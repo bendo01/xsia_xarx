@@ -1,0 +1,1 @@
+{"rustc":12019306335353385202,"features":"[]","declared_features":"[]","target":9933517093603124925,"profile":2241668132362809309,"path":13632948018816083489,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"debug/.fingerprint/glob-1370ded9a71af2c5/dep-lib-glob","checksum":false}}],"rustflags":["-C","link-arg=-fuse-ld=mold"],"config":12296471850835478129,"compile_kind":0}
