@@ -1,0 +1,7 @@
+ƒ¨metadata…¥float³half::binary16::f16£int£i16¦formatÙaburn_core::record::file::NamedMpkFileRecorder<burn_core::record::settings::HalfPrecisionSettings>§version¦0.19.1¨settingsµHalfPrecisionSettings¤item„¥conv1‡¦weight‚¢id­lq51b9qb3o1eo¥paramƒ¥bytesÅ€Û3İ±Œ2³Å3,3q3!-+.Æ.§1R°º³÷4Ÿ¬G-©1O4-´İªÙ%Ä)í¯Ï¯Õ®€3ş1×±Ä¦ô´1³&\³Ğ´‡®º3°_°G±200[.´3*R°¹*f0X2Ü0v±¯*3Á®1%ª¤4—¯0á2i2•¦.²¡,X3+‰.ø-á2Ñ4o²è3P±¤)À®>­
+³Á4j0U±Ÿ3´´?¨®"¨˜³»0·¤†-Ë4Ë°%4‰­14;¬„ú²V¯B³i1q³¾-E±—¨ø2s´è«±¨Y¬Vª54s´™²˜¬´´À,(´÷)T¦ê1õ®«´O²«3û.7ª'­
+4:-Š!+3ƒ3ó,43(3r/Œ°b¯({´§´¼±Û3µªÓ³®%i1[³1‡/ß)é§,¬ü°|4¢0í²†±áª±¡U©&±Q3¬¤«Ü0æ*Û0î¯ö­.°b29­›¬-1Ñ´ç1a)1­à²ğ±³(@0s3º/¥shape“¥dtype£F16¤bias‚¢id­0057vig9m9i2a¥paramƒ¥bytesÄ :3d/3I3ñ-F«-.A-ñ¬2®r´=1F*”!4
+4¥shape‘¥dtype£F16¦strideÀ«kernel_sizeÀ¨dilationÀ¦groupsÀ§paddingÀ£fc1‚¦weight‚¢id­gc8b1e8asjd7s¥paramƒ¥bytesÄÀ¬Ö½/I/”\+-¤¥©ã(´¬Î¬r®K,Ã­
+°¥¬g«)´¬l)™­k*‹ê(AË¤µ+›*æ¨0ğd¯¡,G%p.ÖªZ*Àf¯¡¬‚&
+-±¥Œ+ı-é/	,[¤9(H®â¬%%-ª¬Z©g'#®}.q-Ê«2X¥h-ü#
++X¦+«n*,$)©w(x ¨,ä©¦¤&-"'å®¬-¬î«¨\,*X/–ªÊ©Ÿ•¥* 8¦¥shape’`¥dtype£F16¤bias‚¢id­mv9hen3smhas8¥paramƒ¥bytesÄ˜¨¥shape‘¥dtype£F16¤reluÀ§sigmoidÀ¢_b
