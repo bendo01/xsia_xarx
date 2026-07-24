@@ -1,0 +1,117 @@
+[package]
+name = "xsia_xarx"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+dotenv = "0.15.0"
+openssl = { version = "0.10", features = ["vendored"] }
+openssl-sys = "0.9"
+tracing = { version = "0.1" }
+tracing-subscriber = { version = "0.3.19", features = ["env-filter", "json"] }
+tracing-opentelemetry = "0.33.0"
+opentelemetry = "0.32"
+opentelemetry-otlp = "0.32"
+opentelemetry-semantic-conventions = "0.32"
+regex = { version = "1.11" }
+sea-query = "1.0.1"
+chrono = "0.4"
+validator = { version = "0.20" }
+uuid = { version = "1.18", features = ["v4"] }
+uuid7 = "1.3.0"
+include_dir = { version = "0.7" }
+pgvector = { version = "=0.4.2", features = ["postgres", "sqlx"] }
+rmpv = { version = "1.3", features = ["serde", "serde_bytes"] }
+once_cell = "1.21.3"
+futures = "0.3"
+futures-util = "0.3"
+rust_xlsxwriter = "0.96"
+headless_chrome = "1.0.18"
+base64 = "0.23" # For encoding the logo image
+urlencoding = "2.1"
+reqwest = { version = "0.13", features = [
+    "default",
+    "blocking",
+    "cookies",
+    "json",
+    "socks",
+] }
+lettre = { version = "0.11", default-features = false, features = [
+    "smtp-transport",
+    "tokio1-rustls-tls", # Menggunakan Rustls + Tokio 1
+    "builder",
+    "hostname",
+] }
+# view engine i18n
+tera = "2.0.0"
+fluent-templates = { version = "0.14", features = ["tera"] }
+unic-langid = { version = "0.9" }
+image = "0.25"
+qrcode = { version = "0.14.1", default-features = false, features = [
+    "svg",
+    "image",
+] }
+sha256 = "1.6.0"
+random-string = "1.1.0"
+colored = "3.0.0"
+ndarray = "0.17"
+ndarray-rand = "0.16"
+tensorflow = "0.21.0"
+burn = { version = "0.21", default-features = false, features = [
+    "std",
+    "train",
+    "dataset",
+    "ndarray",
+] }
+burn-ndarray = "0.21"
+burn-train = "0.21"
+derivative = "2.2.0"
+candle-core = "0.11.0"
+candle-nn = "0.11.0"
+candle-transformers = "0.11.0"
+tokenizers = "0.23.1"
+anyhow = "1.0"
+rig-core = "0.40.0"
+tokio-stream = "0.1.18"
+async-stream = "0.3.6"
+text-splitter = { version = "0.32.0", features = ["markdown"] }
+memmap2 = "0.9.10"
+apalis = "0.7.4"
+apalis-cron = "0.7.4"
+apalis-redis = "0.7.4"
+
+salvo = { version = "0.95.0", features = ["oapi", "quinn"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1.0.144" }
+tokio = { version = "1.45", default-features = false, features = [
+    "time",
+    "rt-multi-thread",
+    "full",
+] }
+sea-orm = { version = "2.0.0", features = [
+    "sqlx-postgres",
+    "runtime-tokio-native-tls",
+    "macros",
+    "debug-print",
+    "mock",
+    "rbac",
+    "seaography",
+    "schema-sync",
+    "with-chrono",
+    "with-time",
+    "with-json",
+    "with-rust_decimal",
+    "with-bigdecimal",
+    "with-uuid",
+    "postgres-vector",
+    "postgres-array",
+    "with-arrow",
+] }
+
+
+[dev-dependencies]
+serial_test = { version = "3.2" }
+rstest = { version = "0.26" }
+insta = { version = "1.42", features = ["redactions", "yaml", "filters"] }
+chrono = "0.4"
+fake = { version = "5", features = ["derive"] }
