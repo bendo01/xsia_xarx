@@ -33,6 +33,10 @@ pub struct Model {
     pub deleted_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[sea_orm(has_many, via = "permission_user")]
+    pub permissions: HasMany<super::permissions::Entity>,
+    #[sea_orm(has_many, via = "user_position_type")]
+    pub position_types: HasMany<super::user_position_type::Entity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}
