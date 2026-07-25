@@ -35,12 +35,5 @@ pub fn router() -> Router {
                 ),
         );
 
-    let doc = OpenApi::new("Person Master API", "1.0.0").merge_router(&master_router);
-
-    Router::new()
-        .push(master_router)
-        .push(doc.into_router("master/api-docs/openapi.json"))
-        .push(
-            SwaggerUi::new("/api/v1/master/api-docs/openapi.json").into_router("master/swagger-ui"),
-        )
+    master_router
 }

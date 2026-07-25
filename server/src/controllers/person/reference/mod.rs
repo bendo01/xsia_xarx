@@ -453,15 +453,5 @@ pub fn router() -> Router {
                 ),
         );
 
-    let doc = OpenApi::new("Person Reference API", "1.0.0").merge_router(&ref_router);
-
-    Router::new()
-        .push(ref_router)
-        .push(doc.into_router("api-docs/openapi.json"))
-        .push(SwaggerUi::new("/api/v1/api-docs/openapi.json").into_router("swagger-ui"))
-}
-
-pub fn docs() -> OpenApi {
-    let ref_router = Router::with_path("reference");
-    OpenApi::new("Person Reference API", "1.0.0").merge_router(&ref_router)
+    ref_router
 }

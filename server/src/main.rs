@@ -1,4 +1,5 @@
 use salvo::prelude::*;
+use salvo::oapi::{OpenApi, swagger_ui::SwaggerUi};
 use sea_orm::DatabaseConnection;
 use xsia_xarx::{controllers, db};
 
@@ -25,20 +26,21 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let db = db::connect_db().await?;
     println!("Database connection successful");
 
-    let router = Router::new().push(
-        Router::with_path("api/v1")
-            .hoop(InjectDb(db))
-            .push(controllers::person::reference::router())
-            .push(controllers::person::master::router()),
-    );
+    let api_router = Router::with_path("api/v1")
+        .hoop(InjectDb(db))
+        .push(controllers::person::reference::router())
+        .push(controllers::person::master::router());
+
+    let doc = OpenApi::new("Person API (Reference & Master)", "1.0.0").merge_router(&api_router);
+
+    let router = Router::new()
+        .push(api_router)
+        .push(doc.into_router("api/v1/api-docs/openapi.json"))
+        .push(SwaggerUi::new("/api/v1/api-docs/openapi.json").into_router("api/v1/swagger-ui"));
 
     println!("Server running at http://127.0.0.1:5800");
-    println!("--- Reference ---");
-    println!("  Swagger UI:   http://127.0.0.1:5800/api/v1/swagger-ui/");
-    println!("  OpenAPI JSON: http://127.0.0.1:5800/api/v1/api-docs/openapi.json");
-    println!("--- Master ---");
-    println!("  Swagger UI:   http://127.0.0.1:5800/api/v1/master/swagger-ui/");
-    println!("  OpenAPI JSON: http://127.0.0.1:5800/api/v1/master/api-docs/openapi.json");
+    println!("Swagger UI:   http://127.0.0.1:5800/api/v1/swagger-ui/");
+    println!("OpenAPI JSON: http://127.0.0.1:5800/api/v1/api-docs/openapi.json");
 
     let acceptor = TcpListener::new("127.0.0.1:5800").bind().await;
     Server::new(acceptor).serve(router).await;
