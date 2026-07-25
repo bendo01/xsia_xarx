@@ -17,6 +17,8 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[sea_orm(has_many, via = "user_position_type")]
+    pub users: HasMany<crate::models::auth::users::Entity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}

@@ -36,7 +36,7 @@ pub struct Model {
     #[sea_orm(has_many, via = "permission_user")]
     pub permissions: HasMany<super::permissions::Entity>,
     #[sea_orm(has_many, via = "user_position_type")]
-    pub position_types: HasMany<super::user_position_type::Entity>,
+    pub position_types: HasMany<crate::models::institution::reference::position_type::Entity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}
