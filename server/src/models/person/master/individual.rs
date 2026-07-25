@@ -52,7 +52,8 @@ pub struct Model {
     #[sea_orm(belongs_to, from = "income_id", to = "id")]
     pub income: BelongsTo<crate::models::person::reference::income::Entity>,
     #[sea_orm(belongs_to, from = "identification_type_id", to = "id")]
-    pub identification_type: BelongsTo<crate::models::person::reference::identification_type::Entity>,
+    pub identification_type:
+        BelongsTo<crate::models::person::reference::identification_type::Entity>,
     #[sea_orm(belongs_to, from = "marital_status_id", to = "id")]
     pub marital_status: BelongsTo<crate::models::person::reference::marital_status::Entity>,
     #[sea_orm(belongs_to, from = "profession_id", to = "id")]

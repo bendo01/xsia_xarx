@@ -104,7 +104,10 @@ async fn test_individual_master_relations() {
         .all(&db)
         .await
         .expect("Failed to fetch individuals with gender");
-    println!("Fetched {} individuals with gender relation.", ind_genders.len());
+    println!(
+        "Fetched {} individuals with gender relation.",
+        ind_genders.len()
+    );
 
     // Fetch individuals with their religion relation
     let ind_religions = individual::Entity::find()
@@ -154,7 +157,10 @@ async fn test_biodata_master_relations() {
         .all(&db)
         .await
         .expect("Failed to fetch biodatas with individual");
-    println!("Fetched {} biodatas with individual relation.", biodatas_ind.len());
+    println!(
+        "Fetched {} biodatas with individual relation.",
+        biodatas_ind.len()
+    );
 
     // Fetch biodatas with blood type relation
     let biodatas_blood = biodata::Entity::find()

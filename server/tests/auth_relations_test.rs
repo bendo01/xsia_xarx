@@ -28,7 +28,10 @@ async fn test_user_permission_relation() {
         .await
         .expect("Failed to fetch permission_user relations with user");
 
-    println!("Fetched {} permission_user entries with user.", p_users.len());
+    println!(
+        "Fetched {} permission_user entries with user.",
+        p_users.len()
+    );
 
     let p_permissions = permission_user::Entity::find()
         .find_also_related(permission::Entity)
@@ -36,7 +39,10 @@ async fn test_user_permission_relation() {
         .await
         .expect("Failed to fetch permission_user relations with permission");
 
-    println!("Fetched {} permission_user entries with permission.", p_permissions.len());
+    println!(
+        "Fetched {} permission_user entries with permission.",
+        p_permissions.len()
+    );
 }
 
 #[tokio::test]
@@ -64,7 +70,10 @@ async fn test_user_position_type_relation() {
         .await
         .expect("Failed to fetch user_position_type entries with user");
 
-    println!("Fetched {} user_position_type entries with user.", user_positions.len());
+    println!(
+        "Fetched {} user_position_type entries with user.",
+        user_positions.len()
+    );
 
     // Test querying user_position_type join table with position_type
     let user_positions_with_pt = user_position_type::Entity::find()

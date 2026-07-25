@@ -1,13 +1,26 @@
-use salvo::oapi::swagger_ui::SwaggerUi;
 use salvo::oapi::OpenApi;
+use salvo::oapi::swagger_ui::SwaggerUi;
 use salvo::prelude::*;
 
+pub mod age_classification;
+pub mod blood_type;
 pub mod dto;
+pub mod eye_color;
+pub mod gender;
+pub mod hair_color;
+pub mod hair_type;
+pub mod identification_type;
+pub mod income;
+pub mod marital_status;
+pub mod occupation;
+pub mod profession;
+pub mod relative_type;
+pub mod religion;
 
+#[macro_export]
 macro_rules! impl_reference_controller {
     (
-        $mod_name:ident,
-        $entity_path:path,
+                $entity_path:path,
         $tag:expr,
         $item_name:expr,
         $list_fn:ident,
@@ -16,453 +29,283 @@ macro_rules! impl_reference_controller {
         $update_fn:ident,
         $delete_fn:ident
     ) => {
-        pub mod $mod_name {
-            use chrono::Utc;
-            use salvo::prelude::*;
-            use sea_orm::{
-                ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
-                PaginatorTrait, QueryFilter, QueryOrder, Set,
+        use chrono::Utc;
+        use salvo::prelude::*;
+        use sea_orm::{
+            ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
+            PaginatorTrait, QueryFilter, QueryOrder, Set,
+        };
+        use uuid::Uuid;
+        use validator::Validate;
+
+        use $crate::controllers::person::reference::dto::{
+            CreateReferenceRequest, MessageResponse, PaginatedReferenceResponse, ReferenceQuery,
+            ReferenceResponse, UpdateReferenceRequest,
+        };
+        use $entity_path as entity_mod;
+
+        #[endpoint(tags($tag), status_codes(200, 500))]
+        pub async fn $list_fn(
+            req: &mut Request,
+            depot: &mut Depot,
+        ) -> Result<Json<PaginatedReferenceResponse>, StatusError> {
+            let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+                StatusError::internal_server_error().brief("Database connection missing")
+            })?;
+
+            let query: ReferenceQuery = req.parse_queries().unwrap_or_default();
+            let page = query.page.unwrap_or(1);
+            let page_size = query.page_size.unwrap_or(10);
+
+            let mut select =
+                entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
+
+            if let Some(ref name) = query.name {
+                select = select.filter(entity_mod::Column::Name.contains(name));
+            }
+            if let Some(code) = query.code {
+                select = select.filter(entity_mod::Column::Code.eq(code));
+            }
+
+            let paginator = select
+                .order_by_asc(entity_mod::Column::Code)
+                .paginate(db, page_size);
+
+            let total = paginator
+                .num_items()
+                .await
+                .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+            let total_pages = (total as f64 / page_size as f64).ceil() as u64;
+
+            let items = paginator
+                .fetch_page(page.saturating_sub(1))
+                .await
+                .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+            let data = items
+                .into_iter()
+                .map(|item| ReferenceResponse {
+                    id: item.id,
+                    code: item.code,
+                    alphabet_code: item.alphabet_code,
+                    name: item.name,
+                    created_at: item.created_at,
+                    updated_at: item.updated_at,
+                    deleted_at: item.deleted_at,
+                    sync_at: item.sync_at,
+                    created_by: item.created_by,
+                    updated_by: item.updated_by,
+                })
+                .collect();
+
+            Ok(Json(PaginatedReferenceResponse {
+                data,
+                total,
+                page,
+                page_size,
+                total_pages,
+            }))
+        }
+
+        #[endpoint(tags($tag), status_codes(200, 400, 404, 500))]
+        pub async fn $get_fn(
+            req: &mut Request,
+            depot: &mut Depot,
+        ) -> Result<Json<ReferenceResponse>, StatusError> {
+            let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+                StatusError::internal_server_error().brief("Database connection missing")
+            })?;
+
+            let id_str = req
+                .param::<String>("id")
+                .ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+
+            let id = Uuid::parse_str(&id_str)
+                .map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+
+            let item = entity_mod::Entity::find_by_id(id)
+                .filter(entity_mod::Column::DeletedAt.is_null())
+                .one(db)
+                .await
+                .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                .ok_or_else(|| {
+                    StatusError::not_found().brief(format!("{} not found", $item_name))
+                })?;
+
+            Ok(Json(ReferenceResponse {
+                id: item.id,
+                code: item.code,
+                alphabet_code: item.alphabet_code,
+                name: item.name,
+                created_at: item.created_at,
+                updated_at: item.updated_at,
+                deleted_at: item.deleted_at,
+                sync_at: item.sync_at,
+                created_by: item.created_by,
+                updated_by: item.updated_by,
+            }))
+        }
+
+        #[endpoint(tags($tag), status_codes(200, 400, 500))]
+        pub async fn $create_fn(
+            req: &mut Request,
+            depot: &mut Depot,
+        ) -> Result<Json<ReferenceResponse>, StatusError> {
+            let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+                StatusError::internal_server_error().brief("Database connection missing")
+            })?;
+
+            let payload: CreateReferenceRequest = req.parse_json().await.map_err(|e| {
+                StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+            })?;
+
+            payload
+                .validate()
+                .map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+
+            let now = Utc::now().naive_utc();
+            let new_id = Uuid::new_v4();
+
+            let active_model = entity_mod::ActiveModel {
+                id: Set(new_id),
+                code: Set(payload.code),
+                alphabet_code: Set(payload.alphabet_code),
+                name: Set(payload.name),
+                created_at: Set(now),
+                updated_at: Set(now),
+                deleted_at: Set(None),
+                sync_at: Set(None),
+                created_by: Set(None),
+                updated_by: Set(None),
             };
-            use uuid::Uuid;
-            use validator::Validate;
 
-            use $entity_path as entity_mod;
-            use $crate::controllers::person::reference::dto::{
-                CreateReferenceRequest, MessageResponse, PaginatedReferenceResponse, ReferenceQuery,
-                ReferenceResponse, UpdateReferenceRequest,
-            };
+            let item = active_model
+                .insert(db)
+                .await
+                .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-            #[endpoint(
-                tags($tag),
-                status_codes(200, 500)
-            )]
-            pub async fn $list_fn(
-                req: &mut Request,
-                depot: &mut Depot,
-            ) -> Result<Json<PaginatedReferenceResponse>, StatusError> {
-                let db = depot
-                    .get_typed::<DatabaseConnection>()
-                    .map_err(|_| StatusError::internal_server_error().brief("Database connection missing"))?;
+            Ok(Json(ReferenceResponse {
+                id: item.id,
+                code: item.code,
+                alphabet_code: item.alphabet_code,
+                name: item.name,
+                created_at: item.created_at,
+                updated_at: item.updated_at,
+                deleted_at: item.deleted_at,
+                sync_at: item.sync_at,
+                created_by: item.created_by,
+                updated_by: item.updated_by,
+            }))
+        }
 
-                let query: ReferenceQuery = req.parse_queries().unwrap_or_default();
-                let page = query.page.unwrap_or(1);
-                let page_size = query.page_size.unwrap_or(10);
+        #[endpoint(tags($tag), status_codes(200, 400, 404, 500))]
+        pub async fn $update_fn(
+            req: &mut Request,
+            depot: &mut Depot,
+        ) -> Result<Json<ReferenceResponse>, StatusError> {
+            let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+                StatusError::internal_server_error().brief("Database connection missing")
+            })?;
 
-                let mut select = entity_mod::Entity::find()
-                    .filter(entity_mod::Column::DeletedAt.is_null());
+            let id_str = req
+                .param::<String>("id")
+                .ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
 
-                if let Some(ref name) = query.name {
-                    select = select.filter(entity_mod::Column::Name.contains(name));
-                }
-                if let Some(code) = query.code {
-                    select = select.filter(entity_mod::Column::Code.eq(code));
-                }
+            let id = Uuid::parse_str(&id_str)
+                .map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-                let paginator = select
-                    .order_by_asc(entity_mod::Column::Code)
-                    .paginate(db, page_size);
+            let payload: UpdateReferenceRequest = req.parse_json().await.map_err(|e| {
+                StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+            })?;
 
-                let total = paginator
-                    .num_items()
-                    .await
-                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+            payload
+                .validate()
+                .map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-                let total_pages = (total as f64 / page_size as f64).ceil() as u64;
+            let existing = entity_mod::Entity::find_by_id(id)
+                .filter(entity_mod::Column::DeletedAt.is_null())
+                .one(db)
+                .await
+                .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                .ok_or_else(|| {
+                    StatusError::not_found().brief(format!("{} not found", $item_name))
+                })?;
 
-                let items = paginator
-                    .fetch_page(page.saturating_sub(1))
-                    .await
-                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+            let now = Utc::now().naive_utc();
+            let mut active_model = existing.into_active_model();
 
-                let data = items
-                    .into_iter()
-                    .map(|item| ReferenceResponse {
-                        id: item.id,
-                        code: item.code,
-                        alphabet_code: item.alphabet_code,
-                        name: item.name,
-                        created_at: item.created_at,
-                        updated_at: item.updated_at,
-                        deleted_at: item.deleted_at,
-                        sync_at: item.sync_at,
-                        created_by: item.created_by,
-                        updated_by: item.updated_by,
-                    })
-                    .collect();
-
-                Ok(Json(PaginatedReferenceResponse {
-                    data,
-                    total,
-                    page,
-                    page_size,
-                    total_pages,
-                }))
+            if let Some(code) = payload.code {
+                active_model.code = Set(code);
             }
-
-            #[endpoint(
-                tags($tag),
-                status_codes(200, 400, 404, 500)
-            )]
-            pub async fn $get_fn(
-                req: &mut Request,
-                depot: &mut Depot,
-            ) -> Result<Json<ReferenceResponse>, StatusError> {
-                let db = depot
-                    .get_typed::<DatabaseConnection>()
-                    .map_err(|_| StatusError::internal_server_error().brief("Database connection missing"))?;
-
-                let id_str = req
-                    .param::<String>("id")
-                    .ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-
-                let id = Uuid::parse_str(&id_str)
-                    .map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
-
-                let item = entity_mod::Entity::find_by_id(id)
-                    .filter(entity_mod::Column::DeletedAt.is_null())
-                    .one(db)
-                    .await
-                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-                    .ok_or_else(|| StatusError::not_found().brief(format!("{} not found", $item_name)))?;
-
-                Ok(Json(ReferenceResponse {
-                    id: item.id,
-                    code: item.code,
-                    alphabet_code: item.alphabet_code,
-                    name: item.name,
-                    created_at: item.created_at,
-                    updated_at: item.updated_at,
-                    deleted_at: item.deleted_at,
-                    sync_at: item.sync_at,
-                    created_by: item.created_by,
-                    updated_by: item.updated_by,
-                }))
+            if let Some(alphabet_code) = payload.alphabet_code {
+                active_model.alphabet_code = Set(alphabet_code);
             }
-
-            #[endpoint(
-                tags($tag),
-                status_codes(200, 400, 500)
-            )]
-            pub async fn $create_fn(
-                req: &mut Request,
-                depot: &mut Depot,
-            ) -> Result<Json<ReferenceResponse>, StatusError> {
-                let db = depot
-                    .get_typed::<DatabaseConnection>()
-                    .map_err(|_| StatusError::internal_server_error().brief("Database connection missing"))?;
-
-                let payload: CreateReferenceRequest = req
-                    .parse_json()
-                    .await
-                    .map_err(|e| StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e)))?;
-
-                payload
-                    .validate()
-                    .map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
-
-                let now = Utc::now().naive_utc();
-                let new_id = Uuid::new_v4();
-
-                let active_model = entity_mod::ActiveModel {
-                    id: Set(new_id),
-                    code: Set(payload.code),
-                    alphabet_code: Set(payload.alphabet_code),
-                    name: Set(payload.name),
-                    created_at: Set(now),
-                    updated_at: Set(now),
-                    deleted_at: Set(None),
-                    sync_at: Set(None),
-                    created_by: Set(None),
-                    updated_by: Set(None),
-                };
-
-                let item = active_model
-                    .insert(db)
-                    .await
-                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
-
-                Ok(Json(ReferenceResponse {
-                    id: item.id,
-                    code: item.code,
-                    alphabet_code: item.alphabet_code,
-                    name: item.name,
-                    created_at: item.created_at,
-                    updated_at: item.updated_at,
-                    deleted_at: item.deleted_at,
-                    sync_at: item.sync_at,
-                    created_by: item.created_by,
-                    updated_by: item.updated_by,
-                }))
+            if let Some(name) = payload.name {
+                active_model.name = Set(name);
             }
+            active_model.updated_at = Set(now);
 
-            #[endpoint(
-                tags($tag),
-                status_codes(200, 400, 404, 500)
-            )]
-            pub async fn $update_fn(
-                req: &mut Request,
-                depot: &mut Depot,
-            ) -> Result<Json<ReferenceResponse>, StatusError> {
-                let db = depot
-                    .get_typed::<DatabaseConnection>()
-                    .map_err(|_| StatusError::internal_server_error().brief("Database connection missing"))?;
+            let item = active_model
+                .update(db)
+                .await
+                .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-                let id_str = req
-                    .param::<String>("id")
-                    .ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+            Ok(Json(ReferenceResponse {
+                id: item.id,
+                code: item.code,
+                alphabet_code: item.alphabet_code,
+                name: item.name,
+                created_at: item.created_at,
+                updated_at: item.updated_at,
+                deleted_at: item.deleted_at,
+                sync_at: item.sync_at,
+                created_by: item.created_by,
+                updated_by: item.updated_by,
+            }))
+        }
 
-                let id = Uuid::parse_str(&id_str)
-                    .map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        #[endpoint(tags($tag), status_codes(200, 400, 404, 500))]
+        pub async fn $delete_fn(
+            req: &mut Request,
+            depot: &mut Depot,
+        ) -> Result<Json<MessageResponse>, StatusError> {
+            let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+                StatusError::internal_server_error().brief("Database connection missing")
+            })?;
 
-                let payload: UpdateReferenceRequest = req
-                    .parse_json()
-                    .await
-                    .map_err(|e| StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e)))?;
+            let id_str = req
+                .param::<String>("id")
+                .ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
 
-                payload
-                    .validate()
-                    .map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+            let id = Uuid::parse_str(&id_str)
+                .map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-                let existing = entity_mod::Entity::find_by_id(id)
-                    .filter(entity_mod::Column::DeletedAt.is_null())
-                    .one(db)
-                    .await
-                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-                    .ok_or_else(|| StatusError::not_found().brief(format!("{} not found", $item_name)))?;
+            let existing = entity_mod::Entity::find_by_id(id)
+                .filter(entity_mod::Column::DeletedAt.is_null())
+                .one(db)
+                .await
+                .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                .ok_or_else(|| {
+                    StatusError::not_found().brief(format!("{} not found", $item_name))
+                })?;
 
-                let now = Utc::now().naive_utc();
-                let mut active_model = existing.into_active_model();
+            let now = Utc::now().naive_utc();
+            let mut active_model = existing.into_active_model();
+            active_model.deleted_at = Set(Some(now));
+            active_model.updated_at = Set(now);
 
-                if let Some(code) = payload.code {
-                    active_model.code = Set(code);
-                }
-                if let Some(alphabet_code) = payload.alphabet_code {
-                    active_model.alphabet_code = Set(alphabet_code);
-                }
-                if let Some(name) = payload.name {
-                    active_model.name = Set(name);
-                }
-                active_model.updated_at = Set(now);
+            active_model
+                .update(db)
+                .await
+                .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-                let item = active_model
-                    .update(db)
-                    .await
-                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
-
-                Ok(Json(ReferenceResponse {
-                    id: item.id,
-                    code: item.code,
-                    alphabet_code: item.alphabet_code,
-                    name: item.name,
-                    created_at: item.created_at,
-                    updated_at: item.updated_at,
-                    deleted_at: item.deleted_at,
-                    sync_at: item.sync_at,
-                    created_by: item.created_by,
-                    updated_by: item.updated_by,
-                }))
-            }
-
-            #[endpoint(
-                tags($tag),
-                status_codes(200, 400, 404, 500)
-            )]
-            pub async fn $delete_fn(
-                req: &mut Request,
-                depot: &mut Depot,
-            ) -> Result<Json<MessageResponse>, StatusError> {
-                let db = depot
-                    .get_typed::<DatabaseConnection>()
-                    .map_err(|_| StatusError::internal_server_error().brief("Database connection missing"))?;
-
-                let id_str = req
-                    .param::<String>("id")
-                    .ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-
-                let id = Uuid::parse_str(&id_str)
-                    .map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
-
-                let existing = entity_mod::Entity::find_by_id(id)
-                    .filter(entity_mod::Column::DeletedAt.is_null())
-                    .one(db)
-                    .await
-                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-                    .ok_or_else(|| StatusError::not_found().brief(format!("{} not found", $item_name)))?;
-
-                let now = Utc::now().naive_utc();
-                let mut active_model = existing.into_active_model();
-                active_model.deleted_at = Set(Some(now));
-                active_model.updated_at = Set(now);
-
-                active_model
-                    .update(db)
-                    .await
-                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
-
-                Ok(Json(MessageResponse {
-                    message: format!("{} deleted successfully", $item_name),
-                }))
-            }
+            Ok(Json(MessageResponse {
+                message: format!("{} deleted successfully", $item_name),
+            }))
         }
     };
 }
-
-
-impl_reference_controller!(
-    age_classification,
-    crate::models::person::reference::age_classification,
-    "Person Reference - Age Classification",
-    "Age classification",
-    list_age_classifications,
-    get_age_classification,
-    create_age_classification,
-    update_age_classification,
-    delete_age_classification
-);
-
-impl_reference_controller!(
-    blood_type,
-    crate::models::person::reference::blood_type,
-    "Person Reference - Blood Type",
-    "Blood type",
-    list_blood_types,
-    get_blood_type,
-    create_blood_type,
-    update_blood_type,
-    delete_blood_type
-);
-
-impl_reference_controller!(
-    eye_color,
-    crate::models::person::reference::eye_color,
-    "Person Reference - Eye Color",
-    "Eye color",
-    list_eye_colors,
-    get_eye_color,
-    create_eye_color,
-    update_eye_color,
-    delete_eye_color
-);
-
-impl_reference_controller!(
-    gender,
-    crate::models::person::reference::gender,
-    "Person Reference - Gender",
-    "Gender",
-    list_genders,
-    get_gender,
-    create_gender,
-    update_gender,
-    delete_gender
-);
-
-impl_reference_controller!(
-    hair_color,
-    crate::models::person::reference::hair_color,
-    "Person Reference - Hair Color",
-    "Hair color",
-    list_hair_colors,
-    get_hair_color,
-    create_hair_color,
-    update_hair_color,
-    delete_hair_color
-);
-
-impl_reference_controller!(
-    hair_type,
-    crate::models::person::reference::hair_type,
-    "Person Reference - Hair Type",
-    "Hair type",
-    list_hair_types,
-    get_hair_type,
-    create_hair_type,
-    update_hair_type,
-    delete_hair_type
-);
-
-impl_reference_controller!(
-    identification_type,
-    crate::models::person::reference::identification_type,
-    "Person Reference - Identification Type",
-    "Identification type",
-    list_identification_types,
-    get_identification_type,
-    create_identification_type,
-    update_identification_type,
-    delete_identification_type
-);
-
-impl_reference_controller!(
-    income,
-    crate::models::person::reference::income,
-    "Person Reference - Income",
-    "Income",
-    list_incomes,
-    get_income,
-    create_income,
-    update_income,
-    delete_income
-);
-
-impl_reference_controller!(
-    marital_status,
-    crate::models::person::reference::marital_status,
-    "Person Reference - Marital Status",
-    "Marital status",
-    list_marital_statuses,
-    get_marital_status,
-    create_marital_status,
-    update_marital_status,
-    delete_marital_status
-);
-
-impl_reference_controller!(
-    occupation,
-    crate::models::person::reference::occupation,
-    "Person Reference - Occupation",
-    "Occupation",
-    list_occupations,
-    get_occupation,
-    create_occupation,
-    update_occupation,
-    delete_occupation
-);
-
-impl_reference_controller!(
-    profession,
-    crate::models::person::reference::profession,
-    "Person Reference - Profession",
-    "Profession",
-    list_professions,
-    get_profession,
-    create_profession,
-    update_profession,
-    delete_profession
-);
-
-impl_reference_controller!(
-    relative_type,
-    crate::models::person::reference::relative_type,
-    "Person Reference - Relative Type",
-    "Relative type",
-    list_relative_types,
-    get_relative_type,
-    create_relative_type,
-    update_relative_type,
-    delete_relative_type
-);
-
-impl_reference_controller!(
-    religion,
-    crate::models::person::reference::religion,
-    "Person Reference - Religion",
-    "Religion",
-    list_religions,
-    get_religion,
-    create_religion,
-    update_religion,
-    delete_religion
-);
 
 pub fn router() -> Router {
     let ref_router = Router::with_path("reference")

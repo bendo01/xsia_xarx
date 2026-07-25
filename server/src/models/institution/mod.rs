@@ -1,2 +1,2 @@
-pub mod reference;
 pub mod master;
+pub mod reference;

@@ -28,17 +28,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let router = Router::new().push(
         Router::with_path("api/v1")
             .hoop(InjectDb(db))
-            .push(controllers::person::reference::router()),
+            .push(controllers::person::reference::router())
+            .push(controllers::person::master::router()),
     );
 
     println!("Server running at http://127.0.0.1:5800");
-    println!("Swagger UI:   http://127.0.0.1:5800/api/v1/swagger-ui/");
-    println!("OpenAPI JSON: http://127.0.0.1:5800/api/v1/api-docs/openapi.json");
+    println!("--- Reference ---");
+    println!("  Swagger UI:   http://127.0.0.1:5800/api/v1/swagger-ui/");
+    println!("  OpenAPI JSON: http://127.0.0.1:5800/api/v1/api-docs/openapi.json");
+    println!("--- Master ---");
+    println!("  Swagger UI:   http://127.0.0.1:5800/api/v1/master/swagger-ui/");
+    println!("  OpenAPI JSON: http://127.0.0.1:5800/api/v1/master/api-docs/openapi.json");
 
     let acceptor = TcpListener::new("127.0.0.1:5800").bind().await;
     Server::new(acceptor).serve(router).await;
 
     Ok(())
 }
-
-

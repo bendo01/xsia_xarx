@@ -1,6 +1,6 @@
+use sea_orm::{ConnectOptions, Database, DatabaseConnection, DbErr};
 use std::env;
 use std::time::Duration;
-use sea_orm::{ConnectOptions, Database, DatabaseConnection, DbErr};
 
 /// Initializes environmental variables from `.env` and establishes a SeaORM database connection.
 pub async fn connect_db() -> Result<DatabaseConnection, DbErr> {
