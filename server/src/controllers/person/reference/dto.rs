@@ -2,6 +2,7 @@ use chrono::NaiveDateTime;
 use salvo::oapi::ToSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+use validator::Validate;
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
 pub struct ReferenceResponse {
@@ -17,21 +18,27 @@ pub struct ReferenceResponse {
     pub updated_by: Option<Uuid>,
 }
 
-#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
 pub struct CreateReferenceRequest {
+    #[validate(range(min = 1, message = "code must be >= 1"))]
     pub code: i32,
+    #[validate(length(min = 1, max = 10, message = "alphabet_code must be 1–10 characters"))]
     pub alphabet_code: String,
+    #[validate(length(min = 1, max = 255, message = "name must be 1–255 characters"))]
     pub name: String,
 }
 
-#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
 pub struct UpdateReferenceRequest {
+    #[validate(range(min = 1, message = "code must be >= 1"))]
     pub code: Option<i32>,
+    #[validate(length(min = 1, max = 10, message = "alphabet_code must be 1–10 characters"))]
     pub alphabet_code: Option<String>,
+    #[validate(length(min = 1, max = 255, message = "name must be 1–255 characters"))]
     pub name: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
 pub struct ReferenceQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,

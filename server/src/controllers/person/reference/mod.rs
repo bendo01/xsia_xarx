@@ -24,6 +24,7 @@ macro_rules! impl_reference_controller {
                 PaginatorTrait, QueryFilter, QueryOrder, Set,
             };
             use uuid::Uuid;
+            use validator::Validate;
 
             use $entity_path as entity_mod;
             use $crate::controllers::person::reference::dto::{
@@ -33,35 +34,22 @@ macro_rules! impl_reference_controller {
 
             #[endpoint(
                 tags($tag),
-                status_codes(200, 400, 500)
+                status_codes(200, 500)
             )]
             pub async fn $list_fn(
                 req: &mut Request,
                 depot: &mut Depot,
-                res: &mut Response,
-            ) {
-                let db = match depot.get_typed::<DatabaseConnection>() {
-                    Ok(db) => db,
-                    Err(_) => {
-                        res.status_code(StatusCode::INTERNAL_SERVER_ERROR);
-                        res.render(Json(MessageResponse {
-                            message: "Database connection missing in depot".to_string(),
-                        }));
-                        return;
-                    }
-                };
+            ) -> Result<Json<PaginatedReferenceResponse>, StatusError> {
+                let db = depot
+                    .get_typed::<DatabaseConnection>()
+                    .map_err(|_| StatusError::internal_server_error().brief("Database connection missing"))?;
 
-                let query: ReferenceQuery = req.parse_queries().unwrap_or(ReferenceQuery {
-                    page: None,
-                    page_size: None,
-                    name: None,
-                    code: None,
-                });
-
+                let query: ReferenceQuery = req.parse_queries().unwrap_or_default();
                 let page = query.page.unwrap_or(1);
                 let page_size = query.page_size.unwrap_or(10);
 
-                let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
+                let mut select = entity_mod::Entity::find()
+                    .filter(entity_mod::Column::DeletedAt.is_null());
 
                 if let Some(ref name) = query.name {
                     select = select.filter(entity_mod::Column::Name.contains(name));
@@ -70,31 +58,21 @@ macro_rules! impl_reference_controller {
                     select = select.filter(entity_mod::Column::Code.eq(code));
                 }
 
-                let paginator = select.order_by_asc(entity_mod::Column::Code).paginate(db, page_size);
+                let paginator = select
+                    .order_by_asc(entity_mod::Column::Code)
+                    .paginate(db, page_size);
 
-                let total = match paginator.num_items().await {
-                    Ok(t) => t,
-                    Err(e) => {
-                        res.status_code(StatusCode::INTERNAL_SERVER_ERROR);
-                        res.render(Json(MessageResponse {
-                            message: e.to_string(),
-                        }));
-                        return;
-                    }
-                };
+                let total = paginator
+                    .num_items()
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
                 let total_pages = (total as f64 / page_size as f64).ceil() as u64;
 
-                let items = match paginator.fetch_page(page.saturating_sub(1)).await {
-                    Ok(items) => items,
-                    Err(e) => {
-                        res.status_code(StatusCode::INTERNAL_SERVER_ERROR);
-                        res.render(Json(MessageResponse {
-                            message: e.to_string(),
-                        }));
-                        return;
-                    }
-                };
+                let items = paginator
+                    .fetch_page(page.saturating_sub(1))
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
                 let data = items
                     .into_iter()
@@ -112,121 +90,75 @@ macro_rules! impl_reference_controller {
                     })
                     .collect();
 
-                res.render(Json(PaginatedReferenceResponse {
+                Ok(Json(PaginatedReferenceResponse {
                     data,
                     total,
                     page,
                     page_size,
                     total_pages,
-                }));
+                }))
             }
 
             #[endpoint(
                 tags($tag),
-                status_codes(200, 404, 500)
+                status_codes(200, 400, 404, 500)
             )]
             pub async fn $get_fn(
                 req: &mut Request,
                 depot: &mut Depot,
-                res: &mut Response,
-            ) {
-                let db = match depot.get_typed::<DatabaseConnection>() {
-                    Ok(db) => db,
-                    Err(_) => {
-                        res.status_code(StatusCode::INTERNAL_SERVER_ERROR);
-                        res.render(Json(MessageResponse {
-                            message: "Database connection missing in depot".to_string(),
-                        }));
-                        return;
-                    }
-                };
+            ) -> Result<Json<ReferenceResponse>, StatusError> {
+                let db = depot
+                    .get_typed::<DatabaseConnection>()
+                    .map_err(|_| StatusError::internal_server_error().brief("Database connection missing"))?;
 
-                let id_str = match req.param::<String>("id") {
-                    Some(id) => id,
-                    None => {
-                        res.status_code(StatusCode::BAD_REQUEST);
-                        res.render(Json(MessageResponse {
-                            message: "Missing parameter id".to_string(),
-                        }));
-                        return;
-                    }
-                };
+                let id_str = req
+                    .param::<String>("id")
+                    .ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
 
-                let id = match Uuid::parse_str(&id_str) {
-                    Ok(id) => id,
-                    Err(_) => {
-                        res.status_code(StatusCode::BAD_REQUEST);
-                        res.render(Json(MessageResponse {
-                            message: "Invalid UUID format".to_string(),
-                        }));
-                        return;
-                    }
-                };
+                let id = Uuid::parse_str(&id_str)
+                    .map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-                match entity_mod::Entity::find_by_id(id)
+                let item = entity_mod::Entity::find_by_id(id)
                     .filter(entity_mod::Column::DeletedAt.is_null())
                     .one(db)
                     .await
-                {
-                    Ok(Some(item)) => {
-                        res.render(Json(ReferenceResponse {
-                            id: item.id,
-                            code: item.code,
-                            alphabet_code: item.alphabet_code,
-                            name: item.name,
-                            created_at: item.created_at,
-                            updated_at: item.updated_at,
-                            deleted_at: item.deleted_at,
-                            sync_at: item.sync_at,
-                            created_by: item.created_by,
-                            updated_by: item.updated_by,
-                        }));
-                    }
-                    Ok(None) => {
-                        res.status_code(StatusCode::NOT_FOUND);
-                        res.render(Json(MessageResponse {
-                            message: format!("{} not found", $item_name),
-                        }));
-                    }
-                    Err(e) => {
-                        res.status_code(StatusCode::INTERNAL_SERVER_ERROR);
-                        res.render(Json(MessageResponse {
-                            message: e.to_string(),
-                        }));
-                    }
-                }
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                    .ok_or_else(|| StatusError::not_found().brief(format!("{} not found", $item_name)))?;
+
+                Ok(Json(ReferenceResponse {
+                    id: item.id,
+                    code: item.code,
+                    alphabet_code: item.alphabet_code,
+                    name: item.name,
+                    created_at: item.created_at,
+                    updated_at: item.updated_at,
+                    deleted_at: item.deleted_at,
+                    sync_at: item.sync_at,
+                    created_by: item.created_by,
+                    updated_by: item.updated_by,
+                }))
             }
 
             #[endpoint(
                 tags($tag),
-                status_codes(201, 400, 500)
+                status_codes(200, 400, 500)
             )]
             pub async fn $create_fn(
                 req: &mut Request,
                 depot: &mut Depot,
-                res: &mut Response,
-            ) {
-                let db = match depot.get_typed::<DatabaseConnection>() {
-                    Ok(db) => db,
-                    Err(_) => {
-                        res.status_code(StatusCode::INTERNAL_SERVER_ERROR);
-                        res.render(Json(MessageResponse {
-                            message: "Database connection missing in depot".to_string(),
-                        }));
-                        return;
-                    }
-                };
+            ) -> Result<Json<ReferenceResponse>, StatusError> {
+                let db = depot
+                    .get_typed::<DatabaseConnection>()
+                    .map_err(|_| StatusError::internal_server_error().brief("Database connection missing"))?;
 
-                let payload: CreateReferenceRequest = match req.parse_json().await {
-                    Ok(p) => p,
-                    Err(e) => {
-                        res.status_code(StatusCode::BAD_REQUEST);
-                        res.render(Json(MessageResponse {
-                            message: format!("Invalid JSON payload: {}", e),
-                        }));
-                        return;
-                    }
-                };
+                let payload: CreateReferenceRequest = req
+                    .parse_json()
+                    .await
+                    .map_err(|e| StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e)))?;
+
+                payload
+                    .validate()
+                    .map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
                 let now = Utc::now().naive_utc();
                 let new_id = Uuid::new_v4();
@@ -244,29 +176,23 @@ macro_rules! impl_reference_controller {
                     updated_by: Set(None),
                 };
 
-                match active_model.insert(db).await {
-                    Ok(item) => {
-                        res.status_code(StatusCode::CREATED);
-                        res.render(Json(ReferenceResponse {
-                            id: item.id,
-                            code: item.code,
-                            alphabet_code: item.alphabet_code,
-                            name: item.name,
-                            created_at: item.created_at,
-                            updated_at: item.updated_at,
-                            deleted_at: item.deleted_at,
-                            sync_at: item.sync_at,
-                            created_by: item.created_by,
-                            updated_by: item.updated_by,
-                        }));
-                    }
-                    Err(e) => {
-                        res.status_code(StatusCode::INTERNAL_SERVER_ERROR);
-                        res.render(Json(MessageResponse {
-                            message: e.to_string(),
-                        }));
-                    }
-                }
+                let item = active_model
+                    .insert(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+                Ok(Json(ReferenceResponse {
+                    id: item.id,
+                    code: item.code,
+                    alphabet_code: item.alphabet_code,
+                    name: item.name,
+                    created_at: item.created_at,
+                    updated_at: item.updated_at,
+                    deleted_at: item.deleted_at,
+                    sync_at: item.sync_at,
+                    created_by: item.created_by,
+                    updated_by: item.updated_by,
+                }))
             }
 
             #[endpoint(
@@ -276,73 +202,33 @@ macro_rules! impl_reference_controller {
             pub async fn $update_fn(
                 req: &mut Request,
                 depot: &mut Depot,
-                res: &mut Response,
-            ) {
-                let db = match depot.get_typed::<DatabaseConnection>() {
-                    Ok(db) => db,
-                    Err(_) => {
-                        res.status_code(StatusCode::INTERNAL_SERVER_ERROR);
-                        res.render(Json(MessageResponse {
-                            message: "Database connection missing in depot".to_string(),
-                        }));
-                        return;
-                    }
-                };
+            ) -> Result<Json<ReferenceResponse>, StatusError> {
+                let db = depot
+                    .get_typed::<DatabaseConnection>()
+                    .map_err(|_| StatusError::internal_server_error().brief("Database connection missing"))?;
 
-                let id_str = match req.param::<String>("id") {
-                    Some(id) => id,
-                    None => {
-                        res.status_code(StatusCode::BAD_REQUEST);
-                        res.render(Json(MessageResponse {
-                            message: "Missing parameter id".to_string(),
-                        }));
-                        return;
-                    }
-                };
+                let id_str = req
+                    .param::<String>("id")
+                    .ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
 
-                let id = match Uuid::parse_str(&id_str) {
-                    Ok(id) => id,
-                    Err(_) => {
-                        res.status_code(StatusCode::BAD_REQUEST);
-                        res.render(Json(MessageResponse {
-                            message: "Invalid UUID format".to_string(),
-                        }));
-                        return;
-                    }
-                };
+                let id = Uuid::parse_str(&id_str)
+                    .map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-                let payload: UpdateReferenceRequest = match req.parse_json().await {
-                    Ok(p) => p,
-                    Err(e) => {
-                        res.status_code(StatusCode::BAD_REQUEST);
-                        res.render(Json(MessageResponse {
-                            message: format!("Invalid JSON payload: {}", e),
-                        }));
-                        return;
-                    }
-                };
+                let payload: UpdateReferenceRequest = req
+                    .parse_json()
+                    .await
+                    .map_err(|e| StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e)))?;
 
-                let existing = match entity_mod::Entity::find_by_id(id)
+                payload
+                    .validate()
+                    .map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+
+                let existing = entity_mod::Entity::find_by_id(id)
                     .filter(entity_mod::Column::DeletedAt.is_null())
                     .one(db)
                     .await
-                {
-                    Ok(Some(item)) => item,
-                    Ok(None) => {
-                        res.status_code(StatusCode::NOT_FOUND);
-                        res.render(Json(MessageResponse {
-                            message: format!("{} not found", $item_name),
-                        }));
-                        return;
-                    }
-                    Err(e) => {
-                        res.status_code(StatusCode::INTERNAL_SERVER_ERROR);
-                        res.render(Json(MessageResponse {
-                            message: e.to_string(),
-                        }));
-                        return;
-                    }
-                };
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                    .ok_or_else(|| StatusError::not_found().brief(format!("{} not found", $item_name)))?;
 
                 let now = Utc::now().naive_utc();
                 let mut active_model = existing.into_active_model();
@@ -358,28 +244,23 @@ macro_rules! impl_reference_controller {
                 }
                 active_model.updated_at = Set(now);
 
-                match active_model.update(db).await {
-                    Ok(item) => {
-                        res.render(Json(ReferenceResponse {
-                            id: item.id,
-                            code: item.code,
-                            alphabet_code: item.alphabet_code,
-                            name: item.name,
-                            created_at: item.created_at,
-                            updated_at: item.updated_at,
-                            deleted_at: item.deleted_at,
-                            sync_at: item.sync_at,
-                            created_by: item.created_by,
-                            updated_by: item.updated_by,
-                        }));
-                    }
-                    Err(e) => {
-                        res.status_code(StatusCode::INTERNAL_SERVER_ERROR);
-                        res.render(Json(MessageResponse {
-                            message: e.to_string(),
-                        }));
-                    }
-                }
+                let item = active_model
+                    .update(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+                Ok(Json(ReferenceResponse {
+                    id: item.id,
+                    code: item.code,
+                    alphabet_code: item.alphabet_code,
+                    name: item.name,
+                    created_at: item.created_at,
+                    updated_at: item.updated_at,
+                    deleted_at: item.deleted_at,
+                    sync_at: item.sync_at,
+                    created_by: item.created_by,
+                    updated_by: item.updated_by,
+                }))
             }
 
             #[endpoint(
@@ -389,85 +270,43 @@ macro_rules! impl_reference_controller {
             pub async fn $delete_fn(
                 req: &mut Request,
                 depot: &mut Depot,
-                res: &mut Response,
-            ) {
-                let db = match depot.get_typed::<DatabaseConnection>() {
-                    Ok(db) => db,
-                    Err(_) => {
-                        res.status_code(StatusCode::INTERNAL_SERVER_ERROR);
-                        res.render(Json(MessageResponse {
-                            message: "Database connection missing in depot".to_string(),
-                        }));
-                        return;
-                    }
-                };
+            ) -> Result<Json<MessageResponse>, StatusError> {
+                let db = depot
+                    .get_typed::<DatabaseConnection>()
+                    .map_err(|_| StatusError::internal_server_error().brief("Database connection missing"))?;
 
-                let id_str = match req.param::<String>("id") {
-                    Some(id) => id,
-                    None => {
-                        res.status_code(StatusCode::BAD_REQUEST);
-                        res.render(Json(MessageResponse {
-                            message: "Missing parameter id".to_string(),
-                        }));
-                        return;
-                    }
-                };
+                let id_str = req
+                    .param::<String>("id")
+                    .ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
 
-                let id = match Uuid::parse_str(&id_str) {
-                    Ok(id) => id,
-                    Err(_) => {
-                        res.status_code(StatusCode::BAD_REQUEST);
-                        res.render(Json(MessageResponse {
-                            message: "Invalid UUID format".to_string(),
-                        }));
-                        return;
-                    }
-                };
+                let id = Uuid::parse_str(&id_str)
+                    .map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-                let existing = match entity_mod::Entity::find_by_id(id)
+                let existing = entity_mod::Entity::find_by_id(id)
                     .filter(entity_mod::Column::DeletedAt.is_null())
                     .one(db)
                     .await
-                {
-                    Ok(Some(item)) => item,
-                    Ok(None) => {
-                        res.status_code(StatusCode::NOT_FOUND);
-                        res.render(Json(MessageResponse {
-                            message: format!("{} not found", $item_name),
-                        }));
-                        return;
-                    }
-                    Err(e) => {
-                        res.status_code(StatusCode::INTERNAL_SERVER_ERROR);
-                        res.render(Json(MessageResponse {
-                            message: e.to_string(),
-                        }));
-                        return;
-                    }
-                };
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                    .ok_or_else(|| StatusError::not_found().brief(format!("{} not found", $item_name)))?;
 
                 let now = Utc::now().naive_utc();
                 let mut active_model = existing.into_active_model();
                 active_model.deleted_at = Set(Some(now));
                 active_model.updated_at = Set(now);
 
-                match active_model.update(db).await {
-                    Ok(_) => {
-                        res.render(Json(MessageResponse {
-                            message: format!("{} deleted successfully", $item_name),
-                        }));
-                    }
-                    Err(e) => {
-                        res.status_code(StatusCode::INTERNAL_SERVER_ERROR);
-                        res.render(Json(MessageResponse {
-                            message: e.to_string(),
-                        }));
-                    }
-                }
+                active_model
+                    .update(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+                Ok(Json(MessageResponse {
+                    message: format!("{} deleted successfully", $item_name),
+                }))
             }
         }
     };
 }
+
 
 impl_reference_controller!(
     age_classification,
@@ -776,7 +615,7 @@ pub fn router() -> Router {
     Router::new()
         .push(ref_router)
         .push(doc.into_router("api-docs/openapi.json"))
-        .push(SwaggerUi::new("api-docs/openapi.json").into_router("swagger-ui"))
+        .push(SwaggerUi::new("/api/v1/api-docs/openapi.json").into_router("swagger-ui"))
 }
 
 pub fn docs() -> OpenApi {
