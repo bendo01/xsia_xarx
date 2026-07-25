@@ -39,7 +39,7 @@ pub struct Model {
     pub is_deceased: bool,
     pub created_at: Option<DateTime>,
     pub updated_at: Option<DateTime>,
-    pub deleted_at: Option<DateTime>,
+    pub deleted_at: Option<DateTimeWithTimeZone>,
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
