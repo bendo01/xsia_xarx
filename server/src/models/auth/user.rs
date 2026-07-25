@@ -19,8 +19,7 @@ pub struct Model {
     pub individual_id: Uuid,
     #[sea_orm(default_value = false)]
     pub is_active: bool,
-    #[sea_orm(default_value = "00000000-0000-0000-0000-000000000000")]
-    pub current_role_id: Uuid,
+    pub current_role_id: Option<Uuid>,
     pub reset_token: Option<String>,
     pub reset_sent_at: Option<DateTime>,
     pub email_verification_token: Option<String>,

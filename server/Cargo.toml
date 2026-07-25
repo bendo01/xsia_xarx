@@ -95,7 +95,6 @@ sea-orm = { version = "2.0.0", features = [
     "debug-print",
     "mock",
     "rbac",
-    "seaography",
     "schema-sync",
     "with-chrono",
     "with-time",
@@ -107,7 +106,6 @@ sea-orm = { version = "2.0.0", features = [
     "postgres-array",
     "with-arrow",
 ] }
-
 
 [dev-dependencies]
 serial_test = { version = "3.2" }

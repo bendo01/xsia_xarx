@@ -11,8 +11,8 @@ pub struct Model {
     pub user_id: Uuid,
     #[sea_orm(default_value = "00000000-0000-0000-0000-000000000000")]
     pub position_type_id: Uuid,
-    pub created_at: DateTime,
-    pub updated_at: DateTime,
+    pub created_at: Option<DateTime>,
+    pub updated_at: Option<DateTime>,
     pub deleted_at: Option<DateTime>,
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,

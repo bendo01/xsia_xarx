@@ -1,4 +1,4 @@
-mod db;
+use xsia_xarx::db;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

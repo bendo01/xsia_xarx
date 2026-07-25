@@ -1,15 +1,2 @@
-pub mod academic;
-pub mod ai;
 pub mod auth;
-pub mod building;
-pub mod burn;
-pub mod chart;
-pub mod contact;
-pub mod document;
-pub mod feeder;
-pub mod general;
 pub mod institution;
-pub mod literate;
-pub mod location;
-pub mod payment;
-pub mod person;

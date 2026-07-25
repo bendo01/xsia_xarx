@@ -100,10 +100,29 @@ Open [http://localhost:3000](http://localhost:3000) (or the port indicated by Vi
 
 ## 🧪 Testing & Verification
 
-### Backend Tests
-From the `server/` directory:
+### Backend Tests (`server/`)
+Navigate to the `server/` directory:
+```bash
+cd server
+```
+
+Run tests using [cargo-nextest](https://nexte.st/) (recommended):
+```bash
+# Run all server tests using nextest
+cargo nextest run
+
+# Run tests with stdout output enabled (uncaptured output)
+cargo nextest run --no-capture
+
+# Run a specific test suite or test function
+cargo nextest run --test auth_relations_test
+cargo nextest run test_user_permission_relation
+```
+
+Or using standard `cargo test`:
 ```bash
 cargo test
+cargo test -- --nocapture
 ```
 
 ### Frontend Production Build
