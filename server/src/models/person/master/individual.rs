@@ -59,6 +59,8 @@ pub struct Model {
     pub profession: BelongsTo<crate::models::person::reference::profession::Entity>,
     #[sea_orm(belongs_to, from = "age_classification_id", to = "id")]
     pub age_classification: BelongsTo<crate::models::person::reference::age_classification::Entity>,
+    #[sea_orm(has_one)]
+    pub biodata: HasOne<super::biodata::Entity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}
