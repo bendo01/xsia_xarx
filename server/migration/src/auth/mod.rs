@@ -1,2 +1,2 @@
 pub mod m20260803_135500_schema_auth_table_users;
-pub mod m20260803_135500_schema_auth_table_verifications;
+pub mod m20260803_140041_schema_auth_table_verifications;
