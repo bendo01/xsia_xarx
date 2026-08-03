@@ -67,7 +67,7 @@ impl MigrationTrait for Migration {
                     )
                     .primary_key(
                         Index::create()
-                            .name("auth_ermission_user_pkey")
+                            .name("auth_permission_user_pkey")
                             .col(Alias::new("id")),
                     )
                     .to_owned(),
