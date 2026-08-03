@@ -1,2 +1,0 @@
-pub mod m20241030_192659_schema_academic_student_adviser_counsellors;
-pub mod m20241030_192712_schema_academic_student_adviser_decrees;

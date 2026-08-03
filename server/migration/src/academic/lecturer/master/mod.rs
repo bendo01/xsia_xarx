@@ -1,1 +1,0 @@
-pub mod m20241009_232031_schema_academic_lecturer_master_table_lecturers;

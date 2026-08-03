@@ -1,3 +1,0 @@
-pub mod m20260228_145611_schema_ai_table_chunks;
-pub mod m20260309_212227_schema_ai_table_conversations;
-pub mod m20260309_212339_schema_ai_table_messages;
