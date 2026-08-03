@@ -16,7 +16,7 @@ opentelemetry-semantic-conventions = "0.32"
 regex = { version = "1.11" }
 sea-query = "1.0.1"
 chrono = "0.4"
-validator = { version = "0.20", features = ["derive"] }
+validator = { version = "0.21", features = ["derive"] }
 uuid = { version = "1.18", features = ["v4"] }
 uuid7 = "1.3.0"
 include_dir = { version = "0.7" }
@@ -25,7 +25,7 @@ rmpv = { version = "1.3", features = ["serde", "serde_bytes"] }
 once_cell = "1.21.3"
 futures = "0.3"
 futures-util = "0.3"
-rust_xlsxwriter = "0.96"
+rust_xlsxwriter = "0.97"
 headless_chrome = "1.0.18"
 base64 = "0.23" # For encoding the logo image
 urlencoding = "2.1"
@@ -44,7 +44,7 @@ lettre = { version = "0.11", default-features = false, features = [
 ] }
 # view engine i18n
 tera = "2.0.0"
-fluent-templates = { version = "0.14", features = ["tera"] }
+fluent-templates = { version = "0.15", features = ["tera"] }
 unic-langid = { version = "0.9" }
 image = "0.25"
 qrcode = { version = "0.14.1", default-features = false, features = [
@@ -71,7 +71,7 @@ candle-nn = "0.11.0"
 candle-transformers = "0.11.0"
 tokenizers = "0.23.1"
 anyhow = "1.0"
-rig-core = "0.40.0"
+rig-core = "0.41"
 tokio-stream = "0.1.18"
 async-stream = "0.3.6"
 text-splitter = { version = "0.32.0", features = ["markdown"] }
@@ -108,8 +108,8 @@ sea-orm = { version = "2.0.0", features = [
 ] }
 
 [dev-dependencies]
-serial_test = { version = "3.2" }
+serial_test = { version = "4.0" }
 rstest = { version = "0.26" }
-insta = { version = "1.42", features = ["redactions", "yaml", "filters"] }
+insta = { version = "1.43", features = ["redactions", "yaml", "filters"] }
 chrono = "0.4"
 fake = { version = "5", features = ["derive"] }
