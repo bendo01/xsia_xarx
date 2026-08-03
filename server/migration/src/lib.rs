@@ -18,6 +18,11 @@ pub mod auth;
 pub use sea_orm_migration::prelude::*;
 
 use auth::m20260803_135500_schema_auth_table_users;
+use auth::m20260803_140041_schema_auth_table_verifications;
+use auth::m20260803_160025_schema_auth_table_permission_position_type;
+use auth::m20260803_160035_schema_auth_table_permission_user;
+use auth::m20260803_160042_schema_auth_table_permissions;
+use auth::m20260803_160057_schema_auth_table_user_position_type;
 
 pub struct Migrator;
 
@@ -27,6 +32,11 @@ impl MigratorTrait for Migrator {
     fn migrations() -> Vec<Box<dyn MigrationTrait>> {
         vec![
             Box::new(m20260803_135500_schema_auth_table_users::Migration),
+            Box::new(m20260803_140041_schema_auth_table_verifications::Migration),
+            Box::new(m20260803_160025_schema_auth_table_permission_position_type::Migration),
+            Box::new(m20260803_160035_schema_auth_table_permission_user::Migration),
+            Box::new(m20260803_160042_schema_auth_table_permissions::Migration),
+            Box::new(m20260803_160057_schema_auth_table_user_position_type::Migration),
         ]
     }
 }
