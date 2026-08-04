@@ -2,6 +2,8 @@
 name = "xsia_xarx"
 version = "0.1.0"
 edition = "2024"
+publish = false
+rust-version = "1.97.1s"
 
 [dependencies]
 dotenv = "0.15.0"
