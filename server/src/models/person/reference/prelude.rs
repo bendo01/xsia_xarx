@@ -1,0 +1,13 @@
+pub use super::age_classification::Entity as AgeClassification;
+pub use super::blood_type::Entity as BloodType;
+pub use super::eye_color::Entity as EyeColor;
+pub use super::gender::Entity as Gender;
+pub use super::hair_color::Entity as HairColor;
+pub use super::hair_type::Entity as HairType;
+pub use super::identification_type::Entity as IdentificationType;
+pub use super::income::Entity as Income;
+pub use super::marital_status::Entity as MaritalStatus;
+pub use super::occupation::Entity as Occupation;
+pub use super::profession::Entity as Profession;
+pub use super::relative_type::Entity as RelativeType;
+pub use super::religion::Entity as Religion;

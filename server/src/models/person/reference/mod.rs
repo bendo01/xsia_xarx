@@ -11,3 +11,5 @@ pub mod occupation;
 pub mod profession;
 pub mod relative_type;
 pub mod religion;
+
+pub mod prelude;
