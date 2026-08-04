@@ -43,6 +43,16 @@ impl MigrationTrait for Migration {
                             .not_null(),
                     )
                     .col(
+                        ColumnDef::new("minimum")
+                            .decimal(20, 2)
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new("maximum")
+                            .decimal(20, 2)
+                            .not_null(),
+                    )
+                    .col(
                         ColumnDef::new("created_at")
                             .date_time()
                             .default(Expr::cust("now()")),
