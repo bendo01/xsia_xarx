@@ -9,3 +9,16 @@ sea-orm-cli migrate generate -d ./migration/src/auth -s auth schema_auth_table_v
 ```sh
 sea-orm-cli migrate refresh
 ```
+
+## Gemini command create migration
+```sh
+@directory:server/migration/src/person/master except @file:server/migration/src/person/master/m20260805_065007_schema_person_master_table_biodatas.rs
+
+create migration sea-orm 2 format based on @file:server/person_master.sql
+
+use reference on @directory:server/migration/src/auth and
+
+@directory:server/migration/src/person/reference
+
+
+```
