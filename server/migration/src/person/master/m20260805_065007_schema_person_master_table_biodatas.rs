@@ -10,13 +10,151 @@ impl MigrationName for Migration {
 
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
-    async fn up(&self, _manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
-        todo!();
+    async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .get_connection()
+            .execute_unprepared("CREATE SCHEMA IF NOT EXISTS person_master")
+            .await?;
+
+        manager
+            .create_table(
+                Table::create()
+                    .table((Alias::new("person_master"), Alias::new("biodatas")))
+                    .if_not_exists()
+                    .col(
+                        ColumnDef::new("id")
+                            .uuid()
+                            .not_null()
+                            .default(Expr::cust("uuid_generate_v7()")),
+                    )
+                    .col(
+                        ColumnDef::new("height")
+                            .double()
+                            .default(0.0),
+                    )
+                    .col(
+                        ColumnDef::new("weight")
+                            .double()
+                            .default(0.0),
+                    )
+                    .col(
+                        ColumnDef::new("is_positive_blood_rhesus")
+                            .boolean()
+                            .not_null()
+                            .default(false),
+                    )
+                    .col(
+                        ColumnDef::new("blood_type_id")
+                            .uuid()
+                            .not_null()
+                            .default(Expr::cust("'00000000-0000-0000-0000-000000000000'::uuid")),
+                    )
+                    .col(
+                        ColumnDef::new("hair_type_id")
+                            .uuid()
+                            .not_null()
+                            .default(Expr::cust("'00000000-0000-0000-0000-000000000000'::uuid")),
+                    )
+                    .col(
+                        ColumnDef::new("hair_color_id")
+                            .uuid()
+                            .not_null()
+                            .default(Expr::cust("'00000000-0000-0000-0000-000000000000'::uuid")),
+                    )
+                    .col(
+                        ColumnDef::new("eye_color_id")
+                            .uuid()
+                            .not_null()
+                            .default(Expr::cust("'00000000-0000-0000-0000-000000000000'::uuid")),
+                    )
+                    .col(
+                        ColumnDef::new("individual_id")
+                            .uuid()
+                            .not_null()
+                            .default(Expr::cust("'00000000-0000-0000-0000-000000000000'::uuid")),
+                    )
+                    .col(
+                        ColumnDef::new("bust")
+                            .double()
+                            .not_null()
+                            .default(0.0),
+                    )
+                    .col(
+                        ColumnDef::new("waist")
+                            .double()
+                            .not_null()
+                            .default(0.0),
+                    )
+                    .col(
+                        ColumnDef::new("hip")
+                            .double()
+                            .not_null()
+                            .default(0.0),
+                    )
+                    .col(
+                        ColumnDef::new("arm_circumference")
+                            .double()
+                            .not_null()
+                            .default(0.0),
+                    )
+                    .col(
+                        ColumnDef::new("menarche_age")
+                            .integer()
+                            .not_null()
+                            .default(0),
+                    )
+                    .col(
+                        ColumnDef::new("menopause_age")
+                            .integer()
+                            .not_null()
+                            .default(0),
+                    )
+                    .col(
+                        ColumnDef::new("created_at")
+                            .date_time()
+                            .default(Expr::cust("now()")),
+                    )
+                    .col(
+                        ColumnDef::new("updated_at")
+                            .date_time()
+                            .default(Expr::cust("now()")),
+                    )
+                    .col(
+                        ColumnDef::new("deleted_at")
+                            .date_time(),
+                    )
+                    .col(
+                        ColumnDef::new("created_by")
+                            .uuid()
+                            .default(Expr::cust("'00000000-0000-0000-0000-000000000000'::uuid")),
+                    )
+                    .col(
+                        ColumnDef::new("updated_by")
+                            .uuid()
+                            .default(Expr::cust("'00000000-0000-0000-0000-000000000000'::uuid")),
+                    )
+                    .col(
+                        ColumnDef::new("sync_at")
+                            .date_time(),
+                    )
+                    .primary_key(
+                        Index::create()
+                            .name("pm_biodatas_pkey")
+                            .col(Alias::new("id")),
+                    )
+                    .to_owned(),
+            )
+            .await
     }
 
-    async fn down(&self, _manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
-        todo!();
+    async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .drop_table(
+                Table::drop()
+                    .table((Alias::new("person_master"), Alias::new("biodatas")))
+                    .if_exists()
+                    .to_owned(),
+            )
+            .await
     }
 }
