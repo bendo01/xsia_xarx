@@ -20,5 +20,12 @@ use reference on @directory:server/migration/src/auth and
 
 @directory:server/migration/src/person/reference
 
+```
 
+```sh
+@directory:server/migration/src/institution/reference
+create migration sea-orm 2 format based on @file:server/institution_reference.sql
+
+use reference on @directory:server/migration/src/auth and
+@directory:server/migration/src/person/reference
 ```
