@@ -3,7 +3,7 @@ name = "xsia_xarx"
 version = "0.1.0"
 edition = "2024"
 publish = false
-rust-version = "1.97.1s"
+rust-version = "1.97.1"
 
 [dependencies]
 dotenv = "0.15.0"
@@ -115,3 +115,13 @@ rstest = { version = "0.26" }
 insta = { version = "1.43", features = ["redactions", "yaml", "filters"] }
 chrono = "0.4"
 fake = { version = "5", features = ["derive"] }
+
+# Speed up development compilation
+[profile.dev]
+opt-level = 0      # Do not optimize your own code for fast iteration
+incremental = true # Cache intermediate compilation units
+
+# Highly optimize dependencies even in dev mode
+# This keeps the application fast if you rely on heavy math/game engines (like Bevy)
+[profile.dev.package."*"]
+opt-level = 3
