@@ -1,0 +1,2 @@
+mod m20260806_064610_schema_academic_general_reference_table_academic_year_categories;
+mod m20260806_064613_schema_academic_general_reference_table_academic_years;
