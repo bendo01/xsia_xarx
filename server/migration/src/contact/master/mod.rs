@@ -1,0 +1,4 @@
+mod m20260806_145501_schema_contact_master_table_electronic_mails;
+mod m20260806_145507_schema_contact_master_table_phones;
+mod m20260806_145511_schema_contact_master_table_residences;
+mod m20260806_145515_schema_contact_master_table_websites;
