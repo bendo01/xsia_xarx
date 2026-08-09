@@ -1,12 +1,44 @@
 @import 'tailwindcss';
 @import 'slim-select/styles';
 
+:root {
+  --ss-border-radius: 0;
+}
+
 .dark {
   --ss-bg-color: #262626;
   --ss-font-color: #e5e5e5;
   --ss-border-color: #404040;
   --ss-disabled-color: #525252;
   --ss-placeholder-color: #a3a3a3;
+}
+
+/* Quill Dark Mode Overrides */
+.dark .ql-toolbar.ql-snow,
+.dark .ql-container.ql-snow {
+  border-color: #404040 !important;
+}
+
+.dark .ql-snow .ql-stroke {
+  stroke: #e5e5e5 !important;
+}
+
+.dark .ql-snow .ql-fill,
+.dark .ql-snow .ql-stroke.ql-fill {
+  fill: #e5e5e5 !important;
+}
+
+.dark .ql-snow .ql-picker {
+  color: #e5e5e5 !important;
+}
+
+.dark .ql-snow .ql-picker-options {
+  background-color: #262626 !important;
+  border-color: #404040 !important;
+}
+
+.dark .ql-editor.ql-blank::before {
+  color: #a3a3a3 !important;
 }
 
 
