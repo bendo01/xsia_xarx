@@ -21,6 +21,9 @@ export default function TopBar() {
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 size-4 hidden dark:block"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></svg>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 size-4 block dark:hidden"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
                         </button>
+                        <button type="button" class="relative size-9 flex justify-center items-center rounded-none bg-layer border border-gray-200 dark:border-gray-700 text-layer-foreground shadow-2xs hover:bg-layer-hover focus:outline-hidden focus:bg-layer-focus disabled:opacity-50 disabled:pointer-events-none" aria-label="Toggle dark mode">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 size-4"><path d="M10.268 21a2 2 0 0 0 3.464 0" /><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" /></svg>
+                        </button>
                         <button popovertarget="sidebar-popover" popovertargetaction="toggle" type="button" class="relative size-9 flex justify-center items-center gap-x-2 rounded-none bg-layer border border-gray-200 dark:border-gray-700 text-layer-foreground shadow-2xs hover:bg-layer-hover focus:outline-hidden focus:bg-layer-focus disabled:opacity-50 disabled:pointer-events-none">
                             <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M22.75 4C22.75 4.41421 22.4142 4.75 22 4.75H2C1.58579 4.75 1.25 4.41421 1.25 4C1.25 3.58579 1.58579 3.25 2 3.25H22C22.4142 3.25 22.75 3.58579 22.75 4Z" fill="currentColor"></path>
                                 <path d="M22.75 12C22.75 12.4142 22.4142 12.75 22 12.75H2C1.58579 12.75 1.25 12.4142 1.25 12C1.25 11.5858 1.58579 11.25 2 11.25H22C22.4142 11.25 22.75 11.5858 22.75 12Z" fill="currentColor"></path>
@@ -61,56 +64,56 @@ export default function TopBar() {
                                             <svg class="group-open/users:hidden ms-auto block size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
                                         </summary>
                                         <div class="w-full details-anim-content">
-<div class="min-h-0">
-                                            <ul class="pt-1 ps-7 space-y-1 overflow-hidden">
-                                                <li>
-                                                    <details class="group/sub1 animated-details">
-                                                        <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer w-full text-start flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus">
-                                                            Sub Menu 1
-                                                            <svg class="group-open/sub1:block ms-auto hidden size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6" /></svg>
-                                                            <svg class="group-open/sub1:hidden ms-auto block size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
-                                                        </summary>
-                                                        <div class="w-full details-anim-content">
-                                                            <ul class="pt-1 ps-2 space-y-1 overflow-hidden">
-                                                                <li>
-                                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 1</a>
-                                                                </li>
-                                                                <li>
-                                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 2</a>
-                                                                </li>
-                                                                <li>
-                                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 3</a>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                    </details>
-                                                </li>
+                                            <div class="min-h-0">
+                                                <ul class="pt-1 ps-7 space-y-1 overflow-hidden">
+                                                    <li>
+                                                        <details class="group/sub1 animated-details">
+                                                            <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer w-full text-start flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus">
+                                                                Sub Menu 1
+                                                                <svg class="group-open/sub1:block ms-auto hidden size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6" /></svg>
+                                                                <svg class="group-open/sub1:hidden ms-auto block size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+                                                            </summary>
+                                                            <div class="w-full details-anim-content">
+                                                                <ul class="pt-1 ps-2 space-y-1 overflow-hidden">
+                                                                    <li>
+                                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 1</a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 2</a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 3</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </details>
+                                                    </li>
 
-                                                <li>
-                                                    <details class="group/sub2 animated-details">
-                                                        <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer w-full text-start flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus">
-                                                            Sub Menu 2
-                                                            <svg class="group-open/sub2:block ms-auto hidden size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6" /></svg>
-                                                            <svg class="group-open/sub2:hidden ms-auto block size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
-                                                        </summary>
-                                                        <div class="w-full details-anim-content">
-                                                            <ul class="pt-1 ps-2 space-y-1 overflow-hidden">
-                                                                <li>
-                                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 1</a>
-                                                                </li>
-                                                                <li>
-                                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 2</a>
-                                                                </li>
-                                                                <li>
-                                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 3</a>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                    </details>
-                                                </li>
-                                            </ul>
+                                                    <li>
+                                                        <details class="group/sub2 animated-details">
+                                                            <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer w-full text-start flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus">
+                                                                Sub Menu 2
+                                                                <svg class="group-open/sub2:block ms-auto hidden size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6" /></svg>
+                                                                <svg class="group-open/sub2:hidden ms-auto block size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+                                                            </summary>
+                                                            <div class="w-full details-anim-content">
+                                                                <ul class="pt-1 ps-2 space-y-1 overflow-hidden">
+                                                                    <li>
+                                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 1</a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 2</a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 3</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </details>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
-</div>
                                     </details>
                                 </li>
 
@@ -123,20 +126,20 @@ export default function TopBar() {
                                             <svg class="group-open/account:hidden ms-auto block size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
                                         </summary>
                                         <div class="w-full details-anim-content">
-<div class="min-h-0">
-                                            <ul class="pt-1 ps-7 space-y-1 overflow-hidden">
-                                                <li>
-                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 1</a>
-                                                </li>
-                                                <li>
-                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 2</a>
-                                                </li>
-                                                <li>
-                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 3</a>
-                                                </li>
-                                            </ul>
+                                            <div class="min-h-0">
+                                                <ul class="pt-1 ps-7 space-y-1 overflow-hidden">
+                                                    <li>
+                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 1</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 2</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 3</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
-</div>
                                     </details>
                                 </li>
 
@@ -149,20 +152,20 @@ export default function TopBar() {
                                             <svg class="group-open/projects:hidden ms-auto block size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
                                         </summary>
                                         <div class="w-full details-anim-content">
-<div class="min-h-0">
-                                            <ul class="pt-1 ps-7 space-y-1 overflow-hidden">
-                                                <li>
-                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 1</a>
-                                                </li>
-                                                <li>
-                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 2</a>
-                                                </li>
-                                                <li>
-                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 3</a>
-                                                </li>
-                                            </ul>
+                                            <div class="min-h-0">
+                                                <ul class="pt-1 ps-7 space-y-1 overflow-hidden">
+                                                    <li>
+                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 1</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 2</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 3</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
-</div>
                                     </details>
                                 </li>
                                 <li>
@@ -174,20 +177,20 @@ export default function TopBar() {
                                             <svg class="group-open/projects:hidden ms-auto block size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
                                         </summary>
                                         <div class="w-full details-anim-content">
-<div class="min-h-0">
-                                            <ul class="pt-1 ps-7 space-y-1 overflow-hidden">
-                                                <li>
-                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 1</a>
-                                                </li>
-                                                <li>
-                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 2</a>
-                                                </li>
-                                                <li>
-                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 3</a>
-                                                </li>
-                                            </ul>
+                                            <div class="min-h-0">
+                                                <ul class="pt-1 ps-7 space-y-1 overflow-hidden">
+                                                    <li>
+                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 1</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 2</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 3</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
-</div>
                                     </details>
                                 </li>
                                 <li>
@@ -199,20 +202,20 @@ export default function TopBar() {
                                             <svg class="group-open/projects:hidden ms-auto block size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
                                         </summary>
                                         <div class="w-full details-anim-content">
-<div class="min-h-0">
-                                            <ul class="pt-1 ps-7 space-y-1 overflow-hidden">
-                                                <li>
-                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 1</a>
-                                                </li>
-                                                <li>
-                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 2</a>
-                                                </li>
-                                                <li>
-                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 3</a>
-                                                </li>
-                                            </ul>
+                                            <div class="min-h-0">
+                                                <ul class="pt-1 ps-7 space-y-1 overflow-hidden">
+                                                    <li>
+                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 1</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 2</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 3</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
-</div>
                                     </details>
                                 </li>
                                 <li>
@@ -224,20 +227,20 @@ export default function TopBar() {
                                             <svg class="group-open/projects:hidden ms-auto block size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
                                         </summary>
                                         <div class="w-full details-anim-content">
-<div class="min-h-0">
-                                            <ul class="pt-1 ps-7 space-y-1 overflow-hidden">
-                                                <li>
-                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 1</a>
-                                                </li>
-                                                <li>
-                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 2</a>
-                                                </li>
-                                                <li>
-                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 3</a>
-                                                </li>
-                                            </ul>
+                                            <div class="min-h-0">
+                                                <ul class="pt-1 ps-7 space-y-1 overflow-hidden">
+                                                    <li>
+                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 1</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 2</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 3</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
-</div>
                                     </details>
                                 </li>
                                 <li>
@@ -249,20 +252,20 @@ export default function TopBar() {
                                             <svg class="group-open/projects:hidden ms-auto block size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
                                         </summary>
                                         <div class="w-full details-anim-content">
-<div class="min-h-0">
-                                            <ul class="pt-1 ps-7 space-y-1 overflow-hidden">
-                                                <li>
-                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 1</a>
-                                                </li>
-                                                <li>
-                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 2</a>
-                                                </li>
-                                                <li>
-                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 3</a>
-                                                </li>
-                                            </ul>
+                                            <div class="min-h-0">
+                                                <ul class="pt-1 ps-7 space-y-1 overflow-hidden">
+                                                    <li>
+                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 1</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 2</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 3</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
-</div>
                                     </details>
                                 </li>
                                 <li>
@@ -274,20 +277,20 @@ export default function TopBar() {
                                             <svg class="group-open/projects:hidden ms-auto block size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
                                         </summary>
                                         <div class="w-full details-anim-content">
-<div class="min-h-0">
-                                            <ul class="pt-1 ps-7 space-y-1 overflow-hidden">
-                                                <li>
-                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 1</a>
-                                                </li>
-                                                <li>
-                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 2</a>
-                                                </li>
-                                                <li>
-                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 3</a>
-                                                </li>
-                                            </ul>
+                                            <div class="min-h-0">
+                                                <ul class="pt-1 ps-7 space-y-1 overflow-hidden">
+                                                    <li>
+                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 1</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 2</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-sidebar-nav-foreground rounded-lg hover:bg-sidebar-nav-hover focus:outline-hidden focus:bg-sidebar-nav-focus" href="#">Link 3</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
-</div>
                                     </details>
                                 </li>
 
