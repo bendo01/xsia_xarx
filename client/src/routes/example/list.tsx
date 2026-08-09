@@ -52,6 +52,11 @@ export default function ExampleList() {
 
     onMount(() => {
         setTimeout(() => {
+            if (typeof window !== 'undefined' && (window as any).HSStaticMethods) {
+                (window as any).HSStaticMethods.autoInit();
+            }
+        }, 100);
+        setTimeout(() => {
             const dummyData = Array.from({ length: 500 }, (_, i) => {
                 const roles = ['React Developer', 'Designer', 'Vue Developer', 'UI/UX Engineer', 'Scrum Master', 'Backend Developer', 'Product Manager'];
                 const statuses = ['Active', 'Offline', 'Away'];
@@ -75,16 +80,7 @@ export default function ExampleList() {
         }, 1500); // Simulate 1.5 seconds loading
     });
 
-    // Show a success toast
-    toast.success("Item moved successfully.", 5000);
-    // Show a warning toast
-    toast.warning("Improve password difficulty.", 10000);
-    // Show a danger toast
-    toast.danger("Item has been deleted.", 15000);
-    // Show a default toast (with the initial 3 seconds duration, which is default)
-    toast.default("Set yourself free.", 20000);
-    // You can optionally pass a custom duration in milliseconds
-    toast.success("Custom time!", 25000);
+
 
     return (
         <>
@@ -94,7 +90,7 @@ export default function ExampleList() {
                     <h1 class="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white tracking-tight">Team Members</h1>
                     <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">A list of all the users in your account including their name, title, email and role.</p>
                 </div>
-                <div class="mt-4 sm:mt-0">
+                <div class="mt-4 sm:mt-0 flex justify-end">
                     <button type="button" class="relative size-9 flex justify-center items-center rounded-none bg-layer border border-gray-200 dark:border-gray-700 text-layer-foreground shadow-2xs hover:bg-green-500 hover:border-green-500 hover:text-white focus:outline-hidden focus:bg-layer-focus disabled:opacity-50 disabled:pointer-events-none transition-colors duration-200" aria-label="Show events">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
                     </button>
@@ -146,7 +142,21 @@ export default function ExampleList() {
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-neutral-800 rounded-none shadow-sm border border-neutral-200 dark:border-neutral-700 overflow-hidden transition-colors duration-200 mx-3">
+            <select data-hs-select='{
+                "placeholder": "Select option...",
+                "toggleTag": "<button type=\"button\" aria-expanded=\"false\"></button>",
+                "toggleClasses": "hs-select-disabled:pointer-events-none hs-select-disabled:opacity-50 relative py-3 ps-4 pe-9 flex text-nowrap w-full cursor-pointer bg-neutral-50 border border-neutral-300 text-neutral-800 rounded-none text-start text-sm hover:bg-neutral-100 focus:outline-hidden focus:bg-neutral-100 dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 transition-colors",
+                "dropdownClasses": "mt-2 z-50 w-full max-h-72 p-1 space-y-0.5 bg-white border border-neutral-200 rounded-none shadow-sm overflow-hidden overflow-y-auto dark:bg-neutral-800 dark:border-neutral-700",
+                "optionClasses": "hs-selected:bg-neutral-100 dark:hs-selected:bg-neutral-700 py-2 px-4 w-full text-sm text-neutral-800 cursor-pointer hover:bg-neutral-100 rounded-none focus:outline-hidden focus:bg-neutral-100 hs-select-disabled:pointer-events-none hs-select-disabled:opacity-50 dark:text-neutral-200 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 transition-colors"
+              }'>
+              <option>Select option</option>
+              <option>Name</option>
+              <option>Email address</option>
+              <option>Description</option>
+              <option>User ID</option>
+            </select>
+
+            <div class="lg:mx-3">
                 {/* Desktop Table View */}
                 <div class="hidden md:flex md:flex-col">
                     <div class="overflow-x-auto">
