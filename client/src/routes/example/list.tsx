@@ -8,15 +8,29 @@ export default function ExampleList() {
     const [currentPage, setCurrentPage] = createSignal(1);
     const [itemsPerPage, setItemsPerPage] = createSignal(10);
     const [searchQuery, setSearchQuery] = createSignal("");
+    const [sortParam, setSortParam] = createSignal("name-asc");
 
     const filteredUsers = () => {
         const q = searchQuery().toLowerCase();
-        if (!q) return users();
-        return users().filter(user =>
-            user.name.toLowerCase().includes(q) ||
-            user.email.toLowerCase().includes(q) ||
-            user.role.toLowerCase().includes(q)
-        );
+        let result = users();
+        if (q) {
+            result = result.filter(user =>
+                user.name.toLowerCase().includes(q) ||
+                user.email.toLowerCase().includes(q) ||
+                user.role.toLowerCase().includes(q)
+            );
+        }
+
+        const [field, orderStr] = sortParam().split('-');
+        const order = orderStr === 'asc' ? 1 : -1;
+
+        return [...result].sort((a, b) => {
+            const aVal = String(a[field] || '').toLowerCase();
+            const bVal = String(b[field] || '').toLowerCase();
+            if (aVal < bVal) return -1 * order;
+            if (aVal > bVal) return 1 * order;
+            return 0;
+        });
     };
 
     const totalItems = () => filteredUsers().length;
@@ -87,7 +101,7 @@ export default function ExampleList() {
                 </div>
             </div>
 
-            <div class="px-3 mb-4 flex items-center">
+            <div class="px-3 mb-4 flex flex-col sm:flex-row items-center gap-4">
                 <div class="relative w-full">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                         <svg class="w-4 h-4 text-neutral-500 dark:text-neutral-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
@@ -102,91 +116,120 @@ export default function ExampleList() {
                     />
                 </div>
             </div>
+            <div class="px-3 mb-4 flex flex-col sm:flex-row items-center gap-4 w-full">
+                <div class="flex items-center gap-2 w-full sm:w-1/2">
+                    <span class="text-sm text-neutral-700 dark:text-neutral-300 mr-1 hidden lg:inline">Sort:</span>
+                    <select
+                        class="block w-full p-2 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-neutral-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors"
+                        value={sortParam()}
+                        onChange={(e) => setSortParam((e.target as HTMLSelectElement).value)}
+                    >
+                        <option value="name-asc">Name (A-Z)</option>
+                        <option value="name-desc">Name (Z-A)</option>
+                        <option value="role-asc">Role (A-Z)</option>
+                        <option value="role-desc">Role (Z-A)</option>
+                        <option value="status-asc">Status (A-Z)</option>
+                        <option value="status-desc">Status (Z-A)</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-2 w-full sm:w-1/2">
+                    <span class="text-sm text-neutral-700 dark:text-neutral-300 ml-2 hidden lg:inline">Rows:</span>
+                    <select
+                        class="block w-full p-2 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-neutral-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors"
+                        value={itemsPerPage()}
+                        onChange={handleItemsPerPageChange}
+                    >
+                        <option value={10}>10</option>
+                        <option value={50}>50</option>
+                        <option value={100}>100</option>
+                    </select>
+                </div>
+            </div>
 
             <div class="bg-white dark:bg-neutral-800 rounded-none shadow-sm border border-neutral-200 dark:border-neutral-700 overflow-hidden transition-colors duration-200 mx-3">
                 {/* Desktop Table View */}
                 <div class="hidden md:flex md:flex-col">
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left whitespace-nowrap">
-                        <thead class="text-xs text-neutral-500 uppercase bg-neutral-50 dark:bg-neutral-900/50 dark:text-neutral-400 border-b border-neutral-200 dark:border-neutral-700">
-                            <tr>
-                                <th scope="col" class="px-6 py-4 font-semibold tracking-wider">Name</th>
-                                <th scope="col" class="px-6 py-4 font-semibold tracking-wider">Title / Role</th>
-                                <th scope="col" class="px-6 py-4 font-semibold tracking-wider">Status</th>
-                                <th scope="col" class="px-6 py-4 font-semibold tracking-wider text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
-                            {isLoading() ? (
-                                Array.from({ length: itemsPerPage() }).map(() => (
-                                    <tr class="animate-pulse hover:bg-neutral-50/50 dark:hover:bg-neutral-700/50 transition-colors duration-150">
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-4">
-                                                <div class="h-10 w-10 shrink-0 bg-neutral-200 dark:bg-neutral-700 rounded-full"></div>
-                                                <div class="space-y-2">
-                                                    <div class="h-4 w-24 bg-neutral-200 dark:bg-neutral-700 rounded"></div>
-                                                    <div class="h-3 w-32 bg-neutral-200 dark:bg-neutral-700 rounded"></div>
+                            <thead class="text-xs text-neutral-500 uppercase bg-neutral-50 dark:bg-neutral-900/50 dark:text-neutral-400 border-b border-neutral-200 dark:border-neutral-700">
+                                <tr>
+                                    <th scope="col" class="px-6 py-4 font-semibold tracking-wider">Name</th>
+                                    <th scope="col" class="px-6 py-4 font-semibold tracking-wider">Title / Role</th>
+                                    <th scope="col" class="px-6 py-4 font-semibold tracking-wider">Status</th>
+                                    <th scope="col" class="px-6 py-4 font-semibold tracking-wider text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
+                                {isLoading() ? (
+                                    Array.from({ length: itemsPerPage() }).map(() => (
+                                        <tr class="animate-pulse hover:bg-neutral-50/50 dark:hover:bg-neutral-700/50 transition-colors duration-150">
+                                            <td class="px-6 py-4">
+                                                <div class="flex items-center gap-4">
+                                                    <div class="h-10 w-10 shrink-0 bg-neutral-200 dark:bg-neutral-700 rounded-full"></div>
+                                                    <div class="space-y-2">
+                                                        <div class="h-4 w-24 bg-neutral-200 dark:bg-neutral-700 rounded"></div>
+                                                        <div class="h-3 w-32 bg-neutral-200 dark:bg-neutral-700 rounded"></div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="h-4 w-20 bg-neutral-200 dark:bg-neutral-700 rounded"></div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="h-6 w-16 bg-neutral-200 dark:bg-neutral-700 rounded-full"></div>
-                                        </td>
-                                        <td class="px-6 py-4 text-right flex justify-end gap-2">
-                                            <div class="h-8 w-12 bg-neutral-200 dark:bg-neutral-700 rounded-lg"></div>
-                                            <div class="h-8 w-16 bg-neutral-200 dark:bg-neutral-700 rounded-lg"></div>
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : (
-                                paginatedUsers().map((user) => (
-                                    <tr class="hover:bg-neutral-50/50 dark:hover:bg-neutral-700/50 transition-colors duration-150 group">
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-4">
-                                                <div class="h-10 w-10 shrink-0">
-                                                    <img class="h-10 w-10 rounded-full object-cover border-2 border-transparent group-hover:border-blue-500 transition-colors" src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`} alt={user.name} />
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <div class="h-4 w-20 bg-neutral-200 dark:bg-neutral-700 rounded"></div>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <div class="h-6 w-16 bg-neutral-200 dark:bg-neutral-700 rounded-full"></div>
+                                            </td>
+                                            <td class="px-6 py-4 text-right flex justify-end gap-2">
+                                                <div class="h-8 w-12 bg-neutral-200 dark:bg-neutral-700 rounded-lg"></div>
+                                                <div class="h-8 w-16 bg-neutral-200 dark:bg-neutral-700 rounded-lg"></div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    paginatedUsers().map((user) => (
+                                        <tr class="hover:bg-neutral-50/50 dark:hover:bg-neutral-700/50 transition-colors duration-150 group">
+                                            <td class="px-6 py-4">
+                                                <div class="flex items-center gap-4">
+                                                    <div class="h-10 w-10 shrink-0">
+                                                        <img class="h-10 w-10 rounded-full object-cover border-2 border-transparent group-hover:border-blue-500 transition-colors" src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`} alt={user.name} />
+                                                    </div>
+                                                    <div>
+                                                        <div class="font-medium text-neutral-900 dark:text-white">{user.name}</div>
+                                                        <div class="text-neutral-500 dark:text-neutral-400">{user.email}</div>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <div class="font-medium text-neutral-900 dark:text-white">{user.name}</div>
-                                                    <div class="text-neutral-500 dark:text-neutral-400">{user.email}</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 text-neutral-600 dark:text-neutral-300">
-                                            {user.role}
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <span class={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border border-transparent ${user.statusColor}`}>
-                                                {user.status === 'Active' && <span class="w-1.5 h-1.5 mr-1.5 bg-green-500 rounded-full"></span>}
-                                                {user.status === 'Offline' && <span class="w-1.5 h-1.5 mr-1.5 bg-red-500 rounded-full"></span>}
-                                                {user.status === 'Away' && <span class="w-1.5 h-1.5 mr-1.5 bg-yellow-500 rounded-full"></span>}
-                                                {user.status}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 text-right">
-                                            <button class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 font-medium transition-colors p-2 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg">
-                                                Edit
-                                            </button>
-                                            <button class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 font-medium transition-colors p-2 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg ml-2">
-                                                Delete
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                                            </td>
+                                            <td class="px-6 py-4 text-neutral-600 dark:text-neutral-300">
+                                                {user.role}
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <span class={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border border-transparent ${user.statusColor}`}>
+                                                    {user.status === 'Active' && <span class="w-1.5 h-1.5 mr-1.5 bg-green-500 rounded-full"></span>}
+                                                    {user.status === 'Offline' && <span class="w-1.5 h-1.5 mr-1.5 bg-red-500 rounded-full"></span>}
+                                                    {user.status === 'Away' && <span class="w-1.5 h-1.5 mr-1.5 bg-yellow-500 rounded-full"></span>}
+                                                    {user.status}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 text-right">
+                                                <button class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 font-medium transition-colors p-2 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg">
+                                                    Edit
+                                                </button>
+                                                <button class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 font-medium transition-colors p-2 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg ml-2">
+                                                    Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 {/* Mobile Card View */}
                 <div class="md:hidden space-y-6 p-4 bg-neutral-50/50 dark:bg-neutral-900/20">
                     {isLoading() ? (
                         Array.from({ length: itemsPerPage() }).map(() => (
-                            <div class="bg-white dark:bg-neutral-800 p-4 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-700 space-y-4 animate-pulse">
+                            <div class="bg-white dark:bg-neutral-800 p-4 rounded-none shadow-sm border border-neutral-200 dark:border-neutral-700 space-y-4 animate-pulse">
                                 <div class="flex items-center gap-4">
                                     <div class="h-12 w-12 bg-neutral-200 dark:bg-neutral-700 rounded-full shrink-0"></div>
                                     <div class="space-y-2 flex-1">
@@ -206,7 +249,7 @@ export default function ExampleList() {
                         ))
                     ) : (
                         paginatedUsers().map((user) => (
-                            <div class="bg-white dark:bg-neutral-800 p-4 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-700 space-y-3 transition-colors hover:border-blue-300 dark:hover:border-blue-700">
+                            <div class="bg-white dark:bg-neutral-800 p-4 rounded-none shadow-sm border border-neutral-200 dark:border-neutral-700 space-y-3 transition-colors hover:border-blue-300 dark:hover:border-blue-700">
                                 <div class="flex items-center gap-4">
                                     <div class="h-12 w-12 shrink-0">
                                         <img class="h-12 w-12 rounded-full object-cover border-2 border-transparent" src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`} alt={user.name} />
@@ -246,46 +289,33 @@ export default function ExampleList() {
                         <p class="text-sm text-neutral-700 dark:text-neutral-300 text-center">
                             Showing <span class="font-medium">{totalItems() > 0 ? startIndex() + 1 : 0}</span> to <span class="font-medium">{endIndex()}</span> of <span class="font-medium">{totalItems()}</span> results
                         </p>
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm text-neutral-700 dark:text-neutral-300">Rows per page:</span>
-                            <select
-                                class="text-sm border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 py-1 pl-2 pr-8 focus:ring-blue-500 focus:border-blue-500"
-                                value={itemsPerPage()}
-                                onChange={handleItemsPerPageChange}
-                            >
-                                <option value={10}>10</option>
-                                <option value={50}>50</option>
-                                <option value={100}>100</option>
-                            </select>
-                        </div>
                     </div>
                     <div class="flex justify-center w-full sm:w-auto">
-                            <nav class="isolate inline-flex -space-x-px rounded-none shadow-sm" aria-label="Pagination">
-                                <button
-                                    class="relative inline-flex items-center rounded-none px-2 py-2 text-neutral-400 ring-1 ring-inset ring-neutral-300 dark:ring-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
-                                    disabled={currentPage() === 1 || isLoading()}
-                                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                                >
-                                    <span class="sr-only">Previous</span>
-                                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                                <button aria-current="page" class="relative z-10 inline-flex items-center bg-blue-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
-                                    {currentPage()} / {totalPages()}
-                                </button>
-                                <button
-                                    class="relative inline-flex items-center rounded-none px-2 py-2 text-neutral-400 ring-1 ring-inset ring-neutral-300 dark:ring-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
-                                    disabled={currentPage() === totalPages() || isLoading()}
-                                    onClick={() => setCurrentPage(p => Math.min(totalPages(), p + 1))}
-                                >
-                                    <span class="sr-only">Next</span>
-                                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                            </nav>
-                        </div>
+                        <nav class="isolate inline-flex -space-x-px rounded-none shadow-sm" aria-label="Pagination">
+                            <button
+                                class="relative inline-flex items-center rounded-none px-2 py-2 text-neutral-400 ring-1 ring-inset ring-neutral-300 dark:ring-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+                                disabled={currentPage() === 1 || isLoading()}
+                                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                            >
+                                <span class="sr-only">Previous</span>
+                                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <button aria-current="page" class="relative z-10 inline-flex items-center bg-blue-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                                {currentPage()} / {totalPages()}
+                            </button>
+                            <button
+                                class="relative inline-flex items-center rounded-none px-2 py-2 text-neutral-400 ring-1 ring-inset ring-neutral-300 dark:ring-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+                                disabled={currentPage() === totalPages() || isLoading()}
+                                onClick={() => setCurrentPage(p => Math.min(totalPages(), p + 1))}
+                            >
+                                <span class="sr-only">Next</span>
+                                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </nav>
                     </div>
                 </div>
             </div>
