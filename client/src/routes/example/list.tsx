@@ -52,11 +52,6 @@ export default function ExampleList() {
 
     onMount(() => {
         setTimeout(() => {
-            if (typeof window !== 'undefined' && (window as any).HSStaticMethods) {
-                (window as any).HSStaticMethods.autoInit();
-            }
-        }, 100);
-        setTimeout(() => {
             const dummyData = Array.from({ length: 500 }, (_, i) => {
                 const roles = ['React Developer', 'Designer', 'Vue Developer', 'UI/UX Engineer', 'Scrum Master', 'Backend Developer', 'Product Manager'];
                 const statuses = ['Active', 'Offline', 'Away'];
@@ -142,13 +137,7 @@ export default function ExampleList() {
                 </div>
             </div>
 
-            <select data-hs-select='{
-                "placeholder": "Select option...",
-                "toggleTag": "<button type=\"button\" aria-expanded=\"false\"></button>",
-                "toggleClasses": "hs-select-disabled:pointer-events-none hs-select-disabled:opacity-50 relative py-3 ps-4 pe-9 flex text-nowrap w-full cursor-pointer bg-neutral-50 border border-neutral-300 text-neutral-800 rounded-none text-start text-sm hover:bg-neutral-100 focus:outline-hidden focus:bg-neutral-100 dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 transition-colors",
-                "dropdownClasses": "mt-2 z-50 w-full max-h-72 p-1 space-y-0.5 bg-white border border-neutral-200 rounded-none shadow-sm overflow-hidden overflow-y-auto dark:bg-neutral-800 dark:border-neutral-700",
-                "optionClasses": "hs-selected:bg-neutral-100 dark:hs-selected:bg-neutral-700 py-2 px-4 w-full text-sm text-neutral-800 cursor-pointer hover:bg-neutral-100 rounded-none focus:outline-hidden focus:bg-neutral-100 hs-select-disabled:pointer-events-none hs-select-disabled:opacity-50 dark:text-neutral-200 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 transition-colors"
-              }'>
+            <select class="block w-full p-3 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-neutral-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors">
               <option>Select option</option>
               <option>Name</option>
               <option>Email address</option>
