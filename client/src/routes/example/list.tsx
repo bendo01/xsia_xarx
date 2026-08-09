@@ -93,7 +93,7 @@ export default function ExampleList() {
                     <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">A list of all the users in your account including their name, title, email and role.</p>
                 </div>
                 <div class="mt-4 sm:mt-0 flex justify-end">
-                    <button type="button" class="relative size-9 flex justify-center items-center rounded-none bg-layer border border-gray-200 dark:border-gray-700 text-layer-foreground shadow-2xs hover:bg-green-500 hover:border-green-500 hover:text-white focus:outline-hidden focus:bg-layer-focus disabled:opacity-50 disabled:pointer-events-none transition-colors duration-200" aria-label="Show events">
+                    <button type="button" class="relative size-9 flex justify-center items-center rounded-none bg-layer border border-neutral-200 dark:border-neutral-700 text-layer-foreground shadow-2xs hover:bg-green-500 hover:border-green-500 hover:text-white focus:outline-hidden focus:bg-layer-focus disabled:opacity-50 disabled:pointer-events-none transition-colors duration-200" aria-label="Show events">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 size-4"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
                     </button>
                 </div>
@@ -214,7 +214,7 @@ export default function ExampleList() {
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 text-right flex justify-end gap-2">
-                                                <button type="button" class="relative size-9 flex justify-center items-center rounded-none bg-layer border border-gray-200 dark:border-gray-700 text-layer-foreground shadow-2xs hover:bg-blue-500 hover:border-blue-500 hover:text-white focus:outline-hidden focus:bg-layer-focus disabled:opacity-50 disabled:pointer-events-none transition-colors duration-200" aria-label="Show events">
+                                                <button type="button" class="relative size-9 flex justify-center items-center rounded-none bg-layer border border-neutral-200 dark:border-neutral-700 text-layer-foreground shadow-2xs hover:bg-blue-500 hover:border-blue-500 hover:text-white focus:outline-hidden focus:bg-layer-focus disabled:opacity-50 disabled:pointer-events-none transition-colors duration-200" aria-label="Show events">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 size-4"><circle cx="12" cy="12" r="1" /><circle cx="12" cy="5" r="1" /><circle cx="12" cy="19" r="1" /></svg>
                                                 </button>
                                             </td>
@@ -242,8 +242,7 @@ export default function ExampleList() {
                                 <div class="flex justify-between items-center pt-2">
                                     <div class="h-6 w-16 bg-neutral-200 dark:bg-neutral-700 rounded-full"></div>
                                     <div class="flex gap-2">
-                                        <div class="h-8 w-12 bg-neutral-200 dark:bg-neutral-700 rounded-lg"></div>
-                                        <div class="h-8 w-16 bg-neutral-200 dark:bg-neutral-700 rounded-lg"></div>
+                                        <div class="h-8 w-12 bg-neutral-200 dark:bg-neutral-700 rounded-none"></div>
                                     </div>
                                 </div>
                             </div>
@@ -271,11 +270,8 @@ export default function ExampleList() {
                                         {user.status}
                                     </span>
                                     <div class="flex gap-2">
-                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 font-medium transition-colors p-2 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg text-sm">
-                                            Edit
-                                        </button>
-                                        <button class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 font-medium transition-colors p-2 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg text-sm ml-2">
-                                            Delete
+                                        <button type="button" class="relative size-9 flex justify-center items-center rounded-none bg-layer border border-neutral-200 dark:border-neutral-700 text-layer-foreground shadow-2xs hover:bg-blue-500 hover:border-blue-500 hover:text-white focus:outline-hidden focus:bg-layer-focus disabled:opacity-50 disabled:pointer-events-none transition-colors duration-200" aria-label="Show events">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 size-4"><circle cx="12" cy="12" r="1" /><circle cx="12" cy="5" r="1" /><circle cx="12" cy="19" r="1" /></svg>
                                         </button>
                                     </div>
                                 </div>
