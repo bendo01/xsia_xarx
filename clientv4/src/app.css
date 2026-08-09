@@ -1,18 +1,50 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
-:root {
-  --background-rgb: 214, 219, 220;
-  --foreground-rgb: 0, 0, 0;
-}
+@custom-variant dark (&:where(.dark, .dark *));
 
-@media (prefers-color-scheme: dark) {
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
   :root {
-    --background-rgb: 0, 0, 0;
-    --foreground-rgb: 255, 255, 255;
+    interpolate-size: allow-keywords;
   }
 }
 
-body {
-  background: rgb(var(--background-rgb));
-  color: rgb(var(--foreground-rgb));
+/* Prevent body scrolling when the sidebar popover is open */
+body:has(#sidebar-popover:popover-open) {
+  overflow: hidden;
+}
+
+/* Custom details animation using modern CSS ::details-content */
+@layer components {
+  details.animated-details::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition: block-size 300ms ease-in-out, content-visibility 300ms allow-discrete;
+  }
+  details.animated-details[open]::details-content {
+    block-size: auto;
+  }
+  
+  /* Fade the inner content while height animates */
+  details.animated-details > .details-anim-content {
+    opacity: 0;
+    transition: opacity 300ms ease-in-out;
+  }
+  details.animated-details[open] > .details-anim-content {
+    opacity: 1;
+  }
 }
