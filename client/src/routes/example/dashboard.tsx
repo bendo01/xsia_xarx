@@ -1,7 +1,20 @@
 import { createSignal, onMount, onCleanup } from 'solid-js';
 import TopBar from '~/components/navigation/TopBar';
 import { Chart, registerables } from 'chart.js';
-
+import 'ol/ol.css';
+import Map from 'ol/Map';
+import View from 'ol/View';
+import TileLayer from 'ol/layer/Tile';
+import OSMSource from 'ol/source/OSM';
+import { fromLonLat } from 'ol/proj';
+import Feature from 'ol/Feature';
+import Point from 'ol/geom/Point';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import Style from 'ol/style/Style';
+import CircleStyle from 'ol/style/Circle';
+import Fill from 'ol/style/Fill';
+import Stroke from 'ol/style/Stroke';
 export default function Dashboard() {
     let lineChartRef: HTMLCanvasElement | undefined;
     let barChartRef: HTMLCanvasElement | undefined;
@@ -11,6 +24,7 @@ export default function Dashboard() {
     let polarChartRef: HTMLCanvasElement | undefined;
     let bubbleChartRef: HTMLCanvasElement | undefined;
     let scatterChartRef: HTMLCanvasElement | undefined;
+    let mapRef: HTMLDivElement | undefined;
 
     let lineChartInstance: Chart | undefined;
     let barChartInstance: Chart | undefined;
@@ -23,7 +37,48 @@ export default function Dashboard() {
 
     onMount(() => {
         Chart.register(...registerables);
-        
+
+        if (mapRef) {
+            const vectorSource = new VectorSource();
+
+            const locations = [
+                [-122.4194, 37.7749], // SF
+                [-74.0060, 40.7128],  // NY
+                [-0.1276, 51.5072],   // London
+                [139.6917, 35.6895],  // Tokyo
+                [151.2093, -33.8688]  // Sydney
+            ];
+
+            locations.forEach(coord => {
+                vectorSource.addFeature(new Feature(new Point(fromLonLat(coord))));
+            });
+
+            const vectorLayer = new VectorLayer({
+                source: vectorSource,
+                style: new Style({
+                    image: new CircleStyle({
+                        radius: 8,
+                        fill: new Fill({ color: '#f43f5e' }),
+                        stroke: new Stroke({ color: '#ffffff', width: 2 })
+                    })
+                })
+            });
+
+            const map = new Map({
+                target: mapRef,
+                layers: [
+                    new TileLayer({
+                        source: new OSMSource()
+                    }),
+                    vectorLayer
+                ],
+                view: new View({
+                    center: fromLonLat([0, 20]),
+                    zoom: 2
+                })
+            });
+        }
+
         // Common Options
         const commonOptions = {
             responsive: true,
@@ -179,9 +234,9 @@ export default function Dashboard() {
                     datasets: [{
                         data: [11, 16, 7, 3],
                         backgroundColor: [
-                            'rgba(248, 113, 113, 0.8)', 
-                            'rgba(251, 191, 36, 0.8)', 
-                            'rgba(52, 211, 153, 0.8)', 
+                            'rgba(248, 113, 113, 0.8)',
+                            'rgba(251, 191, 36, 0.8)',
+                            'rgba(52, 211, 153, 0.8)',
                             'rgba(96, 165, 250, 0.8)'
                         ],
                         borderWidth: 0
@@ -292,9 +347,17 @@ export default function Dashboard() {
                     </div>
                 </div>
 
+                {/* Map Section */}
+                <div class="bg-white dark:bg-neutral-800 p-6 border border-neutral-200 dark:border-neutral-700 rounded-none shadow-sm mb-8">
+                    <h2 class="text-lg font-bold text-neutral-900 dark:text-white mb-6">Global User Distribution (Map)</h2>
+                    <div class="w-full h-[800px] border border-neutral-200 dark:border-neutral-700 rounded-none overflow-hidden">
+                        <div ref={mapRef} style="height: 100%; width: 100%;"></div>
+                    </div>
+                </div>
+
                 {/* All other charts in a grid */}
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                    
+
                     {/* Bar Chart */}
                     <div class="bg-white dark:bg-neutral-800 p-6 border border-neutral-200 dark:border-neutral-700 rounded-none shadow-sm">
                         <h2 class="text-lg font-bold text-neutral-900 dark:text-white mb-6">Quarterly Profit (Bar)</h2>
@@ -342,7 +405,7 @@ export default function Dashboard() {
                             <canvas ref={bubbleChartRef}></canvas>
                         </div>
                     </div>
-                    
+
                     {/* Scatter Chart */}
                     <div class="bg-white dark:bg-neutral-800 p-6 border border-neutral-200 dark:border-neutral-700 rounded-none shadow-sm md:col-span-1 lg:col-span-2">
                         <h2 class="text-lg font-bold text-neutral-900 dark:text-white mb-6">Data Clusters (Scatter)</h2>
