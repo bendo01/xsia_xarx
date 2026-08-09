@@ -7,7 +7,7 @@ use sea_orm::{
 use uuid::Uuid;
 use validator::Validate;
 
-use super::dto::{
+use crate::dtos::person::master::individual::{
     CreateIndividualRequest, IndividualQuery, IndividualResponse, MessageResponse,
     PaginatedIndividualResponse, UpdateIndividualRequest,
 };

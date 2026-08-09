@@ -4,7 +4,6 @@ use salvo::prelude::*;
 
 pub mod age_classification;
 pub mod blood_type;
-pub mod dto;
 pub mod eye_color;
 pub mod gender;
 pub mod hair_color;
@@ -38,7 +37,7 @@ macro_rules! impl_reference_controller {
         use uuid::Uuid;
         use validator::Validate;
 
-        use $crate::controllers::person::reference::dto::{
+        use $crate::dtos::common::reference::{
             CreateReferenceRequest, MessageResponse, PaginatedReferenceResponse, ReferenceQuery,
             ReferenceResponse, UpdateReferenceRequest,
         };

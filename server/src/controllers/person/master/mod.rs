@@ -3,7 +3,6 @@ use salvo::oapi::swagger_ui::SwaggerUi;
 use salvo::prelude::*;
 
 pub mod biodata;
-pub mod dto;
 pub mod individual;
 
 pub fn router() -> Router {
