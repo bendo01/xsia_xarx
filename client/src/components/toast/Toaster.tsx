@@ -3,7 +3,7 @@ import { For, Match, Switch } from "solid-js";
 import { Portal } from "solid-js/web";
 import { TransitionGroup } from "solid-transition-group";
 
-export type ToastType = "default" | "success" | "danger" | "warning";
+export type ToastType = "default" | "info" | "success" | "danger" | "warning";
 export type ToastPosition =
   | "top-left"
   | "top-center"
@@ -40,10 +40,11 @@ export const toast = {
   remove: (id: string) => {
     setToasts((t) => t.filter((toast) => toast.id !== id));
   },
-  default: (message: string, duration?: number) => toast.add({ type: "default", message, duration }),
-  success: (message: string, duration?: number) => toast.add({ type: "success", message, duration }),
-  danger: (message: string, duration?: number) => toast.add({ type: "danger", message, duration }),
-  warning: (message: string, duration?: number) => toast.add({ type: "warning", message, duration }),
+  default: (message: string, duration = 3000) => toast.add({ type: "default", message, duration }),
+  info: (message: string, duration = 3000) => toast.add({ type: "info", message, duration }),
+  success: (message: string, duration = 3000) => toast.add({ type: "success", message, duration }),
+  danger: (message: string, duration = 3000) => toast.add({ type: "danger", message, duration }),
+  warning: (message: string, duration = 3000) => toast.add({ type: "warning", message, duration }),
 };
 
 const positionClasses: Record<ToastPosition, string> = {
@@ -109,7 +110,7 @@ function ToastItem(props: { toast: ToastMessage }) {
 
   return (
     <Switch>
-      <Match when={props.toast.type === "default"}>
+      <Match when={props.toast.type === "default" || props.toast.type === "info"}>
         <div class={baseToastClass} role="alert">
           <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.122 17.645a7.185 7.185 0 0 1-2.656 2.495 7.06 7.06 0 0 1-3.52.853 6.617 6.617 0 0 1-3.306-.718 6.73 6.73 0 0 1-2.54-2.266c-2.672-4.57.287-8.846.887-9.668A4.448 4.448 0 0 0 8.07 6.31 4.49 4.49 0 0 0 7.997 4c1.284.965 6.43 3.258 5.525 10.631 1.496-1.136 2.7-3.046 2.846-6.216 1.43 1.061 3.985 5.462 1.754 9.23Z" /></svg>
           <div class="ms-2.5 text-sm border-s border-neutral-200 dark:border-neutral-700 ps-3.5">{props.toast.message}</div>

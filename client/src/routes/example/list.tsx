@@ -99,6 +99,13 @@ export default function ExampleList() {
                 </div>
             </div>
 
+            <div class="px-3 mb-4 flex gap-2 flex-wrap">
+                <button type="button" onClick={() => toast.info('This is an info message!', 5000)} class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-none transition-colors">Info Toast</button>
+                <button type="button" onClick={() => toast.success('Successfully saved changes!', 5000)} class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-none transition-colors">Success Toast</button>
+                <button type="button" onClick={() => toast.warning('Warning: connection is slow.', 5000)} class="px-4 py-2 text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 rounded-none transition-colors">Warning Toast</button>
+                <button type="button" onClick={() => toast.danger('Error: Failed to delete user.', 5000)} class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-none transition-colors">Danger Toast</button>
+            </div>
+
             <div class="px-3 mb-4 flex flex-col sm:flex-row items-center gap-4">
                 <div class="relative w-full">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
