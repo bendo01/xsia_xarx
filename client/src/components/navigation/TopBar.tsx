@@ -10,27 +10,27 @@ export default function TopBar() {
     };
 
     return (
-        <header class="sticky top-0 z-10 flex flex-wrap sm:justify-start sm:flex-nowrap w-full py-3 bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-gray-700">
+        <header class="sticky top-0 z-10 flex flex-wrap sm:justify-start sm:flex-nowrap w-full py-3 bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-700">
             <nav class="w-full mx-auto px-4 flex items-center justify-between">
                 <div class="flex w-full items-center justify-between">
                     <a class="flex-none text-xl font-semibold text-foreground focus:outline-hidden focus:opacity-80" href="#" aria-label="Brand">
                         Brand
                     </a>
                     <div class="flex items-center gap-2">
-                        <button onClick={toggleDarkMode} type="button" class="relative size-9 flex justify-center items-center rounded-none bg-layer border border-gray-200 dark:border-gray-700 text-layer-foreground shadow-2xs hover:bg-layer-hover focus:outline-hidden focus:bg-layer-focus disabled:opacity-50 disabled:pointer-events-none" aria-label="Toggle dark mode">
+                        <button onClick={toggleDarkMode} type="button" class="relative size-9 flex justify-center items-center rounded-none bg-layer border border-neutral-200 dark:border-neutral-700 text-layer-foreground shadow-2xs hover:bg-layer-hover focus:outline-hidden focus:bg-layer-focus disabled:opacity-50 disabled:pointer-events-none" aria-label="Toggle dark mode">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 size-4 hidden dark:block"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></svg>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 size-4 block dark:hidden"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
                         </button>
-                        <button popovertarget="events-popover" type="button" class="relative size-9 flex justify-center items-center rounded-none bg-layer border border-gray-200 dark:border-gray-700 text-layer-foreground shadow-2xs hover:bg-layer-hover focus:outline-hidden focus:bg-layer-focus disabled:opacity-50 disabled:pointer-events-none" aria-label="Show events">
+                        <button popovertarget="events-popover" type="button" class="relative size-9 flex justify-center items-center rounded-none bg-layer border border-neutral-200 dark:border-neutral-700 text-layer-foreground shadow-2xs hover:bg-layer-hover focus:outline-hidden focus:bg-layer-focus disabled:opacity-50 disabled:pointer-events-none" aria-label="Show events">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 size-4"><path d="M10.268 21a2 2 0 0 0 3.464 0" /><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" /></svg>
                         </button>
-                        <div id="events-popover" popover="auto" class="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-gray-700 shadow-xl rounded-none p-4 w-64 m-0 text-neutral-800 dark:text-neutral-100 top-[3.5rem] right-4 inset-auto">
+                        <div id="events-popover" popover="auto" class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-xl rounded-none p-4 w-64 m-0 text-neutral-800 dark:text-neutral-100 top-[3.5rem] right-4 inset-auto">
                             <h3 class="font-semibold text-sm mb-3">Recent Events</h3>
                             <ul class="text-xs text-gray-500 space-y-2">
                                 <li class="p-2 bg-gray-50 dark:bg-neutral-800 rounded">No new events.</li>
                             </ul>
                         </div>
-                        <button popovertarget="sidebar-popover" popovertargetaction="toggle" type="button" class="relative size-9 flex justify-center items-center gap-x-2 rounded-none bg-layer border border-gray-200 dark:border-gray-700 text-layer-foreground shadow-2xs hover:bg-layer-hover focus:outline-hidden focus:bg-layer-focus disabled:opacity-50 disabled:pointer-events-none">
+                        <button popovertarget="sidebar-popover" popovertargetaction="toggle" type="button" class="relative size-9 flex justify-center items-center gap-x-2 rounded-none bg-layer border border-neutral-200 dark:border-neutral-700 text-layer-foreground shadow-2xs hover:bg-layer-hover focus:outline-hidden focus:bg-layer-focus disabled:opacity-50 disabled:pointer-events-none">
                             <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M22.75 4C22.75 4.41421 22.4142 4.75 22 4.75H2C1.58579 4.75 1.25 4.41421 1.25 4C1.25 3.58579 1.58579 3.25 2 3.25H22C22.4142 3.25 22.75 3.58579 22.75 4Z" fill="currentColor"></path>
                                 <path d="M22.75 12C22.75 12.4142 22.4142 12.75 22 12.75H2C1.58579 12.75 1.25 12.4142 1.25 12C1.25 11.5858 1.58579 11.25 2 11.25H22C22.4142 11.25 22.75 11.5858 22.75 12Z" fill="currentColor"></path>
                                 <path d="M22 20.75C22.4142 20.75 22.75 20.4142 22.75 20C22.75 19.5858 22.4142 19.25 22 19.25H2C1.58579 19.25 1.25 19.5858 1.25 20C1.25 20.4142 1.58579 20.75 2 20.75H22Z" fill="currentColor"></path>
@@ -39,7 +39,7 @@ export default function TopBar() {
                     </div>
                 </div>
             </nav>
-            <aside id="sidebar-popover" popover="auto" class="fixed top-0 right-0 left-auto h-full w-64 m-0 z-20 bg-white dark:bg-neutral-900 border-l border-gray-200 dark:border-gray-700 shadow-xl p-5 text-neutral-800 dark:text-neutral-100 backdrop:bg-black/50 backdrop:backdrop-blur-sm">
+            <aside id="sidebar-popover" popover="auto" class="fixed top-0 right-0 left-auto h-full w-64 m-0 z-20 bg-white dark:bg-neutral-900 border-l border-neutral-200 dark:border-neutral-700 shadow-xl p-5 text-neutral-800 dark:text-neutral-100 backdrop:bg-black/50 backdrop:backdrop-blur-sm">
                 <div class="flex flex-col h-full">
                     {/* Start Header */}
                     <div class="flex justify-between items-center mb-6 shrink-0">
@@ -325,7 +325,7 @@ export default function TopBar() {
                                 Mia Hudson
                                 <svg class="shrink-0 size-3.5 ms-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5" /><path d="m7 9 5-5 5 5" /></svg>
                             </button>
-                            <div id="account-dropdown" popover="auto" class="fixed top-auto left-auto bottom-20 right-7 m-0 w-[12.5rem] z-30 bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-lg shadow-lg" role="menu" aria-orientation="vertical" aria-labelledby="hs-sidebar-footer-example-with-dropdown">
+                            <div id="account-dropdown" popover="auto" class="fixed top-auto left-auto bottom-20 right-7 m-0 w-[12.5rem] z-30 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg" role="menu" aria-orientation="vertical" aria-labelledby="hs-sidebar-footer-example-with-dropdown">
                                 <div class="p-1">
                                     <a class="flex items-center gap-x-3 py-2 px-3 rounded-lg text-sm text-gray-800 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-700 focus:outline-hidden focus:bg-gray-100 dark:focus:bg-neutral-700" href="#">
                                         <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
