@@ -1,5 +1,6 @@
 import { createSignal } from 'solid-js';
-import TopBar from '../../components/navigation/TopBar';
+import TopBar from '~/components/navigation/TopBar';
+import { toast } from "~/components/toast/Toaster";
 
 export default function ExampleList() {
     const [users] = createSignal([
@@ -9,6 +10,17 @@ export default function ExampleList() {
         { id: 4, name: 'Jese Leos', email: 'jese@flowbite.com', role: 'UI/UX Engineer', status: 'Away', statusColor: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' },
         { id: 5, name: 'Bonnie Green', email: 'bonnie@flowbite.com', role: 'Scrum Master', status: 'Active', statusColor: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' },
     ]);
+
+    // Show a success toast
+    toast.success("Item moved successfully.");
+    // Show a warning toast
+    toast.warning("Improve password difficulty.");
+    // Show a danger toast
+    toast.danger("Item has been deleted.");
+    // Show a default toast (with the initial 3 seconds duration, which is default)
+    toast.default("Set yourself free.");
+    // You can optionally pass a custom duration in milliseconds
+    toast.success("Custom time!", 5000);
 
     return (
         <>
