@@ -7,6 +7,10 @@ sea-orm-cli migrate generate -d ./migration/src/auth -s auth schema_auth_table_v
 
 ## generate models
 
+```sh
+sea-orm-cli generate entity --database-url "postgres://bendo01:talaso@localhost:5432/xsia_rust_v1" --database-schema "academic_campaign_reference" --output-dir "./src/models/academic_campaign/reference"
+```
+
 ## Refresh Migration
 ```sh
 sea-orm-cli migrate refresh
