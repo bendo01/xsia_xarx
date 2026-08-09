@@ -5,6 +5,8 @@
 sea-orm-cli migrate generate -d ./migration/src/auth -s auth schema_auth_table_verifications
 ```
 
+## generate models
+
 ## Refresh Migration
 ```sh
 sea-orm-cli migrate refresh
