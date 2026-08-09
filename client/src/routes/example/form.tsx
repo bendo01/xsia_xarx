@@ -3,10 +3,28 @@ import TopBar from '~/components/navigation/TopBar';
 import SlimSelect from 'slim-select';
 import 'quill/dist/quill.snow.css';
 
+import 'ol/ol.css';
+import Map from 'ol/Map';
+import View from 'ol/View';
+import TileLayer from 'ol/layer/Tile';
+import OSMSource from 'ol/source/OSM';
+import { fromLonLat, toLonLat } from 'ol/proj';
+import Feature from 'ol/Feature';
+import Point from 'ol/geom/Point';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import Style from 'ol/style/Style';
+import CircleStyle from 'ol/style/Circle';
+import Fill from 'ol/style/Fill';
+import Stroke from 'ol/style/Stroke';
+
 export default function ExampleForm() {
     let selectRef: HTMLSelectElement | undefined;
     let multiSelectRef: HTMLSelectElement | undefined;
     let quillRef: HTMLDivElement | undefined;
+    let mapRef: HTMLDivElement | undefined;
+    
+    const [mapCoords, setMapCoords] = createSignal<{lat: number, lon: number} | null>(null);
 
     onMount(() => {
         if (selectRef) {
@@ -41,9 +59,45 @@ export default function ExampleForm() {
                 });
             });
         }
+        
+        if (mapRef) {
+            const vectorSource = new VectorSource();
+            const vectorLayer = new VectorLayer({
+                source: vectorSource,
+                style: new Style({
+                    image: new CircleStyle({
+                        radius: 6,
+                        fill: new Fill({ color: '#3b82f6' }),
+                        stroke: new Stroke({ color: '#ffffff', width: 2 })
+                    })
+                })
+            });
+
+            const map = new Map({
+                target: mapRef,
+                layers: [
+                    new TileLayer({
+                        source: new OSMSource()
+                    }),
+                    vectorLayer
+                ],
+                view: new View({
+                    center: fromLonLat([0, 0]),
+                    zoom: 2
+                })
+            });
+
+            map.on('click', (evt) => {
+                const coords = toLonLat(evt.coordinate);
+                setMapCoords({ lon: coords[0], lat: coords[1] });
+                
+                vectorSource.clear();
+                vectorSource.addFeature(new Feature(new Point(evt.coordinate)));
+            });
+        }
     });
 
-    const inputClass = "block w-full p-3 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-neutral-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors";
+    const inputClass = "block w-full p-3 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-neutral-50 focus:outline-none focus:rounded-none focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors";
     const labelClass = "block mb-2 text-sm font-medium text-neutral-900 dark:text-white";
 
     return (
@@ -162,6 +216,25 @@ export default function ExampleForm() {
                     <div>
                         <label for="range-input" class={labelClass}>Range Slider</label>
                         <input id="range-input" type="range" min="0" max="100" class="w-full h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer dark:bg-neutral-700" />
+                    </div>
+
+                    {/* Color Picker */}
+                    <div>
+                        <label for="color-input" class={labelClass}>Color Picker</label>
+                        <input type="color" id="color-input" class="p-1 h-10 w-full block bg-white border border-neutral-300 cursor-pointer rounded-none disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700" value="#3b82f6" title="Choose your color" />
+                    </div>
+                    
+                    {/* Location Picker */}
+                    <div>
+                        <label class={labelClass}>Location (OpenStreetMap)</label>
+                        <div class="border border-neutral-300 dark:border-neutral-700 rounded-none overflow-hidden">
+                            <div ref={mapRef} style="height: 300px; width: 100%;"></div>
+                        </div>
+                        {mapCoords() && (
+                            <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+                                Selected Location: {mapCoords()!.lat.toFixed(4)}, {mapCoords()!.lon.toFixed(4)}
+                            </p>
+                        )}
                     </div>
 
                     {/* Submit Button */}

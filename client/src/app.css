@@ -41,6 +41,24 @@
   color: #a3a3a3 !important;
 }
 
+.dark .ql-snow .ql-tooltip {
+  background-color: #262626 !important;
+  border-color: #404040 !important;
+  color: #e5e5e5 !important;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5) !important;
+}
+
+.dark .ql-snow .ql-tooltip input[type="text"] {
+  background-color: #171717 !important;
+  border-color: #404040 !important;
+  color: #e5e5e5 !important;
+}
+
+.dark .ql-snow .ql-tooltip a.ql-action::before,
+.dark .ql-snow .ql-tooltip a.ql-remove::before {
+  color: #e5e5e5 !important;
+}
+
 
 @custom-variant dark (&:where(.dark, .dark *));
 
