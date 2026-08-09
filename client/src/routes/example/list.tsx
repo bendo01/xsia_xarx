@@ -1,4 +1,5 @@
 import { createSignal, onMount } from 'solid-js';
+import SlimSelect from 'slim-select';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from "~/components/toast/Toaster";
 
@@ -49,8 +50,14 @@ export default function ExampleList() {
         setSearchQuery((e.target as HTMLInputElement).value);
         setCurrentPage(1);
     };
+    let customSelectRef: HTMLSelectElement | undefined;
 
     onMount(() => {
+        if (customSelectRef) {
+            new SlimSelect({
+                select: customSelectRef
+            });
+        }
         setTimeout(() => {
             const dummyData = Array.from({ length: 500 }, (_, i) => {
                 const roles = ['React Developer', 'Designer', 'Vue Developer', 'UI/UX Engineer', 'Scrum Master', 'Backend Developer', 'Product Manager'];
@@ -109,7 +116,6 @@ export default function ExampleList() {
             </div>
             <div class="px-3 mb-4 flex flex-col sm:flex-row items-center gap-4 w-full">
                 <div class="flex items-center gap-2 w-full sm:w-1/2">
-                    <span class="text-sm text-neutral-700 dark:text-neutral-300 mr-1 hidden lg:inline">Sort:</span>
                     <select
                         class="block w-full p-2 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-neutral-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors"
                         value={sortParam()}
@@ -124,7 +130,6 @@ export default function ExampleList() {
                     </select>
                 </div>
                 <div class="flex items-center gap-2 w-full sm:w-1/2">
-                    <span class="text-sm text-neutral-700 dark:text-neutral-300 ml-2 hidden lg:inline">Rows:</span>
                     <select
                         class="block w-full p-2 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-neutral-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors"
                         value={itemsPerPage()}
@@ -136,14 +141,15 @@ export default function ExampleList() {
                     </select>
                 </div>
             </div>
-
-            <select class="block w-full p-3 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-neutral-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors">
-              <option>Select option</option>
-              <option>Name</option>
-              <option>Email address</option>
-              <option>Description</option>
-              <option>User ID</option>
-            </select>
+            <div class="px-3 mb-4 flex flex-col sm:flex-row items-center gap-4 w-full">
+                <select ref={customSelectRef} multiple class="block w-full p-3 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-neutral-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors">
+                    <option data-placeholder="true">Select option</option>
+                    <option>Name</option>
+                    <option>Email address</option>
+                    <option>Description</option>
+                    <option>User ID</option>
+                </select>
+            </div>
 
             <div class="lg:mx-3">
                 {/* Desktop Table View */}
