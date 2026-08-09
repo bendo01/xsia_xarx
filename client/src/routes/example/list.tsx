@@ -12,15 +12,15 @@ export default function ExampleList() {
     ]);
 
     // Show a success toast
-    toast.success("Item moved successfully.");
+    toast.success("Item moved successfully.", 5000);
     // Show a warning toast
-    toast.warning("Improve password difficulty.");
+    toast.warning("Improve password difficulty.", 10000);
     // Show a danger toast
-    toast.danger("Item has been deleted.");
+    toast.danger("Item has been deleted.", 15000);
     // Show a default toast (with the initial 3 seconds duration, which is default)
-    toast.default("Set yourself free.");
+    toast.default("Set yourself free.", 20000);
     // You can optionally pass a custom duration in milliseconds
-    toast.success("Custom time!", 5000);
+    toast.success("Custom time!", 25000);
 
     return (
         <>

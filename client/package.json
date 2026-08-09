@@ -14,6 +14,7 @@
     "nitro": "^3.0.260610-beta",
     "solid-chartjs": "^1.3.11",
     "solid-js": "^1.9.14",
+    "solid-transition-group": "^0.3.0",
     "toastify-js": "^1.12.0",
     "vite": "^8.0.0"
   },

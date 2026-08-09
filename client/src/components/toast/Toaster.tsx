@@ -1,6 +1,7 @@
 import { createStore } from "solid-js/store";
 import { For, Match, Switch } from "solid-js";
 import { Portal } from "solid-js/web";
+import { TransitionGroup } from "solid-transition-group";
 
 export type ToastType = "default" | "success" | "danger" | "warning";
 export type ToastPosition =
@@ -60,21 +61,50 @@ export function Toaster(props: { position?: ToastPosition }) {
 
   return (
     <Portal>
-      <div class={`fixed z-50 flex gap-2 pointer-events-none ${positionClasses[position()]}`}>
-        <For each={toasts}>
-          {(t) => (
-            <div class="pointer-events-auto">
-              <ToastItem toast={t} />
-            </div>
-          )}
-        </For>
+      <div class={`fixed z-50 flex gap-2 pointer-events-none p-4 ${positionClasses[position()]}`}>
+        <style>{`
+          .toast-enter {
+            opacity: 0;
+            transform: translateY(-10px) scale(0.95);
+          }
+          .toast-enter-active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1), transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+          }
+          .toast-exit {
+            opacity: 1;
+            transform: scale(1);
+          }
+          .toast-exit-active {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 200ms cubic-bezier(0.4, 0, 1, 1), transform 200ms cubic-bezier(0.4, 0, 1, 1);
+          }
+          @keyframes toast-shrink {
+            from { width: 100%; }
+            to { width: 0%; }
+          }
+          .toast-progress {
+            animation: toast-shrink linear forwards;
+          }
+        `}</style>
+        <TransitionGroup name="toast">
+          <For each={toasts}>
+            {(t) => (
+              <div class="pointer-events-auto shrink-0 w-full max-w-sm">
+                <ToastItem toast={t} />
+              </div>
+            )}
+          </For>
+        </TransitionGroup>
       </div>
     </Portal>
   );
 }
 
 function ToastItem(props: { toast: ToastMessage }) {
-  const baseToastClass = "flex items-center w-full max-w-sm p-4 text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 rounded-none shadow-sm border border-neutral-200 dark:border-neutral-700";
+  const baseToastClass = "relative overflow-hidden flex items-center w-full max-w-sm p-4 text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 rounded-none shadow-sm border border-neutral-200 dark:border-neutral-700";
   const closeBtnClass = "ms-auto flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:hover:text-white bg-transparent box-border border border-transparent hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:ring-4 focus:ring-neutral-200 dark:focus:ring-neutral-600 font-medium leading-5 rounded-none text-sm h-8 w-8 focus:outline-none transition-colors";
 
   return (
@@ -87,6 +117,9 @@ function ToastItem(props: { toast: ToastMessage }) {
             <span class="sr-only">Close</span>
             <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6" /></svg>
           </button>
+          {props.toast.duration && props.toast.duration > 0 && (
+            <div class="absolute bottom-0 left-0 h-1 bg-blue-500/20 dark:bg-blue-400/20 toast-progress" style={{ "animation-duration": `${props.toast.duration}ms` }} />
+          )}
         </div>
       </Match>
       <Match when={props.toast.type === "success"}>
@@ -100,6 +133,9 @@ function ToastItem(props: { toast: ToastMessage }) {
             <span class="sr-only">Close</span>
             <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6" /></svg>
           </button>
+          {props.toast.duration && props.toast.duration > 0 && (
+            <div class="absolute bottom-0 left-0 h-1 bg-green-500/30 dark:bg-green-400/30 toast-progress" style={{ "animation-duration": `${props.toast.duration}ms` }} />
+          )}
         </div>
       </Match>
       <Match when={props.toast.type === "danger"}>
@@ -113,6 +149,9 @@ function ToastItem(props: { toast: ToastMessage }) {
             <span class="sr-only">Close</span>
             <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6" /></svg>
           </button>
+          {props.toast.duration && props.toast.duration > 0 && (
+            <div class="absolute bottom-0 left-0 h-1 bg-red-500/30 dark:bg-red-400/30 toast-progress" style={{ "animation-duration": `${props.toast.duration}ms` }} />
+          )}
         </div>
       </Match>
       <Match when={props.toast.type === "warning"}>
@@ -126,6 +165,9 @@ function ToastItem(props: { toast: ToastMessage }) {
             <span class="sr-only">Close</span>
             <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6" /></svg>
           </button>
+          {props.toast.duration && props.toast.duration > 0 && (
+            <div class="absolute bottom-0 left-0 h-1 bg-yellow-500/30 dark:bg-yellow-400/30 toast-progress" style={{ "animation-duration": `${props.toast.duration}ms` }} />
+          )}
         </div>
       </Match>
     </Switch>
