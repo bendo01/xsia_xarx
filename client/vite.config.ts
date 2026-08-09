@@ -5,7 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   plugins: [
-    solidStart(),
+    solidStart({ devOverlay: false }),
     tailwindcss(),
     nitro()
   ]
