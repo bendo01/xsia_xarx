@@ -20,25 +20,25 @@ export default function ExampleForm() {
                 new Quill(quillRef, {
                     theme: 'snow',
                     placeholder: 'Write your thoughts here...',
-                modules: {
-                    toolbar: [
-                        ['bold', 'italic', 'underline', 'strike'],
-                        ['blockquote', 'code-block'],
-                        [{ 'header': 1 }, { 'header': 2 }],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        [{ 'script': 'sub'}, { 'script': 'super' }],
-                        [{ 'indent': '-1'}, { 'indent': '+1' }],
-                        [{ 'direction': 'rtl' }],
-                        [{ 'size': ['small', false, 'large', 'huge'] }],
-                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                        [{ 'color': [] }, { 'background': [] }],
-                        [{ 'font': [] }],
-                        [{ 'align': [] }],
-                        ['clean'],
-                        ['link', 'image', 'video']
-                    ]
-                }
-            });
+                    modules: {
+                        toolbar: [
+                            ['bold', 'italic', 'underline', 'strike'],
+                            ['blockquote', 'code-block'],
+                            [{ 'header': 1 }, { 'header': 2 }],
+                            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                            [{ 'script': 'sub' }, { 'script': 'super' }],
+                            [{ 'indent': '-1' }, { 'indent': '+1' }],
+                            [{ 'direction': 'rtl' }],
+                            [{ 'size': ['small', false, 'large', 'huge'] }],
+                            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                            [{ 'color': [] }, { 'background': [] }],
+                            [{ 'font': [] }],
+                            [{ 'align': [] }],
+                            ['clean'],
+                            ['link', 'image', 'video']
+                        ]
+                    }
+                });
             });
         }
     });
@@ -119,8 +119,8 @@ export default function ExampleForm() {
 
                     {/* Checkbox */}
                     <div>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" class="w-5 h-5 text-blue-600 bg-neutral-100 border-neutral-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-neutral-800 focus:ring-2 dark:bg-neutral-700 dark:border-neutral-600" />
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" class="w-4 h-4 text-blue-600 bg-neutral-100 border-neutral-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-neutral-800 focus:ring-2 dark:bg-neutral-700 dark:border-neutral-600" />
                             <span class="text-sm font-medium text-neutral-900 dark:text-neutral-300">I agree to the terms and conditions</span>
                         </label>
                     </div>
@@ -128,13 +128,13 @@ export default function ExampleForm() {
                     {/* Radio Buttons */}
                     <div>
                         <span class={labelClass}>Radio Group</span>
-                        <div class="flex flex-col gap-3 mt-2">
-                            <label class="flex items-center gap-3 cursor-pointer">
-                                <input type="radio" name="plan" value="free" class="w-5 h-5 text-blue-600 bg-neutral-100 border-neutral-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-neutral-800 focus:ring-2 dark:bg-neutral-700 dark:border-neutral-600" />
+                        <div class="flex flex-col gap-2 mt-2">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="plan" value="free" class="w-4 h-4 text-blue-600 bg-neutral-100 border-neutral-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-neutral-800 focus:ring-2 dark:bg-neutral-700 dark:border-neutral-600" />
                                 <span class="text-sm font-medium text-neutral-900 dark:text-neutral-300">Free Plan</span>
                             </label>
-                            <label class="flex items-center gap-3 cursor-pointer">
-                                <input type="radio" name="plan" value="pro" class="w-5 h-5 text-blue-600 bg-neutral-100 border-neutral-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-neutral-800 focus:ring-2 dark:bg-neutral-700 dark:border-neutral-600" />
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="plan" value="pro" class="w-4 h-4 text-blue-600 bg-neutral-100 border-neutral-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-neutral-800 focus:ring-2 dark:bg-neutral-700 dark:border-neutral-600" />
                                 <span class="text-sm font-medium text-neutral-900 dark:text-neutral-300">Pro Plan</span>
                             </label>
                         </div>
