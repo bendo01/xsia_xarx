@@ -19,7 +19,7 @@ pub struct Model {
     pub updated_by: Option<Uuid>,
     #[sea_orm(has_many)]
     pub individuals: HasMany<crate::models::person::master::individual::Entity>,
-    }
+ }
 
 
 impl ActiveModelBehavior for ActiveModel {}
