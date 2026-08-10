@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(schema_name = "document_transaction", table_name = "archives")]
 pub struct Model {
@@ -23,9 +24,8 @@ pub struct Model {
     #[sea_orm(column_type = "Text", nullable)]
     pub description: Option<String>,
     pub is_knowledge: bool,
+    #[sea_orm(belongs_to, from = "archive_type_id", to = "id")]
+    pub archive_type: BelongsTo<crate::models::document::reference::archive_types::Entity>,
 }
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}
