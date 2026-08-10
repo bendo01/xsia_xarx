@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(schema_name = "location", table_name = "sub_districts")]
 pub struct Model {
@@ -31,9 +32,12 @@ pub struct Model {
     pub deleted_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[sea_orm(belongs_to, from = "regency_id", to = "id")]
+    pub regency: BelongsTo<crate::models::location::regencies::Entity>,
+    #[sea_orm(has_many)]
+    pub villages: HasMany<crate::models::location::villages::Entity>,
+    #[sea_orm(has_many)]
+    pub residences: HasMany<crate::models::contact::master::residences::Entity>,
 }
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}
