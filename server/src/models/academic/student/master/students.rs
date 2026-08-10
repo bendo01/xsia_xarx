@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(schema_name = "academic_student_master", table_name = "students")]
 pub struct Model {
@@ -34,9 +35,41 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[sea_orm(belongs_to, from = "selection_type_id", to = "id")]
+    pub selection_type: BelongsTo<crate::models::academic::student::reference::selection_types::Entity>,
+    #[sea_orm(belongs_to, from = "individual_id", to = "id")]
+    pub individual: BelongsTo<crate::models::person::master::individual::Entity>,
+    #[sea_orm(belongs_to, from = "status_id", to = "id")]
+    pub status: BelongsTo<crate::models::academic::student::reference::statuses::Entity>,
+    #[sea_orm(belongs_to, from = "unit_id", to = "id")]
+    pub unit: BelongsTo<crate::models::institution::master::units::Entity>,
+    #[sea_orm(belongs_to, from = "academic_year_id", to = "id")]
+    pub academic_year: BelongsTo<crate::models::academic::general::reference::academic_years::Entity>,
+    #[sea_orm(belongs_to, from = "registration_id", to = "id")]
+    pub registration: BelongsTo<crate::models::academic::student::reference::registrations::Entity>,
+    #[sea_orm(belongs_to, from = "resign_status_id", to = "id")]
+    pub resign_status: BelongsTo<crate::models::academic::student::reference::resign_statuses::Entity>,
+    #[sea_orm(belongs_to, from = "concentration_id", to = "id")]
+    pub concentration: BelongsTo<crate::models::academic::course::master::concentrations::Entity>,
+    #[sea_orm(belongs_to, from = "curriculum_id", to = "id")]
+    pub curriculum: BelongsTo<crate::models::academic::course::master::curriculums::Entity>,
+    #[sea_orm(belongs_to, from = "class_code_id", to = "id")]
+    pub class_code: BelongsTo<crate::models::academic::campaign::transaction::class_codes::Entity>,
+    #[sea_orm(belongs_to, from = "finance_id", to = "id")]
+    pub finance: BelongsTo<Option<crate::models::academic::student::reference::finances::Entity>>,
+    #[sea_orm(has_many)]
+    pub candidates: HasMany<crate::models::academic::candidate::master::candidates::Entity>,
+    #[sea_orm(has_many)]
+    pub counsellors: HasMany<crate::models::academic::student::adviser::counsellors::Entity>,
+    #[sea_orm(has_many)]
+    pub convertions: HasMany<crate::models::academic::student::campaign::convertions::Entity>,
+    #[sea_orm(has_many)]
+    pub student_activities: HasMany<crate::models::academic::student::campaign::student_activities::Entity>,
+    #[sea_orm(has_many)]
+    pub submissions: HasMany<crate::models::academic::student::final_assignment::transaction::submissions::Entity>,
+    #[sea_orm(has_many)]
+    pub images: HasMany<crate::models::academic::student::master::images::Entity>,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

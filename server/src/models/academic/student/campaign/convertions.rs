@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(schema_name = "academic_student_campaign", table_name = "convertions")]
 pub struct Model {
@@ -30,9 +31,15 @@ pub struct Model {
     #[sea_orm(column_type = "Double", nullable)]
     pub origin_credit: Option<f64>,
     pub origin_grade: Option<String>,
+    #[sea_orm(belongs_to, from = "student_id", to = "id")]
+    pub student: BelongsTo<crate::models::academic::student::master::students::Entity>,
+    #[sea_orm(belongs_to, from = "course_id", to = "id")]
+    pub course: BelongsTo<crate::models::academic::course::master::courses::Entity>,
+    #[sea_orm(belongs_to, from = "grade_id", to = "id")]
+    pub grade: BelongsTo<crate::models::academic::campaign::transaction::grades::Entity>,
+    #[sea_orm(belongs_to, from = "academic_year_id", to = "id")]
+    pub academic_year: BelongsTo<Option<crate::models::academic::general::reference::academic_years::Entity>>,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

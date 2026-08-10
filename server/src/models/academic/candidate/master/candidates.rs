@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(schema_name = "academic_candidate_master", table_name = "candidates")]
 pub struct Model {
@@ -28,9 +29,29 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[sea_orm(belongs_to, from = "individual_id", to = "id")]
+    pub individual: BelongsTo<Option<crate::models::person::master::individual::Entity>>,
+    #[sea_orm(belongs_to, from = "academic_year_id", to = "id")]
+    pub academic_year: BelongsTo<Option<crate::models::academic::general::reference::academic_years::Entity>>,
+    #[sea_orm(belongs_to, from = "student_id", to = "id")]
+    pub student: BelongsTo<Option<crate::models::academic::student::master::students::Entity>>,
+    #[sea_orm(belongs_to, from = "user_id", to = "id")]
+    pub user: BelongsTo<crate::models::auth::user::Entity>,
+    #[sea_orm(belongs_to, from = "registration_type_id", to = "id")]
+    pub registration_type: BelongsTo<crate::models::academic::candidate::reference::registration_types::Entity>,
+    #[sea_orm(belongs_to, from = "institution_id", to = "id")]
+    pub institution: BelongsTo<crate::models::institution::master::institutions::Entity>,
+    #[sea_orm(has_many)]
+    pub candidate_unit: HasMany<crate::models::academic::candidate::master::candidate_unit::Entity>,
+    #[sea_orm(has_many)]
+    pub candidate_unit_choices: HasMany<crate::models::academic::candidate::transaction::candidate_unit_choices::Entity>,
+    #[sea_orm(has_many)]
+    pub documents: HasMany<crate::models::academic::candidate::transaction::documents::Entity>,
+    #[sea_orm(has_many)]
+    pub exams: HasMany<crate::models::academic::candidate::transaction::exams::Entity>,
+    #[sea_orm(has_many)]
+    pub recognitions: HasMany<crate::models::academic::prior_learning_recognition::transaction::recognitions::Entity>,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

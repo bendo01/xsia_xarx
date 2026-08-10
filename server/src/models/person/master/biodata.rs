@@ -53,4 +53,5 @@ pub struct Model {
     pub eye_color: BelongsTo<crate::models::person::reference::eye_color::Entity>,
 }
 
+
 impl ActiveModelBehavior for ActiveModel {}

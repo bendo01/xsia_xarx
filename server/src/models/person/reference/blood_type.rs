@@ -19,6 +19,7 @@ pub struct Model {
     pub updated_by: Option<Uuid>,
     #[sea_orm(has_many)]
     pub biodatas: HasMany<crate::models::person::master::biodata::Entity>,
-}
+    }
+
 
 impl ActiveModelBehavior for ActiveModel {}

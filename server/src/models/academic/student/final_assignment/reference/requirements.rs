@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(
     schema_name = "academic_student_final_assignment_reference",
@@ -20,9 +21,11 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[sea_orm(belongs_to, from = "stage_id", to = "id")]
+    pub stage: BelongsTo<Option<crate::models::academic::student::final_assignment::reference::stages::Entity>>,
+    #[sea_orm(has_many)]
+    pub prerequisites: HasMany<crate::models::academic::student::final_assignment::transaction::prerequisites::Entity>,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

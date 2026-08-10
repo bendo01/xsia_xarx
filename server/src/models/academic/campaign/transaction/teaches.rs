@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(schema_name = "academic_campaign_transaction", table_name = "teaches")]
 pub struct Model {
@@ -32,9 +33,29 @@ pub struct Model {
     pub updated_by: Option<Uuid>,
     pub max_member: Option<i32>,
     pub feeder_id: Option<Uuid>,
+    #[sea_orm(belongs_to, from = "class_code_id", to = "id")]
+    pub class_code: BelongsTo<crate::models::academic::campaign::transaction::class_codes::Entity>,
+    #[sea_orm(belongs_to, from = "course_id", to = "id")]
+    pub course: BelongsTo<crate::models::academic::course::master::courses::Entity>,
+    #[sea_orm(belongs_to, from = "activity_id", to = "id")]
+    pub activity: BelongsTo<Option<crate::models::academic::campaign::transaction::activities::Entity>>,
+    #[sea_orm(belongs_to, from = "curriculum_detail_id", to = "id")]
+    pub curriculum_detail: BelongsTo<Option<crate::models::academic::course::master::curriculum_details::Entity>>,
+    #[sea_orm(belongs_to, from = "teach_decree_id", to = "id")]
+    pub teach_decree: BelongsTo<crate::models::academic::campaign::transaction::teach_decrees::Entity>,
+    #[sea_orm(belongs_to, from = "encounter_category_id", to = "id")]
+    pub encounter_category: BelongsTo<Option<crate::models::academic::campaign::reference::encounter_categories::Entity>>,
+    #[sea_orm(belongs_to, from = "scope_id", to = "id")]
+    pub scope: BelongsTo<Option<crate::models::academic::campaign::reference::scopes::Entity>>,
+    #[sea_orm(has_many)]
+    pub schedules: HasMany<crate::models::academic::campaign::transaction::schedules::Entity>,
+    #[sea_orm(has_many)]
+    pub teach_evaluations: HasMany<crate::models::academic::campaign::transaction::teach_evaluations::Entity>,
+    #[sea_orm(has_many)]
+    pub teach_lecturers: HasMany<crate::models::academic::campaign::transaction::teach_lecturers::Entity>,
+    #[sea_orm(has_many)]
+    pub detail_activities: HasMany<crate::models::academic::student::campaign::detail_activities::Entity>,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

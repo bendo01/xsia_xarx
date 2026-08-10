@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(
     schema_name = "academic_student_campaign",
@@ -35,9 +36,17 @@ pub struct Model {
     pub finance_id: Option<Uuid>,
     #[sea_orm(column_type = "Double", nullable)]
     pub finance_fee: Option<f64>,
+    #[sea_orm(belongs_to, from = "student_id", to = "id")]
+    pub student: BelongsTo<crate::models::academic::student::master::students::Entity>,
+    #[sea_orm(belongs_to, from = "status_id", to = "id")]
+    pub status: BelongsTo<crate::models::academic::student::reference::statuses::Entity>,
+    #[sea_orm(belongs_to, from = "resign_status_id", to = "id")]
+    pub resign_status: BelongsTo<Option<crate::models::academic::student::reference::resign_statuses::Entity>>,
+    #[sea_orm(belongs_to, from = "unit_id", to = "id")]
+    pub unit: BelongsTo<Option<crate::models::institution::master::units::Entity>>,
+    #[sea_orm(belongs_to, from = "finance_id", to = "id")]
+    pub finance: BelongsTo<Option<crate::models::academic::student::reference::finances::Entity>>,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

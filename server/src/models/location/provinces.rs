@@ -35,11 +35,12 @@ pub struct Model {
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
     #[sea_orm(belongs_to, from = "country_id", to = "id")]
-    pub country: BelongsTo<crate::models::location::countries::Entity>,
+    pub country: BelongsTo<Option<crate::models::location::countries::Entity>>,
     #[sea_orm(has_many)]
     pub regencies: HasMany<crate::models::location::regencies::Entity>,
     #[sea_orm(has_many)]
     pub residences: HasMany<crate::models::contact::master::residences::Entity>,
 }
+
 
 impl ActiveModelBehavior for ActiveModel {}

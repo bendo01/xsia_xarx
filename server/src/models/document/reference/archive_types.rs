@@ -21,4 +21,5 @@ pub struct Model {
     pub archives: HasMany<crate::models::document::transaction::archives::Entity>,
 }
 
+
 impl ActiveModelBehavior for ActiveModel {}

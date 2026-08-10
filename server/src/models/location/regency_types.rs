@@ -21,4 +21,5 @@ pub struct Model {
     pub regencies: HasMany<crate::models::location::regencies::Entity>,
 }
 
+
 impl ActiveModelBehavior for ActiveModel {}

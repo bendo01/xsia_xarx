@@ -19,4 +19,5 @@ pub struct Model {
     pub updated_by: Option<Uuid>,
 }
 
+
 impl ActiveModelBehavior for ActiveModel {}

@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(schema_name = "academic_course_master", table_name = "curriculums")]
 pub struct Model {
@@ -27,9 +28,19 @@ pub struct Model {
     pub start_date: Option<Date>,
     pub end_date: Option<Date>,
     pub is_active: bool,
+    #[sea_orm(belongs_to, from = "unit_id", to = "id")]
+    pub unit: BelongsTo<crate::models::institution::master::units::Entity>,
+    #[sea_orm(belongs_to, from = "academic_year_id", to = "id")]
+    pub academic_year: BelongsTo<crate::models::academic::general::reference::academic_years::Entity>,
+    #[sea_orm(belongs_to, from = "curriculum_type_id", to = "id")]
+    pub curriculum_type: BelongsTo<crate::models::academic::course::reference::curriculum_types::Entity>,
+    #[sea_orm(has_many)]
+    pub curriculum_details: HasMany<crate::models::academic::course::master::curriculum_details::Entity>,
+    #[sea_orm(has_many)]
+    pub recognitions: HasMany<crate::models::academic::prior_learning_recognition::transaction::recognitions::Entity>,
+    #[sea_orm(has_many)]
+    pub students: HasMany<crate::models::academic::student::master::students::Entity>,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

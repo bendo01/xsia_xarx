@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(schema_name = "academic_course_master", table_name = "concentrations")]
 pub struct Model {
@@ -16,9 +17,13 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[sea_orm(belongs_to, from = "unit_id", to = "id")]
+    pub unit: BelongsTo<crate::models::institution::master::units::Entity>,
+    #[sea_orm(has_many)]
+    pub curriculum_details: HasMany<crate::models::academic::course::master::curriculum_details::Entity>,
+    #[sea_orm(has_many)]
+    pub students: HasMany<crate::models::academic::student::master::students::Entity>,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

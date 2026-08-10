@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(
     schema_name = "academic_course_master",
@@ -26,9 +27,15 @@ pub struct Model {
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
     pub code: Option<i32>,
+    #[sea_orm(belongs_to, from = "course_id", to = "id")]
+    pub course: BelongsTo<crate::models::academic::course::master::courses::Entity>,
+    #[sea_orm(belongs_to, from = "evaluation_type_id", to = "id")]
+    pub evaluation_type: BelongsTo<crate::models::academic::course::reference::evaluation_types::Entity>,
+    #[sea_orm(has_many)]
+    pub evaluations: HasMany<crate::models::academic::prior_learning_recognition::transaction::evaluations::Entity>,
+    #[sea_orm(has_many)]
+    pub detail_activity_evaluation_components: HasMany<crate::models::academic::student::campaign::detail_activity_evaluation_components::Entity>,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

@@ -30,6 +30,43 @@ pub struct Model {
     pub institution: BelongsTo<crate::models::institution::master::institutions::Entity>,
     #[sea_orm(has_many)]
     pub staffes: HasMany<crate::models::institution::master::staffes::Entity>,
+    #[sea_orm(belongs_to, from = "education_id", to = "id")]
+    pub education: BelongsTo<crate::models::literate::educations::Entity>,
+    #[sea_orm(has_many)]
+    pub rooms: HasMany<crate::models::building::master::rooms::Entity>,
+    #[sea_orm(has_many)]
+    pub activities: HasMany<crate::models::academic::campaign::transaction::activities::Entity>,
+    #[sea_orm(has_many)]
+    pub class_codes: HasMany<crate::models::academic::campaign::transaction::class_codes::Entity>,
+    #[sea_orm(has_many)]
+    pub grades: HasMany<crate::models::academic::campaign::transaction::grades::Entity>,
+    #[sea_orm(has_many)]
+    pub candidate_unit: HasMany<crate::models::academic::candidate::master::candidate_unit::Entity>,
+    #[sea_orm(has_many)]
+    pub registration_types: HasMany<crate::models::academic::candidate::reference::registration_types::Entity>,
+    #[sea_orm(has_many)]
+    pub candidate_unit_choices: HasMany<crate::models::academic::candidate::transaction::candidate_unit_choices::Entity>,
+    #[sea_orm(has_many)]
+    pub concentrations: HasMany<crate::models::academic::course::master::concentrations::Entity>,
+    #[sea_orm(has_many)]
+    pub courses: HasMany<crate::models::academic::course::master::courses::Entity>,
+    #[sea_orm(has_many)]
+    pub curriculums: HasMany<crate::models::academic::course::master::curriculums::Entity>,
+    #[sea_orm(has_many)]
+    pub homebases: HasMany<crate::models::academic::lecturer::transaction::homebases::Entity>,
+    #[sea_orm(has_many)]
+    pub recognitions: HasMany<crate::models::academic::prior_learning_recognition::transaction::recognitions::Entity>,
+    #[sea_orm(has_many)]
+    pub decrees: HasMany<crate::models::academic::student::adviser::decrees::Entity>,
+    #[sea_orm(has_many)]
+    pub student_activities: HasMany<crate::models::academic::student::campaign::student_activities::Entity>,
+    #[sea_orm(has_many)]
+    pub final_assignment_decrees: HasMany<crate::models::academic::student::final_assignment::transaction::final_assignment_decrees::Entity>,
+    #[sea_orm(has_many)]
+    pub students: HasMany<crate::models::academic::student::master::students::Entity>,
+    #[sea_orm(has_many)]
+    pub bundles: HasMany<crate::models::academic::survey::master::bundles::Entity>,
 }
+
 
 impl ActiveModelBehavior for ActiveModel {}

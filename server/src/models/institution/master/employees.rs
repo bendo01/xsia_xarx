@@ -29,4 +29,5 @@ pub struct Model {
     pub staffes: HasMany<crate::models::institution::master::staffes::Entity>,
 }
 
+
 impl ActiveModelBehavior for ActiveModel {}

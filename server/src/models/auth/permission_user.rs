@@ -18,9 +18,10 @@ pub struct Model {
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
     #[sea_orm(belongs_to, from = "user_id", to = "id")]
-    pub user: BelongsTo<super::users::Entity>,
+    pub user: BelongsTo<super::user::Entity>,
     #[sea_orm(belongs_to, from = "permission_id", to = "id")]
-    pub permission: BelongsTo<super::permissions::Entity>,
+    pub permission: BelongsTo<super::permission::Entity>,
 }
+
 
 impl ActiveModelBehavior for ActiveModel {}

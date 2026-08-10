@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(
     schema_name = "academic_course_master",
@@ -27,9 +28,17 @@ pub struct Model {
     pub is_convertable_to_mbkm: Option<bool>,
     pub feeder_id: Option<Uuid>,
     pub is_convertable_to_prior_learning_recognition: Option<bool>,
+    #[sea_orm(belongs_to, from = "curriculum_id", to = "id")]
+    pub curriculum: BelongsTo<crate::models::academic::course::master::curriculums::Entity>,
+    #[sea_orm(belongs_to, from = "semester_id", to = "id")]
+    pub semester: BelongsTo<crate::models::academic::course::reference::semesters::Entity>,
+    #[sea_orm(belongs_to, from = "course_id", to = "id")]
+    pub course: BelongsTo<crate::models::academic::course::master::courses::Entity>,
+    #[sea_orm(belongs_to, from = "concentration_id", to = "id")]
+    pub concentration: BelongsTo<Option<crate::models::academic::course::master::concentrations::Entity>>,
+    #[sea_orm(has_many)]
+    pub teaches: HasMany<crate::models::academic::campaign::transaction::teaches::Entity>,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

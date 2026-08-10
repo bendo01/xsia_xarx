@@ -52,8 +52,7 @@ pub struct Model {
     #[sea_orm(belongs_to, from = "income_id", to = "id")]
     pub income: BelongsTo<crate::models::person::reference::income::Entity>,
     #[sea_orm(belongs_to, from = "identification_type_id", to = "id")]
-    pub identification_type:
-        BelongsTo<crate::models::person::reference::identification_type::Entity>,
+    pub identification_type: BelongsTo<crate::models::person::reference::identification_type::Entity>,
     #[sea_orm(belongs_to, from = "marital_status_id", to = "id")]
     pub marital_status: BelongsTo<crate::models::person::reference::marital_status::Entity>,
     #[sea_orm(belongs_to, from = "profession_id", to = "id")]
@@ -66,6 +65,17 @@ pub struct Model {
     pub biodata: HasOne<super::biodata::Entity>,
     #[sea_orm(has_many)]
     pub employees: HasMany<crate::models::institution::master::employees::Entity>,
+    #[sea_orm(has_many)]
+    pub user: HasMany<crate::models::auth::user::Entity>,
+    #[sea_orm(has_many)]
+    pub candidates: HasMany<crate::models::academic::candidate::master::candidates::Entity>,
+    #[sea_orm(has_many)]
+    pub lecturers: HasMany<crate::models::academic::lecturer::master::lecturers::Entity>,
+    #[sea_orm(has_many)]
+    pub evaluators: HasMany<crate::models::academic::prior_learning_recognition::transaction::evaluators::Entity>,
+    #[sea_orm(has_many)]
+    pub students: HasMany<crate::models::academic::student::master::students::Entity>,
 }
+
 
 impl ActiveModelBehavior for ActiveModel {}

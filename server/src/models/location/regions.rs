@@ -23,4 +23,5 @@ pub struct Model {
     pub countries: HasMany<crate::models::location::countries::Entity>,
 }
 
+
 impl ActiveModelBehavior for ActiveModel {}

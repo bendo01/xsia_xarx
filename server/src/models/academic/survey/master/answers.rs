@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(schema_name = "academic_survey_master", table_name = "answers")]
 pub struct Model {
@@ -21,9 +22,11 @@ pub struct Model {
     pub deleted_at: Option<DateTimeWithTimeZone>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[sea_orm(belongs_to, from = "question_id", to = "id")]
+    pub question: BelongsTo<crate::models::academic::survey::master::questions::Entity>,
+    #[sea_orm(has_many)]
+    pub responds: HasMany<crate::models::academic::survey::transaction::responds::Entity>,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

@@ -19,7 +19,8 @@ pub struct Model {
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
     #[sea_orm(belongs_to, from = "website_type_id", to = "id")]
-    pub website_type: BelongsTo<crate::models::contact::reference::website_types::Entity>,
+    pub website_type: BelongsTo<Option<crate::models::contact::reference::website_types::Entity>>,
 }
+
 
 impl ActiveModelBehavior for ActiveModel {}

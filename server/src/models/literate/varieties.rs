@@ -21,4 +21,5 @@ pub struct Model {
     pub educations: HasMany<crate::models::literate::educations::Entity>,
 }
 
+
 impl ActiveModelBehavior for ActiveModel {}

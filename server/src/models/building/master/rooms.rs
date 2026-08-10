@@ -2,6 +2,9 @@
 
 use sea_orm::entity::prelude::*;
 
+use crate::models::academic::campaign::transaction::schedules::Entity as CampaignSchedulesEntity;
+use crate::models::academic::student::final_assignment::transaction::schedules::Entity as FinalAssignmentSchedulesEntity;
+
 #[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(schema_name = "building_master", table_name = "rooms")]
@@ -33,7 +36,11 @@ pub struct Model {
     #[sea_orm(belongs_to, from = "condition_id", to = "id")]
     pub condition: BelongsTo<crate::models::building::reference::conditions::Entity>,
     #[sea_orm(belongs_to, from = "unit_id", to = "id")]
-    pub unit: BelongsTo<crate::models::institution::master::units::Entity>,
+    pub unit: BelongsTo<Option<crate::models::institution::master::units::Entity>>,
+    #[sea_orm(has_many)]
+    pub schedules: HasMany<CampaignSchedulesEntity>,
+    #[sea_orm(has_many)]
+    pub schedules_linked: HasMany<FinalAssignmentSchedulesEntity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}

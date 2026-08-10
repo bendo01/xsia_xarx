@@ -27,6 +27,15 @@ pub struct Model {
     pub employee: BelongsTo<crate::models::institution::master::employees::Entity>,
     #[sea_orm(belongs_to, from = "unit_id", to = "id")]
     pub unit: BelongsTo<crate::models::institution::master::units::Entity>,
+    #[sea_orm(belongs_to, from = "position_type_id", to = "id")]
+    pub position_type: BelongsTo<Option<crate::models::institution::reference::position_type::Entity>>,
+    #[sea_orm(has_many)]
+    pub teach_decrees: HasMany<crate::models::academic::campaign::transaction::teach_decrees::Entity>,
+    #[sea_orm(has_many)]
+    pub decrees: HasMany<crate::models::academic::student::adviser::decrees::Entity>,
+    #[sea_orm(has_many)]
+    pub final_assignment_decrees: HasMany<crate::models::academic::student::final_assignment::transaction::final_assignment_decrees::Entity>,
 }
+
 
 impl ActiveModelBehavior for ActiveModel {}

@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(
     schema_name = "academic_student_final_assignment_transaction",
@@ -30,9 +31,27 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[sea_orm(belongs_to, from = "student_id", to = "id")]
+    pub student: BelongsTo<crate::models::academic::student::master::students::Entity>,
+    #[sea_orm(belongs_to, from = "approval_type_id", to = "id")]
+    pub approval_type: BelongsTo<Option<crate::models::academic::student::final_assignment::reference::approval_types::Entity>>,
+    #[sea_orm(belongs_to, from = "category_id", to = "id")]
+    pub category: BelongsTo<Option<crate::models::academic::student::final_assignment::reference::categories::Entity>>,
+    #[sea_orm(belongs_to, from = "stage_id", to = "id")]
+    pub stage: BelongsTo<Option<crate::models::academic::student::final_assignment::reference::stages::Entity>>,
+    #[sea_orm(belongs_to, from = "final_assignment_decree_id", to = "id")]
+    pub final_assignment_decree: BelongsTo<Option<crate::models::academic::student::final_assignment::transaction::final_assignment_decrees::Entity>>,
+    #[sea_orm(belongs_to, from = "detail_activity_id", to = "id")]
+    pub detail_activity: BelongsTo<crate::models::academic::student::campaign::detail_activities::Entity>,
+    #[sea_orm(has_many)]
+    pub advisers: HasMany<crate::models::academic::student::final_assignment::transaction::advisers::Entity>,
+    #[sea_orm(has_many)]
+    pub evaluation_summaries: HasMany<crate::models::academic::student::final_assignment::transaction::evaluation_summaries::Entity>,
+    #[sea_orm(has_many)]
+    pub prerequisites: HasMany<crate::models::academic::student::final_assignment::transaction::prerequisites::Entity>,
+    #[sea_orm(has_many)]
+    pub schedules: HasMany<crate::models::academic::student::final_assignment::transaction::schedules::Entity>,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

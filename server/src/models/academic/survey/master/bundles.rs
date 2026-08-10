@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(schema_name = "academic_survey_master", table_name = "bundles")]
 pub struct Model {
@@ -21,9 +22,19 @@ pub struct Model {
     pub deleted_at: Option<DateTimeWithTimeZone>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[sea_orm(belongs_to, from = "institution_id", to = "id")]
+    pub institution: BelongsTo<crate::models::institution::master::institutions::Entity>,
+    #[sea_orm(belongs_to, from = "bundle_category_id", to = "id")]
+    pub bundle_category: BelongsTo<crate::models::academic::survey::reference::bundle_categories::Entity>,
+    #[sea_orm(belongs_to, from = "unit_id", to = "id")]
+    pub unit: BelongsTo<Option<crate::models::institution::master::units::Entity>>,
+    #[sea_orm(has_many)]
+    pub bundle_question: HasMany<crate::models::academic::survey::master::bundle_question::Entity>,
+    #[sea_orm(has_many)]
+    pub conducts: HasMany<crate::models::academic::survey::transaction::conducts::Entity>,
+    #[sea_orm(has_many)]
+    pub responds: HasMany<crate::models::academic::survey::transaction::responds::Entity>,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

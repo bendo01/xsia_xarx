@@ -19,7 +19,8 @@ pub struct Model {
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
     #[sea_orm(belongs_to, from = "electronic_mail_type_id", to = "id")]
-    pub electronic_mail_type: BelongsTo<crate::models::contact::reference::electronic_mail_types::Entity>,
+    pub electronic_mail_type: BelongsTo<Option<crate::models::contact::reference::electronic_mail_types::Entity>>,
 }
+
 
 impl ActiveModelBehavior for ActiveModel {}

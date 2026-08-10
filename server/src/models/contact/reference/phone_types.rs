@@ -21,4 +21,5 @@ pub struct Model {
     pub phones: HasMany<crate::models::contact::master::phones::Entity>,
 }
 
+
 impl ActiveModelBehavior for ActiveModel {}

@@ -30,15 +30,18 @@ pub struct Model {
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
     #[sea_orm(belongs_to, from = "residence_type_id", to = "id")]
-    pub residence_type: BelongsTo<crate::models::contact::reference::residence_types::Entity>,
+    pub residence_type: BelongsTo<Option<crate::models::contact::reference::residence_types::Entity>>,
     #[sea_orm(belongs_to, from = "province_id", to = "id")]
-    pub province: BelongsTo<crate::models::location::provinces::Entity>,
+    pub province: BelongsTo<Option<crate::models::location::provinces::Entity>>,
     #[sea_orm(belongs_to, from = "regency_id", to = "id")]
-    pub regency: BelongsTo<crate::models::location::regencies::Entity>,
+    pub regency: BelongsTo<Option<crate::models::location::regencies::Entity>>,
     #[sea_orm(belongs_to, from = "sub_district_id", to = "id")]
-    pub sub_district: BelongsTo<crate::models::location::sub_districts::Entity>,
+    pub sub_district: BelongsTo<Option<crate::models::location::sub_districts::Entity>>,
     #[sea_orm(belongs_to, from = "village_id", to = "id")]
-    pub village: BelongsTo<crate::models::location::villages::Entity>,
+    pub village: BelongsTo<Option<crate::models::location::villages::Entity>>,
+    #[sea_orm(has_many)]
+    pub buildings: HasMany<crate::models::building::master::buildings::Entity>,
 }
+
 
 impl ActiveModelBehavior for ActiveModel {}

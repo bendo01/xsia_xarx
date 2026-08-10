@@ -23,4 +23,5 @@ pub struct Model {
     pub rooms: HasMany<crate::models::building::master::rooms::Entity>,
 }
 
+
 impl ActiveModelBehavior for ActiveModel {}

@@ -32,6 +32,31 @@ pub struct Model {
     pub units: HasMany<crate::models::institution::master::units::Entity>,
     #[sea_orm(has_many)]
     pub employees: HasMany<crate::models::institution::master::employees::Entity>,
+    #[sea_orm(belongs_to, from = "country_id", to = "id")]
+    pub country: BelongsTo<crate::models::location::countries::Entity>,
+    #[sea_orm(belongs_to, from = "academic_year_id", to = "id")]
+    pub academic_year: BelongsTo<Option<crate::models::academic::general::reference::academic_years::Entity>>,
+    #[sea_orm(has_many)]
+    pub estimasi: HasMany<crate::models::feeder::akumulasi::estimasi::Entity>,
+    #[sea_orm(has_many)]
+    pub jumlah_data: HasMany<crate::models::feeder::akumulasi::jumlah_data::Entity>,
+    #[sea_orm(has_many)]
+    pub kredential: HasMany<crate::models::feeder::akun::kredential::Entity>,
+    #[sea_orm(has_many)]
+    pub calendars: HasMany<crate::models::academic::campaign::transaction::calendars::Entity>,
+    #[sea_orm(has_many)]
+    pub candidates: HasMany<crate::models::academic::candidate::master::candidates::Entity>,
+    #[sea_orm(has_many)]
+    pub registration_types: HasMany<crate::models::academic::candidate::reference::registration_types::Entity>,
+    #[sea_orm(has_many)]
+    pub lecturers: HasMany<crate::models::academic::lecturer::master::lecturers::Entity>,
+    #[sea_orm(has_many)]
+    pub homebases: HasMany<crate::models::academic::lecturer::transaction::homebases::Entity>,
+    #[sea_orm(has_many)]
+    pub bundles: HasMany<crate::models::academic::survey::master::bundles::Entity>,
+    #[sea_orm(has_many)]
+    pub questions: HasMany<crate::models::academic::survey::master::questions::Entity>,
 }
+
 
 impl ActiveModelBehavior for ActiveModel {}

@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(
     schema_name = "academic_general_reference",
@@ -24,9 +25,23 @@ pub struct Model {
     pub is_active: Option<bool>,
     pub start_date: Option<Date>,
     pub end_date: Option<Date>,
+    #[sea_orm(belongs_to, from = "academic_year_category_id", to = "id")]
+    pub academic_year_category: BelongsTo<crate::models::academic::general::reference::academic_year_categories::Entity>,
+    #[sea_orm(has_many)]
+    pub institutions: HasMany<crate::models::institution::master::institutions::Entity>,
+    #[sea_orm(has_many)]
+    pub activities: HasMany<crate::models::academic::campaign::transaction::activities::Entity>,
+    #[sea_orm(has_many)]
+    pub calendars: HasMany<crate::models::academic::campaign::transaction::calendars::Entity>,
+    #[sea_orm(has_many)]
+    pub candidates: HasMany<crate::models::academic::candidate::master::candidates::Entity>,
+    #[sea_orm(has_many)]
+    pub curriculums: HasMany<crate::models::academic::course::master::curriculums::Entity>,
+    #[sea_orm(has_many)]
+    pub convertions: HasMany<crate::models::academic::student::campaign::convertions::Entity>,
+    #[sea_orm(has_many)]
+    pub students: HasMany<crate::models::academic::student::master::students::Entity>,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

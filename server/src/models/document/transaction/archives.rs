@@ -26,6 +26,9 @@ pub struct Model {
     pub is_knowledge: bool,
     #[sea_orm(belongs_to, from = "archive_type_id", to = "id")]
     pub archive_type: BelongsTo<crate::models::document::reference::archive_types::Entity>,
+    #[sea_orm(has_many)]
+    pub evaluation_details: HasMany<crate::models::academic::prior_learning_recognition::transaction::evaluation_details::Entity>,
 }
+
 
 impl ActiveModelBehavior for ActiveModel {}

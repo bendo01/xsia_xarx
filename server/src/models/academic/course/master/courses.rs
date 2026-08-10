@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(schema_name = "academic_course_master", table_name = "courses")]
 pub struct Model {
@@ -41,9 +42,27 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[sea_orm(belongs_to, from = "group_id", to = "id")]
+    pub group: BelongsTo<Option<crate::models::academic::course::reference::groups::Entity>>,
+    #[sea_orm(belongs_to, from = "variety_id", to = "id")]
+    pub variety: BelongsTo<crate::models::academic::course::reference::varieties::Entity>,
+    #[sea_orm(belongs_to, from = "unit_id", to = "id")]
+    pub unit: BelongsTo<crate::models::institution::master::units::Entity>,
+    #[sea_orm(belongs_to, from = "competence_id", to = "id")]
+    pub competence: BelongsTo<Option<crate::models::academic::course::reference::competences::Entity>>,
+    #[sea_orm(has_many)]
+    pub teaches: HasMany<crate::models::academic::campaign::transaction::teaches::Entity>,
+    #[sea_orm(has_many)]
+    pub course_evaluation_plannings: HasMany<crate::models::academic::course::master::course_evaluation_plannings::Entity>,
+    #[sea_orm(has_many)]
+    pub course_learn_plannings: HasMany<crate::models::academic::course::master::course_learn_plannings::Entity>,
+    #[sea_orm(has_many)]
+    pub curriculum_details: HasMany<crate::models::academic::course::master::curriculum_details::Entity>,
+    #[sea_orm(has_many)]
+    pub convertions: HasMany<crate::models::academic::student::campaign::convertions::Entity>,
+    #[sea_orm(has_many)]
+    pub detail_activities: HasMany<crate::models::academic::student::campaign::detail_activities::Entity>,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(
     schema_name = "academic_prior_learning_recognition_transaction",
@@ -20,9 +21,17 @@ pub struct Model {
     pub updated_by: Option<Uuid>,
     pub curriculum_id: Uuid,
     pub unit_id: Uuid,
+    #[sea_orm(belongs_to, from = "candidate_id", to = "id")]
+    pub candidate: BelongsTo<Option<crate::models::academic::candidate::master::candidates::Entity>>,
+    #[sea_orm(belongs_to, from = "curriculum_id", to = "id")]
+    pub curriculum: BelongsTo<crate::models::academic::course::master::curriculums::Entity>,
+    #[sea_orm(belongs_to, from = "unit_id", to = "id")]
+    pub unit: BelongsTo<crate::models::institution::master::units::Entity>,
+    #[sea_orm(has_many)]
+    pub evaluations: HasMany<crate::models::academic::prior_learning_recognition::transaction::evaluations::Entity>,
+    #[sea_orm(has_many)]
+    pub evaluators: HasMany<crate::models::academic::prior_learning_recognition::transaction::evaluators::Entity>,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

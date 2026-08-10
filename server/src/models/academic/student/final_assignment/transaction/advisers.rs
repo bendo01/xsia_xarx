@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(
     schema_name = "academic_student_final_assignment_transaction",
@@ -21,9 +22,17 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[sea_orm(belongs_to, from = "lecturer_id", to = "id")]
+    pub lecturer: BelongsTo<crate::models::academic::lecturer::master::lecturers::Entity>,
+    #[sea_orm(belongs_to, from = "detail_activity_id", to = "id")]
+    pub detail_activity: BelongsTo<crate::models::academic::student::campaign::detail_activities::Entity>,
+    #[sea_orm(belongs_to, from = "submission_id", to = "id")]
+    pub submission: BelongsTo<Option<crate::models::academic::student::final_assignment::transaction::submissions::Entity>>,
+    #[sea_orm(belongs_to, from = "adviser_category_id", to = "id")]
+    pub adviser_category: BelongsTo<crate::models::academic::student::final_assignment::reference::adviser_categories::Entity>,
+    #[sea_orm(has_many)]
+    pub evaluation_details: HasMany<crate::models::academic::student::final_assignment::transaction::evaluation_details::Entity>,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

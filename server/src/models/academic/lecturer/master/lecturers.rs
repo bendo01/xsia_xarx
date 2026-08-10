@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(schema_name = "academic_lecturer_master", table_name = "lecturers")]
 pub struct Model {
@@ -30,9 +31,31 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[sea_orm(belongs_to, from = "individual_id", to = "id")]
+    pub individual: BelongsTo<crate::models::person::master::individual::Entity>,
+    #[sea_orm(belongs_to, from = "institution_id", to = "id")]
+    pub institution: BelongsTo<Option<crate::models::institution::master::institutions::Entity>>,
+    #[sea_orm(belongs_to, from = "status_id", to = "id")]
+    pub status: BelongsTo<Option<crate::models::academic::lecturer::reference::statuses::Entity>>,
+    #[sea_orm(belongs_to, from = "contract_id", to = "id")]
+    pub contract: BelongsTo<Option<crate::models::academic::lecturer::reference::contracts::Entity>>,
+    #[sea_orm(belongs_to, from = "rank_id", to = "id")]
+    pub rank: BelongsTo<Option<crate::models::academic::lecturer::reference::ranks::Entity>>,
+    #[sea_orm(belongs_to, from = "group_id", to = "id")]
+    pub group: BelongsTo<Option<crate::models::academic::lecturer::reference::groups::Entity>>,
+    #[sea_orm(has_many)]
+    pub teach_lecturers: HasMany<crate::models::academic::campaign::transaction::teach_lecturers::Entity>,
+    #[sea_orm(has_many)]
+    pub academic_groups: HasMany<crate::models::academic::lecturer::transaction::academic_groups::Entity>,
+    #[sea_orm(has_many)]
+    pub academic_ranks: HasMany<crate::models::academic::lecturer::transaction::academic_ranks::Entity>,
+    #[sea_orm(has_many)]
+    pub homebases: HasMany<crate::models::academic::lecturer::transaction::homebases::Entity>,
+    #[sea_orm(has_many)]
+    pub counsellors: HasMany<crate::models::academic::student::adviser::counsellors::Entity>,
+    #[sea_orm(has_many)]
+    pub advisers: HasMany<crate::models::academic::student::final_assignment::transaction::advisers::Entity>,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

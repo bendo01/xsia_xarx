@@ -24,4 +24,5 @@ pub struct Model {
     pub electronic_mails: HasMany<crate::models::contact::master::electronic_mails::Entity>,
 }
 
+
 impl ActiveModelBehavior for ActiveModel {}

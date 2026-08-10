@@ -1,3 +1,5 @@
+pub mod prelude;
+
 pub mod age_classification;
 pub mod blood_type;
 pub mod eye_color;
@@ -11,5 +13,3 @@ pub mod occupation;
 pub mod profession;
 pub mod relative_type;
 pub mod religion;
-
-pub mod prelude;

@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(
     schema_name = "academic_campaign_transaction",
@@ -25,9 +26,11 @@ pub struct Model {
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
     pub feeder_id: Option<Uuid>,
+    #[sea_orm(belongs_to, from = "lecturer_id", to = "id")]
+    pub lecturer: BelongsTo<crate::models::academic::lecturer::master::lecturers::Entity>,
+    #[sea_orm(belongs_to, from = "teach_id", to = "id")]
+    pub teach: BelongsTo<crate::models::academic::campaign::transaction::teaches::Entity>,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

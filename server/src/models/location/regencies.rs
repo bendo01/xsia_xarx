@@ -45,4 +45,5 @@ pub struct Model {
     pub residences: HasMany<crate::models::contact::master::residences::Entity>,
 }
 
+
 impl ActiveModelBehavior for ActiveModel {}

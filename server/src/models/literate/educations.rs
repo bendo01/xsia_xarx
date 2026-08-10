@@ -32,6 +32,9 @@ pub struct Model {
     pub variety: BelongsTo<crate::models::literate::varieties::Entity>,
     #[sea_orm(has_many)]
     pub individuals: HasMany<crate::models::person::master::individual::Entity>,
-}
+    #[sea_orm(has_many)]
+    pub units: HasMany<crate::models::institution::master::units::Entity>,
+    }
+
 
 impl ActiveModelBehavior for ActiveModel {}

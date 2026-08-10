@@ -24,11 +24,14 @@ pub struct Model {
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
     #[sea_orm(belongs_to, from = "continent_id", to = "id")]
-    pub continent: BelongsTo<crate::models::location::continents::Entity>,
+    pub continent: BelongsTo<Option<crate::models::location::continents::Entity>>,
     #[sea_orm(belongs_to, from = "region_id", to = "id")]
-    pub region: BelongsTo<crate::models::location::regions::Entity>,
+    pub region: BelongsTo<Option<crate::models::location::regions::Entity>>,
     #[sea_orm(has_many)]
     pub provinces: HasMany<crate::models::location::provinces::Entity>,
+    #[sea_orm(has_many)]
+    pub institutions: HasMany<crate::models::institution::master::institutions::Entity>,
 }
+
 
 impl ActiveModelBehavior for ActiveModel {}

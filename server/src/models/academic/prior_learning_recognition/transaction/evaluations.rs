@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(
     schema_name = "academic_prior_learning_recognition_transaction",
@@ -21,9 +22,21 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[sea_orm(belongs_to, from = "recognition_id", to = "id")]
+    pub recognition: BelongsTo<Option<crate::models::academic::prior_learning_recognition::transaction::recognitions::Entity>>,
+    #[sea_orm(belongs_to, from = "course_evaluation_planning_id", to = "id")]
+    pub course_evaluation_planning: BelongsTo<Option<crate::models::academic::course::master::course_evaluation_plannings::Entity>>,
+    #[sea_orm(belongs_to, from = "professionalism_id", to = "id")]
+    pub professionalism: BelongsTo<Option<crate::models::academic::prior_learning_recognition::reference::professionalisms::Entity>>,
+    #[sea_orm(belongs_to, from = "evidence_type_id", to = "id")]
+    pub evidence_type: BelongsTo<Option<crate::models::academic::prior_learning_recognition::reference::evidence_types::Entity>>,
+    #[sea_orm(belongs_to, from = "evaluator_id", to = "id")]
+    pub evaluator: BelongsTo<Option<crate::models::academic::prior_learning_recognition::transaction::evaluators::Entity>>,
+    #[sea_orm(has_many)]
+    pub decrees: HasMany<crate::models::academic::prior_learning_recognition::transaction::decrees::Entity>,
+    #[sea_orm(has_many)]
+    pub evaluation_details: HasMany<crate::models::academic::prior_learning_recognition::transaction::evaluation_details::Entity>,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}
