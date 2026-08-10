@@ -17,10 +17,6 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
-    #[sea_orm(has_many, via = "user_position_type")]
-    pub users: HasMany<crate::models::auth::users::Entity>,
-    #[sea_orm(has_many)]
-    pub user_position_type: HasMany<crate::models::auth::user_position_type::Entity>,
     #[sea_orm(has_many)]
     pub staffes: HasMany<crate::models::institution::master::staffes::Entity>,
 }

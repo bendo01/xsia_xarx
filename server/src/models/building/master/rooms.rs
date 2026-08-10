@@ -37,10 +37,6 @@ pub struct Model {
     pub condition: BelongsTo<crate::models::building::reference::conditions::Entity>,
     #[sea_orm(belongs_to, from = "unit_id", to = "id")]
     pub unit: BelongsTo<Option<crate::models::institution::master::units::Entity>>,
-    #[sea_orm(has_many)]
-    pub schedules: HasMany<CampaignSchedulesEntity>,
-    #[sea_orm(has_many)]
-    pub schedules_linked: HasMany<FinalAssignmentSchedulesEntity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}
