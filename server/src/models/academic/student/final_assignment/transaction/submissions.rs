@@ -43,14 +43,6 @@ pub struct Model {
     pub final_assignment_decree: BelongsTo<Option<crate::models::academic::student::final_assignment::transaction::final_assignment_decrees::Entity>>,
     #[sea_orm(belongs_to, from = "detail_activity_id", to = "id")]
     pub detail_activity: BelongsTo<crate::models::academic::student::campaign::detail_activities::Entity>,
-    #[sea_orm(has_many)]
-    pub advisers: HasMany<crate::models::academic::student::final_assignment::transaction::advisers::Entity>,
-    #[sea_orm(has_many)]
-    pub evaluation_summaries: HasMany<crate::models::academic::student::final_assignment::transaction::evaluation_summaries::Entity>,
-    #[sea_orm(has_many)]
-    pub prerequisites: HasMany<crate::models::academic::student::final_assignment::transaction::prerequisites::Entity>,
-    #[sea_orm(has_many)]
-    pub schedules: HasMany<crate::models::academic::student::final_assignment::transaction::schedules::Entity>,
 }
 
 

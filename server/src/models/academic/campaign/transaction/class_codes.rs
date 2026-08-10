@@ -29,10 +29,6 @@ pub struct Model {
     pub activity: BelongsTo<crate::models::academic::campaign::transaction::activities::Entity>,
     #[sea_orm(belongs_to, from = "unit_id", to = "id")]
     pub unit: BelongsTo<Option<crate::models::institution::master::units::Entity>>,
-    #[sea_orm(has_many)]
-    pub teaches: HasMany<crate::models::academic::campaign::transaction::teaches::Entity>,
-    #[sea_orm(has_many)]
-    pub students: HasMany<crate::models::academic::student::master::students::Entity>,
 }
 
 

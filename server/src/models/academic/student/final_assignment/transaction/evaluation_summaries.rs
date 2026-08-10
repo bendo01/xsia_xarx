@@ -31,8 +31,6 @@ pub struct Model {
     pub stage: BelongsTo<crate::models::academic::student::final_assignment::reference::stages::Entity>,
     #[sea_orm(belongs_to, from = "grade_id", to = "id")]
     pub grade: BelongsTo<Option<crate::models::academic::campaign::transaction::grades::Entity>>,
-    #[sea_orm(has_many)]
-    pub evaluation_details: HasMany<crate::models::academic::student::final_assignment::transaction::evaluation_details::Entity>,
 }
 
 

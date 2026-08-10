@@ -30,8 +30,6 @@ pub struct Model {
     pub submission: BelongsTo<Option<crate::models::academic::student::final_assignment::transaction::submissions::Entity>>,
     #[sea_orm(belongs_to, from = "adviser_category_id", to = "id")]
     pub adviser_category: BelongsTo<crate::models::academic::student::final_assignment::reference::adviser_categories::Entity>,
-    #[sea_orm(has_many)]
-    pub evaluation_details: HasMany<crate::models::academic::student::final_assignment::transaction::evaluation_details::Entity>,
 }
 
 

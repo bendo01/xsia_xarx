@@ -47,14 +47,6 @@ pub struct Model {
     pub encounter_category: BelongsTo<Option<crate::models::academic::campaign::reference::encounter_categories::Entity>>,
     #[sea_orm(belongs_to, from = "scope_id", to = "id")]
     pub scope: BelongsTo<Option<crate::models::academic::campaign::reference::scopes::Entity>>,
-    #[sea_orm(has_many)]
-    pub schedules: HasMany<crate::models::academic::campaign::transaction::schedules::Entity>,
-    #[sea_orm(has_many)]
-    pub teach_evaluations: HasMany<crate::models::academic::campaign::transaction::teach_evaluations::Entity>,
-    #[sea_orm(has_many)]
-    pub teach_lecturers: HasMany<crate::models::academic::campaign::transaction::teach_lecturers::Entity>,
-    #[sea_orm(has_many)]
-    pub detail_activities: HasMany<crate::models::academic::student::campaign::detail_activities::Entity>,
 }
 
 

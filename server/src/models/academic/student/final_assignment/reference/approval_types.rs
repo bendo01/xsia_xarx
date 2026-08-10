@@ -20,10 +20,6 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
-    #[sea_orm(has_many)]
-    pub prerequisites: HasMany<crate::models::academic::student::final_assignment::transaction::prerequisites::Entity>,
-    #[sea_orm(has_many)]
-    pub submissions: HasMany<crate::models::academic::student::final_assignment::transaction::submissions::Entity>,
 }
 
 

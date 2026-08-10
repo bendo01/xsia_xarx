@@ -23,8 +23,6 @@ pub struct Model {
     pub updated_by: Option<Uuid>,
     #[sea_orm(belongs_to, from = "stage_id", to = "id")]
     pub stage: BelongsTo<Option<crate::models::academic::student::final_assignment::reference::stages::Entity>>,
-    #[sea_orm(has_many)]
-    pub prerequisites: HasMany<crate::models::academic::student::final_assignment::transaction::prerequisites::Entity>,
 }
 
 

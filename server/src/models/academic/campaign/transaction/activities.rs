@@ -37,16 +37,6 @@ pub struct Model {
     pub unit: BelongsTo<crate::models::institution::master::units::Entity>,
     #[sea_orm(belongs_to, from = "academic_year_id", to = "id")]
     pub academic_year: BelongsTo<crate::models::academic::general::reference::academic_years::Entity>,
-    #[sea_orm(has_many)]
-    pub class_codes: HasMany<crate::models::academic::campaign::transaction::class_codes::Entity>,
-    #[sea_orm(has_many)]
-    pub teach_decrees: HasMany<crate::models::academic::campaign::transaction::teach_decrees::Entity>,
-    #[sea_orm(has_many)]
-    pub teaches: HasMany<crate::models::academic::campaign::transaction::teaches::Entity>,
-    #[sea_orm(has_many)]
-    pub detail_activities: HasMany<crate::models::academic::student::campaign::detail_activities::Entity>,
-    #[sea_orm(has_many)]
-    pub final_assignment_decrees: HasMany<crate::models::academic::student::final_assignment::transaction::final_assignment_decrees::Entity>,
 }
 
 

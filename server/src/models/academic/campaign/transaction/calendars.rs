@@ -24,8 +24,6 @@ pub struct Model {
     pub academic_year: BelongsTo<crate::models::academic::general::reference::academic_years::Entity>,
     #[sea_orm(belongs_to, from = "institution_id", to = "id")]
     pub institution: BelongsTo<crate::models::institution::master::institutions::Entity>,
-    #[sea_orm(has_many)]
-    pub calendar_details: HasMany<crate::models::academic::campaign::transaction::calendar_details::Entity>,
 }
 
 

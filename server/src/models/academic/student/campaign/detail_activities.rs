@@ -38,16 +38,6 @@ pub struct Model {
     pub activity: BelongsTo<crate::models::academic::campaign::transaction::activities::Entity>,
     #[sea_orm(belongs_to, from = "teach_id", to = "id")]
     pub teach: BelongsTo<Option<crate::models::academic::campaign::transaction::teaches::Entity>>,
-    #[sea_orm(has_many)]
-    pub detail_activity_evaluation_components: HasMany<crate::models::academic::student::campaign::detail_activity_evaluation_components::Entity>,
-    #[sea_orm(has_many)]
-    pub advisers: HasMany<crate::models::academic::student::final_assignment::transaction::advisers::Entity>,
-    #[sea_orm(has_many)]
-    pub evaluation_summaries: HasMany<crate::models::academic::student::final_assignment::transaction::evaluation_summaries::Entity>,
-    #[sea_orm(has_many)]
-    pub schedules: HasMany<crate::models::academic::student::final_assignment::transaction::schedules::Entity>,
-    #[sea_orm(has_many)]
-    pub submissions: HasMany<crate::models::academic::student::final_assignment::transaction::submissions::Entity>,
 }
 
 

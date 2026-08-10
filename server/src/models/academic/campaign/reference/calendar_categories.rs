@@ -20,8 +20,6 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
-    #[sea_orm(has_many)]
-    pub calendar_details: HasMany<crate::models::academic::campaign::transaction::calendar_details::Entity>,
 }
 
 

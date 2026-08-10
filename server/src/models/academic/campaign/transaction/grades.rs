@@ -29,14 +29,6 @@ pub struct Model {
     pub feeder_id: Option<Uuid>,
     #[sea_orm(belongs_to, from = "unit_id", to = "id")]
     pub unit: BelongsTo<crate::models::institution::master::units::Entity>,
-    #[sea_orm(has_many)]
-    pub convertions: HasMany<crate::models::academic::student::campaign::convertions::Entity>,
-    #[sea_orm(has_many)]
-    pub detail_activities: HasMany<crate::models::academic::student::campaign::detail_activities::Entity>,
-    #[sea_orm(has_many)]
-    pub evaluation_details: HasMany<crate::models::academic::student::final_assignment::transaction::evaluation_details::Entity>,
-    #[sea_orm(has_many)]
-    pub evaluation_summaries: HasMany<crate::models::academic::student::final_assignment::transaction::evaluation_summaries::Entity>,
 }
 
 

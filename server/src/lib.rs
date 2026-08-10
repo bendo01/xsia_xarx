@@ -1,3 +1,5 @@
+#![recursion_limit = "512"]
+
 pub mod controllers;
 pub mod db;
 pub mod dtos;
