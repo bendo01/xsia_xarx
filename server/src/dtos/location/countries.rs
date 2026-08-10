@@ -3,7 +3,6 @@ use salvo::oapi::ToSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
-use rust_decimal::Decimal;
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
 pub struct CountryResponse {
