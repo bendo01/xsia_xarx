@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(schema_name = "institution_master", table_name = "institutions")]
 pub struct Model {
@@ -23,9 +24,20 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[sea_orm(belongs_to, from = "variety_id", to = "id")]
+    pub variety: BelongsTo<crate::models::institution::reference::varieties::Entity>,
+    #[sea_orm(belongs_to, from = "category_id", to = "id")]
+    pub category: BelongsTo<crate::models::institution::reference::categories::Entity>,
+    #[sea_orm(belongs_to, from = "parent_id", to = "id")]
+    pub parent: BelongsTo<crate::models::institution::master::institutions::Entity>,
+    #[sea_orm(belongs_to, from = "feeder_id", to = "id")]
+    pub feeder: BelongsTo<crate::models::institution::master::institutions::Entity>,
+    #[sea_orm(has_many)]
+    pub children: HasMany<crate::models::institution::master::institutions::Entity>,
+    #[sea_orm(has_many)]
+    pub units: HasMany<crate::models::institution::master::units::Entity>,
+    #[sea_orm(has_many)]
+    pub employees: HasMany<crate::models::institution::master::employees::Entity>,
 }
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}
