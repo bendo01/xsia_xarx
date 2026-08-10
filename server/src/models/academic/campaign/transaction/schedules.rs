@@ -24,8 +24,8 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
-    #[sea_orm(belongs_to, from = "room_id", to = "id")]
-    pub room: BelongsTo<crate::models::building::master::rooms::Entity>,
+    // #[sea_orm(belongs_to, from = "room_id", to = "id")]
+    // pub room: BelongsTo<crate::models::building::master::rooms::Entity>,
     #[sea_orm(belongs_to, from = "teach_id", to = "id")]
     pub teach: BelongsTo<crate::models::academic::campaign::transaction::teaches::Entity>,
 }
