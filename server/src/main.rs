@@ -30,9 +30,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .hoop(InjectDb(db))
         .push(controllers::person::reference::router())
         .push(controllers::person::master::router())
-        .push(controllers::literate::router());
+        .push(controllers::literate::router())
+        .push(controllers::location::router());
 
-    let doc = OpenApi::new("API (Person & Literate)", "1.0.0").merge_router(&api_router);
+    let doc = OpenApi::new("API", "1.0.0").merge_router(&api_router);
 
     let router = Router::new()
         .push(api_router)
