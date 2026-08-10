@@ -28,12 +28,6 @@ pub struct Model {
     pub unit_type: BelongsTo<crate::models::institution::reference::unit_types::Entity>,
     #[sea_orm(belongs_to, from = "institution_id", to = "id")]
     pub institution: BelongsTo<crate::models::institution::master::institutions::Entity>,
-    #[sea_orm(belongs_to, from = "parent_id", to = "id")]
-    pub parent: BelongsTo<crate::models::institution::master::units::Entity>,
-    #[sea_orm(belongs_to, from = "feeder_id", to = "id")]
-    pub feeder: BelongsTo<crate::models::institution::master::units::Entity>,
-    #[sea_orm(has_many)]
-    pub children: HasMany<crate::models::institution::master::units::Entity>,
     #[sea_orm(has_many)]
     pub staffes: HasMany<crate::models::institution::master::staffes::Entity>,
 }

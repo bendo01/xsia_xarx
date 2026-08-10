@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(schema_name = "literate", table_name = "educations")]
 pub struct Model {
@@ -21,9 +22,16 @@ pub struct Model {
     pub deleted_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[sea_orm(belongs_to, from = "level_id", to = "id")]
+    pub level: BelongsTo<crate::models::literate::levels::Entity>,
+    #[sea_orm(belongs_to, from = "group_id", to = "id")]
+    pub group: BelongsTo<crate::models::literate::groups::Entity>,
+    #[sea_orm(belongs_to, from = "category_id", to = "id")]
+    pub category: BelongsTo<crate::models::literate::categories::Entity>,
+    #[sea_orm(belongs_to, from = "variety_id", to = "id")]
+    pub variety: BelongsTo<crate::models::literate::varieties::Entity>,
+    #[sea_orm(has_many)]
+    pub individuals: HasMany<crate::models::person::master::individual::Entity>,
 }
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

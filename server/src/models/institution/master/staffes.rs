@@ -27,8 +27,6 @@ pub struct Model {
     pub employee: BelongsTo<crate::models::institution::master::employees::Entity>,
     #[sea_orm(belongs_to, from = "unit_id", to = "id")]
     pub unit: BelongsTo<crate::models::institution::master::units::Entity>,
-    #[sea_orm(belongs_to, from = "position_type_id", to = "id")]
-    pub position_type: BelongsTo<crate::models::institution::reference::position_type::Entity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}

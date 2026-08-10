@@ -58,6 +58,8 @@ pub struct Model {
     pub marital_status: BelongsTo<crate::models::person::reference::marital_status::Entity>,
     #[sea_orm(belongs_to, from = "profession_id", to = "id")]
     pub profession: BelongsTo<crate::models::person::reference::profession::Entity>,
+    #[sea_orm(belongs_to, from = "education_id", to = "id")]
+    pub education: BelongsTo<crate::models::literate::educations::Entity>,
     #[sea_orm(belongs_to, from = "age_classification_id", to = "id")]
     pub age_classification: BelongsTo<crate::models::person::reference::age_classification::Entity>,
     #[sea_orm(has_one)]
