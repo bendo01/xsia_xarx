@@ -3,3 +3,5 @@ pub mod location;
 pub mod person;
 pub mod institution;
 pub mod building;
+pub mod contact;
+pub mod document;

@@ -1,10 +1,10 @@
 use salvo::prelude::*;
 
-pub mod master;
 pub mod reference;
+pub mod transaction;
 
 pub fn router() -> Router {
-    Router::with_path("contact")
-        .push(master::router())
+    Router::with_path("document")
         .push(reference::router())
+        .push(transaction::router())
 }

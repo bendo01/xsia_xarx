@@ -102,7 +102,11 @@ use crate::dtos::common::reference::MessageResponse;"""
             dto_file_path = os.path.join(dtos_dir, f"{mod_name}.rs")
             
             needs_chrono = any("DateTime" in t or "Date" in t for n, t in fields)
-            chrono_import = "use chrono::{NaiveDate, NaiveDateTime};\n" if needs_chrono else ""
+            needs_tz = any("TimeZone" in t for n, t in fields)
+            chrono_import_items = ["NaiveDate", "NaiveDateTime"]
+            if needs_tz:
+                chrono_import_items.extend(["DateTime", "FixedOffset"])
+            chrono_import = f"use chrono::{{{', '.join(chrono_import_items)}}};\n" if needs_chrono else ""
             
             dto_content = f"""use serde::{{Deserialize, Serialize}};
 use salvo::oapi::ToSchema;
@@ -226,10 +230,23 @@ pub async fn list_{mod_name}(
                 mapping_code += f"            {name}: String::new(),\n"
             elif name == "deleted_at":
                 is_tz = "TimeZone" in type_part
-                mapping_code += f"            deleted_at: item.deleted_at.map(|dt| dt{'.naive_utc()' if is_tz else ''}),\n"
+                if sub_module == "reference" and is_tz:
+                    mapping_code += f"            deleted_at: item.deleted_at.map(|dt| dt.naive_utc()),\n"
+                else:
+                    mapping_code += f"            deleted_at: item.deleted_at,\n"
             elif name in ["created_at", "updated_at"]:
+                is_tz = "TimeZone" in type_part
                 if sub_module == "reference":
-                    val = f"item.{name}.unwrap_or_else(|| Utc::now().naive_utc())" if is_opt else f"item.{name}"
+                    if is_opt:
+                        if is_tz:
+                            val = f"item.{name}.map(|dt| dt.naive_utc()).unwrap_or_else(|| Utc::now().naive_utc())"
+                        else:
+                            val = f"item.{name}.unwrap_or_else(|| Utc::now().naive_utc())"
+                    else:
+                        if is_tz:
+                            val = f"item.{name}.naive_utc()"
+                        else:
+                            val = f"item.{name}"
                 else:
                     val = f"item.{name}"
                 mapping_code += f"            {name}: {val},\n"
@@ -405,7 +422,7 @@ pub async fn delete_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
         deleted_at_opt = "Option" in dict(fields).get("deleted_at", "Option<DateTime>")
         deleted_at_tz = "TimeZone" in dict(fields).get("deleted_at", "Option<DateTime>")
         
-        val = "Utc::now().fixed_offset()" if deleted_at_tz else "now"
+        val = "Utc::now().into()" if deleted_at_tz else "now"
         
         ctrl_content += f"""    active_model.deleted_at = Set(Some({val}));
     active_model.updated_at = Set({'Some(now)' if updated_at_opt else 'now'});
@@ -451,6 +468,13 @@ pub async fn delete_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
         f.write(mod_rs_content_ctrls)
 
 
+import sys
+
 if __name__ == "__main__":
-    generate_dtos_and_controllers("building", "master")
-    generate_dtos_and_controllers("building", "reference")
+    module = sys.argv[1] if len(sys.argv) > 1 else "building"
+    models_dir = f"/home/bendo01/Project/xsia_xarx/server/src/models/{module}"
+    if os.path.exists(models_dir):
+        for entry in os.listdir(models_dir):
+            full_path = os.path.join(models_dir, entry)
+            if os.path.isdir(full_path):
+                generate_dtos_and_controllers(module, entry)
