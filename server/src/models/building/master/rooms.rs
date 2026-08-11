@@ -2,8 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
-use crate::models::academic::campaign::transaction::schedules::Entity as CampaignSchedulesEntity;
-use crate::models::academic::student::final_assignment::transaction::schedules::Entity as FinalAssignmentSchedulesEntity;
+
 
 #[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]

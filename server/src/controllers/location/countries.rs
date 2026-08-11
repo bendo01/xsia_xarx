@@ -109,7 +109,6 @@ pub async fn create_country(
         .validate()
         .map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now();
     let new_id = Uuid::new_v4();
 
     let active_model = countries_mod::ActiveModel {

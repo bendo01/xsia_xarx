@@ -103,7 +103,6 @@ pub async fn create_continent(
         .validate()
         .map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now();
     let new_id = Uuid::new_v4();
 
     let active_model = continents_mod::ActiveModel {

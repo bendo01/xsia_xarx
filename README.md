@@ -11,7 +11,7 @@ The repository is structured as a monorepo containing the following main compone
 ```text
 xsia_xarx/
 ├── server/          # Backend API services built with Rust
-└── clientv3/        # Web client frontend built with SolidJS & Vite
+└── client/          # Web client frontend built with SolidJS & Vite
 ```
 
 ---
@@ -27,7 +27,7 @@ xsia_xarx/
 * **Observability & Logging:** Tracing, OpenTelemetry (OTLP), subscriber JSON format.
 * **Templating & Utilities:** Tera, Fluent-templates (i18n), Lettre (SMTP), Headless Chrome, `rust_xlsxwriter`, QR code generator.
 
-### Frontend (`clientv3/`)
+### Frontend (`client/`)
 * **Framework:** [SolidJS](https://www.solidjs.com/) with TypeScript.
 * **Build Tool:** [Vite](https://vitejs.dev/).
 * **Styling:** [Tailwind CSS v4](https://tailwindcss.com/) with PostCSS.
@@ -39,8 +39,8 @@ xsia_xarx/
 ## 🛠️ Getting Started
 
 ### Prerequisites
-* **Rust**: 1.85+ (or latest stable toolchain supporting 2024 edition)
-* **Node.js**: v18+ and **pnpm** (or `npm`/`yarn`)
+* **Rust**: 1.97.1+ (or latest stable toolchain supporting 2024 edition)
+* **Node.js**: v24+ and **pnpm** (or `npm`/`yarn`)
 * **PostgreSQL**: With `pgvector` extension installed
 * **Redis**: For background task queueing (Apalis)
 
@@ -64,6 +64,12 @@ DATABASE_URL=postgres://postgres:password@localhost:5432/xsia_xarx
 REDIS_URL=redis://127.0.0.1:6379
 ```
 
+Run database migrations:
+
+```bash
+sea-orm-cli migrate up
+```
+
 Run the server in development mode:
 
 ```bash
@@ -72,12 +78,12 @@ cargo run
 
 ---
 
-### 2. Setting Up the Frontend (`clientv3/`)
+### 2. Setting Up the Frontend (`client/`)
 
-Navigate to the `clientv3/` directory:
+Navigate to the `client/` directory:
 
 ```bash
-cd clientv3
+cd client
 ```
 
 Install dependencies:
@@ -126,7 +132,7 @@ cargo test -- --nocapture
 ```
 
 ### Frontend Production Build
-From the `clientv3/` directory:
+From the `client/` directory:
 ```bash
 pnpm build
 ```
