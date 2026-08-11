@@ -11,12 +11,12 @@ pub fn router() -> Router {
         .push(
             Router::with_path("categories")
                 .get(categories::list_categories)
-                .post(categories::create_category)
+                .post(categories::create_categories)
                 .push(
                     Router::with_path("{id}")
-                        .get(categories::get_category)
-                        .put(categories::update_category)
-                        .delete(categories::delete_category),
+                        .get(categories::get_categories)
+                        .put(categories::update_categories)
+                        .delete(categories::delete_categories),
                 ),
         )
         .push(
@@ -33,34 +33,34 @@ pub fn router() -> Router {
         .push(
             Router::with_path("groups")
                 .get(groups::list_groups)
-                .post(groups::create_group)
+                .post(groups::create_groups)
                 .push(
                     Router::with_path("{id}")
-                        .get(groups::get_group)
-                        .put(groups::update_group)
-                        .delete(groups::delete_group),
+                        .get(groups::get_groups)
+                        .put(groups::update_groups)
+                        .delete(groups::delete_groups),
                 ),
         )
         .push(
             Router::with_path("levels")
                 .get(levels::list_levels)
-                .post(levels::create_level)
+                .post(levels::create_levels)
                 .push(
                     Router::with_path("{id}")
-                        .get(levels::get_level)
-                        .put(levels::update_level)
-                        .delete(levels::delete_level),
+                        .get(levels::get_levels)
+                        .put(levels::update_levels)
+                        .delete(levels::delete_levels),
                 ),
         )
         .push(
             Router::with_path("varieties")
                 .get(varieties::list_varieties)
-                .post(varieties::create_variety)
+                .post(varieties::create_varieties)
                 .push(
                     Router::with_path("{id}")
-                        .get(varieties::get_variety)
-                        .put(varieties::update_variety)
-                        .delete(varieties::delete_variety),
+                        .get(varieties::get_varieties)
+                        .put(varieties::update_varieties)
+                        .delete(varieties::delete_varieties),
                 ),
         );
 
