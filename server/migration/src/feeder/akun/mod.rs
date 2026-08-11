@@ -1,1 +1,1 @@
-mod m20260808_034545_schema_feeder_akun_table_kredential;
+pub mod m20260808_034545_schema_feeder_akun_table_kredential;

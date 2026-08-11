@@ -1,1 +1,1 @@
-mod m20260808_131448_schema_document_reference_table_archive_types;
+pub mod m20260808_131448_schema_document_reference_table_archive_types;

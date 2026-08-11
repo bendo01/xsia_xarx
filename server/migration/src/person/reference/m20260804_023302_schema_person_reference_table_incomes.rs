@@ -44,12 +44,12 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new("minimum")
-                            .decimal(20, 2)
+                            .decimal_len(20, 2)
                             .not_null(),
                     )
                     .col(
                         ColumnDef::new("maximum")
-                            .decimal(20, 2)
+                            .decimal_len(20, 2)
                             .not_null(),
                     )
                     .col(

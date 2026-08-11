@@ -1,1 +1,1 @@
-mod m20260806_064713_schema_academic_lecturer_master_table_lecturers;
+pub mod m20260806_064713_schema_academic_lecturer_master_table_lecturers;

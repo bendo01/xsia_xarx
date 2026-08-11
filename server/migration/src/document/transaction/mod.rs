@@ -1,1 +1,1 @@
-mod m20260808_131448_schema_document_transaction_table_archives;
+pub mod m20260808_131448_schema_document_transaction_table_archives;

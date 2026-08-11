@@ -1,2 +1,2 @@
-mod m20260806_135849_schema_building_master_table_buildings;
-mod m20260806_135854_schema_building_master_table_rooms;
+pub mod m20260806_135849_schema_building_master_table_buildings;
+pub mod m20260806_135854_schema_building_master_table_rooms;
