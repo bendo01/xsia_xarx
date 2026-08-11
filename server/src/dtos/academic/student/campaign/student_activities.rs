@@ -1,0 +1,83 @@
+use serde::{Deserialize, Serialize};
+use salvo::oapi::ToSchema;
+use uuid::Uuid;
+use validator::Validate;
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct StudentActivitiQuery {
+    pub page: Option<u64>,
+    pub page_size: Option<u64>,
+    pub name: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct StudentActivitiResponse {
+    pub id: Uuid,
+    pub name: Option<String>,
+    pub cumulative_index: f64,
+    pub grand_cumulative_index: f64,
+    pub total_credit: Option<f64>,
+    pub grand_total_credit: Option<f64>,
+    pub student_id: Uuid,
+    pub unit_activity_id: Uuid,
+    pub status_id: Uuid,
+    pub resign_status_id: Option<Uuid>,
+    pub unit_id: Option<Uuid>,
+    pub is_lock: Option<bool>,
+    pub created_at: Option<NaiveDateTime>,
+    pub updated_at: Option<NaiveDateTime>,
+    pub deleted_at: Option<NaiveDateTime>,
+    pub sync_at: Option<NaiveDateTime>,
+    pub created_by: Option<Uuid>,
+    pub updated_by: Option<Uuid>,
+    pub feeder_id: Option<Uuid>,
+    pub finance_id: Option<Uuid>,
+    pub finance_fee: Option<f64>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
+pub struct CreateStudentActivitiRequest {
+    pub name: Option<String>,
+    pub cumulative_index: f64,
+    pub grand_cumulative_index: f64,
+    pub total_credit: Option<f64>,
+    pub grand_total_credit: Option<f64>,
+    pub student_id: Uuid,
+    pub unit_activity_id: Uuid,
+    pub status_id: Uuid,
+    pub resign_status_id: Option<Uuid>,
+    pub unit_id: Option<Uuid>,
+    pub is_lock: Option<bool>,
+    pub feeder_id: Option<Uuid>,
+    pub finance_id: Option<Uuid>,
+    pub finance_fee: Option<f64>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
+pub struct UpdateStudentActivitiRequest {
+    pub name: Option<String>,
+    pub cumulative_index: Option<f64>,
+    pub grand_cumulative_index: Option<f64>,
+    pub total_credit: Option<f64>,
+    pub grand_total_credit: Option<f64>,
+    pub student_id: Option<Uuid>,
+    pub unit_activity_id: Option<Uuid>,
+    pub status_id: Option<Uuid>,
+    pub resign_status_id: Option<Uuid>,
+    pub unit_id: Option<Uuid>,
+    pub is_lock: Option<bool>,
+    pub feeder_id: Option<Uuid>,
+    pub finance_id: Option<Uuid>,
+    pub finance_fee: Option<f64>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct PaginatedStudentActivitiResponse {
+    pub data: Vec<StudentActivitiResponse>,
+    pub total: u64,
+    pub page: u64,
+    pub page_size: u64,
+    pub total_pages: u64,
+}

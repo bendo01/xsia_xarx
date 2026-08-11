@@ -39,6 +39,7 @@ def rust_type_to_dto(type_str):
         if inner == "DateTimeWithTimeZone": return "DateTime<FixedOffset>"
         if inner == "DateTime": return "NaiveDateTime"
         if inner == "Date": return "NaiveDate"
+        if inner == "Time": return "NaiveTime"
         return inner
 
     if "Option<" in type_str:
@@ -56,11 +57,20 @@ def generate_dtos_and_controllers(module, sub_module):
     os.makedirs(controllers_dir, exist_ok=True)
     
     models = []
+    if not os.path.exists(models_dir):
+        return
+        
     for f in os.listdir(models_dir):
         if f.endswith(".rs") and f not in ["mod.rs", "prelude.rs"]:
             models.append(f[:-3])
             
     models.sort()
+    if not models:
+        return
+    
+    sub_module_path = sub_module.replace('/', '::')
+    sub_module_last = sub_module.split('/')[-1]
+    tag_name = f"{module.title()} - " + " - ".join(x.title() for x in sub_module.split('/'))
     
     mod_rs_content_dtos = ""
     mod_rs_content_ctrls = "use salvo::prelude::*;\n\n"
@@ -73,9 +83,7 @@ def generate_dtos_and_controllers(module, sub_module):
         pretty_name = to_pascal_case(mod_name)
         
         # Determine if it's reference-like or not
-        # Reference-like if sub_module == "reference"
-        if sub_module == "reference":
-            # For reference we don't generate DTOs, we just use common reference DTOs
+        if sub_module_last == "reference":
             dto_imports = f"""use crate::dtos::common::reference::{{
     CreateReferenceRequest, MessageResponse, PaginatedReferenceResponse, ReferenceQuery,
     ReferenceResponse, UpdateReferenceRequest,
@@ -87,7 +95,7 @@ def generate_dtos_and_controllers(module, sub_module):
             paginated_type = "PaginatedReferenceResponse"
         else:
             mod_rs_content_dtos += f"pub mod {mod_name};\n"
-            dto_imports = f"""use crate::dtos::{module}::{sub_module}::{mod_name}::{{
+            dto_imports = f"""use crate::dtos::{module}::{sub_module_path}::{mod_name}::{{
     Create{pretty_name}Request, {pretty_name}Query, {pretty_name}Response, Paginated{pretty_name}Response,
     Update{pretty_name}Request,
 }};
@@ -101,18 +109,21 @@ use crate::dtos::common::reference::MessageResponse;"""
             # GENERATE DTOs
             dto_file_path = os.path.join(dtos_dir, f"{mod_name}.rs")
             
-            needs_chrono = any("DateTime" in t or "Date" in t for n, t in fields)
+            needs_chrono = any("DateTime" in t or "Date" in t or "Time" in t for n, t in fields)
             needs_tz = any("TimeZone" in t for n, t in fields)
-            chrono_import_items = ["NaiveDate", "NaiveDateTime"]
+            chrono_import_items = ["NaiveDate", "NaiveDateTime", "NaiveTime"]
             if needs_tz:
                 chrono_import_items.extend(["DateTime", "FixedOffset"])
             chrono_import = f"use chrono::{{{', '.join(chrono_import_items)}}};\n" if needs_chrono else ""
+            
+            needs_decimal = any("Decimal" in t for n, t in fields)
+            decimal_import = "use sea_orm::entity::prelude::Decimal;\n" if needs_decimal else ""
             
             dto_content = f"""use serde::{{Deserialize, Serialize}};
 use salvo::oapi::ToSchema;
 use uuid::Uuid;
 use validator::Validate;
-{chrono_import}
+{chrono_import}{decimal_import}
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
 pub struct {pretty_name}Query {{
@@ -130,6 +141,9 @@ pub struct {pretty_name}Response {{
 """
             for name, type_part in fields:
                 dto_type = rust_type_to_dto(type_part)
+                if "NaiveTime" in dto_type or "Decimal" in dto_type:
+                    val_type = "Option<String>" if dto_type.startswith("Option<") else "String"
+                    dto_content += f"    #[salvo(schema(value_type = {val_type}))]\n"
                 dto_content += f"    pub {name}: {dto_type},\n"
             dto_content += "}\n\n"
             
@@ -140,6 +154,9 @@ pub struct Create{pretty_name}Request {{
                 if name in ["id", "created_at", "updated_at", "deleted_at", "sync_at", "created_by", "updated_by"]:
                     continue
                 dto_type = rust_type_to_dto(type_part)
+                if "NaiveTime" in dto_type or "Decimal" in dto_type:
+                    val_type = "Option<String>" if dto_type.startswith("Option<") else "String"
+                    dto_content += f"    #[salvo(schema(value_type = {val_type}))]\n"
                 dto_content += f"    pub {name}: {dto_type},\n"
             dto_content += "}\n\n"
             
@@ -152,6 +169,9 @@ pub struct Update{pretty_name}Request {{
                 dto_type = rust_type_to_dto(type_part)
                 if not dto_type.startswith("Option<"):
                     dto_type = f"Option<{dto_type}>"
+                if "NaiveTime" in dto_type or "Decimal" in dto_type:
+                    val_type = "Option<String>" if dto_type.startswith("Option<") else "String"
+                    dto_content += f"    #[salvo(schema(value_type = {val_type}))]\n"
                 dto_content += f"    pub {name}: {dto_type},\n"
             dto_content += "}\n\n"
             
@@ -186,9 +206,9 @@ use uuid::Uuid;
 use validator::Validate;
 
 {dto_imports}
-use crate::models::{module}::{sub_module}::{mod_name} as entity_mod;
+use crate::models::{module}::{sub_module_path}::{mod_name} as entity_mod;
 
-#[endpoint(tags("{module.title()} - {sub_module.title()} - {pretty_name}"), status_codes(200, 500))]
+#[endpoint(tags("{tag_name} - {pretty_name}"), status_codes(200, 500))]
 pub async fn list_{mod_name}(
     req: &mut Request,
     depot: &mut Depot,
@@ -217,40 +237,71 @@ pub async fn list_{mod_name}(
 """
         
         mapping_code = ""
-        for name, type_part in fields:
-            if sub_module == "reference" and name not in ["id", "code", "alphabet_code", "name", "created_at", "updated_at", "deleted_at", "sync_at", "created_by", "updated_by"]:
-                continue
+        fields_dict = dict(fields)
+        if sub_module_last == "reference":
+            mapping_code += "            id: item.id,\n"
             
-            is_opt = "Option" in type_part
-            if name == "code" and sub_module == "reference" and not has_code:
-                mapping_code += f"            {name}: 0,\n"
-            elif name == "alphabet_code" and sub_module == "reference" and not has_alphabet:
-                mapping_code += f"            {name}: String::new(),\n"
-            elif name == "name" and sub_module == "reference" and not has_name:
-                mapping_code += f"            {name}: String::new(),\n"
-            elif name == "deleted_at":
-                is_tz = "TimeZone" in type_part
-                if sub_module == "reference" and is_tz:
-                    mapping_code += f"            deleted_at: item.deleted_at.map(|dt| dt.naive_utc()),\n"
-                else:
-                    mapping_code += f"            deleted_at: item.deleted_at,\n"
-            elif name in ["created_at", "updated_at"]:
-                is_tz = "TimeZone" in type_part
-                if sub_module == "reference":
-                    if is_opt:
-                        if is_tz:
-                            val = f"item.{name}.map(|dt| dt.naive_utc()).unwrap_or_else(|| Utc::now().naive_utc())"
-                        else:
-                            val = f"item.{name}.unwrap_or_else(|| Utc::now().naive_utc())"
-                    else:
-                        if is_tz:
-                            val = f"item.{name}.naive_utc()"
-                        else:
-                            val = f"item.{name}"
-                else:
-                    val = f"item.{name}"
-                mapping_code += f"            {name}: {val},\n"
+            # code
+            if "code" in fields_dict:
+                is_opt = "Option" in fields_dict["code"]
+                mapping_code += f"            code: item.code{'.unwrap_or_default()' if is_opt else ''},\n"
             else:
+                mapping_code += "            code: 0,\n"
+                
+            # alphabet_code
+            if "alphabet_code" in fields_dict:
+                is_opt = "Option" in fields_dict["alphabet_code"]
+                mapping_code += f"            alphabet_code: item.alphabet_code{'.clone().unwrap_or_default()' if is_opt else '.clone()'},\n"
+            else:
+                mapping_code += "            alphabet_code: String::new(),\n"
+                
+            # name
+            if "name" in fields_dict:
+                is_opt = "Option" in fields_dict["name"]
+                mapping_code += f"            name: item.name{'.clone().unwrap_or_default()' if is_opt else '.clone()'},\n"
+            else:
+                mapping_code += "            name: String::new(),\n"
+                
+            # created_at
+            if "created_at" in fields_dict:
+                is_opt = "Option" in fields_dict["created_at"]
+                is_tz = "TimeZone" in fields_dict["created_at"]
+                if is_opt:
+                    val = f"item.created_at.map(|dt| dt.naive_utc()).unwrap_or_else(|| Utc::now().naive_utc())" if is_tz else f"item.created_at.unwrap_or_else(|| Utc::now().naive_utc())"
+                else:
+                    val = f"item.created_at.naive_utc()" if is_tz else f"item.created_at"
+                mapping_code += f"            created_at: {val},\n"
+            else:
+                mapping_code += "            created_at: Utc::now().naive_utc(),\n"
+                
+            # updated_at
+            if "updated_at" in fields_dict:
+                is_opt = "Option" in fields_dict["updated_at"]
+                is_tz = "TimeZone" in fields_dict["updated_at"]
+                if is_opt:
+                    val = f"item.updated_at.map(|dt| dt.naive_utc()).unwrap_or_else(|| Utc::now().naive_utc())" if is_tz else f"item.updated_at.unwrap_or_else(|| Utc::now().naive_utc())"
+                else:
+                    val = f"item.updated_at.naive_utc()" if is_tz else f"item.updated_at"
+                mapping_code += f"            updated_at: {val},\n"
+            else:
+                mapping_code += "            updated_at: Utc::now().naive_utc(),\n"
+                
+            # deleted_at
+            if "deleted_at" in fields_dict:
+                is_tz = "TimeZone" in fields_dict["deleted_at"]
+                val = f"item.deleted_at.map(|dt| dt.naive_utc())" if is_tz else f"item.deleted_at"
+                mapping_code += f"            deleted_at: {val},\n"
+            else:
+                mapping_code += "            deleted_at: None,\n"
+                
+            # sync_at
+            mapping_code += f"            sync_at: item.sync_at,\n" if "sync_at" in fields_dict else "            sync_at: None,\n"
+            # created_by
+            mapping_code += f"            created_by: item.created_by,\n" if "created_by" in fields_dict else "            created_by: None,\n"
+            # updated_by
+            mapping_code += f"            updated_by: item.updated_by,\n" if "updated_by" in fields_dict else "            updated_by: None,\n"
+        else:
+            for name, type_part in fields:
                 if type_part == "String":
                     mapping_code += f"            {name}: item.{name}.clone(),\n"
                 else:
@@ -279,7 +330,7 @@ pub async fn list_{mod_name}(
     }}))
 }}
 
-#[endpoint(tags("{module.title()} - {sub_module.title()} - {pretty_name}"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("{tag_name} - {pretty_name}"), status_codes(200, 400, 404, 500))]
 pub async fn get_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
     req: &mut Request,
     depot: &mut Depot,
@@ -303,7 +354,7 @@ pub async fn get_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
     }}))
 }}
 
-#[endpoint(tags("{module.title()} - {sub_module.title()} - {pretty_name}"), status_codes(200, 400, 500))]
+#[endpoint(tags("{tag_name} - {pretty_name}"), status_codes(200, 400, 500))]
 pub async fn create_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
     req: &mut Request,
     depot: &mut Depot,
@@ -326,16 +377,20 @@ pub async fn create_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
 """
         for name, type_part in fields:
             if name in ["id"]: continue
-            if sub_module == "reference" and name not in ["code", "alphabet_code", "name", "created_at", "updated_at", "deleted_at", "sync_at", "created_by", "updated_by"]:
-                continue
-                
             is_opt = "Option" in type_part
             if name in ["created_at", "updated_at"]:
                 ctrl_content += f"        {name}: Set({'Some(now)' if is_opt else 'now'}),\n"
             elif name in ["deleted_at", "sync_at", "created_by", "updated_by"]:
                 ctrl_content += f"        {name}: Set(None),\n"
             else:
-                ctrl_content += f"        {name}: Set(payload.{name}),\n"
+                if sub_module_last == "reference":
+                    if name in ["code", "alphabet_code", "name"]:
+                        val = f"Some(payload.{name})" if is_opt else f"payload.{name}"
+                        ctrl_content += f"        {name}: Set({val}),\n"
+                    else:
+                        ctrl_content += f"        {name}: Set({'None' if is_opt else 'Default::default()'}),\n"
+                else:
+                    ctrl_content += f"        {name}: Set(payload.{name}),\n"
                 
         ctrl_content += f"""    }};
 
@@ -346,7 +401,7 @@ pub async fn create_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
     }}))
 }}
 
-#[endpoint(tags("{module.title()} - {sub_module.title()} - {pretty_name}"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("{tag_name} - {pretty_name}"), status_codes(200, 400, 404, 500))]
 pub async fn update_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
     req: &mut Request,
     depot: &mut Depot,
@@ -377,7 +432,7 @@ pub async fn update_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
 """
         for name, type_part in fields:
             if name in ["id", "created_at", "updated_at", "deleted_at", "sync_at", "created_by", "updated_by"]: continue
-            if sub_module == "reference" and name not in ["code", "alphabet_code", "name"]:
+            if sub_module_last == "reference" and name not in ["code", "alphabet_code", "name"]:
                 continue
                 
             is_opt = "Option" in type_part
@@ -397,7 +452,7 @@ pub async fn update_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
     }}))
 }}
 
-#[endpoint(tags("{module.title()} - {sub_module.title()} - {pretty_name}"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("{tag_name} - {pretty_name}"), status_codes(200, 400, 404, 500))]
 pub async fn delete_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
     req: &mut Request,
     depot: &mut Depot,
@@ -440,7 +495,6 @@ pub async fn delete_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
         mod_rs_content_ctrls += f"pub mod {mod_name};\n"
         
         url_path = mod_name.replace("_", "-")
-        # Ensure single name for func matches
         func_mod = mod_name[:-1] if mod_name.endswith('s') else mod_name
         
         router_pushes.append(f"""        .push(
@@ -455,11 +509,11 @@ pub async fn delete_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
                 ),
         )""")
         
-    if sub_module != "reference":
+    if sub_module_last != "reference":
         with open(os.path.join(dtos_dir, "mod.rs"), "w") as f:
             f.write(mod_rs_content_dtos)
             
-    mod_rs_content_ctrls += f"\npub fn router() -> Router {{\n    Router::with_path(\"{sub_module.replace('_', '-')}\")\n"
+    mod_rs_content_ctrls += f"\npub fn router() -> Router {{\n    Router::with_path(\"{sub_module_last.replace('_', '-')}\")\n"
     for rp in router_pushes:
         mod_rs_content_ctrls += rp + "\n"
     mod_rs_content_ctrls += "}\n"
@@ -468,13 +522,56 @@ pub async fn delete_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
         f.write(mod_rs_content_ctrls)
 
 
+def process_recursive(module, current_rel=""):
+    base_models = f"/home/bendo01/Project/xsia_xarx/server/src/models/{module}"
+    target_dir = os.path.join(base_models, current_rel)
+    
+    if not os.path.exists(target_dir):
+        return
+        
+    entries = sorted(os.listdir(target_dir))
+    has_model_files = any(f.endswith(".rs") and f not in ["mod.rs", "prelude.rs"] for f in entries)
+    
+    subdirs = [e for e in entries if os.path.isdir(os.path.join(target_dir, e))]
+    
+    if has_model_files:
+        generate_dtos_and_controllers(module, current_rel)
+    
+    child_subdirs = []
+    for s in subdirs:
+        rel_sub = f"{current_rel}/{s}" if current_rel else s
+        process_recursive(module, rel_sub)
+        child_subdirs.append(s)
+        
+    if child_subdirs:
+        # Build mod.rs for dtos and controllers at current level
+        dtos_curr = f"/home/bendo01/Project/xsia_xarx/server/src/dtos/{module}/{current_rel}"
+        ctrls_curr = f"/home/bendo01/Project/xsia_xarx/server/src/controllers/{module}/{current_rel}"
+        
+        os.makedirs(dtos_curr, exist_ok=True)
+        os.makedirs(ctrls_curr, exist_ok=True)
+        
+        dtos_mod_lines = [f"pub mod {s};" for s in child_subdirs if s != "reference"]
+        with open(os.path.join(dtos_curr, "mod.rs"), "w") as f:
+            f.write("\n".join(dtos_mod_lines) + ("\n" if dtos_mod_lines else ""))
+            
+        ctrls_mod_lines = ["use salvo::prelude::*;"]
+        ctrls_mod_lines.extend([f"pub mod {s};" for s in child_subdirs])
+        ctrls_mod_lines.append("")
+        path_segment = current_rel.split('/')[-1].replace('_', '-') if current_rel else module.replace('_', '-')
+        ctrls_mod_lines.append("pub fn router() -> Router {")
+        ctrls_mod_lines.append(f'    Router::with_path("{path_segment}")')
+        for s in child_subdirs:
+            ctrls_mod_lines.append(f'        .push({s}::router())')
+        ctrls_mod_lines.append("}")
+        
+        with open(os.path.join(ctrls_curr, "mod.rs"), "w") as f:
+            f.write("\n".join(ctrls_mod_lines) + "\n")
+
+
 import sys
 
 if __name__ == "__main__":
     module = sys.argv[1] if len(sys.argv) > 1 else "building"
-    models_dir = f"/home/bendo01/Project/xsia_xarx/server/src/models/{module}"
-    if os.path.exists(models_dir):
-        for entry in os.listdir(models_dir):
-            full_path = os.path.join(models_dir, entry)
-            if os.path.isdir(full_path):
-                generate_dtos_and_controllers(module, entry)
+    process_recursive(module)
+

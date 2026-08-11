@@ -1,0 +1,74 @@
+use serde::{Deserialize, Serialize};
+use salvo::oapi::ToSchema;
+use uuid::Uuid;
+use validator::Validate;
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct DetailActivitiQuery {
+    pub page: Option<u64>,
+    pub page_size: Option<u64>,
+    pub name: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct DetailActivitiResponse {
+    pub id: Uuid,
+    pub mark: Option<f64>,
+    pub credit: Option<f64>,
+    pub grade_id: Option<Uuid>,
+    pub course_id: Uuid,
+    pub activity_id: Uuid,
+    pub teach_id: Option<Uuid>,
+    pub is_lock: Option<bool>,
+    pub created_at: Option<NaiveDateTime>,
+    pub updated_at: Option<NaiveDateTime>,
+    pub deleted_at: Option<NaiveDateTime>,
+    pub sync_at: Option<NaiveDateTime>,
+    pub created_by: Option<Uuid>,
+    pub updated_by: Option<Uuid>,
+    pub feeder_id: Option<Uuid>,
+    pub name: Option<String>,
+    pub feeder_grade_id: Option<Uuid>,
+    pub curiculum_detail_sequence: Option<i32>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
+pub struct CreateDetailActivitiRequest {
+    pub mark: Option<f64>,
+    pub credit: Option<f64>,
+    pub grade_id: Option<Uuid>,
+    pub course_id: Uuid,
+    pub activity_id: Uuid,
+    pub teach_id: Option<Uuid>,
+    pub is_lock: Option<bool>,
+    pub feeder_id: Option<Uuid>,
+    pub name: Option<String>,
+    pub feeder_grade_id: Option<Uuid>,
+    pub curiculum_detail_sequence: Option<i32>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
+pub struct UpdateDetailActivitiRequest {
+    pub mark: Option<f64>,
+    pub credit: Option<f64>,
+    pub grade_id: Option<Uuid>,
+    pub course_id: Option<Uuid>,
+    pub activity_id: Option<Uuid>,
+    pub teach_id: Option<Uuid>,
+    pub is_lock: Option<bool>,
+    pub feeder_id: Option<Uuid>,
+    pub name: Option<String>,
+    pub feeder_grade_id: Option<Uuid>,
+    pub curiculum_detail_sequence: Option<i32>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct PaginatedDetailActivitiResponse {
+    pub data: Vec<DetailActivitiResponse>,
+    pub total: u64,
+    pub page: u64,
+    pub page_size: u64,
+    pub total_pages: u64,
+}
