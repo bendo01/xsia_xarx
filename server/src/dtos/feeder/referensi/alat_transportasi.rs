@@ -1,0 +1,46 @@
+use serde::{Deserialize, Serialize};
+use salvo::oapi::ToSchema;
+use uuid::Uuid;
+use validator::Validate;
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct AlatTransportasiQuery {
+    pub page: Option<u64>,
+    pub page_size: Option<u64>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct AlatTransportasiResponse {
+    pub id: Uuid,
+    pub id_alat_transportasi: Option<String>,
+    pub nama_alat_transportasi: Option<String>,
+    pub created_at: Option<NaiveDateTime>,
+    pub updated_at: Option<NaiveDateTime>,
+    pub deleted_at: Option<NaiveDateTime>,
+    pub sync_at: Option<NaiveDateTime>,
+    pub created_by: Option<Uuid>,
+    pub updated_by: Option<Uuid>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
+pub struct CreateAlatTransportasiRequest {
+    pub id_alat_transportasi: Option<String>,
+    pub nama_alat_transportasi: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
+pub struct UpdateAlatTransportasiRequest {
+    pub id_alat_transportasi: Option<String>,
+    pub nama_alat_transportasi: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct PaginatedAlatTransportasiResponse {
+    pub data: Vec<AlatTransportasiResponse>,
+    pub total: u64,
+    pub page: u64,
+    pub page_size: u64,
+    pub total_pages: u64,
+}

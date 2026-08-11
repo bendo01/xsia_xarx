@@ -7,3 +7,4 @@ pub mod building;
 pub mod contact;
 pub mod document;
 pub mod academic;
+pub mod feeder;

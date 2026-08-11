@@ -352,9 +352,12 @@ pub async fn get_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
     Ok(Json({response_type} {{
 {mapping_code}
     }}))
-}}
+}}"""
 
-#[endpoint(tags("{tag_name} - {pretty_name}"), status_codes(200, 400, 500))]
+    id_is_opt = "Option" in dict(fields).get("id", "Uuid")
+    id_val = "Some(new_id)" if id_is_opt else "new_id"
+
+    ctrl_content += f"""#[endpoint(tags("{tag_name} - {pretty_name}"), status_codes(200, 400, 500))]
 pub async fn create_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
     req: &mut Request,
     depot: &mut Depot,
@@ -373,26 +376,26 @@ pub async fn create_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
     let new_id = Uuid::new_v4();
 
     let active_model = entity_mod::ActiveModel {{
-        id: Set(new_id),
+        id: Set({id_val}),
 """
-        for name, type_part in fields:
-            if name in ["id"]: continue
-            is_opt = "Option" in type_part
-            if name in ["created_at", "updated_at"]:
-                ctrl_content += f"        {name}: Set({'Some(now)' if is_opt else 'now'}),\n"
-            elif name in ["deleted_at", "sync_at", "created_by", "updated_by"]:
-                ctrl_content += f"        {name}: Set(None),\n"
-            else:
-                if sub_module_last == "reference":
-                    if name in ["code", "alphabet_code", "name"]:
-                        val = f"Some(payload.{name})" if is_opt else f"payload.{name}"
-                        ctrl_content += f"        {name}: Set({val}),\n"
-                    else:
-                        ctrl_content += f"        {name}: Set({'None' if is_opt else 'Default::default()'}),\n"
+    for name, type_part in fields:
+        if name in ["id"]: continue
+        is_opt = "Option" in type_part
+        if name in ["created_at", "updated_at"]:
+            ctrl_content += f"        {name}: Set({'Some(now)' if is_opt else 'now'}),\n"
+        elif name in ["deleted_at", "sync_at", "created_by", "updated_by"]:
+            ctrl_content += f"        {name}: Set(None),\n"
+        else:
+            if sub_module_last == "reference":
+                if name in ["code", "alphabet_code", "name"]:
+                    val = f"Some(payload.{name})" if is_opt else f"payload.{name}"
+                    ctrl_content += f"        {name}: Set({val}),\n"
                 else:
-                    ctrl_content += f"        {name}: Set(payload.{name}),\n"
+                    ctrl_content += f"        {name}: Set({'None' if is_opt else 'Default::default()'}),\n"
+            else:
+                ctrl_content += f"        {name}: Set(payload.{name}),\n"
                 
-        ctrl_content += f"""    }};
+    ctrl_content += f"""    }};
 
     let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -430,20 +433,20 @@ pub async fn update_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
     let mut active_model = existing.into_active_model();
 
 """
-        for name, type_part in fields:
-            if name in ["id", "created_at", "updated_at", "deleted_at", "sync_at", "created_by", "updated_by"]: continue
-            if sub_module_last == "reference" and name not in ["code", "alphabet_code", "name"]:
-                continue
-                
-            is_opt = "Option" in type_part
-            val = f"Some({name})" if is_opt else name
-            ctrl_content += f"""    if let Some({name}) = payload.{name} {{
+    for name, type_part in fields:
+        if name in ["id", "created_at", "updated_at", "deleted_at", "sync_at", "created_by", "updated_by"]: continue
+        if sub_module_last == "reference" and name not in ["code", "alphabet_code", "name"]:
+            continue
+            
+        is_opt = "Option" in type_part
+        val = f"Some({name})" if is_opt else name
+        ctrl_content += f"""    if let Some({name}) = payload.{name} {{
         active_model.{name} = Set({val});
     }}\n"""
     
-        updated_at_opt = "Option" in dict(fields).get("updated_at", "DateTime")
-        
-        ctrl_content += f"""    active_model.updated_at = Set({'Some(now)' if updated_at_opt else 'now'});
+    updated_at_opt = "Option" in dict(fields).get("updated_at", "DateTime")
+    
+    ctrl_content += f"""    active_model.updated_at = Set({'Some(now)' if updated_at_opt else 'now'});
 
     let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -451,6 +454,10 @@ pub async fn update_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
 {mapping_code}
     }}))
 }}
+
+    deleted_at_opt = "Option" in dict(fields).get("deleted_at", "Option<DateTime>")
+    deleted_at_tz = "TimeZone" in dict(fields).get("deleted_at", "Option<DateTime>")
+    val = "Utc::now().into()" if deleted_at_tz else "now"
 
 #[endpoint(tags("{tag_name} - {pretty_name}"), status_codes(200, 400, 404, 500))]
 pub async fn delete_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
@@ -473,13 +480,8 @@ pub async fn delete_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
 
     let now = Utc::now().naive_utc();
     let mut active_model = existing.into_active_model();
-"""
-        deleted_at_opt = "Option" in dict(fields).get("deleted_at", "Option<DateTime>")
-        deleted_at_tz = "TimeZone" in dict(fields).get("deleted_at", "Option<DateTime>")
-        
-        val = "Utc::now().into()" if deleted_at_tz else "now"
-        
-        ctrl_content += f"""    active_model.deleted_at = Set(Some({val}));
+
+    active_model.deleted_at = Set(Some({val}));
     active_model.updated_at = Set({'Some(now)' if updated_at_opt else 'now'});
 
     active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
@@ -489,25 +491,25 @@ pub async fn delete_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
     }}))
 }}
 """
-        with open(ctrl_file_path, "w") as f:
-            f.write(ctrl_content)
-            
-        mod_rs_content_ctrls += f"pub mod {mod_name};\n"
+    with open(ctrl_file_path, "w") as f:
+        f.write(ctrl_content)
         
-        url_path = mod_name.replace("_", "-")
-        func_mod = mod_name[:-1] if mod_name.endswith('s') else mod_name
+    mod_rs_content_ctrls += f"pub mod {mod_name};\n"
+    
+    url_path = mod_name.replace("_", "-")
+    func_mod = mod_name[:-1] if mod_name.endswith('s') else mod_name
         
-        router_pushes.append(f"""        .push(
-            Router::with_path("{url_path}")
-                .get({mod_name}::list_{mod_name})
-                .post({mod_name}::create_{func_mod})
-                .push(
-                    Router::with_path("{{id}}")
-                        .get({mod_name}::get_{func_mod})
-                        .put({mod_name}::update_{func_mod})
-                        .delete({mod_name}::delete_{func_mod}),
-                ),
-        )""")
+    router_pushes.append(f"""        .push(
+        Router::with_path("{url_path}")
+            .get({mod_name}::list_{mod_name})
+            .post({mod_name}::create_{func_mod})
+            .push(
+                Router::with_path("{{id}}")
+                    .get({mod_name}::get_{func_mod})
+                    .put({mod_name}::update_{func_mod})
+                    .delete({mod_name}::delete_{func_mod}),
+            ),
+    )""")
         
     if sub_module_last != "reference":
         with open(os.path.join(dtos_dir, "mod.rs"), "w") as f:
