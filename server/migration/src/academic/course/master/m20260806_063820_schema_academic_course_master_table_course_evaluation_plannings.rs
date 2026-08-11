@@ -40,7 +40,7 @@ impl MigrationTrait for Migration {
                         ColumnDef::new("course_id").uuid().not_null().default(Expr::cust("'00000000-0000-0000-0000-000000000000'::uuid")),
                     )
                     .col(
-                        ColumnDef::new("evaluation_type_id").uuid().not_null().default(Expr::cust("'00000000-0000-0000-0000-000000000000'::uuid CONSTRAINT course_evaluation_plannings_course_evaluation_base_id_not_null")),
+                        ColumnDef::new("evaluation_type_id").uuid().not_null().default(Expr::cust("'00000000-0000-0000-0000-000000000000'::uuid")),
                     )
                     .col(
                         ColumnDef::new("created_at").date_time().default(Expr::cust("now()")),
