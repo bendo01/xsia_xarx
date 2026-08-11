@@ -32,7 +32,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .push(controllers::person::master::router())
         .push(controllers::literate::router())
         .push(controllers::location::router())
-        .push(controllers::institution::router());
+        .push(controllers::institution::router())
+        .push(controllers::building::router());
 
     let doc = OpenApi::new("API", "1.0.0").merge_router(&api_router);
 
