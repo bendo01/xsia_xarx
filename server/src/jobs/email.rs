@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use apalis::prelude::{Monitor, WorkerBuilderExt, WorkerFactoryFn, Storage};
+use apalis::prelude::Monitor;
 use lettre::{Message, SmtpTransport, Transport, transport::smtp::authentication::Credentials};
 use crate::config::email::EmailConfig;
 
@@ -50,16 +50,17 @@ pub async fn send_email(job: EmailJob) -> Result<(), std::io::Error> {
 
 pub async fn start_email_worker(redis_url: String) -> Result<Monitor, std::io::Error> {
     use apalis_redis::RedisStorage;
+    use apalis::prelude::{WorkerBuilder, WorkerFactoryFn};
 
     let conn = apalis_redis::connect(redis_url).await.map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e.to_string()))?;
     let storage: RedisStorage<EmailJob> = RedisStorage::new(conn);
 
-    #[allow(deprecated)]
-    let worker = Monitor::new()
-        .register_with_count(2, move |c| {
-            c.build_fn(send_email)
-             .with_storage(storage.clone())
-        });
+    let worker = WorkerBuilder::new("xsia-xarx:email")
+        .backend(storage)
+        .build_fn(send_email);
 
-    Ok(worker)
+    let monitor = Monitor::new()
+        .register(worker);
+
+    Ok(monitor)
 }

@@ -1,9 +1,9 @@
 use salvo::prelude::*;
 
 pub mod permission;
-pub mod permission_user;
+pub mod permission_role;
+pub mod role;
 pub mod user;
-pub mod user_position_type;
 
 pub fn router() -> Router {
     Router::with_path("")
@@ -19,14 +19,14 @@ pub fn router() -> Router {
                 ),
         )
         .push(
-            Router::with_path("permission-user")
-                .get(permission_user::list_permission_user)
-                .post(permission_user::create_permission_user)
+            Router::with_path("permission-role")
+                .get(permission_role::list_permission_role)
+                .post(permission_role::create_permission_role)
                 .push(
                     Router::with_path("{id}")
-                        .get(permission_user::get_permission_user)
-                        .put(permission_user::update_permission_user)
-                        .delete(permission_user::delete_permission_user),
+                        .get(permission_role::get_permission_role)
+                        .put(permission_role::update_permission_role)
+                        .delete(permission_role::delete_permission_role),
                 ),
         )
         .push(
@@ -53,14 +53,14 @@ pub fn router() -> Router {
                 .get(user::current_user)
         )
         .push(
-            Router::with_path("user-position-type")
-                .get(user_position_type::list_user_position_type)
-                .post(user_position_type::create_user_position_type)
+            Router::with_path("role")
+                .get(role::list_role)
+                .post(role::create_role)
                 .push(
                     Router::with_path("{id}")
-                        .get(user_position_type::get_user_position_type)
-                        .put(user_position_type::update_user_position_type)
-                        .delete(user_position_type::delete_user_position_type),
+                        .get(role::get_role)
+                        .put(role::update_role)
+                        .delete(role::delete_role),
                 ),
         )
 }

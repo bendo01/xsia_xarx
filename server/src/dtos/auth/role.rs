@@ -6,18 +6,21 @@ use chrono::NaiveDateTime;
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct UserPositionTypeQuery {
+pub struct RoleQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct UserPositionTypeResponse {
+pub struct RoleResponse {
     pub id: Uuid,
-    pub user_id: Uuid,
-    pub position_type_id: Uuid,
-    pub created_at: Option<NaiveDateTime>,
-    pub updated_at: Option<NaiveDateTime>,
+    pub name: String,
+    pub user_id: Option<Uuid>,
+    pub position_type_id: Option<Uuid>,
+    pub roleable_id: Option<Uuid>,
+    pub roleable_type: Option<String>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
     pub deleted_at: Option<NaiveDateTime>,
     pub sync_at: Option<NaiveDateTime>,
     pub created_by: Option<Uuid>,
@@ -25,20 +28,27 @@ pub struct UserPositionTypeResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateUserPositionTypeRequest {
-    pub user_id: Uuid,
-    pub position_type_id: Uuid,
+pub struct CreateRoleRequest {
+    #[validate(length(min = 1, message = "Name must not be empty"))]
+    pub name: String,
+    pub user_id: Option<Uuid>,
+    pub position_type_id: Option<Uuid>,
+    pub roleable_id: Option<Uuid>,
+    pub roleable_type: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateUserPositionTypeRequest {
+pub struct UpdateRoleRequest {
+    pub name: Option<String>,
     pub user_id: Option<Uuid>,
     pub position_type_id: Option<Uuid>,
+    pub roleable_id: Option<Uuid>,
+    pub roleable_type: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedUserPositionTypeResponse {
-    pub data: Vec<UserPositionTypeResponse>,
+pub struct PaginatedRoleResponse {
+    pub data: Vec<RoleResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

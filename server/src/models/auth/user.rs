@@ -32,16 +32,10 @@ pub struct Model {
     pub deleted_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
-    #[sea_orm(has_many, via = "permission_user")]
-    pub permissions: HasMany<super::permission::Entity>,
-    #[sea_orm(has_many, via = "user_position_type")]
-    pub position_types: HasMany<crate::models::institution::reference::position_type::Entity>,
     #[sea_orm(belongs_to, from = "individual_id", to = "id")]
     pub individual: BelongsTo<crate::models::person::master::individual::Entity>,
     #[sea_orm(has_many)]
-    pub permission_user: HasMany<crate::models::auth::permission_user::Entity>,
-    #[sea_orm(has_many)]
-    pub user_position_type: HasMany<crate::models::auth::user_position_type::Entity>,
+    pub roles: HasMany<crate::models::auth::role::Entity>,
     #[sea_orm(has_many)]
     pub candidates: HasMany<crate::models::academic::candidate::master::candidates::Entity>,
 }

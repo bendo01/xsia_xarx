@@ -73,3 +73,21 @@ pub struct Model {
 
 
 impl ActiveModelBehavior for ActiveModel {}
+
+pub struct StudentToRole;
+
+impl Linked for StudentToRole {
+    type FromEntity = Entity;
+    type ToEntity = crate::models::auth::role::Entity;
+
+    fn link(&self) -> Vec<RelationDef> {
+        let rel: RelationDef = crate::models::auth::role::Entity::belongs_to(Entity)
+            .from(crate::models::auth::role::Column::RoleableId)
+            .to(Column::Id)
+            .on_condition(|_left, _right| {
+                crate::models::auth::role::Column::RoleableType.eq("Student").into()
+            })
+            .into();
+        vec![rel.rev()]
+    }
+}
