@@ -97,28 +97,26 @@ pub async fn get_evaluation_summarie(
             updated_by: item.updated_by,
 
     }))
-}
-
-#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - EvaluationSummari"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - EvaluationSummari"), status_codes(200, 400, 500))]
 pub async fn create_evaluation_summarie(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<EvaluationSummariResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreateEvaluationSummariRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: CreateEvaluationSummariRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         submission_id: Set(payload.submission_id),
         detail_activity_id: Set(payload.detail_activity_id),
         stage_id: Set(payload.stage_id),
@@ -132,9 +130,9 @@ pub async fn create_evaluation_summarie(
         updated_by: Set(None),
     };
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(EvaluationSummariResponse {
+        Ok(Json(EvaluationSummariResponse {
             id: item.id,
             submission_id: item.submission_id,
             detail_activity_id: item.detail_activity_id,
@@ -148,57 +146,57 @@ pub async fn create_evaluation_summarie(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
 
 #[endpoint(tags("Academic - Student - Final_Assignment - Transaction - EvaluationSummari"), status_codes(200, 400, 404, 500))]
 pub async fn update_evaluation_summarie(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<EvaluationSummariResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdateEvaluationSummariRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: UpdateEvaluationSummariRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("EvaluationSummari not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("EvaluationSummari not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
     if let Some(submission_id) = payload.submission_id {
-        active_model.submission_id = Set(Some(submission_id));
-    }
+            active_model.submission_id = Set(Some(submission_id));
+        }
     if let Some(detail_activity_id) = payload.detail_activity_id {
-        active_model.detail_activity_id = Set(detail_activity_id);
-    }
+            active_model.detail_activity_id = Set(detail_activity_id);
+        }
     if let Some(stage_id) = payload.stage_id {
-        active_model.stage_id = Set(stage_id);
-    }
+            active_model.stage_id = Set(stage_id);
+        }
     if let Some(mark) = payload.mark {
-        active_model.mark = Set(Some(mark));
-    }
+            active_model.mark = Set(Some(mark));
+        }
     if let Some(grade_id) = payload.grade_id {
-        active_model.grade_id = Set(Some(grade_id));
-    }
+            active_model.grade_id = Set(Some(grade_id));
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(EvaluationSummariResponse {
+        Ok(Json(EvaluationSummariResponse {
             id: item.id,
             submission_id: item.submission_id,
             detail_activity_id: item.detail_activity_id,
@@ -212,36 +210,36 @@ pub async fn update_evaluation_summarie(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
-
 #[endpoint(tags("Academic - Student - Final_Assignment - Transaction - EvaluationSummari"), status_codes(200, 400, 404, 500))]
 pub async fn delete_evaluation_summarie(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("EvaluationSummari not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("EvaluationSummari not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-    active_model.deleted_at = Set(Some(now));
-    active_model.updated_at = Set(Some(now));
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.deleted_at = Set(Some(now));
+        active_model.updated_at = Set(Some(now));
 
-    Ok(Json(MessageResponse {
-        message: "EvaluationSummari deleted successfully".to_string(),
-    }))
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        Ok(Json(MessageResponse {
+            message: "EvaluationSummari deleted successfully".to_string(),
+        }))
 }

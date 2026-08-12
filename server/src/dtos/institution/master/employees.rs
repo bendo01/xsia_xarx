@@ -1,8 +1,17 @@
-use chrono::{NaiveDate, NaiveDateTime};
-use salvo::oapi::ToSchema;
 use serde::{Deserialize, Serialize};
+use salvo::oapi::ToSchema;
 use uuid::Uuid;
 use validator::Validate;
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct EmployeQuery {
+    pub page: Option<u64>,
+    pub page_size: Option<u64>,
+    pub name: Option<String>,
+    pub code: Option<String>,
+}
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
 pub struct EmployeResponse {
@@ -30,7 +39,6 @@ pub struct CreateEmployeRequest {
     pub individual_id: Uuid,
     pub decree_number: Option<String>,
     pub decree_date: Option<NaiveDate>,
-    #[serde(default)]
     pub is_active: bool,
 }
 
@@ -43,13 +51,6 @@ pub struct UpdateEmployeRequest {
     pub decree_number: Option<String>,
     pub decree_date: Option<NaiveDate>,
     pub is_active: Option<bool>,
-}
-
-#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct EmployeQuery {
-    pub page: Option<u64>,
-    pub page_size: Option<u64>,
-    pub name: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]

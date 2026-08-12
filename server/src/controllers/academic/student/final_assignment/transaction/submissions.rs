@@ -113,28 +113,26 @@ pub async fn get_submission(
             updated_by: item.updated_by,
 
     }))
-}
-
-#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - Submission"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - Submission"), status_codes(200, 400, 500))]
 pub async fn create_submission(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<SubmissionResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreateSubmissionRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: CreateSubmissionRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         title: Set(payload.title),
         student_id: Set(payload.student_id),
         approval_type_id: Set(payload.approval_type_id),
@@ -156,9 +154,9 @@ pub async fn create_submission(
         updated_by: Set(None),
     };
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(SubmissionResponse {
+        Ok(Json(SubmissionResponse {
             id: item.id,
             title: item.title,
             student_id: item.student_id,
@@ -180,81 +178,81 @@ pub async fn create_submission(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
 
 #[endpoint(tags("Academic - Student - Final_Assignment - Transaction - Submission"), status_codes(200, 400, 404, 500))]
 pub async fn update_submission(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<SubmissionResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdateSubmissionRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: UpdateSubmissionRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Submission not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("Submission not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
     if let Some(title) = payload.title {
-        active_model.title = Set(Some(title));
-    }
+            active_model.title = Set(Some(title));
+        }
     if let Some(student_id) = payload.student_id {
-        active_model.student_id = Set(student_id);
-    }
+            active_model.student_id = Set(student_id);
+        }
     if let Some(approval_type_id) = payload.approval_type_id {
-        active_model.approval_type_id = Set(Some(approval_type_id));
-    }
+            active_model.approval_type_id = Set(Some(approval_type_id));
+        }
     if let Some(category_id) = payload.category_id {
-        active_model.category_id = Set(Some(category_id));
-    }
+            active_model.category_id = Set(Some(category_id));
+        }
     if let Some(stage_id) = payload.stage_id {
-        active_model.stage_id = Set(Some(stage_id));
-    }
+            active_model.stage_id = Set(Some(stage_id));
+        }
     if let Some(final_assignment_decree_id) = payload.final_assignment_decree_id {
-        active_model.final_assignment_decree_id = Set(Some(final_assignment_decree_id));
-    }
+            active_model.final_assignment_decree_id = Set(Some(final_assignment_decree_id));
+        }
     if let Some(detail_activity_id) = payload.detail_activity_id {
-        active_model.detail_activity_id = Set(detail_activity_id);
-    }
+            active_model.detail_activity_id = Set(detail_activity_id);
+        }
     if let Some(is_taken) = payload.is_taken {
-        active_model.is_taken = Set(Some(is_taken));
-    }
+            active_model.is_taken = Set(Some(is_taken));
+        }
     if let Some(is_lock) = payload.is_lock {
-        active_model.is_lock = Set(Some(is_lock));
-    }
+            active_model.is_lock = Set(Some(is_lock));
+        }
     if let Some(filename) = payload.filename {
-        active_model.filename = Set(Some(filename));
-    }
+            active_model.filename = Set(Some(filename));
+        }
     if let Some(dir) = payload.dir {
-        active_model.dir = Set(Some(dir));
-    }
+            active_model.dir = Set(Some(dir));
+        }
     if let Some(r#type) = payload.r#type {
-        active_model.r#type = Set(Some(r#type));
-    }
+            active_model.r#type = Set(Some(r#type));
+        }
     if let Some(filesize) = payload.filesize {
-        active_model.filesize = Set(Some(filesize));
-    }
+            active_model.filesize = Set(Some(filesize));
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(SubmissionResponse {
+        Ok(Json(SubmissionResponse {
             id: item.id,
             title: item.title,
             student_id: item.student_id,
@@ -276,36 +274,36 @@ pub async fn update_submission(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
-
 #[endpoint(tags("Academic - Student - Final_Assignment - Transaction - Submission"), status_codes(200, 400, 404, 500))]
 pub async fn delete_submission(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Submission not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("Submission not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-    active_model.deleted_at = Set(Some(now));
-    active_model.updated_at = Set(Some(now));
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.deleted_at = Set(Some(now));
+        active_model.updated_at = Set(Some(now));
 
-    Ok(Json(MessageResponse {
-        message: "Submission deleted successfully".to_string(),
-    }))
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        Ok(Json(MessageResponse {
+            message: "Submission deleted successfully".to_string(),
+        }))
 }

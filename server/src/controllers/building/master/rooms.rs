@@ -55,7 +55,7 @@ pub async fn list_rooms(
             condition_id: item.condition_id,
             created_at: item.created_at,
             updated_at: item.updated_at,
-            deleted_at: item.deleted_at.map(|dt| dt),
+            deleted_at: item.deleted_at,
             sync_at: item.sync_at,
             created_by: item.created_by,
             updated_by: item.updated_by,
@@ -103,34 +103,32 @@ pub async fn get_room(
             condition_id: item.condition_id,
             created_at: item.created_at,
             updated_at: item.updated_at,
-            deleted_at: item.deleted_at.map(|dt| dt),
+            deleted_at: item.deleted_at,
             sync_at: item.sync_at,
             created_by: item.created_by,
             updated_by: item.updated_by,
 
     }))
-}
-
-#[endpoint(tags("Building - Master - Room"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Building - Master - Room"), status_codes(200, 400, 500))]
 pub async fn create_room(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<RoomResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreateRoomRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: CreateRoomRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         alphabet_code: Set(payload.alphabet_code),
         name: Set(payload.name),
         long: Set(payload.long),
@@ -148,9 +146,9 @@ pub async fn create_room(
         updated_by: Set(None),
     };
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(RoomResponse {
+        Ok(Json(RoomResponse {
             id: item.id,
             alphabet_code: item.alphabet_code,
             name: item.name.clone(),
@@ -163,74 +161,74 @@ pub async fn create_room(
             condition_id: item.condition_id,
             created_at: item.created_at,
             updated_at: item.updated_at,
-            deleted_at: item.deleted_at.map(|dt| dt),
+            deleted_at: item.deleted_at,
             sync_at: item.sync_at,
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
 
 #[endpoint(tags("Building - Master - Room"), status_codes(200, 400, 404, 500))]
 pub async fn update_room(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<RoomResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdateRoomRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: UpdateRoomRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Room not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("Room not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
     if let Some(alphabet_code) = payload.alphabet_code {
-        active_model.alphabet_code = Set(Some(alphabet_code));
-    }
+            active_model.alphabet_code = Set(Some(alphabet_code));
+        }
     if let Some(name) = payload.name {
-        active_model.name = Set(name);
-    }
+            active_model.name = Set(name);
+        }
     if let Some(long) = payload.long {
-        active_model.long = Set(Some(long));
-    }
+            active_model.long = Set(Some(long));
+        }
     if let Some(wide) = payload.wide {
-        active_model.wide = Set(Some(wide));
-    }
+            active_model.wide = Set(Some(wide));
+        }
     if let Some(high) = payload.high {
-        active_model.high = Set(Some(high));
-    }
+            active_model.high = Set(Some(high));
+        }
     if let Some(room_type_id) = payload.room_type_id {
-        active_model.room_type_id = Set(room_type_id);
-    }
+            active_model.room_type_id = Set(room_type_id);
+        }
     if let Some(unit_id) = payload.unit_id {
-        active_model.unit_id = Set(Some(unit_id));
-    }
+            active_model.unit_id = Set(Some(unit_id));
+        }
     if let Some(building_id) = payload.building_id {
-        active_model.building_id = Set(building_id);
-    }
+            active_model.building_id = Set(building_id);
+        }
     if let Some(condition_id) = payload.condition_id {
-        active_model.condition_id = Set(condition_id);
-    }
+            active_model.condition_id = Set(condition_id);
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(RoomResponse {
+        Ok(Json(RoomResponse {
             id: item.id,
             alphabet_code: item.alphabet_code,
             name: item.name.clone(),
@@ -243,41 +241,41 @@ pub async fn update_room(
             condition_id: item.condition_id,
             created_at: item.created_at,
             updated_at: item.updated_at,
-            deleted_at: item.deleted_at.map(|dt| dt),
+            deleted_at: item.deleted_at,
             sync_at: item.sync_at,
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
-
 #[endpoint(tags("Building - Master - Room"), status_codes(200, 400, 404, 500))]
 pub async fn delete_room(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Room not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("Room not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-    active_model.deleted_at = Set(Some(now));
-    active_model.updated_at = Set(Some(now));
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.deleted_at = Set(Some(now));
+        active_model.updated_at = Set(Some(now));
 
-    Ok(Json(MessageResponse {
-        message: "Room deleted successfully".to_string(),
-    }))
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        Ok(Json(MessageResponse {
+            message: "Room deleted successfully".to_string(),
+        }))
 }

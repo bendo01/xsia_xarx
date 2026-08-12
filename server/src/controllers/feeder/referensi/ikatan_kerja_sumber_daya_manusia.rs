@@ -91,28 +91,26 @@ pub async fn get_ikatan_kerja_sumber_daya_manusia(
             updated_by: item.updated_by,
 
     }))
-}
-
-#[endpoint(tags("Feeder - Referensi - IkatanKerjaSumberDayaManusia"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Feeder - Referensi - IkatanKerjaSumberDayaManusia"), status_codes(200, 400, 500))]
 pub async fn create_ikatan_kerja_sumber_daya_manusia(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<IkatanKerjaSumberDayaManusiaResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreateIkatanKerjaSumberDayaManusiaRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: CreateIkatanKerjaSumberDayaManusiaRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         id_ikatan_kerja: Set(payload.id_ikatan_kerja),
         nama_ikatan_kerja: Set(payload.nama_ikatan_kerja),
         created_at: Set(Some(now)),
@@ -123,9 +121,9 @@ pub async fn create_ikatan_kerja_sumber_daya_manusia(
         updated_by: Set(None),
     };
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(IkatanKerjaSumberDayaManusiaResponse {
+        Ok(Json(IkatanKerjaSumberDayaManusiaResponse {
             id: item.id,
             id_ikatan_kerja: item.id_ikatan_kerja,
             nama_ikatan_kerja: item.nama_ikatan_kerja,
@@ -136,48 +134,48 @@ pub async fn create_ikatan_kerja_sumber_daya_manusia(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
 
 #[endpoint(tags("Feeder - Referensi - IkatanKerjaSumberDayaManusia"), status_codes(200, 400, 404, 500))]
 pub async fn update_ikatan_kerja_sumber_daya_manusia(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<IkatanKerjaSumberDayaManusiaResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdateIkatanKerjaSumberDayaManusiaRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: UpdateIkatanKerjaSumberDayaManusiaRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("IkatanKerjaSumberDayaManusia not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("IkatanKerjaSumberDayaManusia not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
     if let Some(id_ikatan_kerja) = payload.id_ikatan_kerja {
-        active_model.id_ikatan_kerja = Set(Some(id_ikatan_kerja));
-    }
+            active_model.id_ikatan_kerja = Set(Some(id_ikatan_kerja));
+        }
     if let Some(nama_ikatan_kerja) = payload.nama_ikatan_kerja {
-        active_model.nama_ikatan_kerja = Set(Some(nama_ikatan_kerja));
-    }
+            active_model.nama_ikatan_kerja = Set(Some(nama_ikatan_kerja));
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(IkatanKerjaSumberDayaManusiaResponse {
+        Ok(Json(IkatanKerjaSumberDayaManusiaResponse {
             id: item.id,
             id_ikatan_kerja: item.id_ikatan_kerja,
             nama_ikatan_kerja: item.nama_ikatan_kerja,
@@ -188,36 +186,36 @@ pub async fn update_ikatan_kerja_sumber_daya_manusia(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
-
 #[endpoint(tags("Feeder - Referensi - IkatanKerjaSumberDayaManusia"), status_codes(200, 400, 404, 500))]
 pub async fn delete_ikatan_kerja_sumber_daya_manusia(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("IkatanKerjaSumberDayaManusia not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("IkatanKerjaSumberDayaManusia not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-    active_model.deleted_at = Set(Some(now));
-    active_model.updated_at = Set(Some(now));
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.deleted_at = Set(Some(now));
+        active_model.updated_at = Set(Some(now));
 
-    Ok(Json(MessageResponse {
-        message: "IkatanKerjaSumberDayaManusia deleted successfully".to_string(),
-    }))
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        Ok(Json(MessageResponse {
+            message: "IkatanKerjaSumberDayaManusia deleted successfully".to_string(),
+        }))
 }

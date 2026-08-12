@@ -1,8 +1,17 @@
-use chrono::NaiveDateTime;
-use salvo::oapi::ToSchema;
 use serde::{Deserialize, Serialize};
+use salvo::oapi::ToSchema;
 use uuid::Uuid;
 use validator::Validate;
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct RegionQuery {
+    pub page: Option<u64>,
+    pub page_size: Option<u64>,
+    pub name: Option<String>,
+    pub code: Option<String>,
+}
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
 pub struct RegionResponse {
@@ -36,14 +45,6 @@ pub struct UpdateRegionRequest {
     pub name: Option<String>,
     pub slug: Option<String>,
     pub alt_slug: Option<String>,
-}
-
-#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct RegionQuery {
-    pub page: Option<u64>,
-    pub page_size: Option<u64>,
-    pub code: Option<i32>,
-    pub name: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]

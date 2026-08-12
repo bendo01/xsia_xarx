@@ -115,28 +115,26 @@ pub async fn get_curriculum_detail(
             is_convertable_to_prior_learning_recognition: item.is_convertable_to_prior_learning_recognition,
 
     }))
-}
-
-#[endpoint(tags("Academic - Course - Master - CurriculumDetail"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Course - Master - CurriculumDetail"), status_codes(200, 400, 500))]
 pub async fn create_curriculum_detail(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<CurriculumDetailResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreateCurriculumDetailRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: CreateCurriculumDetailRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         code: Set(payload.code),
         curriculum_id: Set(payload.curriculum_id),
         semester_id: Set(payload.semester_id),
@@ -155,9 +153,9 @@ pub async fn create_curriculum_detail(
         is_convertable_to_prior_learning_recognition: Set(payload.is_convertable_to_prior_learning_recognition),
     };
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(CurriculumDetailResponse {
+        Ok(Json(CurriculumDetailResponse {
             id: item.id,
             code: item.code,
             curriculum_id: item.curriculum_id,
@@ -176,72 +174,72 @@ pub async fn create_curriculum_detail(
             feeder_id: item.feeder_id,
             is_convertable_to_prior_learning_recognition: item.is_convertable_to_prior_learning_recognition,
 
-    }))
+        }))
 }
 
 #[endpoint(tags("Academic - Course - Master - CurriculumDetail"), status_codes(200, 400, 404, 500))]
 pub async fn update_curriculum_detail(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<CurriculumDetailResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdateCurriculumDetailRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: UpdateCurriculumDetailRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("CurriculumDetail not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("CurriculumDetail not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
     if let Some(code) = payload.code {
-        active_model.code = Set(Some(code));
-    }
+            active_model.code = Set(Some(code));
+        }
     if let Some(curriculum_id) = payload.curriculum_id {
-        active_model.curriculum_id = Set(curriculum_id);
-    }
+            active_model.curriculum_id = Set(curriculum_id);
+        }
     if let Some(semester_id) = payload.semester_id {
-        active_model.semester_id = Set(semester_id);
-    }
+            active_model.semester_id = Set(semester_id);
+        }
     if let Some(course_id) = payload.course_id {
-        active_model.course_id = Set(course_id);
-    }
+            active_model.course_id = Set(course_id);
+        }
     if let Some(credit) = payload.credit {
-        active_model.credit = Set(Some(credit));
-    }
+            active_model.credit = Set(Some(credit));
+        }
     if let Some(name) = payload.name {
-        active_model.name = Set(Some(name));
-    }
+            active_model.name = Set(Some(name));
+        }
     if let Some(concentration_id) = payload.concentration_id {
-        active_model.concentration_id = Set(Some(concentration_id));
-    }
+            active_model.concentration_id = Set(Some(concentration_id));
+        }
     if let Some(is_convertable_to_mbkm) = payload.is_convertable_to_mbkm {
-        active_model.is_convertable_to_mbkm = Set(Some(is_convertable_to_mbkm));
-    }
+            active_model.is_convertable_to_mbkm = Set(Some(is_convertable_to_mbkm));
+        }
     if let Some(feeder_id) = payload.feeder_id {
-        active_model.feeder_id = Set(Some(feeder_id));
-    }
+            active_model.feeder_id = Set(Some(feeder_id));
+        }
     if let Some(is_convertable_to_prior_learning_recognition) = payload.is_convertable_to_prior_learning_recognition {
-        active_model.is_convertable_to_prior_learning_recognition = Set(Some(is_convertable_to_prior_learning_recognition));
-    }
+            active_model.is_convertable_to_prior_learning_recognition = Set(Some(is_convertable_to_prior_learning_recognition));
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(CurriculumDetailResponse {
+        Ok(Json(CurriculumDetailResponse {
             id: item.id,
             code: item.code,
             curriculum_id: item.curriculum_id,
@@ -260,36 +258,36 @@ pub async fn update_curriculum_detail(
             feeder_id: item.feeder_id,
             is_convertable_to_prior_learning_recognition: item.is_convertable_to_prior_learning_recognition,
 
-    }))
+        }))
 }
-
 #[endpoint(tags("Academic - Course - Master - CurriculumDetail"), status_codes(200, 400, 404, 500))]
 pub async fn delete_curriculum_detail(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("CurriculumDetail not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("CurriculumDetail not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-    active_model.deleted_at = Set(Some(now));
-    active_model.updated_at = Set(Some(now));
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.deleted_at = Set(Some(now));
+        active_model.updated_at = Set(Some(now));
 
-    Ok(Json(MessageResponse {
-        message: "CurriculumDetail deleted successfully".to_string(),
-    }))
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        Ok(Json(MessageResponse {
+            message: "CurriculumDetail deleted successfully".to_string(),
+        }))
 }

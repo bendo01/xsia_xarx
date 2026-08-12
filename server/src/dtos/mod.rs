@@ -8,3 +8,4 @@ pub mod contact;
 pub mod document;
 pub mod academic;
 pub mod feeder;
+pub mod auth;

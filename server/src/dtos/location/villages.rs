@@ -1,11 +1,20 @@
-use chrono::NaiveDateTime;
-use salvo::oapi::ToSchema;
 use serde::{Deserialize, Serialize};
+use salvo::oapi::ToSchema;
 use uuid::Uuid;
 use validator::Validate;
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct VillagQuery {
+    pub page: Option<u64>,
+    pub page_size: Option<u64>,
+    pub name: Option<String>,
+    pub code: Option<String>,
+}
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct VillageResponse {
+pub struct VillagResponse {
     pub id: Uuid,
     pub code: String,
     pub name: String,
@@ -29,7 +38,7 @@ pub struct VillageResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateVillageRequest {
+pub struct CreateVillagRequest {
     pub code: String,
     pub name: String,
     pub sub_district_id: Uuid,
@@ -46,7 +55,7 @@ pub struct CreateVillageRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateVillageRequest {
+pub struct UpdateVillagRequest {
     pub code: Option<String>,
     pub name: Option<String>,
     pub sub_district_id: Option<Uuid>,
@@ -62,18 +71,9 @@ pub struct UpdateVillageRequest {
     pub zoom: Option<i32>,
 }
 
-#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct VillageQuery {
-    pub page: Option<u64>,
-    pub page_size: Option<u64>,
-    pub code: Option<String>,
-    pub name: Option<String>,
-    pub sub_district_id: Option<Uuid>,
-}
-
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedVillageResponse {
-    pub data: Vec<VillageResponse>,
+pub struct PaginatedVillagResponse {
+    pub data: Vec<VillagResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

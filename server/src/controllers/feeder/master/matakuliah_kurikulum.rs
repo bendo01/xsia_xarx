@@ -123,28 +123,26 @@ pub async fn get_matakuliah_kurikulum(
             semester: item.semester,
 
     }))
-}
-
-#[endpoint(tags("Feeder - Master - MatakuliahKurikulum"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Feeder - Master - MatakuliahKurikulum"), status_codes(200, 400, 500))]
 pub async fn create_matakuliah_kurikulum(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MatakuliahKurikulumResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreateMatakuliahKurikulumRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: CreateMatakuliahKurikulumRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         tgl_create: Set(payload.tgl_create),
         id_kurikulum: Set(payload.id_kurikulum),
         nama_kurikulum: Set(payload.nama_kurikulum),
@@ -171,9 +169,9 @@ pub async fn create_matakuliah_kurikulum(
         semester: Set(payload.semester),
     };
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(MatakuliahKurikulumResponse {
+        Ok(Json(MatakuliahKurikulumResponse {
             id: item.id,
             tgl_create: item.tgl_create,
             id_kurikulum: item.id_kurikulum,
@@ -200,96 +198,96 @@ pub async fn create_matakuliah_kurikulum(
             updated_by: item.updated_by,
             semester: item.semester,
 
-    }))
+        }))
 }
 
 #[endpoint(tags("Feeder - Master - MatakuliahKurikulum"), status_codes(200, 400, 404, 500))]
 pub async fn update_matakuliah_kurikulum(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MatakuliahKurikulumResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdateMatakuliahKurikulumRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: UpdateMatakuliahKurikulumRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("MatakuliahKurikulum not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("MatakuliahKurikulum not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
     if let Some(tgl_create) = payload.tgl_create {
-        active_model.tgl_create = Set(Some(tgl_create));
-    }
+            active_model.tgl_create = Set(Some(tgl_create));
+        }
     if let Some(id_kurikulum) = payload.id_kurikulum {
-        active_model.id_kurikulum = Set(Some(id_kurikulum));
-    }
+            active_model.id_kurikulum = Set(Some(id_kurikulum));
+        }
     if let Some(nama_kurikulum) = payload.nama_kurikulum {
-        active_model.nama_kurikulum = Set(Some(nama_kurikulum));
-    }
+            active_model.nama_kurikulum = Set(Some(nama_kurikulum));
+        }
     if let Some(id_matkul) = payload.id_matkul {
-        active_model.id_matkul = Set(Some(id_matkul));
-    }
+            active_model.id_matkul = Set(Some(id_matkul));
+        }
     if let Some(kode_mata_kuliah) = payload.kode_mata_kuliah {
-        active_model.kode_mata_kuliah = Set(Some(kode_mata_kuliah));
-    }
+            active_model.kode_mata_kuliah = Set(Some(kode_mata_kuliah));
+        }
     if let Some(nama_mata_kuliah) = payload.nama_mata_kuliah {
-        active_model.nama_mata_kuliah = Set(Some(nama_mata_kuliah));
-    }
+            active_model.nama_mata_kuliah = Set(Some(nama_mata_kuliah));
+        }
     if let Some(id_prodi) = payload.id_prodi {
-        active_model.id_prodi = Set(Some(id_prodi));
-    }
+            active_model.id_prodi = Set(Some(id_prodi));
+        }
     if let Some(nama_program_studi) = payload.nama_program_studi {
-        active_model.nama_program_studi = Set(Some(nama_program_studi));
-    }
+            active_model.nama_program_studi = Set(Some(nama_program_studi));
+        }
     if let Some(id_semester) = payload.id_semester {
-        active_model.id_semester = Set(Some(id_semester));
-    }
+            active_model.id_semester = Set(Some(id_semester));
+        }
     if let Some(semester_mulai_berlaku) = payload.semester_mulai_berlaku {
-        active_model.semester_mulai_berlaku = Set(Some(semester_mulai_berlaku));
-    }
+            active_model.semester_mulai_berlaku = Set(Some(semester_mulai_berlaku));
+        }
     if let Some(sks_mata_kuliah) = payload.sks_mata_kuliah {
-        active_model.sks_mata_kuliah = Set(Some(sks_mata_kuliah));
-    }
+            active_model.sks_mata_kuliah = Set(Some(sks_mata_kuliah));
+        }
     if let Some(sks_tatap_muka) = payload.sks_tatap_muka {
-        active_model.sks_tatap_muka = Set(Some(sks_tatap_muka));
-    }
+            active_model.sks_tatap_muka = Set(Some(sks_tatap_muka));
+        }
     if let Some(sks_praktek) = payload.sks_praktek {
-        active_model.sks_praktek = Set(Some(sks_praktek));
-    }
+            active_model.sks_praktek = Set(Some(sks_praktek));
+        }
     if let Some(sks_praktek_lapangan) = payload.sks_praktek_lapangan {
-        active_model.sks_praktek_lapangan = Set(Some(sks_praktek_lapangan));
-    }
+            active_model.sks_praktek_lapangan = Set(Some(sks_praktek_lapangan));
+        }
     if let Some(sks_simulasi) = payload.sks_simulasi {
-        active_model.sks_simulasi = Set(Some(sks_simulasi));
-    }
+            active_model.sks_simulasi = Set(Some(sks_simulasi));
+        }
     if let Some(apakah_wajib) = payload.apakah_wajib {
-        active_model.apakah_wajib = Set(Some(apakah_wajib));
-    }
+            active_model.apakah_wajib = Set(Some(apakah_wajib));
+        }
     if let Some(status_sync) = payload.status_sync {
-        active_model.status_sync = Set(Some(status_sync));
-    }
+            active_model.status_sync = Set(Some(status_sync));
+        }
     if let Some(semester) = payload.semester {
-        active_model.semester = Set(Some(semester));
-    }
+            active_model.semester = Set(Some(semester));
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(MatakuliahKurikulumResponse {
+        Ok(Json(MatakuliahKurikulumResponse {
             id: item.id,
             tgl_create: item.tgl_create,
             id_kurikulum: item.id_kurikulum,
@@ -316,36 +314,36 @@ pub async fn update_matakuliah_kurikulum(
             updated_by: item.updated_by,
             semester: item.semester,
 
-    }))
+        }))
 }
-
 #[endpoint(tags("Feeder - Master - MatakuliahKurikulum"), status_codes(200, 400, 404, 500))]
 pub async fn delete_matakuliah_kurikulum(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("MatakuliahKurikulum not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("MatakuliahKurikulum not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-    active_model.deleted_at = Set(Some(now));
-    active_model.updated_at = Set(Some(now));
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.deleted_at = Set(Some(now));
+        active_model.updated_at = Set(Some(now));
 
-    Ok(Json(MessageResponse {
-        message: "MatakuliahKurikulum deleted successfully".to_string(),
-    }))
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        Ok(Json(MessageResponse {
+            message: "MatakuliahKurikulum deleted successfully".to_string(),
+        }))
 }

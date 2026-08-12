@@ -1,14 +1,24 @@
-
 use salvo::prelude::*;
 
 pub mod biodata;
 pub mod individual;
 
 pub fn router() -> Router {
-    let master_router = Router::with_path("master")
+    Router::with_path("master")
         .push(
-            Router::with_path("individuals")
-                .get(individual::list_individuals)
+            Router::with_path("biodata")
+                .get(biodata::list_biodata)
+                .post(biodata::create_biodata)
+                .push(
+                    Router::with_path("{id}")
+                        .get(biodata::get_biodata)
+                        .put(biodata::update_biodata)
+                        .delete(biodata::delete_biodata),
+                ),
+        )
+        .push(
+            Router::with_path("individual")
+                .get(individual::list_individual)
                 .post(individual::create_individual)
                 .push(
                     Router::with_path("{id}")
@@ -17,21 +27,4 @@ pub fn router() -> Router {
                         .delete(individual::delete_individual),
                 ),
         )
-        .push(
-            Router::with_path("biodatas")
-                .get(biodata::list_biodatas)
-                .post(biodata::create_biodata)
-                .push(
-                    Router::with_path("by-individual/{individual_id}")
-                        .get(biodata::get_biodata_by_individual),
-                )
-                .push(
-                    Router::with_path("{id}")
-                        .get(biodata::get_biodata)
-                        .put(biodata::update_biodata)
-                        .delete(biodata::delete_biodata),
-                ),
-        );
-
-    master_router
 }

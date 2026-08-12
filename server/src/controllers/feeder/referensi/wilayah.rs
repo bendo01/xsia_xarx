@@ -99,24 +99,24 @@ pub async fn get_wilayah(
     }))
 }#[endpoint(tags("Feeder - Referensi - Wilayah"), status_codes(200, 400, 500))]
 pub async fn create_wilayah(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<WilayahResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreateWilayahRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: CreateWilayahRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         id_level_wilayah: Set(payload.id_level_wilayah),
         id_wilayah: Set(payload.id_wilayah),
         id_negara: Set(payload.id_negara),
@@ -130,9 +130,9 @@ pub async fn create_wilayah(
         updated_by: Set(None),
     };
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(WilayahResponse {
+        Ok(Json(WilayahResponse {
             id: item.id,
             id_level_wilayah: item.id_level_wilayah,
             id_wilayah: item.id_wilayah,
@@ -146,57 +146,57 @@ pub async fn create_wilayah(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
 
 #[endpoint(tags("Feeder - Referensi - Wilayah"), status_codes(200, 400, 404, 500))]
 pub async fn update_wilayah(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<WilayahResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdateWilayahRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: UpdateWilayahRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Wilayah not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("Wilayah not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
     if let Some(id_level_wilayah) = payload.id_level_wilayah {
-        active_model.id_level_wilayah = Set(Some(id_level_wilayah));
-    }
+            active_model.id_level_wilayah = Set(Some(id_level_wilayah));
+        }
     if let Some(id_wilayah) = payload.id_wilayah {
-        active_model.id_wilayah = Set(Some(id_wilayah));
-    }
+            active_model.id_wilayah = Set(Some(id_wilayah));
+        }
     if let Some(id_negara) = payload.id_negara {
-        active_model.id_negara = Set(Some(id_negara));
-    }
+            active_model.id_negara = Set(Some(id_negara));
+        }
     if let Some(nama_wilayah) = payload.nama_wilayah {
-        active_model.nama_wilayah = Set(Some(nama_wilayah));
-    }
+            active_model.nama_wilayah = Set(Some(nama_wilayah));
+        }
     if let Some(id_induk_wilayah) = payload.id_induk_wilayah {
-        active_model.id_induk_wilayah = Set(Some(id_induk_wilayah));
-    }
+            active_model.id_induk_wilayah = Set(Some(id_induk_wilayah));
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(WilayahResponse {
+        Ok(Json(WilayahResponse {
             id: item.id,
             id_level_wilayah: item.id_level_wilayah,
             id_wilayah: item.id_wilayah,
@@ -210,41 +210,36 @@ pub async fn update_wilayah(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
-
-    deleted_at_opt = "Option" in dict(fields).get("deleted_at", "Option<DateTime>")
-    deleted_at_tz = "TimeZone" in dict(fields).get("deleted_at", "Option<DateTime>")
-    val = "Utc::now().into()" if deleted_at_tz else "now"
-
 #[endpoint(tags("Feeder - Referensi - Wilayah"), status_codes(200, 400, 404, 500))]
 pub async fn delete_wilayah(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Wilayah not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("Wilayah not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model.deleted_at = Set(Some(Some(id_induk_wilayah)));
-    active_model.updated_at = Set(Some(now));
+        active_model.deleted_at = Set(Some(now));
+        active_model.updated_at = Set(Some(now));
 
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(MessageResponse {
-        message: "Wilayah deleted successfully".to_string(),
-    }))
+        Ok(Json(MessageResponse {
+            message: "Wilayah deleted successfully".to_string(),
+        }))
 }

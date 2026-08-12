@@ -1,11 +1,20 @@
-use chrono::{NaiveDate, NaiveDateTime};
-use salvo::oapi::ToSchema;
 use serde::{Deserialize, Serialize};
+use salvo::oapi::ToSchema;
 use uuid::Uuid;
 use validator::Validate;
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct StaffesQuery {
+    pub page: Option<u64>,
+    pub page_size: Option<u64>,
+    pub name: Option<String>,
+    pub code: Option<String>,
+}
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct StaffeResponse {
+pub struct StaffesResponse {
     pub id: Uuid,
     pub code: Option<String>,
     pub name: Option<String>,
@@ -25,7 +34,7 @@ pub struct StaffeResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateStaffeRequest {
+pub struct CreateStaffesRequest {
     pub code: Option<String>,
     pub name: Option<String>,
     pub decree_number: Option<String>,
@@ -38,7 +47,7 @@ pub struct CreateStaffeRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateStaffeRequest {
+pub struct UpdateStaffesRequest {
     pub code: Option<String>,
     pub name: Option<String>,
     pub decree_number: Option<String>,
@@ -50,16 +59,9 @@ pub struct UpdateStaffeRequest {
     pub position_type_id: Option<Uuid>,
 }
 
-#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct StaffeQuery {
-    pub page: Option<u64>,
-    pub page_size: Option<u64>,
-    pub name: Option<String>,
-}
-
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedStaffeResponse {
-    pub data: Vec<StaffeResponse>,
+pub struct PaginatedStaffesResponse {
+    pub data: Vec<StaffesResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

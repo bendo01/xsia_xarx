@@ -1,11 +1,20 @@
-use chrono::NaiveDateTime;
-use salvo::oapi::ToSchema;
 use serde::{Deserialize, Serialize};
+use salvo::oapi::ToSchema;
 use uuid::Uuid;
 use validator::Validate;
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct CountriQuery {
+    pub page: Option<u64>,
+    pub page_size: Option<u64>,
+    pub name: Option<String>,
+    pub code: Option<String>,
+}
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct CountryResponse {
+pub struct CountriResponse {
     pub id: Uuid,
     pub code: String,
     pub name: String,
@@ -25,7 +34,7 @@ pub struct CountryResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateCountryRequest {
+pub struct CreateCountriRequest {
     pub code: String,
     pub name: String,
     pub alpha2_code: String,
@@ -38,7 +47,7 @@ pub struct CreateCountryRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateCountryRequest {
+pub struct UpdateCountriRequest {
     pub code: Option<String>,
     pub name: Option<String>,
     pub alpha2_code: Option<String>,
@@ -50,19 +59,9 @@ pub struct UpdateCountryRequest {
     pub slug: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct CountryQuery {
-    pub page: Option<u64>,
-    pub page_size: Option<u64>,
-    pub code: Option<String>,
-    pub name: Option<String>,
-    pub continent_id: Option<Uuid>,
-    pub region_id: Option<Uuid>,
-}
-
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedCountryResponse {
-    pub data: Vec<CountryResponse>,
+pub struct PaginatedCountriResponse {
+    pub data: Vec<CountriResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

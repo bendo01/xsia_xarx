@@ -191,28 +191,26 @@ pub async fn get_mahasiswa_lulusan_dropout(
             status_sync: item.status_sync,
 
     }))
-}
-
-#[endpoint(tags("Feeder - Master - MahasiswaLulusanDropout"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Feeder - Master - MahasiswaLulusanDropout"), status_codes(200, 400, 500))]
 pub async fn create_mahasiswa_lulusan_dropout(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MahasiswaLulusanDropoutResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreateMahasiswaLulusanDropoutRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: CreateMahasiswaLulusanDropoutRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         created_at: Set(Some(now)),
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
@@ -273,9 +271,9 @@ pub async fn create_mahasiswa_lulusan_dropout(
         status_sync: Set(payload.status_sync),
     };
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(MahasiswaLulusanDropoutResponse {
+        Ok(Json(MahasiswaLulusanDropoutResponse {
             id: item.id,
             created_at: item.created_at,
             updated_at: item.updated_at,
@@ -336,198 +334,198 @@ pub async fn create_mahasiswa_lulusan_dropout(
             nm_smt: item.nm_smt,
             status_sync: item.status_sync,
 
-    }))
+        }))
 }
 
 #[endpoint(tags("Feeder - Master - MahasiswaLulusanDropout"), status_codes(200, 400, 404, 500))]
 pub async fn update_mahasiswa_lulusan_dropout(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MahasiswaLulusanDropoutResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdateMahasiswaLulusanDropoutRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: UpdateMahasiswaLulusanDropoutRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("MahasiswaLulusanDropout not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("MahasiswaLulusanDropout not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
     if let Some(id_registrasi_mahasiswa) = payload.id_registrasi_mahasiswa {
-        active_model.id_registrasi_mahasiswa = Set(Some(id_registrasi_mahasiswa));
-    }
+            active_model.id_registrasi_mahasiswa = Set(Some(id_registrasi_mahasiswa));
+        }
     if let Some(id_mahasiswa) = payload.id_mahasiswa {
-        active_model.id_mahasiswa = Set(Some(id_mahasiswa));
-    }
+            active_model.id_mahasiswa = Set(Some(id_mahasiswa));
+        }
     if let Some(id_perguruan_tinggi) = payload.id_perguruan_tinggi {
-        active_model.id_perguruan_tinggi = Set(Some(id_perguruan_tinggi));
-    }
+            active_model.id_perguruan_tinggi = Set(Some(id_perguruan_tinggi));
+        }
     if let Some(id_prodi) = payload.id_prodi {
-        active_model.id_prodi = Set(Some(id_prodi));
-    }
+            active_model.id_prodi = Set(Some(id_prodi));
+        }
     if let Some(nama_program_studi) = payload.nama_program_studi {
-        active_model.nama_program_studi = Set(Some(nama_program_studi));
-    }
+            active_model.nama_program_studi = Set(Some(nama_program_studi));
+        }
     if let Some(nim) = payload.nim {
-        active_model.nim = Set(Some(nim));
-    }
+            active_model.nim = Set(Some(nim));
+        }
     if let Some(nama_mahasiswa) = payload.nama_mahasiswa {
-        active_model.nama_mahasiswa = Set(Some(nama_mahasiswa));
-    }
+            active_model.nama_mahasiswa = Set(Some(nama_mahasiswa));
+        }
     if let Some(angkatan) = payload.angkatan {
-        active_model.angkatan = Set(Some(angkatan));
-    }
+            active_model.angkatan = Set(Some(angkatan));
+        }
     if let Some(tgl_masuk_sp) = payload.tgl_masuk_sp {
-        active_model.tgl_masuk_sp = Set(Some(tgl_masuk_sp));
-    }
+            active_model.tgl_masuk_sp = Set(Some(tgl_masuk_sp));
+        }
     if let Some(tgl_create) = payload.tgl_create {
-        active_model.tgl_create = Set(Some(tgl_create));
-    }
+            active_model.tgl_create = Set(Some(tgl_create));
+        }
     if let Some(tgl_keluar) = payload.tgl_keluar {
-        active_model.tgl_keluar = Set(Some(tgl_keluar));
-    }
+            active_model.tgl_keluar = Set(Some(tgl_keluar));
+        }
     if let Some(tanggal_keluar) = payload.tanggal_keluar {
-        active_model.tanggal_keluar = Set(Some(tanggal_keluar));
-    }
+            active_model.tanggal_keluar = Set(Some(tanggal_keluar));
+        }
     if let Some(id_jenis_keluar) = payload.id_jenis_keluar {
-        active_model.id_jenis_keluar = Set(id_jenis_keluar);
-    }
+            active_model.id_jenis_keluar = Set(id_jenis_keluar);
+        }
     if let Some(nama_jenis_keluar) = payload.nama_jenis_keluar {
-        active_model.nama_jenis_keluar = Set(nama_jenis_keluar);
-    }
+            active_model.nama_jenis_keluar = Set(nama_jenis_keluar);
+        }
     if let Some(id_periode_keluar) = payload.id_periode_keluar {
-        active_model.id_periode_keluar = Set(id_periode_keluar);
-    }
+            active_model.id_periode_keluar = Set(id_periode_keluar);
+        }
     if let Some(keterangan) = payload.keterangan {
-        active_model.keterangan = Set(Some(keterangan));
-    }
+            active_model.keterangan = Set(Some(keterangan));
+        }
     if let Some(nomor_sk_yudisium) = payload.nomor_sk_yudisium {
-        active_model.nomor_sk_yudisium = Set(Some(nomor_sk_yudisium));
-    }
+            active_model.nomor_sk_yudisium = Set(Some(nomor_sk_yudisium));
+        }
     if let Some(tanggal_sk_yudisium) = payload.tanggal_sk_yudisium {
-        active_model.tanggal_sk_yudisium = Set(Some(tanggal_sk_yudisium));
-    }
+            active_model.tanggal_sk_yudisium = Set(Some(tanggal_sk_yudisium));
+        }
     if let Some(ipk) = payload.ipk {
-        active_model.ipk = Set(Some(ipk));
-    }
+            active_model.ipk = Set(Some(ipk));
+        }
     if let Some(nomor_ijazah) = payload.nomor_ijazah {
-        active_model.nomor_ijazah = Set(Some(nomor_ijazah));
-    }
+            active_model.nomor_ijazah = Set(Some(nomor_ijazah));
+        }
     if let Some(asal_ijazah) = payload.asal_ijazah {
-        active_model.asal_ijazah = Set(asal_ijazah);
-    }
+            active_model.asal_ijazah = Set(asal_ijazah);
+        }
     if let Some(no_sertifikat_profesi) = payload.no_sertifikat_profesi {
-        active_model.no_sertifikat_profesi = Set(Some(no_sertifikat_profesi));
-    }
+            active_model.no_sertifikat_profesi = Set(Some(no_sertifikat_profesi));
+        }
     if let Some(tanggal_terbit_ijazah) = payload.tanggal_terbit_ijazah {
-        active_model.tanggal_terbit_ijazah = Set(Some(tanggal_terbit_ijazah));
-    }
+            active_model.tanggal_terbit_ijazah = Set(Some(tanggal_terbit_ijazah));
+        }
     if let Some(jalur_skripsi) = payload.jalur_skripsi {
-        active_model.jalur_skripsi = Set(Some(jalur_skripsi));
-    }
+            active_model.jalur_skripsi = Set(Some(jalur_skripsi));
+        }
     if let Some(judul_skripsi) = payload.judul_skripsi {
-        active_model.judul_skripsi = Set(Some(judul_skripsi));
-    }
+            active_model.judul_skripsi = Set(Some(judul_skripsi));
+        }
     if let Some(bulan_awal_bimbingan) = payload.bulan_awal_bimbingan {
-        active_model.bulan_awal_bimbingan = Set(Some(bulan_awal_bimbingan));
-    }
+            active_model.bulan_awal_bimbingan = Set(Some(bulan_awal_bimbingan));
+        }
     if let Some(bulan_akhir_bimbingan) = payload.bulan_akhir_bimbingan {
-        active_model.bulan_akhir_bimbingan = Set(Some(bulan_akhir_bimbingan));
-    }
+            active_model.bulan_akhir_bimbingan = Set(Some(bulan_akhir_bimbingan));
+        }
     if let Some(id_dosen) = payload.id_dosen {
-        active_model.id_dosen = Set(Some(id_dosen));
-    }
+            active_model.id_dosen = Set(Some(id_dosen));
+        }
     if let Some(nidn) = payload.nidn {
-        active_model.nidn = Set(Some(nidn));
-    }
+            active_model.nidn = Set(Some(nidn));
+        }
     if let Some(nuptk) = payload.nuptk {
-        active_model.nuptk = Set(Some(nuptk));
-    }
+            active_model.nuptk = Set(Some(nuptk));
+        }
     if let Some(nama_dosen) = payload.nama_dosen {
-        active_model.nama_dosen = Set(Some(nama_dosen));
-    }
+            active_model.nama_dosen = Set(Some(nama_dosen));
+        }
     if let Some(pembimbing_ke) = payload.pembimbing_ke {
-        active_model.pembimbing_ke = Set(Some(pembimbing_ke));
-    }
+            active_model.pembimbing_ke = Set(Some(pembimbing_ke));
+        }
     if let Some(skhun) = payload.skhun {
-        active_model.skhun = Set(Some(skhun));
-    }
+            active_model.skhun = Set(Some(skhun));
+        }
     if let Some(no_peserta_ujian) = payload.no_peserta_ujian {
-        active_model.no_peserta_ujian = Set(Some(no_peserta_ujian));
-    }
+            active_model.no_peserta_ujian = Set(Some(no_peserta_ujian));
+        }
     if let Some(sks_diakui) = payload.sks_diakui {
-        active_model.sks_diakui = Set(Some(sks_diakui));
-    }
+            active_model.sks_diakui = Set(Some(sks_diakui));
+        }
     if let Some(id_jns_daftar) = payload.id_jns_daftar {
-        active_model.id_jns_daftar = Set(Some(id_jns_daftar));
-    }
+            active_model.id_jns_daftar = Set(Some(id_jns_daftar));
+        }
     if let Some(nm_jns_daftar) = payload.nm_jns_daftar {
-        active_model.nm_jns_daftar = Set(Some(nm_jns_daftar));
-    }
+            active_model.nm_jns_daftar = Set(Some(nm_jns_daftar));
+        }
     if let Some(id_jalur_masuk) = payload.id_jalur_masuk {
-        active_model.id_jalur_masuk = Set(Some(id_jalur_masuk));
-    }
+            active_model.id_jalur_masuk = Set(Some(id_jalur_masuk));
+        }
     if let Some(id_pembiayaan) = payload.id_pembiayaan {
-        active_model.id_pembiayaan = Set(Some(id_pembiayaan));
-    }
+            active_model.id_pembiayaan = Set(Some(id_pembiayaan));
+        }
     if let Some(biaya_masuk_kuliah) = payload.biaya_masuk_kuliah {
-        active_model.biaya_masuk_kuliah = Set(Some(biaya_masuk_kuliah));
-    }
+            active_model.biaya_masuk_kuliah = Set(Some(biaya_masuk_kuliah));
+        }
     if let Some(id_minat_bidang) = payload.id_minat_bidang {
-        active_model.id_minat_bidang = Set(Some(id_minat_bidang));
-    }
+            active_model.id_minat_bidang = Set(Some(id_minat_bidang));
+        }
     if let Some(bidang_mayor) = payload.bidang_mayor {
-        active_model.bidang_mayor = Set(Some(bidang_mayor));
-    }
+            active_model.bidang_mayor = Set(Some(bidang_mayor));
+        }
     if let Some(bidang_minor) = payload.bidang_minor {
-        active_model.bidang_minor = Set(Some(bidang_minor));
-    }
+            active_model.bidang_minor = Set(Some(bidang_minor));
+        }
     if let Some(a_pindah_mhs_asing) = payload.a_pindah_mhs_asing {
-        active_model.a_pindah_mhs_asing = Set(Some(a_pindah_mhs_asing));
-    }
+            active_model.a_pindah_mhs_asing = Set(Some(a_pindah_mhs_asing));
+        }
     if let Some(id_pt_asal) = payload.id_pt_asal {
-        active_model.id_pt_asal = Set(Some(id_pt_asal));
-    }
+            active_model.id_pt_asal = Set(Some(id_pt_asal));
+        }
     if let Some(id_prodi_asal) = payload.id_prodi_asal {
-        active_model.id_prodi_asal = Set(Some(id_prodi_asal));
-    }
+            active_model.id_prodi_asal = Set(Some(id_prodi_asal));
+        }
     if let Some(nm_pt_asal) = payload.nm_pt_asal {
-        active_model.nm_pt_asal = Set(Some(nm_pt_asal));
-    }
+            active_model.nm_pt_asal = Set(Some(nm_pt_asal));
+        }
     if let Some(nm_prodi_asal) = payload.nm_prodi_asal {
-        active_model.nm_prodi_asal = Set(Some(nm_prodi_asal));
-    }
+            active_model.nm_prodi_asal = Set(Some(nm_prodi_asal));
+        }
     if let Some(namapt) = payload.namapt {
-        active_model.namapt = Set(Some(namapt));
-    }
+            active_model.namapt = Set(Some(namapt));
+        }
     if let Some(id_jur) = payload.id_jur {
-        active_model.id_jur = Set(Some(id_jur));
-    }
+            active_model.id_jur = Set(Some(id_jur));
+        }
     if let Some(nm_smt) = payload.nm_smt {
-        active_model.nm_smt = Set(Some(nm_smt));
-    }
+            active_model.nm_smt = Set(Some(nm_smt));
+        }
     if let Some(status_sync) = payload.status_sync {
-        active_model.status_sync = Set(Some(status_sync));
-    }
+            active_model.status_sync = Set(Some(status_sync));
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(MahasiswaLulusanDropoutResponse {
+        Ok(Json(MahasiswaLulusanDropoutResponse {
             id: item.id,
             created_at: item.created_at,
             updated_at: item.updated_at,
@@ -588,36 +586,36 @@ pub async fn update_mahasiswa_lulusan_dropout(
             nm_smt: item.nm_smt,
             status_sync: item.status_sync,
 
-    }))
+        }))
 }
-
 #[endpoint(tags("Feeder - Master - MahasiswaLulusanDropout"), status_codes(200, 400, 404, 500))]
 pub async fn delete_mahasiswa_lulusan_dropout(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("MahasiswaLulusanDropout not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("MahasiswaLulusanDropout not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-    active_model.deleted_at = Set(Some(now));
-    active_model.updated_at = Set(Some(now));
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.deleted_at = Set(Some(now));
+        active_model.updated_at = Set(Some(now));
 
-    Ok(Json(MessageResponse {
-        message: "MahasiswaLulusanDropout deleted successfully".to_string(),
-    }))
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        Ok(Json(MessageResponse {
+            message: "MahasiswaLulusanDropout deleted successfully".to_string(),
+        }))
 }

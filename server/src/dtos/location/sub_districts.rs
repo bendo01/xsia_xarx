@@ -1,8 +1,17 @@
-use chrono::NaiveDateTime;
-use salvo::oapi::ToSchema;
 use serde::{Deserialize, Serialize};
+use salvo::oapi::ToSchema;
 use uuid::Uuid;
 use validator::Validate;
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct SubDistrictQuery {
+    pub page: Option<u64>,
+    pub page_size: Option<u64>,
+    pub name: Option<String>,
+    pub code: Option<String>,
+}
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
 pub struct SubDistrictResponse {
@@ -69,16 +78,6 @@ pub struct UpdateSubDistrictRequest {
     pub latitude: Option<f64>,
     pub longitude: Option<f64>,
     pub zoom: Option<i32>,
-}
-
-#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct SubDistrictQuery {
-    pub page: Option<u64>,
-    pub page_size: Option<u64>,
-    pub code: Option<String>,
-    pub name: Option<String>,
-    pub regency_id: Option<Uuid>,
-    pub validation_code: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]

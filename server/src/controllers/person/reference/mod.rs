@@ -1,4 +1,3 @@
-
 use salvo::prelude::*;
 
 pub mod age_classification;
@@ -15,13 +14,11 @@ pub mod profession;
 pub mod relative_type;
 pub mod religion;
 
-
-
 pub fn router() -> Router {
-    let ref_router = Router::with_path("reference")
+    Router::with_path("reference")
         .push(
-            Router::with_path("age-classifications")
-                .get(age_classification::list_age_classifications)
+            Router::with_path("age-classification")
+                .get(age_classification::list_age_classification)
                 .post(age_classification::create_age_classification)
                 .push(
                     Router::with_path("{id}")
@@ -31,8 +28,8 @@ pub fn router() -> Router {
                 ),
         )
         .push(
-            Router::with_path("blood-types")
-                .get(blood_type::list_blood_types)
+            Router::with_path("blood-type")
+                .get(blood_type::list_blood_type)
                 .post(blood_type::create_blood_type)
                 .push(
                     Router::with_path("{id}")
@@ -42,8 +39,8 @@ pub fn router() -> Router {
                 ),
         )
         .push(
-            Router::with_path("eye-colors")
-                .get(eye_color::list_eye_colors)
+            Router::with_path("eye-color")
+                .get(eye_color::list_eye_color)
                 .post(eye_color::create_eye_color)
                 .push(
                     Router::with_path("{id}")
@@ -53,8 +50,8 @@ pub fn router() -> Router {
                 ),
         )
         .push(
-            Router::with_path("genders")
-                .get(gender::list_genders)
+            Router::with_path("gender")
+                .get(gender::list_gender)
                 .post(gender::create_gender)
                 .push(
                     Router::with_path("{id}")
@@ -64,8 +61,8 @@ pub fn router() -> Router {
                 ),
         )
         .push(
-            Router::with_path("hair-colors")
-                .get(hair_color::list_hair_colors)
+            Router::with_path("hair-color")
+                .get(hair_color::list_hair_color)
                 .post(hair_color::create_hair_color)
                 .push(
                     Router::with_path("{id}")
@@ -75,8 +72,8 @@ pub fn router() -> Router {
                 ),
         )
         .push(
-            Router::with_path("hair-types")
-                .get(hair_type::list_hair_types)
+            Router::with_path("hair-type")
+                .get(hair_type::list_hair_type)
                 .post(hair_type::create_hair_type)
                 .push(
                     Router::with_path("{id}")
@@ -86,8 +83,8 @@ pub fn router() -> Router {
                 ),
         )
         .push(
-            Router::with_path("identification-types")
-                .get(identification_type::list_identification_types)
+            Router::with_path("identification-type")
+                .get(identification_type::list_identification_type)
                 .post(identification_type::create_identification_type)
                 .push(
                     Router::with_path("{id}")
@@ -97,8 +94,8 @@ pub fn router() -> Router {
                 ),
         )
         .push(
-            Router::with_path("incomes")
-                .get(income::list_incomes)
+            Router::with_path("income")
+                .get(income::list_income)
                 .post(income::create_income)
                 .push(
                     Router::with_path("{id}")
@@ -108,19 +105,19 @@ pub fn router() -> Router {
                 ),
         )
         .push(
-            Router::with_path("marital-statuses")
-                .get(marital_status::list_marital_statuses)
-                .post(marital_status::create_marital_status)
+            Router::with_path("marital-status")
+                .get(marital_status::list_marital_status)
+                .post(marital_status::create_marital_statu)
                 .push(
                     Router::with_path("{id}")
-                        .get(marital_status::get_marital_status)
-                        .put(marital_status::update_marital_status)
-                        .delete(marital_status::delete_marital_status),
+                        .get(marital_status::get_marital_statu)
+                        .put(marital_status::update_marital_statu)
+                        .delete(marital_status::delete_marital_statu),
                 ),
         )
         .push(
-            Router::with_path("occupations")
-                .get(occupation::list_occupations)
+            Router::with_path("occupation")
+                .get(occupation::list_occupation)
                 .post(occupation::create_occupation)
                 .push(
                     Router::with_path("{id}")
@@ -130,8 +127,8 @@ pub fn router() -> Router {
                 ),
         )
         .push(
-            Router::with_path("professions")
-                .get(profession::list_professions)
+            Router::with_path("profession")
+                .get(profession::list_profession)
                 .post(profession::create_profession)
                 .push(
                     Router::with_path("{id}")
@@ -141,8 +138,8 @@ pub fn router() -> Router {
                 ),
         )
         .push(
-            Router::with_path("relative-types")
-                .get(relative_type::list_relative_types)
+            Router::with_path("relative-type")
+                .get(relative_type::list_relative_type)
                 .post(relative_type::create_relative_type)
                 .push(
                     Router::with_path("{id}")
@@ -152,8 +149,8 @@ pub fn router() -> Router {
                 ),
         )
         .push(
-            Router::with_path("religions")
-                .get(religion::list_religions)
+            Router::with_path("religion")
+                .get(religion::list_religion)
                 .post(religion::create_religion)
                 .push(
                     Router::with_path("{id}")
@@ -161,7 +158,5 @@ pub fn router() -> Router {
                         .put(religion::update_religion)
                         .delete(religion::delete_religion),
                 ),
-        );
-
-    ref_router
+        )
 }

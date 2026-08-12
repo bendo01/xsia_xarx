@@ -103,28 +103,26 @@ pub async fn get_detail_activity_evaluation_component(
             updated_by: item.updated_by,
 
     }))
-}
-
-#[endpoint(tags("Academic - Student - Campaign - DetailActivityEvaluationComponent"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Student - Campaign - DetailActivityEvaluationComponent"), status_codes(200, 400, 500))]
 pub async fn create_detail_activity_evaluation_component(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<DetailActivityEvaluationComponentResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreateDetailActivityEvaluationComponentRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: CreateDetailActivityEvaluationComponentRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         name: Set(payload.name),
         detail_activity_id: Set(payload.detail_activity_id),
         course_evaluation_planning_id: Set(payload.course_evaluation_planning_id),
@@ -139,9 +137,9 @@ pub async fn create_detail_activity_evaluation_component(
         updated_by: Set(None),
     };
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(DetailActivityEvaluationComponentResponse {
+        Ok(Json(DetailActivityEvaluationComponentResponse {
             id: item.id,
             name: item.name,
             detail_activity_id: item.detail_activity_id,
@@ -156,60 +154,60 @@ pub async fn create_detail_activity_evaluation_component(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
 
 #[endpoint(tags("Academic - Student - Campaign - DetailActivityEvaluationComponent"), status_codes(200, 400, 404, 500))]
 pub async fn update_detail_activity_evaluation_component(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<DetailActivityEvaluationComponentResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdateDetailActivityEvaluationComponentRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: UpdateDetailActivityEvaluationComponentRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("DetailActivityEvaluationComponent not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("DetailActivityEvaluationComponent not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
     if let Some(name) = payload.name {
-        active_model.name = Set(Some(name));
-    }
+            active_model.name = Set(Some(name));
+        }
     if let Some(detail_activity_id) = payload.detail_activity_id {
-        active_model.detail_activity_id = Set(detail_activity_id);
-    }
+            active_model.detail_activity_id = Set(detail_activity_id);
+        }
     if let Some(course_evaluation_planning_id) = payload.course_evaluation_planning_id {
-        active_model.course_evaluation_planning_id = Set(course_evaluation_planning_id);
-    }
+            active_model.course_evaluation_planning_id = Set(course_evaluation_planning_id);
+        }
     if let Some(mark) = payload.mark {
-        active_model.mark = Set(Some(mark));
-    }
+            active_model.mark = Set(Some(mark));
+        }
     if let Some(percentage) = payload.percentage {
-        active_model.percentage = Set(Some(percentage));
-    }
+            active_model.percentage = Set(Some(percentage));
+        }
     if let Some(total) = payload.total {
-        active_model.total = Set(Some(total));
-    }
+            active_model.total = Set(Some(total));
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(DetailActivityEvaluationComponentResponse {
+        Ok(Json(DetailActivityEvaluationComponentResponse {
             id: item.id,
             name: item.name,
             detail_activity_id: item.detail_activity_id,
@@ -224,36 +222,36 @@ pub async fn update_detail_activity_evaluation_component(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
-
 #[endpoint(tags("Academic - Student - Campaign - DetailActivityEvaluationComponent"), status_codes(200, 400, 404, 500))]
 pub async fn delete_detail_activity_evaluation_component(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("DetailActivityEvaluationComponent not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("DetailActivityEvaluationComponent not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-    active_model.deleted_at = Set(Some(now));
-    active_model.updated_at = Set(Some(now));
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.deleted_at = Set(Some(now));
+        active_model.updated_at = Set(Some(now));
 
-    Ok(Json(MessageResponse {
-        message: "DetailActivityEvaluationComponent deleted successfully".to_string(),
-    }))
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        Ok(Json(MessageResponse {
+            message: "DetailActivityEvaluationComponent deleted successfully".to_string(),
+        }))
 }

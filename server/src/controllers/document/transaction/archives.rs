@@ -109,28 +109,26 @@ pub async fn get_archive(
             is_knowledge: item.is_knowledge,
 
     }))
-}
-
-#[endpoint(tags("Document - Transaction - Archiv"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Document - Transaction - Archiv"), status_codes(200, 400, 500))]
 pub async fn create_archive(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<ArchivResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreateArchivRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: CreateArchivRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         name: Set(payload.name),
         dir: Set(payload.dir),
         mimetype: Set(payload.mimetype),
@@ -148,9 +146,9 @@ pub async fn create_archive(
         is_knowledge: Set(payload.is_knowledge),
     };
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(ArchivResponse {
+        Ok(Json(ArchivResponse {
             id: item.id,
             name: item.name.clone(),
             dir: item.dir.clone(),
@@ -168,69 +166,69 @@ pub async fn create_archive(
             description: item.description,
             is_knowledge: item.is_knowledge,
 
-    }))
+        }))
 }
 
 #[endpoint(tags("Document - Transaction - Archiv"), status_codes(200, 400, 404, 500))]
 pub async fn update_archive(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<ArchivResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdateArchivRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: UpdateArchivRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Archiv not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("Archiv not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
     if let Some(name) = payload.name {
-        active_model.name = Set(name);
-    }
+            active_model.name = Set(name);
+        }
     if let Some(dir) = payload.dir {
-        active_model.dir = Set(dir);
-    }
+            active_model.dir = Set(dir);
+        }
     if let Some(mimetype) = payload.mimetype {
-        active_model.mimetype = Set(mimetype);
-    }
+            active_model.mimetype = Set(mimetype);
+        }
     if let Some(size) = payload.size {
-        active_model.size = Set(Some(size));
-    }
+            active_model.size = Set(Some(size));
+        }
     if let Some(archiveable_id) = payload.archiveable_id {
-        active_model.archiveable_id = Set(Some(archiveable_id));
-    }
+            active_model.archiveable_id = Set(Some(archiveable_id));
+        }
     if let Some(archiveable_type) = payload.archiveable_type {
-        active_model.archiveable_type = Set(Some(archiveable_type));
-    }
+            active_model.archiveable_type = Set(Some(archiveable_type));
+        }
     if let Some(archive_type_id) = payload.archive_type_id {
-        active_model.archive_type_id = Set(archive_type_id);
-    }
+            active_model.archive_type_id = Set(archive_type_id);
+        }
     if let Some(description) = payload.description {
-        active_model.description = Set(Some(description));
-    }
+            active_model.description = Set(Some(description));
+        }
     if let Some(is_knowledge) = payload.is_knowledge {
-        active_model.is_knowledge = Set(is_knowledge);
-    }
+            active_model.is_knowledge = Set(is_knowledge);
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(ArchivResponse {
+        Ok(Json(ArchivResponse {
             id: item.id,
             name: item.name.clone(),
             dir: item.dir.clone(),
@@ -248,36 +246,36 @@ pub async fn update_archive(
             description: item.description,
             is_knowledge: item.is_knowledge,
 
-    }))
+        }))
 }
-
 #[endpoint(tags("Document - Transaction - Archiv"), status_codes(200, 400, 404, 500))]
 pub async fn delete_archive(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Archiv not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("Archiv not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-    active_model.deleted_at = Set(Some(Utc::now().into()));
-    active_model.updated_at = Set(Some(now));
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.deleted_at = Set(Some(Utc::now().into()));
+        active_model.updated_at = Set(Some(now));
 
-    Ok(Json(MessageResponse {
-        message: "Archiv deleted successfully".to_string(),
-    }))
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        Ok(Json(MessageResponse {
+            message: "Archiv deleted successfully".to_string(),
+        }))
 }

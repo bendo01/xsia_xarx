@@ -99,28 +99,26 @@ pub async fn get_academic_rank(
             end_date: item.end_date,
 
     }))
-}
-
-#[endpoint(tags("Academic - Lecturer - Transaction - AcademicRank"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Lecturer - Transaction - AcademicRank"), status_codes(200, 400, 500))]
 pub async fn create_academic_rank(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<AcademicRankResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreateAcademicRankRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: CreateAcademicRankRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         decree_number: Set(payload.decree_number),
         decree_date: Set(payload.decree_date),
         lecturer_id: Set(payload.lecturer_id),
@@ -135,9 +133,9 @@ pub async fn create_academic_rank(
         end_date: Set(payload.end_date),
     };
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(AcademicRankResponse {
+        Ok(Json(AcademicRankResponse {
             id: item.id,
             decree_number: item.decree_number,
             decree_date: item.decree_date,
@@ -152,60 +150,60 @@ pub async fn create_academic_rank(
             start_date: item.start_date,
             end_date: item.end_date,
 
-    }))
+        }))
 }
 
 #[endpoint(tags("Academic - Lecturer - Transaction - AcademicRank"), status_codes(200, 400, 404, 500))]
 pub async fn update_academic_rank(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<AcademicRankResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdateAcademicRankRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: UpdateAcademicRankRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("AcademicRank not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("AcademicRank not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
     if let Some(decree_number) = payload.decree_number {
-        active_model.decree_number = Set(Some(decree_number));
-    }
+            active_model.decree_number = Set(Some(decree_number));
+        }
     if let Some(decree_date) = payload.decree_date {
-        active_model.decree_date = Set(Some(decree_date));
-    }
+            active_model.decree_date = Set(Some(decree_date));
+        }
     if let Some(lecturer_id) = payload.lecturer_id {
-        active_model.lecturer_id = Set(lecturer_id);
-    }
+            active_model.lecturer_id = Set(lecturer_id);
+        }
     if let Some(rank_id) = payload.rank_id {
-        active_model.rank_id = Set(rank_id);
-    }
+            active_model.rank_id = Set(rank_id);
+        }
     if let Some(start_date) = payload.start_date {
-        active_model.start_date = Set(Some(start_date));
-    }
+            active_model.start_date = Set(Some(start_date));
+        }
     if let Some(end_date) = payload.end_date {
-        active_model.end_date = Set(Some(end_date));
-    }
+            active_model.end_date = Set(Some(end_date));
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(AcademicRankResponse {
+        Ok(Json(AcademicRankResponse {
             id: item.id,
             decree_number: item.decree_number,
             decree_date: item.decree_date,
@@ -220,36 +218,36 @@ pub async fn update_academic_rank(
             start_date: item.start_date,
             end_date: item.end_date,
 
-    }))
+        }))
 }
-
 #[endpoint(tags("Academic - Lecturer - Transaction - AcademicRank"), status_codes(200, 400, 404, 500))]
 pub async fn delete_academic_rank(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("AcademicRank not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("AcademicRank not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-    active_model.deleted_at = Set(Some(now));
-    active_model.updated_at = Set(Some(now));
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.deleted_at = Set(Some(now));
+        active_model.updated_at = Set(Some(now));
 
-    Ok(Json(MessageResponse {
-        message: "AcademicRank deleted successfully".to_string(),
-    }))
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        Ok(Json(MessageResponse {
+            message: "AcademicRank deleted successfully".to_string(),
+        }))
 }

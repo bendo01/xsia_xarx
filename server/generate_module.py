@@ -82,7 +82,10 @@ def generate_dtos_and_controllers(module, sub_module):
         
         pretty_name = to_pascal_case(mod_name)
         
-        # Determine if it's reference-like or not
+        if not fields:
+            continue
+            
+        sub_mod_prefix = f"{sub_module_path}::" if sub_module_path else ""
         if sub_module_last == "reference":
             dto_imports = f"""use crate::dtos::common::reference::{{
     CreateReferenceRequest, MessageResponse, PaginatedReferenceResponse, ReferenceQuery,
@@ -95,7 +98,7 @@ def generate_dtos_and_controllers(module, sub_module):
             paginated_type = "PaginatedReferenceResponse"
         else:
             mod_rs_content_dtos += f"pub mod {mod_name};\n"
-            dto_imports = f"""use crate::dtos::{module}::{sub_module_path}::{mod_name}::{{
+            dto_imports = f"""use crate::dtos::{module}::{sub_mod_prefix}{mod_name}::{{
     Create{pretty_name}Request, {pretty_name}Query, {pretty_name}Response, Paginated{pretty_name}Response,
     Update{pretty_name}Request,
 }};
@@ -206,7 +209,7 @@ use uuid::Uuid;
 use validator::Validate;
 
 {dto_imports}
-use crate::models::{module}::{sub_module_path}::{mod_name} as entity_mod;
+use crate::models::{module}::{sub_mod_prefix}{mod_name} as entity_mod;
 
 #[endpoint(tags("{tag_name} - {pretty_name}"), status_codes(200, 500))]
 pub async fn list_{mod_name}(
@@ -354,162 +357,163 @@ pub async fn get_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
     }}))
 }}"""
 
-    id_is_opt = "Option" in dict(fields).get("id", "Uuid")
-    id_val = "Some(new_id)" if id_is_opt else "new_id"
+        id_is_opt = "Option" in dict(fields).get("id", "Uuid")
+        id_val = "Some(new_id)" if id_is_opt else "new_id"
 
-    ctrl_content += f"""#[endpoint(tags("{tag_name} - {pretty_name}"), status_codes(200, 400, 500))]
+        ctrl_content += f"""#[endpoint(tags("{tag_name} - {pretty_name}"), status_codes(200, 400, 500))]
 pub async fn create_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<{response_type}>, StatusError> {{
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {{
-        StatusError::internal_server_error().brief("Database connection missing")
-    }})?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {{
+            StatusError::internal_server_error().brief("Database connection missing")
+        }})?;
 
-    let payload: {create_type} = req.parse_json().await.map_err(|e| {{
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {{}}", e))
-    }})?;
+        let payload: {create_type} = req.parse_json().await.map_err(|e| {{
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {{}}", e))
+        }})?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {{
-        id: Set({id_val}),
+        let active_model = entity_mod::ActiveModel {{
+            id: Set({id_val}),
 """
-    for name, type_part in fields:
-        if name in ["id"]: continue
-        is_opt = "Option" in type_part
-        if name in ["created_at", "updated_at"]:
-            ctrl_content += f"        {name}: Set({'Some(now)' if is_opt else 'now'}),\n"
-        elif name in ["deleted_at", "sync_at", "created_by", "updated_by"]:
-            ctrl_content += f"        {name}: Set(None),\n"
-        else:
-            if sub_module_last == "reference":
-                if name in ["code", "alphabet_code", "name"]:
-                    val = f"Some(payload.{name})" if is_opt else f"payload.{name}"
-                    ctrl_content += f"        {name}: Set({val}),\n"
-                else:
-                    ctrl_content += f"        {name}: Set({'None' if is_opt else 'Default::default()'}),\n"
+        for name, type_part in fields:
+            if name in ["id"]: continue
+            is_opt = "Option" in type_part
+            if name in ["created_at", "updated_at"]:
+                ctrl_content += f"        {name}: Set({'Some(now)' if is_opt else 'now'}),\n"
+            elif name in ["deleted_at", "sync_at", "created_by", "updated_by"]:
+                ctrl_content += f"        {name}: Set(None),\n"
             else:
-                ctrl_content += f"        {name}: Set(payload.{name}),\n"
-                
-    ctrl_content += f"""    }};
+                if sub_module_last == "reference":
+                    if name in ["code", "alphabet_code", "name"]:
+                        val = f"Some(payload.{name})" if is_opt else f"payload.{name}"
+                        ctrl_content += f"        {name}: Set({val}),\n"
+                    else:
+                        ctrl_content += f"        {name}: Set({'None' if is_opt else 'Default::default()'}),\n"
+                else:
+                    ctrl_content += f"        {name}: Set(payload.{name}),\n"
+                    
+        ctrl_content += f"""    }};
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json({response_type} {{
+        Ok(Json({response_type} {{
 {mapping_code}
-    }}))
+        }}))
 }}
 
 #[endpoint(tags("{tag_name} - {pretty_name}"), status_codes(200, 400, 404, 500))]
 pub async fn update_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<{response_type}>, StatusError> {{
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {{
-        StatusError::internal_server_error().brief("Database connection missing")
-    }})?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {{
+            StatusError::internal_server_error().brief("Database connection missing")
+        }})?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: {update_type} = req.parse_json().await.map_err(|e| {{
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {{}}", e))
-    }})?;
+        let payload: {update_type} = req.parse_json().await.map_err(|e| {{
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {{}}", e))
+        }})?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("{pretty_name} not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("{pretty_name} not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
 """
-    for name, type_part in fields:
-        if name in ["id", "created_at", "updated_at", "deleted_at", "sync_at", "created_by", "updated_by"]: continue
-        if sub_module_last == "reference" and name not in ["code", "alphabet_code", "name"]:
-            continue
-            
-        is_opt = "Option" in type_part
-        val = f"Some({name})" if is_opt else name
-        ctrl_content += f"""    if let Some({name}) = payload.{name} {{
-        active_model.{name} = Set({val});
-    }}\n"""
-    
-    updated_at_opt = "Option" in dict(fields).get("updated_at", "DateTime")
-    
-    ctrl_content += f"""    active_model.updated_at = Set({'Some(now)' if updated_at_opt else 'now'});
+        for name, type_part in fields:
+            if name in ["id", "created_at", "updated_at", "deleted_at", "sync_at", "created_by", "updated_by"]: continue
+            if sub_module_last == "reference" and name not in ["code", "alphabet_code", "name"]:
+                continue
+                
+            is_opt = "Option" in type_part
+            val = f"Some({name})" if is_opt else name
+            ctrl_content += f"""    if let Some({name}) = payload.{name} {{
+            active_model.{name} = Set({val});
+        }}\n"""
+        
+        updated_at_opt = "Option" in dict(fields).get("updated_at", "DateTime")
+        
+        ctrl_content += f"""    active_model.updated_at = Set({'Some(now)' if updated_at_opt else 'now'});
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json({response_type} {{
+        Ok(Json({response_type} {{
 {mapping_code}
-    }}))
-}}
-
-    deleted_at_opt = "Option" in dict(fields).get("deleted_at", "Option<DateTime>")
-    deleted_at_tz = "TimeZone" in dict(fields).get("deleted_at", "Option<DateTime>")
-    val = "Utc::now().into()" if deleted_at_tz else "now"
-
-#[endpoint(tags("{tag_name} - {pretty_name}"), status_codes(200, 400, 404, 500))]
-pub async fn delete_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
-    req: &mut Request,
-    depot: &mut Depot,
-) -> Result<Json<MessageResponse>, StatusError> {{
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {{
-        StatusError::internal_server_error().brief("Database connection missing")
-    }})?;
-
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
-
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("{pretty_name} not found"))?;
-
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-
-    active_model.deleted_at = Set(Some({val}));
-    active_model.updated_at = Set({'Some(now)' if updated_at_opt else 'now'});
-
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
-
-    Ok(Json(MessageResponse {{
-        message: "{pretty_name} deleted successfully".to_string(),
-    }}))
+        }}))
 }}
 """
-    with open(ctrl_file_path, "w") as f:
-        f.write(ctrl_content)
+
+        deleted_at_opt = "Option" in dict(fields).get("deleted_at", "Option<DateTime>")
+        deleted_at_tz = "TimeZone" in dict(fields).get("deleted_at", "Option<DateTime>")
+        val = "Utc::now().into()" if deleted_at_tz else "now"
+
+        ctrl_content += f"""#[endpoint(tags("{tag_name} - {pretty_name}"), status_codes(200, 400, 404, 500))]
+pub async fn delete_{mod_name[:-1] if mod_name.endswith('s') else mod_name}(
+        req: &mut Request,
+        depot: &mut Depot,
+) -> Result<Json<MessageResponse>, StatusError> {{
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {{
+            StatusError::internal_server_error().brief("Database connection missing")
+        }})?;
+
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("{pretty_name} not found"))?;
+
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
+
+        active_model.deleted_at = Set(Some({val}));
+        active_model.updated_at = Set({'Some(now)' if updated_at_opt else 'now'});
+
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        Ok(Json(MessageResponse {{
+            message: "{pretty_name} deleted successfully".to_string(),
+        }}))
+}}
+"""
+        with open(ctrl_file_path, "w") as f:
+            f.write(ctrl_content)
+            
+        mod_rs_content_ctrls += f"pub mod {mod_name};\n"
         
-    mod_rs_content_ctrls += f"pub mod {mod_name};\n"
-    
-    url_path = mod_name.replace("_", "-")
-    func_mod = mod_name[:-1] if mod_name.endswith('s') else mod_name
-        
-    router_pushes.append(f"""        .push(
-        Router::with_path("{url_path}")
-            .get({mod_name}::list_{mod_name})
-            .post({mod_name}::create_{func_mod})
-            .push(
-                Router::with_path("{{id}}")
-                    .get({mod_name}::get_{func_mod})
-                    .put({mod_name}::update_{func_mod})
-                    .delete({mod_name}::delete_{func_mod}),
-            ),
-    )""")
+        url_path = mod_name.replace("_", "-")
+        func_mod = mod_name[:-1] if mod_name.endswith('s') else mod_name
+            
+        router_pushes.append(f"""        .push(
+            Router::with_path("{url_path}")
+                .get({mod_name}::list_{mod_name})
+                .post({mod_name}::create_{func_mod})
+                .push(
+                    Router::with_path("{{id}}")
+                        .get({mod_name}::get_{func_mod})
+                        .put({mod_name}::update_{func_mod})
+                        .delete({mod_name}::delete_{func_mod}),
+                ),
+        )""")
         
     if sub_module_last != "reference":
         with open(os.path.join(dtos_dir, "mod.rs"), "w") as f:
@@ -529,7 +533,7 @@ def process_recursive(module, current_rel=""):
     target_dir = os.path.join(base_models, current_rel)
     
     if not os.path.exists(target_dir):
-        return
+        return False
         
     entries = sorted(os.listdir(target_dir))
     has_model_files = any(f.endswith(".rs") and f not in ["mod.rs", "prelude.rs"] for f in entries)
@@ -538,12 +542,15 @@ def process_recursive(module, current_rel=""):
     
     if has_model_files:
         generate_dtos_and_controllers(module, current_rel)
+        
+    generated_something = has_model_files
     
     child_subdirs = []
     for s in subdirs:
         rel_sub = f"{current_rel}/{s}" if current_rel else s
-        process_recursive(module, rel_sub)
-        child_subdirs.append(s)
+        if process_recursive(module, rel_sub):
+            child_subdirs.append(s)
+            generated_something = True
         
     if child_subdirs:
         # Build mod.rs for dtos and controllers at current level
@@ -569,6 +576,8 @@ def process_recursive(module, current_rel=""):
         
         with open(os.path.join(ctrls_curr, "mod.rs"), "w") as f:
             f.write("\n".join(ctrls_mod_lines) + "\n")
+            
+    return generated_something
 
 
 import sys

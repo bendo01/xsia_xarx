@@ -111,28 +111,26 @@ pub async fn get_class_code(
             capacity: item.capacity,
 
     }))
-}
-
-#[endpoint(tags("Academic - Campaign - Transaction - ClassCod"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Campaign - Transaction - ClassCod"), status_codes(200, 400, 500))]
 pub async fn create_class_code(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<ClassCodResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreateClassCodRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: CreateClassCodRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         code: Set(payload.code),
         alphabet_code: Set(payload.alphabet_code),
         name: Set(payload.name),
@@ -149,9 +147,9 @@ pub async fn create_class_code(
         capacity: Set(payload.capacity),
     };
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(ClassCodResponse {
+        Ok(Json(ClassCodResponse {
             id: item.id,
             code: item.code,
             alphabet_code: item.alphabet_code,
@@ -168,66 +166,66 @@ pub async fn create_class_code(
             unit_id: item.unit_id,
             capacity: item.capacity,
 
-    }))
+        }))
 }
 
 #[endpoint(tags("Academic - Campaign - Transaction - ClassCod"), status_codes(200, 400, 404, 500))]
 pub async fn update_class_code(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<ClassCodResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdateClassCodRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: UpdateClassCodRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("ClassCod not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("ClassCod not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
     if let Some(code) = payload.code {
-        active_model.code = Set(Some(code));
-    }
+            active_model.code = Set(Some(code));
+        }
     if let Some(alphabet_code) = payload.alphabet_code {
-        active_model.alphabet_code = Set(Some(alphabet_code));
-    }
+            active_model.alphabet_code = Set(Some(alphabet_code));
+        }
     if let Some(name) = payload.name {
-        active_model.name = Set(name);
-    }
+            active_model.name = Set(name);
+        }
     if let Some(activity_id) = payload.activity_id {
-        active_model.activity_id = Set(activity_id);
-    }
+            active_model.activity_id = Set(activity_id);
+        }
     if let Some(start_effective_date) = payload.start_effective_date {
-        active_model.start_effective_date = Set(Some(start_effective_date));
-    }
+            active_model.start_effective_date = Set(Some(start_effective_date));
+        }
     if let Some(end_effective_date) = payload.end_effective_date {
-        active_model.end_effective_date = Set(Some(end_effective_date));
-    }
+            active_model.end_effective_date = Set(Some(end_effective_date));
+        }
     if let Some(unit_id) = payload.unit_id {
-        active_model.unit_id = Set(Some(unit_id));
-    }
+            active_model.unit_id = Set(Some(unit_id));
+        }
     if let Some(capacity) = payload.capacity {
-        active_model.capacity = Set(Some(capacity));
-    }
+            active_model.capacity = Set(Some(capacity));
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(ClassCodResponse {
+        Ok(Json(ClassCodResponse {
             id: item.id,
             code: item.code,
             alphabet_code: item.alphabet_code,
@@ -244,36 +242,36 @@ pub async fn update_class_code(
             unit_id: item.unit_id,
             capacity: item.capacity,
 
-    }))
+        }))
 }
-
 #[endpoint(tags("Academic - Campaign - Transaction - ClassCod"), status_codes(200, 400, 404, 500))]
 pub async fn delete_class_code(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("ClassCod not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("ClassCod not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-    active_model.deleted_at = Set(Some(now));
-    active_model.updated_at = Set(Some(now));
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.deleted_at = Set(Some(now));
+        active_model.updated_at = Set(Some(now));
 
-    Ok(Json(MessageResponse {
-        message: "ClassCod deleted successfully".to_string(),
-    }))
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        Ok(Json(MessageResponse {
+            message: "ClassCod deleted successfully".to_string(),
+        }))
 }

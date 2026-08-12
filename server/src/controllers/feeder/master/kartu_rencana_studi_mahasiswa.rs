@@ -113,28 +113,26 @@ pub async fn get_kartu_rencana_studi_mahasiswa(
             updated_by: item.updated_by,
 
     }))
-}
-
-#[endpoint(tags("Feeder - Master - KartuRencanaStudiMahasiswa"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Feeder - Master - KartuRencanaStudiMahasiswa"), status_codes(200, 400, 500))]
 pub async fn create_kartu_rencana_studi_mahasiswa(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<KartuRencanaStudiMahasiswaResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreateKartuRencanaStudiMahasiswaRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: CreateKartuRencanaStudiMahasiswaRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         id_registrasi_mahasiswa: Set(payload.id_registrasi_mahasiswa),
         id_periode: Set(payload.id_periode),
         id_prodi: Set(payload.id_prodi),
@@ -156,9 +154,9 @@ pub async fn create_kartu_rencana_studi_mahasiswa(
         updated_by: Set(None),
     };
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(KartuRencanaStudiMahasiswaResponse {
+        Ok(Json(KartuRencanaStudiMahasiswaResponse {
             id: item.id,
             id_registrasi_mahasiswa: item.id_registrasi_mahasiswa,
             id_periode: item.id_periode,
@@ -180,81 +178,81 @@ pub async fn create_kartu_rencana_studi_mahasiswa(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
 
 #[endpoint(tags("Feeder - Master - KartuRencanaStudiMahasiswa"), status_codes(200, 400, 404, 500))]
 pub async fn update_kartu_rencana_studi_mahasiswa(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<KartuRencanaStudiMahasiswaResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdateKartuRencanaStudiMahasiswaRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: UpdateKartuRencanaStudiMahasiswaRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("KartuRencanaStudiMahasiswa not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("KartuRencanaStudiMahasiswa not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
     if let Some(id_registrasi_mahasiswa) = payload.id_registrasi_mahasiswa {
-        active_model.id_registrasi_mahasiswa = Set(Some(id_registrasi_mahasiswa));
-    }
+            active_model.id_registrasi_mahasiswa = Set(Some(id_registrasi_mahasiswa));
+        }
     if let Some(id_periode) = payload.id_periode {
-        active_model.id_periode = Set(Some(id_periode));
-    }
+            active_model.id_periode = Set(Some(id_periode));
+        }
     if let Some(id_prodi) = payload.id_prodi {
-        active_model.id_prodi = Set(Some(id_prodi));
-    }
+            active_model.id_prodi = Set(Some(id_prodi));
+        }
     if let Some(nama_program_studi) = payload.nama_program_studi {
-        active_model.nama_program_studi = Set(Some(nama_program_studi));
-    }
+            active_model.nama_program_studi = Set(Some(nama_program_studi));
+        }
     if let Some(id_matkul) = payload.id_matkul {
-        active_model.id_matkul = Set(Some(id_matkul));
-    }
+            active_model.id_matkul = Set(Some(id_matkul));
+        }
     if let Some(kode_mata_kuliah) = payload.kode_mata_kuliah {
-        active_model.kode_mata_kuliah = Set(Some(kode_mata_kuliah));
-    }
+            active_model.kode_mata_kuliah = Set(Some(kode_mata_kuliah));
+        }
     if let Some(nama_mata_kuliah) = payload.nama_mata_kuliah {
-        active_model.nama_mata_kuliah = Set(Some(nama_mata_kuliah));
-    }
+            active_model.nama_mata_kuliah = Set(Some(nama_mata_kuliah));
+        }
     if let Some(id_kelas) = payload.id_kelas {
-        active_model.id_kelas = Set(Some(id_kelas));
-    }
+            active_model.id_kelas = Set(Some(id_kelas));
+        }
     if let Some(nama_kelas_kuliah) = payload.nama_kelas_kuliah {
-        active_model.nama_kelas_kuliah = Set(Some(nama_kelas_kuliah));
-    }
+            active_model.nama_kelas_kuliah = Set(Some(nama_kelas_kuliah));
+        }
     if let Some(sks_mata_kuliah) = payload.sks_mata_kuliah {
-        active_model.sks_mata_kuliah = Set(Some(sks_mata_kuliah));
-    }
+            active_model.sks_mata_kuliah = Set(Some(sks_mata_kuliah));
+        }
     if let Some(nim) = payload.nim {
-        active_model.nim = Set(Some(nim));
-    }
+            active_model.nim = Set(Some(nim));
+        }
     if let Some(nama_mahasiswa) = payload.nama_mahasiswa {
-        active_model.nama_mahasiswa = Set(Some(nama_mahasiswa));
-    }
+            active_model.nama_mahasiswa = Set(Some(nama_mahasiswa));
+        }
     if let Some(angkatan) = payload.angkatan {
-        active_model.angkatan = Set(Some(angkatan));
-    }
+            active_model.angkatan = Set(Some(angkatan));
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(KartuRencanaStudiMahasiswaResponse {
+        Ok(Json(KartuRencanaStudiMahasiswaResponse {
             id: item.id,
             id_registrasi_mahasiswa: item.id_registrasi_mahasiswa,
             id_periode: item.id_periode,
@@ -276,36 +274,36 @@ pub async fn update_kartu_rencana_studi_mahasiswa(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
-
 #[endpoint(tags("Feeder - Master - KartuRencanaStudiMahasiswa"), status_codes(200, 400, 404, 500))]
 pub async fn delete_kartu_rencana_studi_mahasiswa(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("KartuRencanaStudiMahasiswa not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("KartuRencanaStudiMahasiswa not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-    active_model.deleted_at = Set(Some(now));
-    active_model.updated_at = Set(Some(now));
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.deleted_at = Set(Some(now));
+        active_model.updated_at = Set(Some(now));
 
-    Ok(Json(MessageResponse {
-        message: "KartuRencanaStudiMahasiswa deleted successfully".to_string(),
-    }))
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        Ok(Json(MessageResponse {
+            message: "KartuRencanaStudiMahasiswa deleted successfully".to_string(),
+        }))
 }

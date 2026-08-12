@@ -139,28 +139,26 @@ pub async fn get_course(
             updated_by: item.updated_by,
 
     }))
-}
-
-#[endpoint(tags("Academic - Course - Master - Cours"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Course - Master - Cours"), status_codes(200, 400, 500))]
 pub async fn create_course(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<CoursResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreateCoursRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: CreateCoursRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         code: Set(payload.code),
         name: Set(payload.name),
         implementation_method: Set(payload.implementation_method),
@@ -191,9 +189,9 @@ pub async fn create_course(
         updated_by: Set(None),
     };
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(CoursResponse {
+        Ok(Json(CoursResponse {
             id: item.id,
             code: item.code.clone(),
             name: item.name.clone(),
@@ -224,108 +222,108 @@ pub async fn create_course(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
 
 #[endpoint(tags("Academic - Course - Master - Cours"), status_codes(200, 400, 404, 500))]
 pub async fn update_course(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<CoursResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdateCoursRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: UpdateCoursRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Cours not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("Cours not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
     if let Some(code) = payload.code {
-        active_model.code = Set(code);
-    }
+            active_model.code = Set(code);
+        }
     if let Some(name) = payload.name {
-        active_model.name = Set(name);
-    }
+            active_model.name = Set(name);
+        }
     if let Some(implementation_method) = payload.implementation_method {
-        active_model.implementation_method = Set(Some(implementation_method));
-    }
+            active_model.implementation_method = Set(Some(implementation_method));
+        }
     if let Some(total_credit) = payload.total_credit {
-        active_model.total_credit = Set(total_credit);
-    }
+            active_model.total_credit = Set(total_credit);
+        }
     if let Some(lecture_credit) = payload.lecture_credit {
-        active_model.lecture_credit = Set(lecture_credit);
-    }
+            active_model.lecture_credit = Set(lecture_credit);
+        }
     if let Some(practice_credit) = payload.practice_credit {
-        active_model.practice_credit = Set(practice_credit);
-    }
+            active_model.practice_credit = Set(practice_credit);
+        }
     if let Some(field_practice_credit) = payload.field_practice_credit {
-        active_model.field_practice_credit = Set(field_practice_credit);
-    }
+            active_model.field_practice_credit = Set(field_practice_credit);
+        }
     if let Some(simulation_credit) = payload.simulation_credit {
-        active_model.simulation_credit = Set(simulation_credit);
-    }
+            active_model.simulation_credit = Set(simulation_credit);
+        }
     if let Some(has_unit) = payload.has_unit {
-        active_model.has_unit = Set(has_unit);
-    }
+            active_model.has_unit = Set(has_unit);
+        }
     if let Some(has_syllabus) = payload.has_syllabus {
-        active_model.has_syllabus = Set(has_syllabus);
-    }
+            active_model.has_syllabus = Set(has_syllabus);
+        }
     if let Some(has_material) = payload.has_material {
-        active_model.has_material = Set(has_material);
-    }
+            active_model.has_material = Set(has_material);
+        }
     if let Some(has_practice) = payload.has_practice {
-        active_model.has_practice = Set(has_practice);
-    }
+            active_model.has_practice = Set(has_practice);
+        }
     if let Some(has_dictation) = payload.has_dictation {
-        active_model.has_dictation = Set(has_dictation);
-    }
+            active_model.has_dictation = Set(has_dictation);
+        }
     if let Some(group_id) = payload.group_id {
-        active_model.group_id = Set(Some(group_id));
-    }
+            active_model.group_id = Set(Some(group_id));
+        }
     if let Some(variety_id) = payload.variety_id {
-        active_model.variety_id = Set(variety_id);
-    }
+            active_model.variety_id = Set(variety_id);
+        }
     if let Some(unit_id) = payload.unit_id {
-        active_model.unit_id = Set(unit_id);
-    }
+            active_model.unit_id = Set(unit_id);
+        }
     if let Some(competence_id) = payload.competence_id {
-        active_model.competence_id = Set(Some(competence_id));
-    }
+            active_model.competence_id = Set(Some(competence_id));
+        }
     if let Some(feeder_course_group_id) = payload.feeder_course_group_id {
-        active_model.feeder_course_group_id = Set(Some(feeder_course_group_id));
-    }
+            active_model.feeder_course_group_id = Set(Some(feeder_course_group_id));
+        }
     if let Some(feeder_course_type_id) = payload.feeder_course_type_id {
-        active_model.feeder_course_type_id = Set(Some(feeder_course_type_id));
-    }
+            active_model.feeder_course_type_id = Set(Some(feeder_course_type_id));
+        }
     if let Some(feeder_course_id) = payload.feeder_course_id {
-        active_model.feeder_course_id = Set(Some(feeder_course_id));
-    }
+            active_model.feeder_course_id = Set(Some(feeder_course_id));
+        }
     if let Some(start_date) = payload.start_date {
-        active_model.start_date = Set(Some(start_date));
-    }
+            active_model.start_date = Set(Some(start_date));
+        }
     if let Some(end_date) = payload.end_date {
-        active_model.end_date = Set(Some(end_date));
-    }
+            active_model.end_date = Set(Some(end_date));
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(CoursResponse {
+        Ok(Json(CoursResponse {
             id: item.id,
             code: item.code.clone(),
             name: item.name.clone(),
@@ -356,36 +354,36 @@ pub async fn update_course(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
-
 #[endpoint(tags("Academic - Course - Master - Cours"), status_codes(200, 400, 404, 500))]
 pub async fn delete_course(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Cours not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("Cours not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-    active_model.deleted_at = Set(Some(now));
-    active_model.updated_at = Set(Some(now));
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.deleted_at = Set(Some(now));
+        active_model.updated_at = Set(Some(now));
 
-    Ok(Json(MessageResponse {
-        message: "Cours deleted successfully".to_string(),
-    }))
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        Ok(Json(MessageResponse {
+            message: "Cours deleted successfully".to_string(),
+        }))
 }

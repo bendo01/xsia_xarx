@@ -125,28 +125,26 @@ pub async fn get_detail_nilai_perkuliahan_kela(
             nilai_huruf: item.nilai_huruf,
 
     }))
-}
-
-#[endpoint(tags("Feeder - Master - DetailNilaiPerkuliahanKela"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Feeder - Master - DetailNilaiPerkuliahanKela"), status_codes(200, 400, 500))]
 pub async fn create_detail_nilai_perkuliahan_kela(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<DetailNilaiPerkuliahanKelaResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreateDetailNilaiPerkuliahanKelaRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: CreateDetailNilaiPerkuliahanKelaRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         created_at: Set(Some(now)),
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
@@ -174,9 +172,9 @@ pub async fn create_detail_nilai_perkuliahan_kela(
         nilai_huruf: Set(payload.nilai_huruf),
     };
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(DetailNilaiPerkuliahanKelaResponse {
+        Ok(Json(DetailNilaiPerkuliahanKelaResponse {
             id: item.id,
             created_at: item.created_at,
             updated_at: item.updated_at,
@@ -204,99 +202,99 @@ pub async fn create_detail_nilai_perkuliahan_kela(
             nilai_indeks: item.nilai_indeks,
             nilai_huruf: item.nilai_huruf,
 
-    }))
+        }))
 }
 
 #[endpoint(tags("Feeder - Master - DetailNilaiPerkuliahanKela"), status_codes(200, 400, 404, 500))]
 pub async fn update_detail_nilai_perkuliahan_kela(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<DetailNilaiPerkuliahanKelaResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdateDetailNilaiPerkuliahanKelaRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: UpdateDetailNilaiPerkuliahanKelaRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("DetailNilaiPerkuliahanKela not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("DetailNilaiPerkuliahanKela not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
     if let Some(id_prodi) = payload.id_prodi {
-        active_model.id_prodi = Set(Some(id_prodi));
-    }
+            active_model.id_prodi = Set(Some(id_prodi));
+        }
     if let Some(nama_program_studi) = payload.nama_program_studi {
-        active_model.nama_program_studi = Set(Some(nama_program_studi));
-    }
+            active_model.nama_program_studi = Set(Some(nama_program_studi));
+        }
     if let Some(id_semester) = payload.id_semester {
-        active_model.id_semester = Set(Some(id_semester));
-    }
+            active_model.id_semester = Set(Some(id_semester));
+        }
     if let Some(nama_semester) = payload.nama_semester {
-        active_model.nama_semester = Set(Some(nama_semester));
-    }
+            active_model.nama_semester = Set(Some(nama_semester));
+        }
     if let Some(id_matkul) = payload.id_matkul {
-        active_model.id_matkul = Set(Some(id_matkul));
-    }
+            active_model.id_matkul = Set(Some(id_matkul));
+        }
     if let Some(kode_mata_kuliah) = payload.kode_mata_kuliah {
-        active_model.kode_mata_kuliah = Set(Some(kode_mata_kuliah));
-    }
+            active_model.kode_mata_kuliah = Set(Some(kode_mata_kuliah));
+        }
     if let Some(nama_mata_kuliah) = payload.nama_mata_kuliah {
-        active_model.nama_mata_kuliah = Set(Some(nama_mata_kuliah));
-    }
+            active_model.nama_mata_kuliah = Set(Some(nama_mata_kuliah));
+        }
     if let Some(sks_mata_kuliah) = payload.sks_mata_kuliah {
-        active_model.sks_mata_kuliah = Set(Some(sks_mata_kuliah));
-    }
+            active_model.sks_mata_kuliah = Set(Some(sks_mata_kuliah));
+        }
     if let Some(id_kelas_kuliah) = payload.id_kelas_kuliah {
-        active_model.id_kelas_kuliah = Set(Some(id_kelas_kuliah));
-    }
+            active_model.id_kelas_kuliah = Set(Some(id_kelas_kuliah));
+        }
     if let Some(nama_kelas_kuliah) = payload.nama_kelas_kuliah {
-        active_model.nama_kelas_kuliah = Set(Some(nama_kelas_kuliah));
-    }
+            active_model.nama_kelas_kuliah = Set(Some(nama_kelas_kuliah));
+        }
     if let Some(id_registrasi_mahasiswa) = payload.id_registrasi_mahasiswa {
-        active_model.id_registrasi_mahasiswa = Set(Some(id_registrasi_mahasiswa));
-    }
+            active_model.id_registrasi_mahasiswa = Set(Some(id_registrasi_mahasiswa));
+        }
     if let Some(id_mahasiswa) = payload.id_mahasiswa {
-        active_model.id_mahasiswa = Set(Some(id_mahasiswa));
-    }
+            active_model.id_mahasiswa = Set(Some(id_mahasiswa));
+        }
     if let Some(nim) = payload.nim {
-        active_model.nim = Set(Some(nim));
-    }
+            active_model.nim = Set(Some(nim));
+        }
     if let Some(nama_mahasiswa) = payload.nama_mahasiswa {
-        active_model.nama_mahasiswa = Set(Some(nama_mahasiswa));
-    }
+            active_model.nama_mahasiswa = Set(Some(nama_mahasiswa));
+        }
     if let Some(jurusan) = payload.jurusan {
-        active_model.jurusan = Set(Some(jurusan));
-    }
+            active_model.jurusan = Set(Some(jurusan));
+        }
     if let Some(angkatan) = payload.angkatan {
-        active_model.angkatan = Set(Some(angkatan));
-    }
+            active_model.angkatan = Set(Some(angkatan));
+        }
     if let Some(nilai_angka) = payload.nilai_angka {
-        active_model.nilai_angka = Set(Some(nilai_angka));
-    }
+            active_model.nilai_angka = Set(Some(nilai_angka));
+        }
     if let Some(nilai_indeks) = payload.nilai_indeks {
-        active_model.nilai_indeks = Set(Some(nilai_indeks));
-    }
+            active_model.nilai_indeks = Set(Some(nilai_indeks));
+        }
     if let Some(nilai_huruf) = payload.nilai_huruf {
-        active_model.nilai_huruf = Set(Some(nilai_huruf));
-    }
+            active_model.nilai_huruf = Set(Some(nilai_huruf));
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(DetailNilaiPerkuliahanKelaResponse {
+        Ok(Json(DetailNilaiPerkuliahanKelaResponse {
             id: item.id,
             created_at: item.created_at,
             updated_at: item.updated_at,
@@ -324,36 +322,36 @@ pub async fn update_detail_nilai_perkuliahan_kela(
             nilai_indeks: item.nilai_indeks,
             nilai_huruf: item.nilai_huruf,
 
-    }))
+        }))
 }
-
 #[endpoint(tags("Feeder - Master - DetailNilaiPerkuliahanKela"), status_codes(200, 400, 404, 500))]
 pub async fn delete_detail_nilai_perkuliahan_kela(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("DetailNilaiPerkuliahanKela not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("DetailNilaiPerkuliahanKela not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-    active_model.deleted_at = Set(Some(now));
-    active_model.updated_at = Set(Some(now));
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.deleted_at = Set(Some(now));
+        active_model.updated_at = Set(Some(now));
 
-    Ok(Json(MessageResponse {
-        message: "DetailNilaiPerkuliahanKela deleted successfully".to_string(),
-    }))
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        Ok(Json(MessageResponse {
+            message: "DetailNilaiPerkuliahanKela deleted successfully".to_string(),
+        }))
 }

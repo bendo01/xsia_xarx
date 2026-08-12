@@ -107,28 +107,26 @@ pub async fn get_substansi_matakuliah(
             updated_by: item.updated_by,
 
     }))
-}
-
-#[endpoint(tags("Feeder - Master - SubstansiMatakuliah"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Feeder - Master - SubstansiMatakuliah"), status_codes(200, 400, 500))]
 pub async fn create_substansi_matakuliah(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<SubstansiMatakuliahResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreateSubstansiMatakuliahRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: CreateSubstansiMatakuliahRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         id_substansi: Set(payload.id_substansi),
         id_prodi: Set(payload.id_prodi),
         nama_program_studi: Set(payload.nama_program_studi),
@@ -147,9 +145,9 @@ pub async fn create_substansi_matakuliah(
         updated_by: Set(None),
     };
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(SubstansiMatakuliahResponse {
+        Ok(Json(SubstansiMatakuliahResponse {
             id: item.id,
             id_substansi: item.id_substansi,
             id_prodi: item.id_prodi,
@@ -168,72 +166,72 @@ pub async fn create_substansi_matakuliah(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
 
 #[endpoint(tags("Feeder - Master - SubstansiMatakuliah"), status_codes(200, 400, 404, 500))]
 pub async fn update_substansi_matakuliah(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<SubstansiMatakuliahResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdateSubstansiMatakuliahRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: UpdateSubstansiMatakuliahRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("SubstansiMatakuliah not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("SubstansiMatakuliah not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
     if let Some(id_substansi) = payload.id_substansi {
-        active_model.id_substansi = Set(Some(id_substansi));
-    }
+            active_model.id_substansi = Set(Some(id_substansi));
+        }
     if let Some(id_prodi) = payload.id_prodi {
-        active_model.id_prodi = Set(Some(id_prodi));
-    }
+            active_model.id_prodi = Set(Some(id_prodi));
+        }
     if let Some(nama_program_studi) = payload.nama_program_studi {
-        active_model.nama_program_studi = Set(Some(nama_program_studi));
-    }
+            active_model.nama_program_studi = Set(Some(nama_program_studi));
+        }
     if let Some(nama_substansi) = payload.nama_substansi {
-        active_model.nama_substansi = Set(Some(nama_substansi));
-    }
+            active_model.nama_substansi = Set(Some(nama_substansi));
+        }
     if let Some(sks_mata_kuliah) = payload.sks_mata_kuliah {
-        active_model.sks_mata_kuliah = Set(Some(sks_mata_kuliah));
-    }
+            active_model.sks_mata_kuliah = Set(Some(sks_mata_kuliah));
+        }
     if let Some(sks_tatap_muka) = payload.sks_tatap_muka {
-        active_model.sks_tatap_muka = Set(Some(sks_tatap_muka));
-    }
+            active_model.sks_tatap_muka = Set(Some(sks_tatap_muka));
+        }
     if let Some(sks_praktek) = payload.sks_praktek {
-        active_model.sks_praktek = Set(Some(sks_praktek));
-    }
+            active_model.sks_praktek = Set(Some(sks_praktek));
+        }
     if let Some(sks_praktek_lapangan) = payload.sks_praktek_lapangan {
-        active_model.sks_praktek_lapangan = Set(Some(sks_praktek_lapangan));
-    }
+            active_model.sks_praktek_lapangan = Set(Some(sks_praktek_lapangan));
+        }
     if let Some(sks_simulasi) = payload.sks_simulasi {
-        active_model.sks_simulasi = Set(Some(sks_simulasi));
-    }
+            active_model.sks_simulasi = Set(Some(sks_simulasi));
+        }
     if let Some(id_jenis_substansi) = payload.id_jenis_substansi {
-        active_model.id_jenis_substansi = Set(Some(id_jenis_substansi));
-    }
+            active_model.id_jenis_substansi = Set(Some(id_jenis_substansi));
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(SubstansiMatakuliahResponse {
+        Ok(Json(SubstansiMatakuliahResponse {
             id: item.id,
             id_substansi: item.id_substansi,
             id_prodi: item.id_prodi,
@@ -252,36 +250,36 @@ pub async fn update_substansi_matakuliah(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
-
 #[endpoint(tags("Feeder - Master - SubstansiMatakuliah"), status_codes(200, 400, 404, 500))]
 pub async fn delete_substansi_matakuliah(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("SubstansiMatakuliah not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("SubstansiMatakuliah not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-    active_model.deleted_at = Set(Some(now));
-    active_model.updated_at = Set(Some(now));
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.deleted_at = Set(Some(now));
+        active_model.updated_at = Set(Some(now));
 
-    Ok(Json(MessageResponse {
-        message: "SubstansiMatakuliah deleted successfully".to_string(),
-    }))
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        Ok(Json(MessageResponse {
+            message: "SubstansiMatakuliah deleted successfully".to_string(),
+        }))
 }

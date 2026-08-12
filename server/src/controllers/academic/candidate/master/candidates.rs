@@ -125,28 +125,26 @@ pub async fn get_candidate(
             updated_by: item.updated_by,
 
     }))
-}
-
-#[endpoint(tags("Academic - Candidate - Master - Candidat"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Candidate - Master - Candidat"), status_codes(200, 400, 500))]
 pub async fn create_candidate(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<CandidatResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreateCandidatRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: CreateCandidatRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         thread: Set(payload.thread),
         code: Set(payload.code),
         name: Set(payload.name),
@@ -170,9 +168,9 @@ pub async fn create_candidate(
         updated_by: Set(None),
     };
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(CandidatResponse {
+        Ok(Json(CandidatResponse {
             id: item.id,
             thread: item.thread,
             code: item.code,
@@ -196,87 +194,87 @@ pub async fn create_candidate(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
 
 #[endpoint(tags("Academic - Candidate - Master - Candidat"), status_codes(200, 400, 404, 500))]
 pub async fn update_candidate(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<CandidatResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdateCandidatRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: UpdateCandidatRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Candidat not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("Candidat not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
     if let Some(thread) = payload.thread {
-        active_model.thread = Set(Some(thread));
-    }
+            active_model.thread = Set(Some(thread));
+        }
     if let Some(code) = payload.code {
-        active_model.code = Set(Some(code));
-    }
+            active_model.code = Set(Some(code));
+        }
     if let Some(name) = payload.name {
-        active_model.name = Set(name);
-    }
+            active_model.name = Set(name);
+        }
     if let Some(student_national_number) = payload.student_national_number {
-        active_model.student_national_number = Set(Some(student_national_number));
-    }
+            active_model.student_national_number = Set(Some(student_national_number));
+        }
     if let Some(school_name) = payload.school_name {
-        active_model.school_name = Set(Some(school_name));
-    }
+            active_model.school_name = Set(Some(school_name));
+        }
     if let Some(school_regency_id) = payload.school_regency_id {
-        active_model.school_regency_id = Set(Some(school_regency_id));
-    }
+            active_model.school_regency_id = Set(Some(school_regency_id));
+        }
     if let Some(state_smart_card_number) = payload.state_smart_card_number {
-        active_model.state_smart_card_number = Set(Some(state_smart_card_number));
-    }
+            active_model.state_smart_card_number = Set(Some(state_smart_card_number));
+        }
     if let Some(individual_id) = payload.individual_id {
-        active_model.individual_id = Set(Some(individual_id));
-    }
+            active_model.individual_id = Set(Some(individual_id));
+        }
     if let Some(academic_year_id) = payload.academic_year_id {
-        active_model.academic_year_id = Set(Some(academic_year_id));
-    }
+            active_model.academic_year_id = Set(Some(academic_year_id));
+        }
     if let Some(student_id) = payload.student_id {
-        active_model.student_id = Set(Some(student_id));
-    }
+            active_model.student_id = Set(Some(student_id));
+        }
     if let Some(user_id) = payload.user_id {
-        active_model.user_id = Set(user_id);
-    }
+            active_model.user_id = Set(user_id);
+        }
     if let Some(registration_type_id) = payload.registration_type_id {
-        active_model.registration_type_id = Set(registration_type_id);
-    }
+            active_model.registration_type_id = Set(registration_type_id);
+        }
     if let Some(institution_id) = payload.institution_id {
-        active_model.institution_id = Set(institution_id);
-    }
+            active_model.institution_id = Set(institution_id);
+        }
     if let Some(guidence_name) = payload.guidence_name {
-        active_model.guidence_name = Set(Some(guidence_name));
-    }
+            active_model.guidence_name = Set(Some(guidence_name));
+        }
     if let Some(guidence_phone_number) = payload.guidence_phone_number {
-        active_model.guidence_phone_number = Set(Some(guidence_phone_number));
-    }
+            active_model.guidence_phone_number = Set(Some(guidence_phone_number));
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(CandidatResponse {
+        Ok(Json(CandidatResponse {
             id: item.id,
             thread: item.thread,
             code: item.code,
@@ -300,36 +298,36 @@ pub async fn update_candidate(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
-
 #[endpoint(tags("Academic - Candidate - Master - Candidat"), status_codes(200, 400, 404, 500))]
 pub async fn delete_candidate(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Candidat not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("Candidat not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-    active_model.deleted_at = Set(Some(now));
-    active_model.updated_at = Set(Some(now));
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.deleted_at = Set(Some(now));
+        active_model.updated_at = Set(Some(now));
 
-    Ok(Json(MessageResponse {
-        message: "Candidat deleted successfully".to_string(),
-    }))
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        Ok(Json(MessageResponse {
+            message: "Candidat deleted successfully".to_string(),
+        }))
 }

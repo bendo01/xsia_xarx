@@ -7,23 +7,23 @@ use sea_orm::{
 use uuid::Uuid;
 use validator::Validate;
 
-use crate::dtos::common::reference::MessageResponse;
 use crate::dtos::institution::master::staffes::{
-    CreateStaffeRequest, StaffeQuery, PaginatedStaffeResponse,
-    StaffeResponse, UpdateStaffeRequest,
+    CreateStaffesRequest, StaffesQuery, StaffesResponse, PaginatedStaffesResponse,
+    UpdateStaffesRequest,
 };
+use crate::dtos::common::reference::MessageResponse;
 use crate::models::institution::master::staffes as entity_mod;
 
-#[endpoint(tags("Institution Master - Staffe"), status_codes(200, 500))]
+#[endpoint(tags("Institution - Master - Staffes"), status_codes(200, 500))]
 pub async fn list_staffes(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<PaginatedStaffeResponse>, StatusError> {
-    let db = depot
-        .get_typed::<DatabaseConnection>()
-        .map_err(|_| StatusError::internal_server_error().brief("Database connection missing"))?;
+) -> Result<Json<PaginatedStaffesResponse>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
 
-    let query: StaffeQuery = req.parse_queries().unwrap_or_default();
+    let query: StaffesQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
@@ -33,25 +33,40 @@ pub async fn list_staffes(
         select = select.filter(entity_mod::Column::Name.contains(name));
     }
 
+    if let Some(code) = query.code {
+        select = select.filter(entity_mod::Column::Code.eq(code));
+    }
+
     let paginator = select
         .order_by_asc(entity_mod::Column::Name)
         .paginate(db, page_size);
 
-    let total = paginator
-        .num_items()
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
-
+    let total = paginator.num_items().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
     let total_pages = (total as f64 / page_size as f64).ceil() as u64;
 
-    let items = paginator
-        .fetch_page(page.saturating_sub(1))
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+    let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(to_response).collect();
+    let data = items.into_iter().map(|item| StaffesResponse {
+            id: item.id,
+            code: item.code,
+            name: item.name,
+            decree_number: item.decree_number,
+            decree_date: item.decree_date,
+            start_date: item.start_date,
+            end_date: item.end_date,
+            employee_id: item.employee_id,
+            unit_id: item.unit_id,
+            position_type_id: item.position_type_id,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+            deleted_at: item.deleted_at,
+            sync_at: item.sync_at,
+            created_by: item.created_by,
+            updated_by: item.updated_by,
 
-    Ok(Json(PaginatedStaffeResponse {
+    }).collect();
+
+    Ok(Json(PaginatedStaffesResponse {
         data,
         total,
         page,
@@ -60,50 +75,64 @@ pub async fn list_staffes(
     }))
 }
 
-#[endpoint(tags("Institution Master - Staffe"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Institution - Master - Staffes"), status_codes(200, 400, 404, 500))]
 pub async fn get_staffe(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<StaffeResponse>, StatusError> {
-    let db = depot
-        .get_typed::<DatabaseConnection>()
-        .map_err(|_| StatusError::internal_server_error().brief("Database connection missing"))?;
+) -> Result<Json<StaffesResponse>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
 
-    let id = parse_uuid(req)?;
+    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
     let item = entity_mod::Entity::find_by_id(id)
         .filter(entity_mod::Column::DeletedAt.is_null())
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Staffe not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("Staffes not found"))?;
 
-    Ok(Json(to_response(item)))
-}
+    Ok(Json(StaffesResponse {
+            id: item.id,
+            code: item.code,
+            name: item.name,
+            decree_number: item.decree_number,
+            decree_date: item.decree_date,
+            start_date: item.start_date,
+            end_date: item.end_date,
+            employee_id: item.employee_id,
+            unit_id: item.unit_id,
+            position_type_id: item.position_type_id,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+            deleted_at: item.deleted_at,
+            sync_at: item.sync_at,
+            created_by: item.created_by,
+            updated_by: item.updated_by,
 
-#[endpoint(tags("Institution Master - Staffe"), status_codes(200, 400, 500))]
+    }))
+}#[endpoint(tags("Institution - Master - Staffes"), status_codes(200, 400, 500))]
 pub async fn create_staffe(
-    req: &mut Request,
-    depot: &mut Depot,
-) -> Result<Json<StaffeResponse>, StatusError> {
-    let db = depot
-        .get_typed::<DatabaseConnection>()
-        .map_err(|_| StatusError::internal_server_error().brief("Database connection missing"))?;
+        req: &mut Request,
+        depot: &mut Depot,
+) -> Result<Json<StaffesResponse>, StatusError> {
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreateStaffeRequest = req
-        .parse_json()
-        .await
-        .map_err(|e| StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e)))?;
+        let payload: CreateStaffesRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload
-        .validate()
-        .map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         code: Set(payload.code),
         name: Set(payload.name),
         decree_number: Set(payload.decree_number),
@@ -121,139 +150,136 @@ pub async fn create_staffe(
         updated_by: Set(None),
     };
 
-    let item = active_model
-        .insert(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(to_response(item)))
+        Ok(Json(StaffesResponse {
+            id: item.id,
+            code: item.code,
+            name: item.name,
+            decree_number: item.decree_number,
+            decree_date: item.decree_date,
+            start_date: item.start_date,
+            end_date: item.end_date,
+            employee_id: item.employee_id,
+            unit_id: item.unit_id,
+            position_type_id: item.position_type_id,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+            deleted_at: item.deleted_at,
+            sync_at: item.sync_at,
+            created_by: item.created_by,
+            updated_by: item.updated_by,
+
+        }))
 }
 
-#[endpoint(tags("Institution Master - Staffe"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Institution - Master - Staffes"), status_codes(200, 400, 404, 500))]
 pub async fn update_staffe(
-    req: &mut Request,
-    depot: &mut Depot,
-) -> Result<Json<StaffeResponse>, StatusError> {
-    let db = depot
-        .get_typed::<DatabaseConnection>()
-        .map_err(|_| StatusError::internal_server_error().brief("Database connection missing"))?;
+        req: &mut Request,
+        depot: &mut Depot,
+) -> Result<Json<StaffesResponse>, StatusError> {
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id = parse_uuid(req)?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdateStaffeRequest = req
-        .parse_json()
-        .await
-        .map_err(|e| StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e)))?;
+        let payload: UpdateStaffesRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload
-        .validate()
-        .map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Staffe not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("Staffes not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    if let Some(val) = payload.code {
-        active_model.code = Set(Some(val));
-    }
-    if let Some(val) = payload.name {
-        active_model.name = Set(Some(val));
-    }
-    if let Some(val) = payload.decree_number {
-        active_model.decree_number = Set(Some(val));
-    }
-    if let Some(val) = payload.decree_date {
-        active_model.decree_date = Set(Some(val));
-    }
-    if let Some(val) = payload.start_date {
-        active_model.start_date = Set(Some(val));
-    }
-    if let Some(val) = payload.end_date {
-        active_model.end_date = Set(Some(val));
-    }
-    if let Some(val) = payload.employee_id {
-        active_model.employee_id = Set(val);
-    }
-    if let Some(val) = payload.unit_id {
-        active_model.unit_id = Set(val);
-    }
-    if let Some(val) = payload.position_type_id {
-        active_model.position_type_id = Set(Some(val));
-    }
+    if let Some(code) = payload.code {
+            active_model.code = Set(Some(code));
+        }
+    if let Some(name) = payload.name {
+            active_model.name = Set(Some(name));
+        }
+    if let Some(decree_number) = payload.decree_number {
+            active_model.decree_number = Set(Some(decree_number));
+        }
+    if let Some(decree_date) = payload.decree_date {
+            active_model.decree_date = Set(Some(decree_date));
+        }
+    if let Some(start_date) = payload.start_date {
+            active_model.start_date = Set(Some(start_date));
+        }
+    if let Some(end_date) = payload.end_date {
+            active_model.end_date = Set(Some(end_date));
+        }
+    if let Some(employee_id) = payload.employee_id {
+            active_model.employee_id = Set(employee_id);
+        }
+    if let Some(unit_id) = payload.unit_id {
+            active_model.unit_id = Set(unit_id);
+        }
+    if let Some(position_type_id) = payload.position_type_id {
+            active_model.position_type_id = Set(Some(position_type_id));
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model
-        .update(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(to_response(item)))
+        Ok(Json(StaffesResponse {
+            id: item.id,
+            code: item.code,
+            name: item.name,
+            decree_number: item.decree_number,
+            decree_date: item.decree_date,
+            start_date: item.start_date,
+            end_date: item.end_date,
+            employee_id: item.employee_id,
+            unit_id: item.unit_id,
+            position_type_id: item.position_type_id,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+            deleted_at: item.deleted_at,
+            sync_at: item.sync_at,
+            created_by: item.created_by,
+            updated_by: item.updated_by,
+
+        }))
 }
-
-#[endpoint(tags("Institution Master - Staffe"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Institution - Master - Staffes"), status_codes(200, 400, 404, 500))]
 pub async fn delete_staffe(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot
-        .get_typed::<DatabaseConnection>()
-        .map_err(|_| StatusError::internal_server_error().brief("Database connection missing"))?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id = parse_uuid(req)?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Staffe not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("Staffes not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-    active_model.deleted_at = Set(Some(Utc::now().naive_utc()));
-    active_model.updated_at = Set(Some(now));
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model
-        .update(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.deleted_at = Set(Some(now));
+        active_model.updated_at = Set(Some(now));
 
-    Ok(Json(MessageResponse {
-        message: "Staffe deleted successfully".to_string(),
-    }))
-}
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-// Helpers
-fn parse_uuid(req: &mut Request) -> Result<Uuid, StatusError> {
-    let id_str = req
-        .param::<String>("id")
-        .ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))
-}
-
-fn to_response(item: entity_mod::Model) -> StaffeResponse {
-    StaffeResponse {
-        id: item.id,
-        code: item.code,
-        name: item.name,
-        decree_number: item.decree_number,
-        decree_date: item.decree_date,
-        start_date: item.start_date,
-        end_date: item.end_date,
-        employee_id: item.employee_id,
-        unit_id: item.unit_id,
-        position_type_id: item.position_type_id,
-        created_at: item.created_at,
-        updated_at: item.updated_at,
-        deleted_at: item.deleted_at,
-        sync_at: item.sync_at,
-        created_by: item.created_by,
-        updated_by: item.updated_by,
-    }
+        Ok(Json(MessageResponse {
+            message: "Staffes deleted successfully".to_string(),
+        }))
 }

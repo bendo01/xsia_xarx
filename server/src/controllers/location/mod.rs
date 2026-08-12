@@ -10,7 +10,7 @@ pub mod sub_districts;
 pub mod villages;
 
 pub fn router() -> Router {
-    let location_router = Router::with_path("location")
+    Router::with_path("")
         .push(
             Router::with_path("continents")
                 .get(continents::list_continents)
@@ -25,12 +25,12 @@ pub fn router() -> Router {
         .push(
             Router::with_path("countries")
                 .get(countries::list_countries)
-                .post(countries::create_country)
+                .post(countries::create_countrie)
                 .push(
                     Router::with_path("{id}")
-                        .get(countries::get_country)
-                        .put(countries::update_country)
-                        .delete(countries::delete_country),
+                        .get(countries::get_countrie)
+                        .put(countries::update_countrie)
+                        .delete(countries::delete_countrie),
                 ),
         )
         .push(
@@ -47,23 +47,23 @@ pub fn router() -> Router {
         .push(
             Router::with_path("regencies")
                 .get(regencies::list_regencies)
-                .post(regencies::create_regency)
+                .post(regencies::create_regencie)
                 .push(
                     Router::with_path("{id}")
-                        .get(regencies::get_regency)
-                        .put(regencies::update_regency)
-                        .delete(regencies::delete_regency),
+                        .get(regencies::get_regencie)
+                        .put(regencies::update_regencie)
+                        .delete(regencies::delete_regencie),
                 ),
         )
         .push(
             Router::with_path("regency-types")
                 .get(regency_types::list_regency_types)
-                .post(regency_types::create_regencytype)
+                .post(regency_types::create_regency_type)
                 .push(
                     Router::with_path("{id}")
-                        .get(regency_types::get_regencytype)
-                        .put(regency_types::update_regencytype)
-                        .delete(regency_types::delete_regencytype),
+                        .get(regency_types::get_regency_type)
+                        .put(regency_types::update_regency_type)
+                        .delete(regency_types::delete_regency_type),
                 ),
         )
         .push(
@@ -80,12 +80,12 @@ pub fn router() -> Router {
         .push(
             Router::with_path("sub-districts")
                 .get(sub_districts::list_sub_districts)
-                .post(sub_districts::create_subdistrict)
+                .post(sub_districts::create_sub_district)
                 .push(
                     Router::with_path("{id}")
-                        .get(sub_districts::get_subdistrict)
-                        .put(sub_districts::update_subdistrict)
-                        .delete(sub_districts::delete_subdistrict),
+                        .get(sub_districts::get_sub_district)
+                        .put(sub_districts::update_sub_district)
+                        .delete(sub_districts::delete_sub_district),
                 ),
         )
         .push(
@@ -98,7 +98,5 @@ pub fn router() -> Router {
                         .put(villages::update_village)
                         .delete(villages::delete_village),
                 ),
-        );
-
-    location_router
+        )
 }

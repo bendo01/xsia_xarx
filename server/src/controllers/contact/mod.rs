@@ -1,5 +1,4 @@
 use salvo::prelude::*;
-
 pub mod master;
 pub mod reference;
 

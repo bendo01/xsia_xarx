@@ -1,8 +1,17 @@
-use chrono::{NaiveDate, NaiveDateTime};
-use salvo::oapi::ToSchema;
 use serde::{Deserialize, Serialize};
+use salvo::oapi::ToSchema;
 use uuid::Uuid;
 use validator::Validate;
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct InstitutionQuery {
+    pub page: Option<u64>,
+    pub page_size: Option<u64>,
+    pub name: Option<String>,
+    pub code: Option<String>,
+}
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
 pub struct InstitutionResponse {
@@ -30,7 +39,6 @@ pub struct CreateInstitutionRequest {
     pub code: Option<String>,
     pub name: Option<String>,
     pub alphabet_code: Option<String>,
-    #[serde(default)]
     pub is_active: bool,
     pub variety_id: Uuid,
     pub category_id: Uuid,
@@ -52,13 +60,6 @@ pub struct UpdateInstitutionRequest {
     pub parent_id: Option<Uuid>,
     pub feeder_id: Option<Uuid>,
     pub academic_year_id: Option<Uuid>,
-}
-
-#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct InstitutionQuery {
-    pub page: Option<u64>,
-    pub page_size: Option<u64>,
-    pub name: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]

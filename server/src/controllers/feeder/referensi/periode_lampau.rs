@@ -101,28 +101,26 @@ pub async fn get_periode_lampau(
             updated_by: item.updated_by,
 
     }))
-}
-
-#[endpoint(tags("Feeder - Referensi - PeriodeLampau"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Feeder - Referensi - PeriodeLampau"), status_codes(200, 400, 500))]
 pub async fn create_periode_lampau(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<PeriodeLampauResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreatePeriodeLampauRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: CreatePeriodeLampauRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         id_program_studi: Set(payload.id_program_studi),
         program_studi: Set(payload.program_studi),
         id_semester: Set(payload.id_semester),
@@ -138,9 +136,9 @@ pub async fn create_periode_lampau(
         updated_by: Set(None),
     };
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(PeriodeLampauResponse {
+        Ok(Json(PeriodeLampauResponse {
             id: item.id,
             id_program_studi: item.id_program_studi,
             program_studi: item.program_studi,
@@ -156,63 +154,63 @@ pub async fn create_periode_lampau(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
 
 #[endpoint(tags("Feeder - Referensi - PeriodeLampau"), status_codes(200, 400, 404, 500))]
 pub async fn update_periode_lampau(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<PeriodeLampauResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdatePeriodeLampauRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: UpdatePeriodeLampauRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("PeriodeLampau not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("PeriodeLampau not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
     if let Some(id_program_studi) = payload.id_program_studi {
-        active_model.id_program_studi = Set(Some(id_program_studi));
-    }
+            active_model.id_program_studi = Set(Some(id_program_studi));
+        }
     if let Some(program_studi) = payload.program_studi {
-        active_model.program_studi = Set(Some(program_studi));
-    }
+            active_model.program_studi = Set(Some(program_studi));
+        }
     if let Some(id_semester) = payload.id_semester {
-        active_model.id_semester = Set(Some(id_semester));
-    }
+            active_model.id_semester = Set(Some(id_semester));
+        }
     if let Some(semester) = payload.semester {
-        active_model.semester = Set(Some(semester));
-    }
+            active_model.semester = Set(Some(semester));
+        }
     if let Some(tanggal_mulai_perkuliahan) = payload.tanggal_mulai_perkuliahan {
-        active_model.tanggal_mulai_perkuliahan = Set(Some(tanggal_mulai_perkuliahan));
-    }
+            active_model.tanggal_mulai_perkuliahan = Set(Some(tanggal_mulai_perkuliahan));
+        }
     if let Some(tanggal_selesai_perkuliahan) = payload.tanggal_selesai_perkuliahan {
-        active_model.tanggal_selesai_perkuliahan = Set(Some(tanggal_selesai_perkuliahan));
-    }
+            active_model.tanggal_selesai_perkuliahan = Set(Some(tanggal_selesai_perkuliahan));
+        }
     if let Some(tipe_periode) = payload.tipe_periode {
-        active_model.tipe_periode = Set(Some(tipe_periode));
-    }
+            active_model.tipe_periode = Set(Some(tipe_periode));
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(PeriodeLampauResponse {
+        Ok(Json(PeriodeLampauResponse {
             id: item.id,
             id_program_studi: item.id_program_studi,
             program_studi: item.program_studi,
@@ -228,36 +226,36 @@ pub async fn update_periode_lampau(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
-
 #[endpoint(tags("Feeder - Referensi - PeriodeLampau"), status_codes(200, 400, 404, 500))]
 pub async fn delete_periode_lampau(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("PeriodeLampau not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("PeriodeLampau not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-    active_model.deleted_at = Set(Some(Utc::now().into()));
-    active_model.updated_at = Set(Some(now));
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.deleted_at = Set(Some(Utc::now().into()));
+        active_model.updated_at = Set(Some(now));
 
-    Ok(Json(MessageResponse {
-        message: "PeriodeLampau deleted successfully".to_string(),
-    }))
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        Ok(Json(MessageResponse {
+            message: "PeriodeLampau deleted successfully".to_string(),
+        }))
 }

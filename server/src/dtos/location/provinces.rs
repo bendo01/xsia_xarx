@@ -1,11 +1,20 @@
-use chrono::NaiveDateTime;
-use salvo::oapi::ToSchema;
 use serde::{Deserialize, Serialize};
+use salvo::oapi::ToSchema;
 use uuid::Uuid;
 use validator::Validate;
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct ProvincQuery {
+    pub page: Option<u64>,
+    pub page_size: Option<u64>,
+    pub name: Option<String>,
+    pub code: Option<String>,
+}
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct ProvinceResponse {
+pub struct ProvincResponse {
     pub id: Uuid,
     pub code: Option<String>,
     pub name: Option<String>,
@@ -33,7 +42,7 @@ pub struct ProvinceResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateProvinceRequest {
+pub struct CreateProvincRequest {
     pub code: Option<String>,
     pub name: Option<String>,
     pub dikti_code: Option<String>,
@@ -54,7 +63,7 @@ pub struct CreateProvinceRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateProvinceRequest {
+pub struct UpdateProvincRequest {
     pub code: Option<String>,
     pub name: Option<String>,
     pub dikti_code: Option<String>,
@@ -74,19 +83,9 @@ pub struct UpdateProvinceRequest {
     pub country_id: Option<Uuid>,
 }
 
-#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct ProvinceQuery {
-    pub page: Option<u64>,
-    pub page_size: Option<u64>,
-    pub code: Option<String>,
-    pub name: Option<String>,
-    pub validation_code: Option<String>,
-    pub country_id: Option<Uuid>,
-}
-
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedProvinceResponse {
-    pub data: Vec<ProvinceResponse>,
+pub struct PaginatedProvincResponse {
+    pub data: Vec<ProvincResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

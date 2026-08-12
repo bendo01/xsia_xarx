@@ -117,28 +117,26 @@ pub async fn get_rencana_evaluasi(
             updated_by: item.updated_by,
 
     }))
-}
-
-#[endpoint(tags("Feeder - Master - RencanaEvaluasi"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Feeder - Master - RencanaEvaluasi"), status_codes(200, 400, 500))]
 pub async fn create_rencana_evaluasi(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<RencanaEvaluasiResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreateRencanaEvaluasiRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: CreateRencanaEvaluasiRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         id_jenis_evaluasi: Set(payload.id_jenis_evaluasi),
         id_rencana_evaluasi: Set(payload.id_rencana_evaluasi),
         jenis_evaluasi: Set(payload.jenis_evaluasi),
@@ -162,9 +160,9 @@ pub async fn create_rencana_evaluasi(
         updated_by: Set(None),
     };
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(RencanaEvaluasiResponse {
+        Ok(Json(RencanaEvaluasiResponse {
             id: item.id,
             id_jenis_evaluasi: item.id_jenis_evaluasi,
             id_rencana_evaluasi: item.id_rencana_evaluasi,
@@ -188,87 +186,87 @@ pub async fn create_rencana_evaluasi(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
 
 #[endpoint(tags("Feeder - Master - RencanaEvaluasi"), status_codes(200, 400, 404, 500))]
 pub async fn update_rencana_evaluasi(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<RencanaEvaluasiResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdateRencanaEvaluasiRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: UpdateRencanaEvaluasiRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("RencanaEvaluasi not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("RencanaEvaluasi not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
     if let Some(id_jenis_evaluasi) = payload.id_jenis_evaluasi {
-        active_model.id_jenis_evaluasi = Set(Some(id_jenis_evaluasi));
-    }
+            active_model.id_jenis_evaluasi = Set(Some(id_jenis_evaluasi));
+        }
     if let Some(id_rencana_evaluasi) = payload.id_rencana_evaluasi {
-        active_model.id_rencana_evaluasi = Set(Some(id_rencana_evaluasi));
-    }
+            active_model.id_rencana_evaluasi = Set(Some(id_rencana_evaluasi));
+        }
     if let Some(jenis_evaluasi) = payload.jenis_evaluasi {
-        active_model.jenis_evaluasi = Set(Some(jenis_evaluasi));
-    }
+            active_model.jenis_evaluasi = Set(Some(jenis_evaluasi));
+        }
     if let Some(id_matkul) = payload.id_matkul {
-        active_model.id_matkul = Set(Some(id_matkul));
-    }
+            active_model.id_matkul = Set(Some(id_matkul));
+        }
     if let Some(nama_mata_kuliah) = payload.nama_mata_kuliah {
-        active_model.nama_mata_kuliah = Set(Some(nama_mata_kuliah));
-    }
+            active_model.nama_mata_kuliah = Set(Some(nama_mata_kuliah));
+        }
     if let Some(kode_mata_kuliah) = payload.kode_mata_kuliah {
-        active_model.kode_mata_kuliah = Set(Some(kode_mata_kuliah));
-    }
+            active_model.kode_mata_kuliah = Set(Some(kode_mata_kuliah));
+        }
     if let Some(sks_mata_kuliah) = payload.sks_mata_kuliah {
-        active_model.sks_mata_kuliah = Set(Some(sks_mata_kuliah));
-    }
+            active_model.sks_mata_kuliah = Set(Some(sks_mata_kuliah));
+        }
     if let Some(id_prodi) = payload.id_prodi {
-        active_model.id_prodi = Set(Some(id_prodi));
-    }
+            active_model.id_prodi = Set(Some(id_prodi));
+        }
     if let Some(nama_program_studi) = payload.nama_program_studi {
-        active_model.nama_program_studi = Set(Some(nama_program_studi));
-    }
+            active_model.nama_program_studi = Set(Some(nama_program_studi));
+        }
     if let Some(nama_evaluasi) = payload.nama_evaluasi {
-        active_model.nama_evaluasi = Set(Some(nama_evaluasi));
-    }
+            active_model.nama_evaluasi = Set(Some(nama_evaluasi));
+        }
     if let Some(deskripsi_indonesia) = payload.deskripsi_indonesia {
-        active_model.deskripsi_indonesia = Set(Some(deskripsi_indonesia));
-    }
+            active_model.deskripsi_indonesia = Set(Some(deskripsi_indonesia));
+        }
     if let Some(deskrips_inggris) = payload.deskrips_inggris {
-        active_model.deskrips_inggris = Set(Some(deskrips_inggris));
-    }
+            active_model.deskrips_inggris = Set(Some(deskrips_inggris));
+        }
     if let Some(nomor_urut) = payload.nomor_urut {
-        active_model.nomor_urut = Set(Some(nomor_urut));
-    }
+            active_model.nomor_urut = Set(Some(nomor_urut));
+        }
     if let Some(bobot_evaluasi) = payload.bobot_evaluasi {
-        active_model.bobot_evaluasi = Set(Some(bobot_evaluasi));
-    }
+            active_model.bobot_evaluasi = Set(Some(bobot_evaluasi));
+        }
     if let Some(status_sync) = payload.status_sync {
-        active_model.status_sync = Set(Some(status_sync));
-    }
+            active_model.status_sync = Set(Some(status_sync));
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(RencanaEvaluasiResponse {
+        Ok(Json(RencanaEvaluasiResponse {
             id: item.id,
             id_jenis_evaluasi: item.id_jenis_evaluasi,
             id_rencana_evaluasi: item.id_rencana_evaluasi,
@@ -292,36 +290,36 @@ pub async fn update_rencana_evaluasi(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
-
 #[endpoint(tags("Feeder - Master - RencanaEvaluasi"), status_codes(200, 400, 404, 500))]
 pub async fn delete_rencana_evaluasi(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("RencanaEvaluasi not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("RencanaEvaluasi not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-    active_model.deleted_at = Set(Some(now));
-    active_model.updated_at = Set(Some(now));
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.deleted_at = Set(Some(now));
+        active_model.updated_at = Set(Some(now));
 
-    Ok(Json(MessageResponse {
-        message: "RencanaEvaluasi deleted successfully".to_string(),
-    }))
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        Ok(Json(MessageResponse {
+            message: "RencanaEvaluasi deleted successfully".to_string(),
+        }))
 }

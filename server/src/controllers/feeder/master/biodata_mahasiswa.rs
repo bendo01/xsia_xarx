@@ -211,28 +211,26 @@ pub async fn get_biodata_mahasiswa(
             updated_by: item.updated_by,
 
     }))
-}
-
-#[endpoint(tags("Feeder - Master - BiodataMahasiswa"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Feeder - Master - BiodataMahasiswa"), status_codes(200, 400, 500))]
 pub async fn create_biodata_mahasiswa(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<BiodataMahasiswaResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreateBiodataMahasiswaRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: CreateBiodataMahasiswaRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         nama_mahasiswa: Set(payload.nama_mahasiswa),
         jenis_kelamin: Set(payload.jenis_kelamin),
         tempat_lahir: Set(payload.tempat_lahir),
@@ -303,9 +301,9 @@ pub async fn create_biodata_mahasiswa(
         updated_by: Set(None),
     };
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(BiodataMahasiswaResponse {
+        Ok(Json(BiodataMahasiswaResponse {
             id: item.id,
             nama_mahasiswa: item.nama_mahasiswa,
             jenis_kelamin: item.jenis_kelamin,
@@ -376,228 +374,228 @@ pub async fn create_biodata_mahasiswa(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
 
 #[endpoint(tags("Feeder - Master - BiodataMahasiswa"), status_codes(200, 400, 404, 500))]
 pub async fn update_biodata_mahasiswa(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<BiodataMahasiswaResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdateBiodataMahasiswaRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: UpdateBiodataMahasiswaRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("BiodataMahasiswa not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("BiodataMahasiswa not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
     if let Some(nama_mahasiswa) = payload.nama_mahasiswa {
-        active_model.nama_mahasiswa = Set(Some(nama_mahasiswa));
-    }
+            active_model.nama_mahasiswa = Set(Some(nama_mahasiswa));
+        }
     if let Some(jenis_kelamin) = payload.jenis_kelamin {
-        active_model.jenis_kelamin = Set(Some(jenis_kelamin));
-    }
+            active_model.jenis_kelamin = Set(Some(jenis_kelamin));
+        }
     if let Some(tempat_lahir) = payload.tempat_lahir {
-        active_model.tempat_lahir = Set(Some(tempat_lahir));
-    }
+            active_model.tempat_lahir = Set(Some(tempat_lahir));
+        }
     if let Some(tanggal_lahir) = payload.tanggal_lahir {
-        active_model.tanggal_lahir = Set(Some(tanggal_lahir));
-    }
+            active_model.tanggal_lahir = Set(Some(tanggal_lahir));
+        }
     if let Some(id_mahasiswa) = payload.id_mahasiswa {
-        active_model.id_mahasiswa = Set(Some(id_mahasiswa));
-    }
+            active_model.id_mahasiswa = Set(Some(id_mahasiswa));
+        }
     if let Some(id_agama) = payload.id_agama {
-        active_model.id_agama = Set(Some(id_agama));
-    }
+            active_model.id_agama = Set(Some(id_agama));
+        }
     if let Some(nama_agama) = payload.nama_agama {
-        active_model.nama_agama = Set(Some(nama_agama));
-    }
+            active_model.nama_agama = Set(Some(nama_agama));
+        }
     if let Some(nik) = payload.nik {
-        active_model.nik = Set(Some(nik));
-    }
+            active_model.nik = Set(Some(nik));
+        }
     if let Some(nisn) = payload.nisn {
-        active_model.nisn = Set(Some(nisn));
-    }
+            active_model.nisn = Set(Some(nisn));
+        }
     if let Some(npwp) = payload.npwp {
-        active_model.npwp = Set(Some(npwp));
-    }
+            active_model.npwp = Set(Some(npwp));
+        }
     if let Some(id_negara) = payload.id_negara {
-        active_model.id_negara = Set(Some(id_negara));
-    }
+            active_model.id_negara = Set(Some(id_negara));
+        }
     if let Some(kewarganegaraan) = payload.kewarganegaraan {
-        active_model.kewarganegaraan = Set(Some(kewarganegaraan));
-    }
+            active_model.kewarganegaraan = Set(Some(kewarganegaraan));
+        }
     if let Some(jalan) = payload.jalan {
-        active_model.jalan = Set(Some(jalan));
-    }
+            active_model.jalan = Set(Some(jalan));
+        }
     if let Some(dusun) = payload.dusun {
-        active_model.dusun = Set(Some(dusun));
-    }
+            active_model.dusun = Set(Some(dusun));
+        }
     if let Some(rt) = payload.rt {
-        active_model.rt = Set(Some(rt));
-    }
+            active_model.rt = Set(Some(rt));
+        }
     if let Some(rw) = payload.rw {
-        active_model.rw = Set(Some(rw));
-    }
+            active_model.rw = Set(Some(rw));
+        }
     if let Some(kelurahan) = payload.kelurahan {
-        active_model.kelurahan = Set(Some(kelurahan));
-    }
+            active_model.kelurahan = Set(Some(kelurahan));
+        }
     if let Some(kode_pos) = payload.kode_pos {
-        active_model.kode_pos = Set(Some(kode_pos));
-    }
+            active_model.kode_pos = Set(Some(kode_pos));
+        }
     if let Some(id_wilayah) = payload.id_wilayah {
-        active_model.id_wilayah = Set(Some(id_wilayah));
-    }
+            active_model.id_wilayah = Set(Some(id_wilayah));
+        }
     if let Some(nama_wilayah) = payload.nama_wilayah {
-        active_model.nama_wilayah = Set(Some(nama_wilayah));
-    }
+            active_model.nama_wilayah = Set(Some(nama_wilayah));
+        }
     if let Some(id_jenis_tinggal) = payload.id_jenis_tinggal {
-        active_model.id_jenis_tinggal = Set(Some(id_jenis_tinggal));
-    }
+            active_model.id_jenis_tinggal = Set(Some(id_jenis_tinggal));
+        }
     if let Some(nama_jenis_tinggal) = payload.nama_jenis_tinggal {
-        active_model.nama_jenis_tinggal = Set(Some(nama_jenis_tinggal));
-    }
+            active_model.nama_jenis_tinggal = Set(Some(nama_jenis_tinggal));
+        }
     if let Some(id_alat_transportasi) = payload.id_alat_transportasi {
-        active_model.id_alat_transportasi = Set(Some(id_alat_transportasi));
-    }
+            active_model.id_alat_transportasi = Set(Some(id_alat_transportasi));
+        }
     if let Some(nama_alat_transportasi) = payload.nama_alat_transportasi {
-        active_model.nama_alat_transportasi = Set(Some(nama_alat_transportasi));
-    }
+            active_model.nama_alat_transportasi = Set(Some(nama_alat_transportasi));
+        }
     if let Some(telepon) = payload.telepon {
-        active_model.telepon = Set(Some(telepon));
-    }
+            active_model.telepon = Set(Some(telepon));
+        }
     if let Some(handphone) = payload.handphone {
-        active_model.handphone = Set(Some(handphone));
-    }
+            active_model.handphone = Set(Some(handphone));
+        }
     if let Some(email) = payload.email {
-        active_model.email = Set(Some(email));
-    }
+            active_model.email = Set(Some(email));
+        }
     if let Some(penerima_kps) = payload.penerima_kps {
-        active_model.penerima_kps = Set(Some(penerima_kps));
-    }
+            active_model.penerima_kps = Set(Some(penerima_kps));
+        }
     if let Some(nomor_kps) = payload.nomor_kps {
-        active_model.nomor_kps = Set(Some(nomor_kps));
-    }
+            active_model.nomor_kps = Set(Some(nomor_kps));
+        }
     if let Some(nik_ayah) = payload.nik_ayah {
-        active_model.nik_ayah = Set(Some(nik_ayah));
-    }
+            active_model.nik_ayah = Set(Some(nik_ayah));
+        }
     if let Some(nama_ayah) = payload.nama_ayah {
-        active_model.nama_ayah = Set(Some(nama_ayah));
-    }
+            active_model.nama_ayah = Set(Some(nama_ayah));
+        }
     if let Some(tanggal_lahir_ayah) = payload.tanggal_lahir_ayah {
-        active_model.tanggal_lahir_ayah = Set(Some(tanggal_lahir_ayah));
-    }
+            active_model.tanggal_lahir_ayah = Set(Some(tanggal_lahir_ayah));
+        }
     if let Some(id_pendidikan_ayah) = payload.id_pendidikan_ayah {
-        active_model.id_pendidikan_ayah = Set(Some(id_pendidikan_ayah));
-    }
+            active_model.id_pendidikan_ayah = Set(Some(id_pendidikan_ayah));
+        }
     if let Some(nama_pendidikan_ayah) = payload.nama_pendidikan_ayah {
-        active_model.nama_pendidikan_ayah = Set(Some(nama_pendidikan_ayah));
-    }
+            active_model.nama_pendidikan_ayah = Set(Some(nama_pendidikan_ayah));
+        }
     if let Some(id_pekerjaan_ayah) = payload.id_pekerjaan_ayah {
-        active_model.id_pekerjaan_ayah = Set(Some(id_pekerjaan_ayah));
-    }
+            active_model.id_pekerjaan_ayah = Set(Some(id_pekerjaan_ayah));
+        }
     if let Some(nama_pekerjaan_ayah) = payload.nama_pekerjaan_ayah {
-        active_model.nama_pekerjaan_ayah = Set(Some(nama_pekerjaan_ayah));
-    }
+            active_model.nama_pekerjaan_ayah = Set(Some(nama_pekerjaan_ayah));
+        }
     if let Some(id_penghasilan_ayah) = payload.id_penghasilan_ayah {
-        active_model.id_penghasilan_ayah = Set(Some(id_penghasilan_ayah));
-    }
+            active_model.id_penghasilan_ayah = Set(Some(id_penghasilan_ayah));
+        }
     if let Some(nama_penghasilan_ayah) = payload.nama_penghasilan_ayah {
-        active_model.nama_penghasilan_ayah = Set(Some(nama_penghasilan_ayah));
-    }
+            active_model.nama_penghasilan_ayah = Set(Some(nama_penghasilan_ayah));
+        }
     if let Some(nik_ibu) = payload.nik_ibu {
-        active_model.nik_ibu = Set(Some(nik_ibu));
-    }
+            active_model.nik_ibu = Set(Some(nik_ibu));
+        }
     if let Some(nama_ibu_kandung) = payload.nama_ibu_kandung {
-        active_model.nama_ibu_kandung = Set(Some(nama_ibu_kandung));
-    }
+            active_model.nama_ibu_kandung = Set(Some(nama_ibu_kandung));
+        }
     if let Some(tanggal_lahir_ibu) = payload.tanggal_lahir_ibu {
-        active_model.tanggal_lahir_ibu = Set(Some(tanggal_lahir_ibu));
-    }
+            active_model.tanggal_lahir_ibu = Set(Some(tanggal_lahir_ibu));
+        }
     if let Some(id_pendidikan_ibu) = payload.id_pendidikan_ibu {
-        active_model.id_pendidikan_ibu = Set(Some(id_pendidikan_ibu));
-    }
+            active_model.id_pendidikan_ibu = Set(Some(id_pendidikan_ibu));
+        }
     if let Some(nama_pendidikan_ibu) = payload.nama_pendidikan_ibu {
-        active_model.nama_pendidikan_ibu = Set(Some(nama_pendidikan_ibu));
-    }
+            active_model.nama_pendidikan_ibu = Set(Some(nama_pendidikan_ibu));
+        }
     if let Some(id_pekerjaan_ibu) = payload.id_pekerjaan_ibu {
-        active_model.id_pekerjaan_ibu = Set(Some(id_pekerjaan_ibu));
-    }
+            active_model.id_pekerjaan_ibu = Set(Some(id_pekerjaan_ibu));
+        }
     if let Some(nama_pekerjaan_ibu) = payload.nama_pekerjaan_ibu {
-        active_model.nama_pekerjaan_ibu = Set(Some(nama_pekerjaan_ibu));
-    }
+            active_model.nama_pekerjaan_ibu = Set(Some(nama_pekerjaan_ibu));
+        }
     if let Some(id_penghasilan_ibu) = payload.id_penghasilan_ibu {
-        active_model.id_penghasilan_ibu = Set(Some(id_penghasilan_ibu));
-    }
+            active_model.id_penghasilan_ibu = Set(Some(id_penghasilan_ibu));
+        }
     if let Some(nama_penghasilan_ibu) = payload.nama_penghasilan_ibu {
-        active_model.nama_penghasilan_ibu = Set(Some(nama_penghasilan_ibu));
-    }
+            active_model.nama_penghasilan_ibu = Set(Some(nama_penghasilan_ibu));
+        }
     if let Some(nama_wali) = payload.nama_wali {
-        active_model.nama_wali = Set(Some(nama_wali));
-    }
+            active_model.nama_wali = Set(Some(nama_wali));
+        }
     if let Some(tanggal_lahir_wali) = payload.tanggal_lahir_wali {
-        active_model.tanggal_lahir_wali = Set(Some(tanggal_lahir_wali));
-    }
+            active_model.tanggal_lahir_wali = Set(Some(tanggal_lahir_wali));
+        }
     if let Some(id_pendidikan_wali) = payload.id_pendidikan_wali {
-        active_model.id_pendidikan_wali = Set(Some(id_pendidikan_wali));
-    }
+            active_model.id_pendidikan_wali = Set(Some(id_pendidikan_wali));
+        }
     if let Some(nama_pendidikan_wali) = payload.nama_pendidikan_wali {
-        active_model.nama_pendidikan_wali = Set(Some(nama_pendidikan_wali));
-    }
+            active_model.nama_pendidikan_wali = Set(Some(nama_pendidikan_wali));
+        }
     if let Some(id_pekerjaan_wali) = payload.id_pekerjaan_wali {
-        active_model.id_pekerjaan_wali = Set(Some(id_pekerjaan_wali));
-    }
+            active_model.id_pekerjaan_wali = Set(Some(id_pekerjaan_wali));
+        }
     if let Some(nama_pekerjaan_wali) = payload.nama_pekerjaan_wali {
-        active_model.nama_pekerjaan_wali = Set(Some(nama_pekerjaan_wali));
-    }
+            active_model.nama_pekerjaan_wali = Set(Some(nama_pekerjaan_wali));
+        }
     if let Some(id_penghasilan_wali) = payload.id_penghasilan_wali {
-        active_model.id_penghasilan_wali = Set(Some(id_penghasilan_wali));
-    }
+            active_model.id_penghasilan_wali = Set(Some(id_penghasilan_wali));
+        }
     if let Some(nama_penghasilan_wali) = payload.nama_penghasilan_wali {
-        active_model.nama_penghasilan_wali = Set(Some(nama_penghasilan_wali));
-    }
+            active_model.nama_penghasilan_wali = Set(Some(nama_penghasilan_wali));
+        }
     if let Some(id_kebutuhan_khusus_mahasiswa) = payload.id_kebutuhan_khusus_mahasiswa {
-        active_model.id_kebutuhan_khusus_mahasiswa = Set(Some(id_kebutuhan_khusus_mahasiswa));
-    }
+            active_model.id_kebutuhan_khusus_mahasiswa = Set(Some(id_kebutuhan_khusus_mahasiswa));
+        }
     if let Some(nama_kebutuhan_khusus_mahasiswa) = payload.nama_kebutuhan_khusus_mahasiswa {
-        active_model.nama_kebutuhan_khusus_mahasiswa = Set(Some(nama_kebutuhan_khusus_mahasiswa));
-    }
+            active_model.nama_kebutuhan_khusus_mahasiswa = Set(Some(nama_kebutuhan_khusus_mahasiswa));
+        }
     if let Some(id_kebutuhan_khusus_ayah) = payload.id_kebutuhan_khusus_ayah {
-        active_model.id_kebutuhan_khusus_ayah = Set(Some(id_kebutuhan_khusus_ayah));
-    }
+            active_model.id_kebutuhan_khusus_ayah = Set(Some(id_kebutuhan_khusus_ayah));
+        }
     if let Some(nama_kebutuhan_khusus_ayah) = payload.nama_kebutuhan_khusus_ayah {
-        active_model.nama_kebutuhan_khusus_ayah = Set(Some(nama_kebutuhan_khusus_ayah));
-    }
+            active_model.nama_kebutuhan_khusus_ayah = Set(Some(nama_kebutuhan_khusus_ayah));
+        }
     if let Some(id_kebutuhan_khusus_ibu) = payload.id_kebutuhan_khusus_ibu {
-        active_model.id_kebutuhan_khusus_ibu = Set(Some(id_kebutuhan_khusus_ibu));
-    }
+            active_model.id_kebutuhan_khusus_ibu = Set(Some(id_kebutuhan_khusus_ibu));
+        }
     if let Some(nama_kebutuhan_khusus_ibu) = payload.nama_kebutuhan_khusus_ibu {
-        active_model.nama_kebutuhan_khusus_ibu = Set(Some(nama_kebutuhan_khusus_ibu));
-    }
+            active_model.nama_kebutuhan_khusus_ibu = Set(Some(nama_kebutuhan_khusus_ibu));
+        }
     if let Some(status_sync) = payload.status_sync {
-        active_model.status_sync = Set(Some(status_sync));
-    }
+            active_model.status_sync = Set(Some(status_sync));
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(BiodataMahasiswaResponse {
+        Ok(Json(BiodataMahasiswaResponse {
             id: item.id,
             nama_mahasiswa: item.nama_mahasiswa,
             jenis_kelamin: item.jenis_kelamin,
@@ -668,36 +666,36 @@ pub async fn update_biodata_mahasiswa(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
-
 #[endpoint(tags("Feeder - Master - BiodataMahasiswa"), status_codes(200, 400, 404, 500))]
 pub async fn delete_biodata_mahasiswa(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("BiodataMahasiswa not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("BiodataMahasiswa not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-    active_model.deleted_at = Set(Some(now));
-    active_model.updated_at = Set(Some(now));
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.deleted_at = Set(Some(now));
+        active_model.updated_at = Set(Some(now));
 
-    Ok(Json(MessageResponse {
-        message: "BiodataMahasiswa deleted successfully".to_string(),
-    }))
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        Ok(Json(MessageResponse {
+            message: "BiodataMahasiswa deleted successfully".to_string(),
+        }))
 }

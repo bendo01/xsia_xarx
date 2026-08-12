@@ -107,28 +107,26 @@ pub async fn get_teach_lecturer(
             feeder_id: item.feeder_id,
 
     }))
-}
-
-#[endpoint(tags("Academic - Campaign - Transaction - TeachLecturer"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Campaign - Transaction - TeachLecturer"), status_codes(200, 400, 500))]
 pub async fn create_teach_lecturer(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<TeachLecturerResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreateTeachLecturerRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: CreateTeachLecturerRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         name: Set(payload.name),
         planning: Set(payload.planning),
         realization: Set(payload.realization),
@@ -145,9 +143,9 @@ pub async fn create_teach_lecturer(
         feeder_id: Set(payload.feeder_id),
     };
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(TeachLecturerResponse {
+        Ok(Json(TeachLecturerResponse {
             id: item.id,
             name: item.name,
             planning: item.planning,
@@ -164,66 +162,66 @@ pub async fn create_teach_lecturer(
             updated_by: item.updated_by,
             feeder_id: item.feeder_id,
 
-    }))
+        }))
 }
 
 #[endpoint(tags("Academic - Campaign - Transaction - TeachLecturer"), status_codes(200, 400, 404, 500))]
 pub async fn update_teach_lecturer(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<TeachLecturerResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdateTeachLecturerRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: UpdateTeachLecturerRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("TeachLecturer not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("TeachLecturer not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
     if let Some(name) = payload.name {
-        active_model.name = Set(Some(name));
-    }
+            active_model.name = Set(Some(name));
+        }
     if let Some(planning) = payload.planning {
-        active_model.planning = Set(planning);
-    }
+            active_model.planning = Set(planning);
+        }
     if let Some(realization) = payload.realization {
-        active_model.realization = Set(realization);
-    }
+            active_model.realization = Set(realization);
+        }
     if let Some(credit) = payload.credit {
-        active_model.credit = Set(Some(credit));
-    }
+            active_model.credit = Set(Some(credit));
+        }
     if let Some(is_lecturer_home_base) = payload.is_lecturer_home_base {
-        active_model.is_lecturer_home_base = Set(is_lecturer_home_base);
-    }
+            active_model.is_lecturer_home_base = Set(is_lecturer_home_base);
+        }
     if let Some(lecturer_id) = payload.lecturer_id {
-        active_model.lecturer_id = Set(lecturer_id);
-    }
+            active_model.lecturer_id = Set(lecturer_id);
+        }
     if let Some(teach_id) = payload.teach_id {
-        active_model.teach_id = Set(teach_id);
-    }
+            active_model.teach_id = Set(teach_id);
+        }
     if let Some(feeder_id) = payload.feeder_id {
-        active_model.feeder_id = Set(Some(feeder_id));
-    }
+            active_model.feeder_id = Set(Some(feeder_id));
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(TeachLecturerResponse {
+        Ok(Json(TeachLecturerResponse {
             id: item.id,
             name: item.name,
             planning: item.planning,
@@ -240,36 +238,36 @@ pub async fn update_teach_lecturer(
             updated_by: item.updated_by,
             feeder_id: item.feeder_id,
 
-    }))
+        }))
 }
-
 #[endpoint(tags("Academic - Campaign - Transaction - TeachLecturer"), status_codes(200, 400, 404, 500))]
 pub async fn delete_teach_lecturer(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("TeachLecturer not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("TeachLecturer not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-    active_model.deleted_at = Set(Some(now));
-    active_model.updated_at = Set(Some(now));
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.deleted_at = Set(Some(now));
+        active_model.updated_at = Set(Some(now));
 
-    Ok(Json(MessageResponse {
-        message: "TeachLecturer deleted successfully".to_string(),
-    }))
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        Ok(Json(MessageResponse {
+            message: "TeachLecturer deleted successfully".to_string(),
+        }))
 }

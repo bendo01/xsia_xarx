@@ -137,28 +137,26 @@ pub async fn get_nilai_transfer_pendidikan_mahasiswa(
             updated_by: item.updated_by,
 
     }))
-}
-
-#[endpoint(tags("Feeder - Master - NilaiTransferPendidikanMahasiswa"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Feeder - Master - NilaiTransferPendidikanMahasiswa"), status_codes(200, 400, 500))]
 pub async fn create_nilai_transfer_pendidikan_mahasiswa(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<NilaiTransferPendidikanMahasiswaResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreateNilaiTransferPendidikanMahasiswaRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: CreateNilaiTransferPendidikanMahasiswaRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         id_transfer: Set(payload.id_transfer),
         id_registrasi_mahasiswa: Set(payload.id_registrasi_mahasiswa),
         nim: Set(payload.nim),
@@ -192,9 +190,9 @@ pub async fn create_nilai_transfer_pendidikan_mahasiswa(
         updated_by: Set(None),
     };
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(NilaiTransferPendidikanMahasiswaResponse {
+        Ok(Json(NilaiTransferPendidikanMahasiswaResponse {
             id: item.id,
             id_transfer: item.id_transfer,
             id_registrasi_mahasiswa: item.id_registrasi_mahasiswa,
@@ -228,117 +226,117 @@ pub async fn create_nilai_transfer_pendidikan_mahasiswa(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
 
 #[endpoint(tags("Feeder - Master - NilaiTransferPendidikanMahasiswa"), status_codes(200, 400, 404, 500))]
 pub async fn update_nilai_transfer_pendidikan_mahasiswa(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<NilaiTransferPendidikanMahasiswaResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdateNilaiTransferPendidikanMahasiswaRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: UpdateNilaiTransferPendidikanMahasiswaRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("NilaiTransferPendidikanMahasiswa not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("NilaiTransferPendidikanMahasiswa not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
     if let Some(id_transfer) = payload.id_transfer {
-        active_model.id_transfer = Set(Some(id_transfer));
-    }
+            active_model.id_transfer = Set(Some(id_transfer));
+        }
     if let Some(id_registrasi_mahasiswa) = payload.id_registrasi_mahasiswa {
-        active_model.id_registrasi_mahasiswa = Set(Some(id_registrasi_mahasiswa));
-    }
+            active_model.id_registrasi_mahasiswa = Set(Some(id_registrasi_mahasiswa));
+        }
     if let Some(nim) = payload.nim {
-        active_model.nim = Set(Some(nim));
-    }
+            active_model.nim = Set(Some(nim));
+        }
     if let Some(nama_mahasiswa) = payload.nama_mahasiswa {
-        active_model.nama_mahasiswa = Set(Some(nama_mahasiswa));
-    }
+            active_model.nama_mahasiswa = Set(Some(nama_mahasiswa));
+        }
     if let Some(id_prodi) = payload.id_prodi {
-        active_model.id_prodi = Set(Some(id_prodi));
-    }
+            active_model.id_prodi = Set(Some(id_prodi));
+        }
     if let Some(nama_program_studi) = payload.nama_program_studi {
-        active_model.nama_program_studi = Set(Some(nama_program_studi));
-    }
+            active_model.nama_program_studi = Set(Some(nama_program_studi));
+        }
     if let Some(id_periode_masuk) = payload.id_periode_masuk {
-        active_model.id_periode_masuk = Set(Some(id_periode_masuk));
-    }
+            active_model.id_periode_masuk = Set(Some(id_periode_masuk));
+        }
     if let Some(kode_mata_kuliah_asal) = payload.kode_mata_kuliah_asal {
-        active_model.kode_mata_kuliah_asal = Set(Some(kode_mata_kuliah_asal));
-    }
+            active_model.kode_mata_kuliah_asal = Set(Some(kode_mata_kuliah_asal));
+        }
     if let Some(nama_mata_kuliah_asal) = payload.nama_mata_kuliah_asal {
-        active_model.nama_mata_kuliah_asal = Set(Some(nama_mata_kuliah_asal));
-    }
+            active_model.nama_mata_kuliah_asal = Set(Some(nama_mata_kuliah_asal));
+        }
     if let Some(sks_mata_kuliah_asal) = payload.sks_mata_kuliah_asal {
-        active_model.sks_mata_kuliah_asal = Set(Some(sks_mata_kuliah_asal));
-    }
+            active_model.sks_mata_kuliah_asal = Set(Some(sks_mata_kuliah_asal));
+        }
     if let Some(nilai_huruf_asal) = payload.nilai_huruf_asal {
-        active_model.nilai_huruf_asal = Set(Some(nilai_huruf_asal));
-    }
+            active_model.nilai_huruf_asal = Set(Some(nilai_huruf_asal));
+        }
     if let Some(id_matkul) = payload.id_matkul {
-        active_model.id_matkul = Set(Some(id_matkul));
-    }
+            active_model.id_matkul = Set(Some(id_matkul));
+        }
     if let Some(kode_matkul_diakui) = payload.kode_matkul_diakui {
-        active_model.kode_matkul_diakui = Set(Some(kode_matkul_diakui));
-    }
+            active_model.kode_matkul_diakui = Set(Some(kode_matkul_diakui));
+        }
     if let Some(nama_mata_kuliah_diakui) = payload.nama_mata_kuliah_diakui {
-        active_model.nama_mata_kuliah_diakui = Set(Some(nama_mata_kuliah_diakui));
-    }
+            active_model.nama_mata_kuliah_diakui = Set(Some(nama_mata_kuliah_diakui));
+        }
     if let Some(sks_mata_kuliah_diakui) = payload.sks_mata_kuliah_diakui {
-        active_model.sks_mata_kuliah_diakui = Set(Some(sks_mata_kuliah_diakui));
-    }
+            active_model.sks_mata_kuliah_diakui = Set(Some(sks_mata_kuliah_diakui));
+        }
     if let Some(nilai_huruf_diakui) = payload.nilai_huruf_diakui {
-        active_model.nilai_huruf_diakui = Set(Some(nilai_huruf_diakui));
-    }
+            active_model.nilai_huruf_diakui = Set(Some(nilai_huruf_diakui));
+        }
     if let Some(nilai_angka_diakui) = payload.nilai_angka_diakui {
-        active_model.nilai_angka_diakui = Set(Some(nilai_angka_diakui));
-    }
+            active_model.nilai_angka_diakui = Set(Some(nilai_angka_diakui));
+        }
     if let Some(id_perguruan_tinggi) = payload.id_perguruan_tinggi {
-        active_model.id_perguruan_tinggi = Set(Some(id_perguruan_tinggi));
-    }
+            active_model.id_perguruan_tinggi = Set(Some(id_perguruan_tinggi));
+        }
     if let Some(id_aktivitas) = payload.id_aktivitas {
-        active_model.id_aktivitas = Set(Some(id_aktivitas));
-    }
+            active_model.id_aktivitas = Set(Some(id_aktivitas));
+        }
     if let Some(judul) = payload.judul {
-        active_model.judul = Set(Some(judul));
-    }
+            active_model.judul = Set(Some(judul));
+        }
     if let Some(id_jenis_aktivitas) = payload.id_jenis_aktivitas {
-        active_model.id_jenis_aktivitas = Set(Some(id_jenis_aktivitas));
-    }
+            active_model.id_jenis_aktivitas = Set(Some(id_jenis_aktivitas));
+        }
     if let Some(nama_jenis_aktivitas) = payload.nama_jenis_aktivitas {
-        active_model.nama_jenis_aktivitas = Set(Some(nama_jenis_aktivitas));
-    }
+            active_model.nama_jenis_aktivitas = Set(Some(nama_jenis_aktivitas));
+        }
     if let Some(id_semester) = payload.id_semester {
-        active_model.id_semester = Set(Some(id_semester));
-    }
+            active_model.id_semester = Set(Some(id_semester));
+        }
     if let Some(nama_semester) = payload.nama_semester {
-        active_model.nama_semester = Set(Some(nama_semester));
-    }
+            active_model.nama_semester = Set(Some(nama_semester));
+        }
     if let Some(status_sync) = payload.status_sync {
-        active_model.status_sync = Set(Some(status_sync));
-    }
+            active_model.status_sync = Set(Some(status_sync));
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(NilaiTransferPendidikanMahasiswaResponse {
+        Ok(Json(NilaiTransferPendidikanMahasiswaResponse {
             id: item.id,
             id_transfer: item.id_transfer,
             id_registrasi_mahasiswa: item.id_registrasi_mahasiswa,
@@ -372,36 +370,36 @@ pub async fn update_nilai_transfer_pendidikan_mahasiswa(
             created_by: item.created_by,
             updated_by: item.updated_by,
 
-    }))
+        }))
 }
-
 #[endpoint(tags("Feeder - Master - NilaiTransferPendidikanMahasiswa"), status_codes(200, 400, 404, 500))]
 pub async fn delete_nilai_transfer_pendidikan_mahasiswa(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("NilaiTransferPendidikanMahasiswa not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("NilaiTransferPendidikanMahasiswa not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-    active_model.deleted_at = Set(Some(now));
-    active_model.updated_at = Set(Some(now));
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.deleted_at = Set(Some(now));
+        active_model.updated_at = Set(Some(now));
 
-    Ok(Json(MessageResponse {
-        message: "NilaiTransferPendidikanMahasiswa deleted successfully".to_string(),
-    }))
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        Ok(Json(MessageResponse {
+            message: "NilaiTransferPendidikanMahasiswa deleted successfully".to_string(),
+        }))
 }

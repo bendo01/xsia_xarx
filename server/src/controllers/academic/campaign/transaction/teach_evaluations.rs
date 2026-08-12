@@ -105,28 +105,26 @@ pub async fn get_teach_evaluation(
             teach_id: item.teach_id,
 
     }))
-}
-
-#[endpoint(tags("Academic - Campaign - Transaction - TeachEvaluation"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Campaign - Transaction - TeachEvaluation"), status_codes(200, 400, 500))]
 pub async fn create_teach_evaluation(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<TeachEvaluationResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let payload: CreateTeachEvaluationRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: CreateTeachEvaluationRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let now = Utc::now().naive_utc();
-    let new_id = Uuid::new_v4();
+        let now = Utc::now().naive_utc();
+        let new_id = Uuid::new_v4();
 
-    let active_model = entity_mod::ActiveModel {
-        id: Set(new_id),
+        let active_model = entity_mod::ActiveModel {
+            id: Set(new_id),
         thread: Set(payload.thread),
         name: Set(payload.name),
         english_name: Set(payload.english_name),
@@ -142,9 +140,9 @@ pub async fn create_teach_evaluation(
         teach_id: Set(payload.teach_id),
     };
 
-    let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(TeachEvaluationResponse {
+        Ok(Json(TeachEvaluationResponse {
             id: item.id,
             thread: item.thread,
             name: item.name,
@@ -160,63 +158,63 @@ pub async fn create_teach_evaluation(
             updated_by: item.updated_by,
             teach_id: item.teach_id,
 
-    }))
+        }))
 }
 
 #[endpoint(tags("Academic - Campaign - Transaction - TeachEvaluation"), status_codes(200, 400, 404, 500))]
 pub async fn update_teach_evaluation(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<TeachEvaluationResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let payload: UpdateTeachEvaluationRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
+        let payload: UpdateTeachEvaluationRequest = req.parse_json().await.map_err(|e| {
+            StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+        })?;
 
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("TeachEvaluation not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("TeachEvaluation not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
     if let Some(thread) = payload.thread {
-        active_model.thread = Set(Some(thread));
-    }
+            active_model.thread = Set(Some(thread));
+        }
     if let Some(name) = payload.name {
-        active_model.name = Set(Some(name));
-    }
+            active_model.name = Set(Some(name));
+        }
     if let Some(english_name) = payload.english_name {
-        active_model.english_name = Set(Some(english_name));
-    }
+            active_model.english_name = Set(Some(english_name));
+        }
     if let Some(evaluation_weight) = payload.evaluation_weight {
-        active_model.evaluation_weight = Set(Some(evaluation_weight));
-    }
+            active_model.evaluation_weight = Set(Some(evaluation_weight));
+        }
     if let Some(evaluation_type_id) = payload.evaluation_type_id {
-        active_model.evaluation_type_id = Set(Some(evaluation_type_id));
-    }
+            active_model.evaluation_type_id = Set(Some(evaluation_type_id));
+        }
     if let Some(feeder_id) = payload.feeder_id {
-        active_model.feeder_id = Set(Some(feeder_id));
-    }
+            active_model.feeder_id = Set(Some(feeder_id));
+        }
     if let Some(teach_id) = payload.teach_id {
-        active_model.teach_id = Set(Some(teach_id));
-    }
+            active_model.teach_id = Set(Some(teach_id));
+        }
     active_model.updated_at = Set(Some(now));
 
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(TeachEvaluationResponse {
+        Ok(Json(TeachEvaluationResponse {
             id: item.id,
             thread: item.thread,
             name: item.name,
@@ -232,36 +230,36 @@ pub async fn update_teach_evaluation(
             updated_by: item.updated_by,
             teach_id: item.teach_id,
 
-    }))
+        }))
 }
-
 #[endpoint(tags("Academic - Campaign - Transaction - TeachEvaluation"), status_codes(200, 400, 404, 500))]
 pub async fn delete_teach_evaluation(
-    req: &mut Request,
-    depot: &mut Depot,
+        req: &mut Request,
+        depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+        let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+            StatusError::internal_server_error().brief("Database connection missing")
+        })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+        let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+        let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("TeachEvaluation not found"))?;
+        let existing = entity_mod::Entity::find_by_id(id)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::not_found().brief("TeachEvaluation not found"))?;
 
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-    active_model.deleted_at = Set(Some(now));
-    active_model.updated_at = Set(Some(now));
+        let now = Utc::now().naive_utc();
+        let mut active_model = existing.into_active_model();
 
-    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        active_model.deleted_at = Set(Some(now));
+        active_model.updated_at = Set(Some(now));
 
-    Ok(Json(MessageResponse {
-        message: "TeachEvaluation deleted successfully".to_string(),
-    }))
+        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        Ok(Json(MessageResponse {
+            message: "TeachEvaluation deleted successfully".to_string(),
+        }))
 }

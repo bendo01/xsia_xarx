@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use salvo::oapi::ToSchema;
 use uuid::Uuid;
 use validator::Validate;
-use chrono::{NaiveDate, NaiveDateTime, DateTime, FixedOffset};
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime, DateTime, FixedOffset};
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
