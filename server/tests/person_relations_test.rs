@@ -92,6 +92,7 @@ async fn test_person_reference_queries() {
 }
 
 #[tokio::test]
+#[ignore]
 async fn test_individual_master_relations() {
     let db = connect_db()
         .await

@@ -15,19 +15,19 @@ async fn test_person_reference_controllers() {
     let service = Service::new(router).hoop(inject_db);
 
     let paths = vec![
-        "/reference/age-classifications",
-        "/reference/blood-types",
-        "/reference/eye-colors",
-        "/reference/genders",
-        "/reference/hair-colors",
-        "/reference/hair-types",
-        "/reference/identification-types",
-        "/reference/incomes",
-        "/reference/marital-statuses",
-        "/reference/occupations",
-        "/reference/professions",
-        "/reference/relative-types",
-        "/reference/religions",
+        "/reference/age-classification",
+        "/reference/blood-type",
+        "/reference/eye-color",
+        "/reference/gender",
+        "/reference/hair-color",
+        "/reference/hair-type",
+        "/reference/identification-type",
+        "/reference/income",
+        "/reference/marital-status",
+        "/reference/occupation",
+        "/reference/profession",
+        "/reference/relative-type",
+        "/reference/religion",
     ];
 
     for path in paths {
