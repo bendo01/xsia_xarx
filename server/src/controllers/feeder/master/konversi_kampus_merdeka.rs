@@ -27,7 +27,7 @@ pub async fn list_konversi_kampus_merdeka(
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
-    let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
+    let select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
 
     let paginator = select
         .order_by_asc(entity_mod::Column::Id)
