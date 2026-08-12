@@ -2,8 +2,27 @@ use salvo::prelude::*;
 use salvo::oapi::{OpenApi, swagger_ui::SwaggerUi};
 use sea_orm::DatabaseConnection;
 use xsia_xarx::{controllers, db};
+use xsia_xarx::config::redis::RedisConfig;
+use xsia_xarx::jobs::email::{EmailJob, start_email_worker};
+use apalis_redis::RedisStorage;
 
 struct InjectDb(DatabaseConnection);
+
+struct InjectRedis(RedisStorage<EmailJob>);
+
+#[async_trait]
+impl Handler for InjectRedis {
+    async fn handle(
+        &self,
+        req: &mut Request,
+        depot: &mut Depot,
+        res: &mut Response,
+        ctrl: &mut FlowCtrl,
+    ) {
+        depot.insert_typed::<RedisStorage<EmailJob>>(self.0.clone());
+        ctrl.call_next(req, depot, res).await;
+    }
+}
 
 #[async_trait]
 impl Handler for InjectDb {
@@ -26,8 +45,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let db = db::connect_db().await?;
     println!("Database connection successful");
 
+    let redis_config = RedisConfig::from_env();
+    let redis_url = format!("redis://{}:{}", redis_config.host, redis_config.port);
+    let email_worker = start_email_worker(redis_url.clone()).await?;
+    let conn = apalis_redis::connect(redis_url).await.map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e.to_string()))?;
+    let redis_storage = apalis_redis::RedisStorage::new(conn);
+    
+    tokio::spawn(async move {
+        let _ = email_worker.run().await;
+    });
+    println!("Apalis email worker started");
+
     let api_router = Router::with_path("api/v1")
         .hoop(InjectDb(db))
+        .hoop(InjectRedis(redis_storage))
         .push(controllers::person::reference::router())
         .push(controllers::person::master::router())
         .push(controllers::literate::router())

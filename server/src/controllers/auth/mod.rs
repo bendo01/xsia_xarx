@@ -32,13 +32,25 @@ pub fn router() -> Router {
         .push(
             Router::with_path("user")
                 .get(user::list_user)
-                .post(user::create_user)
                 .push(
                     Router::with_path("{id}")
                         .get(user::get_user)
                         .put(user::update_user)
                         .delete(user::delete_user),
                 ),
+        )
+        // Public Auth Endpoints
+        .push(Router::with_path("register").post(user::register))
+        .push(Router::with_path("login").post(user::login))
+        .push(Router::with_path("verify/{token}").get(user::verify_email))
+        .push(Router::with_path("forgot").post(user::forgot_password))
+        .push(Router::with_path("reset").post(user::reset_password))
+        .push(Router::with_path("resend-verification-mail").post(user::resend_verification_mail))
+        // Protected Auth Endpoints
+        .push(
+            Router::with_path("current")
+                .hoop(crate::middleware::auth::JwtAuth)
+                .get(user::current_user)
         )
         .push(
             Router::with_path("user-position-type")

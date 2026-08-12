@@ -83,3 +83,45 @@ pub struct PaginatedUserResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
+pub struct RegisterRequest {
+    #[validate(email)]
+    pub email: String,
+    #[validate(length(min = 6))]
+    pub password: String,
+    pub name: String,
+    pub individual_id: Option<Uuid>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
+pub struct LoginRequest {
+    #[validate(email)]
+    pub email: String,
+    pub password: String,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct LoginResponse {
+    pub token: String,
+    pub user: UserResponse,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
+pub struct ForgotPasswordRequest {
+    #[validate(email)]
+    pub email: String,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
+pub struct ResetPasswordRequest {
+    pub token: String,
+    #[validate(length(min = 6))]
+    pub new_password: String,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
+pub struct ResendVerificationRequest {
+    #[validate(email)]
+    pub email: String,
+}

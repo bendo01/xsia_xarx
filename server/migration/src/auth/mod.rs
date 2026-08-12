@@ -4,3 +4,4 @@ pub mod m20260803_160025_schema_auth_table_permission_position_type;
 pub mod m20260803_160035_schema_auth_table_permission_user;
 pub mod m20260803_160042_schema_auth_table_permissions;
 pub mod m20260803_160057_schema_auth_table_user_position_type;
+mod m20260812_070052_schema_auth_table_roles;
