@@ -32,3 +32,39 @@ pub struct Model {
 
 
 impl ActiveModelBehavior for ActiveModel {}
+
+pub struct ArchiveToIndividual;
+
+impl Linked for ArchiveToIndividual {
+    type FromEntity = Entity;
+    type ToEntity = crate::models::person::master::individual::Entity;
+
+    fn link(&self) -> Vec<RelationDef> {
+        let rel: RelationDef = Entity::belongs_to(crate::models::person::master::individual::Entity)
+            .from(Column::ArchiveableId)
+            .to(crate::models::person::master::individual::Column::Id)
+            .on_condition(|_left, _right| {
+                Column::ArchiveableType.eq("Individual").into()
+            })
+            .into();
+        vec![rel]
+    }
+}
+
+pub struct ArchiveToInstitution;
+
+impl Linked for ArchiveToInstitution {
+    type FromEntity = Entity;
+    type ToEntity = crate::models::institution::master::institutions::Entity;
+
+    fn link(&self) -> Vec<RelationDef> {
+        let rel: RelationDef = Entity::belongs_to(crate::models::institution::master::institutions::Entity)
+            .from(Column::ArchiveableId)
+            .to(crate::models::institution::master::institutions::Column::Id)
+            .on_condition(|_left, _right| {
+                Column::ArchiveableType.eq("Institution").into()
+            })
+            .into();
+        vec![rel]
+    }
+}

@@ -79,3 +79,21 @@ pub struct Model {
 
 
 impl ActiveModelBehavior for ActiveModel {}
+
+pub struct IndividualToArchive;
+
+impl Linked for IndividualToArchive {
+    type FromEntity = Entity;
+    type ToEntity = crate::models::document::transaction::archives::Entity;
+
+    fn link(&self) -> Vec<RelationDef> {
+        let rel: RelationDef = crate::models::document::transaction::archives::Entity::belongs_to(Entity)
+            .from(crate::models::document::transaction::archives::Column::ArchiveableId)
+            .to(Column::Id)
+            .on_condition(|_left, _right| {
+                crate::models::document::transaction::archives::Column::ArchiveableType.eq("Individual").into()
+            })
+            .into();
+        vec![rel.rev()]
+    }
+}
