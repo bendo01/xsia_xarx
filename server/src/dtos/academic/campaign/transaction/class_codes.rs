@@ -6,7 +6,7 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct ClassCodQuery {
+pub struct ClassCodeQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
     pub name: Option<String>,
@@ -14,7 +14,7 @@ pub struct ClassCodQuery {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct ClassCodResponse {
+pub struct ClassCodeResponse {
     pub id: Uuid,
     pub code: Option<i32>,
     pub alphabet_code: Option<String>,
@@ -33,7 +33,7 @@ pub struct ClassCodResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateClassCodRequest {
+pub struct CreateClassCodeRequest {
     pub code: Option<i32>,
     pub alphabet_code: Option<String>,
     pub name: String,
@@ -45,7 +45,7 @@ pub struct CreateClassCodRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateClassCodRequest {
+pub struct UpdateClassCodeRequest {
     pub code: Option<i32>,
     pub alphabet_code: Option<String>,
     pub name: Option<String>,
@@ -57,8 +57,8 @@ pub struct UpdateClassCodRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedClassCodResponse {
-    pub data: Vec<ClassCodResponse>,
+pub struct PaginatedClassCodeResponse {
+    pub data: Vec<ClassCodeResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

@@ -6,7 +6,7 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct CandidatQuery {
+pub struct CandidateQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
     pub name: Option<String>,
@@ -14,7 +14,7 @@ pub struct CandidatQuery {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct CandidatResponse {
+pub struct CandidateResponse {
     pub id: Uuid,
     pub thread: Option<i32>,
     pub code: Option<String>,
@@ -40,7 +40,7 @@ pub struct CandidatResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateCandidatRequest {
+pub struct CreateCandidateRequest {
     pub thread: Option<i32>,
     pub code: Option<String>,
     pub name: String,
@@ -59,7 +59,7 @@ pub struct CreateCandidatRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateCandidatRequest {
+pub struct UpdateCandidateRequest {
     pub thread: Option<i32>,
     pub code: Option<String>,
     pub name: Option<String>,
@@ -78,8 +78,8 @@ pub struct UpdateCandidatRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedCandidatResponse {
-    pub data: Vec<CandidatResponse>,
+pub struct PaginatedCandidateResponse {
+    pub data: Vec<CandidateResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

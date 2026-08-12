@@ -8,22 +8,22 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::academic::student::final_assignment::transaction::schedules::{
-    CreateSchedulRequest, SchedulQuery, SchedulResponse, PaginatedSchedulResponse,
-    UpdateSchedulRequest,
+    CreateScheduleRequest, ScheduleQuery, ScheduleResponse, PaginatedScheduleResponse,
+    UpdateScheduleRequest,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::student::final_assignment::transaction::schedules as entity_mod;
 
-#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - Schedul"), status_codes(200, 500))]
+#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - Schedule"), status_codes(200, 500))]
 pub async fn list_schedules(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<PaginatedSchedulResponse>, StatusError> {
+) -> Result<Json<PaginatedScheduleResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
 
-    let query: SchedulQuery = req.parse_queries().unwrap_or_default();
+    let query: ScheduleQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
@@ -38,7 +38,7 @@ pub async fn list_schedules(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| SchedulResponse {
+    let data = items.into_iter().map(|item| ScheduleResponse {
             id: item.id,
             ecree_number: item.ecree_number,
             schedule_date: item.schedule_date,
@@ -57,7 +57,7 @@ pub async fn list_schedules(
 
     }).collect();
 
-    Ok(Json(PaginatedSchedulResponse {
+    Ok(Json(PaginatedScheduleResponse {
         data,
         total,
         page,
@@ -66,11 +66,11 @@ pub async fn list_schedules(
     }))
 }
 
-#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - Schedul"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - Schedule"), status_codes(200, 400, 404, 500))]
 pub async fn get_schedule(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<SchedulResponse>, StatusError> {
+) -> Result<Json<ScheduleResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
@@ -83,9 +83,9 @@ pub async fn get_schedule(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Schedul not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("Schedule not found"))?;
 
-    Ok(Json(SchedulResponse {
+    Ok(Json(ScheduleResponse {
             id: item.id,
             ecree_number: item.ecree_number,
             schedule_date: item.schedule_date,
@@ -103,16 +103,16 @@ pub async fn get_schedule(
             updated_by: item.updated_by,
 
     }))
-}#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - Schedul"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - Schedule"), status_codes(200, 400, 500))]
 pub async fn create_schedule(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<SchedulResponse>, StatusError> {
+) -> Result<Json<ScheduleResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
 
-        let payload: CreateSchedulRequest = req.parse_json().await.map_err(|e| {
+        let payload: CreateScheduleRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -141,7 +141,7 @@ pub async fn create_schedule(
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(SchedulResponse {
+        Ok(Json(ScheduleResponse {
             id: item.id,
             ecree_number: item.ecree_number,
             schedule_date: item.schedule_date,
@@ -161,11 +161,11 @@ pub async fn create_schedule(
         }))
 }
 
-#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - Schedul"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - Schedule"), status_codes(200, 400, 404, 500))]
 pub async fn update_schedule(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<SchedulResponse>, StatusError> {
+) -> Result<Json<ScheduleResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
@@ -173,7 +173,7 @@ pub async fn update_schedule(
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-        let payload: UpdateSchedulRequest = req.parse_json().await.map_err(|e| {
+        let payload: UpdateScheduleRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -184,7 +184,7 @@ pub async fn update_schedule(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Schedul not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Schedule not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -217,7 +217,7 @@ pub async fn update_schedule(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(SchedulResponse {
+        Ok(Json(ScheduleResponse {
             id: item.id,
             ecree_number: item.ecree_number,
             schedule_date: item.schedule_date,
@@ -236,7 +236,7 @@ pub async fn update_schedule(
 
         }))
 }
-#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - Schedul"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - Schedule"), status_codes(200, 400, 404, 500))]
 pub async fn delete_schedule(
         req: &mut Request,
         depot: &mut Depot,
@@ -253,7 +253,7 @@ pub async fn delete_schedule(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Schedul not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Schedule not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -264,6 +264,6 @@ pub async fn delete_schedule(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "Schedul deleted successfully".to_string(),
+            message: "Schedule deleted successfully".to_string(),
         }))
 }

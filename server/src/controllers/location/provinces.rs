@@ -8,22 +8,22 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::location::provinces::{
-    CreateProvincRequest, ProvincQuery, ProvincResponse, PaginatedProvincResponse,
-    UpdateProvincRequest,
+    CreateProvinceRequest, ProvinceQuery, ProvinceResponse, PaginatedProvinceResponse,
+    UpdateProvinceRequest,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::location::provinces as entity_mod;
 
-#[endpoint(tags("Location -  - Provinc"), status_codes(200, 500))]
+#[endpoint(tags("Location -  - Province"), status_codes(200, 500))]
 pub async fn list_provinces(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<PaginatedProvincResponse>, StatusError> {
+) -> Result<Json<PaginatedProvinceResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
 
-    let query: ProvincQuery = req.parse_queries().unwrap_or_default();
+    let query: ProvinceQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
@@ -46,7 +46,7 @@ pub async fn list_provinces(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| ProvincResponse {
+    let data = items.into_iter().map(|item| ProvinceResponse {
             id: item.id,
             code: item.code,
             name: item.name,
@@ -74,7 +74,7 @@ pub async fn list_provinces(
 
     }).collect();
 
-    Ok(Json(PaginatedProvincResponse {
+    Ok(Json(PaginatedProvinceResponse {
         data,
         total,
         page,
@@ -83,11 +83,11 @@ pub async fn list_provinces(
     }))
 }
 
-#[endpoint(tags("Location -  - Provinc"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Location -  - Province"), status_codes(200, 400, 404, 500))]
 pub async fn get_province(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<ProvincResponse>, StatusError> {
+) -> Result<Json<ProvinceResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
@@ -100,9 +100,9 @@ pub async fn get_province(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Provinc not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("Province not found"))?;
 
-    Ok(Json(ProvincResponse {
+    Ok(Json(ProvinceResponse {
             id: item.id,
             code: item.code,
             name: item.name,
@@ -129,16 +129,16 @@ pub async fn get_province(
             updated_by: item.updated_by,
 
     }))
-}#[endpoint(tags("Location -  - Provinc"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Location -  - Province"), status_codes(200, 400, 500))]
 pub async fn create_province(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<ProvincResponse>, StatusError> {
+) -> Result<Json<ProvinceResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
 
-        let payload: CreateProvincRequest = req.parse_json().await.map_err(|e| {
+        let payload: CreateProvinceRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -176,7 +176,7 @@ pub async fn create_province(
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(ProvincResponse {
+        Ok(Json(ProvinceResponse {
             id: item.id,
             code: item.code,
             name: item.name,
@@ -205,11 +205,11 @@ pub async fn create_province(
         }))
 }
 
-#[endpoint(tags("Location -  - Provinc"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Location -  - Province"), status_codes(200, 400, 404, 500))]
 pub async fn update_province(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<ProvincResponse>, StatusError> {
+) -> Result<Json<ProvinceResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
@@ -217,7 +217,7 @@ pub async fn update_province(
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-        let payload: UpdateProvincRequest = req.parse_json().await.map_err(|e| {
+        let payload: UpdateProvinceRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -228,7 +228,7 @@ pub async fn update_province(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Provinc not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Province not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -288,7 +288,7 @@ pub async fn update_province(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(ProvincResponse {
+        Ok(Json(ProvinceResponse {
             id: item.id,
             code: item.code,
             name: item.name,
@@ -316,7 +316,7 @@ pub async fn update_province(
 
         }))
 }
-#[endpoint(tags("Location -  - Provinc"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Location -  - Province"), status_codes(200, 400, 404, 500))]
 pub async fn delete_province(
         req: &mut Request,
         depot: &mut Depot,
@@ -333,7 +333,7 @@ pub async fn delete_province(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Provinc not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Province not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -344,6 +344,6 @@ pub async fn delete_province(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "Provinc deleted successfully".to_string(),
+            message: "Province deleted successfully".to_string(),
         }))
 }

@@ -13,7 +13,7 @@ use crate::dtos::common::reference::{
 };
 use crate::models::document::reference::archive_types as entity_mod;
 
-#[endpoint(tags("Document - Reference - ArchiveTyp"), status_codes(200, 500))]
+#[endpoint(tags("Document - Reference - ArchiveType"), status_codes(200, 500))]
 pub async fn list_archive_types(
     req: &mut Request,
     depot: &mut Depot,
@@ -68,7 +68,7 @@ pub async fn list_archive_types(
     }))
 }
 
-#[endpoint(tags("Document - Reference - ArchiveTyp"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Document - Reference - ArchiveType"), status_codes(200, 400, 404, 500))]
 pub async fn get_archive_type(
     req: &mut Request,
     depot: &mut Depot,
@@ -85,7 +85,7 @@ pub async fn get_archive_type(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("ArchiveTyp not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("ArchiveType not found"))?;
 
     Ok(Json(ReferenceResponse {
             id: item.id,
@@ -100,7 +100,7 @@ pub async fn get_archive_type(
             updated_by: item.updated_by,
 
     }))
-}#[endpoint(tags("Document - Reference - ArchiveTyp"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Document - Reference - ArchiveType"), status_codes(200, 400, 500))]
 pub async fn create_archive_type(
         req: &mut Request,
         depot: &mut Depot,
@@ -148,7 +148,7 @@ pub async fn create_archive_type(
         }))
 }
 
-#[endpoint(tags("Document - Reference - ArchiveTyp"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Document - Reference - ArchiveType"), status_codes(200, 400, 404, 500))]
 pub async fn update_archive_type(
         req: &mut Request,
         depot: &mut Depot,
@@ -171,7 +171,7 @@ pub async fn update_archive_type(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("ArchiveTyp not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("ArchiveType not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -203,7 +203,7 @@ pub async fn update_archive_type(
 
         }))
 }
-#[endpoint(tags("Document - Reference - ArchiveTyp"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Document - Reference - ArchiveType"), status_codes(200, 400, 404, 500))]
 pub async fn delete_archive_type(
         req: &mut Request,
         depot: &mut Depot,
@@ -220,7 +220,7 @@ pub async fn delete_archive_type(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("ArchiveTyp not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("ArchiveType not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -231,6 +231,6 @@ pub async fn delete_archive_type(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "ArchiveTyp deleted successfully".to_string(),
+            message: "ArchiveType deleted successfully".to_string(),
         }))
 }

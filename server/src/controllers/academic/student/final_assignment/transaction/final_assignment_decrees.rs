@@ -8,22 +8,22 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::academic::student::final_assignment::transaction::final_assignment_decrees::{
-    CreateFinalAssignmentDecreRequest, FinalAssignmentDecreQuery, FinalAssignmentDecreResponse, PaginatedFinalAssignmentDecreResponse,
-    UpdateFinalAssignmentDecreRequest,
+    CreateFinalAssignmentDecreeRequest, FinalAssignmentDecreeQuery, FinalAssignmentDecreeResponse, PaginatedFinalAssignmentDecreeResponse,
+    UpdateFinalAssignmentDecreeRequest,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::student::final_assignment::transaction::final_assignment_decrees as entity_mod;
 
-#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - FinalAssignmentDecre"), status_codes(200, 500))]
+#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - FinalAssignmentDecree"), status_codes(200, 500))]
 pub async fn list_final_assignment_decrees(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<PaginatedFinalAssignmentDecreResponse>, StatusError> {
+) -> Result<Json<PaginatedFinalAssignmentDecreeResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
 
-    let query: FinalAssignmentDecreQuery = req.parse_queries().unwrap_or_default();
+    let query: FinalAssignmentDecreeQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
@@ -38,7 +38,7 @@ pub async fn list_final_assignment_decrees(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| FinalAssignmentDecreResponse {
+    let data = items.into_iter().map(|item| FinalAssignmentDecreeResponse {
             id: item.id,
             decree_number: item.decree_number.clone(),
             decree_date: item.decree_date,
@@ -54,7 +54,7 @@ pub async fn list_final_assignment_decrees(
 
     }).collect();
 
-    Ok(Json(PaginatedFinalAssignmentDecreResponse {
+    Ok(Json(PaginatedFinalAssignmentDecreeResponse {
         data,
         total,
         page,
@@ -63,11 +63,11 @@ pub async fn list_final_assignment_decrees(
     }))
 }
 
-#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - FinalAssignmentDecre"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - FinalAssignmentDecree"), status_codes(200, 400, 404, 500))]
 pub async fn get_final_assignment_decree(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<FinalAssignmentDecreResponse>, StatusError> {
+) -> Result<Json<FinalAssignmentDecreeResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
@@ -80,9 +80,9 @@ pub async fn get_final_assignment_decree(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("FinalAssignmentDecre not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("FinalAssignmentDecree not found"))?;
 
-    Ok(Json(FinalAssignmentDecreResponse {
+    Ok(Json(FinalAssignmentDecreeResponse {
             id: item.id,
             decree_number: item.decree_number.clone(),
             decree_date: item.decree_date,
@@ -97,16 +97,16 @@ pub async fn get_final_assignment_decree(
             updated_by: item.updated_by,
 
     }))
-}#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - FinalAssignmentDecre"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - FinalAssignmentDecree"), status_codes(200, 400, 500))]
 pub async fn create_final_assignment_decree(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<FinalAssignmentDecreResponse>, StatusError> {
+) -> Result<Json<FinalAssignmentDecreeResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
 
-        let payload: CreateFinalAssignmentDecreRequest = req.parse_json().await.map_err(|e| {
+        let payload: CreateFinalAssignmentDecreeRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -132,7 +132,7 @@ pub async fn create_final_assignment_decree(
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(FinalAssignmentDecreResponse {
+        Ok(Json(FinalAssignmentDecreeResponse {
             id: item.id,
             decree_number: item.decree_number.clone(),
             decree_date: item.decree_date,
@@ -149,11 +149,11 @@ pub async fn create_final_assignment_decree(
         }))
 }
 
-#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - FinalAssignmentDecre"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - FinalAssignmentDecree"), status_codes(200, 400, 404, 500))]
 pub async fn update_final_assignment_decree(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<FinalAssignmentDecreResponse>, StatusError> {
+) -> Result<Json<FinalAssignmentDecreeResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
@@ -161,7 +161,7 @@ pub async fn update_final_assignment_decree(
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-        let payload: UpdateFinalAssignmentDecreRequest = req.parse_json().await.map_err(|e| {
+        let payload: UpdateFinalAssignmentDecreeRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -172,7 +172,7 @@ pub async fn update_final_assignment_decree(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("FinalAssignmentDecre not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("FinalAssignmentDecree not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -196,7 +196,7 @@ pub async fn update_final_assignment_decree(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(FinalAssignmentDecreResponse {
+        Ok(Json(FinalAssignmentDecreeResponse {
             id: item.id,
             decree_number: item.decree_number.clone(),
             decree_date: item.decree_date,
@@ -212,7 +212,7 @@ pub async fn update_final_assignment_decree(
 
         }))
 }
-#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - FinalAssignmentDecre"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - FinalAssignmentDecree"), status_codes(200, 400, 404, 500))]
 pub async fn delete_final_assignment_decree(
         req: &mut Request,
         depot: &mut Depot,
@@ -229,7 +229,7 @@ pub async fn delete_final_assignment_decree(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("FinalAssignmentDecre not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("FinalAssignmentDecree not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -240,6 +240,6 @@ pub async fn delete_final_assignment_decree(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "FinalAssignmentDecre deleted successfully".to_string(),
+            message: "FinalAssignmentDecree deleted successfully".to_string(),
         }))
 }

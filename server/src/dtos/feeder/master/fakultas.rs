@@ -6,13 +6,13 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct FakultaQuery {
+pub struct FakultasQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct FakultaResponse {
+pub struct FakultasResponse {
     pub id: Uuid,
     pub id_fakultas: Option<Uuid>,
     pub nama_fakultas: Option<String>,
@@ -28,7 +28,7 @@ pub struct FakultaResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateFakultaRequest {
+pub struct CreateFakultasRequest {
     pub id_fakultas: Option<Uuid>,
     pub nama_fakultas: Option<String>,
     pub status: Option<String>,
@@ -37,7 +37,7 @@ pub struct CreateFakultaRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateFakultaRequest {
+pub struct UpdateFakultasRequest {
     pub id_fakultas: Option<Uuid>,
     pub nama_fakultas: Option<String>,
     pub status: Option<String>,
@@ -46,8 +46,8 @@ pub struct UpdateFakultaRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedFakultaResponse {
-    pub data: Vec<FakultaResponse>,
+pub struct PaginatedFakultasResponse {
+    pub data: Vec<FakultasResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

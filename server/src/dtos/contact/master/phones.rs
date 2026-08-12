@@ -6,13 +6,13 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct PhonQuery {
+pub struct PhoneQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PhonResponse {
+pub struct PhoneResponse {
     pub id: Uuid,
     pub phone_number: String,
     pub phone_type_id: Option<Uuid>,
@@ -27,7 +27,7 @@ pub struct PhonResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreatePhonRequest {
+pub struct CreatePhoneRequest {
     pub phone_number: String,
     pub phone_type_id: Option<Uuid>,
     pub phoneable_id: Uuid,
@@ -35,7 +35,7 @@ pub struct CreatePhonRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdatePhonRequest {
+pub struct UpdatePhoneRequest {
     pub phone_number: Option<String>,
     pub phone_type_id: Option<Uuid>,
     pub phoneable_id: Option<Uuid>,
@@ -43,8 +43,8 @@ pub struct UpdatePhonRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedPhonResponse {
-    pub data: Vec<PhonResponse>,
+pub struct PaginatedPhoneResponse {
+    pub data: Vec<PhoneResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

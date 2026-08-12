@@ -6,7 +6,7 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct VillagQuery {
+pub struct VillageQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
     pub name: Option<String>,
@@ -14,7 +14,7 @@ pub struct VillagQuery {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct VillagResponse {
+pub struct VillageResponse {
     pub id: Uuid,
     pub code: String,
     pub name: String,
@@ -38,7 +38,7 @@ pub struct VillagResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateVillagRequest {
+pub struct CreateVillageRequest {
     pub code: String,
     pub name: String,
     pub sub_district_id: Uuid,
@@ -55,7 +55,7 @@ pub struct CreateVillagRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateVillagRequest {
+pub struct UpdateVillageRequest {
     pub code: Option<String>,
     pub name: Option<String>,
     pub sub_district_id: Option<Uuid>,
@@ -72,8 +72,8 @@ pub struct UpdateVillagRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedVillagResponse {
-    pub data: Vec<VillagResponse>,
+pub struct PaginatedVillageResponse {
+    pub data: Vec<VillageResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

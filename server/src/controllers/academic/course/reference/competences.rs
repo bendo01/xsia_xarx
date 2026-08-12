@@ -13,7 +13,7 @@ use crate::dtos::common::reference::{
 };
 use crate::models::academic::course::reference::competences as entity_mod;
 
-#[endpoint(tags("Academic - Course - Reference - Competenc"), status_codes(200, 500))]
+#[endpoint(tags("Academic - Course - Reference - Competence"), status_codes(200, 500))]
 pub async fn list_competences(
     req: &mut Request,
     depot: &mut Depot,
@@ -68,7 +68,7 @@ pub async fn list_competences(
     }))
 }
 
-#[endpoint(tags("Academic - Course - Reference - Competenc"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Course - Reference - Competence"), status_codes(200, 400, 404, 500))]
 pub async fn get_competence(
     req: &mut Request,
     depot: &mut Depot,
@@ -85,7 +85,7 @@ pub async fn get_competence(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Competenc not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("Competence not found"))?;
 
     Ok(Json(ReferenceResponse {
             id: item.id,
@@ -100,7 +100,7 @@ pub async fn get_competence(
             updated_by: item.updated_by,
 
     }))
-}#[endpoint(tags("Academic - Course - Reference - Competenc"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Course - Reference - Competence"), status_codes(200, 400, 500))]
 pub async fn create_competence(
         req: &mut Request,
         depot: &mut Depot,
@@ -150,7 +150,7 @@ pub async fn create_competence(
         }))
 }
 
-#[endpoint(tags("Academic - Course - Reference - Competenc"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Course - Reference - Competence"), status_codes(200, 400, 404, 500))]
 pub async fn update_competence(
         req: &mut Request,
         depot: &mut Depot,
@@ -173,7 +173,7 @@ pub async fn update_competence(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Competenc not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Competence not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -205,7 +205,7 @@ pub async fn update_competence(
 
         }))
 }
-#[endpoint(tags("Academic - Course - Reference - Competenc"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Course - Reference - Competence"), status_codes(200, 400, 404, 500))]
 pub async fn delete_competence(
         req: &mut Request,
         depot: &mut Depot,
@@ -222,7 +222,7 @@ pub async fn delete_competence(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Competenc not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Competence not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -233,6 +233,6 @@ pub async fn delete_competence(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "Competenc deleted successfully".to_string(),
+            message: "Competence deleted successfully".to_string(),
         }))
 }

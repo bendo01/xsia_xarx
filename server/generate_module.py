@@ -1,12 +1,60 @@
 import os
 
-def to_pascal_case(snake_str):
-    if snake_str.endswith("es") and snake_str != "staffes" and snake_str != "residences":
-        snake_str = snake_str[:-2]
-    elif snake_str.endswith("s") and snake_str != "staffes" and snake_str != "status":
-        snake_str = snake_str[:-1]
+def singularize(word):
+    exceptions = {
+        "staffes": "staff",
+        "residences": "residence",
+        "archives": "archive",
+        "decrees": "decree",
+        "homebases": "homebase",
+        "choices": "choice",
+        "summaries": "summary",
+        "prerequisites": "prerequisite",
+        "images": "image",
+        "websites": "website",
+        "phones": "phone",
+        "evaluations": "evaluation",
+        "submissions": "submission",
+        "activities": "activity",
+        "categories": "category",
+        "countries": "country",
+        "regencies": "regency",
+        "varieties": "variety",
+        "agencies": "agency",
+        "cities": "city",
+        "universities": "university",
+        "facilities": "facility",
+        "properties": "property",
+        "modules": "module",
+        "schedules": "schedule",
+        "codes": "code",
+        "villages": "village",
+        "bundles": "bundle",
+        "candidates": "candidate",
+        "employees": "employee",
+        "courses": "course",
+        "classes": "class",
+        "fakultas": "fakultas",
+        "kelas": "kelas",
+        "status": "status",
+        "khusus": "khusus"
+    }
     
+    if word in exceptions:
+        return exceptions[word]
+        
+    if word.endswith("ies"):
+        return word[:-3] + "y"
+    elif word.endswith("ches") or word.endswith("shes") or word.endswith("sses") or word.endswith("xes") or word.endswith("zes"):
+        return word[:-2]
+    elif word.endswith("s") and not word.endswith("ss") and not word.endswith("us") and not word.endswith("is") and not word.endswith("as"):
+        return word[:-1]
+        
+    return word
+
+def to_pascal_case(snake_str):
     components = snake_str.split('_')
+    components[-1] = singularize(components[-1])
     return "".join(x.title() for x in components)
 
 def parse_model(file_path):

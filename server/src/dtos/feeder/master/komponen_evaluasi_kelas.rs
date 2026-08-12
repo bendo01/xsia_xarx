@@ -6,13 +6,13 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct KomponenEvaluasiKelaQuery {
+pub struct KomponenEvaluasiKelasQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct KomponenEvaluasiKelaResponse {
+pub struct KomponenEvaluasiKelasResponse {
     pub id: Uuid,
     pub id_komponen_evaluasi: Option<Uuid>,
     pub id_kelas_kuliah: Option<Uuid>,
@@ -32,7 +32,7 @@ pub struct KomponenEvaluasiKelaResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateKomponenEvaluasiKelaRequest {
+pub struct CreateKomponenEvaluasiKelasRequest {
     pub id_komponen_evaluasi: Option<Uuid>,
     pub id_kelas_kuliah: Option<Uuid>,
     pub id_jenis_evaluasi: Option<i32>,
@@ -45,7 +45,7 @@ pub struct CreateKomponenEvaluasiKelaRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateKomponenEvaluasiKelaRequest {
+pub struct UpdateKomponenEvaluasiKelasRequest {
     pub id_komponen_evaluasi: Option<Uuid>,
     pub id_kelas_kuliah: Option<Uuid>,
     pub id_jenis_evaluasi: Option<i32>,
@@ -58,8 +58,8 @@ pub struct UpdateKomponenEvaluasiKelaRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedKomponenEvaluasiKelaResponse {
-    pub data: Vec<KomponenEvaluasiKelaResponse>,
+pub struct PaginatedKomponenEvaluasiKelasResponse {
+    pub data: Vec<KomponenEvaluasiKelasResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

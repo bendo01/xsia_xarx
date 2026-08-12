@@ -8,22 +8,22 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::literate::categories::{
-    CreateCategoriRequest, CategoriQuery, CategoriResponse, PaginatedCategoriResponse,
-    UpdateCategoriRequest,
+    CreateCategoryRequest, CategoryQuery, CategoryResponse, PaginatedCategoryResponse,
+    UpdateCategoryRequest,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::literate::categories as entity_mod;
 
-#[endpoint(tags("Literate -  - Categori"), status_codes(200, 500))]
+#[endpoint(tags("Literate -  - Category"), status_codes(200, 500))]
 pub async fn list_categories(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<PaginatedCategoriResponse>, StatusError> {
+) -> Result<Json<PaginatedCategoryResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
 
-    let query: CategoriQuery = req.parse_queries().unwrap_or_default();
+    let query: CategoryQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
@@ -46,7 +46,7 @@ pub async fn list_categories(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| CategoriResponse {
+    let data = items.into_iter().map(|item| CategoryResponse {
             id: item.id,
             code: item.code,
             alphabet_code: item.alphabet_code.clone(),
@@ -60,7 +60,7 @@ pub async fn list_categories(
 
     }).collect();
 
-    Ok(Json(PaginatedCategoriResponse {
+    Ok(Json(PaginatedCategoryResponse {
         data,
         total,
         page,
@@ -69,11 +69,11 @@ pub async fn list_categories(
     }))
 }
 
-#[endpoint(tags("Literate -  - Categori"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Literate -  - Category"), status_codes(200, 400, 404, 500))]
 pub async fn get_categorie(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<CategoriResponse>, StatusError> {
+) -> Result<Json<CategoryResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
@@ -86,9 +86,9 @@ pub async fn get_categorie(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Categori not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("Category not found"))?;
 
-    Ok(Json(CategoriResponse {
+    Ok(Json(CategoryResponse {
             id: item.id,
             code: item.code,
             alphabet_code: item.alphabet_code.clone(),
@@ -101,16 +101,16 @@ pub async fn get_categorie(
             updated_by: item.updated_by,
 
     }))
-}#[endpoint(tags("Literate -  - Categori"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Literate -  - Category"), status_codes(200, 400, 500))]
 pub async fn create_categorie(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<CategoriResponse>, StatusError> {
+) -> Result<Json<CategoryResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
 
-        let payload: CreateCategoriRequest = req.parse_json().await.map_err(|e| {
+        let payload: CreateCategoryRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -134,7 +134,7 @@ pub async fn create_categorie(
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(CategoriResponse {
+        Ok(Json(CategoryResponse {
             id: item.id,
             code: item.code,
             alphabet_code: item.alphabet_code.clone(),
@@ -149,11 +149,11 @@ pub async fn create_categorie(
         }))
 }
 
-#[endpoint(tags("Literate -  - Categori"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Literate -  - Category"), status_codes(200, 400, 404, 500))]
 pub async fn update_categorie(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<CategoriResponse>, StatusError> {
+) -> Result<Json<CategoryResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
@@ -161,7 +161,7 @@ pub async fn update_categorie(
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-        let payload: UpdateCategoriRequest = req.parse_json().await.map_err(|e| {
+        let payload: UpdateCategoryRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -172,7 +172,7 @@ pub async fn update_categorie(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Categori not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Category not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -190,7 +190,7 @@ pub async fn update_categorie(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(CategoriResponse {
+        Ok(Json(CategoryResponse {
             id: item.id,
             code: item.code,
             alphabet_code: item.alphabet_code.clone(),
@@ -204,7 +204,7 @@ pub async fn update_categorie(
 
         }))
 }
-#[endpoint(tags("Literate -  - Categori"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Literate -  - Category"), status_codes(200, 400, 404, 500))]
 pub async fn delete_categorie(
         req: &mut Request,
         depot: &mut Depot,
@@ -221,7 +221,7 @@ pub async fn delete_categorie(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Categori not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Category not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -232,6 +232,6 @@ pub async fn delete_categorie(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "Categori deleted successfully".to_string(),
+            message: "Category deleted successfully".to_string(),
         }))
 }

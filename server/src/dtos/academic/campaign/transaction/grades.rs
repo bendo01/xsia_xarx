@@ -6,7 +6,7 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct GradQuery {
+pub struct GradeQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
     pub name: Option<String>,
@@ -14,7 +14,7 @@ pub struct GradQuery {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct GradResponse {
+pub struct GradeResponse {
     pub id: Uuid,
     pub code: Option<i32>,
     pub alphabet_code: Option<String>,
@@ -35,7 +35,7 @@ pub struct GradResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateGradRequest {
+pub struct CreateGradeRequest {
     pub code: Option<i32>,
     pub alphabet_code: Option<String>,
     pub name: String,
@@ -49,7 +49,7 @@ pub struct CreateGradRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateGradRequest {
+pub struct UpdateGradeRequest {
     pub code: Option<i32>,
     pub alphabet_code: Option<String>,
     pub name: Option<String>,
@@ -63,8 +63,8 @@ pub struct UpdateGradRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedGradResponse {
-    pub data: Vec<GradResponse>,
+pub struct PaginatedGradeResponse {
+    pub data: Vec<GradeResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

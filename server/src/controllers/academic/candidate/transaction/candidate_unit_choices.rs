@@ -8,22 +8,22 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::academic::candidate::transaction::candidate_unit_choices::{
-    CreateCandidateUnitChoicRequest, CandidateUnitChoicQuery, CandidateUnitChoicResponse, PaginatedCandidateUnitChoicResponse,
-    UpdateCandidateUnitChoicRequest,
+    CreateCandidateUnitChoiceRequest, CandidateUnitChoiceQuery, CandidateUnitChoiceResponse, PaginatedCandidateUnitChoiceResponse,
+    UpdateCandidateUnitChoiceRequest,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::candidate::transaction::candidate_unit_choices as entity_mod;
 
-#[endpoint(tags("Academic - Candidate - Transaction - CandidateUnitChoic"), status_codes(200, 500))]
+#[endpoint(tags("Academic - Candidate - Transaction - CandidateUnitChoice"), status_codes(200, 500))]
 pub async fn list_candidate_unit_choices(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<PaginatedCandidateUnitChoicResponse>, StatusError> {
+) -> Result<Json<PaginatedCandidateUnitChoiceResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
 
-    let query: CandidateUnitChoicQuery = req.parse_queries().unwrap_or_default();
+    let query: CandidateUnitChoiceQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
@@ -38,7 +38,7 @@ pub async fn list_candidate_unit_choices(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| CandidateUnitChoicResponse {
+    let data = items.into_iter().map(|item| CandidateUnitChoiceResponse {
             id: item.id,
             candidate_id: item.candidate_id,
             unit_id: item.unit_id,
@@ -55,7 +55,7 @@ pub async fn list_candidate_unit_choices(
 
     }).collect();
 
-    Ok(Json(PaginatedCandidateUnitChoicResponse {
+    Ok(Json(PaginatedCandidateUnitChoiceResponse {
         data,
         total,
         page,
@@ -64,11 +64,11 @@ pub async fn list_candidate_unit_choices(
     }))
 }
 
-#[endpoint(tags("Academic - Candidate - Transaction - CandidateUnitChoic"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Candidate - Transaction - CandidateUnitChoice"), status_codes(200, 400, 404, 500))]
 pub async fn get_candidate_unit_choice(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<CandidateUnitChoicResponse>, StatusError> {
+) -> Result<Json<CandidateUnitChoiceResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
@@ -81,9 +81,9 @@ pub async fn get_candidate_unit_choice(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("CandidateUnitChoic not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("CandidateUnitChoice not found"))?;
 
-    Ok(Json(CandidateUnitChoicResponse {
+    Ok(Json(CandidateUnitChoiceResponse {
             id: item.id,
             candidate_id: item.candidate_id,
             unit_id: item.unit_id,
@@ -99,16 +99,16 @@ pub async fn get_candidate_unit_choice(
             updated_by: item.updated_by,
 
     }))
-}#[endpoint(tags("Academic - Candidate - Transaction - CandidateUnitChoic"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Candidate - Transaction - CandidateUnitChoice"), status_codes(200, 400, 500))]
 pub async fn create_candidate_unit_choice(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<CandidateUnitChoicResponse>, StatusError> {
+) -> Result<Json<CandidateUnitChoiceResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
 
-        let payload: CreateCandidateUnitChoicRequest = req.parse_json().await.map_err(|e| {
+        let payload: CreateCandidateUnitChoiceRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -135,7 +135,7 @@ pub async fn create_candidate_unit_choice(
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(CandidateUnitChoicResponse {
+        Ok(Json(CandidateUnitChoiceResponse {
             id: item.id,
             candidate_id: item.candidate_id,
             unit_id: item.unit_id,
@@ -153,11 +153,11 @@ pub async fn create_candidate_unit_choice(
         }))
 }
 
-#[endpoint(tags("Academic - Candidate - Transaction - CandidateUnitChoic"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Candidate - Transaction - CandidateUnitChoice"), status_codes(200, 400, 404, 500))]
 pub async fn update_candidate_unit_choice(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<CandidateUnitChoicResponse>, StatusError> {
+) -> Result<Json<CandidateUnitChoiceResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
@@ -165,7 +165,7 @@ pub async fn update_candidate_unit_choice(
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-        let payload: UpdateCandidateUnitChoicRequest = req.parse_json().await.map_err(|e| {
+        let payload: UpdateCandidateUnitChoiceRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -176,7 +176,7 @@ pub async fn update_candidate_unit_choice(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("CandidateUnitChoic not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("CandidateUnitChoice not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -203,7 +203,7 @@ pub async fn update_candidate_unit_choice(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(CandidateUnitChoicResponse {
+        Ok(Json(CandidateUnitChoiceResponse {
             id: item.id,
             candidate_id: item.candidate_id,
             unit_id: item.unit_id,
@@ -220,7 +220,7 @@ pub async fn update_candidate_unit_choice(
 
         }))
 }
-#[endpoint(tags("Academic - Candidate - Transaction - CandidateUnitChoic"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Candidate - Transaction - CandidateUnitChoice"), status_codes(200, 400, 404, 500))]
 pub async fn delete_candidate_unit_choice(
         req: &mut Request,
         depot: &mut Depot,
@@ -237,7 +237,7 @@ pub async fn delete_candidate_unit_choice(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("CandidateUnitChoic not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("CandidateUnitChoice not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -248,6 +248,6 @@ pub async fn delete_candidate_unit_choice(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "CandidateUnitChoic deleted successfully".to_string(),
+            message: "CandidateUnitChoice deleted successfully".to_string(),
         }))
 }

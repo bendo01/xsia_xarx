@@ -8,22 +8,22 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::academic::student::adviser::decrees::{
-    CreateDecreRequest, DecreQuery, DecreResponse, PaginatedDecreResponse,
-    UpdateDecreRequest,
+    CreateDecreeRequest, DecreeQuery, DecreeResponse, PaginatedDecreeResponse,
+    UpdateDecreeRequest,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::student::adviser::decrees as entity_mod;
 
-#[endpoint(tags("Academic - Student - Adviser - Decre"), status_codes(200, 500))]
+#[endpoint(tags("Academic - Student - Adviser - Decree"), status_codes(200, 500))]
 pub async fn list_decrees(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<PaginatedDecreResponse>, StatusError> {
+) -> Result<Json<PaginatedDecreeResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
 
-    let query: DecreQuery = req.parse_queries().unwrap_or_default();
+    let query: DecreeQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
@@ -38,7 +38,7 @@ pub async fn list_decrees(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| DecreResponse {
+    let data = items.into_iter().map(|item| DecreeResponse {
             id: item.id,
             decree_date: item.decree_date,
             decree_number: item.decree_number.clone(),
@@ -53,7 +53,7 @@ pub async fn list_decrees(
 
     }).collect();
 
-    Ok(Json(PaginatedDecreResponse {
+    Ok(Json(PaginatedDecreeResponse {
         data,
         total,
         page,
@@ -62,11 +62,11 @@ pub async fn list_decrees(
     }))
 }
 
-#[endpoint(tags("Academic - Student - Adviser - Decre"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Student - Adviser - Decree"), status_codes(200, 400, 404, 500))]
 pub async fn get_decree(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<DecreResponse>, StatusError> {
+) -> Result<Json<DecreeResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
@@ -79,9 +79,9 @@ pub async fn get_decree(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Decre not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("Decree not found"))?;
 
-    Ok(Json(DecreResponse {
+    Ok(Json(DecreeResponse {
             id: item.id,
             decree_date: item.decree_date,
             decree_number: item.decree_number.clone(),
@@ -95,16 +95,16 @@ pub async fn get_decree(
             updated_by: item.updated_by,
 
     }))
-}#[endpoint(tags("Academic - Student - Adviser - Decre"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Student - Adviser - Decree"), status_codes(200, 400, 500))]
 pub async fn create_decree(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<DecreResponse>, StatusError> {
+) -> Result<Json<DecreeResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
 
-        let payload: CreateDecreRequest = req.parse_json().await.map_err(|e| {
+        let payload: CreateDecreeRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -129,7 +129,7 @@ pub async fn create_decree(
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(DecreResponse {
+        Ok(Json(DecreeResponse {
             id: item.id,
             decree_date: item.decree_date,
             decree_number: item.decree_number.clone(),
@@ -145,11 +145,11 @@ pub async fn create_decree(
         }))
 }
 
-#[endpoint(tags("Academic - Student - Adviser - Decre"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Student - Adviser - Decree"), status_codes(200, 400, 404, 500))]
 pub async fn update_decree(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<DecreResponse>, StatusError> {
+) -> Result<Json<DecreeResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
@@ -157,7 +157,7 @@ pub async fn update_decree(
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-        let payload: UpdateDecreRequest = req.parse_json().await.map_err(|e| {
+        let payload: UpdateDecreeRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -168,7 +168,7 @@ pub async fn update_decree(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Decre not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Decree not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -189,7 +189,7 @@ pub async fn update_decree(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(DecreResponse {
+        Ok(Json(DecreeResponse {
             id: item.id,
             decree_date: item.decree_date,
             decree_number: item.decree_number.clone(),
@@ -204,7 +204,7 @@ pub async fn update_decree(
 
         }))
 }
-#[endpoint(tags("Academic - Student - Adviser - Decre"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Student - Adviser - Decree"), status_codes(200, 400, 404, 500))]
 pub async fn delete_decree(
         req: &mut Request,
         depot: &mut Depot,
@@ -221,7 +221,7 @@ pub async fn delete_decree(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Decre not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Decree not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -232,6 +232,6 @@ pub async fn delete_decree(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "Decre deleted successfully".to_string(),
+            message: "Decree deleted successfully".to_string(),
         }))
 }

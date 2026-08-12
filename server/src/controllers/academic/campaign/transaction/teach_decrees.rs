@@ -8,22 +8,22 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::academic::campaign::transaction::teach_decrees::{
-    CreateTeachDecreRequest, TeachDecreQuery, TeachDecreResponse, PaginatedTeachDecreResponse,
-    UpdateTeachDecreRequest,
+    CreateTeachDecreeRequest, TeachDecreeQuery, TeachDecreeResponse, PaginatedTeachDecreeResponse,
+    UpdateTeachDecreeRequest,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::campaign::transaction::teach_decrees as entity_mod;
 
-#[endpoint(tags("Academic - Campaign - Transaction - TeachDecre"), status_codes(200, 500))]
+#[endpoint(tags("Academic - Campaign - Transaction - TeachDecree"), status_codes(200, 500))]
 pub async fn list_teach_decrees(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<PaginatedTeachDecreResponse>, StatusError> {
+) -> Result<Json<PaginatedTeachDecreeResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
 
-    let query: TeachDecreQuery = req.parse_queries().unwrap_or_default();
+    let query: TeachDecreeQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
@@ -38,7 +38,7 @@ pub async fn list_teach_decrees(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| TeachDecreResponse {
+    let data = items.into_iter().map(|item| TeachDecreeResponse {
             id: item.id,
             decree_number: item.decree_number.clone(),
             decree_date: item.decree_date,
@@ -54,7 +54,7 @@ pub async fn list_teach_decrees(
 
     }).collect();
 
-    Ok(Json(PaginatedTeachDecreResponse {
+    Ok(Json(PaginatedTeachDecreeResponse {
         data,
         total,
         page,
@@ -63,11 +63,11 @@ pub async fn list_teach_decrees(
     }))
 }
 
-#[endpoint(tags("Academic - Campaign - Transaction - TeachDecre"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Campaign - Transaction - TeachDecree"), status_codes(200, 400, 404, 500))]
 pub async fn get_teach_decree(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<TeachDecreResponse>, StatusError> {
+) -> Result<Json<TeachDecreeResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
@@ -80,9 +80,9 @@ pub async fn get_teach_decree(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("TeachDecre not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("TeachDecree not found"))?;
 
-    Ok(Json(TeachDecreResponse {
+    Ok(Json(TeachDecreeResponse {
             id: item.id,
             decree_number: item.decree_number.clone(),
             decree_date: item.decree_date,
@@ -97,16 +97,16 @@ pub async fn get_teach_decree(
             feeder_id: item.feeder_id,
 
     }))
-}#[endpoint(tags("Academic - Campaign - Transaction - TeachDecre"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Campaign - Transaction - TeachDecree"), status_codes(200, 400, 500))]
 pub async fn create_teach_decree(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<TeachDecreResponse>, StatusError> {
+) -> Result<Json<TeachDecreeResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
 
-        let payload: CreateTeachDecreRequest = req.parse_json().await.map_err(|e| {
+        let payload: CreateTeachDecreeRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -132,7 +132,7 @@ pub async fn create_teach_decree(
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(TeachDecreResponse {
+        Ok(Json(TeachDecreeResponse {
             id: item.id,
             decree_number: item.decree_number.clone(),
             decree_date: item.decree_date,
@@ -149,11 +149,11 @@ pub async fn create_teach_decree(
         }))
 }
 
-#[endpoint(tags("Academic - Campaign - Transaction - TeachDecre"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Campaign - Transaction - TeachDecree"), status_codes(200, 400, 404, 500))]
 pub async fn update_teach_decree(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<TeachDecreResponse>, StatusError> {
+) -> Result<Json<TeachDecreeResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
@@ -161,7 +161,7 @@ pub async fn update_teach_decree(
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-        let payload: UpdateTeachDecreRequest = req.parse_json().await.map_err(|e| {
+        let payload: UpdateTeachDecreeRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -172,7 +172,7 @@ pub async fn update_teach_decree(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("TeachDecre not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("TeachDecree not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -196,7 +196,7 @@ pub async fn update_teach_decree(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(TeachDecreResponse {
+        Ok(Json(TeachDecreeResponse {
             id: item.id,
             decree_number: item.decree_number.clone(),
             decree_date: item.decree_date,
@@ -212,7 +212,7 @@ pub async fn update_teach_decree(
 
         }))
 }
-#[endpoint(tags("Academic - Campaign - Transaction - TeachDecre"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Campaign - Transaction - TeachDecree"), status_codes(200, 400, 404, 500))]
 pub async fn delete_teach_decree(
         req: &mut Request,
         depot: &mut Depot,
@@ -229,7 +229,7 @@ pub async fn delete_teach_decree(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("TeachDecre not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("TeachDecree not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -240,6 +240,6 @@ pub async fn delete_teach_decree(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "TeachDecre deleted successfully".to_string(),
+            message: "TeachDecree deleted successfully".to_string(),
         }))
 }

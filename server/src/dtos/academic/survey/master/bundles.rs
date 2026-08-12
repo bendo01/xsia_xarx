@@ -6,7 +6,7 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime, DateTime, FixedOffset};
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct BundlQuery {
+pub struct BundleQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
     pub name: Option<String>,
@@ -14,7 +14,7 @@ pub struct BundlQuery {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct BundlResponse {
+pub struct BundleResponse {
     pub id: Uuid,
     pub code: i32,
     pub alphabet_code: String,
@@ -32,7 +32,7 @@ pub struct BundlResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateBundlRequest {
+pub struct CreateBundleRequest {
     pub code: i32,
     pub alphabet_code: String,
     pub name: String,
@@ -43,7 +43,7 @@ pub struct CreateBundlRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateBundlRequest {
+pub struct UpdateBundleRequest {
     pub code: Option<i32>,
     pub alphabet_code: Option<String>,
     pub name: Option<String>,
@@ -54,8 +54,8 @@ pub struct UpdateBundlRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedBundlResponse {
-    pub data: Vec<BundlResponse>,
+pub struct PaginatedBundleResponse {
+    pub data: Vec<BundleResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

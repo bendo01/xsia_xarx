@@ -8,22 +8,22 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::academic::campaign::transaction::grades::{
-    CreateGradRequest, GradQuery, GradResponse, PaginatedGradResponse,
-    UpdateGradRequest,
+    CreateGradeRequest, GradeQuery, GradeResponse, PaginatedGradeResponse,
+    UpdateGradeRequest,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::campaign::transaction::grades as entity_mod;
 
-#[endpoint(tags("Academic - Campaign - Transaction - Grad"), status_codes(200, 500))]
+#[endpoint(tags("Academic - Campaign - Transaction - Grade"), status_codes(200, 500))]
 pub async fn list_grades(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<PaginatedGradResponse>, StatusError> {
+) -> Result<Json<PaginatedGradeResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
 
-    let query: GradQuery = req.parse_queries().unwrap_or_default();
+    let query: GradeQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
@@ -46,7 +46,7 @@ pub async fn list_grades(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| GradResponse {
+    let data = items.into_iter().map(|item| GradeResponse {
             id: item.id,
             code: item.code,
             alphabet_code: item.alphabet_code,
@@ -67,7 +67,7 @@ pub async fn list_grades(
 
     }).collect();
 
-    Ok(Json(PaginatedGradResponse {
+    Ok(Json(PaginatedGradeResponse {
         data,
         total,
         page,
@@ -76,11 +76,11 @@ pub async fn list_grades(
     }))
 }
 
-#[endpoint(tags("Academic - Campaign - Transaction - Grad"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Campaign - Transaction - Grade"), status_codes(200, 400, 404, 500))]
 pub async fn get_grade(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<GradResponse>, StatusError> {
+) -> Result<Json<GradeResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
@@ -93,9 +93,9 @@ pub async fn get_grade(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Grad not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("Grade not found"))?;
 
-    Ok(Json(GradResponse {
+    Ok(Json(GradeResponse {
             id: item.id,
             code: item.code,
             alphabet_code: item.alphabet_code,
@@ -115,16 +115,16 @@ pub async fn get_grade(
             feeder_id: item.feeder_id,
 
     }))
-}#[endpoint(tags("Academic - Campaign - Transaction - Grad"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Campaign - Transaction - Grade"), status_codes(200, 400, 500))]
 pub async fn create_grade(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<GradResponse>, StatusError> {
+) -> Result<Json<GradeResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
 
-        let payload: CreateGradRequest = req.parse_json().await.map_err(|e| {
+        let payload: CreateGradeRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -155,7 +155,7 @@ pub async fn create_grade(
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(GradResponse {
+        Ok(Json(GradeResponse {
             id: item.id,
             code: item.code,
             alphabet_code: item.alphabet_code,
@@ -177,11 +177,11 @@ pub async fn create_grade(
         }))
 }
 
-#[endpoint(tags("Academic - Campaign - Transaction - Grad"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Campaign - Transaction - Grade"), status_codes(200, 400, 404, 500))]
 pub async fn update_grade(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<GradResponse>, StatusError> {
+) -> Result<Json<GradeResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
@@ -189,7 +189,7 @@ pub async fn update_grade(
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-        let payload: UpdateGradRequest = req.parse_json().await.map_err(|e| {
+        let payload: UpdateGradeRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -200,7 +200,7 @@ pub async fn update_grade(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Grad not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Grade not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -239,7 +239,7 @@ pub async fn update_grade(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(GradResponse {
+        Ok(Json(GradeResponse {
             id: item.id,
             code: item.code,
             alphabet_code: item.alphabet_code,
@@ -260,7 +260,7 @@ pub async fn update_grade(
 
         }))
 }
-#[endpoint(tags("Academic - Campaign - Transaction - Grad"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Campaign - Transaction - Grade"), status_codes(200, 400, 404, 500))]
 pub async fn delete_grade(
         req: &mut Request,
         depot: &mut Depot,
@@ -277,7 +277,7 @@ pub async fn delete_grade(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Grad not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Grade not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -288,6 +288,6 @@ pub async fn delete_grade(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "Grad deleted successfully".to_string(),
+            message: "Grade deleted successfully".to_string(),
         }))
 }

@@ -6,14 +6,14 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct SchedulQuery {
+pub struct ScheduleQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
     pub name: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct SchedulResponse {
+pub struct ScheduleResponse {
     pub id: Uuid,
     pub name: Option<String>,
     #[salvo(schema(value_type = String))]
@@ -32,7 +32,7 @@ pub struct SchedulResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateSchedulRequest {
+pub struct CreateScheduleRequest {
     pub name: Option<String>,
     #[salvo(schema(value_type = String))]
     pub start_hour: NaiveTime,
@@ -44,7 +44,7 @@ pub struct CreateSchedulRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateSchedulRequest {
+pub struct UpdateScheduleRequest {
     pub name: Option<String>,
     #[salvo(schema(value_type = Option<String>))]
     pub start_hour: Option<NaiveTime>,
@@ -56,8 +56,8 @@ pub struct UpdateSchedulRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedSchedulResponse {
-    pub data: Vec<SchedulResponse>,
+pub struct PaginatedScheduleResponse {
+    pub data: Vec<ScheduleResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

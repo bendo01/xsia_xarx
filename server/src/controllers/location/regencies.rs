@@ -8,22 +8,22 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::location::regencies::{
-    CreateRegenciRequest, RegenciQuery, RegenciResponse, PaginatedRegenciResponse,
-    UpdateRegenciRequest,
+    CreateRegencyRequest, RegencyQuery, RegencyResponse, PaginatedRegencyResponse,
+    UpdateRegencyRequest,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::location::regencies as entity_mod;
 
-#[endpoint(tags("Location -  - Regenci"), status_codes(200, 500))]
+#[endpoint(tags("Location -  - Regency"), status_codes(200, 500))]
 pub async fn list_regencies(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<PaginatedRegenciResponse>, StatusError> {
+) -> Result<Json<PaginatedRegencyResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
 
-    let query: RegenciQuery = req.parse_queries().unwrap_or_default();
+    let query: RegencyQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
@@ -46,7 +46,7 @@ pub async fn list_regencies(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| RegenciResponse {
+    let data = items.into_iter().map(|item| RegencyResponse {
             id: item.id,
             code: item.code,
             name: item.name,
@@ -75,7 +75,7 @@ pub async fn list_regencies(
 
     }).collect();
 
-    Ok(Json(PaginatedRegenciResponse {
+    Ok(Json(PaginatedRegencyResponse {
         data,
         total,
         page,
@@ -84,11 +84,11 @@ pub async fn list_regencies(
     }))
 }
 
-#[endpoint(tags("Location -  - Regenci"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Location -  - Regency"), status_codes(200, 400, 404, 500))]
 pub async fn get_regencie(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<RegenciResponse>, StatusError> {
+) -> Result<Json<RegencyResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
@@ -101,9 +101,9 @@ pub async fn get_regencie(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Regenci not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("Regency not found"))?;
 
-    Ok(Json(RegenciResponse {
+    Ok(Json(RegencyResponse {
             id: item.id,
             code: item.code,
             name: item.name,
@@ -131,16 +131,16 @@ pub async fn get_regencie(
             updated_by: item.updated_by,
 
     }))
-}#[endpoint(tags("Location -  - Regenci"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Location -  - Regency"), status_codes(200, 400, 500))]
 pub async fn create_regencie(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<RegenciResponse>, StatusError> {
+) -> Result<Json<RegencyResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
 
-        let payload: CreateRegenciRequest = req.parse_json().await.map_err(|e| {
+        let payload: CreateRegencyRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -179,7 +179,7 @@ pub async fn create_regencie(
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(RegenciResponse {
+        Ok(Json(RegencyResponse {
             id: item.id,
             code: item.code,
             name: item.name,
@@ -209,11 +209,11 @@ pub async fn create_regencie(
         }))
 }
 
-#[endpoint(tags("Location -  - Regenci"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Location -  - Regency"), status_codes(200, 400, 404, 500))]
 pub async fn update_regencie(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<RegenciResponse>, StatusError> {
+) -> Result<Json<RegencyResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
@@ -221,7 +221,7 @@ pub async fn update_regencie(
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-        let payload: UpdateRegenciRequest = req.parse_json().await.map_err(|e| {
+        let payload: UpdateRegencyRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -232,7 +232,7 @@ pub async fn update_regencie(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Regenci not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Regency not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -295,7 +295,7 @@ pub async fn update_regencie(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(RegenciResponse {
+        Ok(Json(RegencyResponse {
             id: item.id,
             code: item.code,
             name: item.name,
@@ -324,7 +324,7 @@ pub async fn update_regencie(
 
         }))
 }
-#[endpoint(tags("Location -  - Regenci"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Location -  - Regency"), status_codes(200, 400, 404, 500))]
 pub async fn delete_regencie(
         req: &mut Request,
         depot: &mut Depot,
@@ -341,7 +341,7 @@ pub async fn delete_regencie(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Regenci not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Regency not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -352,6 +352,6 @@ pub async fn delete_regencie(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "Regenci deleted successfully".to_string(),
+            message: "Regency deleted successfully".to_string(),
         }))
 }

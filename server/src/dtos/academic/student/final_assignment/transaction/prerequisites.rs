@@ -6,13 +6,13 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct PrerequisitQuery {
+pub struct PrerequisiteQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PrerequisitResponse {
+pub struct PrerequisiteResponse {
     pub id: Uuid,
     pub thread: i32,
     pub requirement_id: Uuid,
@@ -32,7 +32,7 @@ pub struct PrerequisitResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreatePrerequisitRequest {
+pub struct CreatePrerequisiteRequest {
     pub thread: i32,
     pub requirement_id: Uuid,
     pub submission_id: Uuid,
@@ -45,7 +45,7 @@ pub struct CreatePrerequisitRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdatePrerequisitRequest {
+pub struct UpdatePrerequisiteRequest {
     pub thread: Option<i32>,
     pub requirement_id: Option<Uuid>,
     pub submission_id: Option<Uuid>,
@@ -58,8 +58,8 @@ pub struct UpdatePrerequisitRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedPrerequisitResponse {
-    pub data: Vec<PrerequisitResponse>,
+pub struct PaginatedPrerequisiteResponse {
+    pub data: Vec<PrerequisiteResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

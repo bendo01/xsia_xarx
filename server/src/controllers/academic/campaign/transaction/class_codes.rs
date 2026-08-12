@@ -8,22 +8,22 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::academic::campaign::transaction::class_codes::{
-    CreateClassCodRequest, ClassCodQuery, ClassCodResponse, PaginatedClassCodResponse,
-    UpdateClassCodRequest,
+    CreateClassCodeRequest, ClassCodeQuery, ClassCodeResponse, PaginatedClassCodeResponse,
+    UpdateClassCodeRequest,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::campaign::transaction::class_codes as entity_mod;
 
-#[endpoint(tags("Academic - Campaign - Transaction - ClassCod"), status_codes(200, 500))]
+#[endpoint(tags("Academic - Campaign - Transaction - ClassCode"), status_codes(200, 500))]
 pub async fn list_class_codes(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<PaginatedClassCodResponse>, StatusError> {
+) -> Result<Json<PaginatedClassCodeResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
 
-    let query: ClassCodQuery = req.parse_queries().unwrap_or_default();
+    let query: ClassCodeQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
@@ -46,7 +46,7 @@ pub async fn list_class_codes(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| ClassCodResponse {
+    let data = items.into_iter().map(|item| ClassCodeResponse {
             id: item.id,
             code: item.code,
             alphabet_code: item.alphabet_code,
@@ -65,7 +65,7 @@ pub async fn list_class_codes(
 
     }).collect();
 
-    Ok(Json(PaginatedClassCodResponse {
+    Ok(Json(PaginatedClassCodeResponse {
         data,
         total,
         page,
@@ -74,11 +74,11 @@ pub async fn list_class_codes(
     }))
 }
 
-#[endpoint(tags("Academic - Campaign - Transaction - ClassCod"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Campaign - Transaction - ClassCode"), status_codes(200, 400, 404, 500))]
 pub async fn get_class_code(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<ClassCodResponse>, StatusError> {
+) -> Result<Json<ClassCodeResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
@@ -91,9 +91,9 @@ pub async fn get_class_code(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("ClassCod not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("ClassCode not found"))?;
 
-    Ok(Json(ClassCodResponse {
+    Ok(Json(ClassCodeResponse {
             id: item.id,
             code: item.code,
             alphabet_code: item.alphabet_code,
@@ -111,16 +111,16 @@ pub async fn get_class_code(
             capacity: item.capacity,
 
     }))
-}#[endpoint(tags("Academic - Campaign - Transaction - ClassCod"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Campaign - Transaction - ClassCode"), status_codes(200, 400, 500))]
 pub async fn create_class_code(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<ClassCodResponse>, StatusError> {
+) -> Result<Json<ClassCodeResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
 
-        let payload: CreateClassCodRequest = req.parse_json().await.map_err(|e| {
+        let payload: CreateClassCodeRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -149,7 +149,7 @@ pub async fn create_class_code(
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(ClassCodResponse {
+        Ok(Json(ClassCodeResponse {
             id: item.id,
             code: item.code,
             alphabet_code: item.alphabet_code,
@@ -169,11 +169,11 @@ pub async fn create_class_code(
         }))
 }
 
-#[endpoint(tags("Academic - Campaign - Transaction - ClassCod"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Campaign - Transaction - ClassCode"), status_codes(200, 400, 404, 500))]
 pub async fn update_class_code(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<ClassCodResponse>, StatusError> {
+) -> Result<Json<ClassCodeResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
@@ -181,7 +181,7 @@ pub async fn update_class_code(
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-        let payload: UpdateClassCodRequest = req.parse_json().await.map_err(|e| {
+        let payload: UpdateClassCodeRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -192,7 +192,7 @@ pub async fn update_class_code(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("ClassCod not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("ClassCode not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -225,7 +225,7 @@ pub async fn update_class_code(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(ClassCodResponse {
+        Ok(Json(ClassCodeResponse {
             id: item.id,
             code: item.code,
             alphabet_code: item.alphabet_code,
@@ -244,7 +244,7 @@ pub async fn update_class_code(
 
         }))
 }
-#[endpoint(tags("Academic - Campaign - Transaction - ClassCod"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Campaign - Transaction - ClassCode"), status_codes(200, 400, 404, 500))]
 pub async fn delete_class_code(
         req: &mut Request,
         depot: &mut Depot,
@@ -261,7 +261,7 @@ pub async fn delete_class_code(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("ClassCod not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("ClassCode not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -272,6 +272,6 @@ pub async fn delete_class_code(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "ClassCod deleted successfully".to_string(),
+            message: "ClassCode deleted successfully".to_string(),
         }))
 }

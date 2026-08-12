@@ -8,22 +8,22 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::contact::master::websites::{
-    CreateWebsitRequest, WebsitQuery, WebsitResponse, PaginatedWebsitResponse,
-    UpdateWebsitRequest,
+    CreateWebsiteRequest, WebsiteQuery, WebsiteResponse, PaginatedWebsiteResponse,
+    UpdateWebsiteRequest,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::contact::master::websites as entity_mod;
 
-#[endpoint(tags("Contact - Master - Websit"), status_codes(200, 500))]
+#[endpoint(tags("Contact - Master - Website"), status_codes(200, 500))]
 pub async fn list_websites(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<PaginatedWebsitResponse>, StatusError> {
+) -> Result<Json<PaginatedWebsiteResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
 
-    let query: WebsitQuery = req.parse_queries().unwrap_or_default();
+    let query: WebsiteQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
@@ -38,7 +38,7 @@ pub async fn list_websites(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| WebsitResponse {
+    let data = items.into_iter().map(|item| WebsiteResponse {
             id: item.id,
             website_url: item.website_url.clone(),
             website_type_id: item.website_type_id,
@@ -53,7 +53,7 @@ pub async fn list_websites(
 
     }).collect();
 
-    Ok(Json(PaginatedWebsitResponse {
+    Ok(Json(PaginatedWebsiteResponse {
         data,
         total,
         page,
@@ -62,11 +62,11 @@ pub async fn list_websites(
     }))
 }
 
-#[endpoint(tags("Contact - Master - Websit"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Contact - Master - Website"), status_codes(200, 400, 404, 500))]
 pub async fn get_website(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<WebsitResponse>, StatusError> {
+) -> Result<Json<WebsiteResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
@@ -79,9 +79,9 @@ pub async fn get_website(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Websit not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("Website not found"))?;
 
-    Ok(Json(WebsitResponse {
+    Ok(Json(WebsiteResponse {
             id: item.id,
             website_url: item.website_url.clone(),
             website_type_id: item.website_type_id,
@@ -95,16 +95,16 @@ pub async fn get_website(
             updated_by: item.updated_by,
 
     }))
-}#[endpoint(tags("Contact - Master - Websit"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Contact - Master - Website"), status_codes(200, 400, 500))]
 pub async fn create_website(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<WebsitResponse>, StatusError> {
+) -> Result<Json<WebsiteResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
 
-        let payload: CreateWebsitRequest = req.parse_json().await.map_err(|e| {
+        let payload: CreateWebsiteRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -129,7 +129,7 @@ pub async fn create_website(
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(WebsitResponse {
+        Ok(Json(WebsiteResponse {
             id: item.id,
             website_url: item.website_url.clone(),
             website_type_id: item.website_type_id,
@@ -145,11 +145,11 @@ pub async fn create_website(
         }))
 }
 
-#[endpoint(tags("Contact - Master - Websit"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Contact - Master - Website"), status_codes(200, 400, 404, 500))]
 pub async fn update_website(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<WebsitResponse>, StatusError> {
+) -> Result<Json<WebsiteResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
@@ -157,7 +157,7 @@ pub async fn update_website(
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-        let payload: UpdateWebsitRequest = req.parse_json().await.map_err(|e| {
+        let payload: UpdateWebsiteRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -168,7 +168,7 @@ pub async fn update_website(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Websit not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Website not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -189,7 +189,7 @@ pub async fn update_website(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(WebsitResponse {
+        Ok(Json(WebsiteResponse {
             id: item.id,
             website_url: item.website_url.clone(),
             website_type_id: item.website_type_id,
@@ -204,7 +204,7 @@ pub async fn update_website(
 
         }))
 }
-#[endpoint(tags("Contact - Master - Websit"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Contact - Master - Website"), status_codes(200, 400, 404, 500))]
 pub async fn delete_website(
         req: &mut Request,
         depot: &mut Depot,
@@ -221,7 +221,7 @@ pub async fn delete_website(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Websit not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Website not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -232,6 +232,6 @@ pub async fn delete_website(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "Websit deleted successfully".to_string(),
+            message: "Website deleted successfully".to_string(),
         }))
 }

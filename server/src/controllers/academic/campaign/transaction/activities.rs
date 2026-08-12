@@ -8,22 +8,22 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::academic::campaign::transaction::activities::{
-    CreateActivitiRequest, ActivitiQuery, ActivitiResponse, PaginatedActivitiResponse,
-    UpdateActivitiRequest,
+    CreateActivityRequest, ActivityQuery, ActivityResponse, PaginatedActivityResponse,
+    UpdateActivityRequest,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::campaign::transaction::activities as entity_mod;
 
-#[endpoint(tags("Academic - Campaign - Transaction - Activiti"), status_codes(200, 500))]
+#[endpoint(tags("Academic - Campaign - Transaction - Activity"), status_codes(200, 500))]
 pub async fn list_activities(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<PaginatedActivitiResponse>, StatusError> {
+) -> Result<Json<PaginatedActivityResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
 
-    let query: ActivitiQuery = req.parse_queries().unwrap_or_default();
+    let query: ActivityQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
@@ -42,7 +42,7 @@ pub async fn list_activities(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| ActivitiResponse {
+    let data = items.into_iter().map(|item| ActivityResponse {
             id: item.id,
             name: item.name.clone(),
             week_quantity: item.week_quantity,
@@ -69,7 +69,7 @@ pub async fn list_activities(
 
     }).collect();
 
-    Ok(Json(PaginatedActivitiResponse {
+    Ok(Json(PaginatedActivityResponse {
         data,
         total,
         page,
@@ -78,11 +78,11 @@ pub async fn list_activities(
     }))
 }
 
-#[endpoint(tags("Academic - Campaign - Transaction - Activiti"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Campaign - Transaction - Activity"), status_codes(200, 400, 404, 500))]
 pub async fn get_activitie(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<ActivitiResponse>, StatusError> {
+) -> Result<Json<ActivityResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
@@ -95,9 +95,9 @@ pub async fn get_activitie(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Activiti not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("Activity not found"))?;
 
-    Ok(Json(ActivitiResponse {
+    Ok(Json(ActivityResponse {
             id: item.id,
             name: item.name.clone(),
             week_quantity: item.week_quantity,
@@ -123,16 +123,16 @@ pub async fn get_activitie(
             updated_by: item.updated_by,
 
     }))
-}#[endpoint(tags("Academic - Campaign - Transaction - Activiti"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Campaign - Transaction - Activity"), status_codes(200, 400, 500))]
 pub async fn create_activitie(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<ActivitiResponse>, StatusError> {
+) -> Result<Json<ActivityResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
 
-        let payload: CreateActivitiRequest = req.parse_json().await.map_err(|e| {
+        let payload: CreateActivityRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -169,7 +169,7 @@ pub async fn create_activitie(
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(ActivitiResponse {
+        Ok(Json(ActivityResponse {
             id: item.id,
             name: item.name.clone(),
             week_quantity: item.week_quantity,
@@ -197,11 +197,11 @@ pub async fn create_activitie(
         }))
 }
 
-#[endpoint(tags("Academic - Campaign - Transaction - Activiti"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Campaign - Transaction - Activity"), status_codes(200, 400, 404, 500))]
 pub async fn update_activitie(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<ActivitiResponse>, StatusError> {
+) -> Result<Json<ActivityResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
@@ -209,7 +209,7 @@ pub async fn update_activitie(
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-        let payload: UpdateActivitiRequest = req.parse_json().await.map_err(|e| {
+        let payload: UpdateActivityRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -220,7 +220,7 @@ pub async fn update_activitie(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Activiti not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Activity not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -277,7 +277,7 @@ pub async fn update_activitie(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(ActivitiResponse {
+        Ok(Json(ActivityResponse {
             id: item.id,
             name: item.name.clone(),
             week_quantity: item.week_quantity,
@@ -304,7 +304,7 @@ pub async fn update_activitie(
 
         }))
 }
-#[endpoint(tags("Academic - Campaign - Transaction - Activiti"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Campaign - Transaction - Activity"), status_codes(200, 400, 404, 500))]
 pub async fn delete_activitie(
         req: &mut Request,
         depot: &mut Depot,
@@ -321,7 +321,7 @@ pub async fn delete_activitie(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Activiti not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Activity not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -332,6 +332,6 @@ pub async fn delete_activitie(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "Activiti deleted successfully".to_string(),
+            message: "Activity deleted successfully".to_string(),
         }))
 }

@@ -13,7 +13,7 @@ use crate::dtos::common::reference::{
 };
 use crate::models::academic::student::final_assignment::reference::approval_types as entity_mod;
 
-#[endpoint(tags("Academic - Student - Final_Assignment - Reference - ApprovalTyp"), status_codes(200, 500))]
+#[endpoint(tags("Academic - Student - Final_Assignment - Reference - ApprovalType"), status_codes(200, 500))]
 pub async fn list_approval_types(
     req: &mut Request,
     depot: &mut Depot,
@@ -68,7 +68,7 @@ pub async fn list_approval_types(
     }))
 }
 
-#[endpoint(tags("Academic - Student - Final_Assignment - Reference - ApprovalTyp"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Student - Final_Assignment - Reference - ApprovalType"), status_codes(200, 400, 404, 500))]
 pub async fn get_approval_type(
     req: &mut Request,
     depot: &mut Depot,
@@ -85,7 +85,7 @@ pub async fn get_approval_type(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("ApprovalTyp not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("ApprovalType not found"))?;
 
     Ok(Json(ReferenceResponse {
             id: item.id,
@@ -100,7 +100,7 @@ pub async fn get_approval_type(
             updated_by: item.updated_by,
 
     }))
-}#[endpoint(tags("Academic - Student - Final_Assignment - Reference - ApprovalTyp"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Student - Final_Assignment - Reference - ApprovalType"), status_codes(200, 400, 500))]
 pub async fn create_approval_type(
         req: &mut Request,
         depot: &mut Depot,
@@ -148,7 +148,7 @@ pub async fn create_approval_type(
         }))
 }
 
-#[endpoint(tags("Academic - Student - Final_Assignment - Reference - ApprovalTyp"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Student - Final_Assignment - Reference - ApprovalType"), status_codes(200, 400, 404, 500))]
 pub async fn update_approval_type(
         req: &mut Request,
         depot: &mut Depot,
@@ -171,7 +171,7 @@ pub async fn update_approval_type(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("ApprovalTyp not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("ApprovalType not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -203,7 +203,7 @@ pub async fn update_approval_type(
 
         }))
 }
-#[endpoint(tags("Academic - Student - Final_Assignment - Reference - ApprovalTyp"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Student - Final_Assignment - Reference - ApprovalType"), status_codes(200, 400, 404, 500))]
 pub async fn delete_approval_type(
         req: &mut Request,
         depot: &mut Depot,
@@ -220,7 +220,7 @@ pub async fn delete_approval_type(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("ApprovalTyp not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("ApprovalType not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -231,6 +231,6 @@ pub async fn delete_approval_type(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "ApprovalTyp deleted successfully".to_string(),
+            message: "ApprovalType deleted successfully".to_string(),
         }))
 }

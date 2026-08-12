@@ -8,22 +8,22 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::location::countries::{
-    CreateCountriRequest, CountriQuery, CountriResponse, PaginatedCountriResponse,
-    UpdateCountriRequest,
+    CreateCountryRequest, CountryQuery, CountryResponse, PaginatedCountryResponse,
+    UpdateCountryRequest,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::location::countries as entity_mod;
 
-#[endpoint(tags("Location -  - Countri"), status_codes(200, 500))]
+#[endpoint(tags("Location -  - Country"), status_codes(200, 500))]
 pub async fn list_countries(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<PaginatedCountriResponse>, StatusError> {
+) -> Result<Json<PaginatedCountryResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
 
-    let query: CountriQuery = req.parse_queries().unwrap_or_default();
+    let query: CountryQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
@@ -46,7 +46,7 @@ pub async fn list_countries(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| CountriResponse {
+    let data = items.into_iter().map(|item| CountryResponse {
             id: item.id,
             code: item.code.clone(),
             name: item.name.clone(),
@@ -66,7 +66,7 @@ pub async fn list_countries(
 
     }).collect();
 
-    Ok(Json(PaginatedCountriResponse {
+    Ok(Json(PaginatedCountryResponse {
         data,
         total,
         page,
@@ -75,11 +75,11 @@ pub async fn list_countries(
     }))
 }
 
-#[endpoint(tags("Location -  - Countri"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Location -  - Country"), status_codes(200, 400, 404, 500))]
 pub async fn get_countrie(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<CountriResponse>, StatusError> {
+) -> Result<Json<CountryResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
@@ -92,9 +92,9 @@ pub async fn get_countrie(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Countri not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("Country not found"))?;
 
-    Ok(Json(CountriResponse {
+    Ok(Json(CountryResponse {
             id: item.id,
             code: item.code.clone(),
             name: item.name.clone(),
@@ -113,16 +113,16 @@ pub async fn get_countrie(
             updated_by: item.updated_by,
 
     }))
-}#[endpoint(tags("Location -  - Countri"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Location -  - Country"), status_codes(200, 400, 500))]
 pub async fn create_countrie(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<CountriResponse>, StatusError> {
+) -> Result<Json<CountryResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
 
-        let payload: CreateCountriRequest = req.parse_json().await.map_err(|e| {
+        let payload: CreateCountryRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -152,7 +152,7 @@ pub async fn create_countrie(
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(CountriResponse {
+        Ok(Json(CountryResponse {
             id: item.id,
             code: item.code.clone(),
             name: item.name.clone(),
@@ -173,11 +173,11 @@ pub async fn create_countrie(
         }))
 }
 
-#[endpoint(tags("Location -  - Countri"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Location -  - Country"), status_codes(200, 400, 404, 500))]
 pub async fn update_countrie(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<CountriResponse>, StatusError> {
+) -> Result<Json<CountryResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
@@ -185,7 +185,7 @@ pub async fn update_countrie(
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-        let payload: UpdateCountriRequest = req.parse_json().await.map_err(|e| {
+        let payload: UpdateCountryRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -196,7 +196,7 @@ pub async fn update_countrie(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Countri not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Country not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -232,7 +232,7 @@ pub async fn update_countrie(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(CountriResponse {
+        Ok(Json(CountryResponse {
             id: item.id,
             code: item.code.clone(),
             name: item.name.clone(),
@@ -252,7 +252,7 @@ pub async fn update_countrie(
 
         }))
 }
-#[endpoint(tags("Location -  - Countri"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Location -  - Country"), status_codes(200, 400, 404, 500))]
 pub async fn delete_countrie(
         req: &mut Request,
         depot: &mut Depot,
@@ -269,7 +269,7 @@ pub async fn delete_countrie(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Countri not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Country not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -280,6 +280,6 @@ pub async fn delete_countrie(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "Countri deleted successfully".to_string(),
+            message: "Country deleted successfully".to_string(),
         }))
 }

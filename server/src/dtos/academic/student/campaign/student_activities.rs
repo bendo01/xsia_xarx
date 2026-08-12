@@ -6,14 +6,14 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct StudentActivitiQuery {
+pub struct StudentActivityQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
     pub name: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct StudentActivitiResponse {
+pub struct StudentActivityResponse {
     pub id: Uuid,
     pub name: Option<String>,
     pub cumulative_index: f64,
@@ -38,7 +38,7 @@ pub struct StudentActivitiResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateStudentActivitiRequest {
+pub struct CreateStudentActivityRequest {
     pub name: Option<String>,
     pub cumulative_index: f64,
     pub grand_cumulative_index: f64,
@@ -56,7 +56,7 @@ pub struct CreateStudentActivitiRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateStudentActivitiRequest {
+pub struct UpdateStudentActivityRequest {
     pub name: Option<String>,
     pub cumulative_index: Option<f64>,
     pub grand_cumulative_index: Option<f64>,
@@ -74,8 +74,8 @@ pub struct UpdateStudentActivitiRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedStudentActivitiResponse {
-    pub data: Vec<StudentActivitiResponse>,
+pub struct PaginatedStudentActivityResponse {
+    pub data: Vec<StudentActivityResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

@@ -8,22 +8,22 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::academic::survey::master::bundles::{
-    CreateBundlRequest, BundlQuery, BundlResponse, PaginatedBundlResponse,
-    UpdateBundlRequest,
+    CreateBundleRequest, BundleQuery, BundleResponse, PaginatedBundleResponse,
+    UpdateBundleRequest,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::survey::master::bundles as entity_mod;
 
-#[endpoint(tags("Academic - Survey - Master - Bundl"), status_codes(200, 500))]
+#[endpoint(tags("Academic - Survey - Master - Bundle"), status_codes(200, 500))]
 pub async fn list_bundles(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<PaginatedBundlResponse>, StatusError> {
+) -> Result<Json<PaginatedBundleResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
 
-    let query: BundlQuery = req.parse_queries().unwrap_or_default();
+    let query: BundleQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
@@ -46,7 +46,7 @@ pub async fn list_bundles(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| BundlResponse {
+    let data = items.into_iter().map(|item| BundleResponse {
             id: item.id,
             code: item.code,
             alphabet_code: item.alphabet_code.clone(),
@@ -64,7 +64,7 @@ pub async fn list_bundles(
 
     }).collect();
 
-    Ok(Json(PaginatedBundlResponse {
+    Ok(Json(PaginatedBundleResponse {
         data,
         total,
         page,
@@ -73,11 +73,11 @@ pub async fn list_bundles(
     }))
 }
 
-#[endpoint(tags("Academic - Survey - Master - Bundl"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Survey - Master - Bundle"), status_codes(200, 400, 404, 500))]
 pub async fn get_bundle(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<BundlResponse>, StatusError> {
+) -> Result<Json<BundleResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
@@ -90,9 +90,9 @@ pub async fn get_bundle(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Bundl not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("Bundle not found"))?;
 
-    Ok(Json(BundlResponse {
+    Ok(Json(BundleResponse {
             id: item.id,
             code: item.code,
             alphabet_code: item.alphabet_code.clone(),
@@ -109,16 +109,16 @@ pub async fn get_bundle(
             updated_by: item.updated_by,
 
     }))
-}#[endpoint(tags("Academic - Survey - Master - Bundl"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Survey - Master - Bundle"), status_codes(200, 400, 500))]
 pub async fn create_bundle(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<BundlResponse>, StatusError> {
+) -> Result<Json<BundleResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
 
-        let payload: CreateBundlRequest = req.parse_json().await.map_err(|e| {
+        let payload: CreateBundleRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -146,7 +146,7 @@ pub async fn create_bundle(
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(BundlResponse {
+        Ok(Json(BundleResponse {
             id: item.id,
             code: item.code,
             alphabet_code: item.alphabet_code.clone(),
@@ -165,11 +165,11 @@ pub async fn create_bundle(
         }))
 }
 
-#[endpoint(tags("Academic - Survey - Master - Bundl"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Survey - Master - Bundle"), status_codes(200, 400, 404, 500))]
 pub async fn update_bundle(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<BundlResponse>, StatusError> {
+) -> Result<Json<BundleResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
@@ -177,7 +177,7 @@ pub async fn update_bundle(
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-        let payload: UpdateBundlRequest = req.parse_json().await.map_err(|e| {
+        let payload: UpdateBundleRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -188,7 +188,7 @@ pub async fn update_bundle(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Bundl not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Bundle not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -218,7 +218,7 @@ pub async fn update_bundle(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(BundlResponse {
+        Ok(Json(BundleResponse {
             id: item.id,
             code: item.code,
             alphabet_code: item.alphabet_code.clone(),
@@ -236,7 +236,7 @@ pub async fn update_bundle(
 
         }))
 }
-#[endpoint(tags("Academic - Survey - Master - Bundl"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Survey - Master - Bundle"), status_codes(200, 400, 404, 500))]
 pub async fn delete_bundle(
         req: &mut Request,
         depot: &mut Depot,
@@ -253,7 +253,7 @@ pub async fn delete_bundle(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Bundl not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Bundle not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -264,6 +264,6 @@ pub async fn delete_bundle(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "Bundl deleted successfully".to_string(),
+            message: "Bundle deleted successfully".to_string(),
         }))
 }

@@ -6,13 +6,13 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct WebsitQuery {
+pub struct WebsiteQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct WebsitResponse {
+pub struct WebsiteResponse {
     pub id: Uuid,
     pub website_url: String,
     pub website_type_id: Option<Uuid>,
@@ -27,7 +27,7 @@ pub struct WebsitResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateWebsitRequest {
+pub struct CreateWebsiteRequest {
     pub website_url: String,
     pub website_type_id: Option<Uuid>,
     pub websiteable_id: Uuid,
@@ -35,7 +35,7 @@ pub struct CreateWebsitRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateWebsitRequest {
+pub struct UpdateWebsiteRequest {
     pub website_url: Option<String>,
     pub website_type_id: Option<Uuid>,
     pub websiteable_id: Option<Uuid>,
@@ -43,8 +43,8 @@ pub struct UpdateWebsitRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedWebsitResponse {
-    pub data: Vec<WebsitResponse>,
+pub struct PaginatedWebsiteResponse {
+    pub data: Vec<WebsiteResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

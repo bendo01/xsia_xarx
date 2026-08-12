@@ -8,22 +8,22 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::academic::student::final_assignment::transaction::evaluation_summaries::{
-    CreateEvaluationSummariRequest, EvaluationSummariQuery, EvaluationSummariResponse, PaginatedEvaluationSummariResponse,
-    UpdateEvaluationSummariRequest,
+    CreateEvaluationSummaryRequest, EvaluationSummaryQuery, EvaluationSummaryResponse, PaginatedEvaluationSummaryResponse,
+    UpdateEvaluationSummaryRequest,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::student::final_assignment::transaction::evaluation_summaries as entity_mod;
 
-#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - EvaluationSummari"), status_codes(200, 500))]
+#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - EvaluationSummary"), status_codes(200, 500))]
 pub async fn list_evaluation_summaries(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<PaginatedEvaluationSummariResponse>, StatusError> {
+) -> Result<Json<PaginatedEvaluationSummaryResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
 
-    let query: EvaluationSummariQuery = req.parse_queries().unwrap_or_default();
+    let query: EvaluationSummaryQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
@@ -38,7 +38,7 @@ pub async fn list_evaluation_summaries(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| EvaluationSummariResponse {
+    let data = items.into_iter().map(|item| EvaluationSummaryResponse {
             id: item.id,
             submission_id: item.submission_id,
             detail_activity_id: item.detail_activity_id,
@@ -54,7 +54,7 @@ pub async fn list_evaluation_summaries(
 
     }).collect();
 
-    Ok(Json(PaginatedEvaluationSummariResponse {
+    Ok(Json(PaginatedEvaluationSummaryResponse {
         data,
         total,
         page,
@@ -63,11 +63,11 @@ pub async fn list_evaluation_summaries(
     }))
 }
 
-#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - EvaluationSummari"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - EvaluationSummary"), status_codes(200, 400, 404, 500))]
 pub async fn get_evaluation_summarie(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<EvaluationSummariResponse>, StatusError> {
+) -> Result<Json<EvaluationSummaryResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
@@ -80,9 +80,9 @@ pub async fn get_evaluation_summarie(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("EvaluationSummari not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("EvaluationSummary not found"))?;
 
-    Ok(Json(EvaluationSummariResponse {
+    Ok(Json(EvaluationSummaryResponse {
             id: item.id,
             submission_id: item.submission_id,
             detail_activity_id: item.detail_activity_id,
@@ -97,16 +97,16 @@ pub async fn get_evaluation_summarie(
             updated_by: item.updated_by,
 
     }))
-}#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - EvaluationSummari"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - EvaluationSummary"), status_codes(200, 400, 500))]
 pub async fn create_evaluation_summarie(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<EvaluationSummariResponse>, StatusError> {
+) -> Result<Json<EvaluationSummaryResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
 
-        let payload: CreateEvaluationSummariRequest = req.parse_json().await.map_err(|e| {
+        let payload: CreateEvaluationSummaryRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -132,7 +132,7 @@ pub async fn create_evaluation_summarie(
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(EvaluationSummariResponse {
+        Ok(Json(EvaluationSummaryResponse {
             id: item.id,
             submission_id: item.submission_id,
             detail_activity_id: item.detail_activity_id,
@@ -149,11 +149,11 @@ pub async fn create_evaluation_summarie(
         }))
 }
 
-#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - EvaluationSummari"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - EvaluationSummary"), status_codes(200, 400, 404, 500))]
 pub async fn update_evaluation_summarie(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<EvaluationSummariResponse>, StatusError> {
+) -> Result<Json<EvaluationSummaryResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
@@ -161,7 +161,7 @@ pub async fn update_evaluation_summarie(
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-        let payload: UpdateEvaluationSummariRequest = req.parse_json().await.map_err(|e| {
+        let payload: UpdateEvaluationSummaryRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -172,7 +172,7 @@ pub async fn update_evaluation_summarie(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("EvaluationSummari not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("EvaluationSummary not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -196,7 +196,7 @@ pub async fn update_evaluation_summarie(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(EvaluationSummariResponse {
+        Ok(Json(EvaluationSummaryResponse {
             id: item.id,
             submission_id: item.submission_id,
             detail_activity_id: item.detail_activity_id,
@@ -212,7 +212,7 @@ pub async fn update_evaluation_summarie(
 
         }))
 }
-#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - EvaluationSummari"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - EvaluationSummary"), status_codes(200, 400, 404, 500))]
 pub async fn delete_evaluation_summarie(
         req: &mut Request,
         depot: &mut Depot,
@@ -229,7 +229,7 @@ pub async fn delete_evaluation_summarie(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("EvaluationSummari not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("EvaluationSummary not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -240,6 +240,6 @@ pub async fn delete_evaluation_summarie(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "EvaluationSummari deleted successfully".to_string(),
+            message: "EvaluationSummary deleted successfully".to_string(),
         }))
 }

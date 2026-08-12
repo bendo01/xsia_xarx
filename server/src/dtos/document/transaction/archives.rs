@@ -6,14 +6,14 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime, DateTime, FixedOffset};
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct ArchivQuery {
+pub struct ArchiveQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
     pub name: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct ArchivResponse {
+pub struct ArchiveResponse {
     pub id: Uuid,
     pub name: String,
     pub dir: String,
@@ -33,7 +33,7 @@ pub struct ArchivResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateArchivRequest {
+pub struct CreateArchiveRequest {
     pub name: String,
     pub dir: String,
     pub mimetype: String,
@@ -46,7 +46,7 @@ pub struct CreateArchivRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateArchivRequest {
+pub struct UpdateArchiveRequest {
     pub name: Option<String>,
     pub dir: Option<String>,
     pub mimetype: Option<String>,
@@ -59,8 +59,8 @@ pub struct UpdateArchivRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedArchivResponse {
-    pub data: Vec<ArchivResponse>,
+pub struct PaginatedArchiveResponse {
+    pub data: Vec<ArchiveResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

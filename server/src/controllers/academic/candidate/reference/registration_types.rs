@@ -13,7 +13,7 @@ use crate::dtos::common::reference::{
 };
 use crate::models::academic::candidate::reference::registration_types as entity_mod;
 
-#[endpoint(tags("Academic - Candidate - Reference - RegistrationTyp"), status_codes(200, 500))]
+#[endpoint(tags("Academic - Candidate - Reference - RegistrationType"), status_codes(200, 500))]
 pub async fn list_registration_types(
     req: &mut Request,
     depot: &mut Depot,
@@ -68,7 +68,7 @@ pub async fn list_registration_types(
     }))
 }
 
-#[endpoint(tags("Academic - Candidate - Reference - RegistrationTyp"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Candidate - Reference - RegistrationType"), status_codes(200, 400, 404, 500))]
 pub async fn get_registration_type(
     req: &mut Request,
     depot: &mut Depot,
@@ -85,7 +85,7 @@ pub async fn get_registration_type(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("RegistrationTyp not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("RegistrationType not found"))?;
 
     Ok(Json(ReferenceResponse {
             id: item.id,
@@ -100,7 +100,7 @@ pub async fn get_registration_type(
             updated_by: item.updated_by,
 
     }))
-}#[endpoint(tags("Academic - Candidate - Reference - RegistrationTyp"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Candidate - Reference - RegistrationType"), status_codes(200, 400, 500))]
 pub async fn create_registration_type(
         req: &mut Request,
         depot: &mut Depot,
@@ -152,7 +152,7 @@ pub async fn create_registration_type(
         }))
 }
 
-#[endpoint(tags("Academic - Candidate - Reference - RegistrationTyp"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Candidate - Reference - RegistrationType"), status_codes(200, 400, 404, 500))]
 pub async fn update_registration_type(
         req: &mut Request,
         depot: &mut Depot,
@@ -175,7 +175,7 @@ pub async fn update_registration_type(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("RegistrationTyp not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("RegistrationType not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -207,7 +207,7 @@ pub async fn update_registration_type(
 
         }))
 }
-#[endpoint(tags("Academic - Candidate - Reference - RegistrationTyp"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Candidate - Reference - RegistrationType"), status_codes(200, 400, 404, 500))]
 pub async fn delete_registration_type(
         req: &mut Request,
         depot: &mut Depot,
@@ -224,7 +224,7 @@ pub async fn delete_registration_type(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("RegistrationTyp not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("RegistrationType not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -235,6 +235,6 @@ pub async fn delete_registration_type(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "RegistrationTyp deleted successfully".to_string(),
+            message: "RegistrationType deleted successfully".to_string(),
         }))
 }

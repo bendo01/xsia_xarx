@@ -8,22 +8,22 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::feeder::master::komponen_evaluasi_kelas::{
-    CreateKomponenEvaluasiKelaRequest, KomponenEvaluasiKelaQuery, KomponenEvaluasiKelaResponse, PaginatedKomponenEvaluasiKelaResponse,
-    UpdateKomponenEvaluasiKelaRequest,
+    CreateKomponenEvaluasiKelasRequest, KomponenEvaluasiKelasQuery, KomponenEvaluasiKelasResponse, PaginatedKomponenEvaluasiKelasResponse,
+    UpdateKomponenEvaluasiKelasRequest,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::feeder::master::komponen_evaluasi_kelas as entity_mod;
 
-#[endpoint(tags("Feeder - Master - KomponenEvaluasiKela"), status_codes(200, 500))]
+#[endpoint(tags("Feeder - Master - KomponenEvaluasiKelas"), status_codes(200, 500))]
 pub async fn list_komponen_evaluasi_kelas(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<PaginatedKomponenEvaluasiKelaResponse>, StatusError> {
+) -> Result<Json<PaginatedKomponenEvaluasiKelasResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
 
-    let query: KomponenEvaluasiKelaQuery = req.parse_queries().unwrap_or_default();
+    let query: KomponenEvaluasiKelasQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
@@ -38,7 +38,7 @@ pub async fn list_komponen_evaluasi_kelas(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| KomponenEvaluasiKelaResponse {
+    let data = items.into_iter().map(|item| KomponenEvaluasiKelasResponse {
             id: item.id,
             id_komponen_evaluasi: item.id_komponen_evaluasi,
             id_kelas_kuliah: item.id_kelas_kuliah,
@@ -58,7 +58,7 @@ pub async fn list_komponen_evaluasi_kelas(
 
     }).collect();
 
-    Ok(Json(PaginatedKomponenEvaluasiKelaResponse {
+    Ok(Json(PaginatedKomponenEvaluasiKelasResponse {
         data,
         total,
         page,
@@ -67,11 +67,11 @@ pub async fn list_komponen_evaluasi_kelas(
     }))
 }
 
-#[endpoint(tags("Feeder - Master - KomponenEvaluasiKela"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Feeder - Master - KomponenEvaluasiKelas"), status_codes(200, 400, 404, 500))]
 pub async fn get_komponen_evaluasi_kela(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<KomponenEvaluasiKelaResponse>, StatusError> {
+) -> Result<Json<KomponenEvaluasiKelasResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
@@ -84,9 +84,9 @@ pub async fn get_komponen_evaluasi_kela(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("KomponenEvaluasiKela not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("KomponenEvaluasiKelas not found"))?;
 
-    Ok(Json(KomponenEvaluasiKelaResponse {
+    Ok(Json(KomponenEvaluasiKelasResponse {
             id: item.id,
             id_komponen_evaluasi: item.id_komponen_evaluasi,
             id_kelas_kuliah: item.id_kelas_kuliah,
@@ -105,16 +105,16 @@ pub async fn get_komponen_evaluasi_kela(
             updated_by: item.updated_by,
 
     }))
-}#[endpoint(tags("Feeder - Master - KomponenEvaluasiKela"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Feeder - Master - KomponenEvaluasiKelas"), status_codes(200, 400, 500))]
 pub async fn create_komponen_evaluasi_kela(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<KomponenEvaluasiKelaResponse>, StatusError> {
+) -> Result<Json<KomponenEvaluasiKelasResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
 
-        let payload: CreateKomponenEvaluasiKelaRequest = req.parse_json().await.map_err(|e| {
+        let payload: CreateKomponenEvaluasiKelasRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -144,7 +144,7 @@ pub async fn create_komponen_evaluasi_kela(
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(KomponenEvaluasiKelaResponse {
+        Ok(Json(KomponenEvaluasiKelasResponse {
             id: item.id,
             id_komponen_evaluasi: item.id_komponen_evaluasi,
             id_kelas_kuliah: item.id_kelas_kuliah,
@@ -165,11 +165,11 @@ pub async fn create_komponen_evaluasi_kela(
         }))
 }
 
-#[endpoint(tags("Feeder - Master - KomponenEvaluasiKela"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Feeder - Master - KomponenEvaluasiKelas"), status_codes(200, 400, 404, 500))]
 pub async fn update_komponen_evaluasi_kela(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<KomponenEvaluasiKelaResponse>, StatusError> {
+) -> Result<Json<KomponenEvaluasiKelasResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
@@ -177,7 +177,7 @@ pub async fn update_komponen_evaluasi_kela(
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-        let payload: UpdateKomponenEvaluasiKelaRequest = req.parse_json().await.map_err(|e| {
+        let payload: UpdateKomponenEvaluasiKelasRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -188,7 +188,7 @@ pub async fn update_komponen_evaluasi_kela(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("KomponenEvaluasiKela not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("KomponenEvaluasiKelas not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -224,7 +224,7 @@ pub async fn update_komponen_evaluasi_kela(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(KomponenEvaluasiKelaResponse {
+        Ok(Json(KomponenEvaluasiKelasResponse {
             id: item.id,
             id_komponen_evaluasi: item.id_komponen_evaluasi,
             id_kelas_kuliah: item.id_kelas_kuliah,
@@ -244,7 +244,7 @@ pub async fn update_komponen_evaluasi_kela(
 
         }))
 }
-#[endpoint(tags("Feeder - Master - KomponenEvaluasiKela"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Feeder - Master - KomponenEvaluasiKelas"), status_codes(200, 400, 404, 500))]
 pub async fn delete_komponen_evaluasi_kela(
         req: &mut Request,
         depot: &mut Depot,
@@ -261,7 +261,7 @@ pub async fn delete_komponen_evaluasi_kela(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("KomponenEvaluasiKela not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("KomponenEvaluasiKelas not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -272,6 +272,6 @@ pub async fn delete_komponen_evaluasi_kela(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "KomponenEvaluasiKela deleted successfully".to_string(),
+            message: "KomponenEvaluasiKelas deleted successfully".to_string(),
         }))
 }

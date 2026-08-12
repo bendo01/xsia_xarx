@@ -6,13 +6,13 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct NilaiPerkuliahanKelaQuery {
+pub struct NilaiPerkuliahanKelasQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct NilaiPerkuliahanKelaResponse {
+pub struct NilaiPerkuliahanKelasResponse {
     pub id: Uuid,
     pub created_at: Option<NaiveDateTime>,
     pub updated_at: Option<NaiveDateTime>,
@@ -51,7 +51,7 @@ pub struct NilaiPerkuliahanKelaResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateNilaiPerkuliahanKelaRequest {
+pub struct CreateNilaiPerkuliahanKelasRequest {
     pub id_matkul: Option<Uuid>,
     pub kode_mata_kuliah: Option<String>,
     pub nama_mata_kuliah: Option<String>,
@@ -83,7 +83,7 @@ pub struct CreateNilaiPerkuliahanKelaRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateNilaiPerkuliahanKelaRequest {
+pub struct UpdateNilaiPerkuliahanKelasRequest {
     pub id_matkul: Option<Uuid>,
     pub kode_mata_kuliah: Option<String>,
     pub nama_mata_kuliah: Option<String>,
@@ -115,8 +115,8 @@ pub struct UpdateNilaiPerkuliahanKelaRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedNilaiPerkuliahanKelaResponse {
-    pub data: Vec<NilaiPerkuliahanKelaResponse>,
+pub struct PaginatedNilaiPerkuliahanKelasResponse {
+    pub data: Vec<NilaiPerkuliahanKelasResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

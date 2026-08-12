@@ -13,7 +13,7 @@ use crate::dtos::common::reference::{
 };
 use crate::models::academic::course::reference::encounter_types as entity_mod;
 
-#[endpoint(tags("Academic - Course - Reference - EncounterTyp"), status_codes(200, 500))]
+#[endpoint(tags("Academic - Course - Reference - EncounterType"), status_codes(200, 500))]
 pub async fn list_encounter_types(
     req: &mut Request,
     depot: &mut Depot,
@@ -68,7 +68,7 @@ pub async fn list_encounter_types(
     }))
 }
 
-#[endpoint(tags("Academic - Course - Reference - EncounterTyp"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Course - Reference - EncounterType"), status_codes(200, 400, 404, 500))]
 pub async fn get_encounter_type(
     req: &mut Request,
     depot: &mut Depot,
@@ -85,7 +85,7 @@ pub async fn get_encounter_type(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("EncounterTyp not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("EncounterType not found"))?;
 
     Ok(Json(ReferenceResponse {
             id: item.id,
@@ -100,7 +100,7 @@ pub async fn get_encounter_type(
             updated_by: item.updated_by,
 
     }))
-}#[endpoint(tags("Academic - Course - Reference - EncounterTyp"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Course - Reference - EncounterType"), status_codes(200, 400, 500))]
 pub async fn create_encounter_type(
         req: &mut Request,
         depot: &mut Depot,
@@ -148,7 +148,7 @@ pub async fn create_encounter_type(
         }))
 }
 
-#[endpoint(tags("Academic - Course - Reference - EncounterTyp"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Course - Reference - EncounterType"), status_codes(200, 400, 404, 500))]
 pub async fn update_encounter_type(
         req: &mut Request,
         depot: &mut Depot,
@@ -171,7 +171,7 @@ pub async fn update_encounter_type(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("EncounterTyp not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("EncounterType not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -203,7 +203,7 @@ pub async fn update_encounter_type(
 
         }))
 }
-#[endpoint(tags("Academic - Course - Reference - EncounterTyp"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Course - Reference - EncounterType"), status_codes(200, 400, 404, 500))]
 pub async fn delete_encounter_type(
         req: &mut Request,
         depot: &mut Depot,
@@ -220,7 +220,7 @@ pub async fn delete_encounter_type(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("EncounterTyp not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("EncounterType not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -231,6 +231,6 @@ pub async fn delete_encounter_type(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "EncounterTyp deleted successfully".to_string(),
+            message: "EncounterType deleted successfully".to_string(),
         }))
 }

@@ -8,22 +8,22 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::academic::student::master::images::{
-    CreateImagRequest, ImagQuery, ImagResponse, PaginatedImagResponse,
-    UpdateImagRequest,
+    CreateImageRequest, ImageQuery, ImageResponse, PaginatedImageResponse,
+    UpdateImageRequest,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::student::master::images as entity_mod;
 
-#[endpoint(tags("Academic - Student - Master - Imag"), status_codes(200, 500))]
+#[endpoint(tags("Academic - Student - Master - Image"), status_codes(200, 500))]
 pub async fn list_images(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<PaginatedImagResponse>, StatusError> {
+) -> Result<Json<PaginatedImageResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
 
-    let query: ImagQuery = req.parse_queries().unwrap_or_default();
+    let query: ImageQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
@@ -38,7 +38,7 @@ pub async fn list_images(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| ImagResponse {
+    let data = items.into_iter().map(|item| ImageResponse {
             id: item.id,
             student_id: item.student_id,
             filename: item.filename.clone(),
@@ -54,7 +54,7 @@ pub async fn list_images(
 
     }).collect();
 
-    Ok(Json(PaginatedImagResponse {
+    Ok(Json(PaginatedImageResponse {
         data,
         total,
         page,
@@ -63,11 +63,11 @@ pub async fn list_images(
     }))
 }
 
-#[endpoint(tags("Academic - Student - Master - Imag"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Student - Master - Image"), status_codes(200, 400, 404, 500))]
 pub async fn get_image(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<ImagResponse>, StatusError> {
+) -> Result<Json<ImageResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
@@ -80,9 +80,9 @@ pub async fn get_image(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Imag not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("Image not found"))?;
 
-    Ok(Json(ImagResponse {
+    Ok(Json(ImageResponse {
             id: item.id,
             student_id: item.student_id,
             filename: item.filename.clone(),
@@ -97,16 +97,16 @@ pub async fn get_image(
             updated_by: item.updated_by,
 
     }))
-}#[endpoint(tags("Academic - Student - Master - Imag"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Academic - Student - Master - Image"), status_codes(200, 400, 500))]
 pub async fn create_image(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<ImagResponse>, StatusError> {
+) -> Result<Json<ImageResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
 
-        let payload: CreateImagRequest = req.parse_json().await.map_err(|e| {
+        let payload: CreateImageRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -132,7 +132,7 @@ pub async fn create_image(
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(ImagResponse {
+        Ok(Json(ImageResponse {
             id: item.id,
             student_id: item.student_id,
             filename: item.filename.clone(),
@@ -149,11 +149,11 @@ pub async fn create_image(
         }))
 }
 
-#[endpoint(tags("Academic - Student - Master - Imag"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Student - Master - Image"), status_codes(200, 400, 404, 500))]
 pub async fn update_image(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<ImagResponse>, StatusError> {
+) -> Result<Json<ImageResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
@@ -161,7 +161,7 @@ pub async fn update_image(
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-        let payload: UpdateImagRequest = req.parse_json().await.map_err(|e| {
+        let payload: UpdateImageRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -172,7 +172,7 @@ pub async fn update_image(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Imag not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Image not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -196,7 +196,7 @@ pub async fn update_image(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(ImagResponse {
+        Ok(Json(ImageResponse {
             id: item.id,
             student_id: item.student_id,
             filename: item.filename.clone(),
@@ -212,7 +212,7 @@ pub async fn update_image(
 
         }))
 }
-#[endpoint(tags("Academic - Student - Master - Imag"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Student - Master - Image"), status_codes(200, 400, 404, 500))]
 pub async fn delete_image(
         req: &mut Request,
         depot: &mut Depot,
@@ -229,7 +229,7 @@ pub async fn delete_image(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Imag not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Image not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -240,6 +240,6 @@ pub async fn delete_image(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "Imag deleted successfully".to_string(),
+            message: "Image deleted successfully".to_string(),
         }))
 }

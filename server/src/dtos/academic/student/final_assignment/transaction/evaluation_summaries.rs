@@ -6,13 +6,13 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct EvaluationSummariQuery {
+pub struct EvaluationSummaryQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct EvaluationSummariResponse {
+pub struct EvaluationSummaryResponse {
     pub id: Uuid,
     pub submission_id: Option<Uuid>,
     pub detail_activity_id: Uuid,
@@ -28,7 +28,7 @@ pub struct EvaluationSummariResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateEvaluationSummariRequest {
+pub struct CreateEvaluationSummaryRequest {
     pub submission_id: Option<Uuid>,
     pub detail_activity_id: Uuid,
     pub stage_id: Uuid,
@@ -37,7 +37,7 @@ pub struct CreateEvaluationSummariRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateEvaluationSummariRequest {
+pub struct UpdateEvaluationSummaryRequest {
     pub submission_id: Option<Uuid>,
     pub detail_activity_id: Option<Uuid>,
     pub stage_id: Option<Uuid>,
@@ -46,8 +46,8 @@ pub struct UpdateEvaluationSummariRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedEvaluationSummariResponse {
-    pub data: Vec<EvaluationSummariResponse>,
+pub struct PaginatedEvaluationSummaryResponse {
+    pub data: Vec<EvaluationSummaryResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

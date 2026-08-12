@@ -6,7 +6,7 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct RegenciQuery {
+pub struct RegencyQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
     pub name: Option<String>,
@@ -14,7 +14,7 @@ pub struct RegenciQuery {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct RegenciResponse {
+pub struct RegencyResponse {
     pub id: Uuid,
     pub code: Option<String>,
     pub name: Option<String>,
@@ -43,7 +43,7 @@ pub struct RegenciResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateRegenciRequest {
+pub struct CreateRegencyRequest {
     pub code: Option<String>,
     pub name: Option<String>,
     pub dikti_code: Option<String>,
@@ -65,7 +65,7 @@ pub struct CreateRegenciRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateRegenciRequest {
+pub struct UpdateRegencyRequest {
     pub code: Option<String>,
     pub name: Option<String>,
     pub dikti_code: Option<String>,
@@ -87,8 +87,8 @@ pub struct UpdateRegenciRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedRegenciResponse {
-    pub data: Vec<RegenciResponse>,
+pub struct PaginatedRegencyResponse {
+    pub data: Vec<RegencyResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

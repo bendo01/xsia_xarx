@@ -6,13 +6,13 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct ImagQuery {
+pub struct ImageQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct ImagResponse {
+pub struct ImageResponse {
     pub id: Uuid,
     pub student_id: Uuid,
     pub filename: String,
@@ -28,7 +28,7 @@ pub struct ImagResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateImagRequest {
+pub struct CreateImageRequest {
     pub student_id: Uuid,
     pub filename: String,
     pub dir: String,
@@ -37,7 +37,7 @@ pub struct CreateImagRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateImagRequest {
+pub struct UpdateImageRequest {
     pub student_id: Option<Uuid>,
     pub filename: Option<String>,
     pub dir: Option<String>,
@@ -46,8 +46,8 @@ pub struct UpdateImagRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedImagResponse {
-    pub data: Vec<ImagResponse>,
+pub struct PaginatedImageResponse {
+    pub data: Vec<ImageResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

@@ -6,13 +6,13 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct CandidateUnitChoicQuery {
+pub struct CandidateUnitChoiceQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct CandidateUnitChoicResponse {
+pub struct CandidateUnitChoiceResponse {
     pub id: Uuid,
     pub candidate_id: Uuid,
     pub unit_id: Option<Uuid>,
@@ -29,7 +29,7 @@ pub struct CandidateUnitChoicResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateCandidateUnitChoicRequest {
+pub struct CreateCandidateUnitChoiceRequest {
     pub candidate_id: Uuid,
     pub unit_id: Option<Uuid>,
     pub student_registration_id: Option<Uuid>,
@@ -39,7 +39,7 @@ pub struct CreateCandidateUnitChoicRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateCandidateUnitChoicRequest {
+pub struct UpdateCandidateUnitChoiceRequest {
     pub candidate_id: Option<Uuid>,
     pub unit_id: Option<Uuid>,
     pub student_registration_id: Option<Uuid>,
@@ -49,8 +49,8 @@ pub struct UpdateCandidateUnitChoicRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedCandidateUnitChoicResponse {
-    pub data: Vec<CandidateUnitChoicResponse>,
+pub struct PaginatedCandidateUnitChoiceResponse {
+    pub data: Vec<CandidateUnitChoiceResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

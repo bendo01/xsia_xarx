@@ -8,22 +8,22 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::location::regency_types::{
-    CreateRegencyTypRequest, RegencyTypQuery, RegencyTypResponse, PaginatedRegencyTypResponse,
-    UpdateRegencyTypRequest,
+    CreateRegencyTypeRequest, RegencyTypeQuery, RegencyTypeResponse, PaginatedRegencyTypeResponse,
+    UpdateRegencyTypeRequest,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::location::regency_types as entity_mod;
 
-#[endpoint(tags("Location -  - RegencyTyp"), status_codes(200, 500))]
+#[endpoint(tags("Location -  - RegencyType"), status_codes(200, 500))]
 pub async fn list_regency_types(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<PaginatedRegencyTypResponse>, StatusError> {
+) -> Result<Json<PaginatedRegencyTypeResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
 
-    let query: RegencyTypQuery = req.parse_queries().unwrap_or_default();
+    let query: RegencyTypeQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
@@ -46,7 +46,7 @@ pub async fn list_regency_types(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| RegencyTypResponse {
+    let data = items.into_iter().map(|item| RegencyTypeResponse {
             id: item.id,
             code: item.code,
             alphabet_code: item.alphabet_code.clone(),
@@ -60,7 +60,7 @@ pub async fn list_regency_types(
 
     }).collect();
 
-    Ok(Json(PaginatedRegencyTypResponse {
+    Ok(Json(PaginatedRegencyTypeResponse {
         data,
         total,
         page,
@@ -69,11 +69,11 @@ pub async fn list_regency_types(
     }))
 }
 
-#[endpoint(tags("Location -  - RegencyTyp"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Location -  - RegencyType"), status_codes(200, 400, 404, 500))]
 pub async fn get_regency_type(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<RegencyTypResponse>, StatusError> {
+) -> Result<Json<RegencyTypeResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
@@ -86,9 +86,9 @@ pub async fn get_regency_type(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("RegencyTyp not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("RegencyType not found"))?;
 
-    Ok(Json(RegencyTypResponse {
+    Ok(Json(RegencyTypeResponse {
             id: item.id,
             code: item.code,
             alphabet_code: item.alphabet_code.clone(),
@@ -101,16 +101,16 @@ pub async fn get_regency_type(
             updated_by: item.updated_by,
 
     }))
-}#[endpoint(tags("Location -  - RegencyTyp"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Location -  - RegencyType"), status_codes(200, 400, 500))]
 pub async fn create_regency_type(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<RegencyTypResponse>, StatusError> {
+) -> Result<Json<RegencyTypeResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
 
-        let payload: CreateRegencyTypRequest = req.parse_json().await.map_err(|e| {
+        let payload: CreateRegencyTypeRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -134,7 +134,7 @@ pub async fn create_regency_type(
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(RegencyTypResponse {
+        Ok(Json(RegencyTypeResponse {
             id: item.id,
             code: item.code,
             alphabet_code: item.alphabet_code.clone(),
@@ -149,11 +149,11 @@ pub async fn create_regency_type(
         }))
 }
 
-#[endpoint(tags("Location -  - RegencyTyp"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Location -  - RegencyType"), status_codes(200, 400, 404, 500))]
 pub async fn update_regency_type(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<RegencyTypResponse>, StatusError> {
+) -> Result<Json<RegencyTypeResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
@@ -161,7 +161,7 @@ pub async fn update_regency_type(
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-        let payload: UpdateRegencyTypRequest = req.parse_json().await.map_err(|e| {
+        let payload: UpdateRegencyTypeRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -172,7 +172,7 @@ pub async fn update_regency_type(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("RegencyTyp not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("RegencyType not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -190,7 +190,7 @@ pub async fn update_regency_type(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(RegencyTypResponse {
+        Ok(Json(RegencyTypeResponse {
             id: item.id,
             code: item.code,
             alphabet_code: item.alphabet_code.clone(),
@@ -204,7 +204,7 @@ pub async fn update_regency_type(
 
         }))
 }
-#[endpoint(tags("Location -  - RegencyTyp"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Location -  - RegencyType"), status_codes(200, 400, 404, 500))]
 pub async fn delete_regency_type(
         req: &mut Request,
         depot: &mut Depot,
@@ -221,7 +221,7 @@ pub async fn delete_regency_type(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("RegencyTyp not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("RegencyType not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -232,6 +232,6 @@ pub async fn delete_regency_type(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "RegencyTyp deleted successfully".to_string(),
+            message: "RegencyType deleted successfully".to_string(),
         }))
 }

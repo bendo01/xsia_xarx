@@ -8,22 +8,22 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::feeder::master::detail_nilai_perkuliahan_kelas::{
-    CreateDetailNilaiPerkuliahanKelaRequest, DetailNilaiPerkuliahanKelaQuery, DetailNilaiPerkuliahanKelaResponse, PaginatedDetailNilaiPerkuliahanKelaResponse,
-    UpdateDetailNilaiPerkuliahanKelaRequest,
+    CreateDetailNilaiPerkuliahanKelasRequest, DetailNilaiPerkuliahanKelasQuery, DetailNilaiPerkuliahanKelasResponse, PaginatedDetailNilaiPerkuliahanKelasResponse,
+    UpdateDetailNilaiPerkuliahanKelasRequest,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::feeder::master::detail_nilai_perkuliahan_kelas as entity_mod;
 
-#[endpoint(tags("Feeder - Master - DetailNilaiPerkuliahanKela"), status_codes(200, 500))]
+#[endpoint(tags("Feeder - Master - DetailNilaiPerkuliahanKelas"), status_codes(200, 500))]
 pub async fn list_detail_nilai_perkuliahan_kelas(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<PaginatedDetailNilaiPerkuliahanKelaResponse>, StatusError> {
+) -> Result<Json<PaginatedDetailNilaiPerkuliahanKelasResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
 
-    let query: DetailNilaiPerkuliahanKelaQuery = req.parse_queries().unwrap_or_default();
+    let query: DetailNilaiPerkuliahanKelasQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
@@ -38,7 +38,7 @@ pub async fn list_detail_nilai_perkuliahan_kelas(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| DetailNilaiPerkuliahanKelaResponse {
+    let data = items.into_iter().map(|item| DetailNilaiPerkuliahanKelasResponse {
             id: item.id,
             created_at: item.created_at,
             updated_at: item.updated_at,
@@ -68,7 +68,7 @@ pub async fn list_detail_nilai_perkuliahan_kelas(
 
     }).collect();
 
-    Ok(Json(PaginatedDetailNilaiPerkuliahanKelaResponse {
+    Ok(Json(PaginatedDetailNilaiPerkuliahanKelasResponse {
         data,
         total,
         page,
@@ -77,11 +77,11 @@ pub async fn list_detail_nilai_perkuliahan_kelas(
     }))
 }
 
-#[endpoint(tags("Feeder - Master - DetailNilaiPerkuliahanKela"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Feeder - Master - DetailNilaiPerkuliahanKelas"), status_codes(200, 400, 404, 500))]
 pub async fn get_detail_nilai_perkuliahan_kela(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<DetailNilaiPerkuliahanKelaResponse>, StatusError> {
+) -> Result<Json<DetailNilaiPerkuliahanKelasResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
@@ -94,9 +94,9 @@ pub async fn get_detail_nilai_perkuliahan_kela(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("DetailNilaiPerkuliahanKela not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("DetailNilaiPerkuliahanKelas not found"))?;
 
-    Ok(Json(DetailNilaiPerkuliahanKelaResponse {
+    Ok(Json(DetailNilaiPerkuliahanKelasResponse {
             id: item.id,
             created_at: item.created_at,
             updated_at: item.updated_at,
@@ -125,16 +125,16 @@ pub async fn get_detail_nilai_perkuliahan_kela(
             nilai_huruf: item.nilai_huruf,
 
     }))
-}#[endpoint(tags("Feeder - Master - DetailNilaiPerkuliahanKela"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Feeder - Master - DetailNilaiPerkuliahanKelas"), status_codes(200, 400, 500))]
 pub async fn create_detail_nilai_perkuliahan_kela(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<DetailNilaiPerkuliahanKelaResponse>, StatusError> {
+) -> Result<Json<DetailNilaiPerkuliahanKelasResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
 
-        let payload: CreateDetailNilaiPerkuliahanKelaRequest = req.parse_json().await.map_err(|e| {
+        let payload: CreateDetailNilaiPerkuliahanKelasRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -174,7 +174,7 @@ pub async fn create_detail_nilai_perkuliahan_kela(
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(DetailNilaiPerkuliahanKelaResponse {
+        Ok(Json(DetailNilaiPerkuliahanKelasResponse {
             id: item.id,
             created_at: item.created_at,
             updated_at: item.updated_at,
@@ -205,11 +205,11 @@ pub async fn create_detail_nilai_perkuliahan_kela(
         }))
 }
 
-#[endpoint(tags("Feeder - Master - DetailNilaiPerkuliahanKela"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Feeder - Master - DetailNilaiPerkuliahanKelas"), status_codes(200, 400, 404, 500))]
 pub async fn update_detail_nilai_perkuliahan_kela(
         req: &mut Request,
         depot: &mut Depot,
-) -> Result<Json<DetailNilaiPerkuliahanKelaResponse>, StatusError> {
+) -> Result<Json<DetailNilaiPerkuliahanKelasResponse>, StatusError> {
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
@@ -217,7 +217,7 @@ pub async fn update_detail_nilai_perkuliahan_kela(
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-        let payload: UpdateDetailNilaiPerkuliahanKelaRequest = req.parse_json().await.map_err(|e| {
+        let payload: UpdateDetailNilaiPerkuliahanKelasRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
         })?;
 
@@ -228,7 +228,7 @@ pub async fn update_detail_nilai_perkuliahan_kela(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("DetailNilaiPerkuliahanKela not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("DetailNilaiPerkuliahanKelas not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -294,7 +294,7 @@ pub async fn update_detail_nilai_perkuliahan_kela(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(DetailNilaiPerkuliahanKelaResponse {
+        Ok(Json(DetailNilaiPerkuliahanKelasResponse {
             id: item.id,
             created_at: item.created_at,
             updated_at: item.updated_at,
@@ -324,7 +324,7 @@ pub async fn update_detail_nilai_perkuliahan_kela(
 
         }))
 }
-#[endpoint(tags("Feeder - Master - DetailNilaiPerkuliahanKela"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Feeder - Master - DetailNilaiPerkuliahanKelas"), status_codes(200, 400, 404, 500))]
 pub async fn delete_detail_nilai_perkuliahan_kela(
         req: &mut Request,
         depot: &mut Depot,
@@ -341,7 +341,7 @@ pub async fn delete_detail_nilai_perkuliahan_kela(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("DetailNilaiPerkuliahanKela not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("DetailNilaiPerkuliahanKelas not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -352,6 +352,6 @@ pub async fn delete_detail_nilai_perkuliahan_kela(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "DetailNilaiPerkuliahanKela deleted successfully".to_string(),
+            message: "DetailNilaiPerkuliahanKelas deleted successfully".to_string(),
         }))
 }

@@ -6,13 +6,13 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct DecreQuery {
+pub struct DecreeQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct DecreResponse {
+pub struct DecreeResponse {
     pub id: Uuid,
     pub decree_date: NaiveDate,
     pub decree_number: String,
@@ -27,7 +27,7 @@ pub struct DecreResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateDecreRequest {
+pub struct CreateDecreeRequest {
     pub decree_date: NaiveDate,
     pub decree_number: String,
     pub unit_id: Uuid,
@@ -35,7 +35,7 @@ pub struct CreateDecreRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateDecreRequest {
+pub struct UpdateDecreeRequest {
     pub decree_date: Option<NaiveDate>,
     pub decree_number: Option<String>,
     pub unit_id: Option<Uuid>,
@@ -43,8 +43,8 @@ pub struct UpdateDecreRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedDecreResponse {
-    pub data: Vec<DecreResponse>,
+pub struct PaginatedDecreeResponse {
+    pub data: Vec<DecreeResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

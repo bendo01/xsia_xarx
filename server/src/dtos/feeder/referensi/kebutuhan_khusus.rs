@@ -6,13 +6,13 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct KebutuhanKhusuQuery {
+pub struct KebutuhanKhususQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct KebutuhanKhusuResponse {
+pub struct KebutuhanKhususResponse {
     pub id: Uuid,
     pub id_kebutuhan_khusus: Option<String>,
     pub nama_kebutuhan_khusus: Option<String>,
@@ -25,20 +25,20 @@ pub struct KebutuhanKhusuResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateKebutuhanKhusuRequest {
+pub struct CreateKebutuhanKhususRequest {
     pub id_kebutuhan_khusus: Option<String>,
     pub nama_kebutuhan_khusus: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateKebutuhanKhusuRequest {
+pub struct UpdateKebutuhanKhususRequest {
     pub id_kebutuhan_khusus: Option<String>,
     pub nama_kebutuhan_khusus: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedKebutuhanKhusuResponse {
-    pub data: Vec<KebutuhanKhusuResponse>,
+pub struct PaginatedKebutuhanKhususResponse {
+    pub data: Vec<KebutuhanKhususResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

@@ -6,13 +6,13 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct FinalAssignmentDecreQuery {
+pub struct FinalAssignmentDecreeQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct FinalAssignmentDecreResponse {
+pub struct FinalAssignmentDecreeResponse {
     pub id: Uuid,
     pub decree_number: String,
     pub decree_date: NaiveDate,
@@ -28,7 +28,7 @@ pub struct FinalAssignmentDecreResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateFinalAssignmentDecreRequest {
+pub struct CreateFinalAssignmentDecreeRequest {
     pub decree_number: String,
     pub decree_date: NaiveDate,
     pub unit_id: Option<Uuid>,
@@ -37,7 +37,7 @@ pub struct CreateFinalAssignmentDecreRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateFinalAssignmentDecreRequest {
+pub struct UpdateFinalAssignmentDecreeRequest {
     pub decree_number: Option<String>,
     pub decree_date: Option<NaiveDate>,
     pub unit_id: Option<Uuid>,
@@ -46,8 +46,8 @@ pub struct UpdateFinalAssignmentDecreRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedFinalAssignmentDecreResponse {
-    pub data: Vec<FinalAssignmentDecreResponse>,
+pub struct PaginatedFinalAssignmentDecreeResponse {
+    pub data: Vec<FinalAssignmentDecreeResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

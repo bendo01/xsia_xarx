@@ -13,7 +13,7 @@ use crate::dtos::common::reference::{
 };
 use crate::models::institution::reference::varieties as entity_mod;
 
-#[endpoint(tags("Institution - Reference - Varieti"), status_codes(200, 500))]
+#[endpoint(tags("Institution - Reference - Variety"), status_codes(200, 500))]
 pub async fn list_varieties(
     req: &mut Request,
     depot: &mut Depot,
@@ -68,7 +68,7 @@ pub async fn list_varieties(
     }))
 }
 
-#[endpoint(tags("Institution - Reference - Varieti"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Institution - Reference - Variety"), status_codes(200, 400, 404, 500))]
 pub async fn get_varietie(
     req: &mut Request,
     depot: &mut Depot,
@@ -85,7 +85,7 @@ pub async fn get_varietie(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Varieti not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("Variety not found"))?;
 
     Ok(Json(ReferenceResponse {
             id: item.id,
@@ -100,7 +100,7 @@ pub async fn get_varietie(
             updated_by: item.updated_by,
 
     }))
-}#[endpoint(tags("Institution - Reference - Varieti"), status_codes(200, 400, 500))]
+}#[endpoint(tags("Institution - Reference - Variety"), status_codes(200, 400, 500))]
 pub async fn create_varietie(
         req: &mut Request,
         depot: &mut Depot,
@@ -148,7 +148,7 @@ pub async fn create_varietie(
         }))
 }
 
-#[endpoint(tags("Institution - Reference - Varieti"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Institution - Reference - Variety"), status_codes(200, 400, 404, 500))]
 pub async fn update_varietie(
         req: &mut Request,
         depot: &mut Depot,
@@ -171,7 +171,7 @@ pub async fn update_varietie(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Varieti not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Variety not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -203,7 +203,7 @@ pub async fn update_varietie(
 
         }))
 }
-#[endpoint(tags("Institution - Reference - Varieti"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Institution - Reference - Variety"), status_codes(200, 400, 404, 500))]
 pub async fn delete_varietie(
         req: &mut Request,
         depot: &mut Depot,
@@ -220,7 +220,7 @@ pub async fn delete_varietie(
             .one(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Varieti not found"))?;
+            .ok_or_else(|| StatusError::not_found().brief("Variety not found"))?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -231,6 +231,6 @@ pub async fn delete_varietie(
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
-            message: "Varieti deleted successfully".to_string(),
+            message: "Variety deleted successfully".to_string(),
         }))
 }

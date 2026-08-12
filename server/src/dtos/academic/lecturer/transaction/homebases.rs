@@ -6,13 +6,13 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct HomebasQuery {
+pub struct HomebaseQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct HomebasResponse {
+pub struct HomebaseResponse {
     pub id: Uuid,
     pub lecturer_id: Uuid,
     pub unit_id: Uuid,
@@ -28,7 +28,7 @@ pub struct HomebasResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreateHomebasRequest {
+pub struct CreateHomebaseRequest {
     pub lecturer_id: Uuid,
     pub unit_id: Uuid,
     pub institution_id: Uuid,
@@ -37,7 +37,7 @@ pub struct CreateHomebasRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdateHomebasRequest {
+pub struct UpdateHomebaseRequest {
     pub lecturer_id: Option<Uuid>,
     pub unit_id: Option<Uuid>,
     pub institution_id: Option<Uuid>,
@@ -46,8 +46,8 @@ pub struct UpdateHomebasRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedHomebasResponse {
-    pub data: Vec<HomebasResponse>,
+pub struct PaginatedHomebaseResponse {
+    pub data: Vec<HomebaseResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,
