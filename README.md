@@ -76,6 +76,13 @@ Run the server in development mode:
 cargo run
 ```
 
+Run the backend test suite using `cargo-nextest`:
+
+```bash
+# Ensure your database is migrated before running tests
+cargo nextest run
+```
+
 ---
 
 ### 2. Setting Up the Frontend (`client/`)

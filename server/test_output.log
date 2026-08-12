@@ -1,0 +1,244 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.34s
+warning: the following packages contain code that will be rejected by a future version of Rust: apalis-redis v0.7.4
+note: to see what the problems were, use the option `--future-incompat-report`, or run `cargo report future-incompatibilities --id 1`
+     Running unittests src/lib.rs (target/debug/deps/xsia_xarx-8651e18849dd6090)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/xsia_xarx-8f00a995360e54f0)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/auth_relations_test.rs (target/debug/deps/auth_relations_test-aa45ac917fc86e1d)
+
+running 2 tests
+test test_user_permission_relation ... FAILED
+test test_user_position_type_relation ... ok
+
+failures:
+
+---- test_user_permission_relation stdout ----
+
+thread 'test_user_permission_relation' (51560) panicked at tests/auth_relations_test.rs:17:10:
+Failed to fetch users with permissions: Query(SqlxError(Database(PgDatabaseError { severity: Error, code: "42703", message: "column permissions.is_open does not exist", detail: None, hint: None, position: Some(Original(1012)), where: None, schema: None, table: None, column: None, data_type: None, constraint: None, file: Some("parse_relation.c"), line: Some(3822), routine: Some("errorMissingColumn") })))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    test_user_permission_relation
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `--test auth_relations_test`
+     Running tests/generated_academic_controllers_test.rs (target/debug/deps/generated_academic_controllers_test-46c4d55ac426e668)
+
+running 1 test
+test test_academic_controllers ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.59s
+
+     Running tests/generated_academic_models_test.rs (target/debug/deps/generated_academic_models_test-af6def02f3e9b9df)
+
+running 1 test
+test test_academic_models_query ... FAILED
+
+failures:
+
+---- test_academic_models_query stdout ----
+
+thread 'test_academic_models_query' (52043) panicked at tests/generated_academic_models_test.rs:87:5:
+Query failed for academic::candidate::reference::document_types
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    test_academic_models_query
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `--test generated_academic_models_test`
+     Running tests/generated_auth_controllers_test.rs (target/debug/deps/generated_auth_controllers_test-ebd5aad81a7556d7)
+
+running 1 test
+test test_auth_controllers ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/generated_auth_models_test.rs (target/debug/deps/generated_auth_models_test-57b78f5491c99c98)
+
+running 1 test
+test test_auth_models_query ... FAILED
+
+failures:
+
+---- test_auth_models_query stdout ----
+
+thread 'test_auth_models_query' (52074) panicked at tests/generated_auth_models_test.rs:11:5:
+Query failed for auth::permission
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    test_auth_models_query
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `--test generated_auth_models_test`
+     Running tests/generated_building_controllers_test.rs (target/debug/deps/generated_building_controllers_test-a69cefc16529f58d)
+
+running 1 test
+test test_building_controllers ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/generated_building_models_test.rs (target/debug/deps/generated_building_models_test-8f18fa3082671f10)
+
+running 1 test
+test test_building_models_query ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/generated_contact_controllers_test.rs (target/debug/deps/generated_contact_controllers_test-7f621b29240a3332)
+
+running 1 test
+test test_contact_controllers ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/generated_contact_models_test.rs (target/debug/deps/generated_contact_models_test-ac9ba05186c3df93)
+
+running 1 test
+test test_contact_models_query ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/generated_document_controllers_test.rs (target/debug/deps/generated_document_controllers_test-e54f476040424a56)
+
+running 1 test
+test test_document_controllers ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/generated_document_models_test.rs (target/debug/deps/generated_document_models_test-37eb94be25b9692c)
+
+running 1 test
+test test_document_models_query ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/generated_feeder_controllers_test.rs (target/debug/deps/generated_feeder_controllers_test-fcb26793c87883a5)
+
+running 1 test
+test test_feeder_controllers ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.54s
+
+     Running tests/generated_feeder_models_test.rs (target/debug/deps/generated_feeder_models_test-6389cb176529aa0c)
+
+running 1 test
+test test_feeder_models_query ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/generated_institution_controllers_test.rs (target/debug/deps/generated_institution_controllers_test-4f90c72e919a8d1b)
+
+running 1 test
+test test_institution_controllers ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/generated_institution_models_test.rs (target/debug/deps/generated_institution_models_test-7cfabd9115d3a13c)
+
+running 1 test
+test test_institution_models_query ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/generated_literate_controllers_test.rs (target/debug/deps/generated_literate_controllers_test-c06736e20df70b6e)
+
+running 1 test
+test test_literate_controllers ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/generated_literate_models_test.rs (target/debug/deps/generated_literate_models_test-20cbbb0cf42510a4)
+
+running 1 test
+test test_literate_models_query ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/generated_location_controllers_test.rs (target/debug/deps/generated_location_controllers_test-9d151a62aaadc8c0)
+
+running 1 test
+test test_location_controllers ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/generated_location_models_test.rs (target/debug/deps/generated_location_models_test-9a92d9a9165d131e)
+
+running 1 test
+test test_location_models_query ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/generated_person_controllers_test.rs (target/debug/deps/generated_person_controllers_test-770732fcffc9ecbc)
+
+running 1 test
+test test_person_controllers ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/generated_person_models_test.rs (target/debug/deps/generated_person_models_test-7a09e818bf716c4f)
+
+running 1 test
+test test_person_models_query ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/person_reference_controller_test.rs (target/debug/deps/person_reference_controller_test-3163a54a7f3ae3c8)
+
+running 1 test
+test test_person_reference_controllers ... FAILED
+
+failures:
+
+---- test_person_reference_controllers stdout ----
+
+thread 'test_person_reference_controllers' (52885) panicked at tests/person_reference_controller_test.rs:36:9:
+assertion `left == right` failed: Failed GET on /reference/age-classifications
+  left: Some(404)
+ right: Some(200)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    test_person_reference_controllers
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `--test person_reference_controller_test`
+     Running tests/person_relations_test.rs (target/debug/deps/person_relations_test-ec932652e229cd5a)
+
+running 3 tests
+test test_biodata_master_relations ... ok
+test test_individual_master_relations ... ok
+test test_person_reference_queries ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+   Doc-tests xsia_xarx
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: 4 targets failed:
+    `--test auth_relations_test`
+    `--test generated_academic_models_test`
+    `--test generated_auth_models_test`
+    `--test person_reference_controller_test`

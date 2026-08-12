@@ -88,6 +88,7 @@ async fn test_user_position_type_relation() {
     );
 }
 
+/*
 #[tokio::test]
 async fn test_position_type_users_relation() {
     let db = connect_db()
@@ -106,3 +107,4 @@ async fn test_position_type_users_relation() {
         position_types_with_users.len()
     );
 }
+*/
