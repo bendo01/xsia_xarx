@@ -1,6 +1,7 @@
 use salvo::prelude::*;
 use salvo::oapi::{OpenApi, swagger_ui::SwaggerUi};
 use sea_orm::DatabaseConnection;
+use clap::{Parser, Subcommand};
 use xsia_xarx::{controllers, db};
 use xsia_xarx::config::redis::RedisConfig;
 use xsia_xarx::jobs::email::{EmailJob, start_email_worker};
@@ -38,12 +39,43 @@ impl Handler for InjectDb {
     }
 }
 
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Cli {
+    #[command(subcommand)]
+    command: Option<Commands>,
+}
+
+#[derive(Subcommand, Debug)]
+enum Commands {
+    /// Task runner
+    Task {
+        /// The name of the task to run
+        name: Option<String>,
+        
+        /// Task arguments
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let cli = Cli::parse();
+
     tracing_subscriber::fmt::init();
 
     let db = db::connect_db().await?;
     println!("Database connection successful");
+
+    if let Some(command) = cli.command {
+        match command {
+            Commands::Task { name, args } => {
+                xsia_xarx::tasks::run_task(name, &args, &db).await?;
+                return Ok(());
+            }
+        }
+    }
 
     let redis_config = RedisConfig::from_env();
     let redis_url = redis_config.url;

@@ -7,3 +7,4 @@ pub mod models;
 pub mod config;
 pub mod jobs;
 pub mod middleware;
+pub mod tasks;

@@ -112,6 +112,7 @@ bcrypt = "0.19.3"
 jsonwebtoken = "11.0.0"
 argon2 = "0.5.3"
 rand = "0.8"
+clap = { version = "4.6.6", features = ["derive"] }
 
 [dev-dependencies]
 serial_test = { version = "4.0" }
