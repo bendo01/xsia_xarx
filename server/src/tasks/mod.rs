@@ -25,19 +25,19 @@ pub async fn run_task(name: Option<String>, args: &[String], db: &DatabaseConnec
     let tasks = get_tasks();
     
     if let Some(task_name) = name {
-        for task in tasks {
+        for task in &tasks {
             if task.name() == task_name {
                 println!("Running task: {}", task.name());
                 return task.run(db, args).await;
             }
         }
         println!("Task '{}' not found. Available tasks:", task_name);
-        for task in tasks {
+        for task in &tasks {
             println!("  {:<20} {}", task.name(), task.description());
         }
     } else {
         println!("Available tasks:");
-        for task in tasks {
+        for task in &tasks {
             println!("  {:<20} {}", task.name(), task.description());
         }
     }
