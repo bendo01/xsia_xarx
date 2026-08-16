@@ -13,22 +13,19 @@ impl Handler for JwtAuth {
         ctrl: &mut FlowCtrl,
     ) {
         let auth_header = req.header::<String>("authorization");
-        if let Some(auth_str) = auth_header {
-            if auth_str.starts_with("Bearer ") {
-                let token = &auth_str[7..];
-                let jwt_config = JwtConfig::from_env();
-                
-                match verify_token(token, &jwt_config) {
-                    Ok(claims) => {
-                        depot.insert("current_user_id", claims.sub);
-                        ctrl.call_next(req, depot, res).await;
-                        return;
-                    }
-                    Err(_) => {
-                        res.render(StatusError::unauthorized().brief("Invalid token"));
-                        ctrl.skip_rest();
-                        return;
-                    }
+        if let Some(token) = auth_header.as_deref().and_then(|s| s.strip_prefix("Bearer ")) {
+            let jwt_config = JwtConfig::from_env();
+            
+            match verify_token(token, &jwt_config) {
+                Ok(claims) => {
+                    depot.insert("current_user_id", claims.sub);
+                    ctrl.call_next(req, depot, res).await;
+                    return;
+                }
+                Err(_) => {
+                    res.render(StatusError::unauthorized().brief("Invalid token"));
+                    ctrl.skip_rest();
+                    return;
                 }
             }
         }

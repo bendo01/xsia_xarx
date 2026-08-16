@@ -80,7 +80,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let redis_config = RedisConfig::from_env();
     let redis_url = redis_config.url;
     let email_worker = start_email_worker(redis_url.clone()).await?;
-    let conn = apalis_redis::connect(redis_url).await.map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e.to_string()))?;
+    let conn = apalis_redis::connect(redis_url).await.map_err(|e| std::io::Error::other(e.to_string()))?;
     let redis_storage = apalis_redis::RedisStorage::new(conn);
     
     tokio::spawn(async move {
