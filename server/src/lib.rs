@@ -8,3 +8,4 @@ pub mod config;
 pub mod jobs;
 pub mod middleware;
 pub mod tasks;
+pub mod services;
