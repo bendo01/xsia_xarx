@@ -153,6 +153,10 @@ export default function PersonReferenceRelativeTypePage() {
             errors.code = 'Code must be a valid number.';
         }
 
+        if (!currentForm.alphabet_code || currentForm.alphabet_code.trim() === '') {
+            errors.alphabet_code = 'Alphabet code is required.';
+        }
+
         if (!currentForm.name || currentForm.name.trim() === '') {
             errors.name = 'Relative type name is required.';
         }
@@ -585,15 +589,20 @@ export default function PersonReferenceRelativeTypePage() {
 
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Alphabet Code
+                                Alphabet Code <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
-                                class="block w-full p-2.5 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
+                                    formErrors().alphabet_code ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
+                                }`}
                                 placeholder="e.g. AYH, IBU, ANK..."
                                 value={formData().alphabet_code || ''}
                                 onInput={(e) => setFormData({ ...formData(), alphabet_code: e.currentTarget.value })}
                             />
+                            {formErrors().alphabet_code && (
+                                <p class="text-xs text-red-500 mt-1">{formErrors().alphabet_code}</p>
+                            )}
                         </div>
 
                         <div>
@@ -685,14 +694,19 @@ export default function PersonReferenceRelativeTypePage() {
 
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Alphabet Code
+                                Alphabet Code <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
-                                class="block w-full p-2.5 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
+                                    formErrors().alphabet_code ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
+                                }`}
                                 value={formData().alphabet_code || ''}
                                 onInput={(e) => setFormData({ ...formData(), alphabet_code: e.currentTarget.value })}
                             />
+                            {formErrors().alphabet_code && (
+                                <p class="text-xs text-red-500 mt-1">{formErrors().alphabet_code}</p>
+                            )}
                         </div>
 
                         <div>
