@@ -88,7 +88,21 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     });
     println!("Apalis email worker started");
 
+    let cors = salvo::cors::Cors::new()
+        .allow_origin(salvo::cors::Any)
+        .allow_methods(vec![
+            Method::GET,
+            Method::POST,
+            Method::PUT,
+            Method::DELETE,
+            Method::PATCH,
+            Method::OPTIONS,
+        ])
+        .allow_headers(salvo::cors::Any)
+        .into_handler();
+
     let api_router = Router::with_path("api/v1")
+        .hoop(cors)
         .hoop(InjectDb(db))
         .hoop(InjectRedis(redis_storage))
         .push(controllers::person::reference::router())
