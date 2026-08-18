@@ -404,7 +404,7 @@ export default function PersonReferenceAgeClassificationPage() {
                                                             <button
                                                                 type="button"
                                                                 onClick={() => openEditModal(item)}
-                                                                class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-blue-600 hover:bg-blue-50 dark:text-neutral-300 dark:hover:text-blue-400 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
+                                                                class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
                                                                 title="Edit Record"
                                                                 aria-label={`Edit ${item.name}`}
                                                             >
@@ -416,7 +416,7 @@ export default function PersonReferenceAgeClassificationPage() {
                                                             <button
                                                                 type="button"
                                                                 onClick={() => openDeleteModal(item)}
-                                                                class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-red-600 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
+                                                                class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-red-600 hover:border-red-500 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:border-red-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
                                                                 title="Delete Record"
                                                                 aria-label={`Delete ${item.name}`}
                                                             >
@@ -490,14 +490,14 @@ export default function PersonReferenceAgeClassificationPage() {
                                                 <button
                                                     type="button"
                                                     onClick={() => openEditModal(item)}
-                                                    class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 dark:text-blue-400 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800"
+                                                    class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-yellow-50 hover:text-yellow-600 hover:border-yellow-500 dark:text-blue-400 dark:bg-blue-950/50 dark:hover:text-yellow-400 dark:hover:border-yellow-500 border border-blue-200 dark:border-blue-800 transition-colors cursor-pointer"
                                                 >
                                                     Edit
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => openDeleteModal(item)}
-                                                    class="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 dark:text-red-400 dark:bg-red-950/50 border border-red-200 dark:border-red-800"
+                                                    class="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-50 hover:text-red-600 hover:border-red-500 dark:text-red-400 dark:bg-red-950/50 dark:hover:text-red-400 dark:hover:border-red-500 border border-red-200 dark:border-red-800 transition-colors cursor-pointer"
                                                 >
                                                     Delete
                                                 </button>
@@ -588,9 +588,8 @@ export default function PersonReferenceAgeClassificationPage() {
                             </label>
                             <input
                                 type="number"
-                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
-                                    formErrors().code ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
-                                }`}
+                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${formErrors().code ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
+                                    }`}
                                 placeholder="e.g. 1"
                                 value={formData().code}
                                 onInput={(e) => setFormData({ ...formData(), code: e.currentTarget.value })}
@@ -606,9 +605,8 @@ export default function PersonReferenceAgeClassificationPage() {
                             </label>
                             <input
                                 type="text"
-                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
-                                    formErrors().alphabet_code ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
-                                }`}
+                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${formErrors().alphabet_code ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
+                                    }`}
                                 placeholder="e.g. A, B, C, D..."
                                 value={formData().alphabet_code || ''}
                                 onInput={(e) => setFormData({ ...formData(), alphabet_code: e.currentTarget.value })}
@@ -624,9 +622,8 @@ export default function PersonReferenceAgeClassificationPage() {
                             </label>
                             <input
                                 type="text"
-                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
-                                    formErrors().name ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
-                                }`}
+                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${formErrors().name ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
+                                    }`}
                                 placeholder="e.g. Balita, Remaja Awal, Dewasa..."
                                 value={formData().name}
                                 onInput={(e) => setFormData({ ...formData(), name: e.currentTarget.value })}
@@ -705,9 +702,8 @@ export default function PersonReferenceAgeClassificationPage() {
                             </label>
                             <input
                                 type="number"
-                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
-                                    formErrors().code ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
-                                }`}
+                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${formErrors().code ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
+                                    }`}
                                 value={formData().code}
                                 onInput={(e) => setFormData({ ...formData(), code: e.currentTarget.value })}
                             />
@@ -722,9 +718,8 @@ export default function PersonReferenceAgeClassificationPage() {
                             </label>
                             <input
                                 type="text"
-                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
-                                    formErrors().alphabet_code ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
-                                }`}
+                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${formErrors().alphabet_code ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
+                                    }`}
                                 value={formData().alphabet_code || ''}
                                 onInput={(e) => setFormData({ ...formData(), alphabet_code: e.currentTarget.value })}
                             />
@@ -739,9 +734,8 @@ export default function PersonReferenceAgeClassificationPage() {
                             </label>
                             <input
                                 type="text"
-                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
-                                    formErrors().name ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
-                                }`}
+                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${formErrors().name ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
+                                    }`}
                                 value={formData().name}
                                 onInput={(e) => setFormData({ ...formData(), name: e.currentTarget.value })}
                             />
@@ -790,14 +784,32 @@ export default function PersonReferenceAgeClassificationPage() {
                                 Confirm Deletion
                             </h2>
                             <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                                Are you sure you want to delete <strong class="text-neutral-900 dark:text-white">{selectedItem()?.name}</strong> (Code: {selectedItem()?.code})?
+                                Are you sure you want to delete this record?
                             </p>
-                            <p class="mt-1 text-xs text-red-600 dark:text-red-400 font-medium">
-                                This action cannot be undone.
-                            </p>
+
                         </div>
                     </div>
-
+                    <div class="bg-red-100 dark:bg-red-950 text-sm text-foreground-inverse rounded-none p-4 mt-3" role="alert" tabindex="-1" aria-labelledby="hs-solid-color-danger-label">
+                        <span class="font-bold">Danger</span> alert! This Action Cannot be Undone
+                    </div>
+                    <div class="mt-3 border border-neutral-200 dark:border-neutral-700 overflow-hidden">
+                        <table class="w-full text-sm text-left">
+                            <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
+                                <tr class="bg-neutral-50/50 dark:bg-neutral-800/30">
+                                    <td class="px-3 py-2 font-medium text-neutral-500 dark:text-neutral-400 w-1/3">Code</td>
+                                    <td class="px-3 py-2 font-mono font-medium text-neutral-900 dark:text-white">{selectedItem()?.code}</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-3 py-2 font-medium text-neutral-500 dark:text-neutral-400">Alphabet Code</td>
+                                    <td class="px-3 py-2 text-neutral-900 dark:text-white">{selectedItem()?.alphabet_code || '-'}</td>
+                                </tr>
+                                <tr class="bg-neutral-50/50 dark:bg-neutral-800/30">
+                                    <td class="px-3 py-2 font-medium text-neutral-500 dark:text-neutral-400">Classification Name</td>
+                                    <td class="px-3 py-2 font-medium text-neutral-900 dark:text-white">{selectedItem()?.name}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <div class="flex items-center justify-end gap-3 pt-6 mt-4 border-t border-neutral-200 dark:border-neutral-700">
                         <button
                             type="button"
