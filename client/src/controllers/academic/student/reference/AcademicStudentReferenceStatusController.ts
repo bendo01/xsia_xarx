@@ -1,39 +1,95 @@
-import type { ModelSelectItem } from "../../../../models/common/select/ModelSelectItem";
-import { getStorageItem } from "../../../../lib/storage";
+import {
+    TypePaginationForm,
+    TypePaginationResponse,
+    TypeInputEntityReferenceForm,
+} from '~/lib/types';
+import type { AcademicStudentReferenceStatus } from '~/models/academic/student/reference/Status';
+import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
+import { getStorageItem } from '~/lib/storage';
 
-const server_api_url = import.meta.env.VITE_API_SERVER_URL ?? "http://localhost:5155/api/";
+const getBaseUrl = () => {
+    return (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
+};
+
+export async function AcademicStudentReferenceControllerStatusIndex(
+    props: TypePaginationForm,
+): Promise<TypePaginationResponse<AcademicStudentReferenceStatus>> {
+    const params = new URLSearchParams();
+    if (props.page) params.append('page', props.page.toString());
+    if (props.per_page) params.append('per_page', props.per_page.toString());
+    if (props.search) params.append('search', props.search);
+    if (props.sort_by) params.append('sort_by', props.sort_by);
+    if (props.sort_dir) params.append('sort_dir', props.sort_dir);
+
+    const res = await fetch(`${getBaseUrl()}/academic/student/reference/statuses?${params.toString()}`);
+    return await res.json();
+}
+
+export async function AcademicStudentReferenceControllerStatusUpsert(
+    form: TypeInputEntityReferenceForm,
+): Promise<{ is_error: boolean; message: string; data?: AcademicStudentReferenceStatus }> {
+    const isUpdate = !!form.id;
+    const url = isUpdate
+        ? `${getBaseUrl()}/academic/student/reference/statuses/${form.id}`
+        : `${getBaseUrl()}/academic/student/reference/statuses`;
+    const method = isUpdate ? 'PUT' : 'POST';
+
+    const payload: Record<string, any> = {
+        code: isNaN(Number(form.code)) ? form.code : Number(form.code),
+        alphabet_code: form.alphabet_code,
+        name: form.name,
+    };
+    if (isUpdate) {
+        payload.id = form.id;
+    }
+
+    const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+    });
+    return await res.json();
+}
+
+export async function AcademicStudentReferenceControllerStatusDelete(
+    props: { id: string },
+): Promise<{ is_error: boolean; message: string }> {
+    const res = await fetch(`${getBaseUrl()}/academic/student/reference/statuses/${props.id}`, {
+        method: 'DELETE',
+    });
+    return await res.json();
+}
 
 export async function getStatusLists(): Promise<{
     code: number;
     message: string | ModelSelectItem[];
 }> {
-    
     try {
-        const response = await fetch(`${server_api_url}academic/student/reference/statuses/list`, {
-            method: "GET",
+        const response = await fetch(`${getBaseUrl()}/academic/student/reference/statuses/list`, {
+            method: 'GET',
             headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                Authorization: `Bearer ${getStorageItem("token")}`,
-            }
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                Authorization: `Bearer ${getStorageItem('token')}`,
+            },
         });
         const data: ModelSelectItem[] = await response.json();
-        
+
         if (!response.ok) {
             return {
                 code: response.status || 500,
-                    message: "Gagal Mengambil Data Status Mahasiswa"
-                };
-            }
-
-            return {
-                code: 200,
-                message: data
+                message: 'Gagal Mengambil Data Status Mahasiswa',
             };
+        }
+
+        return {
+            code: 200,
+            message: data,
+        };
     } catch (error) {
         return {
             code: 500,
-            message: "Internal server error"
+            message: 'Internal server error',
         };
     }
 }

@@ -1,3 +1,5 @@
+import type { ModelPagination } from '../models/pagination/ModelPagination';
+
 export interface TypePaginationForm {
     search?: string;
     sort_by?: string;
@@ -7,6 +9,11 @@ export interface TypePaginationForm {
     per_page: number;
     name?: string;
     code?: number;
+}
+
+export interface TypePaginationResponse<T = any> {
+    pagination: ModelPagination;
+    data: T[];
 }
 
 export interface TypeInputEntityReferenceForm {
