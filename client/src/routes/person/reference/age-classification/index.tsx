@@ -65,8 +65,8 @@ export default function PersonReferenceAgeClassificationPage() {
                 });
 
                 setItems(data);
-                setTotalData(response.pagination.total_data || data.length);
-                setTotalPages(response.pagination.total_page || 1);
+                setTotalData(response.pagination?.total_data || data.length);
+                setTotalPages(response.pagination?.total_page || 1);
             } else {
                 setItems([]);
                 setTotalData(0);

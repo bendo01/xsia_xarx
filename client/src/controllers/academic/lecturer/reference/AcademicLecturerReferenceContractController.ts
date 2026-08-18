@@ -12,48 +12,119 @@ const getBaseUrl = () => {
 export async function AcademicLecturerReferenceControllerContractIndex(
     props: TypePaginationForm,
 ): Promise<TypePaginationResponse<AcademicLecturerReferenceContract>> {
-    const params = new URLSearchParams();
-    if (props.page) params.append('page', props.page.toString());
-    if (props.per_page) params.append('per_page', props.per_page.toString());
-    if (props.search) params.append('search', props.search);
-    if (props.sort_by) params.append('sort_by', props.sort_by);
-    if (props.sort_dir) params.append('sort_dir', props.sort_dir);
+    try {
+        const params = new URLSearchParams();
+        if (props.page) params.append('page', props.page.toString());
+        if (props.per_page) params.append('page_size', props.per_page.toString());
+        if (props.search) params.append('name', props.search);
+        if (props.name) params.append('name', props.name);
+        if (props.code !== undefined && props.code !== null && !isNaN(Number(props.code))) {
+            params.append('code', props.code.toString());
+        }
 
-    const res = await fetch(`${getBaseUrl()}/academic/lecturer/reference/contracts?${params.toString()}`);
-    return await res.json();
+        const res = await fetch(`${getBaseUrl()}/academic/lecturer/reference/contracts?${params.toString()}`);
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const resJson = await res.json();
+        return {
+            pagination: {
+                search: props.search || '',
+                sort_by: props.sort_by || '',
+                column: props.column || '',
+                sort_dir: props.sort_dir || '',
+                page: resJson.page || props.page || 1,
+                per_page: resJson.page_size || props.per_page || 10,
+                total_page: resJson.total_pages || 0,
+                last_page: resJson.total_pages || 1,
+                total_data: resJson.total ?? (Array.isArray(resJson.data) ? resJson.data.length : 0),
+            },
+            data: Array.isArray(resJson.data) ? resJson.data : (Array.isArray(resJson) ? resJson : []),
+        };
+    } catch (e) {
+        console.error('Error in AcademicLecturerReferenceControllerContractIndex:', e);
+        return {
+            pagination: {
+                search: props.search || '',
+                sort_by: props.sort_by || '',
+                column: props.column || '',
+                sort_dir: props.sort_dir || '',
+                page: props.page || 1,
+                per_page: props.per_page || 10,
+                total_page: 0,
+                last_page: 1,
+                total_data: 0,
+            },
+            data: [],
+        };
+    }
 }
 
 export async function AcademicLecturerReferenceControllerContractUpsert(
     form: TypeInputEntityReferenceForm,
 ): Promise<{ is_error: boolean; message: string; data?: AcademicLecturerReferenceContract }> {
-    const isUpdate = !!form.id;
-    const url = isUpdate
-        ? `${getBaseUrl()}/academic/lecturer/reference/contracts/${form.id}`
-        : `${getBaseUrl()}/academic/lecturer/reference/contracts`;
-    const method = isUpdate ? 'PUT' : 'POST';
+    try {
+        const isUpdate = !!form.id;
+        const url = isUpdate
+            ? `${getBaseUrl()}/academic/lecturer/reference/contracts/${form.id}`
+            : `${getBaseUrl()}/academic/lecturer/reference/contracts`;
+        const method = isUpdate ? 'PUT' : 'POST';
 
-    const payload: Record<string, any> = {
-        code: isNaN(Number(form.code)) ? form.code : Number(form.code),
-        alphabet_code: form.alphabet_code,
-        name: form.name,
-    };
-    if (isUpdate) {
-        payload.id = form.id;
+        const payload: Record<string, any> = {
+            code: isNaN(Number(form.code)) ? form.code : Number(form.code),
+            alphabet_code: form.alphabet_code || form.alphabetic_code || '',
+            name: form.name,
+        };
+
+        const res = await fetch(url, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+
+        const resJson = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            return {
+                is_error: true,
+                message: resJson.message || resJson.brief || (isUpdate ? 'Failed to update record.' : 'Failed to create record.'),
+            };
+        }
+
+        return {
+            is_error: false,
+            message: isUpdate ? 'Record updated successfully.' : 'Record created successfully.',
+            data: resJson,
+        };
+    } catch (error: any) {
+        return {
+            is_error: true,
+            message: error.message || 'Network error while saving record.',
+        };
     }
-
-    const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-    });
-    return await res.json();
 }
 
 export async function AcademicLecturerReferenceControllerContractDelete(
     props: { id: string },
 ): Promise<{ is_error: boolean; message: string }> {
-    const res = await fetch(`${getBaseUrl()}/academic/lecturer/reference/contracts/${props.id}`, {
-        method: 'DELETE',
-    });
-    return await res.json();
+    try {
+        const res = await fetch(`${getBaseUrl()}/academic/lecturer/reference/contracts/${props.id}`, {
+            method: 'DELETE',
+        });
+        const resJson = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            return {
+                is_error: true,
+                message: resJson.message || resJson.brief || 'Failed to delete record.',
+            };
+        }
+        return {
+            is_error: false,
+            message: resJson.message || 'Record deleted successfully.',
+        };
+    } catch (error: any) {
+        return {
+            is_error: true,
+            message: error.message || 'Network error while deleting record.',
+        };
+    }
 }

@@ -233,8 +233,8 @@ export default function ExampleList() {
 
             if (response && response.data) {
                 setItems(response.data);
-                setTotalData(response.pagination.total_data || response.data.length);
-                setTotalPages(response.pagination.total_page || 1);
+                setTotalData(response.pagination?.total_data || response.data.length);
+                setTotalPages(response.pagination?.total_page || 1);
             } else {
                 setItems([]);
                 setTotalData(0);

@@ -105,8 +105,8 @@ export function Toaster(props: { position?: ToastPosition }) {
 }
 
 function ToastItem(props: { toast: ToastMessage }) {
-  const baseToastClass = "relative overflow-hidden flex items-center w-full max-w-sm p-4 text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 rounded-none shadow-sm border border-neutral-200 dark:border-neutral-700";
-  const closeBtnClass = "ms-auto flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:hover:text-white bg-transparent box-border border border-transparent hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:ring-4 focus:ring-neutral-200 dark:focus:ring-neutral-600 font-medium leading-5 rounded-none text-sm h-8 w-8 focus:outline-none transition-colors";
+  const baseToastClass = "relative overflow-hidden flex items-center w-full max-w-sm p-4 text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 rounded-full shadow-sm border border-neutral-200 dark:border-neutral-700";
+  const closeBtnClass = "ms-auto flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:hover:text-white bg-transparent box-border border border-transparent hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:ring-4 focus:ring-neutral-200 dark:focus:ring-neutral-600 font-medium leading-5 rounded-full text-sm h-8 w-8 focus:outline-none transition-colors";
 
   return (
     <Switch>
@@ -125,7 +125,7 @@ function ToastItem(props: { toast: ToastMessage }) {
       </Match>
       <Match when={props.toast.type === "success"}>
         <div class={baseToastClass} role="alert">
-          <div class="inline-flex items-center justify-center shrink-0 w-7 h-7 text-green-800 bg-green-100 dark:text-green-300 dark:bg-green-900 rounded-none">
+          <div class="inline-flex items-center justify-center shrink-0 w-7 h-7 text-green-800 bg-green-100 dark:text-green-300 dark:bg-green-900 rounded-full">
             <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5" /></svg>
             <span class="sr-only">Check icon</span>
           </div>
@@ -141,7 +141,7 @@ function ToastItem(props: { toast: ToastMessage }) {
       </Match>
       <Match when={props.toast.type === "danger"}>
         <div class={baseToastClass} role="alert">
-          <div class="inline-flex items-center justify-center shrink-0 w-7 h-7 text-red-800 bg-red-100 dark:text-red-300 dark:bg-red-900 rounded-none">
+          <div class="inline-flex items-center justify-center shrink-0 w-7 h-7 text-red-800 bg-red-100 dark:text-red-300 dark:bg-red-900 rounded-full">
             <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6" /></svg>
             <span class="sr-only">Error icon</span>
           </div>
@@ -157,7 +157,7 @@ function ToastItem(props: { toast: ToastMessage }) {
       </Match>
       <Match when={props.toast.type === "warning"}>
         <div class={baseToastClass} role="alert">
-          <div class="inline-flex items-center justify-center shrink-0 w-7 h-7 text-yellow-800 bg-yellow-100 dark:text-yellow-300 dark:bg-yellow-900 rounded-none">
+          <div class="inline-flex items-center justify-center shrink-0 w-7 h-7 text-yellow-800 bg-yellow-100 dark:text-yellow-300 dark:bg-yellow-900 rounded-full">
             <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 13V8m0 8h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
             <span class="sr-only">Warning icon</span>
           </div>
