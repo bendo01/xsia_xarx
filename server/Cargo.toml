@@ -82,7 +82,13 @@ apalis = "0.7.4"
 apalis-cron = "0.7.4"
 apalis-redis = "0.7.4"
 
-salvo = { version = "0.95.0", features = ["oapi", "quinn", "cors", "websocket", "sse"] }
+salvo = { version = "0.95.0", features = [
+    "oapi",
+    "quinn",
+    "cors",
+    "websocket",
+    "sse",
+] }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1.0.144" }
 tokio = { version = "1.45", default-features = false, features = [
@@ -122,9 +128,12 @@ chrono = "0.4"
 fake = { version = "5", features = ["derive"] }
 
 # Speed up development compilation
+# [profile.dev]
+# opt-level = 0      # Do not optimize your own code for fast iteration
+# incremental = true # Cache intermediate compilation units
+
 [profile.dev]
-opt-level = 0      # Do not optimize your own code for fast iteration
-incremental = true # Cache intermediate compilation units
+debug = "line-tables-only"
 
 # Highly optimize dependencies even in dev mode
 # This keeps the application fast if you rely on heavy math/game engines (like Bevy)
