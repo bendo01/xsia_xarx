@@ -1,29 +1,52 @@
-import type { TypePaginationForm } from "../../../lib/types";
-import type { TypeInputEntityReferenceForm } from "../../../lib/types";
-import { UpsertDeleteMessage } from "../../../models/common/reference/ModelCommonReference";
+import type { TypePaginationForm, TypeInputEntityReferenceForm } from "../../../lib/types";
+import type { UpsertDeleteMessage } from "../../../models/common/reference/ModelCommonReference";
 import type { ModelCommonReferencePaginationResponse } from "../../../models/pagination/ModelPagination";
-// import type{ CommonMessage } from "../../../models/common/Message";
-// import { getStorageItem } from "../../../lib/storage";
+import type { ModelSelectItem } from "../../../models/common/select/ModelSelectItem";
 
-const server_api_url = import.meta.env.VITE_API_SERVER_URL ?? "http://localhost:5150/api/";
-const path = "institution/reference/variety";
+const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0.1:5800/api/v1/").replace(/\/+$/, "");
+const path = "institution/reference/varieties";
 
-export async function InstitutionReferenceControllerVarietyIndex(pagination : TypePaginationForm): Promise<ModelCommonReferencePaginationResponse> {
+export async function InstitutionReferenceControllerVarietyIndex(pagination: TypePaginationForm): Promise<ModelCommonReferencePaginationResponse> {
     try {
-        const response = await fetch(`${server_api_url}${path}`, {
-            method: "POST", // HTTP method
+        const queryParams = new URLSearchParams();
+        if (pagination.page) queryParams.set("page", String(pagination.page));
+        if (pagination.per_page) queryParams.set("page_size", String(pagination.per_page));
+        if (pagination.search) queryParams.set("name", pagination.search);
+        if (pagination.name) queryParams.set("name", pagination.name);
+        if (pagination.code !== undefined && pagination.code !== null && !isNaN(pagination.code)) {
+            queryParams.set("code", String(pagination.code));
+        }
+
+        const url = `${getBaseUrl()}/${path}?${queryParams.toString()}`;
+        const response = await fetch(url, {
+            method: "GET",
             headers: {
-                "Content-Type": "application/json", // Specify the data format
+                "Content-Type": "application/json",
                 Accept: "application/json",
-                // Authorization: `Bearer ${getStorageItem("token")}`,
             },
-            body: JSON.stringify(pagination), // Send form data as JSON
         });
-        const response_data: ModelCommonReferencePaginationResponse = await response.json();
-        return response_data;
-    }
-    catch (error) {
-        console.error("Error:", error);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const resJson = await response.json();
+        return {
+            pagination: {
+                search: pagination.search || "",
+                sort_by: pagination.sort_by || "",
+                column: pagination.column || "",
+                sort_dir: pagination.sort_dir || "",
+                page: resJson.page || 1,
+                per_page: resJson.page_size || 10,
+                total_page: resJson.total_pages || 0,
+                last_page: resJson.total_pages || 1,
+                total_data: resJson.total || 0,
+            },
+            data: resJson.data || [],
+        };
+    } catch (error) {
+        console.error("Error fetching variety reference:", error);
         return {
             pagination: {
                 search: "",
@@ -37,109 +60,135 @@ export async function InstitutionReferenceControllerVarietyIndex(pagination : Ty
                 total_data: 0,
             },
             data: [],
-        }
+        };
     }
 }
 
 export async function InstitutionReferenceControllerVarietyUpsert(data: TypeInputEntityReferenceForm): Promise<UpsertDeleteMessage> {
-    let returned = {
+    const returned: UpsertDeleteMessage = {
         is_error: false,
         code: 200,
-        message: "success to upsert reference.",
+        message: "Successfully saved variety reference.",
         errors: {},
-    }
-    // console.log(data);
+    };
+
     try {
-        let payload = {
+        const payload = {
             code: Number(data.code),
-            alphabet_code:data.alphabet_code,
-            name: data.name
-        }
-        let response = null;
+            alphabet_code: data.alphabet_code || data.alphabetic_code || "",
+            name: data.name,
+        };
 
-        if (
-            ("id" in data) &&
-            data.id != null &&
-            data.id !== '00000000-0000-0000-0000-000000000000' &&
-            data.id.length !== 0
-        ) {
-            response = await fetch(`${server_api_url}${path}/${data.id}`, {
-                method: "PUT", // HTTP method
-                headers: {
-                    "Content-Type": "application/json", // Specify the data format
-                    Accept: "application/json",
-                    // Authorization: `Bearer ${getStorageItem("token")}`,
-                },
-                body: JSON.stringify(payload), // Send form data as JSON
-            });
-        } else {
-            response = await fetch(`${server_api_url}${path}/store`, {
-                method: "POST", // HTTP method
-                headers: {
-                    "Content-Type": "application/json", // Specify the data format
-                    Accept: "application/json",
-                    // Authorization: `Bearer ${getStorageItem("token")}`,
-                },
-                body: JSON.stringify(payload), // Send form data as JSON
-            });
-        }
+        const isUpdate = Boolean(data.id && data.id !== "" && data.id !== "00000000-0000-0000-0000-000000000000");
+        const url = isUpdate ? `${getBaseUrl()}/${path}/${data.id}` : `${getBaseUrl()}/${path}`;
+        const method = isUpdate ? "PUT" : "POST";
 
-        const responseData = await response.json();
+        const response = await fetch(url, {
+            method,
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const responseData = await response.json().catch(() => ({}));
 
         if (!response.ok) {
-            // console.log(responseData);
-            // console.log(responseData.errors);
-            // console.log(responseData.message);
-            if (responseData.errors) {
-                returned.errors = responseData.errors;
-            }
             returned.is_error = true;
-            returned.code = 500;
-            returned.message = responseData.message;
+            returned.code = response.status;
+            returned.message = responseData.message || responseData.brief || "Failed to save variety reference.";
+            if (responseData.errors) returned.errors = responseData.errors;
+            return returned;
         }
-        // console.log(returned);
+
+        returned.message = isUpdate ? "Successfully updated variety reference." : "Successfully created variety reference.";
         return returned;
-
-    } catch (error) {
-        // Return a default error message in case of exception
+    } catch (error: any) {
         returned.is_error = true;
-        returned.code = 502;
-        returned.message = "Failed to upserting reference.";
+        returned.code = 500;
+        returned.message = error.message || "Network error while saving variety reference.";
+        return returned;
     }
-
-    return returned;
 }
 
-export async function InstitutionReferenceControllerVarietyDelete(data: TypeInputEntityReferenceForm): Promise<UpsertDeleteMessage> {
-    let returned = {
+export async function InstitutionReferenceControllerVarietyDelete(data: TypeInputEntityReferenceForm | { id?: string | null }): Promise<UpsertDeleteMessage> {
+    const returned: UpsertDeleteMessage = {
         is_error: false,
         code: 200,
-        message: "success to upsert reference.",
+        message: "Successfully deleted variety reference.",
         errors: {},
+    };
+
+    if (!data.id || data.id === "" || data.id === "00000000-0000-0000-0000-000000000000") {
+        returned.is_error = true;
+        returned.code = 400;
+        returned.message = "Missing or invalid ID to delete reference.";
+        return returned;
     }
-    if (
-            ("id" in data) &&
-            data.id != null &&
-            data.id !== '00000000-0000-0000-0000-000000000000' &&
-            data.id.length !== 0
-    ) {
-        const response = await fetch(`${server_api_url}${path}/${data.id}`, {
-            method: "DELETE", // HTTP method
+
+    try {
+        const response = await fetch(`${getBaseUrl()}/${path}/${data.id}`, {
+            method: "DELETE",
             headers: {
-                "Content-Type": "application/json", // Specify the data format
+                "Content-Type": "application/json",
                 Accept: "application/json",
-                // Authorization: `Bearer ${getStorageItem("token")}`,
             },
         });
+
+        const responseData = await response.json().catch(() => ({}));
+
         if (!response.ok) {
             returned.is_error = true;
-            returned.code = 500;
-            returned.message = "Failed to delete reference.";
+            returned.code = response.status;
+            returned.message = responseData.message || responseData.brief || "Failed to delete variety reference.";
+            return returned;
         }
-    } else {
+
+        return returned;
+    } catch (error: any) {
         returned.is_error = true;
-        returned.code = 502;
-        returned.message = "problem to delete reference.";
+        returned.code = 500;
+        returned.message = error.message || "Network error while deleting variety reference.";
+        return returned;
     }
-    return returned;
+}
+
+export async function InstitutionReferenceControllerVarietyList(): Promise<{
+    code: number;
+    message: string | ModelSelectItem[];
+}> {
+    try {
+        const response = await fetch(`${getBaseUrl()}/${path}?page=1&page_size=1000`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+        });
+        const resData = await response.json();
+
+        if (!response.ok) {
+            return {
+                code: response.status || 500,
+                message: "Failed to fetch variety list",
+            };
+        }
+
+        const items: ModelSelectItem[] = (resData.data || []).map((item: any) => ({
+            id: item.id,
+            value: item.id,
+            label: item.name,
+        }));
+
+        return {
+            code: 200,
+            message: items,
+        };
+    } catch (error) {
+        return {
+            code: 500,
+            message: "Internal server error",
+        };
+    }
 }

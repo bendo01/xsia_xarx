@@ -4,9 +4,9 @@ import type { ModelCommonReferencePaginationResponse } from "../../../models/pag
 import type { ModelSelectItem } from "../../../models/common/select/ModelSelectItem";
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0.1:5800/api/v1/").replace(/\/+$/, "");
-const path = "contact/reference/residence-types";
+const path = "building/reference/categories";
 
-export async function ContactReferenceControllerResidenceTypeIndex(pagination: TypePaginationForm): Promise<ModelCommonReferencePaginationResponse> {
+export async function BuildingReferenceControllerCategoryIndex(pagination: TypePaginationForm): Promise<ModelCommonReferencePaginationResponse> {
     try {
         const queryParams = new URLSearchParams();
         if (pagination.page) queryParams.set("page", String(pagination.page));
@@ -46,7 +46,7 @@ export async function ContactReferenceControllerResidenceTypeIndex(pagination: T
             data: resJson.data || [],
         };
     } catch (error) {
-        console.error("Error fetching residence type reference:", error);
+        console.error("Error fetching building category reference:", error);
         return {
             pagination: {
                 search: "",
@@ -64,11 +64,11 @@ export async function ContactReferenceControllerResidenceTypeIndex(pagination: T
     }
 }
 
-export async function ContactReferenceControllerResidenceTypeUpsert(data: TypeInputEntityReferenceForm): Promise<UpsertDeleteMessage> {
+export async function BuildingReferenceControllerCategoryUpsert(data: TypeInputEntityReferenceForm): Promise<UpsertDeleteMessage> {
     const returned: UpsertDeleteMessage = {
         is_error: false,
         code: 200,
-        message: "Successfully saved residence type reference.",
+        message: "Successfully saved building category reference.",
         errors: {},
     };
 
@@ -97,26 +97,26 @@ export async function ContactReferenceControllerResidenceTypeUpsert(data: TypeIn
         if (!response.ok) {
             returned.is_error = true;
             returned.code = response.status;
-            returned.message = responseData.message || responseData.brief || "Failed to save residence type reference.";
+            returned.message = responseData.message || responseData.brief || "Failed to save building category reference.";
             if (responseData.errors) returned.errors = responseData.errors;
             return returned;
         }
 
-        returned.message = isUpdate ? "Successfully updated residence type reference." : "Successfully created residence type reference.";
+        returned.message = isUpdate ? "Successfully updated building category reference." : "Successfully created building category reference.";
         return returned;
     } catch (error: any) {
         returned.is_error = true;
         returned.code = 500;
-        returned.message = error.message || "Network error while saving residence type reference.";
+        returned.message = error.message || "Network error while saving building category reference.";
         return returned;
     }
 }
 
-export async function ContactReferenceControllerResidenceTypeDelete(data: TypeInputEntityReferenceForm | { id?: string | null }): Promise<UpsertDeleteMessage> {
+export async function BuildingReferenceControllerCategoryDelete(data: TypeInputEntityReferenceForm | { id?: string | null }): Promise<UpsertDeleteMessage> {
     const returned: UpsertDeleteMessage = {
         is_error: false,
         code: 200,
-        message: "Successfully deleted residence type reference.",
+        message: "Successfully deleted building category reference.",
         errors: {},
     };
 
@@ -141,7 +141,7 @@ export async function ContactReferenceControllerResidenceTypeDelete(data: TypeIn
         if (!response.ok) {
             returned.is_error = true;
             returned.code = response.status;
-            returned.message = responseData.message || responseData.brief || "Failed to delete residence type reference.";
+            returned.message = responseData.message || responseData.brief || "Failed to delete building category reference.";
             return returned;
         }
 
@@ -149,12 +149,12 @@ export async function ContactReferenceControllerResidenceTypeDelete(data: TypeIn
     } catch (error: any) {
         returned.is_error = true;
         returned.code = 500;
-        returned.message = error.message || "Network error while deleting residence type reference.";
+        returned.message = error.message || "Network error while deleting building category reference.";
         return returned;
     }
 }
 
-export async function ContactReferenceControllerResidenceTypeList(): Promise<{
+export async function BuildingReferenceControllerCategoryList(): Promise<{
     code: number;
     message: string | ModelSelectItem[];
 }> {
@@ -171,7 +171,7 @@ export async function ContactReferenceControllerResidenceTypeList(): Promise<{
         if (!response.ok) {
             return {
                 code: response.status || 500,
-                message: "Failed to fetch residence type list",
+                message: "Failed to fetch building category list",
             };
         }
 

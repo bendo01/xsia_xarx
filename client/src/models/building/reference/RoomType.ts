@@ -1,4 +1,4 @@
-export interface ContactReferencePhoneType {
+export interface BuildingReferenceRoomType {
     id: string | null;
     code: number | null;
     alphabet_code?: string | null;
@@ -7,6 +7,7 @@ export interface ContactReferencePhoneType {
     created_at: Date | string | null;
     updated_at: Date | string | null;
     deleted_at: Date | string | null;
+    sync_at?: Date | string | null;
     created_by: string | null;
     updated_by: string | null;
 }
