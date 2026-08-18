@@ -95,7 +95,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .into_handler();
 
     let api_router = Router::with_path("api/v1")
-        .hoop(cors)
         .hoop(InjectDb(db))
         .hoop(InjectRedis(redis_storage))
         .push(controllers::person::reference::router())
@@ -121,8 +120,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Swagger UI:   http://127.0.0.1:5800/api/v1/swagger-ui/");
     println!("OpenAPI JSON: http://127.0.0.1:5800/api/v1/api-docs/openapi.json");
 
+    let service = Service::new(router).hoop(cors);
     let acceptor = TcpListener::new("127.0.0.1:5800").bind().await;
-    Server::new(acceptor).serve(router).await;
+    Server::new(acceptor).serve(service).await;
 
     Ok(())
 }
