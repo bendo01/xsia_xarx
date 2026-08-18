@@ -395,7 +395,7 @@ export default function PersonReferenceBloodTypePage() {
                                                             <button
                                                                 type="button"
                                                                 onClick={() => openEditModal(item)}
-                                                                class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-blue-600 hover:bg-blue-50 dark:text-neutral-300 dark:hover:text-blue-400 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
+                                                                class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
                                                                 title="Edit Record"
                                                                 aria-label={`Edit ${item.name}`}
                                                             >
@@ -407,7 +407,7 @@ export default function PersonReferenceBloodTypePage() {
                                                             <button
                                                                 type="button"
                                                                 onClick={() => openDeleteModal(item)}
-                                                                class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-red-600 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
+                                                                class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-red-600 hover:border-red-500 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:border-red-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
                                                                 title="Delete Record"
                                                                 aria-label={`Delete ${item.name}`}
                                                             >
@@ -481,14 +481,14 @@ export default function PersonReferenceBloodTypePage() {
                                                 <button
                                                     type="button"
                                                     onClick={() => openEditModal(item)}
-                                                    class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 dark:text-blue-400 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 cursor-pointer"
+                                                    class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-yellow-50 hover:text-yellow-600 hover:border-yellow-500 dark:text-blue-400 dark:bg-blue-950/50 dark:hover:text-yellow-400 dark:hover:border-yellow-500 border border-blue-200 dark:border-blue-800 transition-colors cursor-pointer"
                                                 >
                                                     Edit
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => openDeleteModal(item)}
-                                                    class="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 dark:text-red-400 dark:bg-red-950/50 border border-red-200 dark:border-red-800 cursor-pointer"
+                                                    class="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-50 hover:text-red-600 hover:border-red-500 dark:text-red-400 dark:bg-red-950/50 dark:hover:text-red-400 dark:hover:border-red-500 border border-red-200 dark:border-red-800 transition-colors cursor-pointer"
                                                 >
                                                     Delete
                                                 </button>
@@ -747,47 +747,67 @@ export default function PersonReferenceBloodTypePage() {
                 </div>
             </dialog>
 
-            {/* 3. DELETE CONFIRMATION MODAL */}
+            {/* 3. CONFIRM DELETE MODAL */}
             <dialog
                 ref={deleteDialogRef}
-                class="fixed inset-0 m-auto p-0 rounded-none bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-2xl text-neutral-900 dark:text-neutral-100 max-w-md w-full"
+                class="fixed inset-0 m-auto p-0 rounded-none bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-2xl text-neutral-900 dark:text-neutral-100 max-w-md w-full max-h-[90vh] overflow-y-auto"
                 onClick={(e) => {
                     if (e.target === e.currentTarget) closeDeleteModal();
                 }}
             >
                 <div class="p-6 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="size-10 rounded-full bg-red-100 dark:bg-red-950 flex items-center justify-center text-red-600 dark:text-red-400 shrink-0">
-                            <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="flex items-start gap-4">
+                        <div class="size-10 rounded-full bg-red-100 dark:bg-red-950 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0">
+                            <svg class="size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
                         </div>
-                        <div>
-                            <h2 class="text-lg font-bold text-neutral-900 dark:text-white">Delete Blood Type</h2>
-                            <p class="text-xs text-neutral-500 dark:text-neutral-400">This action cannot be undone.</p>
+                        <div class="flex-1">
+                            <h2 class="text-lg font-bold text-neutral-900 dark:text-white">
+                                Confirm Deletion
+                            </h2>
+                            <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                                Are you sure you want to delete this record?
+                            </p>
+
                         </div>
                     </div>
-
-                    <p class="text-sm text-neutral-600 dark:text-neutral-400 mb-6">
-                        Are you sure you want to delete the blood type <strong class="text-neutral-900 dark:text-white">"{selectedItem()?.name}"</strong>?
-                    </p>
-
-                    <div class="flex justify-end gap-3">
+                    <div class="bg-red-100 dark:bg-red-950 text-sm text-foreground-inverse rounded-none p-4 mt-3" role="alert" tabindex="-1" aria-labelledby="hs-solid-color-danger-label">
+                        <span class="font-bold">Danger</span> alert! This Action Cannot be Undone
+                    </div>
+                    <div class="mt-3 border border-neutral-200 dark:border-neutral-700 overflow-hidden">
+                        <table class="w-full text-sm text-left">
+                            <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
+                                <tr class="bg-neutral-50/50 dark:bg-neutral-800/30">
+                                    <td class="px-3 py-2 font-medium text-neutral-500 dark:text-neutral-400 w-1/3">Code</td>
+                                    <td class="px-3 py-2 font-mono font-medium text-neutral-900 dark:text-white">{selectedItem()?.code}</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-3 py-2 font-medium text-neutral-500 dark:text-neutral-400">Alphabet Code</td>
+                                    <td class="px-3 py-2 text-neutral-900 dark:text-white">{selectedItem()?.alphabet_code || selectedItem()?.alphabetic_code || '-'}</td>
+                                </tr>
+                                <tr class="bg-neutral-50/50 dark:bg-neutral-800/30">
+                                    <td class="px-3 py-2 font-medium text-neutral-500 dark:text-neutral-400">Blood Type Name</td>
+                                    <td class="px-3 py-2 font-medium text-neutral-900 dark:text-white">{selectedItem()?.name}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="flex items-center justify-end gap-3 pt-6 mt-4 border-t border-neutral-200 dark:border-neutral-700">
                         <button
                             type="button"
                             onClick={closeDeleteModal}
-                            class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 hover:bg-neutral-50 dark:bg-neutral-800 dark:text-neutral-300 dark:border-neutral-600 dark:hover:bg-neutral-700 rounded-none transition-colors cursor-pointer"
-                            disabled={isSubmitting()}
+                            class="px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-none transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="button"
-                            onClick={handleDeleteSubmit}
-                            class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-none transition-colors disabled:opacity-50 cursor-pointer"
                             disabled={isSubmitting()}
+                            onClick={handleDeleteSubmit}
+                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:ring-2 focus:ring-red-500 rounded-none shadow-xs transition-colors disabled:opacity-50"
                         >
-                            {isSubmitting() ? 'Deleting...' : 'Delete'}
+                            {isSubmitting() ? 'Deleting...' : 'Yes, Delete'}
                         </button>
                     </div>
                 </div>
