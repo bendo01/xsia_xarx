@@ -1,0 +1,31 @@
+export interface AcademicCourseMasterCourse {
+    id: string;
+    code: string;
+    name: string;
+    implementation_method: string | null;
+    total_credit: number;
+    lecture_credit: number;
+    practice_credit: number;
+    field_practice_credit: number;
+    simulation_credit: number;
+    has_unit: boolean;
+    has_syllabus: boolean;
+    has_material: boolean;
+    has_practice: boolean;
+    has_dictation: boolean;
+    group_id: string;
+    variety_id: string;
+    unit_id: string;
+    competence_id: string;
+    feeder_course_group_id: string;
+    feeder_course_type_id: string;
+    feeder_course_id: string;
+    start_date: string | null;
+    end_date: string | null;
+    created_at: string;
+    updated_at: string;
+    sync_at: string | null;
+    deleted_at: string | null;
+    created_by: string;
+    updated_by: string;
+}

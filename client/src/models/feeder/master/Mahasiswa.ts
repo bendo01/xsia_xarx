@@ -1,0 +1,33 @@
+export interface FeederMasterMahasiswa {
+  id: string
+  nama_mahasiswa: string
+  jenis_kelamin: string
+  tanggal_lahir: string
+  id_perguruan_tinggi: string
+  nipd: string
+  ipk: any
+  total_sks: number
+  id_sms: string
+  id_mahasiswa: string
+  id_agama: number
+  nama_agama: string
+  id_prodi: string
+  nama_program_studi: string
+  id_status_mahasiswa: any
+  nama_status_mahasiswa: string
+  nim: string
+  id_periode: string
+  nama_periode_masuk: string
+  id_registrasi_mahasiswa: string
+  id_periode_keluar: any
+  tanggal_keluar: any
+  last_update: string
+  tgl_create: string
+  status_sync: string
+  sync_at: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+  deleted_at: any
+}
