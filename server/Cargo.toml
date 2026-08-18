@@ -82,7 +82,7 @@ apalis = "0.7.4"
 apalis-cron = "0.7.4"
 apalis-redis = "0.7.4"
 
-salvo = { version = "0.95.0", features = ["oapi", "quinn", "cors"] }
+salvo = { version = "0.95.0", features = ["oapi", "quinn", "cors", "websocket", "sse"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1.0.144" }
 tokio = { version = "1.45", default-features = false, features = [
