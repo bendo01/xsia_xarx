@@ -7,5 +7,13 @@ export default defineConfig({
   plugins: [
     solidStart({ devOverlay: false }),
     tailwindcss(),
-  ]
+  ],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:5800',
+        changeOrigin: true,
+      },
+    },
+  },
 });

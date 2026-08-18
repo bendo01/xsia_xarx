@@ -90,14 +90,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let cors = salvo::cors::Cors::new()
         .allow_origin(salvo::cors::Any)
-        .allow_methods(vec![
-            Method::GET,
-            Method::POST,
-            Method::PUT,
-            Method::DELETE,
-            Method::PATCH,
-            Method::OPTIONS,
-        ])
+        .allow_methods(salvo::cors::Any)
         .allow_headers(salvo::cors::Any)
         .into_handler();
 
