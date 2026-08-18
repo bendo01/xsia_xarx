@@ -542,7 +542,7 @@ export default function PersonReferenceMaritalStatusPage() {
                     if (e.target === e.currentTarget) closeCreateModal();
                 }}
             >
-                <div class="p-6">
+                <div class="p-6 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
                     <div class="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-700">
                         <div>
                             <h2 class="text-lg font-bold text-neutral-900 dark:text-white">
@@ -642,7 +642,7 @@ export default function PersonReferenceMaritalStatusPage() {
                     if (e.target === e.currentTarget) closeEditModal();
                 }}
             >
-                <div class="p-6">
+                <div class="p-6 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
                     <div class="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-700">
                         <div>
                             <h2 class="text-lg font-bold text-neutral-900 dark:text-white">
@@ -751,7 +751,7 @@ export default function PersonReferenceMaritalStatusPage() {
                     if (e.target === e.currentTarget) closeDeleteModal();
                 }}
             >
-                <div class="p-6">
+                <div class="p-6 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
                     <div class="flex items-center gap-3 text-red-600 dark:text-red-400 mb-3">
                         <div class="p-2 bg-red-100 dark:bg-red-950/50">
                             <svg class="size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">

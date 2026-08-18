@@ -111,14 +111,22 @@ body:has(#sidebar-popover:popover-open) {
 
 /* HTML Dialog element styling */
 dialog {
+  margin: auto;
   padding: 0;
-  border: none;
-  background: transparent;
+  border: 1px solid #e5e5e5;
+  background-color: #ffffff;
+  color: #171717;
+}
+
+.dark dialog {
+  border-color: #404040;
+  background-color: #171717;
+  color: #f5f5f5;
 }
 
 dialog::backdrop {
-  background-color: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
 }
 
 dialog[open] {

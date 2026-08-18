@@ -546,7 +546,7 @@ export default function PersonReferenceGenderPage() {
                     if (e.target === e.currentTarget) closeCreateModal();
                 }}
             >
-                <div class="p-6">
+                <div class="p-6 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
                     <div class="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-700">
                         <div>
                             <h2 class="text-lg font-bold text-neutral-900 dark:text-white">
@@ -559,7 +559,7 @@ export default function PersonReferenceGenderPage() {
                         <button
                             type="button"
                             onClick={closeCreateModal}
-                            class="size-8 inline-flex items-center justify-center text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                            class="size-8 inline-flex items-center justify-center text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
                             aria-label="Close dialog"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -622,14 +622,14 @@ export default function PersonReferenceGenderPage() {
                             <button
                                 type="button"
                                 onClick={closeCreateModal}
-                                class="px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-none transition-colors"
+                                class="px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-none transition-colors cursor-pointer"
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
                                 disabled={isSubmitting()}
-                                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 rounded-none shadow-xs transition-colors disabled:opacity-50"
+                                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 rounded-none shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
                             >
                                 {isSubmitting() ? 'Saving...' : 'Save Gender'}
                             </button>
@@ -646,7 +646,7 @@ export default function PersonReferenceGenderPage() {
                     if (e.target === e.currentTarget) closeEditModal();
                 }}
             >
-                <div class="p-6">
+                <div class="p-6 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
                     <div class="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-700">
                         <div>
                             <h2 class="text-lg font-bold text-neutral-900 dark:text-white">
@@ -659,7 +659,7 @@ export default function PersonReferenceGenderPage() {
                         <button
                             type="button"
                             onClick={closeEditModal}
-                            class="size-8 inline-flex items-center justify-center text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                            class="size-8 inline-flex items-center justify-center text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
                             aria-label="Close dialog"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -731,14 +731,14 @@ export default function PersonReferenceGenderPage() {
                             <button
                                 type="button"
                                 onClick={closeEditModal}
-                                class="px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-none transition-colors"
+                                class="px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-none transition-colors cursor-pointer"
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
                                 disabled={isSubmitting()}
-                                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 rounded-none shadow-xs transition-colors disabled:opacity-50"
+                                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 rounded-none shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
                             >
                                 {isSubmitting() ? 'Updating...' : 'Update Changes'}
                             </button>
@@ -755,7 +755,7 @@ export default function PersonReferenceGenderPage() {
                     if (e.target === e.currentTarget) closeDeleteModal();
                 }}
             >
-                <div class="p-6">
+                <div class="p-6 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
                     <div class="flex items-start gap-4">
                         <div class="size-10 rounded-full bg-red-100 dark:bg-red-950 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0">
                             <svg class="size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -779,7 +779,7 @@ export default function PersonReferenceGenderPage() {
                         <button
                             type="button"
                             onClick={closeDeleteModal}
-                            class="px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-none transition-colors"
+                            class="px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-none transition-colors cursor-pointer"
                         >
                             Cancel
                         </button>
@@ -787,7 +787,7 @@ export default function PersonReferenceGenderPage() {
                             type="button"
                             disabled={isSubmitting()}
                             onClick={handleDeleteSubmit}
-                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:ring-2 focus:ring-red-500 rounded-none shadow-xs transition-colors disabled:opacity-50"
+                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:ring-2 focus:ring-red-500 rounded-none shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
                         >
                             {isSubmitting() ? 'Deleting...' : 'Yes, Delete'}
                         </button>
