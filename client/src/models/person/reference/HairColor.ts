@@ -1,4 +1,4 @@
-export interface PersonReferenceMaritalStatus {
+export interface PersonReferenceHairColor {
     id: string | null;
     code: number | null;
     alphabet_code?: string | null;

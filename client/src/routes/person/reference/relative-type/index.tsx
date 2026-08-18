@@ -1,195 +1,16 @@
 import { createSignal, onMount, createEffect, For, Show } from 'solid-js';
-import SlimSelect from 'slim-select';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
-import type { ModelCommonReference } from '~/models/common/reference/ModelCommonReference';
+import type { PersonReferenceRelativeType } from '~/models/person/reference/RelativeType';
 import type { TypeInputEntityReferenceForm } from '~/lib/types';
-import {
-    PersonReferenceControllerGenderIndex,
-    PersonReferenceControllerGenderUpsert,
-    PersonReferenceControllerGenderDelete,
-} from '~/controllers/person/reference/PersonReferenceGenderController';
-import {
-    PersonReferenceControllerReligionIndex,
-    PersonReferenceControllerReligionUpsert,
-    PersonReferenceControllerReligionDelete,
-} from '~/controllers/person/reference/PersonReferenceReligionController';
-import {
-    PersonReferenceControllerMaritalStatusIndex,
-    PersonReferenceControllerMaritalStatusUpsert,
-    PersonReferenceControllerMaritalStatusDelete,
-} from '~/controllers/person/reference/PersonReferenceMaritalStatusController';
-import {
-    PersonReferenceControllerOccupationIndex,
-    PersonReferenceControllerOccupationUpsert,
-    PersonReferenceControllerOccupationDelete,
-} from '~/controllers/person/reference/PersonReferenceOccupationController';
-import {
-    PersonReferenceControllerIdentificationTypeIndex,
-    PersonReferenceControllerIdentificationTypeUpsert,
-    PersonReferenceControllerIdentificationTypeDelete,
-} from '~/controllers/person/reference/PersonReferenceIdentificationTypeController';
-import {
-    PersonReferenceControllerIncomeIndex,
-    PersonReferenceControllerIncomeUpsert,
-    PersonReferenceControllerIncomeDelete,
-} from '~/controllers/person/reference/PersonReferenceIncomeController';
-import {
-    PersonReferenceControllerAgeClassificationIndex,
-    PersonReferenceControllerAgeClassificationUpsert,
-    PersonReferenceControllerAgeClassificationDelete,
-} from '~/controllers/person/reference/PersonReferenceAgeClassificationController';
-import {
-    PersonReferenceControllerProfessionIndex,
-    PersonReferenceControllerProfessionUpsert,
-    PersonReferenceControllerProfessionDelete,
-} from '~/controllers/person/reference/PersonReferenceProfessionController';
-import {
-    PersonReferenceControllerBloodTypeIndex,
-    PersonReferenceControllerBloodTypeUpsert,
-    PersonReferenceControllerBloodTypeDelete,
-} from '~/controllers/person/reference/PersonReferenceBloodTypeController';
-import {
-    PersonReferenceControllerEyeColorIndex,
-    PersonReferenceControllerEyeColorUpsert,
-    PersonReferenceControllerEyeColorDelete,
-} from '~/controllers/person/reference/PersonReferenceEyeColorController';
-import {
-    PersonReferenceControllerHairColorIndex,
-    PersonReferenceControllerHairColorUpsert,
-    PersonReferenceControllerHairColorDelete,
-} from '~/controllers/person/reference/PersonReferenceHairColorController';
-import {
-    PersonReferenceControllerHairTypeIndex,
-    PersonReferenceControllerHairTypeUpsert,
-    PersonReferenceControllerHairTypeDelete,
-} from '~/controllers/person/reference/PersonReferenceHairTypeController';
 import {
     PersonReferenceControllerRelativeTypeIndex,
     PersonReferenceControllerRelativeTypeUpsert,
     PersonReferenceControllerRelativeTypeDelete,
 } from '~/controllers/person/reference/PersonReferenceRelativeTypeController';
 
-type ReferenceType =
-    | 'gender'
-    | 'religion'
-    | 'marital-status'
-    | 'occupation'
-    | 'identification-type'
-    | 'income'
-    | 'age-classification'
-    | 'profession'
-    | 'blood-type'
-    | 'eye-color'
-    | 'hair-color'
-    | 'hair-type'
-    | 'relative-type';
-
-interface ReferenceService {
-    label: string;
-    description: string;
-    index: (p: any) => Promise<any>;
-    upsert: (d: any) => Promise<any>;
-    delete: (d: any) => Promise<any>;
-}
-
-const referenceServices: Record<ReferenceType, ReferenceService> = {
-    'gender': {
-        label: 'Gender / Jenis Kelamin',
-        description: 'Manage master references for person gender classifications.',
-        index: PersonReferenceControllerGenderIndex,
-        upsert: PersonReferenceControllerGenderUpsert,
-        delete: PersonReferenceControllerGenderDelete,
-    },
-    'religion': {
-        label: 'Religion / Agama',
-        description: 'Manage master references for religion and beliefs.',
-        index: PersonReferenceControllerReligionIndex,
-        upsert: PersonReferenceControllerReligionUpsert,
-        delete: PersonReferenceControllerReligionDelete,
-    },
-    'marital-status': {
-        label: 'Marital Status / Status Perkawinan',
-        description: 'Manage master references for marital and relationship statuses.',
-        index: PersonReferenceControllerMaritalStatusIndex,
-        upsert: PersonReferenceControllerMaritalStatusUpsert,
-        delete: PersonReferenceControllerMaritalStatusDelete,
-    },
-    'occupation': {
-        label: 'Occupation / Pekerjaan',
-        description: 'Manage master references for occupational and work categories.',
-        index: PersonReferenceControllerOccupationIndex,
-        upsert: PersonReferenceControllerOccupationUpsert,
-        delete: PersonReferenceControllerOccupationDelete,
-    },
-    'identification-type': {
-        label: 'Identification Type / Jenis Identitas',
-        description: 'Manage master references for personal identification documents.',
-        index: PersonReferenceControllerIdentificationTypeIndex,
-        upsert: PersonReferenceControllerIdentificationTypeUpsert,
-        delete: PersonReferenceControllerIdentificationTypeDelete,
-    },
-    'income': {
-        label: 'Income / Penghasilan',
-        description: 'Manage master references for income ranges and brackets.',
-        index: PersonReferenceControllerIncomeIndex,
-        upsert: PersonReferenceControllerIncomeUpsert,
-        delete: PersonReferenceControllerIncomeDelete,
-    },
-    'age-classification': {
-        label: 'Age Classification / Klasifikasi Usia',
-        description: 'Manage master references for demographic age brackets.',
-        index: PersonReferenceControllerAgeClassificationIndex,
-        upsert: PersonReferenceControllerAgeClassificationUpsert,
-        delete: PersonReferenceControllerAgeClassificationDelete,
-    },
-    'profession': {
-        label: 'Profession / Profesi',
-        description: 'Manage master references for professional designations.',
-        index: PersonReferenceControllerProfessionIndex,
-        upsert: PersonReferenceControllerProfessionUpsert,
-        delete: PersonReferenceControllerProfessionDelete,
-    },
-    'blood-type': {
-        label: 'Blood Type / Golongan Darah',
-        description: 'Manage master references for blood type classifications.',
-        index: PersonReferenceControllerBloodTypeIndex,
-        upsert: PersonReferenceControllerBloodTypeUpsert,
-        delete: PersonReferenceControllerBloodTypeDelete,
-    },
-    'eye-color': {
-        label: 'Eye Color / Warna Mata',
-        description: 'Manage master references for eye color classifications.',
-        index: PersonReferenceControllerEyeColorIndex,
-        upsert: PersonReferenceControllerEyeColorUpsert,
-        delete: PersonReferenceControllerEyeColorDelete,
-    },
-    'hair-color': {
-        label: 'Hair Color / Warna Rambut',
-        description: 'Manage master references for hair color classifications.',
-        index: PersonReferenceControllerHairColorIndex,
-        upsert: PersonReferenceControllerHairColorUpsert,
-        delete: PersonReferenceControllerHairColorDelete,
-    },
-    'hair-type': {
-        label: 'Hair Type / Jenis Rambut',
-        description: 'Manage master references for hair type classifications.',
-        index: PersonReferenceControllerHairTypeIndex,
-        upsert: PersonReferenceControllerHairTypeUpsert,
-        delete: PersonReferenceControllerHairTypeDelete,
-    },
-    'relative-type': {
-        label: 'Relative Type / Hubungan Keluarga',
-        description: 'Manage master references for family and relative relationships.',
-        index: PersonReferenceControllerRelativeTypeIndex,
-        upsert: PersonReferenceControllerRelativeTypeUpsert,
-        delete: PersonReferenceControllerRelativeTypeDelete,
-    },
-};
-
-export default function ExampleList() {
-    const [activeRefType, setActiveRefType] = createSignal<ReferenceType>('gender');
-    const [items, setItems] = createSignal<ModelCommonReference[]>([]);
+export default function PersonReferenceRelativeTypePage() {
+    const [items, setItems] = createSignal<PersonReferenceRelativeType[]>([]);
     const [isLoading, setIsLoading] = createSignal(true);
     const [currentPage, setCurrentPage] = createSignal(1);
     const [itemsPerPage, setItemsPerPage] = createSignal(10);
@@ -202,7 +23,6 @@ export default function ExampleList() {
     let createDialogRef!: HTMLDialogElement;
     let editDialogRef!: HTMLDialogElement;
     let deleteDialogRef!: HTMLDialogElement;
-    let customSelectRef: HTMLSelectElement | undefined;
 
     // Form state for Create & Edit
     const [formData, setFormData] = createSignal<TypeInputEntityReferenceForm>({
@@ -215,25 +35,36 @@ export default function ExampleList() {
     const [isSubmitting, setIsSubmitting] = createSignal(false);
 
     // Selected item for Delete
-    const [selectedItem, setSelectedItem] = createSignal<ModelCommonReference | null>(null);
-
-    const currentService = () => referenceServices[activeRefType()];
+    const [selectedItem, setSelectedItem] = createSignal<PersonReferenceRelativeType | null>(null);
 
     const fetchData = async () => {
         setIsLoading(true);
         try {
-            const service = currentService();
-            const response = await service.index({
+            const [field, dir] = sortParam().split('-');
+            const response = await PersonReferenceControllerRelativeTypeIndex({
                 page: currentPage(),
                 per_page: itemsPerPage(),
                 search: searchQuery(),
-                sort_by: sortParam().split('-')[0],
-                sort_dir: sortParam().split('-')[1] || 'asc',
+                sort_by: field,
+                sort_dir: dir || 'asc',
             });
 
             if (response && response.data) {
-                setItems(response.data);
-                setTotalData(response.pagination.total_data || response.data.length);
+                let data = response.data as unknown as PersonReferenceRelativeType[];
+                const order = dir === 'desc' ? -1 : 1;
+                data = [...data].sort((a, b) => {
+                    if (field === 'code') {
+                        return (Number(a.code) - Number(b.code)) * order;
+                    }
+                    const aVal = String(a.name || '').toLowerCase();
+                    const bVal = String(b.name || '').toLowerCase();
+                    if (aVal < bVal) return -1 * order;
+                    if (aVal > bVal) return 1 * order;
+                    return 0;
+                });
+
+                setItems(data);
+                setTotalData(response.pagination.total_data || data.length);
                 setTotalPages(response.pagination.total_page || 1);
             } else {
                 setItems([]);
@@ -241,16 +72,14 @@ export default function ExampleList() {
                 setTotalPages(1);
             }
         } catch (error) {
-            console.error('Error loading reference data:', error);
-            toast.danger('Failed to load data from server.');
+            console.error('Error loading relative type data:', error);
+            toast.danger('Failed to load relative type data from server.');
         } finally {
             setIsLoading(false);
         }
     };
 
     createEffect(() => {
-        // Track dependencies
-        activeRefType();
         currentPage();
         itemsPerPage();
         searchQuery();
@@ -258,15 +87,6 @@ export default function ExampleList() {
         fetchData();
     });
 
-    onMount(() => {
-        if (customSelectRef) {
-            new SlimSelect({
-                select: customSelectRef,
-            });
-        }
-    });
-
-    // Handle Search
     let searchTimeout: any;
     const handleSearch = (e: Event) => {
         const val = (e.target as HTMLInputElement).value;
@@ -283,14 +103,6 @@ export default function ExampleList() {
         setCurrentPage(1);
     };
 
-    const handleCategoryChange = (e: Event) => {
-        const value = (e.target as HTMLSelectElement).value as ReferenceType;
-        setActiveRefType(value);
-        setCurrentPage(1);
-        setSearchQuery('');
-    };
-
-    // Modal Triggers
     const openCreateModal = () => {
         setFormData({
             id: null,
@@ -306,12 +118,12 @@ export default function ExampleList() {
         createDialogRef.close();
     };
 
-    const openEditModal = (item: ModelCommonReference) => {
+    const openEditModal = (item: PersonReferenceRelativeType) => {
         setFormData({
             id: item.id,
-            code: item.code,
-            alphabet_code: item.alphabet_code || '',
-            name: item.name,
+            code: item.code ?? '',
+            alphabet_code: item.alphabet_code || item.alphabetic_code || '',
+            name: item.name ?? '',
         });
         setFormErrors({});
         editDialogRef.showModal();
@@ -321,7 +133,7 @@ export default function ExampleList() {
         editDialogRef.close();
     };
 
-    const openDeleteModal = (item: ModelCommonReference) => {
+    const openDeleteModal = (item: PersonReferenceRelativeType) => {
         setSelectedItem(item);
         deleteDialogRef.showModal();
     };
@@ -331,7 +143,6 @@ export default function ExampleList() {
         setSelectedItem(null);
     };
 
-    // Validation
     const validateForm = (): boolean => {
         const errors: Record<string, string> = {};
         const currentForm = formData();
@@ -343,51 +154,47 @@ export default function ExampleList() {
         }
 
         if (!currentForm.name || currentForm.name.trim() === '') {
-            errors.name = 'Name is required.';
+            errors.name = 'Relative type name is required.';
         }
 
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
     };
 
-    // Submit Create
     const handleCreateSubmit = async (e: Event) => {
         e.preventDefault();
         if (!validateForm()) return;
 
         setIsSubmitting(true);
         try {
-            const service = currentService();
-            const res = await service.upsert(formData());
+            const res = await PersonReferenceControllerRelativeTypeUpsert(formData());
             if (!res.is_error) {
-                toast.success(res.message || 'Reference created successfully!', 5000);
+                toast.success(res.message || 'Relative type reference created successfully!', 5000);
                 closeCreateModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to create reference.', 5000);
+                toast.danger(res.message || 'Failed to create relative type reference.', 5000);
             }
         } catch (error: any) {
-            toast.danger(error.message || 'Error occurred while saving.', 5000);
+            toast.danger(error.message || 'Error occurred while creating.', 5000);
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    // Submit Edit
     const handleEditSubmit = async (e: Event) => {
         e.preventDefault();
         if (!validateForm()) return;
 
         setIsSubmitting(true);
         try {
-            const service = currentService();
-            const res = await service.upsert(formData());
+            const res = await PersonReferenceControllerRelativeTypeUpsert(formData());
             if (!res.is_error) {
-                toast.success(res.message || 'Reference updated successfully!', 5000);
+                toast.success(res.message || 'Relative type reference updated successfully!', 5000);
                 closeEditModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to update reference.', 5000);
+                toast.danger(res.message || 'Failed to update relative type reference.', 5000);
             }
         } catch (error: any) {
             toast.danger(error.message || 'Error occurred while updating.', 5000);
@@ -396,21 +203,19 @@ export default function ExampleList() {
         }
     };
 
-    // Submit Delete
     const handleDeleteSubmit = async () => {
         const item = selectedItem();
         if (!item || !item.id) return;
 
         setIsSubmitting(true);
         try {
-            const service = currentService();
-            const res = await service.delete({ id: item.id });
+            const res = await PersonReferenceControllerRelativeTypeDelete({ id: item.id });
             if (!res.is_error) {
-                toast.success(res.message || 'Reference deleted successfully!', 5000);
+                toast.success(res.message || 'Relative type reference deleted successfully!', 5000);
                 closeDeleteModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to delete reference.', 5000);
+                toast.danger(res.message || 'Failed to delete relative type reference.', 5000);
             }
         } catch (error: any) {
             toast.danger(error.message || 'Error occurred while deleting.', 5000);
@@ -430,10 +235,10 @@ export default function ExampleList() {
             <div class="sm:flex sm:items-center sm:justify-between mb-4 px-3 pt-4">
                 <div>
                     <h1 class="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white tracking-tight">
-                        {currentService().label}
+                        Relative Type / Hubungan Keluarga
                     </h1>
                     <p class="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-                        {currentService().description}
+                        Manage master reference categories for relative relationships (Ayah, Ibu, Anak, Suami, Istri, etc.).
                     </p>
                 </div>
                 <div class="mt-4 sm:mt-0 flex items-center gap-2 justify-end">
@@ -441,48 +246,20 @@ export default function ExampleList() {
                         type="button"
                         onClick={openCreateModal}
                         class="inline-flex items-center gap-x-2 px-3.5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-hidden focus:ring-2 focus:ring-blue-500 rounded-none shadow-xs transition-colors cursor-pointer"
-                        id="btn-create-reference"
+                        id="btn-add-relative-type"
                     >
                         <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M5 12h14" />
                             <path d="M12 5v14" />
                         </svg>
-                        <span>Add New</span>
+                        <span>Add Relative Type</span>
                     </button>
                 </div>
             </div>
 
-            {/* Reference Type Switcher & Filter Controls */}
+            {/* Search & Filter Controls */}
             <div class="px-3 mb-4 flex flex-col md:flex-row items-center gap-3 w-full">
-                {/* Category Selector */}
-                <div class="w-full md:w-1/3">
-                    <label class="block text-xs font-semibold uppercase text-neutral-500 dark:text-neutral-400 mb-1">
-                        Select Reference Entity
-                    </label>
-                    <select
-                        class="block w-full p-2 text-sm font-medium text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
-                        value={activeRefType()}
-                        onChange={handleCategoryChange}
-                        id="select-reference-category"
-                    >
-                        <option value="gender">Gender (Jenis Kelamin)</option>
-                        <option value="religion">Religion (Agama)</option>
-                        <option value="marital-status">Marital Status (Status Perkawinan)</option>
-                        <option value="occupation">Occupation (Pekerjaan)</option>
-                        <option value="identification-type">Identification Type (Jenis Identitas)</option>
-                        <option value="income">Income (Penghasilan)</option>
-                        <option value="age-classification">Age Classification (Klasifikasi Usia)</option>
-                        <option value="profession">Profession (Profesi)</option>
-                        <option value="blood-type">Blood Type (Golongan Darah)</option>
-                        <option value="eye-color">Eye Color (Warna Mata)</option>
-                        <option value="hair-color">Hair Color (Warna Rambut)</option>
-                        <option value="hair-type">Hair Type (Jenis Rambut)</option>
-                        <option value="relative-type">Relative Type (Hubungan Keluarga)</option>
-                    </select>
-                </div>
-
-                {/* Search Bar */}
-                <div class="w-full md:w-1/3">
+                <div class="w-full md:w-2/3">
                     <label class="block text-xs font-semibold uppercase text-neutral-500 dark:text-neutral-400 mb-1">
                         Search Filter
                     </label>
@@ -495,14 +272,13 @@ export default function ExampleList() {
                         <input
                             type="text"
                             class="block w-full p-2 pl-10 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:placeholder-neutral-400 dark:text-white transition-colors"
-                            placeholder="Filter by name or keyword..."
+                            placeholder="Search by relative type (e.g. Ayah, Ibu, Anak, Wali)..."
                             onInput={handleSearch}
-                            id="input-search-reference"
+                            id="input-search-relative-type"
                         />
                     </div>
                 </div>
 
-                {/* Sort & Pagination Limit Controls */}
                 <div class="w-full md:w-1/3 flex gap-2">
                     <div class="w-1/2">
                         <label class="block text-xs font-semibold uppercase text-neutral-500 dark:text-neutral-400 mb-1">
@@ -512,7 +288,7 @@ export default function ExampleList() {
                             class="block w-full p-2 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                             value={sortParam()}
                             onChange={(e) => setSortParam((e.target as HTMLSelectElement).value)}
-                            id="select-sort"
+                            id="select-sort-relative-type"
                         >
                             <option value="code-asc">Code (Ascending)</option>
                             <option value="code-desc">Code (Descending)</option>
@@ -528,7 +304,7 @@ export default function ExampleList() {
                             class="block w-full p-2 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                             value={itemsPerPage()}
                             onChange={handleItemsPerPageChange}
-                            id="select-per-page"
+                            id="select-per-page-relative-type"
                         >
                             <option value={10}>10</option>
                             <option value={25}>25</option>
@@ -537,15 +313,6 @@ export default function ExampleList() {
                         </select>
                     </div>
                 </div>
-            </div>
-
-            {/* Toast Demonstration Bar */}
-            <div class="px-3 mb-4 flex gap-2 flex-wrap items-center">
-                <span class="text-xs font-medium text-neutral-500 dark:text-neutral-400">Toast Previews:</span>
-                <button type="button" onClick={() => toast.info('System connected to backend at port 5800.', 4000)} class="px-2.5 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-none transition-colors">Info</button>
-                <button type="button" onClick={() => toast.success('Operation succeeded.', 4000)} class="px-2.5 py-1 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-none transition-colors">Success</button>
-                <button type="button" onClick={() => toast.warning('Reference codes should be unique.', 4000)} class="px-2.5 py-1 text-xs font-medium text-white bg-yellow-600 hover:bg-yellow-700 rounded-none transition-colors">Warning</button>
-                <button type="button" onClick={() => toast.danger('Error connecting to server.', 4000)} class="px-2.5 py-1 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-none transition-colors">Danger</button>
             </div>
 
             {/* Content Table Container */}
@@ -557,9 +324,9 @@ export default function ExampleList() {
                             <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
                                 <tr>
                                     <th scope="col" class="px-6 py-3.5 font-semibold tracking-wider w-24">Code</th>
-                                    <th scope="col" class="px-6 py-3.5 font-semibold tracking-wider w-32">Alphabet Code</th>
-                                    <th scope="col" class="px-6 py-3.5 font-semibold tracking-wider">Name / Label</th>
-                                    <th scope="col" class="px-6 py-3.5 font-semibold tracking-wider">Created / Synced</th>
+                                    <th scope="col" class="px-6 py-3.5 font-semibold tracking-wider w-36">Alphabet Code</th>
+                                    <th scope="col" class="px-6 py-3.5 font-semibold tracking-wider">Relative Type Name</th>
+                                    <th scope="col" class="px-6 py-3.5 font-semibold tracking-wider">Created At</th>
                                     <th scope="col" class="px-6 py-3.5 font-semibold tracking-wider text-right">Actions</th>
                                 </tr>
                             </thead>
@@ -567,8 +334,8 @@ export default function ExampleList() {
                                 <Show
                                     when={!isLoading()}
                                     fallback={
-                                        <For each={Array.from({ length: 5 })}>
-                                            {() => (
+                                        <For each={Array.from({ length: 3 })}>
+                                             {() => (
                                                 <tr class="animate-pulse hover:bg-neutral-50 dark:hover:bg-neutral-800/50">
                                                     <td class="px-6 py-4"><div class="h-5 w-12 bg-neutral-200 dark:bg-neutral-700"></div></td>
                                                     <td class="px-6 py-4"><div class="h-5 w-16 bg-neutral-200 dark:bg-neutral-700"></div></td>
@@ -592,8 +359,8 @@ export default function ExampleList() {
                                                         <svg class="size-8 text-neutral-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                                                         </svg>
-                                                        <p class="text-sm font-medium">No records found</p>
-                                                        <p class="text-xs">Click "Add New" to create the first record in this reference category.</p>
+                                                        <p class="text-sm font-medium">No relative type records found</p>
+                                                        <p class="text-xs">Click "Add Relative Type" to add a new record.</p>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -609,7 +376,7 @@ export default function ExampleList() {
                                                     </td>
                                                     <td class="px-6 py-4">
                                                         <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                                                            {item.alphabet_code || '-'}
+                                                            {item.alphabet_code || item.alphabetic_code || '-'}
                                                         </span>
                                                     </td>
                                                     <td class="px-6 py-4">
@@ -665,7 +432,7 @@ export default function ExampleList() {
                     <Show
                         when={!isLoading()}
                         fallback={
-                            <For each={Array.from({ length: 3 })}>
+                            <For each={Array.from({ length: 2 })}>
                                 {() => (
                                     <div class="p-4 space-y-3 animate-pulse">
                                         <div class="h-4 w-1/3 bg-neutral-200 dark:bg-neutral-700"></div>
@@ -683,7 +450,7 @@ export default function ExampleList() {
                             when={items().length > 0}
                             fallback={
                                 <div class="p-8 text-center text-neutral-500 dark:text-neutral-400">
-                                    No records found.
+                                    No relative type records found.
                                 </div>
                             }
                         >
@@ -695,7 +462,7 @@ export default function ExampleList() {
                                                 Code: {item.code}
                                             </span>
                                             <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                                                Alphabet: {item.alphabet_code || '-'}
+                                                Alphabet: {item.alphabet_code || item.alphabetic_code || '-'}
                                             </span>
                                         </div>
                                         <div>
@@ -710,14 +477,14 @@ export default function ExampleList() {
                                                 <button
                                                     type="button"
                                                     onClick={() => openEditModal(item)}
-                                                    class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 dark:text-blue-400 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800"
+                                                    class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 dark:text-blue-400 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 cursor-pointer"
                                                 >
                                                     Edit
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => openDeleteModal(item)}
-                                                    class="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 dark:text-red-400 dark:bg-red-950/50 border border-red-200 dark:border-red-800"
+                                                    class="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 dark:text-red-400 dark:bg-red-950/50 border border-red-200 dark:border-red-800 cursor-pointer"
                                                 >
                                                     Delete
                                                 </button>
@@ -767,10 +534,6 @@ export default function ExampleList() {
                 </div>
             </div>
 
-            {/* ========================================================= */}
-            {/* HTML5 <dialog> MODALS                                     */}
-            {/* ========================================================= */}
-
             {/* 1. CREATE MODAL */}
             <dialog
                 ref={createDialogRef}
@@ -783,16 +546,16 @@ export default function ExampleList() {
                     <div class="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-700">
                         <div>
                             <h2 class="text-lg font-bold text-neutral-900 dark:text-white">
-                                Add {currentService().label}
+                                Add Relative Type
                             </h2>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                Enter details for the new reference record.
+                                Create a new relative type reference record.
                             </p>
                         </div>
                         <button
                             type="button"
                             onClick={closeCreateModal}
-                            class="size-8 inline-flex items-center justify-center text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                            class="size-8 inline-flex items-center justify-center text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
                             aria-label="Close dialog"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -827,7 +590,7 @@ export default function ExampleList() {
                             <input
                                 type="text"
                                 class="block w-full p-2.5 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
-                                placeholder="e.g. L, P, A, B..."
+                                placeholder="e.g. AYH, IBU, ANK..."
                                 value={formData().alphabet_code || ''}
                                 onInput={(e) => setFormData({ ...formData(), alphabet_code: e.currentTarget.value })}
                             />
@@ -835,14 +598,14 @@ export default function ExampleList() {
 
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Name / Description <span class="text-red-500">*</span>
+                                Relative Type Name <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
                                 class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
                                     formErrors().name ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
                                 }`}
-                                placeholder="e.g. Laki-Laki, Islam, etc."
+                                placeholder="e.g. Ayah, Ibu, Anak..."
                                 value={formData().name}
                                 onInput={(e) => setFormData({ ...formData(), name: e.currentTarget.value })}
                             />
@@ -851,20 +614,21 @@ export default function ExampleList() {
                             )}
                         </div>
 
-                        <div class="flex items-center justify-end gap-3 pt-4 border-t border-neutral-200 dark:border-neutral-700">
+                        <div class="flex justify-end gap-3 pt-4 border-t border-neutral-200 dark:border-neutral-700">
                             <button
                                 type="button"
                                 onClick={closeCreateModal}
-                                class="px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-none transition-colors"
+                                class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 hover:bg-neutral-50 dark:bg-neutral-800 dark:text-neutral-300 dark:border-neutral-600 dark:hover:bg-neutral-700 rounded-none transition-colors cursor-pointer"
+                                disabled={isSubmitting()}
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
+                                class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-none transition-colors disabled:opacity-50 cursor-pointer"
                                 disabled={isSubmitting()}
-                                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 rounded-none shadow-xs transition-colors disabled:opacity-50"
                             >
-                                {isSubmitting() ? 'Saving...' : 'Save Record'}
+                                {isSubmitting() ? 'Saving...' : 'Save Relative Type'}
                             </button>
                         </div>
                     </form>
@@ -883,16 +647,16 @@ export default function ExampleList() {
                     <div class="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-700">
                         <div>
                             <h2 class="text-lg font-bold text-neutral-900 dark:text-white">
-                                Edit {currentService().label}
+                                Edit Relative Type
                             </h2>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                Modify the reference record fields.
+                                Modify relative type reference attributes.
                             </p>
                         </div>
                         <button
                             type="button"
                             onClick={closeEditModal}
-                            class="size-8 inline-flex items-center justify-center text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                            class="size-8 inline-flex items-center justify-center text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
                             aria-label="Close dialog"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -902,18 +666,6 @@ export default function ExampleList() {
                     </div>
 
                     <form onSubmit={handleEditSubmit} class="space-y-4 pt-4">
-                        <div>
-                            <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Record ID
-                            </label>
-                            <input
-                                type="text"
-                                disabled
-                                class="block w-full p-2.5 text-xs font-mono text-neutral-500 border border-neutral-200 rounded-none bg-neutral-100 dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-400 cursor-not-allowed"
-                                value={formData().id || ''}
-                            />
-                        </div>
-
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                                 Code <span class="text-red-500">*</span>
@@ -945,7 +697,7 @@ export default function ExampleList() {
 
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Name / Description <span class="text-red-500">*</span>
+                                Relative Type Name <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
@@ -960,69 +712,68 @@ export default function ExampleList() {
                             )}
                         </div>
 
-                        <div class="flex items-center justify-end gap-3 pt-4 border-t border-neutral-200 dark:border-neutral-700">
+                        <div class="flex justify-end gap-3 pt-4 border-t border-neutral-200 dark:border-neutral-700">
                             <button
                                 type="button"
                                 onClick={closeEditModal}
-                                class="px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-none transition-colors"
+                                class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 hover:bg-neutral-50 dark:bg-neutral-800 dark:text-neutral-300 dark:border-neutral-600 dark:hover:bg-neutral-700 rounded-none transition-colors cursor-pointer"
+                                disabled={isSubmitting()}
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
+                                class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-none transition-colors disabled:opacity-50 cursor-pointer"
                                 disabled={isSubmitting()}
-                                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 rounded-none shadow-xs transition-colors disabled:opacity-50"
                             >
-                                {isSubmitting() ? 'Updating...' : 'Update Changes'}
+                                {isSubmitting() ? 'Updating...' : 'Update Relative Type'}
                             </button>
                         </div>
                     </form>
                 </div>
             </dialog>
 
-            {/* 3. CONFIRM DELETE MODAL */}
+            {/* 3. DELETE CONFIRMATION MODAL */}
             <dialog
                 ref={deleteDialogRef}
-                class="fixed inset-0 m-auto p-0 rounded-none bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-2xl text-neutral-900 dark:text-neutral-100 max-w-md w-full max-h-[90vh] overflow-y-auto"
+                class="fixed inset-0 m-auto p-0 rounded-none bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-2xl text-neutral-900 dark:text-neutral-100 max-w-md w-full"
                 onClick={(e) => {
                     if (e.target === e.currentTarget) closeDeleteModal();
                 }}
             >
                 <div class="p-6">
-                    <div class="flex items-start gap-4">
-                        <div class="size-10 rounded-full bg-red-100 dark:bg-red-950 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0">
-                            <svg class="size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="size-10 rounded-full bg-red-100 dark:bg-red-950 flex items-center justify-center text-red-600 dark:text-red-400 shrink-0">
+                            <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
                         </div>
-                        <div class="flex-1">
-                            <h2 class="text-lg font-bold text-neutral-900 dark:text-white">
-                                Confirm Deletion
-                            </h2>
-                            <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                                Are you sure you want to delete <strong class="text-neutral-900 dark:text-white">{selectedItem()?.name}</strong> (Code: {selectedItem()?.code})?
-                            </p>
-                            <p class="mt-1 text-xs text-red-600 dark:text-red-400 font-medium">
-                                This action cannot be undone.
-                            </p>
+                        <div>
+                            <h2 class="text-lg font-bold text-neutral-900 dark:text-white">Delete Relative Type</h2>
+                            <p class="text-xs text-neutral-500 dark:text-neutral-400">This action cannot be undone.</p>
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-end gap-3 pt-6 mt-4 border-t border-neutral-200 dark:border-neutral-700">
+                    <p class="text-sm text-neutral-600 dark:text-neutral-400 mb-6">
+                        Are you sure you want to delete the relative type <strong class="text-neutral-900 dark:text-white">"{selectedItem()?.name}"</strong>?
+                    </p>
+
+                    <div class="flex justify-end gap-3">
                         <button
                             type="button"
                             onClick={closeDeleteModal}
-                            class="px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-none transition-colors"
+                            class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 hover:bg-neutral-50 dark:bg-neutral-800 dark:text-neutral-300 dark:border-neutral-600 dark:hover:bg-neutral-700 rounded-none transition-colors cursor-pointer"
+                            disabled={isSubmitting()}
                         >
                             Cancel
                         </button>
                         <button
                             type="button"
-                            disabled={isSubmitting()}
                             onClick={handleDeleteSubmit}
-                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:ring-2 focus:ring-red-500 rounded-none shadow-xs transition-colors disabled:opacity-50"
+                            class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-none transition-colors disabled:opacity-50 cursor-pointer"
+                            disabled={isSubmitting()}
                         >
-                            {isSubmitting() ? 'Deleting...' : 'Yes, Delete'}
+                            {isSubmitting() ? 'Deleting...' : 'Delete'}
                         </button>
                     </div>
                 </div>
