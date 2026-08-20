@@ -6,6 +6,7 @@ pub mod dtos;
 pub mod models;
 pub mod config;
 pub mod jobs;
+pub mod library;
 pub mod middleware;
 pub mod tasks;
 pub mod services;

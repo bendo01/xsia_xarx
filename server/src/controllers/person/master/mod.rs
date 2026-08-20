@@ -1,4 +1,5 @@
 use salvo::prelude::*;
+use crate::middleware::rbac::NamedRouterExt;
 
 pub mod biodata;
 pub mod individual;
@@ -7,6 +8,7 @@ pub fn router() -> Router {
     Router::with_path("master")
         .push(
             Router::with_path("biodata")
+                .named("person.master.biodata")
                 .get(biodata::list_biodata)
                 .post(biodata::create_biodata)
                 .push(
@@ -18,6 +20,7 @@ pub fn router() -> Router {
         )
         .push(
             Router::with_path("individual")
+                .named("person.master.individual")
                 .get(individual::list_individual)
                 .post(individual::create_individual)
                 .push(

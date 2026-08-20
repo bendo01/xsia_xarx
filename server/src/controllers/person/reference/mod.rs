@@ -1,4 +1,5 @@
 use salvo::prelude::*;
+use crate::middleware::rbac::NamedRouterExt;
 
 pub mod age_classification;
 pub mod blood_type;
@@ -18,6 +19,7 @@ pub fn router() -> Router {
     Router::with_path("reference")
         .push(
             Router::with_path("age-classification")
+                .named("person.reference.age_classification")
                 .get(age_classification::list_age_classification)
                 .post(age_classification::create_age_classification)
                 .push(
@@ -29,6 +31,7 @@ pub fn router() -> Router {
         )
         .push(
             Router::with_path("blood-type")
+                .named("person.reference.blood_type")
                 .get(blood_type::list_blood_type)
                 .post(blood_type::create_blood_type)
                 .push(
@@ -40,6 +43,7 @@ pub fn router() -> Router {
         )
         .push(
             Router::with_path("eye-color")
+                .named("person.reference.eye_color")
                 .get(eye_color::list_eye_color)
                 .post(eye_color::create_eye_color)
                 .push(
@@ -51,6 +55,7 @@ pub fn router() -> Router {
         )
         .push(
             Router::with_path("gender")
+                .named("person.reference.gender")
                 .get(gender::list_gender)
                 .post(gender::create_gender)
                 .push(
@@ -62,6 +67,7 @@ pub fn router() -> Router {
         )
         .push(
             Router::with_path("hair-color")
+                .named("person.reference.hair_color")
                 .get(hair_color::list_hair_color)
                 .post(hair_color::create_hair_color)
                 .push(
@@ -73,6 +79,7 @@ pub fn router() -> Router {
         )
         .push(
             Router::with_path("hair-type")
+                .named("person.reference.hair_type")
                 .get(hair_type::list_hair_type)
                 .post(hair_type::create_hair_type)
                 .push(
@@ -84,6 +91,7 @@ pub fn router() -> Router {
         )
         .push(
             Router::with_path("identification-type")
+                .named("person.reference.identification_type")
                 .get(identification_type::list_identification_type)
                 .post(identification_type::create_identification_type)
                 .push(
@@ -95,6 +103,7 @@ pub fn router() -> Router {
         )
         .push(
             Router::with_path("income")
+                .named("person.reference.income")
                 .get(income::list_income)
                 .post(income::create_income)
                 .push(
@@ -106,6 +115,7 @@ pub fn router() -> Router {
         )
         .push(
             Router::with_path("marital-status")
+                .named("person.reference.marital_status")
                 .get(marital_status::list_marital_status)
                 .post(marital_status::create_marital_statu)
                 .push(
@@ -117,6 +127,7 @@ pub fn router() -> Router {
         )
         .push(
             Router::with_path("occupation")
+                .named("person.reference.occupation")
                 .get(occupation::list_occupation)
                 .post(occupation::create_occupation)
                 .push(
@@ -128,6 +139,7 @@ pub fn router() -> Router {
         )
         .push(
             Router::with_path("profession")
+                .named("person.reference.profession")
                 .get(profession::list_profession)
                 .post(profession::create_profession)
                 .push(
@@ -139,6 +151,7 @@ pub fn router() -> Router {
         )
         .push(
             Router::with_path("relative-type")
+                .named("person.reference.relative_type")
                 .get(relative_type::list_relative_type)
                 .post(relative_type::create_relative_type)
                 .push(
@@ -150,6 +163,7 @@ pub fn router() -> Router {
         )
         .push(
             Router::with_path("religion")
+                .named("person.reference.religion")
                 .get(religion::list_religion)
                 .post(religion::create_religion)
                 .push(
