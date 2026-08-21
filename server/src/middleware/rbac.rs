@@ -27,11 +27,46 @@ impl Handler for RouteName {
 pub trait NamedRouterExt {
     /// Attach a route name (e.g. "person.reference.gender") and RBAC protection to the Router
     fn named(self, name: &'static str) -> Self;
+
+    /// Attach a named GET handler to a new child route
+    fn get_named(self, name: &'static str, handler: impl Handler + 'static) -> Self;
+
+    /// Attach a named POST handler to a new child route
+    fn post_named(self, name: &'static str, handler: impl Handler + 'static) -> Self;
+
+    /// Attach a named PUT handler to a new child route
+    fn put_named(self, name: &'static str, handler: impl Handler + 'static) -> Self;
+
+    /// Attach a named PATCH handler to a new child route
+    fn patch_named(self, name: &'static str, handler: impl Handler + 'static) -> Self;
+
+    /// Attach a named DELETE handler to a new child route
+    fn delete_named(self, name: &'static str, handler: impl Handler + 'static) -> Self;
 }
 
 impl NamedRouterExt for Router {
     fn named(self, name: &'static str) -> Self {
         self.hoop(RouteName(name)).hoop(RbacGuard)
+    }
+
+    fn get_named(self, name: &'static str, handler: impl Handler + 'static) -> Self {
+        self.push(Router::new().named(name).get(handler))
+    }
+
+    fn post_named(self, name: &'static str, handler: impl Handler + 'static) -> Self {
+        self.push(Router::new().named(name).post(handler))
+    }
+
+    fn put_named(self, name: &'static str, handler: impl Handler + 'static) -> Self {
+        self.push(Router::new().named(name).put(handler))
+    }
+
+    fn patch_named(self, name: &'static str, handler: impl Handler + 'static) -> Self {
+        self.push(Router::new().named(name).patch(handler))
+    }
+
+    fn delete_named(self, name: &'static str, handler: impl Handler + 'static) -> Self {
+        self.push(Router::new().named(name).delete(handler))
     }
 }
 
@@ -175,6 +210,7 @@ impl Handler for RbacGuard {
                 || p.name == route_name
                 || p.name == action_permission
                 || p.name == wildcard_permission
+                || (p.name.ends_with(".*") && route_name.starts_with(&p.name[..p.name.len() - 1]))
         });
 
         if has_permission {

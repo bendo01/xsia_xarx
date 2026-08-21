@@ -1,4 +1,5 @@
 use salvo::prelude::*;
+use crate::middleware::rbac::NamedRouterExt;
 
 pub mod categories;
 pub mod conditions;
@@ -9,46 +10,46 @@ pub fn router() -> Router {
     Router::with_path("reference")
         .push(
             Router::with_path("categories")
-                .get(categories::list_categories)
-                .post(categories::create_categorie)
+                .get_named("building.reference.categories.list_categories", categories::list_categories)
+                .post_named("building.reference.categories.create_categorie", categories::create_categorie)
                 .push(
                     Router::with_path("{id}")
-                        .get(categories::get_categorie)
-                        .put(categories::update_categorie)
-                        .delete(categories::delete_categorie),
+                        .get_named("building.reference.categories.get_categorie", categories::get_categorie)
+                        .put_named("building.reference.categories.update_categorie", categories::update_categorie)
+                        .delete_named("building.reference.categories.delete_categorie", categories::delete_categorie),
                 ),
         )
         .push(
             Router::with_path("conditions")
-                .get(conditions::list_conditions)
-                .post(conditions::create_condition)
+                .get_named("building.reference.conditions.list_conditions", conditions::list_conditions)
+                .post_named("building.reference.conditions.create_condition", conditions::create_condition)
                 .push(
                     Router::with_path("{id}")
-                        .get(conditions::get_condition)
-                        .put(conditions::update_condition)
-                        .delete(conditions::delete_condition),
+                        .get_named("building.reference.conditions.get_condition", conditions::get_condition)
+                        .put_named("building.reference.conditions.update_condition", conditions::update_condition)
+                        .delete_named("building.reference.conditions.delete_condition", conditions::delete_condition),
                 ),
         )
         .push(
             Router::with_path("room-types")
-                .get(room_types::list_room_types)
-                .post(room_types::create_room_type)
+                .get_named("building.reference.room_types.list_room_types", room_types::list_room_types)
+                .post_named("building.reference.room_types.create_room_type", room_types::create_room_type)
                 .push(
                     Router::with_path("{id}")
-                        .get(room_types::get_room_type)
-                        .put(room_types::update_room_type)
-                        .delete(room_types::delete_room_type),
+                        .get_named("building.reference.room_types.get_room_type", room_types::get_room_type)
+                        .put_named("building.reference.room_types.update_room_type", room_types::update_room_type)
+                        .delete_named("building.reference.room_types.delete_room_type", room_types::delete_room_type),
                 ),
         )
         .push(
             Router::with_path("varieties")
-                .get(varieties::list_varieties)
-                .post(varieties::create_varietie)
+                .get_named("building.reference.varieties.list_varieties", varieties::list_varieties)
+                .post_named("building.reference.varieties.create_varietie", varieties::create_varietie)
                 .push(
                     Router::with_path("{id}")
-                        .get(varieties::get_varietie)
-                        .put(varieties::update_varietie)
-                        .delete(varieties::delete_varietie),
+                        .get_named("building.reference.varieties.get_varietie", varieties::get_varietie)
+                        .put_named("building.reference.varieties.update_varietie", varieties::update_varietie)
+                        .delete_named("building.reference.varieties.delete_varietie", varieties::delete_varietie),
                 ),
         )
 }

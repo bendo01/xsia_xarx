@@ -1,4 +1,5 @@
 use salvo::prelude::*;
+use crate::middleware::rbac::NamedRouterExt;
 use salvo::websocket::{Message, WebSocketUpgrade};
 use salvo::sse::{self, SseEvent};
 use futures_util::StreamExt;
@@ -113,7 +114,11 @@ pub async fn webtransport_handler(req: &mut Request, _res: &mut Response) -> Res
 
 pub fn router() -> Router {
     Router::with_path("realtime")
-        .push(Router::with_path("ws").get(ws_handler))
-        .push(Router::with_path("sse").get(sse_handler))
-        .push(Router::with_path("webtransport").post(webtransport_handler).get(webtransport_handler))
+        .push(Router::with_path("ws").get_named("realtime.ws.ws_handler", ws_handler))
+        .push(Router::with_path("sse").get_named("realtime.sse.sse_handler", sse_handler))
+        .push(
+            Router::with_path("webtransport")
+                .post_named("realtime.webtransport.webtransport_handler", webtransport_handler)
+                .get_named("realtime.webtransport.webtransport_handler", webtransport_handler),
+        )
 }

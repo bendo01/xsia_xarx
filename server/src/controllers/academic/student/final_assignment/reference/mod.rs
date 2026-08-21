@@ -1,4 +1,5 @@
 use salvo::prelude::*;
+use crate::middleware::rbac::NamedRouterExt;
 
 pub mod adviser_categories;
 pub mod approval_types;
@@ -11,68 +12,68 @@ pub fn router() -> Router {
     Router::with_path("reference")
         .push(
             Router::with_path("adviser-categories")
-                .get(adviser_categories::list_adviser_categories)
-                .post(adviser_categories::create_adviser_categorie)
+                .get_named("academic.student.final_assignment.reference.adviser_categories.list_adviser_categories", adviser_categories::list_adviser_categories)
+                .post_named("academic.student.final_assignment.reference.adviser_categories.create_adviser_categorie", adviser_categories::create_adviser_categorie)
                 .push(
                     Router::with_path("{id}")
-                        .get(adviser_categories::get_adviser_categorie)
-                        .put(adviser_categories::update_adviser_categorie)
-                        .delete(adviser_categories::delete_adviser_categorie),
+                        .get_named("academic.student.final_assignment.reference.adviser_categories.get_adviser_categorie", adviser_categories::get_adviser_categorie)
+                        .put_named("academic.student.final_assignment.reference.adviser_categories.update_adviser_categorie", adviser_categories::update_adviser_categorie)
+                        .delete_named("academic.student.final_assignment.reference.adviser_categories.delete_adviser_categorie", adviser_categories::delete_adviser_categorie),
                 ),
         )
         .push(
             Router::with_path("approval-types")
-                .get(approval_types::list_approval_types)
-                .post(approval_types::create_approval_type)
+                .get_named("academic.student.final_assignment.reference.approval_types.list_approval_types", approval_types::list_approval_types)
+                .post_named("academic.student.final_assignment.reference.approval_types.create_approval_type", approval_types::create_approval_type)
                 .push(
                     Router::with_path("{id}")
-                        .get(approval_types::get_approval_type)
-                        .put(approval_types::update_approval_type)
-                        .delete(approval_types::delete_approval_type),
+                        .get_named("academic.student.final_assignment.reference.approval_types.get_approval_type", approval_types::get_approval_type)
+                        .put_named("academic.student.final_assignment.reference.approval_types.update_approval_type", approval_types::update_approval_type)
+                        .delete_named("academic.student.final_assignment.reference.approval_types.delete_approval_type", approval_types::delete_approval_type),
                 ),
         )
         .push(
             Router::with_path("categories")
-                .get(categories::list_categories)
-                .post(categories::create_categorie)
+                .get_named("academic.student.final_assignment.reference.categories.list_categories", categories::list_categories)
+                .post_named("academic.student.final_assignment.reference.categories.create_categorie", categories::create_categorie)
                 .push(
                     Router::with_path("{id}")
-                        .get(categories::get_categorie)
-                        .put(categories::update_categorie)
-                        .delete(categories::delete_categorie),
+                        .get_named("academic.student.final_assignment.reference.categories.get_categorie", categories::get_categorie)
+                        .put_named("academic.student.final_assignment.reference.categories.update_categorie", categories::update_categorie)
+                        .delete_named("academic.student.final_assignment.reference.categories.delete_categorie", categories::delete_categorie),
                 ),
         )
         .push(
             Router::with_path("requirements")
-                .get(requirements::list_requirements)
-                .post(requirements::create_requirement)
+                .get_named("academic.student.final_assignment.reference.requirements.list_requirements", requirements::list_requirements)
+                .post_named("academic.student.final_assignment.reference.requirements.create_requirement", requirements::create_requirement)
                 .push(
                     Router::with_path("{id}")
-                        .get(requirements::get_requirement)
-                        .put(requirements::update_requirement)
-                        .delete(requirements::delete_requirement),
+                        .get_named("academic.student.final_assignment.reference.requirements.get_requirement", requirements::get_requirement)
+                        .put_named("academic.student.final_assignment.reference.requirements.update_requirement", requirements::update_requirement)
+                        .delete_named("academic.student.final_assignment.reference.requirements.delete_requirement", requirements::delete_requirement),
                 ),
         )
         .push(
             Router::with_path("stages")
-                .get(stages::list_stages)
-                .post(stages::create_stage)
+                .get_named("academic.student.final_assignment.reference.stages.list_stages", stages::list_stages)
+                .post_named("academic.student.final_assignment.reference.stages.create_stage", stages::create_stage)
                 .push(
                     Router::with_path("{id}")
-                        .get(stages::get_stage)
-                        .put(stages::update_stage)
-                        .delete(stages::delete_stage),
+                        .get_named("academic.student.final_assignment.reference.stages.get_stage", stages::get_stage)
+                        .put_named("academic.student.final_assignment.reference.stages.update_stage", stages::update_stage)
+                        .delete_named("academic.student.final_assignment.reference.stages.delete_stage", stages::delete_stage),
                 ),
         )
         .push(
             Router::with_path("varieties")
-                .get(varieties::list_varieties)
-                .post(varieties::create_varietie)
+                .get_named("academic.student.final_assignment.reference.varieties.list_varieties", varieties::list_varieties)
+                .post_named("academic.student.final_assignment.reference.varieties.create_varietie", varieties::create_varietie)
                 .push(
                     Router::with_path("{id}")
-                        .get(varieties::get_varietie)
-                        .put(varieties::update_varietie)
-                        .delete(varieties::delete_varietie),
+                        .get_named("academic.student.final_assignment.reference.varieties.get_varietie", varieties::get_varietie)
+                        .put_named("academic.student.final_assignment.reference.varieties.update_varietie", varieties::update_varietie)
+                        .delete_named("academic.student.final_assignment.reference.varieties.delete_varietie", varieties::delete_varietie),
                 ),
         )
 }

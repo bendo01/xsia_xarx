@@ -8,26 +8,24 @@ pub fn router() -> Router {
     Router::with_path("master")
         .push(
             Router::with_path("biodata")
-                .named("person.master.biodata")
-                .get(biodata::list_biodata)
-                .post(biodata::create_biodata)
+                .get_named("person.master.biodata.list_biodata", biodata::list_biodata)
+                .post_named("person.master.biodata.create_biodata", biodata::create_biodata)
                 .push(
                     Router::with_path("{id}")
-                        .get(biodata::get_biodata)
-                        .put(biodata::update_biodata)
-                        .delete(biodata::delete_biodata),
+                        .get_named("person.master.biodata.get_biodata", biodata::get_biodata)
+                        .put_named("person.master.biodata.update_biodata", biodata::update_biodata)
+                        .delete_named("person.master.biodata.delete_biodata", biodata::delete_biodata),
                 ),
         )
         .push(
             Router::with_path("individual")
-                .named("person.master.individual")
-                .get(individual::list_individual)
-                .post(individual::create_individual)
+                .get_named("person.master.individual.list_individual", individual::list_individual)
+                .post_named("person.master.individual.create_individual", individual::create_individual)
                 .push(
                     Router::with_path("{id}")
-                        .get(individual::get_individual)
-                        .put(individual::update_individual)
-                        .delete(individual::delete_individual),
+                        .get_named("person.master.individual.get_individual", individual::get_individual)
+                        .put_named("person.master.individual.update_individual", individual::update_individual)
+                        .delete_named("person.master.individual.delete_individual", individual::delete_individual),
                 ),
         )
 }

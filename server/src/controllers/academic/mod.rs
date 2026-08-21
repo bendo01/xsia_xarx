@@ -1,4 +1,5 @@
 use salvo::prelude::*;
+use crate::middleware::rbac::NamedRouterExt;
 pub mod campaign;
 pub mod candidate;
 pub mod course;
