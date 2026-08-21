@@ -2,6 +2,7 @@ use salvo::async_trait;
 use sea_orm::DatabaseConnection;
 
 pub mod example;
+pub mod route_list;
 pub mod sync_permissions;
 
 #[async_trait]
@@ -20,6 +21,7 @@ pub fn get_tasks() -> Vec<Box<dyn Task>> {
     vec![
         Box::new(example::ExampleTask),
         Box::new(sync_permissions::SyncPermissionsTask),
+        Box::new(route_list::RouteListTask),
     ]
 }
 

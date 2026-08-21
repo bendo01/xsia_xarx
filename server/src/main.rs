@@ -57,25 +57,38 @@ enum Commands {
         #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
     },
+    /// List all registered routes, methods, handlers, and route names
+    #[command(name = "route:list")]
+    RouteList {
+        /// Optional filter keyword
+        filter: Option<String>,
+    },
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
 
-    tracing_subscriber::fmt::init();
-
-    let db = db::connect_db().await?;
-    println!("Database connection successful");
-
     if let Some(command) = cli.command {
         match command {
+            Commands::RouteList { filter } => {
+                let args = filter.map(|f| vec![f]).unwrap_or_default();
+                xsia_xarx::tasks::route_list::print_route_list(&args);
+                return Ok(());
+            }
             Commands::Task { name, args } => {
+                let db = db::connect_db().await?;
+                println!("Database connection successful");
                 xsia_xarx::tasks::run_task(name, &args, &db).await?;
                 return Ok(());
             }
         }
     }
+
+    tracing_subscriber::fmt::init();
+
+    let db = db::connect_db().await?;
+    println!("Database connection successful");
 
     let redis_config = RedisConfig::from_env();
     let redis_url = redis_config.url;

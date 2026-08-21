@@ -1,5 +1,4 @@
 use salvo::prelude::*;
-use crate::middleware::rbac::NamedRouterExt;
 pub mod adviser;
 pub mod campaign;
 pub mod final_assignment;
