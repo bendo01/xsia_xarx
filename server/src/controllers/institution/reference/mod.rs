@@ -13,6 +13,10 @@ pub fn router() -> Router {
                 .get_named("institution.reference.categories.list_categories", categories::list_categories)
                 .post_named("institution.reference.categories.create_categorie", categories::create_categorie)
                 .push(
+                    Router::with_path("options")
+                        .post_named("institution.reference.categories.options_categories", categories::options_categories),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("institution.reference.categories.get_categorie", categories::get_categorie)
                         .put_named("institution.reference.categories.update_categorie", categories::update_categorie)
@@ -23,6 +27,10 @@ pub fn router() -> Router {
             Router::with_path("position-type")
                 .get_named("institution.reference.position_type.list_position_type", position_type::list_position_type)
                 .post_named("institution.reference.position_type.create_position_type", position_type::create_position_type)
+                .push(
+                    Router::with_path("options")
+                        .post_named("institution.reference.position_type.options_position_type", position_type::options_position_type),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("institution.reference.position_type.get_position_type", position_type::get_position_type)
@@ -35,6 +43,10 @@ pub fn router() -> Router {
                 .get_named("institution.reference.unit_types.list_unit_types", unit_types::list_unit_types)
                 .post_named("institution.reference.unit_types.create_unit_type", unit_types::create_unit_type)
                 .push(
+                    Router::with_path("options")
+                        .post_named("institution.reference.unit_types.options_unit_types", unit_types::options_unit_types),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("institution.reference.unit_types.get_unit_type", unit_types::get_unit_type)
                         .put_named("institution.reference.unit_types.update_unit_type", unit_types::update_unit_type)
@@ -45,6 +57,10 @@ pub fn router() -> Router {
             Router::with_path("varieties")
                 .get_named("institution.reference.varieties.list_varieties", varieties::list_varieties)
                 .post_named("institution.reference.varieties.create_varietie", varieties::create_varietie)
+                .push(
+                    Router::with_path("options")
+                        .post_named("institution.reference.varieties.options_varieties", varieties::options_varieties),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("institution.reference.varieties.get_varietie", varieties::get_varietie)

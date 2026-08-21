@@ -13,6 +13,10 @@ pub fn router() -> Router {
                 .get_named("contact.reference.electronic_mail_types.list_electronic_mail_types", electronic_mail_types::list_electronic_mail_types)
                 .post_named("contact.reference.electronic_mail_types.create_electronic_mail_type", electronic_mail_types::create_electronic_mail_type)
                 .push(
+                    Router::with_path("options")
+                        .post_named("contact.reference.electronic_mail_types.options_electronic_mail_types", electronic_mail_types::options_electronic_mail_types),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("contact.reference.electronic_mail_types.get_electronic_mail_type", electronic_mail_types::get_electronic_mail_type)
                         .put_named("contact.reference.electronic_mail_types.update_electronic_mail_type", electronic_mail_types::update_electronic_mail_type)
@@ -23,6 +27,10 @@ pub fn router() -> Router {
             Router::with_path("phone-types")
                 .get_named("contact.reference.phone_types.list_phone_types", phone_types::list_phone_types)
                 .post_named("contact.reference.phone_types.create_phone_type", phone_types::create_phone_type)
+                .push(
+                    Router::with_path("options")
+                        .post_named("contact.reference.phone_types.options_phone_types", phone_types::options_phone_types),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("contact.reference.phone_types.get_phone_type", phone_types::get_phone_type)
@@ -35,6 +43,10 @@ pub fn router() -> Router {
                 .get_named("contact.reference.residence_types.list_residence_types", residence_types::list_residence_types)
                 .post_named("contact.reference.residence_types.create_residence_type", residence_types::create_residence_type)
                 .push(
+                    Router::with_path("options")
+                        .post_named("contact.reference.residence_types.options_residence_types", residence_types::options_residence_types),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("contact.reference.residence_types.get_residence_type", residence_types::get_residence_type)
                         .put_named("contact.reference.residence_types.update_residence_type", residence_types::update_residence_type)
@@ -45,6 +57,10 @@ pub fn router() -> Router {
             Router::with_path("website-types")
                 .get_named("contact.reference.website_types.list_website_types", website_types::list_website_types)
                 .post_named("contact.reference.website_types.create_website_type", website_types::create_website_type)
+                .push(
+                    Router::with_path("options")
+                        .post_named("contact.reference.website_types.options_website_types", website_types::options_website_types),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("contact.reference.website_types.get_website_type", website_types::get_website_type)

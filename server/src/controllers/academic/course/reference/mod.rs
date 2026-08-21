@@ -17,6 +17,10 @@ pub fn router() -> Router {
                 .get_named("academic.course.reference.competences.list_competences", competences::list_competences)
                 .post_named("academic.course.reference.competences.create_competence", competences::create_competence)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.course.reference.competences.options_competences", competences::options_competences),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.course.reference.competences.get_competence", competences::get_competence)
                         .put_named("academic.course.reference.competences.update_competence", competences::update_competence)
@@ -27,6 +31,10 @@ pub fn router() -> Router {
             Router::with_path("course-evaluation-bases")
                 .get_named("academic.course.reference.course_evaluation_bases.list_course_evaluation_bases", course_evaluation_bases::list_course_evaluation_bases)
                 .post_named("academic.course.reference.course_evaluation_bases.create_course_evaluation_base", course_evaluation_bases::create_course_evaluation_base)
+                .push(
+                    Router::with_path("options")
+                        .post_named("academic.course.reference.course_evaluation_bases.options_course_evaluation_bases", course_evaluation_bases::options_course_evaluation_bases),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("academic.course.reference.course_evaluation_bases.get_course_evaluation_base", course_evaluation_bases::get_course_evaluation_base)
@@ -39,6 +47,10 @@ pub fn router() -> Router {
                 .get_named("academic.course.reference.curriculum_types.list_curriculum_types", curriculum_types::list_curriculum_types)
                 .post_named("academic.course.reference.curriculum_types.create_curriculum_type", curriculum_types::create_curriculum_type)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.course.reference.curriculum_types.options_curriculum_types", curriculum_types::options_curriculum_types),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.course.reference.curriculum_types.get_curriculum_type", curriculum_types::get_curriculum_type)
                         .put_named("academic.course.reference.curriculum_types.update_curriculum_type", curriculum_types::update_curriculum_type)
@@ -49,6 +61,10 @@ pub fn router() -> Router {
             Router::with_path("encounter-types")
                 .get_named("academic.course.reference.encounter_types.list_encounter_types", encounter_types::list_encounter_types)
                 .post_named("academic.course.reference.encounter_types.create_encounter_type", encounter_types::create_encounter_type)
+                .push(
+                    Router::with_path("options")
+                        .post_named("academic.course.reference.encounter_types.options_encounter_types", encounter_types::options_encounter_types),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("academic.course.reference.encounter_types.get_encounter_type", encounter_types::get_encounter_type)
@@ -61,6 +77,10 @@ pub fn router() -> Router {
                 .get_named("academic.course.reference.evaluation_types.list_evaluation_types", evaluation_types::list_evaluation_types)
                 .post_named("academic.course.reference.evaluation_types.create_evaluation_type", evaluation_types::create_evaluation_type)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.course.reference.evaluation_types.options_evaluation_types", evaluation_types::options_evaluation_types),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.course.reference.evaluation_types.get_evaluation_type", evaluation_types::get_evaluation_type)
                         .put_named("academic.course.reference.evaluation_types.update_evaluation_type", evaluation_types::update_evaluation_type)
@@ -71,6 +91,10 @@ pub fn router() -> Router {
             Router::with_path("groups")
                 .get_named("academic.course.reference.groups.list_groups", groups::list_groups)
                 .post_named("academic.course.reference.groups.create_group", groups::create_group)
+                .push(
+                    Router::with_path("options")
+                        .post_named("academic.course.reference.groups.options_groups", groups::options_groups),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("academic.course.reference.groups.get_group", groups::get_group)
@@ -83,6 +107,10 @@ pub fn router() -> Router {
                 .get_named("academic.course.reference.semesters.list_semesters", semesters::list_semesters)
                 .post_named("academic.course.reference.semesters.create_semester", semesters::create_semester)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.course.reference.semesters.options_semesters", semesters::options_semesters),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.course.reference.semesters.get_semester", semesters::get_semester)
                         .put_named("academic.course.reference.semesters.update_semester", semesters::update_semester)
@@ -93,6 +121,10 @@ pub fn router() -> Router {
             Router::with_path("varieties")
                 .get_named("academic.course.reference.varieties.list_varieties", varieties::list_varieties)
                 .post_named("academic.course.reference.varieties.create_varietie", varieties::create_varietie)
+                .push(
+                    Router::with_path("options")
+                        .post_named("academic.course.reference.varieties.options_varieties", varieties::options_varieties),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("academic.course.reference.varieties.get_varietie", varieties::get_varietie)

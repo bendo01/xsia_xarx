@@ -21,6 +21,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.campaign.reference.attend_types.create_attend_type",
         },
         RouteDefinition {
+            url: "/api/v1/academic/campaign/reference/attend-types/options",
+            method: "POST",
+            handler: "attend_types::options_attend_types",
+            name: "academic.campaign.reference.attend_types.options_attend_types",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/campaign/reference/attend-types/{id}",
             method: "GET",
             handler: "attend_types::get_attend_type",
@@ -49,6 +55,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "calendar_categories::create_calendar_categorie",
             name: "academic.campaign.reference.calendar_categories.create_calendar_categorie",
+        },
+        RouteDefinition {
+            url: "/api/v1/academic/campaign/reference/calendar-categories/options",
+            method: "POST",
+            handler: "calendar_categories::options_calendar_categories",
+            name: "academic.campaign.reference.calendar_categories.options_calendar_categories",
         },
         RouteDefinition {
             url: "/api/v1/academic/campaign/reference/calendar-categories/{id}",
@@ -81,6 +93,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.campaign.reference.encounter_categories.create_encounter_categorie",
         },
         RouteDefinition {
+            url: "/api/v1/academic/campaign/reference/encounter-categories/options",
+            method: "POST",
+            handler: "encounter_categories::options_encounter_categories",
+            name: "academic.campaign.reference.encounter_categories.options_encounter_categories",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/campaign/reference/encounter-categories/{id}",
             method: "GET",
             handler: "encounter_categories::get_encounter_categorie",
@@ -109,6 +127,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "implementations::create_implementation",
             name: "academic.campaign.reference.implementations.create_implementation",
+        },
+        RouteDefinition {
+            url: "/api/v1/academic/campaign/reference/implementations/options",
+            method: "POST",
+            handler: "implementations::options_implementations",
+            name: "academic.campaign.reference.implementations.options_implementations",
         },
         RouteDefinition {
             url: "/api/v1/academic/campaign/reference/implementations/{id}",
@@ -141,6 +165,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.campaign.reference.scopes.create_scope",
         },
         RouteDefinition {
+            url: "/api/v1/academic/campaign/reference/scopes/options",
+            method: "POST",
+            handler: "scopes::options_scopes",
+            name: "academic.campaign.reference.scopes.options_scopes",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/campaign/reference/scopes/{id}",
             method: "GET",
             handler: "scopes::get_scope",
@@ -169,6 +199,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "substances::create_substance",
             name: "academic.campaign.reference.substances.create_substance",
+        },
+        RouteDefinition {
+            url: "/api/v1/academic/campaign/reference/substances/options",
+            method: "POST",
+            handler: "substances::options_substances",
+            name: "academic.campaign.reference.substances.options_substances",
         },
         RouteDefinition {
             url: "/api/v1/academic/campaign/reference/substances/{id}",
@@ -591,6 +627,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.candidate.reference.document_types.create_document_type",
         },
         RouteDefinition {
+            url: "/api/v1/academic/candidate/reference/document-types/options",
+            method: "POST",
+            handler: "document_types::options_document_types",
+            name: "academic.candidate.reference.document_types.options_document_types",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/candidate/reference/document-types/{id}",
             method: "GET",
             handler: "document_types::get_document_type",
@@ -619,6 +661,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "phases::create_phase",
             name: "academic.candidate.reference.phases.create_phase",
+        },
+        RouteDefinition {
+            url: "/api/v1/academic/candidate/reference/phases/options",
+            method: "POST",
+            handler: "phases::options_phases",
+            name: "academic.candidate.reference.phases.options_phases",
         },
         RouteDefinition {
             url: "/api/v1/academic/candidate/reference/phases/{id}",
@@ -651,6 +699,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.candidate.reference.registration_categories.create_registration_categorie",
         },
         RouteDefinition {
+            url: "/api/v1/academic/candidate/reference/registration-categories/options",
+            method: "POST",
+            handler: "registration_categories::options_registration_categories",
+            name: "academic.candidate.reference.registration_categories.options_registration_categories",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/candidate/reference/registration-categories/{id}",
             method: "GET",
             handler: "registration_categories::get_registration_categorie",
@@ -679,6 +733,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "registration_types::create_registration_type",
             name: "academic.candidate.reference.registration_types.create_registration_type",
+        },
+        RouteDefinition {
+            url: "/api/v1/academic/candidate/reference/registration-types/options",
+            method: "POST",
+            handler: "registration_types::options_registration_types",
+            name: "academic.candidate.reference.registration_types.options_registration_types",
         },
         RouteDefinition {
             url: "/api/v1/academic/candidate/reference/registration-types/{id}",
@@ -981,6 +1041,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.course.reference.competences.create_competence",
         },
         RouteDefinition {
+            url: "/api/v1/academic/course/reference/competences/options",
+            method: "POST",
+            handler: "competences::options_competences",
+            name: "academic.course.reference.competences.options_competences",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/course/reference/competences/{id}",
             method: "GET",
             handler: "competences::get_competence",
@@ -1009,6 +1075,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "course_evaluation_bases::create_course_evaluation_base",
             name: "academic.course.reference.course_evaluation_bases.create_course_evaluation_base",
+        },
+        RouteDefinition {
+            url: "/api/v1/academic/course/reference/course-evaluation-bases/options",
+            method: "POST",
+            handler: "course_evaluation_bases::options_course_evaluation_bases",
+            name: "academic.course.reference.course_evaluation_bases.options_course_evaluation_bases",
         },
         RouteDefinition {
             url: "/api/v1/academic/course/reference/course-evaluation-bases/{id}",
@@ -1041,6 +1113,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.course.reference.curriculum_types.create_curriculum_type",
         },
         RouteDefinition {
+            url: "/api/v1/academic/course/reference/curriculum-types/options",
+            method: "POST",
+            handler: "curriculum_types::options_curriculum_types",
+            name: "academic.course.reference.curriculum_types.options_curriculum_types",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/course/reference/curriculum-types/{id}",
             method: "GET",
             handler: "curriculum_types::get_curriculum_type",
@@ -1069,6 +1147,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "encounter_types::create_encounter_type",
             name: "academic.course.reference.encounter_types.create_encounter_type",
+        },
+        RouteDefinition {
+            url: "/api/v1/academic/course/reference/encounter-types/options",
+            method: "POST",
+            handler: "encounter_types::options_encounter_types",
+            name: "academic.course.reference.encounter_types.options_encounter_types",
         },
         RouteDefinition {
             url: "/api/v1/academic/course/reference/encounter-types/{id}",
@@ -1101,6 +1185,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.course.reference.evaluation_types.create_evaluation_type",
         },
         RouteDefinition {
+            url: "/api/v1/academic/course/reference/evaluation-types/options",
+            method: "POST",
+            handler: "evaluation_types::options_evaluation_types",
+            name: "academic.course.reference.evaluation_types.options_evaluation_types",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/course/reference/evaluation-types/{id}",
             method: "GET",
             handler: "evaluation_types::get_evaluation_type",
@@ -1129,6 +1219,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "groups::create_group",
             name: "academic.course.reference.groups.create_group",
+        },
+        RouteDefinition {
+            url: "/api/v1/academic/course/reference/groups/options",
+            method: "POST",
+            handler: "groups::options_groups",
+            name: "academic.course.reference.groups.options_groups",
         },
         RouteDefinition {
             url: "/api/v1/academic/course/reference/groups/{id}",
@@ -1161,6 +1257,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.course.reference.semesters.create_semester",
         },
         RouteDefinition {
+            url: "/api/v1/academic/course/reference/semesters/options",
+            method: "POST",
+            handler: "semesters::options_semesters",
+            name: "academic.course.reference.semesters.options_semesters",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/course/reference/semesters/{id}",
             method: "GET",
             handler: "semesters::get_semester",
@@ -1191,6 +1293,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.course.reference.varieties.create_varietie",
         },
         RouteDefinition {
+            url: "/api/v1/academic/course/reference/varieties/options",
+            method: "POST",
+            handler: "varieties::options_varieties",
+            name: "academic.course.reference.varieties.options_varieties",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/course/reference/varieties/{id}",
             method: "GET",
             handler: "varieties::get_varietie",
@@ -1219,6 +1327,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "academic_year_categories::create_academic_year_categorie",
             name: "academic.general.reference.academic_year_categories.create_academic_year_categorie",
+        },
+        RouteDefinition {
+            url: "/api/v1/academic/general/reference/academic-year-categories/options",
+            method: "POST",
+            handler: "academic_year_categories::options_academic_year_categories",
+            name: "academic.general.reference.academic_year_categories.options_academic_year_categories",
         },
         RouteDefinition {
             url: "/api/v1/academic/general/reference/academic-year-categories/{id}",
@@ -1317,6 +1431,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.lecturer.reference.contracts.create_contract",
         },
         RouteDefinition {
+            url: "/api/v1/academic/lecturer/reference/contracts/options",
+            method: "POST",
+            handler: "contracts::options_contracts",
+            name: "academic.lecturer.reference.contracts.options_contracts",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/lecturer/reference/contracts/{id}",
             method: "GET",
             handler: "contracts::get_contract",
@@ -1345,6 +1465,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "groups::create_group",
             name: "academic.lecturer.reference.groups.create_group",
+        },
+        RouteDefinition {
+            url: "/api/v1/academic/lecturer/reference/groups/options",
+            method: "POST",
+            handler: "groups::options_groups",
+            name: "academic.lecturer.reference.groups.options_groups",
         },
         RouteDefinition {
             url: "/api/v1/academic/lecturer/reference/groups/{id}",
@@ -1377,6 +1503,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.lecturer.reference.ranks.create_rank",
         },
         RouteDefinition {
+            url: "/api/v1/academic/lecturer/reference/ranks/options",
+            method: "POST",
+            handler: "ranks::options_ranks",
+            name: "academic.lecturer.reference.ranks.options_ranks",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/lecturer/reference/ranks/{id}",
             method: "GET",
             handler: "ranks::get_rank",
@@ -1405,6 +1537,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "statuses::create_statuse",
             name: "academic.lecturer.reference.statuses.create_statuse",
+        },
+        RouteDefinition {
+            url: "/api/v1/academic/lecturer/reference/statuses/options",
+            method: "POST",
+            handler: "statuses::options_statuses",
+            name: "academic.lecturer.reference.statuses.options_statuses",
         },
         RouteDefinition {
             url: "/api/v1/academic/lecturer/reference/statuses/{id}",
@@ -1527,6 +1665,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.prior_learning_recognition.reference.evaluator_types.create_evaluator_type",
         },
         RouteDefinition {
+            url: "/api/v1/academic/prior-learning-recognition/reference/evaluator-types/options",
+            method: "POST",
+            handler: "evaluator_types::options_evaluator_types",
+            name: "academic.prior_learning_recognition.reference.evaluator_types.options_evaluator_types",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/prior-learning-recognition/reference/evaluator-types/{id}",
             method: "GET",
             handler: "evaluator_types::get_evaluator_type",
@@ -1555,6 +1699,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "evidence_categories::create_evidence_categorie",
             name: "academic.prior_learning_recognition.reference.evidence_categories.create_evidence_categorie",
+        },
+        RouteDefinition {
+            url: "/api/v1/academic/prior-learning-recognition/reference/evidence-categories/options",
+            method: "POST",
+            handler: "evidence_categories::options_evidence_categories",
+            name: "academic.prior_learning_recognition.reference.evidence_categories.options_evidence_categories",
         },
         RouteDefinition {
             url: "/api/v1/academic/prior-learning-recognition/reference/evidence-categories/{id}",
@@ -1587,6 +1737,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.prior_learning_recognition.reference.evidence_types.create_evidence_type",
         },
         RouteDefinition {
+            url: "/api/v1/academic/prior-learning-recognition/reference/evidence-types/options",
+            method: "POST",
+            handler: "evidence_types::options_evidence_types",
+            name: "academic.prior_learning_recognition.reference.evidence_types.options_evidence_types",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/prior-learning-recognition/reference/evidence-types/{id}",
             method: "GET",
             handler: "evidence_types::get_evidence_type",
@@ -1615,6 +1771,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "professionalisms::create_professionalism",
             name: "academic.prior_learning_recognition.reference.professionalisms.create_professionalism",
+        },
+        RouteDefinition {
+            url: "/api/v1/academic/prior-learning-recognition/reference/professionalisms/options",
+            method: "POST",
+            handler: "professionalisms::options_professionalisms",
+            name: "academic.prior_learning_recognition.reference.professionalisms.options_professionalisms",
         },
         RouteDefinition {
             url: "/api/v1/academic/prior-learning-recognition/reference/professionalisms/{id}",
@@ -1977,6 +2139,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.student.final_assignment.reference.adviser_categories.create_adviser_categorie",
         },
         RouteDefinition {
+            url: "/api/v1/academic/student/final-assignment/reference/adviser-categories/options",
+            method: "POST",
+            handler: "adviser_categories::options_adviser_categories",
+            name: "academic.student.final_assignment.reference.adviser_categories.options_adviser_categories",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/student/final-assignment/reference/adviser-categories/{id}",
             method: "GET",
             handler: "adviser_categories::get_adviser_categorie",
@@ -2005,6 +2173,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "approval_types::create_approval_type",
             name: "academic.student.final_assignment.reference.approval_types.create_approval_type",
+        },
+        RouteDefinition {
+            url: "/api/v1/academic/student/final-assignment/reference/approval-types/options",
+            method: "POST",
+            handler: "approval_types::options_approval_types",
+            name: "academic.student.final_assignment.reference.approval_types.options_approval_types",
         },
         RouteDefinition {
             url: "/api/v1/academic/student/final-assignment/reference/approval-types/{id}",
@@ -2037,6 +2211,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.student.final_assignment.reference.categories.create_categorie",
         },
         RouteDefinition {
+            url: "/api/v1/academic/student/final-assignment/reference/categories/options",
+            method: "POST",
+            handler: "categories::options_categories",
+            name: "academic.student.final_assignment.reference.categories.options_categories",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/student/final-assignment/reference/categories/{id}",
             method: "GET",
             handler: "categories::get_categorie",
@@ -2065,6 +2245,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "requirements::create_requirement",
             name: "academic.student.final_assignment.reference.requirements.create_requirement",
+        },
+        RouteDefinition {
+            url: "/api/v1/academic/student/final-assignment/reference/requirements/options",
+            method: "POST",
+            handler: "requirements::options_requirements",
+            name: "academic.student.final_assignment.reference.requirements.options_requirements",
         },
         RouteDefinition {
             url: "/api/v1/academic/student/final-assignment/reference/requirements/{id}",
@@ -2097,6 +2283,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.student.final_assignment.reference.stages.create_stage",
         },
         RouteDefinition {
+            url: "/api/v1/academic/student/final-assignment/reference/stages/options",
+            method: "POST",
+            handler: "stages::options_stages",
+            name: "academic.student.final_assignment.reference.stages.options_stages",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/student/final-assignment/reference/stages/{id}",
             method: "GET",
             handler: "stages::get_stage",
@@ -2125,6 +2317,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "varieties::create_varietie",
             name: "academic.student.final_assignment.reference.varieties.create_varietie",
+        },
+        RouteDefinition {
+            url: "/api/v1/academic/student/final-assignment/reference/varieties/options",
+            method: "POST",
+            handler: "varieties::options_varieties",
+            name: "academic.student.final_assignment.reference.varieties.options_varieties",
         },
         RouteDefinition {
             url: "/api/v1/academic/student/final-assignment/reference/varieties/{id}",
@@ -2427,6 +2625,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.student.reference.finances.create_finance",
         },
         RouteDefinition {
+            url: "/api/v1/academic/student/reference/finances/options",
+            method: "POST",
+            handler: "finances::options_finances",
+            name: "academic.student.reference.finances.options_finances",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/student/reference/finances/{id}",
             method: "GET",
             handler: "finances::get_finance",
@@ -2455,6 +2659,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "registrations::create_registration",
             name: "academic.student.reference.registrations.create_registration",
+        },
+        RouteDefinition {
+            url: "/api/v1/academic/student/reference/registrations/options",
+            method: "POST",
+            handler: "registrations::options_registrations",
+            name: "academic.student.reference.registrations.options_registrations",
         },
         RouteDefinition {
             url: "/api/v1/academic/student/reference/registrations/{id}",
@@ -2487,6 +2697,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.student.reference.resign_statuses.create_resign_statuse",
         },
         RouteDefinition {
+            url: "/api/v1/academic/student/reference/resign-statuses/options",
+            method: "POST",
+            handler: "resign_statuses::options_resign_statuses",
+            name: "academic.student.reference.resign_statuses.options_resign_statuses",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/student/reference/resign-statuses/{id}",
             method: "GET",
             handler: "resign_statuses::get_resign_statuse",
@@ -2517,6 +2733,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.student.reference.selection_types.create_selection_type",
         },
         RouteDefinition {
+            url: "/api/v1/academic/student/reference/selection-types/options",
+            method: "POST",
+            handler: "selection_types::options_selection_types",
+            name: "academic.student.reference.selection_types.options_selection_types",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/student/reference/selection-types/{id}",
             method: "GET",
             handler: "selection_types::get_selection_type",
@@ -2545,6 +2767,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "statuses::create_statuse",
             name: "academic.student.reference.statuses.create_statuse",
+        },
+        RouteDefinition {
+            url: "/api/v1/academic/student/reference/statuses/options",
+            method: "POST",
+            handler: "statuses::options_statuses",
+            name: "academic.student.reference.statuses.options_statuses",
         },
         RouteDefinition {
             url: "/api/v1/academic/student/reference/statuses/{id}",
@@ -2697,6 +2925,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.survey.reference.bundle_categories.create_bundle_categorie",
         },
         RouteDefinition {
+            url: "/api/v1/academic/survey/reference/bundle-categories/options",
+            method: "POST",
+            handler: "bundle_categories::options_bundle_categories",
+            name: "academic.survey.reference.bundle_categories.options_bundle_categories",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/survey/reference/bundle-categories/{id}",
             method: "GET",
             handler: "bundle_categories::get_bundle_categorie",
@@ -2725,6 +2959,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "question_varieties::create_question_varietie",
             name: "academic.survey.reference.question_varieties.create_question_varietie",
+        },
+        RouteDefinition {
+            url: "/api/v1/academic/survey/reference/question-varieties/options",
+            method: "POST",
+            handler: "question_varieties::options_question_varieties",
+            name: "academic.survey.reference.question_varieties.options_question_varieties",
         },
         RouteDefinition {
             url: "/api/v1/academic/survey/reference/question-varieties/{id}",
@@ -3033,6 +3273,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "building.reference.categories.create_categorie",
         },
         RouteDefinition {
+            url: "/api/v1/building/reference/categories/options",
+            method: "POST",
+            handler: "categories::options_categories",
+            name: "building.reference.categories.options_categories",
+        },
+        RouteDefinition {
             url: "/api/v1/building/reference/categories/{id}",
             method: "GET",
             handler: "categories::get_categorie",
@@ -3061,6 +3307,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "conditions::create_condition",
             name: "building.reference.conditions.create_condition",
+        },
+        RouteDefinition {
+            url: "/api/v1/building/reference/conditions/options",
+            method: "POST",
+            handler: "conditions::options_conditions",
+            name: "building.reference.conditions.options_conditions",
         },
         RouteDefinition {
             url: "/api/v1/building/reference/conditions/{id}",
@@ -3093,6 +3345,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "building.reference.room_types.create_room_type",
         },
         RouteDefinition {
+            url: "/api/v1/building/reference/room-types/options",
+            method: "POST",
+            handler: "room_types::options_room_types",
+            name: "building.reference.room_types.options_room_types",
+        },
+        RouteDefinition {
             url: "/api/v1/building/reference/room-types/{id}",
             method: "GET",
             handler: "room_types::get_room_type",
@@ -3121,6 +3379,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "varieties::create_varietie",
             name: "building.reference.varieties.create_varietie",
+        },
+        RouteDefinition {
+            url: "/api/v1/building/reference/varieties/options",
+            method: "POST",
+            handler: "varieties::options_varieties",
+            name: "building.reference.varieties.options_varieties",
         },
         RouteDefinition {
             url: "/api/v1/building/reference/varieties/{id}",
@@ -3273,6 +3537,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "contact.reference.electronic_mail_types.create_electronic_mail_type",
         },
         RouteDefinition {
+            url: "/api/v1/contact/reference/electronic-mail-types/options",
+            method: "POST",
+            handler: "electronic_mail_types::options_electronic_mail_types",
+            name: "contact.reference.electronic_mail_types.options_electronic_mail_types",
+        },
+        RouteDefinition {
             url: "/api/v1/contact/reference/electronic-mail-types/{id}",
             method: "GET",
             handler: "electronic_mail_types::get_electronic_mail_type",
@@ -3301,6 +3571,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "phone_types::create_phone_type",
             name: "contact.reference.phone_types.create_phone_type",
+        },
+        RouteDefinition {
+            url: "/api/v1/contact/reference/phone-types/options",
+            method: "POST",
+            handler: "phone_types::options_phone_types",
+            name: "contact.reference.phone_types.options_phone_types",
         },
         RouteDefinition {
             url: "/api/v1/contact/reference/phone-types/{id}",
@@ -3333,6 +3609,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "contact.reference.residence_types.create_residence_type",
         },
         RouteDefinition {
+            url: "/api/v1/contact/reference/residence-types/options",
+            method: "POST",
+            handler: "residence_types::options_residence_types",
+            name: "contact.reference.residence_types.options_residence_types",
+        },
+        RouteDefinition {
             url: "/api/v1/contact/reference/residence-types/{id}",
             method: "GET",
             handler: "residence_types::get_residence_type",
@@ -3363,6 +3645,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "contact.reference.website_types.create_website_type",
         },
         RouteDefinition {
+            url: "/api/v1/contact/reference/website-types/options",
+            method: "POST",
+            handler: "website_types::options_website_types",
+            name: "contact.reference.website_types.options_website_types",
+        },
+        RouteDefinition {
             url: "/api/v1/contact/reference/website-types/{id}",
             method: "GET",
             handler: "website_types::get_website_type",
@@ -3391,6 +3679,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "archive_types::create_archive_type",
             name: "document.reference.archive_types.create_archive_type",
+        },
+        RouteDefinition {
+            url: "/api/v1/document/reference/archive-types/options",
+            method: "POST",
+            handler: "archive_types::options_archive_types",
+            name: "document.reference.archive_types.options_archive_types",
         },
         RouteDefinition {
             url: "/api/v1/document/reference/archive-types/{id}",
@@ -6303,6 +6597,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "institution.reference.categories.create_categorie",
         },
         RouteDefinition {
+            url: "/api/v1/institution/reference/categories/options",
+            method: "POST",
+            handler: "categories::options_categories",
+            name: "institution.reference.categories.options_categories",
+        },
+        RouteDefinition {
             url: "/api/v1/institution/reference/categories/{id}",
             method: "GET",
             handler: "categories::get_categorie",
@@ -6331,6 +6631,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "position_type::create_position_type",
             name: "institution.reference.position_type.create_position_type",
+        },
+        RouteDefinition {
+            url: "/api/v1/institution/reference/position-type/options",
+            method: "POST",
+            handler: "position_type::options_position_type",
+            name: "institution.reference.position_type.options_position_type",
         },
         RouteDefinition {
             url: "/api/v1/institution/reference/position-type/{id}",
@@ -6363,6 +6669,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "institution.reference.unit_types.create_unit_type",
         },
         RouteDefinition {
+            url: "/api/v1/institution/reference/unit-types/options",
+            method: "POST",
+            handler: "unit_types::options_unit_types",
+            name: "institution.reference.unit_types.options_unit_types",
+        },
+        RouteDefinition {
             url: "/api/v1/institution/reference/unit-types/{id}",
             method: "GET",
             handler: "unit_types::get_unit_type",
@@ -6391,6 +6703,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "varieties::create_varietie",
             name: "institution.reference.varieties.create_varietie",
+        },
+        RouteDefinition {
+            url: "/api/v1/institution/reference/varieties/options",
+            method: "POST",
+            handler: "varieties::options_varieties",
+            name: "institution.reference.varieties.options_varieties",
         },
         RouteDefinition {
             url: "/api/v1/institution/reference/varieties/{id}",
@@ -6873,6 +7191,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "person.reference.age_classification.create_age_classification",
         },
         RouteDefinition {
+            url: "/api/v1/person/reference/age-classification/options",
+            method: "POST",
+            handler: "age_classification::options_age_classification",
+            name: "person.reference.age_classification.options_age_classification",
+        },
+        RouteDefinition {
             url: "/api/v1/person/reference/age-classification/{id}",
             method: "GET",
             handler: "age_classification::get_age_classification",
@@ -6901,6 +7225,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "blood_type::create_blood_type",
             name: "person.reference.blood_type.create_blood_type",
+        },
+        RouteDefinition {
+            url: "/api/v1/person/reference/blood-type/options",
+            method: "POST",
+            handler: "blood_type::options_blood_type",
+            name: "person.reference.blood_type.options_blood_type",
         },
         RouteDefinition {
             url: "/api/v1/person/reference/blood-type/{id}",
@@ -6933,6 +7263,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "person.reference.eye_color.create_eye_color",
         },
         RouteDefinition {
+            url: "/api/v1/person/reference/eye-color/options",
+            method: "POST",
+            handler: "eye_color::options_eye_color",
+            name: "person.reference.eye_color.options_eye_color",
+        },
+        RouteDefinition {
             url: "/api/v1/person/reference/eye-color/{id}",
             method: "GET",
             handler: "eye_color::get_eye_color",
@@ -6961,6 +7297,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "gender::create_gender",
             name: "person.reference.gender.create_gender",
+        },
+        RouteDefinition {
+            url: "/api/v1/person/reference/gender/options",
+            method: "POST",
+            handler: "gender::options_gender",
+            name: "person.reference.gender.options_gender",
         },
         RouteDefinition {
             url: "/api/v1/person/reference/gender/{id}",
@@ -6993,6 +7335,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "person.reference.hair_color.create_hair_color",
         },
         RouteDefinition {
+            url: "/api/v1/person/reference/hair-color/options",
+            method: "POST",
+            handler: "hair_color::options_hair_color",
+            name: "person.reference.hair_color.options_hair_color",
+        },
+        RouteDefinition {
             url: "/api/v1/person/reference/hair-color/{id}",
             method: "GET",
             handler: "hair_color::get_hair_color",
@@ -7021,6 +7369,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "hair_type::create_hair_type",
             name: "person.reference.hair_type.create_hair_type",
+        },
+        RouteDefinition {
+            url: "/api/v1/person/reference/hair-type/options",
+            method: "POST",
+            handler: "hair_type::options_hair_type",
+            name: "person.reference.hair_type.options_hair_type",
         },
         RouteDefinition {
             url: "/api/v1/person/reference/hair-type/{id}",
@@ -7053,6 +7407,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "person.reference.identification_type.create_identification_type",
         },
         RouteDefinition {
+            url: "/api/v1/person/reference/identification-type/options",
+            method: "POST",
+            handler: "identification_type::options_identification_type",
+            name: "person.reference.identification_type.options_identification_type",
+        },
+        RouteDefinition {
             url: "/api/v1/person/reference/identification-type/{id}",
             method: "GET",
             handler: "identification_type::get_identification_type",
@@ -7081,6 +7441,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "income::create_income",
             name: "person.reference.income.create_income",
+        },
+        RouteDefinition {
+            url: "/api/v1/person/reference/income/options",
+            method: "POST",
+            handler: "income::options_income",
+            name: "person.reference.income.options_income",
         },
         RouteDefinition {
             url: "/api/v1/person/reference/income/{id}",
@@ -7113,6 +7479,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "person.reference.marital_status.create_marital_statu",
         },
         RouteDefinition {
+            url: "/api/v1/person/reference/marital-status/options",
+            method: "POST",
+            handler: "marital_status::options_marital_status",
+            name: "person.reference.marital_status.options_marital_status",
+        },
+        RouteDefinition {
             url: "/api/v1/person/reference/marital-status/{id}",
             method: "GET",
             handler: "marital_status::get_marital_statu",
@@ -7141,6 +7513,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "occupation::create_occupation",
             name: "person.reference.occupation.create_occupation",
+        },
+        RouteDefinition {
+            url: "/api/v1/person/reference/occupation/options",
+            method: "POST",
+            handler: "occupation::options_occupation",
+            name: "person.reference.occupation.options_occupation",
         },
         RouteDefinition {
             url: "/api/v1/person/reference/occupation/{id}",
@@ -7173,6 +7551,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "person.reference.profession.create_profession",
         },
         RouteDefinition {
+            url: "/api/v1/person/reference/profession/options",
+            method: "POST",
+            handler: "profession::options_profession",
+            name: "person.reference.profession.options_profession",
+        },
+        RouteDefinition {
             url: "/api/v1/person/reference/profession/{id}",
             method: "GET",
             handler: "profession::get_profession",
@@ -7203,6 +7587,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "person.reference.relative_type.create_relative_type",
         },
         RouteDefinition {
+            url: "/api/v1/person/reference/relative-type/options",
+            method: "POST",
+            handler: "relative_type::options_relative_type",
+            name: "person.reference.relative_type.options_relative_type",
+        },
+        RouteDefinition {
             url: "/api/v1/person/reference/relative-type/{id}",
             method: "GET",
             handler: "relative_type::get_relative_type",
@@ -7231,6 +7621,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "religion::create_religion",
             name: "person.reference.religion.create_religion",
+        },
+        RouteDefinition {
+            url: "/api/v1/person/reference/religion/options",
+            method: "POST",
+            handler: "religion::options_religion",
+            name: "person.reference.religion.options_religion",
         },
         RouteDefinition {
             url: "/api/v1/person/reference/religion/{id}",

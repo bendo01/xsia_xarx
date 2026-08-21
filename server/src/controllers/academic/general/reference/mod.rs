@@ -11,6 +11,10 @@ pub fn router() -> Router {
                 .get_named("academic.general.reference.academic_year_categories.list_academic_year_categories", academic_year_categories::list_academic_year_categories)
                 .post_named("academic.general.reference.academic_year_categories.create_academic_year_categorie", academic_year_categories::create_academic_year_categorie)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.general.reference.academic_year_categories.options_academic_year_categories", academic_year_categories::options_academic_year_categories),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.general.reference.academic_year_categories.get_academic_year_categorie", academic_year_categories::get_academic_year_categorie)
                         .put_named("academic.general.reference.academic_year_categories.update_academic_year_categorie", academic_year_categories::update_academic_year_categorie)

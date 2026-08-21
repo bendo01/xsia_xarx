@@ -10,6 +10,10 @@ pub fn router() -> Router {
                 .get_named("document.reference.archive_types.list_archive_types", archive_types::list_archive_types)
                 .post_named("document.reference.archive_types.create_archive_type", archive_types::create_archive_type)
                 .push(
+                    Router::with_path("options")
+                        .post_named("document.reference.archive_types.options_archive_types", archive_types::options_archive_types),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("document.reference.archive_types.get_archive_type", archive_types::get_archive_type)
                         .put_named("document.reference.archive_types.update_archive_type", archive_types::update_archive_type)
