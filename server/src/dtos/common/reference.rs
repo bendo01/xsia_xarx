@@ -59,3 +59,14 @@ pub struct PaginatedReferenceResponse {
 pub struct MessageResponse {
     pub message: String,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct OptionItem {
+    pub id: Uuid,
+    pub name: String,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct OptionRequest {
+    pub search: Option<String>,
+}

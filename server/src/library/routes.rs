@@ -1251,6 +1251,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.general.reference.academic_years.create_academic_year",
         },
         RouteDefinition {
+            url: "/api/v1/academic/general/reference/academic-years/options",
+            method: "POST",
+            handler: "academic_years::options_academic_years",
+            name: "academic.general.reference.academic_years.options_academic_years",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/general/reference/academic-years/{id}",
             method: "GET",
             handler: "academic_years::get_academic_year",
