@@ -1,7 +1,9 @@
 use chrono::Utc;
 use salvo::prelude::*;
+use sea_orm::sea_query::extension::postgres::PgExpr;
+use sea_orm::sea_query::Expr;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
+    ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, EntityTrait, IntoActiveModel,
     PaginatorTrait, QueryFilter, QueryOrder, Set,
 };
 use uuid::Uuid;
@@ -29,12 +31,32 @@ pub async fn list_individual(
 
     let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
 
-    if let Some(ref name) = query.name {
-        select = select.filter(entity_mod::Column::Name.contains(name));
+    if let Some(ref search) = query.search {
+        let trimmed = search.trim();
+        if !trimmed.is_empty() {
+            let search_pattern = format!("%{}%", trimmed);
+            select = select.filter(
+                Condition::any()
+                    .add(Expr::col(entity_mod::Column::Name).ilike(search_pattern.clone()))
+                    .add(Expr::col(entity_mod::Column::Code).ilike(search_pattern)),
+            );
+        }
     }
 
-    if let Some(code) = query.code {
-        select = select.filter(entity_mod::Column::Code.eq(code));
+    if let Some(ref name) = query.name {
+        let trimmed = name.trim();
+        if !trimmed.is_empty() {
+            let search_pattern = format!("%{}%", trimmed);
+            select = select.filter(Expr::col(entity_mod::Column::Name).ilike(search_pattern));
+        }
+    }
+
+    if let Some(ref code) = query.code {
+        let trimmed = code.trim();
+        if !trimmed.is_empty() {
+            let search_pattern = format!("%{}%", trimmed);
+            select = select.filter(Expr::col(entity_mod::Column::Code).ilike(search_pattern));
+        }
     }
 
     let paginator = select

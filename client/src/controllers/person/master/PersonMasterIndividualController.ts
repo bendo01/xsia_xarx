@@ -3,9 +3,24 @@ import type { UpsertDeleteMessage } from "../../../models/common/reference/Model
 import type { PersonMasterIndividual, PersonMasterIndividualDataObject } from "../../../models/person/master/Individual";
 import type { ModelPersonMasterIndividualPaginationResponse } from "../../../models/pagination/ModelPagination";
 import type { ModelSelectItem } from "../../../models/common/select/ModelSelectItem";
+import { getStorageItem } from "../../../lib/storage";
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0.1:5800/api/v1/").replace(/\/+$/, "");
 const path = "person/master/individual";
+
+const getHeaders = (): Record<string, string> => {
+    const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+    };
+    if (typeof window !== "undefined") {
+        const token = getStorageItem("token");
+        if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
+        }
+    }
+    return headers;
+};
 
 export async function PersonMasterIndividualControllerIndex(pagination: TypePaginationForm): Promise<ModelPersonMasterIndividualPaginationResponse> {
     try {
@@ -21,10 +36,7 @@ export async function PersonMasterIndividualControllerIndex(pagination: TypePagi
         const url = `${getBaseUrl()}/${path}?${queryParams.toString()}`;
         const response = await fetch(url, {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
+            headers: getHeaders(),
         });
 
         if (!response.ok) {
@@ -108,10 +120,7 @@ export async function PersonMasterIndividualControllerShow(id: string): Promise<
     try {
         const response = await fetch(`${getBaseUrl()}/${path}/${id}`, {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
+            headers: getHeaders(),
         });
 
         const resData = await response.json().catch(() => ({}));
@@ -154,10 +163,7 @@ export async function PersonMasterIndividualControllerUpsert(data: Partial<Perso
 
         const response = await fetch(url, {
             method,
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
+            headers: getHeaders(),
             body: JSON.stringify(data),
         });
 
@@ -199,10 +205,7 @@ export async function PersonMasterIndividualControllerDelete(id: string): Promis
     try {
         const response = await fetch(`${getBaseUrl()}/${path}/${id}`, {
             method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
+            headers: getHeaders(),
         });
 
         const responseData = await response.json().catch(() => ({}));
@@ -235,10 +238,7 @@ export async function PersonMasterIndividualControllerList(params?: { search?: s
 
         const response = await fetch(`${getBaseUrl()}/${path}?${queryParams.toString()}`, {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
+            headers: getHeaders(),
         });
         const resData = await response.json();
 

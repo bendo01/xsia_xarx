@@ -11,6 +11,7 @@ pub struct IndividualQuery {
     pub page_size: Option<u64>,
     pub name: Option<String>,
     pub code: Option<String>,
+    pub search: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]

@@ -123,18 +123,27 @@ export default function PersonMasterIndividualIndexPage() {
                 sort_dir: sortParam().split('-')[1] || 'asc',
             });
 
-            if (response && response.data && response.data.length > 0) {
+            if (response && Array.isArray(response.data) && response.data.length > 0) {
+                setItems(response.data);
+                setTotalData(response.pagination?.total_data ?? response.data.length);
+                setTotalPages(response.pagination?.total_page || 1);
+            } else if (response && Array.isArray(response.data) && response.data.length === 0 && searchQuery()) {
+                // Search returned zero results
+                setItems([]);
+                setTotalData(0);
+                setTotalPages(1);
+            } else if (response && Array.isArray(response.data) && response.data.length > 0) {
                 setItems(response.data);
                 setTotalData(response.pagination?.total_data || response.data.length);
                 setTotalPages(response.pagination?.total_page || 1);
             } else {
-                // If server data is empty, provide fallback demo data
-                setItems(fallbackList);
-                setTotalData(fallbackList.length);
-                setTotalPages(1);
+                // If offline or completely empty database without query
+                setItems(response?.data && response.data.length > 0 ? response.data : fallbackList);
+                setTotalData(response?.pagination?.total_data || fallbackList.length);
+                setTotalPages(response?.pagination?.total_page || 1);
             }
         } catch (error) {
-            console.error('Error loading individuals:', error);
+            console.error('Error loading individuals from server:', error);
             setItems(fallbackList);
             setTotalData(fallbackList.length);
             setTotalPages(1);
@@ -204,7 +213,7 @@ export default function PersonMasterIndividualIndexPage() {
         <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
             <TopBar />
 
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+            <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Page Header */}
                 <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div>

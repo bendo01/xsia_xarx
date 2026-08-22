@@ -191,6 +191,13 @@ export default function PersonMasterIndividualShowPage() {
             const res = await PersonMasterIndividualControllerList();
             if (res.code === 200 && Array.isArray(res.message)) {
                 setIndividualList(res.message);
+                const currentId = (searchParams.id as string) || selectedIndividualId();
+                if (!currentId && res.message.length > 0 && res.message[0].id) {
+                    const firstId = res.message[0].id;
+                    setSelectedIndividualId(firstId);
+                    setSearchParams({ id: firstId });
+                    fetchIndividualDetail(firstId);
+                }
             }
         } catch (err) {
             console.error('Failed to load individual selection list', err);
@@ -340,7 +347,7 @@ export default function PersonMasterIndividualShowPage() {
         <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
             <TopBar />
 
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+            <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* 1. Header Navigation & Quick Actions */}
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div>
@@ -436,7 +443,7 @@ export default function PersonMasterIndividualShowPage() {
                 <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
                     <div class="p-6 md:p-8">
                         <div class="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
-                            
+
                             {/* --- PHOTO / PORTRAIT SECTION --- */}
                             <div class="flex flex-col items-center shrink-0">
                                 <div class="relative group cursor-pointer" onClick={openPhotoModal}>
@@ -604,11 +611,10 @@ export default function PersonMasterIndividualShowPage() {
                         <button
                             type="button"
                             onClick={() => setActiveTab('demographics')}
-                            class={`px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center gap-2 ${
-                                activeTab() === 'demographics'
+                            class={`px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center gap-2 ${activeTab() === 'demographics'
                                     ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-neutral-800'
                                     : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
-                            }`}
+                                }`}
                             id="tab-demographics"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -621,11 +627,10 @@ export default function PersonMasterIndividualShowPage() {
                         <button
                             type="button"
                             onClick={() => setActiveTab('biometrics')}
-                            class={`px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center gap-2 ${
-                                activeTab() === 'biometrics'
+                            class={`px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center gap-2 ${activeTab() === 'biometrics'
                                     ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-neutral-800'
                                     : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
-                            }`}
+                                }`}
                             id="tab-biometrics"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -637,11 +642,10 @@ export default function PersonMasterIndividualShowPage() {
                         <button
                             type="button"
                             onClick={() => setActiveTab('family')}
-                            class={`px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center gap-2 ${
-                                activeTab() === 'family'
+                            class={`px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center gap-2 ${activeTab() === 'family'
                                     ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-neutral-800'
                                     : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
-                            }`}
+                                }`}
                             id="tab-family"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -656,11 +660,10 @@ export default function PersonMasterIndividualShowPage() {
                         <button
                             type="button"
                             onClick={() => setActiveTab('roles')}
-                            class={`px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center gap-2 ${
-                                activeTab() === 'roles'
+                            class={`px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center gap-2 ${activeTab() === 'roles'
                                     ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-neutral-800'
                                     : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
-                            }`}
+                                }`}
                             id="tab-roles"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -673,11 +676,10 @@ export default function PersonMasterIndividualShowPage() {
                         <button
                             type="button"
                             onClick={() => setActiveTab('audit')}
-                            class={`px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center gap-2 ${
-                                activeTab() === 'audit'
+                            class={`px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center gap-2 ${activeTab() === 'audit'
                                     ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-neutral-800'
                                     : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
-                            }`}
+                                }`}
                             id="tab-audit"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -786,11 +788,10 @@ export default function PersonMasterIndividualShowPage() {
                                 <div class="py-2.5 grid grid-cols-3">
                                     <dt class="font-medium text-neutral-500 dark:text-neutral-400">Social Protection (KPS)</dt>
                                     <dd class="col-span-2">
-                                        <span class={`inline-flex items-center px-2 py-0.5 text-xs font-semibold ${
-                                            individualData()?.individual.is_social_protection_card_recipient
+                                        <span class={`inline-flex items-center px-2 py-0.5 text-xs font-semibold ${individualData()?.individual.is_social_protection_card_recipient
                                                 ? 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300'
                                                 : 'bg-neutral-100 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300'
-                                        }`}>
+                                            }`}>
                                             {individualData()?.individual.is_social_protection_card_recipient ? 'Recipient (Penerima)' : 'No (Bukan Penerima)'}
                                         </span>
                                     </dd>
@@ -798,11 +799,10 @@ export default function PersonMasterIndividualShowPage() {
                                 <div class="py-2.5 grid grid-cols-3">
                                     <dt class="font-medium text-neutral-500 dark:text-neutral-400">Special Needs (Disabilitas)</dt>
                                     <dd class="col-span-2">
-                                        <span class={`inline-flex items-center px-2 py-0.5 text-xs font-semibold ${
-                                            individualData()?.individual.is_special_need
+                                        <span class={`inline-flex items-center px-2 py-0.5 text-xs font-semibold ${individualData()?.individual.is_special_need
                                                 ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300'
                                                 : 'bg-neutral-100 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300'
-                                        }`}>
+                                            }`}>
                                             {individualData()?.individual.is_special_need ? 'Yes (Berkebutuhan Khusus)' : 'None (Tidak Ada)'}
                                         </span>
                                     </dd>
