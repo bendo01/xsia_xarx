@@ -63,14 +63,14 @@ pub struct Model {
     pub age_classification: BelongsTo<crate::models::person::reference::age_classification::Entity>,
     #[sea_orm(has_one)]
     pub biodata: HasOne<super::biodata::Entity>,
-    #[sea_orm(has_many)]
-    pub employees: HasMany<crate::models::institution::master::employees::Entity>,
     #[sea_orm(has_one)]
     pub user: HasOne<crate::models::auth::user::Entity>,
+    #[sea_orm(has_one)]
+    pub lecturer: HasOne<crate::models::academic::lecturer::master::lecturers::Entity>,
+    #[sea_orm(has_many)]
+    pub employees: HasMany<crate::models::institution::master::employees::Entity>,
     #[sea_orm(has_many)]
     pub candidates: HasMany<crate::models::academic::candidate::master::candidates::Entity>,
-    #[sea_orm(has_many)]
-    pub lecturers: HasMany<crate::models::academic::lecturer::master::lecturers::Entity>,
     #[sea_orm(has_many)]
     pub evaluators: HasMany<crate::models::academic::prior_learning_recognition::transaction::evaluators::Entity>,
     #[sea_orm(has_many)]

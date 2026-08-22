@@ -9,6 +9,12 @@ use sea_orm::{
 use uuid::Uuid;
 use validator::Validate;
 
+use crate::dtos::academic::candidate::master::candidates::CandidateResponse;
+use crate::dtos::academic::lecturer::master::lecturers::LecturerResponse;
+use crate::dtos::academic::prior_learning_recognition::transaction::evaluators::EvaluatorResponse;
+use crate::dtos::academic::student::master::students::StudentResponse;
+use crate::dtos::auth::user::UserResponse;
+use crate::dtos::institution::master::employees::EmployeeResponse;
 use crate::dtos::literate::educations::EducationResponse;
 use crate::dtos::person::master::biodata::BiodataResponse;
 use crate::dtos::person::master::individual::{
@@ -336,6 +342,186 @@ pub async fn get_individual(
             updated_by: b.updated_by,
         });
 
+    let user = item
+        .find_related(crate::models::auth::user::Entity)
+        .filter(crate::models::auth::user::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .map(|u| UserResponse {
+            id: u.id,
+            pid: u.pid,
+            email: u.email,
+            password: "".to_string(),
+            api_key: u.api_key,
+            name: u.name,
+            individual_id: u.individual_id,
+            is_active: u.is_active,
+            current_role_id: u.current_role_id,
+            reset_token: u.reset_token,
+            reset_sent_at: u.reset_sent_at,
+            email_verification_token: u.email_verification_token,
+            email_verification_sent_at: u.email_verification_sent_at,
+            email_verified_at: u.email_verified_at,
+            magic_link_token: u.magic_link_token,
+            magic_link_expiration: u.magic_link_expiration,
+            created_at: u.created_at,
+            updated_at: u.updated_at,
+            deleted_at: u.deleted_at,
+            created_by: u.created_by,
+            updated_by: u.updated_by,
+        });
+
+    let lecturer = item
+        .find_related(crate::models::academic::lecturer::master::lecturers::Entity)
+        .filter(crate::models::academic::lecturer::master::lecturers::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .map(|l| LecturerResponse {
+            id: l.id,
+            code: l.code,
+            name: l.name,
+            individual_id: l.individual_id,
+            institution_id: l.institution_id,
+            alternative_code: l.alternative_code,
+            accessor_number: l.accessor_number,
+            identification_number: l.identification_number,
+            status_id: l.status_id,
+            contract_id: l.contract_id,
+            rank_id: l.rank_id,
+            start_date: l.start_date,
+            end_date: l.end_date,
+            front_title: l.front_title,
+            last_title: l.last_title,
+            id_dosen: l.id_dosen,
+            group_id: l.group_id,
+            nuptk: l.nuptk,
+            created_at: l.created_at,
+            updated_at: l.updated_at,
+            deleted_at: l.deleted_at,
+            sync_at: l.sync_at,
+            created_by: l.created_by,
+            updated_by: l.updated_by,
+        });
+
+    let employees = item
+        .find_related(crate::models::institution::master::employees::Entity)
+        .filter(crate::models::institution::master::employees::Column::DeletedAt.is_null())
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .into_iter()
+        .map(|e| EmployeeResponse {
+            id: e.id,
+            code: e.code,
+            name: e.name,
+            institution_id: e.institution_id,
+            individual_id: e.individual_id,
+            decree_number: e.decree_number,
+            decree_date: e.decree_date,
+            is_active: e.is_active,
+            created_at: e.created_at,
+            updated_at: e.updated_at,
+            deleted_at: e.deleted_at,
+            sync_at: e.sync_at,
+            created_by: e.created_by,
+            updated_by: e.updated_by,
+        })
+        .collect::<Vec<_>>();
+
+    let candidates = item
+        .find_related(crate::models::academic::candidate::master::candidates::Entity)
+        .filter(crate::models::academic::candidate::master::candidates::Column::DeletedAt.is_null())
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .into_iter()
+        .map(|c| CandidateResponse {
+            id: c.id,
+            thread: c.thread,
+            code: c.code,
+            name: c.name,
+            student_national_number: c.student_national_number,
+            school_name: c.school_name,
+            school_regency_id: c.school_regency_id,
+            state_smart_card_number: c.state_smart_card_number,
+            individual_id: c.individual_id,
+            academic_year_id: c.academic_year_id,
+            student_id: c.student_id,
+            user_id: c.user_id,
+            registration_type_id: c.registration_type_id,
+            institution_id: c.institution_id,
+            guidence_name: c.guidence_name,
+            guidence_phone_number: c.guidence_phone_number,
+            created_at: c.created_at,
+            updated_at: c.updated_at,
+            deleted_at: c.deleted_at,
+            sync_at: c.sync_at,
+            created_by: c.created_by,
+            updated_by: c.updated_by,
+        })
+        .collect::<Vec<_>>();
+
+    let evaluators = item
+        .find_related(crate::models::academic::prior_learning_recognition::transaction::evaluators::Entity)
+        .filter(crate::models::academic::prior_learning_recognition::transaction::evaluators::Column::DeletedAt.is_null())
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .into_iter()
+        .map(|ev| EvaluatorResponse {
+            id: ev.id,
+            individual_id: ev.individual_id,
+            evaluator_type_id: ev.evaluator_type_id,
+            recognition_id: ev.recognition_id,
+            created_at: ev.created_at,
+            updated_at: ev.updated_at,
+            deleted_at: ev.deleted_at,
+            sync_at: ev.sync_at,
+            created_by: ev.created_by,
+            updated_by: ev.updated_by,
+        })
+        .collect::<Vec<_>>();
+
+    let students = item
+        .find_related(crate::models::academic::student::master::students::Entity)
+        .filter(crate::models::academic::student::master::students::Column::DeletedAt.is_null())
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .into_iter()
+        .map(|s| StudentResponse {
+            id: s.id,
+            code: s.code,
+            name: s.name,
+            selection_type_id: s.selection_type_id,
+            registered: s.registered,
+            individual_id: s.individual_id,
+            status_id: s.status_id,
+            unit_id: s.unit_id,
+            academic_year_id: s.academic_year_id,
+            registration_id: s.registration_id,
+            nisn: s.nisn,
+            resign_status_id: s.resign_status_id,
+            concentration_id: s.concentration_id,
+            curriculum_id: s.curriculum_id,
+            class_code_id: s.class_code_id,
+            transfer_code: s.transfer_code,
+            transfer_unit_id: s.transfer_unit_id,
+            id_mahasiswa: s.id_mahasiswa,
+            id_registrasi_mahasiswa: s.id_registrasi_mahasiswa,
+            finance_fee: s.finance_fee,
+            finance_id: s.finance_id,
+            created_at: s.created_at,
+            updated_at: s.updated_at,
+            deleted_at: s.deleted_at,
+            sync_at: s.sync_at,
+            created_by: s.created_by,
+            updated_by: s.updated_by,
+        })
+        .collect::<Vec<_>>();
+
     Ok(Json(IndividualDetailResponse {
         individual: IndividualResponse {
             id: item.id,
@@ -374,6 +560,12 @@ pub async fn get_individual(
         education,
         age_classification,
         biodata,
+        user,
+        lecturer,
+        employees,
+        candidates,
+        evaluators,
+        students,
     }))
 }
 #[endpoint(tags("Person - Master - Individual"), status_codes(200, 400, 500))]

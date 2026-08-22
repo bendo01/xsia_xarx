@@ -110,4 +110,10 @@ pub struct IndividualDetailResponse {
     pub education: Option<crate::dtos::literate::educations::EducationResponse>,
     pub age_classification: Option<crate::dtos::common::reference::ReferenceResponse>,
     pub biodata: Option<crate::dtos::person::master::biodata::BiodataResponse>,
+    pub user: Option<crate::dtos::auth::user::UserResponse>,
+    pub lecturer: Option<crate::dtos::academic::lecturer::master::lecturers::LecturerResponse>,
+    pub employees: Vec<crate::dtos::institution::master::employees::EmployeeResponse>,
+    pub candidates: Vec<crate::dtos::academic::candidate::master::candidates::CandidateResponse>,
+    pub evaluators: Vec<crate::dtos::academic::prior_learning_recognition::transaction::evaluators::EvaluatorResponse>,
+    pub students: Vec<crate::dtos::academic::student::master::students::StudentResponse>,
 }

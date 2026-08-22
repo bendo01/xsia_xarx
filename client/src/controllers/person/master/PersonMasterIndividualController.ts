@@ -149,9 +149,12 @@ export async function PersonMasterIndividualControllerShow(id: string): Promise<
             age_classification: resData.age_classification ?? null,
             biodata: resData.biodata ?? null,
             picture: resData.picture ?? null,
+            user: resData.user ?? null,
             lecturer: resData.lecturer ?? null,
             students: resData.students ?? null,
             employees: resData.employees ?? null,
+            candidates: resData.candidates ?? null,
+            evaluators: resData.evaluators ?? null,
             family_card_members: resData.family_card_members ?? null,
         };
 

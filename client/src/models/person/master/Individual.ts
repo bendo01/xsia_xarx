@@ -75,8 +75,11 @@ export interface PersonMasterIndividualDataObject {
   age_classification: PersonReferenceAgeClassification | null;
   biodata: any | null; // PersonMasterBiodata
   picture: any | null; // PersonMasterImage
+  user: any | null; // AuthUser
   lecturer: any | null; // AcademicLecturerMasterLecturer
   students: any[] | null; // AcademicStudentMasterStudent[]
   employees: any[] | null; // InstitutionMasterEmployee[]
+  candidates: any[] | null; // AcademicCandidateMasterCandidate[]
+  evaluators: any[] | null; // AcademicPriorLearningRecognitionTransactionEvaluator[]
   family_card_members: any[] | null; // PersonMasterFamilyCardMember[]
 }

@@ -176,6 +176,17 @@ export default function PersonMasterIndividualShowPage() {
         };
     };
 
+    const totalRolesCount = () => {
+        let count = 0;
+        if (individualData()?.lecturer) count++;
+        if (individualData()?.user) count++;
+        count += (individualData()?.employees || []).length;
+        count += (individualData()?.students || []).length;
+        count += (individualData()?.candidates || []).length;
+        count += (individualData()?.evaluators || []).length;
+        return count;
+    };
+
     const printPage = () => {
         window.print();
     };
@@ -335,19 +346,55 @@ export default function PersonMasterIndividualShowPage() {
                             <div class="flex-1 text-center md:text-left space-y-4 w-full">
                                 <div>
                                     <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-1.5">
-                                        {/* Status Tags */}
+                                        {/* Status & Role Tags */}
                                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
                                             <span class="size-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                                             Active Record
                                         </span>
 
-                                        <Show when={individualData()?.individual.is_social_protection_card_recipient}>
+                                        <Show when={individualData()?.lecturer}>
                                             <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                                                Lecturer / Dosen
+                                            </span>
+                                        </Show>
+
+                                        <Show when={(individualData()?.employees || []).length > 0}>
+                                            <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                                Staff / Pegawai ({(individualData()?.employees || []).length})
+                                            </span>
+                                        </Show>
+
+                                        <Show when={(individualData()?.students || []).length > 0}>
+                                            <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                                                Student / Mahasiswa ({(individualData()?.students || []).length})
+                                            </span>
+                                        </Show>
+
+                                        <Show when={(individualData()?.candidates || []).length > 0}>
+                                            <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                                                PMB Candidate
+                                            </span>
+                                        </Show>
+
+                                        <Show when={(individualData()?.evaluators || []).length > 0}>
+                                            <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300 border border-rose-200 dark:border-rose-800">
+                                                RPL Evaluator
+                                            </span>
+                                        </Show>
+
+                                        <Show when={individualData()?.user}>
+                                            <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300 border border-teal-200 dark:border-teal-800">
+                                                User Account
+                                            </span>
+                                        </Show>
+
+                                        <Show when={individualData()?.individual?.is_social_protection_card_recipient}>
+                                            <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-fuchsia-50 text-fuchsia-700 dark:bg-fuchsia-950 dark:text-fuchsia-300 border border-fuchsia-200 dark:border-fuchsia-800">
                                                 KPS / KIP Recipient
                                             </span>
                                         </Show>
 
-                                        <Show when={individualData()?.individual.is_special_need}>
+                                        <Show when={individualData()?.individual?.is_special_need}>
                                             <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
                                                 Special Needs
                                             </span>
@@ -491,7 +538,12 @@ export default function PersonMasterIndividualShowPage() {
                                 <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
                                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                             </svg>
-                            <span>3. Family Card & Relatives</span>
+                            <span>3. Family Card</span>
+                            <Show when={(individualData()?.family_card_members || []).length > 0}>
+                                <span class="px-1.5 py-0.2 text-[10px] rounded-full bg-neutral-200 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 font-bold">
+                                    {(individualData()?.family_card_members || []).length}
+                                </span>
+                            </Show>
                         </button>
 
                         <button
@@ -508,6 +560,11 @@ export default function PersonMasterIndividualShowPage() {
                                 <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
                             </svg>
                             <span>4. Academic & Staff Roles</span>
+                            <Show when={totalRolesCount() > 0}>
+                                <span class="px-1.5 py-0.2 text-[10px] rounded-full bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 font-bold">
+                                    {totalRolesCount()}
+                                </span>
+                            </Show>
                         </button>
 
                         <button
@@ -850,97 +907,309 @@ export default function PersonMasterIndividualShowPage() {
                     </Show>
                 </Show>
 
-                {/* --- TAB 4: ACADEMIC & STAFF ROLES --- */}
+                {/* --- TAB 4: ACADEMIC & INSTITUTIONAL ROLES --- */}
                 <Show when={activeTab() === 'roles'}>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Employee / Kepegawaian Card */}
-                        <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 space-y-4">
-                            <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider pb-2 border-b border-neutral-200 dark:border-neutral-700 flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect width="20" height="14" x="2" y="7" rx="2" ry="2" />
-                                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-                                </svg>
-                                Institution Employee Records (Kepegawaian)
-                            </h3>
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                            <Show
-                                when={(individualData()?.employees || []).length > 0}
-                                fallback={
-                                    <p class="text-xs text-neutral-500 dark:text-neutral-400 py-4 text-center">
-                                        No active employee appointments on record.
-                                    </p>
-                                }
-                            >
-                                <For each={individualData()?.employees || []}>
-                                    {(emp) => (
-                                        <div class="p-4 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 space-y-2 text-xs sm:text-sm">
-                                            <div class="flex items-center justify-between">
-                                                <span class="font-bold text-neutral-900 dark:text-white">{emp.position}</span>
-                                                <span class="px-2 py-0.5 text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300">
-                                                    Active
-                                                </span>
-                                            </div>
-                                            <div class="text-xs text-neutral-600 dark:text-neutral-400 font-mono">
-                                                NIP: {emp.nip}
-                                            </div>
-                                            <div class="text-xs text-neutral-700 dark:text-neutral-300">
-                                                Unit: <span class="font-medium">{emp.unit}</span>
-                                            </div>
-                                            <div class="text-xs text-neutral-500 pt-1 border-t border-neutral-200 dark:border-neutral-700">
-                                                Decree: {emp.decree_number} ({emp.decree_date})
-                                            </div>
-                                        </div>
-                                    )}
-                                </For>
-                            </Show>
-                        </div>
-
-                        {/* Lecturer / Dosen Master Card */}
-                        <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 space-y-4">
-                            <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider pb-2 border-b border-neutral-200 dark:border-neutral-700 flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-purple-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
-                                    <path d="M6 6h10" />
-                                    <path d="M6 10h10" />
-                                </svg>
-                                Lecturer Faculty Profile (Dosen)
-                            </h3>
-
-                            <Show
-                                when={individualData()?.lecturer}
-                                fallback={
-                                    <p class="text-xs text-neutral-500 dark:text-neutral-400 py-4 text-center">
-                                        No academic lecturer profile linked to this individual.
-                                    </p>
-                                }
-                            >
-                                <div class="p-4 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 space-y-2.5 text-xs sm:text-sm">
-                                    <div class="flex items-center justify-between">
-                                        <span class="font-semibold text-neutral-500">NIDN / NIDK:</span>
-                                        <span class="font-mono font-bold text-neutral-900 dark:text-white">
-                                            {individualData()?.lecturer?.nidn}
+                            {/* 1. Lecturer / Dosen Master Card */}
+                            <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 space-y-4">
+                                <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
+                                    <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-purple-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+                                            <path d="M6 6h10" />
+                                            <path d="M6 10h10" />
+                                        </svg>
+                                        Lecturer Profile (Dosen)
+                                    </h3>
+                                    <Show when={individualData()?.lecturer}>
+                                        <span class="px-2 py-0.5 text-xs font-semibold bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">
+                                            Active Faculty
                                         </span>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="font-semibold text-neutral-500">Functional Rank (JFA):</span>
-                                        <span class="font-medium text-neutral-900 dark:text-white">
-                                            {individualData()?.lecturer?.functional_rank}
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="font-semibold text-neutral-500">Academic Status:</span>
-                                        <span class="px-2 py-0.5 text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
-                                            {individualData()?.lecturer?.status}
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="font-semibold text-neutral-500">Academic Homebase:</span>
-                                        <span class="font-medium text-neutral-900 dark:text-white">
-                                            {individualData()?.lecturer?.homebase}
-                                        </span>
-                                    </div>
+                                    </Show>
                                 </div>
-                            </Show>
+
+                                <Show
+                                    when={individualData()?.lecturer}
+                                    fallback={
+                                        <p class="text-xs text-neutral-500 dark:text-neutral-400 py-6 text-center">
+                                            No academic lecturer profile linked to this individual.
+                                        </p>
+                                    }
+                                >
+                                    <div class="divide-y divide-neutral-100 dark:divide-neutral-700/60 text-xs sm:text-sm">
+                                        <div class="py-2 grid grid-cols-3">
+                                            <span class="text-neutral-500">Lecturer Code / NIDN:</span>
+                                            <span class="col-span-2 font-mono font-bold text-neutral-900 dark:text-white">{individualData()?.lecturer?.code}</span>
+                                        </div>
+                                        <div class="py-2 grid grid-cols-3">
+                                            <span class="text-neutral-500">Lecturer Name:</span>
+                                            <span class="col-span-2 font-medium text-neutral-900 dark:text-white">
+                                                {[individualData()?.lecturer?.front_title, individualData()?.lecturer?.name, individualData()?.lecturer?.last_title].filter(Boolean).join(' ') || '-'}
+                                            </span>
+                                        </div>
+                                        <div class="py-2 grid grid-cols-3">
+                                            <span class="text-neutral-500">NUPTK:</span>
+                                            <span class="col-span-2 font-mono text-neutral-800 dark:text-neutral-200">{individualData()?.lecturer?.nuptk || '-'}</span>
+                                        </div>
+                                        <div class="py-2 grid grid-cols-3">
+                                            <span class="text-neutral-500">Accessor Number:</span>
+                                            <span class="col-span-2 text-neutral-800 dark:text-neutral-200">{individualData()?.lecturer?.accessor_number || '-'}</span>
+                                        </div>
+                                        <div class="py-2 grid grid-cols-3">
+                                            <span class="text-neutral-500">Identification No:</span>
+                                            <span class="col-span-2 font-mono text-neutral-800 dark:text-neutral-200">{individualData()?.lecturer?.identification_number || '-'}</span>
+                                        </div>
+                                        <div class="py-2 grid grid-cols-3">
+                                            <span class="text-neutral-500">Appointment Term:</span>
+                                            <span class="col-span-2 text-neutral-800 dark:text-neutral-200">
+                                                {individualData()?.lecturer?.start_date ? new Date(individualData()!.lecturer!.start_date!).toLocaleDateString('id-ID') : '-'}
+                                                {' to '}
+                                                {individualData()?.lecturer?.end_date ? new Date(individualData()!.lecturer!.end_date!).toLocaleDateString('id-ID') : 'Present'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </Show>
+                            </div>
+
+                            {/* 2. Employee / Kepegawaian Card */}
+                            <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 space-y-4">
+                                <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
+                                    <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect width="20" height="14" x="2" y="7" rx="2" ry="2" />
+                                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                                        </svg>
+                                        Institution Employee Records (Kepegawaian)
+                                    </h3>
+                                    <span class="px-2 py-0.5 text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
+                                        {(individualData()?.employees || []).length} Records
+                                    </span>
+                                </div>
+
+                                <Show
+                                    when={(individualData()?.employees || []).length > 0}
+                                    fallback={
+                                        <p class="text-xs text-neutral-500 dark:text-neutral-400 py-6 text-center">
+                                            No active employee appointments on record.
+                                        </p>
+                                    }
+                                >
+                                    <div class="space-y-3">
+                                        <For each={individualData()?.employees || []}>
+                                            {(emp) => (
+                                                <div class="p-3.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 space-y-1.5 text-xs sm:text-sm">
+                                                    <div class="flex items-center justify-between">
+                                                        <span class="font-bold text-neutral-900 dark:text-white">{emp.name}</span>
+                                                        <span class={`px-2 py-0.5 text-[11px] font-semibold ${emp.is_active ? 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300' : 'bg-neutral-200 text-neutral-700'}`}>
+                                                            {emp.is_active ? 'Active' : 'Inactive'}
+                                                        </span>
+                                                    </div>
+                                                    <div class="text-xs text-neutral-600 dark:text-neutral-400 font-mono">
+                                                        NIP / Code: {emp.code}
+                                                    </div>
+                                                    <div class="text-xs text-neutral-500 pt-1 border-t border-neutral-200 dark:border-neutral-700">
+                                                        Decree (SK): {emp.decree_number || '-'} {emp.decree_date ? `(${new Date(emp.decree_date).toLocaleDateString('id-ID')})` : ''}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </For>
+                                    </div>
+                                </Show>
+                            </div>
+
+                            {/* 3. Academic Student Enrollments (Mahasiswa) */}
+                            <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 space-y-4">
+                                <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
+                                    <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                                            <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                                        </svg>
+                                        Student Master Registrations (Mahasiswa)
+                                    </h3>
+                                    <span class="px-2 py-0.5 text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                                        {(individualData()?.students || []).length} Enrollments
+                                    </span>
+                                </div>
+
+                                <Show
+                                    when={(individualData()?.students || []).length > 0}
+                                    fallback={
+                                        <p class="text-xs text-neutral-500 dark:text-neutral-400 py-6 text-center">
+                                            No academic student enrollments linked to this individual.
+                                        </p>
+                                    }
+                                >
+                                    <div class="space-y-3">
+                                        <For each={individualData()?.students || []}>
+                                            {(student) => (
+                                                <div class="p-3.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 space-y-1.5 text-xs sm:text-sm">
+                                                    <div class="flex items-center justify-between">
+                                                        <span class="font-bold text-neutral-900 dark:text-white">{student.name}</span>
+                                                        <span class="font-mono text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 border border-emerald-200 dark:border-emerald-800">
+                                                            NIM: {student.code}
+                                                        </span>
+                                                    </div>
+                                                    <div class="grid grid-cols-2 gap-2 text-xs text-neutral-600 dark:text-neutral-400 pt-1">
+                                                        <div>Registered: <span class="font-medium text-neutral-800 dark:text-neutral-200">{student.registered ? new Date(student.registered).toLocaleDateString('id-ID') : '-'}</span></div>
+                                                        <div>NISN: <span class="font-mono font-medium text-neutral-800 dark:text-neutral-200">{student.nisn || '-'}</span></div>
+                                                        <Show when={student.transfer_code}>
+                                                            <div>Transfer Code: <span class="font-mono text-neutral-800 dark:text-neutral-200">{student.transfer_code}</span></div>
+                                                        </Show>
+                                                        <Show when={student.finance_fee !== null && student.finance_fee !== undefined}>
+                                                            <div>Fee: <span class="font-medium text-neutral-800 dark:text-neutral-200">Rp {Number(student.finance_fee).toLocaleString('id-ID')}</span></div>
+                                                        </Show>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </For>
+                                    </div>
+                                </Show>
+                            </div>
+
+                            {/* 4. PMB Candidate / Admissions */}
+                            <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 space-y-4">
+                                <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
+                                    <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                            <circle cx="9" cy="7" r="4" />
+                                            <line x1="19" x2="19" y1="8" y2="14" />
+                                            <line x1="22" x2="16" y1="11" y2="11" />
+                                        </svg>
+                                        Admissions / PMB Candidates
+                                    </h3>
+                                    <span class="px-2 py-0.5 text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+                                        {(individualData()?.candidates || []).length} Candidates
+                                    </span>
+                                </div>
+
+                                <Show
+                                    when={(individualData()?.candidates || []).length > 0}
+                                    fallback={
+                                        <p class="text-xs text-neutral-500 dark:text-neutral-400 py-6 text-center">
+                                            No admission candidate applications found.
+                                        </p>
+                                    }
+                                >
+                                    <div class="space-y-3">
+                                        <For each={individualData()?.candidates || []}>
+                                            {(candidate) => (
+                                                <div class="p-3.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 space-y-1.5 text-xs sm:text-sm">
+                                                    <div class="flex items-center justify-between">
+                                                        <span class="font-bold text-neutral-900 dark:text-white">{candidate.name}</span>
+                                                        <span class="font-mono text-xs font-medium text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950 px-2 py-0.5 border border-amber-200 dark:border-amber-800">
+                                                            No: {candidate.code || '-'}
+                                                        </span>
+                                                    </div>
+                                                    <div class="grid grid-cols-2 gap-2 text-xs text-neutral-600 dark:text-neutral-400 pt-1">
+                                                        <div>School: <span class="font-medium text-neutral-800 dark:text-neutral-200">{candidate.school_name || '-'}</span></div>
+                                                        <div>NISN: <span class="font-mono text-neutral-800 dark:text-neutral-200">{candidate.student_national_number || '-'}</span></div>
+                                                        <div>KIP/Card: <span class="font-mono text-neutral-800 dark:text-neutral-200">{candidate.state_smart_card_number || '-'}</span></div>
+                                                        <div>Guidance: <span class="font-medium text-neutral-800 dark:text-neutral-200">{candidate.guidence_name || '-'}</span></div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </For>
+                                    </div>
+                                </Show>
+                            </div>
+
+                            {/* 5. RPL Evaluator Appointments */}
+                            <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 space-y-4">
+                                <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
+                                    <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-rose-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+                                            <path d="m9 12 2 2 4-4" />
+                                        </svg>
+                                        RPL Evaluator Appointments
+                                    </h3>
+                                    <span class="px-2 py-0.5 text-xs font-semibold bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300">
+                                        {(individualData()?.evaluators || []).length} Records
+                                    </span>
+                                </div>
+
+                                <Show
+                                    when={(individualData()?.evaluators || []).length > 0}
+                                    fallback={
+                                        <p class="text-xs text-neutral-500 dark:text-neutral-400 py-6 text-center">
+                                            No RPL evaluator appointments registered for this individual.
+                                        </p>
+                                    }
+                                >
+                                    <div class="space-y-3">
+                                        <For each={individualData()?.evaluators || []}>
+                                            {(ev) => (
+                                                <div class="p-3.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 space-y-1 text-xs">
+                                                    <div class="font-mono font-medium text-neutral-900 dark:text-white">
+                                                        Evaluator ID: {ev.id}
+                                                    </div>
+                                                    <div class="text-neutral-600 dark:text-neutral-400">
+                                                        Recognition Ref: <span class="font-mono text-neutral-800 dark:text-neutral-200">{ev.recognition_id || '-'}</span>
+                                                    </div>
+                                                    <div class="text-neutral-500">
+                                                        Appointed: {ev.created_at ? new Date(ev.created_at).toLocaleDateString('id-ID') : '-'}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </For>
+                                    </div>
+                                </Show>
+                            </div>
+
+                            {/* 6. System User & Authentication */}
+                            <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 space-y-4">
+                                <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
+                                    <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                        </svg>
+                                        System User Account (Autentikasi)
+                                    </h3>
+                                    <Show when={individualData()?.user}>
+                                        <span class={`px-2 py-0.5 text-xs font-semibold ${individualData()?.user?.is_active ? 'bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300' : 'bg-neutral-200 text-neutral-700'}`}>
+                                            {individualData()?.user?.is_active ? 'Active User' : 'Inactive'}
+                                        </span>
+                                    </Show>
+                                </div>
+
+                                <Show
+                                    when={individualData()?.user}
+                                    fallback={
+                                        <p class="text-xs text-neutral-500 dark:text-neutral-400 py-6 text-center">
+                                            No system authentication login account linked to this individual.
+                                        </p>
+                                    }
+                                >
+                                    <div class="divide-y divide-neutral-100 dark:divide-neutral-700/60 text-xs sm:text-sm">
+                                        <div class="py-2 grid grid-cols-3">
+                                            <span class="text-neutral-500">Account Email:</span>
+                                            <span class="col-span-2 font-semibold text-neutral-900 dark:text-white font-mono">{individualData()?.user?.email}</span>
+                                        </div>
+                                        <div class="py-2 grid grid-cols-3">
+                                            <span class="text-neutral-500">User PID:</span>
+                                            <span class="col-span-2 font-mono text-neutral-800 dark:text-neutral-200 truncate">{individualData()?.user?.pid}</span>
+                                        </div>
+                                        <div class="py-2 grid grid-cols-3">
+                                            <span class="text-neutral-500">Email Verification:</span>
+                                            <span class="col-span-2 text-neutral-800 dark:text-neutral-200">
+                                                {individualData()?.user?.email_verified_at ? `Verified on ${new Date(individualData()!.user!.email_verified_at!).toLocaleDateString('id-ID')}` : 'Unverified'}
+                                            </span>
+                                        </div>
+                                        <div class="py-2 grid grid-cols-3">
+                                            <span class="text-neutral-500">API Key:</span>
+                                            <span class="col-span-2 font-mono text-neutral-500 text-xs truncate">
+                                                {individualData()?.user?.api_key ? `${individualData()!.user!.api_key.substring(0, 12)}...` : '-'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </Show>
+                            </div>
+
                         </div>
                     </div>
                 </Show>
