@@ -4,16 +4,18 @@ use sea_orm::sea_query::extension::postgres::PgExpr;
 use sea_orm::sea_query::Expr;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, EntityTrait, IntoActiveModel,
-    PaginatorTrait, QueryFilter, QueryOrder, Set,
+    ModelTrait, PaginatorTrait, QueryFilter, QueryOrder, Set,
 };
 use uuid::Uuid;
 use validator::Validate;
 
+use crate::dtos::literate::educations::EducationResponse;
+use crate::dtos::person::master::biodata::BiodataResponse;
 use crate::dtos::person::master::individual::{
-    CreateIndividualRequest, IndividualQuery, IndividualResponse, PaginatedIndividualResponse,
-    UpdateIndividualRequest,
+    CreateIndividualRequest, IndividualDetailResponse, IndividualQuery, IndividualResponse,
+    PaginatedIndividualResponse, UpdateIndividualRequest,
 };
-use crate::dtos::common::reference::MessageResponse;
+use crate::dtos::common::reference::{MessageResponse, ReferenceResponse};
 use crate::models::person::master::individual as entity_mod;
 
 #[endpoint(tags("Person - Master - Individual"), status_codes(200, 500))]
@@ -110,13 +112,16 @@ pub async fn list_individual(
 pub async fn get_individual(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<IndividualResponse>, StatusError> {
+) -> Result<Json<IndividualDetailResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+    let id_str = req
+        .param::<String>("id")
+        .ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+    let id = Uuid::parse_str(&id_str)
+        .map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
     let item = entity_mod::Entity::find_by_id(id)
         .filter(entity_mod::Column::DeletedAt.is_null())
@@ -125,14 +130,221 @@ pub async fn get_individual(
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
         .ok_or_else(|| StatusError::not_found().brief("Individual not found"))?;
 
-    Ok(Json(IndividualResponse {
+    let gender = item
+        .find_related(crate::models::person::reference::gender::Entity)
+        .filter(crate::models::person::reference::gender::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .map(|m| ReferenceResponse {
+            id: m.id,
+            code: m.code,
+            alphabet_code: m.alphabet_code,
+            name: m.name,
+            created_at: m.created_at,
+            updated_at: m.updated_at,
+            deleted_at: m.deleted_at,
+            sync_at: m.sync_at,
+            created_by: m.created_by,
+            updated_by: m.updated_by,
+        });
+
+    let religion = item
+        .find_related(crate::models::person::reference::religion::Entity)
+        .filter(crate::models::person::reference::religion::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .map(|m| ReferenceResponse {
+            id: m.id,
+            code: m.code,
+            alphabet_code: m.alphabet_code,
+            name: m.name,
+            created_at: m.created_at,
+            updated_at: m.updated_at,
+            deleted_at: m.deleted_at,
+            sync_at: m.sync_at,
+            created_by: m.created_by,
+            updated_by: m.updated_by,
+        });
+
+    let occupation = item
+        .find_related(crate::models::person::reference::occupation::Entity)
+        .filter(crate::models::person::reference::occupation::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .map(|m| ReferenceResponse {
+            id: m.id,
+            code: m.code,
+            alphabet_code: m.alphabet_code,
+            name: m.name,
+            created_at: m.created_at,
+            updated_at: m.updated_at,
+            deleted_at: m.deleted_at,
+            sync_at: m.sync_at,
+            created_by: m.created_by,
+            updated_by: m.updated_by,
+        });
+
+    let income = item
+        .find_related(crate::models::person::reference::income::Entity)
+        .filter(crate::models::person::reference::income::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .map(|m| ReferenceResponse {
+            id: m.id,
+            code: m.code,
+            alphabet_code: m.alphabet_code,
+            name: m.name,
+            created_at: m.created_at,
+            updated_at: m.updated_at,
+            deleted_at: m.deleted_at,
+            sync_at: m.sync_at,
+            created_by: m.created_by,
+            updated_by: m.updated_by,
+        });
+
+    let identification_type = item
+        .find_related(crate::models::person::reference::identification_type::Entity)
+        .filter(crate::models::person::reference::identification_type::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .map(|m| ReferenceResponse {
+            id: m.id,
+            code: m.code,
+            alphabet_code: m.alphabet_code,
+            name: m.name,
+            created_at: m.created_at,
+            updated_at: m.updated_at,
+            deleted_at: m.deleted_at,
+            sync_at: m.sync_at,
+            created_by: m.created_by,
+            updated_by: m.updated_by,
+        });
+
+    let marital_status = item
+        .find_related(crate::models::person::reference::marital_status::Entity)
+        .filter(crate::models::person::reference::marital_status::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .map(|m| ReferenceResponse {
+            id: m.id,
+            code: m.code,
+            alphabet_code: m.alphabet_code,
+            name: m.name,
+            created_at: m.created_at,
+            updated_at: m.updated_at,
+            deleted_at: m.deleted_at,
+            sync_at: m.sync_at,
+            created_by: m.created_by,
+            updated_by: m.updated_by,
+        });
+
+    let profession = item
+        .find_related(crate::models::person::reference::profession::Entity)
+        .filter(crate::models::person::reference::profession::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .map(|m| ReferenceResponse {
+            id: m.id,
+            code: m.code,
+            alphabet_code: m.alphabet_code,
+            name: m.name,
+            created_at: m.created_at,
+            updated_at: m.updated_at,
+            deleted_at: m.deleted_at,
+            sync_at: m.sync_at,
+            created_by: m.created_by,
+            updated_by: m.updated_by,
+        });
+
+    let age_classification = item
+        .find_related(crate::models::person::reference::age_classification::Entity)
+        .filter(crate::models::person::reference::age_classification::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .map(|m| ReferenceResponse {
+            id: m.id,
+            code: m.code,
+            alphabet_code: m.alphabet_code,
+            name: m.name,
+            created_at: m.created_at,
+            updated_at: m.updated_at,
+            deleted_at: m.deleted_at,
+            sync_at: m.sync_at,
+            created_by: m.created_by,
+            updated_by: m.updated_by,
+        });
+
+    let education = item
+        .find_related(crate::models::literate::educations::Entity)
+        .filter(crate::models::literate::educations::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .map(|e| EducationResponse {
+            id: e.id,
+            code: e.code,
+            alphabet_code: e.alphabet_code,
+            abbreviation: e.abbreviation,
+            name: e.name,
+            level_id: e.level_id,
+            group_id: e.group_id,
+            category_id: e.category_id,
+            variety_id: e.variety_id,
+            created_at: e.created_at,
+            updated_at: e.updated_at,
+            sync_at: e.sync_at,
+            deleted_at: e.deleted_at,
+            created_by: e.created_by,
+            updated_by: e.updated_by,
+        });
+
+    let biodata = item
+        .find_related(crate::models::person::master::biodata::Entity)
+        .filter(crate::models::person::master::biodata::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .map(|b| BiodataResponse {
+            id: b.id,
+            height: b.height,
+            weight: b.weight,
+            is_positive_blood_rhesus: b.is_positive_blood_rhesus,
+            blood_type_id: b.blood_type_id,
+            hair_type_id: b.hair_type_id,
+            hair_color_id: b.hair_color_id,
+            eye_color_id: b.eye_color_id,
+            individual_id: b.individual_id,
+            bust: b.bust,
+            waist: b.waist,
+            hip: b.hip,
+            arm_circumference: b.arm_circumference,
+            menarche_age: b.menarche_age,
+            menopause_age: b.menopause_age,
+            created_at: b.created_at,
+            updated_at: b.updated_at,
+            deleted_at: b.deleted_at,
+            sync_at: b.sync_at,
+            created_by: b.created_by,
+            updated_by: b.updated_by,
+        });
+
+    Ok(Json(IndividualDetailResponse {
+        individual: IndividualResponse {
             id: item.id,
-            code: item.code.clone(),
-            name: item.name.clone(),
+            code: item.code,
+            name: item.name,
             front_title: item.front_title,
             last_title: item.last_title,
             birth_date: item.birth_date,
-            birth_place: item.birth_place.clone(),
+            birth_place: item.birth_place,
             gender_id: item.gender_id,
             religion_id: item.religion_id,
             occupation_id: item.occupation_id,
@@ -151,9 +363,20 @@ pub async fn get_individual(
             sync_at: item.sync_at,
             created_by: item.created_by,
             updated_by: item.updated_by,
-
+        },
+        gender,
+        religion,
+        occupation,
+        income,
+        identification_type,
+        marital_status,
+        profession,
+        education,
+        age_classification,
+        biodata,
     }))
-}#[endpoint(tags("Person - Master - Individual"), status_codes(200, 400, 500))]
+}
+#[endpoint(tags("Person - Master - Individual"), status_codes(200, 400, 500))]
 pub async fn create_individual(
         req: &mut Request,
         depot: &mut Depot,

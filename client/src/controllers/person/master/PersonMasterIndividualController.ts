@@ -109,7 +109,7 @@ export async function PersonMasterIndividualControllerShow(id: string): Promise<
     is_error: boolean;
     code: number;
     message: string;
-    data?: PersonMasterIndividual;
+    data?: PersonMasterIndividualDataObject;
 }> {
     if (!id || id === "" || id === "00000000-0000-0000-0000-000000000000") {
         return {
@@ -135,11 +135,30 @@ export async function PersonMasterIndividualControllerShow(id: string): Promise<
             };
         }
 
+        const individual = (resData.individual ?? resData) as PersonMasterIndividual;
+        const formattedData: PersonMasterIndividualDataObject = {
+            individual,
+            gender: resData.gender ?? null,
+            religion: resData.religion ?? null,
+            identification_type: resData.identification_type ?? null,
+            income: resData.income ?? null,
+            marital_status: resData.marital_status ?? null,
+            occupation: resData.occupation ?? null,
+            profession: resData.profession ?? null,
+            age_classification: resData.age_classification ?? null,
+            biodata: resData.biodata ?? null,
+            picture: resData.picture ?? null,
+            lecturer: resData.lecturer ?? null,
+            students: resData.students ?? null,
+            employees: resData.employees ?? null,
+            family_card_members: resData.family_card_members ?? null,
+        };
+
         return {
             is_error: false,
             code: 200,
             message: "Success",
-            data: resData as PersonMasterIndividual,
+            data: formattedData,
         };
     } catch (error: any) {
         return {

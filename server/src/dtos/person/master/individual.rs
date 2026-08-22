@@ -95,3 +95,19 @@ pub struct PaginatedIndividualResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct IndividualDetailResponse {
+    #[serde(flatten)]
+    pub individual: IndividualResponse,
+    pub gender: Option<crate::dtos::common::reference::ReferenceResponse>,
+    pub religion: Option<crate::dtos::common::reference::ReferenceResponse>,
+    pub occupation: Option<crate::dtos::common::reference::ReferenceResponse>,
+    pub income: Option<crate::dtos::common::reference::ReferenceResponse>,
+    pub identification_type: Option<crate::dtos::common::reference::ReferenceResponse>,
+    pub marital_status: Option<crate::dtos::common::reference::ReferenceResponse>,
+    pub profession: Option<crate::dtos::common::reference::ReferenceResponse>,
+    pub education: Option<crate::dtos::literate::educations::EducationResponse>,
+    pub age_classification: Option<crate::dtos::common::reference::ReferenceResponse>,
+    pub biodata: Option<crate::dtos::person::master::biodata::BiodataResponse>,
+}

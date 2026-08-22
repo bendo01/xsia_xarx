@@ -52,23 +52,7 @@ export default function PersonMasterIndividualShowPage() {
         try {
             const res = await PersonMasterIndividualControllerShow(id);
             if (!res.is_error && res.data) {
-                setIndividualData({
-                    individual: res.data,
-                    gender: null,
-                    religion: null,
-                    identification_type: null,
-                    income: null,
-                    marital_status: null,
-                    occupation: null,
-                    profession: null,
-                    age_classification: null,
-                    biodata: null,
-                    picture: null,
-                    lecturer: null,
-                    students: null,
-                    employees: null,
-                    family_card_members: null,
-                });
+                setIndividualData(res.data);
             } else {
                 setIndividualData(null);
                 toast.danger(res.message || 'Individual record not found on server.');
