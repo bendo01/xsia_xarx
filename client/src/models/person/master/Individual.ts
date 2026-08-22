@@ -71,6 +71,7 @@ export interface PersonMasterIndividualDataObject {
   marital_status: PersonReferenceMaritalStatus | null;
   occupation: PersonReferenceOccupation | null;
   profession: any | null; // PersonReferenceProfession
+  education?: any | null; // LiterateEducation
   age_classification: PersonReferenceAgeClassification | null;
   biodata: any | null; // PersonMasterBiodata
   picture: any | null; // PersonMasterImage

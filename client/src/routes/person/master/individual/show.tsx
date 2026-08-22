@@ -619,28 +619,40 @@ export default function PersonMasterIndividualShowPage() {
                                     <dd class="col-span-2 text-neutral-800 dark:text-neutral-200">{individualData()?.occupation?.name || '-'}</dd>
                                 </div>
                                 <div class="py-2.5 grid grid-cols-3">
+                                    <dt class="font-medium text-neutral-500 dark:text-neutral-400">Profession</dt>
+                                    <dd class="col-span-2 text-neutral-800 dark:text-neutral-200">{individualData()?.profession?.name || '-'}</dd>
+                                </div>
+                                <div class="py-2.5 grid grid-cols-3">
+                                    <dt class="font-medium text-neutral-500 dark:text-neutral-400">Latest Education</dt>
+                                    <dd class="col-span-2 text-neutral-800 dark:text-neutral-200">{individualData()?.education?.name || individualData()?.education?.abbreviation || '-'}</dd>
+                                </div>
+                                <div class="py-2.5 grid grid-cols-3">
                                     <dt class="font-medium text-neutral-500 dark:text-neutral-400">Income Bracket</dt>
                                     <dd class="col-span-2 text-neutral-800 dark:text-neutral-200">{individualData()?.income?.name || '-'}</dd>
                                 </div>
                                 <div class="py-2.5 grid grid-cols-3">
+                                    <dt class="font-medium text-neutral-500 dark:text-neutral-400">Age Classification</dt>
+                                    <dd class="col-span-2 text-neutral-800 dark:text-neutral-200">{individualData()?.age_classification?.name || '-'}</dd>
+                                </div>
+                                <div class="py-2.5 grid grid-cols-3">
                                     <dt class="font-medium text-neutral-500 dark:text-neutral-400">Social Protection (KPS)</dt>
                                     <dd class="col-span-2">
-                                        <span class={`inline-flex items-center px-2 py-0.5 text-xs font-semibold ${individualData()?.individual.is_social_protection_card_recipient
+                                        <span class={`inline-flex items-center px-2 py-0.5 text-xs font-semibold ${individualData()?.individual?.is_social_protection_card_recipient
                                                 ? 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300'
                                                 : 'bg-neutral-100 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300'
                                             }`}>
-                                            {individualData()?.individual.is_social_protection_card_recipient ? 'Recipient (Penerima)' : 'No (Bukan Penerima)'}
+                                            {individualData()?.individual?.is_social_protection_card_recipient ? 'Recipient (Penerima)' : 'No (Bukan Penerima)'}
                                         </span>
                                     </dd>
                                 </div>
                                 <div class="py-2.5 grid grid-cols-3">
                                     <dt class="font-medium text-neutral-500 dark:text-neutral-400">Special Needs (Disabilitas)</dt>
                                     <dd class="col-span-2">
-                                        <span class={`inline-flex items-center px-2 py-0.5 text-xs font-semibold ${individualData()?.individual.is_special_need
+                                        <span class={`inline-flex items-center px-2 py-0.5 text-xs font-semibold ${individualData()?.individual?.is_special_need
                                                 ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300'
                                                 : 'bg-neutral-100 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300'
                                             }`}>
-                                            {individualData()?.individual.is_special_need ? 'Yes (Berkebutuhan Khusus)' : 'None (Tidak Ada)'}
+                                            {individualData()?.individual?.is_special_need ? 'Yes (Berkebutuhan Khusus)' : 'None (Tidak Ada)'}
                                         </span>
                                     </dd>
                                 </div>

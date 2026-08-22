@@ -145,6 +145,7 @@ export async function PersonMasterIndividualControllerShow(id: string): Promise<
             marital_status: resData.marital_status ?? null,
             occupation: resData.occupation ?? null,
             profession: resData.profession ?? null,
+            education: resData.education ?? null,
             age_classification: resData.age_classification ?? null,
             biodata: resData.biodata ?? null,
             picture: resData.picture ?? null,
