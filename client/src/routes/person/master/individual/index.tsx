@@ -22,96 +22,6 @@ export default function PersonMasterIndividualIndexPage() {
     const [selectedItem, setSelectedItem] = createSignal<PersonMasterIndividualDataObject | null>(null);
     const [isSubmitting, setIsSubmitting] = createSignal(false);
 
-    // Demo placeholder list if server has no items yet
-    const fallbackList: PersonMasterIndividualDataObject[] = [
-        {
-            individual: {
-                id: '7a19e84b-c941-41d3-82ff-65239a5ec101',
-                code: '3171012304850001',
-                name: 'Bambang Sudarmono',
-                front_title: 'Dr. Ir.',
-                last_title: 'M.Kom., Ph.D.',
-                birth_date: '1985-04-23',
-                birth_place: 'Jakarta',
-                gender_id: '1',
-                religion_id: '1',
-                occupation_id: '1',
-                education_id: '1',
-                income_id: '1',
-                identification_type_id: '1',
-                marital_status_id: '1',
-                profession_id: '1',
-                age_classification_id: '1',
-                is_special_need: false,
-                is_social_protection_card_recipient: false,
-                is_deceased: false,
-                created_at: '2025-01-15T08:30:00Z',
-                updated_at: '2026-02-10T14:45:00Z',
-                sync_at: '2026-02-20T03:00:00Z',
-                deleted_at: null,
-                created_by: null,
-                updated_by: null,
-            },
-            gender: { id: '1', code: 1, name: 'Laki-laki', created_at: null, updated_at: null, deleted_at: null, created_by: null, updated_by: null },
-            religion: { id: '1', code: 1, name: 'Islam', created_at: null, updated_at: null, deleted_at: null, created_by: null, updated_by: null },
-            identification_type: { id: '1', code: 1, name: 'KTP', created_at: null, updated_at: null, deleted_at: null, created_by: null, updated_by: null },
-            income: null,
-            marital_status: null,
-            occupation: null,
-            profession: null,
-            age_classification: { id: '1', code: 4, alphabet_code: 'DA', name: 'Dewasa Awal', minimum: 26, maximum: 45, created_at: null, updated_at: null, sync_at: null, deleted_at: null, created_by: null, updated_by: null },
-            biodata: null,
-            picture: null,
-            lecturer: null,
-            students: null,
-            employees: null,
-            family_card_members: null,
-        },
-        {
-            individual: {
-                id: '8b20f95c-d052-52e4-93aa-76340b6fd202',
-                code: '3171016509870002',
-                name: 'Siti Rahmawati',
-                front_title: null,
-                last_title: 'S.E., M.M.',
-                birth_date: '1987-09-25',
-                birth_place: 'Bandung',
-                gender_id: '2',
-                religion_id: '1',
-                occupation_id: '2',
-                education_id: '2',
-                income_id: '2',
-                identification_type_id: '1',
-                marital_status_id: '1',
-                profession_id: '2',
-                age_classification_id: '1',
-                is_special_need: false,
-                is_social_protection_card_recipient: false,
-                is_deceased: false,
-                created_at: '2025-02-01T09:15:00Z',
-                updated_at: '2026-01-20T11:30:00Z',
-                sync_at: '2026-02-20T03:00:00Z',
-                deleted_at: null,
-                created_by: null,
-                updated_by: null,
-            },
-            gender: { id: '2', code: 2, name: 'Perempuan', created_at: null, updated_at: null, deleted_at: null, created_by: null, updated_by: null },
-            religion: { id: '1', code: 1, name: 'Islam', created_at: null, updated_at: null, deleted_at: null, created_by: null, updated_by: null },
-            identification_type: { id: '1', code: 1, name: 'KTP', created_at: null, updated_at: null, deleted_at: null, created_by: null, updated_by: null },
-            income: null,
-            marital_status: null,
-            occupation: null,
-            profession: null,
-            age_classification: { id: '1', code: 4, alphabet_code: 'DA', name: 'Dewasa Awal', minimum: 26, maximum: 45, created_at: null, updated_at: null, sync_at: null, deleted_at: null, created_by: null, updated_by: null },
-            biodata: null,
-            picture: null,
-            lecturer: null,
-            students: null,
-            employees: null,
-            family_card_members: null,
-        },
-    ];
-
     const fetchData = async () => {
         setIsLoading(true);
         try {
@@ -123,30 +33,21 @@ export default function PersonMasterIndividualIndexPage() {
                 sort_dir: sortParam().split('-')[1] || 'asc',
             });
 
-            if (response && Array.isArray(response.data) && response.data.length > 0) {
+            if (response && Array.isArray(response.data)) {
                 setItems(response.data);
                 setTotalData(response.pagination?.total_data ?? response.data.length);
                 setTotalPages(response.pagination?.total_page || 1);
-            } else if (response && Array.isArray(response.data) && response.data.length === 0 && searchQuery()) {
-                // Search returned zero results
+            } else {
                 setItems([]);
                 setTotalData(0);
                 setTotalPages(1);
-            } else if (response && Array.isArray(response.data) && response.data.length > 0) {
-                setItems(response.data);
-                setTotalData(response.pagination?.total_data || response.data.length);
-                setTotalPages(response.pagination?.total_page || 1);
-            } else {
-                // If offline or completely empty database without query
-                setItems(response?.data && response.data.length > 0 ? response.data : fallbackList);
-                setTotalData(response?.pagination?.total_data || fallbackList.length);
-                setTotalPages(response?.pagination?.total_page || 1);
             }
         } catch (error) {
             console.error('Error loading individuals from server:', error);
-            setItems(fallbackList);
-            setTotalData(fallbackList.length);
+            setItems([]);
+            setTotalData(0);
             setTotalPages(1);
+            toast.danger('Failed to load individuals from server.');
         } finally {
             setIsLoading(false);
         }
@@ -326,7 +227,25 @@ export default function PersonMasterIndividualIndexPage() {
                                         </For>
                                     }
                                 >
-                                    <For each={items()}>
+                                    <Show
+                                        when={items().length > 0}
+                                        fallback={
+                                            <tr>
+                                                <td colspan="6" class="px-4 py-12 text-center text-neutral-500 dark:text-neutral-400">
+                                                    <div class="flex flex-col items-center justify-center gap-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="size-8 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                                            <circle cx="12" cy="12" r="10" />
+                                                            <line x1="12" y1="8" x2="12" y2="12" />
+                                                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                                                        </svg>
+                                                        <span class="font-semibold text-sm text-neutral-700 dark:text-neutral-300">No individual records found</span>
+                                                        <span class="text-xs text-neutral-500">No data matches your query. Try searching with a different name or code.</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    >
+                                        <For each={items()}>
                                         {(item) => (
                                             <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-700/50 transition-colors">
                                                 {/* Portrait Placeholder Thumbnail */}
@@ -413,6 +332,7 @@ export default function PersonMasterIndividualIndexPage() {
                                             </tr>
                                         )}
                                     </For>
+                                    </Show>
                                 </Show>
                             </tbody>
                         </table>

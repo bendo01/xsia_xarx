@@ -22,169 +22,6 @@ export default function PersonMasterIndividualShowPage() {
     let photoDialogRef!: HTMLDialogElement;
     let fileInputRef!: HTMLInputElement;
 
-    // Fallback Mock Individual Data for Rich Demo / Offline State
-    const fallbackIndividual: PersonMasterIndividualDataObject = {
-        individual: {
-            id: '7a19e84b-c941-41d3-82ff-65239a5ec101',
-            code: '3171012304850001',
-            name: 'Bambang Sudarmono',
-            front_title: 'Dr. Ir.',
-            last_title: 'M.Kom., Ph.D.',
-            birth_date: '1985-04-23',
-            birth_place: 'Jakarta',
-            gender_id: '018f972b-8a21-729f-b98a-40a8a6be9101',
-            religion_id: '018f972b-8a21-729f-b98a-40a8a6be9102',
-            occupation_id: '018f972b-8a21-729f-b98a-40a8a6be9103',
-            education_id: '018f972b-8a21-729f-b98a-40a8a6be9104',
-            income_id: '018f972b-8a21-729f-b98a-40a8a6be9105',
-            identification_type_id: '018f972b-8a21-729f-b98a-40a8a6be9106',
-            marital_status_id: '018f972b-8a21-729f-b98a-40a8a6be9107',
-            profession_id: '018f972b-8a21-729f-b98a-40a8a6be9108',
-            age_classification_id: '018f972b-8a21-729f-b98a-40a8a6be9109',
-            is_special_need: false,
-            is_social_protection_card_recipient: false,
-            is_deceased: false,
-            created_at: '2025-01-15T08:30:00Z',
-            updated_at: '2026-02-10T14:45:00Z',
-            sync_at: '2026-02-20T03:00:00Z',
-            deleted_at: null,
-            created_by: '018f972b-8a21-729f-b98a-40a8a6be9999',
-            updated_by: '018f972b-8a21-729f-b98a-40a8a6be9999',
-        },
-        gender: {
-            id: '018f972b-8a21-729f-b98a-40a8a6be9101',
-            code: 1,
-            name: 'Laki-laki (Male)',
-            created_at: null,
-            updated_at: null,
-            deleted_at: null,
-            created_by: null,
-            updated_by: null,
-        },
-        religion: {
-            id: '018f972b-8a21-729f-b98a-40a8a6be9102',
-            code: 1,
-            name: 'Islam',
-            created_at: null,
-            updated_at: null,
-            deleted_at: null,
-            created_by: null,
-            updated_by: null,
-        },
-        identification_type: {
-            id: '018f972b-8a21-729f-b98a-40a8a6be9106',
-            code: 1,
-            name: 'Kartu Tanda Penduduk (KTP)',
-            created_at: null,
-            updated_at: null,
-            deleted_at: null,
-            created_by: null,
-            updated_by: null,
-        },
-        income: {
-            id: '018f972b-8a21-729f-b98a-40a8a6be9105',
-            code: 4,
-            name: 'Rp 10.000.000 - Rp 20.000.000',
-            minimum: 10000000,
-            maximum: 20000000,
-            created_at: null,
-            updated_at: null,
-            deleted_at: null,
-            created_by: null,
-            updated_by: null,
-        },
-        marital_status: {
-            id: '018f972b-8a21-729f-b98a-40a8a6be9107',
-            code: 2,
-            name: 'Kawin (Married)',
-            created_at: null,
-            updated_at: null,
-            deleted_at: null,
-            created_by: null,
-            updated_by: null,
-        },
-        occupation: {
-            id: '018f972b-8a21-729f-b98a-40a8a6be9103',
-            code: 3,
-            name: 'Dosen / Tenaga Pengajar Perguruan Tinggi',
-            created_at: null,
-            updated_at: null,
-            deleted_at: null,
-            created_by: null,
-            updated_by: null,
-        },
-        profession: {
-            id: '018f972b-8a21-729f-b98a-40a8a6be9108',
-            code: 12,
-            name: 'Dosen Informatika & Ilmu Komputer',
-        },
-        age_classification: {
-            id: '018f972b-8a21-729f-b98a-40a8a6be9109',
-            code: 4,
-            name: 'Dewasa Awal (Early Adult / 26-45 thn)',
-            alphabet_code: 'DA',
-            minimum: 26,
-            maximum: 45,
-            sync_at: null,
-            created_at: null,
-            updated_at: null,
-            deleted_at: null,
-            created_by: null,
-            updated_by: null,
-        },
-        biodata: {
-            height: 175,
-            weight: 72,
-            is_positive_blood_rhesus: true,
-            blood_type: 'O',
-            hair_type: 'Lurus (Straight)',
-            hair_color: 'Hitam (Black)',
-            eye_color: 'Cokelat Gelap (Dark Brown)',
-            bust: 98,
-            waist: 84,
-            hip: 96,
-            arm_circumference: 32,
-            menarche_age: 0,
-            menopause_age: 0,
-        },
-        picture: null,
-        lecturer: {
-            nidn: '0323048501',
-            functional_rank: 'Lektor Kepala',
-            status: 'Aktif Mengajar',
-            homebase: 'Teknik Informatika - S1',
-        },
-        students: [],
-        employees: [
-            {
-                nip: '198504232010121002',
-                unit: 'Fakultas Ilmu Komputer & Rekayasa',
-                position: 'Ketua Program Studi Informatika',
-                decree_number: 'SK/REK/2023/1104',
-                decree_date: '2023-08-01',
-                is_active: true,
-            },
-        ],
-        family_card_members: [
-            {
-                family_card_code: '3171012008100045',
-                relative_name: 'Siti Rahmawati, S.E., M.M.',
-                relative_nik: '3171016509870002',
-                relative_type: 'Istri (Spouse)',
-                gender: 'Perempuan',
-                birth_date: '1987-09-25',
-            },
-            {
-                family_card_code: '3171012008100045',
-                relative_name: 'Rayhan Sudarmono',
-                relative_nik: '3171011204150003',
-                relative_type: 'Anak Kandung (Child)',
-                gender: 'Laki-laki',
-                birth_date: '2015-04-12',
-            },
-        ],
-    };
-
     // Load available individual list for dropdown switcher
     const fetchIndividualList = async () => {
         try {
@@ -206,24 +43,40 @@ export default function PersonMasterIndividualShowPage() {
 
     // Fetch individual detail
     const fetchIndividualDetail = async (id: string) => {
+        if (!id || id === '' || id === '00000000-0000-0000-0000-000000000000') {
+            setIndividualData(null);
+            setIsLoading(false);
+            return;
+        }
         setIsLoading(true);
         try {
-            if (id && id !== '' && id !== '00000000-0000-0000-0000-000000000000') {
-                const res = await PersonMasterIndividualControllerShow(id);
-                if (!res.is_error && res.data) {
-                    setIndividualData({
-                        ...fallbackIndividual,
-                        individual: res.data,
-                    });
-                    return;
-                }
+            const res = await PersonMasterIndividualControllerShow(id);
+            if (!res.is_error && res.data) {
+                setIndividualData({
+                    individual: res.data,
+                    gender: null,
+                    religion: null,
+                    identification_type: null,
+                    income: null,
+                    marital_status: null,
+                    occupation: null,
+                    profession: null,
+                    age_classification: null,
+                    biodata: null,
+                    picture: null,
+                    lecturer: null,
+                    students: null,
+                    employees: null,
+                    family_card_members: null,
+                });
+            } else {
+                setIndividualData(null);
+                toast.danger(res.message || 'Individual record not found on server.');
             }
-            // Fallback to sample data for display
-            setIndividualData(fallbackIndividual);
         } catch (error) {
             console.error('Error fetching individual data:', error);
-            setIndividualData(fallbackIndividual);
-            toast.info('Viewing sample individual profile record.');
+            setIndividualData(null);
+            toast.danger('Failed to load individual profile from server.');
         } finally {
             setIsLoading(false);
         }
@@ -540,7 +393,7 @@ export default function PersonMasterIndividualShowPage() {
                                         <span>•</span>
                                         <div>
                                             <span class="font-semibold text-neutral-500 uppercase">ID Type:</span>{' '}
-                                            <span class="font-medium text-neutral-800 dark:text-neutral-200">{individualData()?.identification_type?.name || 'KTP (National ID)'}</span>
+                                            <span class="font-medium text-neutral-800 dark:text-neutral-200">{individualData()?.identification_type?.name || '-'}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -550,7 +403,7 @@ export default function PersonMasterIndividualShowPage() {
                                     <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-left">
                                         <span class="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">Gender</span>
                                         <span class="text-sm font-semibold text-neutral-900 dark:text-white flex items-center gap-1 mt-0.5">
-                                            {individualData()?.gender?.name || 'Laki-laki'}
+                                            {individualData()?.gender?.name || '-'}
                                         </span>
                                     </div>
 
@@ -559,7 +412,7 @@ export default function PersonMasterIndividualShowPage() {
                                         <span class="text-sm font-semibold text-neutral-900 dark:text-white mt-0.5 block truncate">
                                             {calculateAge(individualData()?.individual.birth_date) ? `${calculateAge(individualData()?.individual.birth_date)} Tahun` : '-'}
                                             <span class="text-xs font-normal text-neutral-500 block truncate">
-                                                {individualData()?.age_classification?.name || 'Dewasa'}
+                                                {individualData()?.age_classification?.name || '-'}
                                             </span>
                                         </span>
                                     </div>
@@ -567,14 +420,14 @@ export default function PersonMasterIndividualShowPage() {
                                     <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-left">
                                         <span class="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">Religion</span>
                                         <span class="text-sm font-semibold text-neutral-900 dark:text-white mt-0.5 block">
-                                            {individualData()?.religion?.name || 'Islam'}
+                                            {individualData()?.religion?.name || '-'}
                                         </span>
                                     </div>
 
                                     <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-left">
                                         <span class="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">Marital Status</span>
                                         <span class="text-sm font-semibold text-neutral-900 dark:text-white mt-0.5 block">
-                                            {individualData()?.marital_status?.name || 'Kawin'}
+                                            {individualData()?.marital_status?.name || '-'}
                                         </span>
                                     </div>
                                 </div>
@@ -598,7 +451,7 @@ export default function PersonMasterIndividualShowPage() {
                                     <div class="flex items-center gap-2 mt-1 sm:mt-0 text-neutral-500">
                                         <span>Profession:</span>
                                         <span class="font-medium text-neutral-800 dark:text-neutral-200">
-                                            {individualData()?.profession?.name || individualData()?.occupation?.name || 'Tenaga Akademik / Dosen'}
+                                            {individualData()?.profession?.name || individualData()?.occupation?.name || '-'}
                                         </span>
                                     </div>
                                 </div>
@@ -737,7 +590,7 @@ export default function PersonMasterIndividualShowPage() {
                                 </div>
                                 <div class="py-2.5 grid grid-cols-3">
                                     <dt class="font-medium text-neutral-500 dark:text-neutral-400">ID Document Type</dt>
-                                    <dd class="col-span-2 text-neutral-800 dark:text-neutral-200">{individualData()?.identification_type?.name || 'KTP'}</dd>
+                                    <dd class="col-span-2 text-neutral-800 dark:text-neutral-200">{individualData()?.identification_type?.name || '-'}</dd>
                                 </div>
                                 <div class="py-2.5 grid grid-cols-3">
                                     <dt class="font-medium text-neutral-500 dark:text-neutral-400">Place of Birth</dt>
@@ -814,187 +667,191 @@ export default function PersonMasterIndividualShowPage() {
 
                 {/* --- TAB 2: BIOMETRICS & BIODATA --- */}
                 <Show when={activeTab() === 'biometrics'}>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* Physical Metrics & BMI */}
-                        <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 md:col-span-1 space-y-4">
-                            <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider pb-2 border-b border-neutral-200 dark:border-neutral-700">
-                                Height & Weight Index
-                            </h3>
-
-                            <div class="space-y-3">
-                                <div class="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
-                                    <span class="text-xs text-neutral-500">Height (Tinggi)</span>
-                                    <span class="text-lg font-bold text-neutral-900 dark:text-white">
-                                        {individualData()?.biodata?.height || 175} <span class="text-xs font-normal text-neutral-500">cm</span>
-                                    </span>
-                                </div>
-
-                                <div class="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
-                                    <span class="text-xs text-neutral-500">Weight (Berat)</span>
-                                    <span class="text-lg font-bold text-neutral-900 dark:text-white">
-                                        {individualData()?.biodata?.weight || 72} <span class="text-xs font-normal text-neutral-500">kg</span>
-                                    </span>
-                                </div>
-
-                                {/* BMI Indicator */}
-                                {(() => {
-                                    const bmi = calculateBMI(individualData()?.biodata?.height || 175, individualData()?.biodata?.weight || 72);
-                                    return (
-                                        <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 space-y-2">
-                                            <div class="flex justify-between items-center">
-                                                <span class="text-xs text-neutral-500">BMI Calculation</span>
-                                                <span class={`px-2 py-0.5 text-xs font-semibold border ${bmi?.color}`}>
-                                                    {bmi?.category}
-                                                </span>
-                                            </div>
-                                            <div class="text-2xl font-black text-neutral-900 dark:text-white">
-                                                {bmi?.value} <span class="text-xs font-normal text-neutral-500">kg/m²</span>
-                                            </div>
-                                        </div>
-                                    );
-                                })()}
+                    <Show
+                        when={individualData()?.biodata}
+                        fallback={
+                            <div class="p-8 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-center text-xs text-neutral-500 dark:text-neutral-400">
+                                No physical measurements or biometric records available for this individual.
                             </div>
-                        </div>
+                        }
+                    >
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {/* Physical Metrics & BMI */}
+                            <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 md:col-span-1 space-y-4">
+                                <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider pb-2 border-b border-neutral-200 dark:border-neutral-700">
+                                    Height & Weight Index
+                                </h3>
 
-                        {/* Blood Type & Biometric Features */}
-                        <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 md:col-span-2 space-y-4">
-                            <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider pb-2 border-b border-neutral-200 dark:border-neutral-700">
-                                Biological & Morphological Features
-                            </h3>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
-                                <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
-                                    <span class="block text-xs text-neutral-500">Blood Type & Rhesus</span>
-                                    <span class="text-base font-bold text-red-600 dark:text-red-400 mt-1 block">
-                                        Type {individualData()?.biodata?.blood_type || 'O'}{' '}
-                                        <span class="text-xs font-medium text-neutral-700 dark:text-neutral-300">
-                                            ({individualData()?.biodata?.is_positive_blood_rhesus ? 'Rh+' : 'Rh-'})
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                        <span class="text-xs text-neutral-500">Height (Tinggi)</span>
+                                        <span class="text-lg font-bold text-neutral-900 dark:text-white">
+                                            {individualData()?.biodata?.height || '-'} <span class="text-xs font-normal text-neutral-500">cm</span>
                                         </span>
-                                    </span>
-                                </div>
+                                    </div>
 
-                                <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
-                                    <span class="block text-xs text-neutral-500">Eye Color (Warna Mata)</span>
-                                    <span class="text-base font-semibold text-neutral-900 dark:text-white mt-1 block">
-                                        {individualData()?.biodata?.eye_color || 'Cokelat Gelap (Dark Brown)'}
-                                    </span>
-                                </div>
+                                    <div class="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                        <span class="text-xs text-neutral-500">Weight (Berat)</span>
+                                        <span class="text-lg font-bold text-neutral-900 dark:text-white">
+                                            {individualData()?.biodata?.weight || '-'} <span class="text-xs font-normal text-neutral-500">kg</span>
+                                        </span>
+                                    </div>
 
-                                <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
-                                    <span class="block text-xs text-neutral-500">Hair Type (Jenis Rambut)</span>
-                                    <span class="text-base font-semibold text-neutral-900 dark:text-white mt-1 block">
-                                        {individualData()?.biodata?.hair_type || 'Lurus (Straight)'}
-                                    </span>
-                                </div>
-
-                                <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
-                                    <span class="block text-xs text-neutral-500">Hair Color (Warna Rambut)</span>
-                                    <span class="text-base font-semibold text-neutral-900 dark:text-white mt-1 block">
-                                        {individualData()?.biodata?.hair_color || 'Hitam (Black)'}
-                                    </span>
+                                    {/* BMI Indicator */}
+                                    {(() => {
+                                        const h = individualData()?.biodata?.height;
+                                        const w = individualData()?.biodata?.weight;
+                                        if (!h || !w) return null;
+                                        const bmi = calculateBMI(h, w);
+                                        return (
+                                            <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 space-y-2">
+                                                <div class="flex justify-between items-center">
+                                                    <span class="text-xs text-neutral-500">BMI Calculation</span>
+                                                    <span class={`px-2 py-0.5 text-xs font-semibold border ${bmi?.color}`}>
+                                                        {bmi?.category}
+                                                    </span>
+                                                </div>
+                                                <div class="text-2xl font-black text-neutral-900 dark:text-white">
+                                                    {bmi?.value} <span class="text-xs font-normal text-neutral-500">kg/m²</span>
+                                                </div>
+                                            </div>
+                                        );
+                                    })()}
                                 </div>
                             </div>
 
-                            {/* Anthropometric Circumferences */}
-                            <div class="pt-2">
-                                <h4 class="text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider mb-2">
-                                    Body Circumferences (Lingkar Tubuh)
-                                </h4>
-                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                                    <div class="p-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
-                                        <span class="text-neutral-500 block">Bust / Dada</span>
-                                        <span class="font-bold text-sm text-neutral-900 dark:text-white">{individualData()?.biodata?.bust || 98} cm</span>
+                            {/* Blood Type & Biometric Features */}
+                            <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 md:col-span-2 space-y-4">
+                                <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider pb-2 border-b border-neutral-200 dark:border-neutral-700">
+                                    Biological & Morphological Features
+                                </h3>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
+                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                        <span class="block text-xs text-neutral-500">Blood Type & Rhesus</span>
+                                        <span class="text-base font-bold text-red-600 dark:text-red-400 mt-1 block">
+                                            Type {individualData()?.biodata?.blood_type || '-'}{' '}
+                                            <span class="text-xs font-medium text-neutral-700 dark:text-neutral-300">
+                                                ({individualData()?.biodata?.is_positive_blood_rhesus ? 'Rh+' : 'Rh-'})
+                                            </span>
+                                        </span>
                                     </div>
-                                    <div class="p-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
-                                        <span class="text-neutral-500 block">Waist / Pinggang</span>
-                                        <span class="font-bold text-sm text-neutral-900 dark:text-white">{individualData()?.biodata?.waist || 84} cm</span>
+
+                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                        <span class="block text-xs text-neutral-500">Eye Color (Warna Mata)</span>
+                                        <span class="text-base font-semibold text-neutral-900 dark:text-white mt-1 block">
+                                            {individualData()?.biodata?.eye_color || '-'}
+                                        </span>
                                     </div>
-                                    <div class="p-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
-                                        <span class="text-neutral-500 block">Hip / Pinggul</span>
-                                        <span class="font-bold text-sm text-neutral-900 dark:text-white">{individualData()?.biodata?.hip || 96} cm</span>
+
+                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                        <span class="block text-xs text-neutral-500">Hair Type (Jenis Rambut)</span>
+                                        <span class="text-base font-semibold text-neutral-900 dark:text-white mt-1 block">
+                                            {individualData()?.biodata?.hair_type || '-'}
+                                        </span>
                                     </div>
-                                    <div class="p-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
-                                        <span class="text-neutral-500 block">Arm / Lengan</span>
-                                        <span class="font-bold text-sm text-neutral-900 dark:text-white">{individualData()?.biodata?.arm_circumference || 32} cm</span>
+
+                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                        <span class="block text-xs text-neutral-500">Hair Color (Warna Rambut)</span>
+                                        <span class="text-base font-semibold text-neutral-900 dark:text-white mt-1 block">
+                                            {individualData()?.biodata?.hair_color || '-'}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Anthropometric Circumferences */}
+                                <div class="pt-2">
+                                    <h4 class="text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider mb-2">
+                                        Body Circumferences (Lingkar Tubuh)
+                                    </h4>
+                                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                                        <div class="p-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                            <span class="text-neutral-500 block">Bust / Dada</span>
+                                            <span class="font-bold text-sm text-neutral-900 dark:text-white">{individualData()?.biodata?.bust || '-'} cm</span>
+                                        </div>
+                                        <div class="p-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                            <span class="text-neutral-500 block">Waist / Pinggang</span>
+                                            <span class="font-bold text-sm text-neutral-900 dark:text-white">{individualData()?.biodata?.waist || '-'} cm</span>
+                                        </div>
+                                        <div class="p-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                            <span class="text-neutral-500 block">Hip / Pinggul</span>
+                                            <span class="font-bold text-sm text-neutral-900 dark:text-white">{individualData()?.biodata?.hip || '-'} cm</span>
+                                        </div>
+                                        <div class="p-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                            <span class="text-neutral-500 block">Arm / Lengan</span>
+                                            <span class="font-bold text-sm text-neutral-900 dark:text-white">{individualData()?.biodata?.arm_circumference || '-'} cm</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </Show>
                 </Show>
 
                 {/* --- TAB 3: FAMILY CARD & RELATIVES --- */}
                 <Show when={activeTab() === 'family'}>
-                    <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 space-y-4">
-                        <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
-                            <div>
-                                <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                                        <circle cx="9" cy="7" r="4" />
-                                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                                    </svg>
-                                    Family Card & Household Members (Kartu Keluarga)
-                                </h3>
-                                <p class="text-xs text-neutral-500 mt-0.5">
-                                    Official household relations and registered family members.
-                                </p>
+                    <Show
+                        when={(individualData()?.family_card_members || []).length > 0}
+                        fallback={
+                            <div class="p-8 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-center text-xs text-neutral-500 dark:text-neutral-400">
+                                No family card or household member records linked to this individual.
                             </div>
-                            <span class="px-2.5 py-1 text-xs font-mono font-semibold bg-neutral-100 dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600">
-                                KK: 3171012008100045
-                            </span>
-                        </div>
+                        }
+                    >
+                        <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 space-y-4">
+                            <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
+                                <div>
+                                    <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                            <circle cx="9" cy="7" r="4" />
+                                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                        </svg>
+                                        Family Card & Household Members (Kartu Keluarga)
+                                    </h3>
+                                    <p class="text-xs text-neutral-500 mt-0.5">
+                                        Official household relations and registered family members.
+                                    </p>
+                                </div>
+                            </div>
 
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-xs sm:text-sm text-left">
-                                <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
-                                    <tr>
-                                        <th class="px-4 py-3 font-semibold">Relative Name</th>
-                                        <th class="px-4 py-3 font-semibold">NIK</th>
-                                        <th class="px-4 py-3 font-semibold">Relation Type</th>
-                                        <th class="px-4 py-3 font-semibold">Gender</th>
-                                        <th class="px-4 py-3 font-semibold">Birth Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
-                                    <tr class="bg-blue-50/40 dark:bg-blue-950/20 font-medium">
-                                        <td class="px-4 py-3 font-semibold text-blue-900 dark:text-blue-200">
-                                            {fullPersonName()} <span class="text-xs font-normal text-blue-600 dark:text-blue-400">(Self)</span>
-                                        </td>
-                                        <td class="px-4 py-3 font-mono">{individualData()?.individual.code || '-'}</td>
-                                        <td class="px-4 py-3">
-                                            <span class="px-2 py-0.5 text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
-                                                Kepala Keluarga (Head of Family)
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-3">{individualData()?.gender?.name || 'Laki-laki'}</td>
-                                        <td class="px-4 py-3">{individualData()?.individual.birth_date || '-'}</td>
-                                    </tr>
-
-                                    <For each={individualData()?.family_card_members || []}>
-                                        {(member) => (
-                                            <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-700/50 transition-colors">
-                                                <td class="px-4 py-3 font-medium text-neutral-900 dark:text-white">
-                                                    {member.relative_name}
-                                                </td>
-                                                <td class="px-4 py-3 font-mono text-neutral-600 dark:text-neutral-300">
-                                                    {member.relative_nik}
-                                                </td>
-                                                <td class="px-4 py-3">
-                                                    <span class="px-2 py-0.5 text-xs font-medium bg-neutral-100 text-neutral-800 dark:bg-neutral-700 dark:text-neutral-200">
-                                                        {member.relative_type}
-                                                    </span>
-                                                </td>
-                                                <td class="px-4 py-3">{member.gender}</td>
-                                                <td class="px-4 py-3">{member.birth_date}</td>
-                                            </tr>
-                                        )}
-                                    </For>
-                                </tbody>
-                            </table>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-xs sm:text-sm text-left">
+                                    <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
+                                        <tr>
+                                            <th class="px-4 py-3 font-semibold">Relative Name</th>
+                                            <th class="px-4 py-3 font-semibold">NIK</th>
+                                            <th class="px-4 py-3 font-semibold">Relation Type</th>
+                                            <th class="px-4 py-3 font-semibold">Gender</th>
+                                            <th class="px-4 py-3 font-semibold">Birth Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
+                                        <For each={individualData()?.family_card_members || []}>
+                                            {(member) => (
+                                                <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-700/50 transition-colors">
+                                                    <td class="px-4 py-3 font-medium text-neutral-900 dark:text-white">
+                                                        {member.relative_name}
+                                                    </td>
+                                                    <td class="px-4 py-3 font-mono text-neutral-600 dark:text-neutral-300">
+                                                        {member.relative_nik}
+                                                    </td>
+                                                    <td class="px-4 py-3">
+                                                        <span class="px-2 py-0.5 text-xs font-medium bg-neutral-100 text-neutral-800 dark:bg-neutral-700 dark:text-neutral-200">
+                                                            {member.relative_type}
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-4 py-3">{member.gender}</td>
+                                                    <td class="px-4 py-3">{member.birth_date}</td>
+                                                </tr>
+                                            )}
+                                        </For>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
+                    </Show>
                 </Show>
 
                 {/* --- TAB 4: ACADEMIC & STAFF ROLES --- */}
