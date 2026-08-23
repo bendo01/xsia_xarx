@@ -102,6 +102,38 @@ pub fn get_system_permissions() -> Vec<PermissionDefinition> {
             description: "Religion reference data",
         },
 
+        // ── Literate Module ──
+        PermissionDefinition {
+            name: "literate.categories",
+            uri: "api/v1/categories",
+            is_open: false,
+            description: "Manage literate categories",
+        },
+        PermissionDefinition {
+            name: "literate.educations",
+            uri: "api/v1/educations",
+            is_open: false,
+            description: "Manage literate educations",
+        },
+        PermissionDefinition {
+            name: "literate.groups",
+            uri: "api/v1/groups",
+            is_open: false,
+            description: "Manage literate groups",
+        },
+        PermissionDefinition {
+            name: "literate.levels",
+            uri: "api/v1/levels",
+            is_open: false,
+            description: "Manage literate levels",
+        },
+        PermissionDefinition {
+            name: "literate.varieties",
+            uri: "api/v1/varieties",
+            is_open: false,
+            description: "Manage literate varieties",
+        },
+
         // ── Auth Module ──
         PermissionDefinition {
             name: "auth.permission",
