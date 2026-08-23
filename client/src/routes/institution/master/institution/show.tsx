@@ -1,27 +1,24 @@
-import { createSignal, onMount, Show } from 'solid-js';
+import { createSignal, onMount, Show, For } from 'solid-js';
 import { useSearchParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import type { InstitutionMasterInstitutionDataObject } from '~/models/institution/master/Institution';
 import {
     InstitutionMasterInstitutionControllerShow,
-    fetchInstitutionVarietyOptions,
-    fetchInstitutionCategoryOptions,
-    fetchCountryOptions,
-    InstitutionMasterInstitutionControllerList,
-    fetchAcademicYearOptions,
 } from '~/controllers/institution/master/InstitutionMasterInstitutionController';
 
 export default function InstitutionMasterInstitutionShowPage() {
     const [searchParams] = useSearchParams();
     const [isLoading, setIsLoading] = createSignal(true);
     const [institutionData, setInstitutionData] = createSignal<InstitutionMasterInstitutionDataObject | null>(null);
+    const [activeTab, setActiveTab] = createSignal<'units' | 'employees' | 'lecturers' | 'candidates'>('units');
 
     // Reference labels
     const [varietyName, setVarietyName] = createSignal('-');
     const [categoryName, setCategoryName] = createSignal('-');
     const [countryName, setCountryName] = createSignal('-');
     const [parentName, setParentName] = createSignal('-');
+    const [feederName, setFeederName] = createSignal('-');
     const [academicYearName, setAcademicYearName] = createSignal('-');
 
     const institutionId = () => (searchParams.id as string) || '';
@@ -34,34 +31,19 @@ export default function InstitutionMasterInstitutionShowPage() {
         }
         setIsLoading(true);
         try {
-            const [res, varieties, categories, countries, parents, academicYears] = await Promise.all([
-                InstitutionMasterInstitutionControllerShow(id),
-                fetchInstitutionVarietyOptions(),
-                fetchInstitutionCategoryOptions(),
-                fetchCountryOptions(),
-                InstitutionMasterInstitutionControllerList(),
-                fetchAcademicYearOptions(),
-            ]);
+            const res = await InstitutionMasterInstitutionControllerShow(id);
 
             if (!res.is_error && res.data) {
                 setInstitutionData(res.data);
-                const inst = res.data.institution;
+                const d = res.data;
 
-                // Resolve labels
-                const variety = varieties.find((v) => v.id === inst.variety_id);
-                if (variety?.label) setVarietyName(variety.label);
-
-                const category = categories.find((c) => c.id === inst.category_id);
-                if (category?.label) setCategoryName(category.label);
-
-                const country = countries.find((c) => c.id === inst.country_id);
-                if (country?.label) setCountryName(country.label);
-
-                const parent = parents.find((p) => p.id === inst.parent_id);
-                if (parent?.label) setParentName(parent.label);
-
-                const academicYear = academicYears.find((y) => y.id === inst.academic_year_id);
-                if (academicYear?.label) setAcademicYearName(academicYear.label);
+                // Resolve labels directly from loaded relationships
+                setVarietyName(d.variety?.name || (d.variety?.code ? `Variety #${d.variety.code}` : '-') );
+                setCategoryName(d.category?.name || '-');
+                setCountryName(d.country?.name ? `${d.country.name}${d.country.alpha2_code ? ` (${d.country.alpha2_code})` : ''}` : '-');
+                setParentName(d.parent?.name ? `${d.parent.name}${d.parent.code ? ` (${d.parent.code})` : ''}` : (d.institution.parent_id ? 'Parent Configured' : '-'));
+                setFeederName(d.feeder?.name ? `${d.feeder.name}${d.feeder.code ? ` (${d.feeder.code})` : ''}` : (d.institution.feeder_id || '-'));
+                setAcademicYearName(d.academic_year?.name || '-');
             } else {
                 setInstitutionData(null);
                 toast.danger(res.message || 'Institution record not found.');
@@ -116,7 +98,7 @@ export default function InstitutionMasterInstitutionShowPage() {
                             </Show>
                         </h1>
                         <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
-                            Comprehensive institutional master record, classification, and operational parameters.
+                            Comprehensive institutional master record, classification, and relational entities.
                         </p>
                     </div>
 
@@ -167,7 +149,7 @@ export default function InstitutionMasterInstitutionShowPage() {
                 <Show when={isLoading()}>
                     <div class="p-12 text-center bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-3">
                         <div class="animate-spin size-8 border-3 border-blue-600 border-t-transparent rounded-full mx-auto"></div>
-                        <p class="text-xs sm:text-sm text-neutral-500">Loading institution profile details...</p>
+                        <p class="text-xs sm:text-sm text-neutral-500">Loading institution profile details and related data...</p>
                     </div>
                 </Show>
 
@@ -195,8 +177,9 @@ export default function InstitutionMasterInstitutionShowPage() {
 
                 <Show when={!isLoading() && institutionData()}>
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        {/* Left Column: Quick Profile Card */}
+                        {/* Left Column: Quick Profile & Classification Cards */}
                         <div class="lg:col-span-1 space-y-6">
+                            {/* Profile Card */}
                             <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 p-6 shadow-2xs space-y-4">
                                 <div class="size-16 bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 flex items-center justify-center text-blue-600 dark:text-blue-400 mx-auto">
                                     <svg class="size-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
@@ -256,10 +239,7 @@ export default function InstitutionMasterInstitutionShowPage() {
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Right Column: Detailed Sections */}
-                        <div class="lg:col-span-2 space-y-6">
                             {/* Classification Card */}
                             <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
                                 <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700">
@@ -274,25 +254,25 @@ export default function InstitutionMasterInstitutionShowPage() {
                                     </h3>
                                 </div>
 
-                                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
-                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60">
-                                        <span class="text-neutral-500 dark:text-neutral-400 block text-[11px] uppercase tracking-wider">Variety</span>
-                                        <span class="font-semibold text-neutral-900 dark:text-white mt-0.5 block">{varietyName()}</span>
+                                <div class="p-6 space-y-3 text-xs sm:text-sm">
+                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 flex items-center justify-between">
+                                        <span class="text-neutral-500 dark:text-neutral-400 text-[11px] uppercase tracking-wider">Variety</span>
+                                        <span class="font-semibold text-neutral-900 dark:text-white">{varietyName()}</span>
                                     </div>
 
-                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60">
-                                        <span class="text-neutral-500 dark:text-neutral-400 block text-[11px] uppercase tracking-wider">Category</span>
-                                        <span class="font-semibold text-neutral-900 dark:text-white mt-0.5 block">{categoryName()}</span>
+                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 flex items-center justify-between">
+                                        <span class="text-neutral-500 dark:text-neutral-400 text-[11px] uppercase tracking-wider">Category</span>
+                                        <span class="font-semibold text-neutral-900 dark:text-white">{categoryName()}</span>
                                     </div>
 
-                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60">
-                                        <span class="text-neutral-500 dark:text-neutral-400 block text-[11px] uppercase tracking-wider">Parent Institution</span>
-                                        <span class="font-semibold text-neutral-900 dark:text-white mt-0.5 block">{parentName()}</span>
+                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 flex items-center justify-between">
+                                        <span class="text-neutral-500 dark:text-neutral-400 text-[11px] uppercase tracking-wider">Parent Institution</span>
+                                        <span class="font-semibold text-neutral-900 dark:text-white">{parentName()}</span>
                                     </div>
 
-                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60">
-                                        <span class="text-neutral-500 dark:text-neutral-400 block text-[11px] uppercase tracking-wider">Academic Year</span>
-                                        <span class="font-semibold text-neutral-900 dark:text-white mt-0.5 block">{academicYearName()}</span>
+                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 flex items-center justify-between">
+                                        <span class="text-neutral-500 dark:text-neutral-400 text-[11px] uppercase tracking-wider">Academic Year</span>
+                                        <span class="font-semibold text-neutral-900 dark:text-white">{academicYearName()}</span>
                                     </div>
                                 </div>
                             </div>
@@ -311,18 +291,18 @@ export default function InstitutionMasterInstitutionShowPage() {
                                     </h3>
                                 </div>
 
-                                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
-                                    <div>
-                                        <span class="text-neutral-500 dark:text-neutral-400 block text-[11px] uppercase tracking-wider">Feeder Integration ID</span>
-                                        <span class="font-mono text-neutral-900 dark:text-white mt-0.5 block">
-                                            {institutionData()?.institution.feeder_id || '-'}
-                                        </span>
+                                <div class="p-6 space-y-3 text-xs sm:text-sm">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-neutral-500 dark:text-neutral-400 text-[11px] uppercase tracking-wider">Feeder Ref:</span>
+                                        <span class="font-medium text-neutral-900 dark:text-white">{feederName()}</span>
                                     </div>
-                                    <div>
-                                        <span class="text-neutral-500 dark:text-neutral-400 block text-[11px] uppercase tracking-wider">Last Sync Timestamp</span>
-                                        <span class="text-neutral-900 dark:text-white mt-0.5 block">
-                                            {institutionData()?.institution.sync_at || '-'}
-                                        </span>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-neutral-500 dark:text-neutral-400 text-[11px] uppercase tracking-wider">Feeder UUID:</span>
+                                        <span class="font-mono text-neutral-900 dark:text-white text-xs">{institutionData()?.institution.feeder_id || '-'}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-neutral-500 dark:text-neutral-400 text-[11px] uppercase tracking-wider">Sync Timestamp:</span>
+                                        <span class="text-neutral-900 dark:text-white">{institutionData()?.institution.sync_at || '-'}</span>
                                     </div>
                                 </div>
                             </div>
@@ -339,19 +319,264 @@ export default function InstitutionMasterInstitutionShowPage() {
                                     </h3>
                                 </div>
 
-                                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
-                                    <div>
-                                        <span class="text-neutral-500 dark:text-neutral-400 block text-[11px] uppercase tracking-wider">Created Timestamp</span>
-                                        <span class="text-neutral-900 dark:text-white mt-0.5 block font-mono">
-                                            {institutionData()?.institution.created_at || '-'}
-                                        </span>
+                                <div class="p-6 space-y-3 text-xs">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-neutral-500 dark:text-neutral-400 text-[11px] uppercase tracking-wider">Created:</span>
+                                        <span class="text-neutral-900 dark:text-white font-mono">{institutionData()?.institution.created_at || '-'}</span>
                                     </div>
-                                    <div>
-                                        <span class="text-neutral-500 dark:text-neutral-400 block text-[11px] uppercase tracking-wider">Last Updated Timestamp</span>
-                                        <span class="text-neutral-900 dark:text-white mt-0.5 block font-mono">
-                                            {institutionData()?.institution.updated_at || '-'}
-                                        </span>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-neutral-500 dark:text-neutral-400 text-[11px] uppercase tracking-wider">Updated:</span>
+                                        <span class="text-neutral-900 dark:text-white font-mono">{institutionData()?.institution.updated_at || '-'}</span>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Right Column: Loaded Relational Lists with Tabs */}
+                        <div class="lg:col-span-2 space-y-6">
+                            <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
+                                {/* Tab Navigation */}
+                                <div class="border-b border-neutral-200 dark:border-neutral-700 flex overflow-x-auto">
+                                    <button
+                                        type="button"
+                                        onClick={() => setActiveTab('units')}
+                                        class={`px-4 py-3 text-xs sm:text-sm font-medium border-b-2 transition-colors cursor-pointer flex items-center gap-2 shrink-0 ${activeTab() === 'units' ? 'border-blue-600 text-blue-600 dark:text-blue-400 font-semibold' : 'border-transparent text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'}`}
+                                    >
+                                        <span>Units & Divisions</span>
+                                        <span class={`px-1.5 py-0.2 text-[10px] rounded-full font-mono ${activeTab() === 'units' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'}`}>
+                                            {institutionData()?.units?.length || 0}
+                                        </span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setActiveTab('employees')}
+                                        class={`px-4 py-3 text-xs sm:text-sm font-medium border-b-2 transition-colors cursor-pointer flex items-center gap-2 shrink-0 ${activeTab() === 'employees' ? 'border-blue-600 text-blue-600 dark:text-blue-400 font-semibold' : 'border-transparent text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'}`}
+                                    >
+                                        <span>Employees</span>
+                                        <span class={`px-1.5 py-0.2 text-[10px] rounded-full font-mono ${activeTab() === 'employees' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'}`}>
+                                            {institutionData()?.employees?.length || 0}
+                                        </span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setActiveTab('lecturers')}
+                                        class={`px-4 py-3 text-xs sm:text-sm font-medium border-b-2 transition-colors cursor-pointer flex items-center gap-2 shrink-0 ${activeTab() === 'lecturers' ? 'border-blue-600 text-blue-600 dark:text-blue-400 font-semibold' : 'border-transparent text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'}`}
+                                    >
+                                        <span>Faculty / Lecturers</span>
+                                        <span class={`px-1.5 py-0.2 text-[10px] rounded-full font-mono ${activeTab() === 'lecturers' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'}`}>
+                                            {institutionData()?.lecturers?.length || 0}
+                                        </span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setActiveTab('candidates')}
+                                        class={`px-4 py-3 text-xs sm:text-sm font-medium border-b-2 transition-colors cursor-pointer flex items-center gap-2 shrink-0 ${activeTab() === 'candidates' ? 'border-blue-600 text-blue-600 dark:text-blue-400 font-semibold' : 'border-transparent text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'}`}
+                                    >
+                                        <span>Registered Candidates</span>
+                                        <span class={`px-1.5 py-0.2 text-[10px] rounded-full font-mono ${activeTab() === 'candidates' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'}`}>
+                                            {institutionData()?.candidates?.length || 0}
+                                        </span>
+                                    </button>
+                                </div>
+
+                                {/* Tab Contents */}
+                                <div class="p-6">
+                                    {/* Units Tab */}
+                                    <Show when={activeTab() === 'units'}>
+                                        <div class="space-y-4">
+                                            <div class="flex items-center justify-between">
+                                                <h4 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                                    Associated Units & Departments ({institutionData()?.units?.length || 0})
+                                                </h4>
+                                            </div>
+
+                                            <Show when={(institutionData()?.units?.length || 0) === 0}>
+                                                <div class="p-8 text-center bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200 dark:border-neutral-700/60 text-xs text-neutral-500 space-y-2">
+                                                    <p>No operational units or sub-divisions associated with this institution.</p>
+                                                </div>
+                                            </Show>
+
+                                            <Show when={(institutionData()?.units?.length || 0) > 0}>
+                                                <div class="overflow-x-auto border border-neutral-200 dark:border-neutral-700">
+                                                    <table class="w-full text-left text-xs">
+                                                        <thead class="bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-700 uppercase tracking-wider text-neutral-500">
+                                                            <tr>
+                                                                <th class="px-4 py-2.5">#</th>
+                                                                <th class="px-4 py-2.5">Unit Name</th>
+                                                                <th class="px-4 py-2.5">Code</th>
+                                                                <th class="px-4 py-2.5">Status</th>
+                                                                <th class="px-4 py-2.5">Created At</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700/50">
+                                                            <For each={institutionData()?.units}>
+                                                                {(unit, idx) => (
+                                                                    <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-750 transition-colors">
+                                                                        <td class="px-4 py-3 font-mono text-neutral-400">{idx() + 1}</td>
+                                                                        <td class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">{unit.name || '-'}</td>
+                                                                        <td class="px-4 py-3 font-mono text-neutral-600 dark:text-neutral-300">{unit.code || '-'}</td>
+                                                                        <td class="px-4 py-3">
+                                                                            <span class={`px-2 py-0.5 text-[10px] font-semibold uppercase ${unit.is_active ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : 'bg-neutral-200 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300'}`}>
+                                                                                {unit.is_active ? 'Active' : 'Inactive'}
+                                                                            </span>
+                                                                        </td>
+                                                                        <td class="px-4 py-3 text-neutral-500 font-mono">{unit.created_at || '-'}</td>
+                                                                    </tr>
+                                                                )}
+                                                            </For>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </Show>
+                                        </div>
+                                    </Show>
+
+                                    {/* Employees Tab */}
+                                    <Show when={activeTab() === 'employees'}>
+                                        <div class="space-y-4">
+                                            <div class="flex items-center justify-between">
+                                                <h4 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                                    Associated Employees & Staff ({institutionData()?.employees?.length || 0})
+                                                </h4>
+                                            </div>
+
+                                            <Show when={(institutionData()?.employees?.length || 0) === 0}>
+                                                <div class="p-8 text-center bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200 dark:border-neutral-700/60 text-xs text-neutral-500 space-y-2">
+                                                    <p>No active employees or staff records registered under this institution.</p>
+                                                </div>
+                                            </Show>
+
+                                            <Show when={(institutionData()?.employees?.length || 0) > 0}>
+                                                <div class="overflow-x-auto border border-neutral-200 dark:border-neutral-700">
+                                                    <table class="w-full text-left text-xs">
+                                                        <thead class="bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-700 uppercase tracking-wider text-neutral-500">
+                                                            <tr>
+                                                                <th class="px-4 py-2.5">#</th>
+                                                                <th class="px-4 py-2.5">Employee Name</th>
+                                                                <th class="px-4 py-2.5">Employee Code</th>
+                                                                <th class="px-4 py-2.5">Decree No.</th>
+                                                                <th class="px-4 py-2.5">Status</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700/50">
+                                                            <For each={institutionData()?.employees}>
+                                                                {(emp, idx) => (
+                                                                    <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-750 transition-colors">
+                                                                        <td class="px-4 py-3 font-mono text-neutral-400">{idx() + 1}</td>
+                                                                        <td class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">{emp.name}</td>
+                                                                        <td class="px-4 py-3 font-mono text-neutral-600 dark:text-neutral-300">{emp.code}</td>
+                                                                        <td class="px-4 py-3 text-neutral-600 dark:text-neutral-300">{emp.decree_number || '-'}</td>
+                                                                        <td class="px-4 py-3">
+                                                                            <span class={`px-2 py-0.5 text-[10px] font-semibold uppercase ${emp.is_active ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : 'bg-neutral-200 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300'}`}>
+                                                                                {emp.is_active ? 'Active' : 'Inactive'}
+                                                                            </span>
+                                                                        </td>
+                                                                    </tr>
+                                                                )}
+                                                            </For>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </Show>
+                                        </div>
+                                    </Show>
+
+                                    {/* Lecturers Tab */}
+                                    <Show when={activeTab() === 'lecturers'}>
+                                        <div class="space-y-4">
+                                            <div class="flex items-center justify-between">
+                                                <h4 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                                    Associated Faculty & Lecturers ({institutionData()?.lecturers?.length || 0})
+                                                </h4>
+                                            </div>
+
+                                            <Show when={(institutionData()?.lecturers?.length || 0) === 0}>
+                                                <div class="p-8 text-center bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200 dark:border-neutral-700/60 text-xs text-neutral-500 space-y-2">
+                                                    <p>No lecturers or faculty members affiliated with this institution.</p>
+                                                </div>
+                                            </Show>
+
+                                            <Show when={(institutionData()?.lecturers?.length || 0) > 0}>
+                                                <div class="overflow-x-auto border border-neutral-200 dark:border-neutral-700">
+                                                    <table class="w-full text-left text-xs">
+                                                        <thead class="bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-700 uppercase tracking-wider text-neutral-500">
+                                                            <tr>
+                                                                <th class="px-4 py-2.5">#</th>
+                                                                <th class="px-4 py-2.5">Faculty Name</th>
+                                                                <th class="px-4 py-2.5">Code</th>
+                                                                <th class="px-4 py-2.5">NUPTK</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700/50">
+                                                            <For each={institutionData()?.lecturers}>
+                                                                {(lecturer, idx) => (
+                                                                    <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-750 transition-colors">
+                                                                        <td class="px-4 py-3 font-mono text-neutral-400">{idx() + 1}</td>
+                                                                        <td class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">
+                                                                            {lecturer.front_title ? `${lecturer.front_title} ` : ''}
+                                                                            {lecturer.name || '-'}
+                                                                            {lecturer.last_title ? `, ${lecturer.last_title}` : ''}
+                                                                        </td>
+                                                                        <td class="px-4 py-3 font-mono text-neutral-600 dark:text-neutral-300">{lecturer.code || '-'}</td>
+                                                                        <td class="px-4 py-3 font-mono text-neutral-600 dark:text-neutral-300">{lecturer.nuptk || '-'}</td>
+                                                                    </tr>
+                                                                )}
+                                                            </For>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </Show>
+                                        </div>
+                                    </Show>
+
+                                    {/* Candidates Tab */}
+                                    <Show when={activeTab() === 'candidates'}>
+                                        <div class="space-y-4">
+                                            <div class="flex items-center justify-between">
+                                                <h4 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                                    Registered Candidates ({institutionData()?.candidates?.length || 0})
+                                                </h4>
+                                            </div>
+
+                                            <Show when={(institutionData()?.candidates?.length || 0) === 0}>
+                                                <div class="p-8 text-center bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200 dark:border-neutral-700/60 text-xs text-neutral-500 space-y-2">
+                                                    <p>No academic candidates currently registered under this institution.</p>
+                                                </div>
+                                            </Show>
+
+                                            <Show when={(institutionData()?.candidates?.length || 0) > 0}>
+                                                <div class="overflow-x-auto border border-neutral-200 dark:border-neutral-700">
+                                                    <table class="w-full text-left text-xs">
+                                                        <thead class="bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-700 uppercase tracking-wider text-neutral-500">
+                                                            <tr>
+                                                                <th class="px-4 py-2.5">#</th>
+                                                                <th class="px-4 py-2.5">Candidate Name</th>
+                                                                <th class="px-4 py-2.5">Registration Code</th>
+                                                                <th class="px-4 py-2.5">National Student ID (NISN)</th>
+                                                                <th class="px-4 py-2.5">Origin School</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700/50">
+                                                            <For each={institutionData()?.candidates}>
+                                                                {(cand, idx) => (
+                                                                    <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-750 transition-colors">
+                                                                        <td class="px-4 py-3 font-mono text-neutral-400">{idx() + 1}</td>
+                                                                        <td class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">{cand.name}</td>
+                                                                        <td class="px-4 py-3 font-mono text-neutral-600 dark:text-neutral-300">{cand.code || '-'}</td>
+                                                                        <td class="px-4 py-3 font-mono text-neutral-600 dark:text-neutral-300">{cand.student_national_number || '-'}</td>
+                                                                        <td class="px-4 py-3 text-neutral-600 dark:text-neutral-300">{cand.school_name || '-'}</td>
+                                                                    </tr>
+                                                                )}
+                                                            </For>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </Show>
+                                        </div>
+                                    </Show>
                                 </div>
                             </div>
                         </div>

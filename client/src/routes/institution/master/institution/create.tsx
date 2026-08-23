@@ -164,7 +164,7 @@ export default function InstitutionMasterInstitutionCreatePage() {
         <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 pb-12">
             <TopBar />
 
-            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+            <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Header with Breadcrumbs */}
                 <div class="border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">

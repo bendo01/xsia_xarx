@@ -2,6 +2,25 @@ import type { InstitutionReferenceCategory } from "~/models/institution/referenc
 import type { InstitutionReferenceVariety } from "~/models/institution/reference/Variety";
 import type { LocationCountry } from "~/models/location/Country";
 import type { AcademicGeneralReferenceAcademicYear } from "~/models/academic/general/reference/AcademicYear";
+import type { InstitutionMasterUnit } from "~/models/institution/master/Unit";
+import type { InstitutionMasterEmployee } from "~/models/institution/master/Employee";
+
+export interface AcademicLecturerBasic {
+    id: string;
+    code: string;
+    name?: string | null;
+    front_title?: string | null;
+    last_title?: string | null;
+    nuptk?: string | null;
+}
+
+export interface AcademicCandidateBasic {
+    id: string;
+    code?: string | null;
+    name: string;
+    student_national_number?: string | null;
+    school_name?: string | null;
+}
 
 export interface InstitutionMasterInstitution {
     id: string;
@@ -29,7 +48,12 @@ export interface InstitutionMasterInstitutionDataObject {
     category?: InstitutionReferenceCategory | null;
     country?: LocationCountry | null;
     parent?: InstitutionMasterInstitution | null;
+    feeder?: InstitutionMasterInstitution | null;
     academic_year?: AcademicGeneralReferenceAcademicYear | null;
+    units?: InstitutionMasterUnit[];
+    employees?: InstitutionMasterEmployee[];
+    lecturers?: AcademicLecturerBasic[];
+    candidates?: AcademicCandidateBasic[];
 }
 
 export interface ModelInstitutionMasterInstitutionPaginationResponse {

@@ -76,3 +76,19 @@ pub struct PaginatedInstitutionResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct InstitutionDetailResponse {
+    #[serde(flatten)]
+    pub institution: InstitutionResponse,
+    pub variety: Option<crate::dtos::common::reference::ReferenceResponse>,
+    pub category: Option<crate::dtos::common::reference::ReferenceResponse>,
+    pub country: Option<crate::dtos::location::countries::CountryResponse>,
+    pub academic_year: Option<crate::dtos::common::reference::ReferenceResponse>,
+    pub parent: Option<InstitutionResponse>,
+    pub feeder: Option<InstitutionResponse>,
+    pub units: Vec<crate::dtos::institution::master::units::UnitResponse>,
+    pub employees: Vec<crate::dtos::institution::master::employees::EmployeeResponse>,
+    pub lecturers: Vec<crate::dtos::academic::lecturer::master::lecturers::LecturerResponse>,
+    pub candidates: Vec<crate::dtos::academic::candidate::master::candidates::CandidateResponse>,
+}

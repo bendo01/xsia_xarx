@@ -121,17 +121,41 @@ export async function InstitutionMasterInstitutionControllerShow(
             };
         }
 
-        const institution: InstitutionMasterInstitution = resJson;
+        const institution: InstitutionMasterInstitution = {
+            id: resJson.id,
+            code: resJson.code,
+            name: resJson.name,
+            alphabet_code: resJson.alphabet_code,
+            is_active: resJson.is_active,
+            variety_id: resJson.variety_id,
+            category_id: resJson.category_id,
+            country_id: resJson.country_id,
+            parent_id: resJson.parent_id,
+            feeder_id: resJson.feeder_id,
+            academic_year_id: resJson.academic_year_id,
+            created_at: resJson.created_at,
+            updated_at: resJson.updated_at,
+            deleted_at: resJson.deleted_at,
+            sync_at: resJson.sync_at,
+            created_by: resJson.created_by,
+            updated_by: resJson.updated_by,
+        };
+
         return {
             is_error: false,
             message: "Successfully loaded institution details.",
             data: {
                 institution,
-                variety: null,
-                category: null,
-                country: null,
-                parent: null,
-                academic_year: null,
+                variety: resJson.variety || null,
+                category: resJson.category || null,
+                country: resJson.country || null,
+                parent: resJson.parent || null,
+                feeder: resJson.feeder || null,
+                academic_year: resJson.academic_year || null,
+                units: Array.isArray(resJson.units) ? resJson.units : [],
+                employees: Array.isArray(resJson.employees) ? resJson.employees : [],
+                lecturers: Array.isArray(resJson.lecturers) ? resJson.lecturers : [],
+                candidates: Array.isArray(resJson.candidates) ? resJson.candidates : [],
             },
         };
     } catch (error: any) {

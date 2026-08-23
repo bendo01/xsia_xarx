@@ -28,14 +28,14 @@ pub struct Model {
     pub variety: BelongsTo<crate::models::institution::reference::varieties::Entity>,
     #[sea_orm(belongs_to, from = "category_id", to = "id")]
     pub category: BelongsTo<crate::models::institution::reference::categories::Entity>,
-    #[sea_orm(has_many)]
-    pub units: HasMany<crate::models::institution::master::units::Entity>,
-    #[sea_orm(has_many)]
-    pub employees: HasMany<crate::models::institution::master::employees::Entity>,
     #[sea_orm(belongs_to, from = "country_id", to = "id")]
     pub country: BelongsTo<crate::models::location::countries::Entity>,
     #[sea_orm(belongs_to, from = "academic_year_id", to = "id")]
     pub academic_year: BelongsTo<Option<crate::models::academic::general::reference::academic_years::Entity>>,
+    #[sea_orm(has_many)]
+    pub units: HasMany<crate::models::institution::master::units::Entity>,
+    #[sea_orm(has_many)]
+    pub employees: HasMany<crate::models::institution::master::employees::Entity>,
     #[sea_orm(has_many)]
     pub estimasi: HasMany<crate::models::feeder::akumulasi::estimasi::Entity>,
     #[sea_orm(has_many)]

@@ -5,7 +5,7 @@ import { InstitutionMasterInstitution } from "./Institution";
 export interface InstitutionMasterEmployee {
     id: string;
     code: string | null,
-    // name: string | null,
+    name?: string | null,
     institution_id: string | null,
     individual_id: string | null,
     decree_date: string | null,
@@ -21,7 +21,7 @@ export interface InstitutionMasterEmployee {
 export const initialInstitutionMasterEmployee: InstitutionMasterEmployee = {
     id: "",
     code: "",
-    // name: "",
+    name: "",
     institution_id: null,
     individual_id: null,
     decree_date: null,
