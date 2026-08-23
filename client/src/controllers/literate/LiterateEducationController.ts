@@ -1,24 +1,39 @@
 import type { ModelSelectItem } from "~/models/common/select/ModelSelectItem";
+import { getStorageItem } from "~/lib/storage";
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0.1:5800/api/v1/").replace(/\/+$/, "");
 const path = "educations";
 
+const getHeaders = (): Record<string, string> => {
+    const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+    };
+    if (typeof window !== "undefined") {
+        const token = getStorageItem("token");
+        if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
+        }
+    }
+    return headers;
+};
+
 export async function fetchEducationOptions(): Promise<ModelSelectItem[]> {
+    const headers = getHeaders();
+
     try {
         // 1. Try POST /educations/options
         const response = await fetch(`${getBaseUrl()}/${path}/options`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
+            headers,
             body: JSON.stringify({}),
         });
 
         if (response.ok) {
             const resData = await response.json();
-            if (Array.isArray(resData) && resData.length > 0) {
-                return resData.map((item: any) => ({
+            const list = Array.isArray(resData) ? resData : (Array.isArray(resData?.data) ? resData.data : []);
+            if (list.length > 0) {
+                return list.map((item: any) => ({
                     id: item.id,
                     value: item.id,
                     label: item.name || item.alphabet_code || item.code || String(item.id),
@@ -29,16 +44,14 @@ export async function fetchEducationOptions(): Promise<ModelSelectItem[]> {
         // 2. Try GET /educations/options
         const getOptionsRes = await fetch(`${getBaseUrl()}/${path}/options`, {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
+            headers,
         });
 
         if (getOptionsRes.ok) {
             const resData = await getOptionsRes.json();
-            if (Array.isArray(resData) && resData.length > 0) {
-                return resData.map((item: any) => ({
+            const list = Array.isArray(resData) ? resData : (Array.isArray(resData?.data) ? resData.data : []);
+            if (list.length > 0) {
+                return list.map((item: any) => ({
                     id: item.id,
                     value: item.id,
                     label: item.name || item.alphabet_code || item.code || String(item.id),
@@ -49,10 +62,7 @@ export async function fetchEducationOptions(): Promise<ModelSelectItem[]> {
         // 3. Fallback: GET /educations?page=1&page_size=1000
         const fallbackRes = await fetch(`${getBaseUrl()}/${path}?page=1&page_size=1000`, {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
+            headers,
         });
 
         if (fallbackRes.ok) {
@@ -72,10 +82,7 @@ export async function fetchEducationOptions(): Promise<ModelSelectItem[]> {
         // 4. Fallback: GET /levels?page=1&page_size=1000
         const levelsRes = await fetch(`${getBaseUrl()}/levels?page=1&page_size=1000`, {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
+            headers,
         });
 
         if (levelsRes.ok) {

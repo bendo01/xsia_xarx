@@ -709,7 +709,7 @@ export default function PersonMasterIndividualEditPage() {
                                         >
                                             <option value="">-- Select Education Level --</option>
                                             <For each={educationOptions()}>
-                                                {(opt) => <option value={opt.id}>{opt.label}</option>}
+                                                {(opt: any) => <option value={opt.id || opt.value}>{opt.label || opt.name}</option>}
                                             </For>
                                         </select>
                                     </div>
