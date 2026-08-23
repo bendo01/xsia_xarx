@@ -12,6 +12,10 @@ pub struct IndividualQuery {
     pub name: Option<String>,
     pub code: Option<String>,
     pub search: Option<String>,
+    pub sort_by: Option<String>,
+    pub sort_dir: Option<String>,
+    pub order_by: Option<String>,
+    pub order_dir: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]

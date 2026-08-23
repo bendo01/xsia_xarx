@@ -495,42 +495,45 @@ export default function PersonMasterIndividualShowPage() {
                         <button
                             type="button"
                             onClick={() => setActiveTab('demographics')}
-                            class={`px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center gap-2 ${activeTab() === 'demographics'
-                                    ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-neutral-800'
+                            class={`flex-1 sm:flex-none px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-2 ${activeTab() === 'demographics'
+                                    ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-white dark:bg-neutral-800'
                                     : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
                                 }`}
                             id="tab-demographics"
+                            title="1. Demographics & Civil ID"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
                                 <circle cx="12" cy="7" r="4" />
                             </svg>
-                            <span>1. Demographics & Civil ID</span>
+                            <span class="hidden sm:inline">1. Demographics & Civil ID</span>
                         </button>
 
                         <button
                             type="button"
                             onClick={() => setActiveTab('biometrics')}
-                            class={`px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center gap-2 ${activeTab() === 'biometrics'
-                                    ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-neutral-800'
+                            class={`flex-1 sm:flex-none px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-2 ${activeTab() === 'biometrics'
+                                    ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-white dark:bg-neutral-800'
                                     : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
                                 }`}
                             id="tab-biometrics"
+                            title="2. Biometrics & Biodata"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
                             </svg>
-                            <span>2. Biometrics & Biodata</span>
+                            <span class="hidden sm:inline">2. Biometrics & Biodata</span>
                         </button>
 
                         <button
                             type="button"
                             onClick={() => setActiveTab('family')}
-                            class={`px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center gap-2 ${activeTab() === 'family'
-                                    ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-neutral-800'
+                            class={`flex-1 sm:flex-none px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-2 ${activeTab() === 'family'
+                                    ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-white dark:bg-neutral-800'
                                     : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
                                 }`}
                             id="tab-family"
+                            title="3. Family Card"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
@@ -538,9 +541,9 @@ export default function PersonMasterIndividualShowPage() {
                                 <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
                                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                             </svg>
-                            <span>3. Family Card</span>
+                            <span class="hidden sm:inline">3. Family Card</span>
                             <Show when={(individualData()?.family_card_members || []).length > 0}>
-                                <span class="px-1.5 py-0.2 text-[10px] rounded-full bg-neutral-200 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 font-bold">
+                                <span class="hidden sm:inline-block px-1.5 py-0.2 text-[10px] rounded-full bg-neutral-200 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 font-bold">
                                     {(individualData()?.family_card_members || []).length}
                                 </span>
                             </Show>
@@ -549,19 +552,20 @@ export default function PersonMasterIndividualShowPage() {
                         <button
                             type="button"
                             onClick={() => setActiveTab('roles')}
-                            class={`px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center gap-2 ${activeTab() === 'roles'
-                                    ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-neutral-800'
+                            class={`flex-1 sm:flex-none px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-2 ${activeTab() === 'roles'
+                                    ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-white dark:bg-neutral-800'
                                     : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
                                 }`}
                             id="tab-roles"
+                            title="4. Academic & Staff Roles"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <rect width="20" height="14" x="2" y="7" rx="2" ry="2" />
                                 <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
                             </svg>
-                            <span>4. Academic & Staff Roles</span>
+                            <span class="hidden sm:inline">4. Academic & Staff Roles</span>
                             <Show when={totalRolesCount() > 0}>
-                                <span class="px-1.5 py-0.2 text-[10px] rounded-full bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 font-bold">
+                                <span class="hidden sm:inline-block px-1.5 py-0.2 text-[10px] rounded-full bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300 font-bold">
                                     {totalRolesCount()}
                                 </span>
                             </Show>
@@ -570,17 +574,18 @@ export default function PersonMasterIndividualShowPage() {
                         <button
                             type="button"
                             onClick={() => setActiveTab('audit')}
-                            class={`px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center gap-2 ${activeTab() === 'audit'
-                                    ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-neutral-800'
+                            class={`flex-1 sm:flex-none px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-2 ${activeTab() === 'audit'
+                                    ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-white dark:bg-neutral-800'
                                     : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
                                 }`}
                             id="tab-audit"
+                            title="5. System Audit Log"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="12" cy="12" r="10" />
                                 <polyline points="12 6 12 12 16 14" />
                             </svg>
-                            <span>5. System Audit Log</span>
+                            <span class="hidden sm:inline">5. System Audit Log</span>
                         </button>
                     </div>
                 </div>

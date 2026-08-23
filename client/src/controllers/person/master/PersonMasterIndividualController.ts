@@ -34,6 +34,8 @@ export async function PersonMasterIndividualControllerIndex(pagination: TypePagi
         if (pagination.code !== undefined && pagination.code !== null && !isNaN(pagination.code)) {
             queryParams.set("code", String(pagination.code));
         }
+        if (pagination.sort_by) queryParams.set("sort_by", pagination.sort_by);
+        if (pagination.sort_dir) queryParams.set("sort_dir", pagination.sort_dir);
 
         const url = `${getBaseUrl()}/${path}?${queryParams.toString()}`;
         const response = await fetch(url, {

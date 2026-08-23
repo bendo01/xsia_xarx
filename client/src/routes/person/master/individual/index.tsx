@@ -172,7 +172,10 @@ export default function PersonMasterIndividualIndexPage() {
                         <select
                             class="w-1/2 p-2 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white dark:bg-neutral-800 dark:border-neutral-700 dark:text-white"
                             value={sortParam()}
-                            onChange={(e) => setSortParam((e.target as HTMLSelectElement).value)}
+                            onChange={(e) => {
+                                setSortParam((e.target as HTMLSelectElement).value);
+                                setCurrentPage(1);
+                            }}
                         >
                             <option value="name-asc">Name (A-Z)</option>
                             <option value="name-desc">Name (Z-A)</option>
