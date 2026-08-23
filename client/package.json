@@ -10,23 +10,23 @@
   "dependencies": {
     "@floating-ui/dom": "^1.8.0",
     "@solidjs/router": "^1.0.0",
-    "@solidjs/start": "^2.0.0",
+    "@solidjs/start": "^2.0.3",
     "@tanstack/charts": "^0.12.0",
     "@tanstack/solid-form": "^1.33.5",
     "@tanstack/solid-table": "^9.1.2",
     "nitro": "^3.0.260610-beta",
     "ol": "^10.10.0",
     "quill": "^2.0.3",
-    "slim-select": "^4.0.7",
-    "solid-js": "^1.9.14",
+    "slim-select": "^4.1.0",
+    "solid-js": "^1.9.15",
     "solid-transition-group": "^0.3.0",
     "toastify-js": "^1.12.0",
-    "vite": "^8.0.0"
+    "vite": "^8.2.2"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.0.7",
+    "@tailwindcss/vite": "^4.3.3",
     "@types/toastify-js": "^1.12.4",
-    "tailwindcss": "^4.0.7"
+    "tailwindcss": "^4.3.3"
   },
   "engines": {
     "node": ">=24"
