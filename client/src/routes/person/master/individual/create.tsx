@@ -12,6 +12,7 @@ import { PersonReferenceControllerOccupationList } from '~/controllers/person/re
 import { PersonReferenceControllerProfessionList } from '~/controllers/person/reference/PersonReferenceProfessionController';
 import { PersonReferenceControllerIncomeList } from '~/controllers/person/reference/PersonReferenceIncomeController';
 import { PersonReferenceControllerAgeClassificationList } from '~/controllers/person/reference/PersonReferenceAgeClassificationController';
+import { LiterateEducationControllerList } from '~/controllers/literate/LiterateEducationController';
 import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
 
 export default function PersonMasterIndividualCreatePage() {
@@ -30,56 +31,6 @@ export default function PersonMasterIndividualCreatePage() {
     const [incomeOptions, setIncomeOptions] = createSignal<ModelSelectItem[]>([]);
     const [ageClassificationOptions, setAgeClassificationOptions] = createSignal<ModelSelectItem[]>([]);
     const [educationOptions, setEducationOptions] = createSignal<ModelSelectItem[]>([]);
-
-    const fetchEducationOptions = async (): Promise<ModelSelectItem[]> => {
-        try {
-            const baseUrl = (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0.1:5800/api/v1/").replace(/\/+$/, "");
-            const res = await fetch(`${baseUrl}/educations?page=1&page_size=1000`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            });
-            if (res.ok) {
-                const data = await res.json();
-                if (Array.isArray(data.data) && data.data.length > 0) {
-                    return data.data.map((item: any) => ({
-                        id: item.id,
-                        value: item.id,
-                        label: item.name
-                            ? `${item.name}${item.abbreviation ? ` (${item.abbreviation})` : item.alphabet_code ? ` (${item.alphabet_code})` : ''}`
-                            : (item.abbreviation || item.alphabet_code || item.code),
-                    }));
-                }
-            }
-
-            // Fallback to /levels endpoint if /educations returned empty
-            const resLevels = await fetch(`${baseUrl}/levels?page=1&page_size=1000`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            });
-            if (resLevels.ok) {
-                const data = await resLevels.json();
-                if (Array.isArray(data.data) && data.data.length > 0) {
-                    return data.data.map((item: any) => ({
-                        id: item.id,
-                        value: item.id,
-                        label: item.name
-                            ? `${item.name}${item.alphabet_code ? ` (${item.alphabet_code})` : ''}`
-                            : (item.alphabet_code || item.code),
-                    }));
-                }
-            }
-            return [];
-        } catch (err) {
-            console.error('Failed to fetch education options:', err);
-            return [];
-        }
-    };
 
     onMount(async () => {
         setIsLoadingReferences(true);
@@ -103,7 +54,7 @@ export default function PersonMasterIndividualCreatePage() {
                 PersonReferenceControllerProfessionList(),
                 PersonReferenceControllerIncomeList(),
                 PersonReferenceControllerAgeClassificationList(),
-                fetchEducationOptions(),
+                LiterateEducationControllerList(),
             ]);
 
             if (Array.isArray(genders.message)) setGenderOptions(genders.message);
@@ -121,7 +72,7 @@ export default function PersonMasterIndividualCreatePage() {
             if (Array.isArray(professions.message)) setProfessionOptions(professions.message);
             if (Array.isArray(incomes.message)) setIncomeOptions(incomes.message);
             if (Array.isArray(ageClasses.message)) setAgeClassificationOptions(ageClasses.message);
-            if (Array.isArray(educations)) setEducationOptions(educations);
+            if (Array.isArray(educations.message)) setEducationOptions(educations.message);
         } catch (err) {
             console.error('Failed to load form reference options:', err);
             toast.danger('Failed to load some reference options.');

@@ -6771,6 +6771,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "literate.educations.create_education",
         },
         RouteDefinition {
+            url: "/api/v1/educations/options",
+            method: "POST",
+            handler: "educations::options_educations",
+            name: "literate.educations.options_educations",
+        },
+        RouteDefinition {
             url: "/api/v1/educations/{id}",
             method: "GET",
             handler: "educations::get_education",

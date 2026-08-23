@@ -16,6 +16,7 @@ import { PersonReferenceControllerOccupationList } from '~/controllers/person/re
 import { PersonReferenceControllerProfessionList } from '~/controllers/person/reference/PersonReferenceProfessionController';
 import { PersonReferenceControllerIncomeList } from '~/controllers/person/reference/PersonReferenceIncomeController';
 import { PersonReferenceControllerAgeClassificationList } from '~/controllers/person/reference/PersonReferenceAgeClassificationController';
+import { LiterateEducationControllerList } from '~/controllers/literate/LiterateEducationController';
 import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
 
 export default function PersonMasterIndividualEditPage() {
@@ -38,56 +39,6 @@ export default function PersonMasterIndividualEditPage() {
     const [incomeOptions, setIncomeOptions] = createSignal<ModelSelectItem[]>([]);
     const [ageClassificationOptions, setAgeClassificationOptions] = createSignal<ModelSelectItem[]>([]);
     const [educationOptions, setEducationOptions] = createSignal<ModelSelectItem[]>([]);
-
-    const fetchEducationOptions = async (): Promise<ModelSelectItem[]> => {
-        try {
-            const baseUrl = (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0.1:5800/api/v1/").replace(/\/+$/, "");
-            const res = await fetch(`${baseUrl}/educations?page=1&page_size=1000`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            });
-            if (res.ok) {
-                const data = await res.json();
-                if (Array.isArray(data.data) && data.data.length > 0) {
-                    return data.data.map((item: any) => ({
-                        id: item.id,
-                        value: item.id,
-                        label: item.name
-                            ? `${item.name}${item.abbreviation ? ` (${item.abbreviation})` : item.alphabet_code ? ` (${item.alphabet_code})` : ''}`
-                            : (item.abbreviation || item.alphabet_code || item.code),
-                    }));
-                }
-            }
-
-            // Fallback to /levels endpoint if /educations returned empty
-            const resLevels = await fetch(`${baseUrl}/levels?page=1&page_size=1000`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            });
-            if (resLevels.ok) {
-                const data = await resLevels.json();
-                if (Array.isArray(data.data) && data.data.length > 0) {
-                    return data.data.map((item: any) => ({
-                        id: item.id,
-                        value: item.id,
-                        label: item.name
-                            ? `${item.name}${item.alphabet_code ? ` (${item.alphabet_code})` : ''}`
-                            : (item.alphabet_code || item.code),
-                    }));
-                }
-            }
-            return [];
-        } catch (err) {
-            console.error('Failed to fetch education options:', err);
-            return [];
-        }
-    };
 
     // Fetch individual record details
     const fetchIndividual = async (id: string) => {
@@ -159,7 +110,7 @@ export default function PersonMasterIndividualEditPage() {
                 PersonReferenceControllerProfessionList(),
                 PersonReferenceControllerIncomeList(),
                 PersonReferenceControllerAgeClassificationList(),
-                fetchEducationOptions(),
+                LiterateEducationControllerList(),
             ]);
 
             if (Array.isArray(genders.message)) setGenderOptions(genders.message);
@@ -170,7 +121,7 @@ export default function PersonMasterIndividualEditPage() {
             if (Array.isArray(professions.message)) setProfessionOptions(professions.message);
             if (Array.isArray(incomes.message)) setIncomeOptions(incomes.message);
             if (Array.isArray(ageClasses.message)) setAgeClassificationOptions(ageClasses.message);
-            if (Array.isArray(educations)) setEducationOptions(educations);
+            if (Array.isArray(educations.message)) setEducationOptions(educations.message);
         } catch (err) {
             console.error('Failed to load reference dropdown options:', err);
         }
@@ -317,7 +268,7 @@ export default function PersonMasterIndividualEditPage() {
         <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
             <TopBar />
 
-            <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 max-w-5xl">
+            <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Header & Breadcrumbs */}
                 <div class="border-b border-neutral-200 dark:border-neutral-800 pb-4 sm:flex sm:items-center sm:justify-between">
                     <div>
@@ -471,9 +422,8 @@ export default function PersonMasterIndividualEditPage() {
                                         </label>
                                         <input
                                             type="text"
-                                            class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${
-                                                errors().code ? 'border-red-500 focus:ring-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500'
-                                            } text-neutral-900 dark:text-white rounded-none transition-colors`}
+                                            class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().code ? 'border-red-500 focus:ring-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500'
+                                                } text-neutral-900 dark:text-white rounded-none transition-colors`}
                                             value={formData().code}
                                             onInput={(e) => updateField('code', (e.target as HTMLInputElement).value)}
                                             required
@@ -509,9 +459,8 @@ export default function PersonMasterIndividualEditPage() {
                                         </label>
                                         <input
                                             type="text"
-                                            class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${
-                                                errors().name ? 'border-red-500 focus:ring-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500'
-                                            } text-neutral-900 dark:text-white rounded-none transition-colors`}
+                                            class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().name ? 'border-red-500 focus:ring-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500'
+                                                } text-neutral-900 dark:text-white rounded-none transition-colors`}
                                             value={formData().name}
                                             onInput={(e) => updateField('name', (e.target as HTMLInputElement).value)}
                                             required
@@ -571,9 +520,8 @@ export default function PersonMasterIndividualEditPage() {
                                         </label>
                                         <input
                                             type="text"
-                                            class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${
-                                                errors().birth_place ? 'border-red-500 focus:ring-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500'
-                                            } text-neutral-900 dark:text-white rounded-none transition-colors`}
+                                            class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().birth_place ? 'border-red-500 focus:ring-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500'
+                                                } text-neutral-900 dark:text-white rounded-none transition-colors`}
                                             value={formData().birth_place}
                                             onInput={(e) => updateField('birth_place', (e.target as HTMLInputElement).value)}
                                             required
@@ -590,9 +538,8 @@ export default function PersonMasterIndividualEditPage() {
                                         </label>
                                         <input
                                             type="date"
-                                            class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${
-                                                errors().birth_date ? 'border-red-500 focus:ring-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500'
-                                            } text-neutral-900 dark:text-white rounded-none transition-colors`}
+                                            class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().birth_date ? 'border-red-500 focus:ring-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500'
+                                                } text-neutral-900 dark:text-white rounded-none transition-colors`}
                                             value={formData().birth_date}
                                             onInput={(e) => updateField('birth_date', (e.target as HTMLInputElement).value)}
                                             required
@@ -608,9 +555,8 @@ export default function PersonMasterIndividualEditPage() {
                                             Gender <span class="text-red-500">*</span>
                                         </label>
                                         <select
-                                            class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${
-                                                errors().gender_id ? 'border-red-500' : 'border-neutral-300 dark:border-neutral-700'
-                                            } text-neutral-900 dark:text-white rounded-none focus:ring-blue-500 focus:border-blue-500`}
+                                            class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().gender_id ? 'border-red-500' : 'border-neutral-300 dark:border-neutral-700'
+                                                } text-neutral-900 dark:text-white rounded-none focus:ring-blue-500 focus:border-blue-500`}
                                             value={formData().gender_id}
                                             onChange={(e) => updateField('gender_id', (e.target as HTMLSelectElement).value)}
                                             required
@@ -631,9 +577,8 @@ export default function PersonMasterIndividualEditPage() {
                                             Religion <span class="text-red-500">*</span>
                                         </label>
                                         <select
-                                            class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${
-                                                errors().religion_id ? 'border-red-500' : 'border-neutral-300 dark:border-neutral-700'
-                                            } text-neutral-900 dark:text-white rounded-none focus:ring-blue-500 focus:border-blue-500`}
+                                            class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().religion_id ? 'border-red-500' : 'border-neutral-300 dark:border-neutral-700'
+                                                } text-neutral-900 dark:text-white rounded-none focus:ring-blue-500 focus:border-blue-500`}
                                             value={formData().religion_id}
                                             onChange={(e) => updateField('religion_id', (e.target as HTMLSelectElement).value)}
                                             required
