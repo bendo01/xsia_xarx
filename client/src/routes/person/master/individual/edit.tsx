@@ -16,7 +16,7 @@ import { PersonReferenceControllerOccupationList } from '~/controllers/person/re
 import { PersonReferenceControllerProfessionList } from '~/controllers/person/reference/PersonReferenceProfessionController';
 import { PersonReferenceControllerIncomeList } from '~/controllers/person/reference/PersonReferenceIncomeController';
 import { PersonReferenceControllerAgeClassificationList } from '~/controllers/person/reference/PersonReferenceAgeClassificationController';
-import { LiterateEducationControllerList } from '~/controllers/literate/LiterateEducationController';
+import { fetchEducationOptions } from '~/controllers/literate/LiterateEducationController';
 import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
 
 export default function PersonMasterIndividualEditPage() {
@@ -110,7 +110,7 @@ export default function PersonMasterIndividualEditPage() {
                 PersonReferenceControllerProfessionList(),
                 PersonReferenceControllerIncomeList(),
                 PersonReferenceControllerAgeClassificationList(),
-                LiterateEducationControllerList(),
+                fetchEducationOptions(),
             ]);
 
             if (Array.isArray(genders.message)) setGenderOptions(genders.message);
@@ -121,7 +121,11 @@ export default function PersonMasterIndividualEditPage() {
             if (Array.isArray(professions.message)) setProfessionOptions(professions.message);
             if (Array.isArray(incomes.message)) setIncomeOptions(incomes.message);
             if (Array.isArray(ageClasses.message)) setAgeClassificationOptions(ageClasses.message);
-            if (Array.isArray(educations.message)) setEducationOptions(educations.message);
+            if (Array.isArray(educations)) {
+                setEducationOptions(educations);
+            } else if (Array.isArray((educations as any)?.message)) {
+                setEducationOptions((educations as any).message);
+            }
         } catch (err) {
             console.error('Failed to load reference dropdown options:', err);
         }

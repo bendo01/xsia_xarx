@@ -26,6 +26,7 @@ pub fn router() -> Router {
                 .post_named("literate.educations.create_education", educations::create_education)
                 .push(
                     Router::with_path("options")
+                        .get_named("literate.educations.options_educations_get", educations::options_educations)
                         .post_named("literate.educations.options_educations", educations::options_educations),
                 )
                 .push(

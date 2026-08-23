@@ -3,11 +3,9 @@ import type { ModelSelectItem } from "~/models/common/select/ModelSelectItem";
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0.1:5800/api/v1/").replace(/\/+$/, "");
 const path = "educations";
 
-export async function LiterateEducationControllerList(): Promise<{
-    code: number;
-    message: string | ModelSelectItem[];
-}> {
+export async function fetchEducationOptions(): Promise<ModelSelectItem[]> {
     try {
+        // 1. Try POST /educations/options
         const response = await fetch(`${getBaseUrl()}/${path}/options`, {
             method: "POST",
             headers: {
@@ -20,19 +18,35 @@ export async function LiterateEducationControllerList(): Promise<{
         if (response.ok) {
             const resData = await response.json();
             if (Array.isArray(resData) && resData.length > 0) {
-                const items: ModelSelectItem[] = resData.map((item: any) => ({
+                return resData.map((item: any) => ({
                     id: item.id,
                     value: item.id,
-                    label: item.name,
+                    label: item.name || item.alphabet_code || item.code || String(item.id),
                 }));
-                return {
-                    code: 200,
-                    message: items,
-                };
             }
         }
 
-        // Fallback to GET /educations?page=1&page_size=1000
+        // 2. Try GET /educations/options
+        const getOptionsRes = await fetch(`${getBaseUrl()}/${path}/options`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+        });
+
+        if (getOptionsRes.ok) {
+            const resData = await getOptionsRes.json();
+            if (Array.isArray(resData) && resData.length > 0) {
+                return resData.map((item: any) => ({
+                    id: item.id,
+                    value: item.id,
+                    label: item.name || item.alphabet_code || item.code || String(item.id),
+                }));
+            }
+        }
+
+        // 3. Fallback: GET /educations?page=1&page_size=1000
         const fallbackRes = await fetch(`${getBaseUrl()}/${path}?page=1&page_size=1000`, {
             method: "GET",
             headers: {
@@ -40,23 +54,57 @@ export async function LiterateEducationControllerList(): Promise<{
                 Accept: "application/json",
             },
         });
-        const fallbackData = await fallbackRes.json();
 
-        if (!fallbackRes.ok) {
-            return {
-                code: fallbackRes.status || 500,
-                message: "Failed to fetch education list",
-            };
+        if (fallbackRes.ok) {
+            const fallbackData = await fallbackRes.json();
+            const list = Array.isArray(fallbackData.data) ? fallbackData.data : (Array.isArray(fallbackData) ? fallbackData : []);
+            if (list.length > 0) {
+                return list.map((item: any) => ({
+                    id: item.id,
+                    value: item.id,
+                    label: item.name
+                        ? `${item.name}${item.abbreviation ? ` (${item.abbreviation})` : item.alphabet_code ? ` (${item.alphabet_code})` : ''}`
+                        : (item.abbreviation || item.alphabet_code || item.code || String(item.id)),
+                }));
+            }
         }
 
-        const items: ModelSelectItem[] = (fallbackData.data || []).map((item: any) => ({
-            id: item.id,
-            value: item.id,
-            label: item.name
-                ? `${item.name}${item.abbreviation ? ` (${item.abbreviation})` : item.alphabet_code ? ` (${item.alphabet_code})` : ''}`
-                : (item.abbreviation || item.alphabet_code || item.code),
-        }));
+        // 4. Fallback: GET /levels?page=1&page_size=1000
+        const levelsRes = await fetch(`${getBaseUrl()}/levels?page=1&page_size=1000`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+        });
 
+        if (levelsRes.ok) {
+            const levelsData = await levelsRes.json();
+            const list = Array.isArray(levelsData.data) ? levelsData.data : (Array.isArray(levelsData) ? levelsData : []);
+            if (list.length > 0) {
+                return list.map((item: any) => ({
+                    id: item.id,
+                    value: item.id,
+                    label: item.name
+                        ? `${item.name}${item.alphabet_code ? ` (${item.alphabet_code})` : ''}`
+                        : (item.alphabet_code || item.code || String(item.id)),
+                }));
+            }
+        }
+
+        return [];
+    } catch (error) {
+        console.error("Error fetching education options:", error);
+        return [];
+    }
+}
+
+export async function LiterateEducationControllerList(): Promise<{
+    code: number;
+    message: string | ModelSelectItem[];
+}> {
+    try {
+        const items = await fetchEducationOptions();
         return {
             code: 200,
             message: items,
@@ -67,12 +115,4 @@ export async function LiterateEducationControllerList(): Promise<{
             message: error?.message || "Internal server error",
         };
     }
-}
-
-export async function fetchEducationOptions(): Promise<ModelSelectItem[]> {
-    const res = await LiterateEducationControllerList();
-    if (typeof res.message !== "string" && Array.isArray(res.message)) {
-        return res.message;
-    }
-    return [];
 }
