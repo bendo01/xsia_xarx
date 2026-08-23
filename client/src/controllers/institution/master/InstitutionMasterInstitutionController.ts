@@ -335,13 +335,26 @@ export async function InstitutionMasterInstitutionControllerList(
 }
 
 // Reference Fetchers
-export async function fetchInstitutionVarietyOptions(): Promise<ModelSelectItem[]> {
+export async function fetchInstitutionVarietyOptions(search: string = ""): Promise<ModelSelectItem[]> {
     try {
-        const res = await fetch(`${getBaseUrl()}/institution/reference/varieties?page=1&page_size=1000`, {
+        const res = await fetch(`${getBaseUrl()}/institution/reference/varieties/options`, {
+            method: "POST",
+            headers: getHeaders(),
+            body: JSON.stringify({ search }),
+        });
+        if (res.ok) {
+            const data = await res.json();
+            return (data || []).map((v: any) => ({
+                id: v.id,
+                value: v.id,
+                label: v.name,
+            }));
+        }
+        const fallbackRes = await fetch(`${getBaseUrl()}/institution/reference/varieties?page=1&page_size=1000`, {
             headers: getHeaders(),
         });
-        if (!res.ok) return [];
-        const data = await res.json();
+        if (!fallbackRes.ok) return [];
+        const data = await fallbackRes.json();
         return (data.data || []).map((v: any) => ({
             id: v.id,
             value: v.id,
@@ -352,13 +365,26 @@ export async function fetchInstitutionVarietyOptions(): Promise<ModelSelectItem[
     }
 }
 
-export async function fetchInstitutionCategoryOptions(): Promise<ModelSelectItem[]> {
+export async function fetchInstitutionCategoryOptions(search: string = ""): Promise<ModelSelectItem[]> {
     try {
-        const res = await fetch(`${getBaseUrl()}/institution/reference/categories?page=1&page_size=1000`, {
+        const res = await fetch(`${getBaseUrl()}/institution/reference/categories/options`, {
+            method: "POST",
+            headers: getHeaders(),
+            body: JSON.stringify({ search }),
+        });
+        if (res.ok) {
+            const data = await res.json();
+            return (data || []).map((c: any) => ({
+                id: c.id,
+                value: c.id,
+                label: c.name,
+            }));
+        }
+        const fallbackRes = await fetch(`${getBaseUrl()}/institution/reference/categories?page=1&page_size=1000`, {
             headers: getHeaders(),
         });
-        if (!res.ok) return [];
-        const data = await res.json();
+        if (!fallbackRes.ok) return [];
+        const data = await fallbackRes.json();
         return (data.data || []).map((c: any) => ({
             id: c.id,
             value: c.id,

@@ -1,13 +1,21 @@
-import { createSignal, createEffect, For, Show } from 'solid-js';
+import { createSignal, createEffect, For, Show, onMount } from 'solid-js';
+import SlimSelect from 'slim-select';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import type { InstitutionMasterInstitutionDataObject } from '~/models/institution/master/Institution';
+import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
 import {
     InstitutionMasterInstitutionControllerIndex,
     InstitutionMasterInstitutionControllerDelete,
+    fetchInstitutionCategoryOptions,
+    fetchInstitutionVarietyOptions,
 } from '~/controllers/institution/master/InstitutionMasterInstitutionController';
 
 export default function InstitutionMasterInstitutionIndexPage() {
+    let multiSelectRefCategory: HTMLSelectElement | undefined;
+    let multiSelectRefVariety: HTMLSelectElement | undefined;
+    const inputClass = "block w-full p-3 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-neutral-50 focus:outline-none focus:rounded-none focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors";
+
     const [items, setItems] = createSignal<InstitutionMasterInstitutionDataObject[]>([]);
     const [isLoading, setIsLoading] = createSignal(true);
     const [currentPage, setCurrentPage] = createSignal(1);
@@ -16,6 +24,10 @@ export default function InstitutionMasterInstitutionIndexPage() {
     const [sortParam, setSortParam] = createSignal('name-asc');
     const [totalData, setTotalData] = createSignal(0);
     const [totalPages, setTotalPages] = createSignal(1);
+
+    // Reference options for filters
+    const [categoryOptions, setCategoryOptions] = createSignal<ModelSelectItem[]>([]);
+    const [varietyOptions, setVarietyOptions] = createSignal<ModelSelectItem[]>([]);
 
     // Selected item for Delete modal
     let deleteDialogRef!: HTMLDialogElement;
@@ -105,6 +117,50 @@ export default function InstitutionMasterInstitutionIndexPage() {
     const startIndex = () => (currentPage() - 1) * itemsPerPage();
     const endIndex = () => Math.min(startIndex() + items().length, totalData());
 
+    onMount(async () => {
+        let slimCat: SlimSelect | undefined;
+        let slimVar: SlimSelect | undefined;
+
+        if (multiSelectRefCategory) {
+            slimCat = new SlimSelect({ select: multiSelectRefCategory });
+        }
+        if (multiSelectRefVariety) {
+            slimVar = new SlimSelect({ select: multiSelectRefVariety });
+        }
+
+        try {
+            const [categories, varieties] = await Promise.all([
+                fetchInstitutionCategoryOptions(),
+                fetchInstitutionVarietyOptions(),
+            ]);
+
+            setCategoryOptions(categories);
+            setVarietyOptions(varieties);
+
+            if (slimCat) {
+                slimCat.setData([
+                    { placeholder: true, text: 'Choose Category' },
+                    ...categories.map((c) => ({
+                        text: c.label || '',
+                        value: c.id,
+                    })),
+                ]);
+            }
+
+            if (slimVar) {
+                slimVar.setData([
+                    { placeholder: true, text: 'Choose Variety' },
+                    ...varieties.map((v) => ({
+                        text: v.label || '',
+                        value: v.id,
+                    })),
+                ]);
+            }
+        } catch (err) {
+            console.error('Failed to load category or variety options:', err);
+        }
+    });
+
     return (
         <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
             <TopBar />
@@ -189,6 +245,24 @@ export default function InstitutionMasterInstitutionIndexPage() {
                             <option value={10}>10 / page</option>
                             <option value={25}>25 / page</option>
                             <option value={50}>50 / page</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex flex-col md:flex-row items-center gap-3">
+                    <div class="w-full md:w-1/2">
+                        <select id="select-category" ref={multiSelectRefCategory} multiple class={inputClass}>
+                            <option data-placeholder="true">Choose Category</option>
+                            <For each={categoryOptions()}>
+                                {(item) => <option value={item.id}>{item.label}</option>}
+                            </For>
+                        </select>
+                    </div>
+                    <div class="w-full md:w-1/2 gap-2">
+                        <select id="select-variety" ref={multiSelectRefVariety} multiple class={inputClass}>
+                            <option data-placeholder="true">Choose Variety</option>
+                            <For each={varietyOptions()}>
+                                {(item) => <option value={item.id}>{item.label}</option>}
+                            </For>
                         </select>
                     </div>
                 </div>

@@ -192,3 +192,25 @@ export async function InstitutionReferenceControllerCategoryList(): Promise<{
         };
     }
 }
+
+export async function InstitutionReferenceControllerCategoryOptions(search?: string): Promise<ModelSelectItem[]> {
+    try {
+        const response = await fetch(`${getBaseUrl()}/${path}/options`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+            body: JSON.stringify(search ? { search } : {}),
+        });
+        if (!response.ok) return [];
+        const data = await response.json();
+        return (data || []).map((item: any) => ({
+            id: item.id,
+            value: item.id,
+            label: item.name,
+        }));
+    } catch (error) {
+        return [];
+    }
+}
