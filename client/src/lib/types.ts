@@ -8,7 +8,12 @@ export interface TypePaginationForm {
     page: number;
     per_page: number;
     name?: string;
-    code?: number;
+    code?: number | string;
+    category_id?: string;
+    category_ids?: string | string[];
+    variety_id?: string;
+    variety_ids?: string | string[];
+    [key: string]: any;
 }
 
 export interface TypePaginationResponse<T = any> {

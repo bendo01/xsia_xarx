@@ -64,6 +64,36 @@ pub async fn list_institutions(
         }
     }
 
+    let mut category_filter_uuids = Vec::new();
+    if let Some(ref raw_cats) = query.category_ids.as_ref().or(query.category_id.as_ref()) {
+        for val in raw_cats.split(',') {
+            let val_trimmed = val.trim();
+            if !val_trimmed.is_empty() {
+                if let Ok(u) = Uuid::parse_str(val_trimmed) {
+                    category_filter_uuids.push(u);
+                }
+            }
+        }
+    }
+    if !category_filter_uuids.is_empty() {
+        select = select.filter(entity_mod::Column::CategoryId.is_in(category_filter_uuids));
+    }
+
+    let mut variety_filter_uuids = Vec::new();
+    if let Some(ref raw_vars) = query.variety_ids.as_ref().or(query.variety_id.as_ref()) {
+        for val in raw_vars.split(',') {
+            let val_trimmed = val.trim();
+            if !val_trimmed.is_empty() {
+                if let Ok(u) = Uuid::parse_str(val_trimmed) {
+                    variety_filter_uuids.push(u);
+                }
+            }
+        }
+    }
+    if !variety_filter_uuids.is_empty() {
+        select = select.filter(entity_mod::Column::VarietyId.is_in(variety_filter_uuids));
+    }
+
     let sort_by = query
         .sort_by
         .as_deref()

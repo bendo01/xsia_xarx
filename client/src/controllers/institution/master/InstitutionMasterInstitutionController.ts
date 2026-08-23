@@ -42,6 +42,18 @@ export async function InstitutionMasterInstitutionControllerIndex(
         if (pagination.sort_by) queryParams.set("sort_by", pagination.sort_by);
         if (pagination.sort_dir) queryParams.set("sort_dir", pagination.sort_dir);
         if (pagination.column) queryParams.set("column", pagination.column);
+        if (pagination.category_ids) {
+            const val = Array.isArray(pagination.category_ids) ? pagination.category_ids.join(",") : pagination.category_ids;
+            if (val) queryParams.set("category_ids", val);
+        } else if (pagination.category_id) {
+            queryParams.set("category_id", pagination.category_id);
+        }
+        if (pagination.variety_ids) {
+            const val = Array.isArray(pagination.variety_ids) ? pagination.variety_ids.join(",") : pagination.variety_ids;
+            if (val) queryParams.set("variety_ids", val);
+        } else if (pagination.variety_id) {
+            queryParams.set("variety_id", pagination.variety_id);
+        }
 
         const url = `${getBaseUrl()}/${path}?${queryParams.toString()}`;
         const response = await fetch(url, {

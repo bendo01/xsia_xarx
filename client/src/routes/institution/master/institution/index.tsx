@@ -28,6 +28,8 @@ export default function InstitutionMasterInstitutionIndexPage() {
     // Reference options for filters
     const [categoryOptions, setCategoryOptions] = createSignal<ModelSelectItem[]>([]);
     const [varietyOptions, setVarietyOptions] = createSignal<ModelSelectItem[]>([]);
+    const [selectedCategories, setSelectedCategories] = createSignal<string[]>([]);
+    const [selectedVarieties, setSelectedVarieties] = createSignal<string[]>([]);
 
     // Selected item for Delete modal
     let deleteDialogRef!: HTMLDialogElement;
@@ -43,6 +45,8 @@ export default function InstitutionMasterInstitutionIndexPage() {
                 search: searchQuery(),
                 sort_by: sortParam().split('-')[0],
                 sort_dir: sortParam().split('-')[1] || 'asc',
+                category_ids: selectedCategories(),
+                variety_ids: selectedVarieties(),
             });
 
             if (response && Array.isArray(response.data)) {
@@ -70,6 +74,8 @@ export default function InstitutionMasterInstitutionIndexPage() {
         itemsPerPage();
         searchQuery();
         sortParam();
+        selectedCategories();
+        selectedVarieties();
         fetchData();
     });
 
@@ -122,10 +128,28 @@ export default function InstitutionMasterInstitutionIndexPage() {
         let slimVar: SlimSelect | undefined;
 
         if (multiSelectRefCategory) {
-            slimCat = new SlimSelect({ select: multiSelectRefCategory });
+            slimCat = new SlimSelect({
+                select: multiSelectRefCategory,
+                events: {
+                    afterChange: (newVal) => {
+                        const vals = newVal.map((v) => v.value).filter((v) => v && v !== '');
+                        setSelectedCategories(vals);
+                        setCurrentPage(1);
+                    },
+                },
+            });
         }
         if (multiSelectRefVariety) {
-            slimVar = new SlimSelect({ select: multiSelectRefVariety });
+            slimVar = new SlimSelect({
+                select: multiSelectRefVariety,
+                events: {
+                    afterChange: (newVal) => {
+                        const vals = newVal.map((v) => v.value).filter((v) => v && v !== '');
+                        setSelectedVarieties(vals);
+                        setCurrentPage(1);
+                    },
+                },
+            });
         }
 
         try {
@@ -250,7 +274,19 @@ export default function InstitutionMasterInstitutionIndexPage() {
                 </div>
                 <div class="flex flex-col md:flex-row items-center gap-3">
                     <div class="w-full md:w-1/2">
-                        <select id="select-category" ref={multiSelectRefCategory} multiple class={inputClass}>
+                        <select
+                            id="select-category"
+                            ref={multiSelectRefCategory}
+                            multiple
+                            class={inputClass}
+                            onChange={(e) => {
+                                const selected = Array.from((e.target as HTMLSelectElement).selectedOptions)
+                                    .map((o) => o.value)
+                                    .filter((v) => v && v !== '');
+                                setSelectedCategories(selected);
+                                setCurrentPage(1);
+                            }}
+                        >
                             <option data-placeholder="true">Choose Category</option>
                             <For each={categoryOptions()}>
                                 {(item) => <option value={item.id}>{item.label}</option>}
@@ -258,7 +294,19 @@ export default function InstitutionMasterInstitutionIndexPage() {
                         </select>
                     </div>
                     <div class="w-full md:w-1/2 gap-2">
-                        <select id="select-variety" ref={multiSelectRefVariety} multiple class={inputClass}>
+                        <select
+                            id="select-variety"
+                            ref={multiSelectRefVariety}
+                            multiple
+                            class={inputClass}
+                            onChange={(e) => {
+                                const selected = Array.from((e.target as HTMLSelectElement).selectedOptions)
+                                    .map((o) => o.value)
+                                    .filter((v) => v && v !== '');
+                                setSelectedVarieties(selected);
+                                setCurrentPage(1);
+                            }}
+                        >
                             <option data-placeholder="true">Choose Variety</option>
                             <For each={varietyOptions()}>
                                 {(item) => <option value={item.id}>{item.label}</option>}
