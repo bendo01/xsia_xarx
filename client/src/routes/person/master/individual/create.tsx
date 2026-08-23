@@ -43,14 +43,40 @@ export default function PersonMasterIndividualCreatePage() {
             });
             if (res.ok) {
                 const data = await res.json();
-                return (data.data || []).map((item: any) => ({
-                    id: item.id,
-                    value: item.id,
-                    label: item.name ? `${item.name}${item.abbreviation ? ` (${item.abbreviation})` : ''}` : item.code,
-                }));
+                if (Array.isArray(data.data) && data.data.length > 0) {
+                    return data.data.map((item: any) => ({
+                        id: item.id,
+                        value: item.id,
+                        label: item.name
+                            ? `${item.name}${item.abbreviation ? ` (${item.abbreviation})` : item.alphabet_code ? ` (${item.alphabet_code})` : ''}`
+                            : (item.abbreviation || item.alphabet_code || item.code),
+                    }));
+                }
+            }
+
+            // Fallback to /levels endpoint if /educations returned empty
+            const resLevels = await fetch(`${baseUrl}/levels?page=1&page_size=1000`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+            });
+            if (resLevels.ok) {
+                const data = await resLevels.json();
+                if (Array.isArray(data.data) && data.data.length > 0) {
+                    return data.data.map((item: any) => ({
+                        id: item.id,
+                        value: item.id,
+                        label: item.name
+                            ? `${item.name}${item.alphabet_code ? ` (${item.alphabet_code})` : ''}`
+                            : (item.alphabet_code || item.code),
+                    }));
+                }
             }
             return [];
-        } catch {
+        } catch (err) {
+            console.error('Failed to fetch education options:', err);
             return [];
         }
     };

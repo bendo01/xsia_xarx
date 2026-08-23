@@ -4,7 +4,7 @@ import type { ModelCommonReferencePaginationResponse } from "../../../models/pag
 import type { ModelSelectItem } from "../../../models/common/select/ModelSelectItem";
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0.1:5800/api/v1/").replace(/\/+$/, "");
-const path = "reference/eye-color";
+const path = "person/reference/eye-color";
 
 export async function PersonReferenceControllerEyeColorIndex(pagination: TypePaginationForm): Promise<ModelCommonReferencePaginationResponse> {
     try {
