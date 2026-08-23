@@ -1,7 +1,9 @@
 use chrono::Utc;
 use salvo::prelude::*;
+use sea_orm::sea_query::extension::postgres::PgExpr;
+use sea_orm::sea_query::Expr;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
+    ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, EntityTrait, IntoActiveModel,
     PaginatorTrait, QueryFilter, QueryOrder, Set,
 };
 use uuid::Uuid;
@@ -29,17 +31,84 @@ pub async fn list_institutions(
 
     let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
 
+    if let Some(ref search) = query.search {
+        let trimmed = search.trim();
+        if !trimmed.is_empty() {
+            let search_pattern = format!("%{}%", trimmed);
+            select = select.filter(
+                Condition::any()
+                    .add(Expr::col(entity_mod::Column::Name).ilike(search_pattern.clone()))
+                    .add(Expr::col(entity_mod::Column::Code).ilike(search_pattern.clone()))
+                    .add(Expr::col(entity_mod::Column::AlphabetCode).ilike(search_pattern)),
+            );
+        }
+    }
+
     if let Some(ref name) = query.name {
-        select = select.filter(entity_mod::Column::Name.contains(name));
+        let trimmed = name.trim();
+        if !trimmed.is_empty() {
+            let search_pattern = format!("%{}%", trimmed);
+            select = select.filter(Expr::col(entity_mod::Column::Name).ilike(search_pattern));
+        }
     }
 
-    if let Some(code) = query.code {
-        select = select.filter(entity_mod::Column::Code.eq(code));
+    if let Some(ref code) = query.code {
+        let trimmed = code.trim();
+        if !trimmed.is_empty() {
+            let search_pattern = format!("%{}%", trimmed);
+            select = select.filter(
+                Condition::any()
+                    .add(Expr::col(entity_mod::Column::Code).ilike(search_pattern.clone()))
+                    .add(Expr::col(entity_mod::Column::AlphabetCode).ilike(search_pattern)),
+            );
+        }
     }
 
-    let paginator = select
-        .order_by_asc(entity_mod::Column::Name)
-        .paginate(db, page_size);
+    let sort_by = query
+        .sort_by
+        .as_deref()
+        .or(query.order_by.as_deref())
+        .or(query.column.as_deref())
+        .unwrap_or("name");
+    let sort_dir = query
+        .sort_dir
+        .as_deref()
+        .or(query.order_dir.as_deref())
+        .unwrap_or("asc");
+    let is_desc = sort_dir.eq_ignore_ascii_case("desc");
+
+    select = match sort_by {
+        "code" => {
+            if is_desc {
+                select.order_by_desc(entity_mod::Column::Code)
+            } else {
+                select.order_by_asc(entity_mod::Column::Code)
+            }
+        }
+        "created_at" => {
+            if is_desc {
+                select.order_by_desc(entity_mod::Column::CreatedAt)
+            } else {
+                select.order_by_asc(entity_mod::Column::CreatedAt)
+            }
+        }
+        "updated_at" => {
+            if is_desc {
+                select.order_by_desc(entity_mod::Column::UpdatedAt)
+            } else {
+                select.order_by_asc(entity_mod::Column::UpdatedAt)
+            }
+        }
+        _ => {
+            if is_desc {
+                select.order_by_desc(entity_mod::Column::Name)
+            } else {
+                select.order_by_asc(entity_mod::Column::Name)
+            }
+        }
+    };
+
+    let paginator = select.paginate(db, page_size);
 
     let total = paginator.num_items().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
     let total_pages = (total as f64 / page_size as f64).ceil() as u64;

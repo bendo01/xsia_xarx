@@ -11,6 +11,12 @@ pub struct InstitutionQuery {
     pub page_size: Option<u64>,
     pub name: Option<String>,
     pub code: Option<String>,
+    pub search: Option<String>,
+    pub sort_by: Option<String>,
+    pub sort_dir: Option<String>,
+    pub order_by: Option<String>,
+    pub order_dir: Option<String>,
+    pub column: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
