@@ -3,14 +3,12 @@ import { useSearchParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import type { PersonMasterIndividual, PersonMasterIndividualDataObject } from '~/models/person/master/Individual';
-import { PersonMasterIndividualControllerShow, PersonMasterIndividualControllerList } from '~/controllers/person/master/PersonMasterIndividualController';
-import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
+import { PersonMasterIndividualControllerShow } from '~/controllers/person/master/PersonMasterIndividualController';
 
 export default function PersonMasterIndividualShowPage() {
     const [searchParams, setSearchParams] = useSearchParams();
     const [isLoading, setIsLoading] = createSignal(true);
     const [individualData, setIndividualData] = createSignal<PersonMasterIndividualDataObject | null>(null);
-    const [individualList, setIndividualList] = createSignal<ModelSelectItem[]>([]);
     const [selectedIndividualId, setSelectedIndividualId] = createSignal<string>(
         (searchParams.id as string) || ''
     );
@@ -21,25 +19,6 @@ export default function PersonMasterIndividualShowPage() {
     // Dialog refs
     let photoDialogRef!: HTMLDialogElement;
     let fileInputRef!: HTMLInputElement;
-
-    // Load available individual list for dropdown switcher
-    const fetchIndividualList = async () => {
-        try {
-            const res = await PersonMasterIndividualControllerList();
-            if (res.code === 200 && Array.isArray(res.message)) {
-                setIndividualList(res.message);
-                const currentId = (searchParams.id as string) || selectedIndividualId();
-                if (!currentId && res.message.length > 0 && res.message[0].id) {
-                    const firstId = res.message[0].id;
-                    setSelectedIndividualId(firstId);
-                    setSearchParams({ id: firstId });
-                    fetchIndividualDetail(firstId);
-                }
-            }
-        } catch (err) {
-            console.error('Failed to load individual selection list', err);
-        }
-    };
 
     // Fetch individual detail
     const fetchIndividualDetail = async (id: string) => {
@@ -67,7 +46,6 @@ export default function PersonMasterIndividualShowPage() {
     };
 
     onMount(() => {
-        fetchIndividualList();
         const initialId = (searchParams.id as string) || '';
         fetchIndividualDetail(initialId);
     });
@@ -79,13 +57,6 @@ export default function PersonMasterIndividualShowPage() {
             fetchIndividualDetail(idFromQuery);
         }
     });
-
-    const handleSelectIndividual = (e: Event) => {
-        const targetId = (e.target as HTMLSelectElement).value;
-        setSelectedIndividualId(targetId);
-        setSearchParams({ id: targetId });
-        fetchIndividualDetail(targetId);
-    };
 
     // Copy to clipboard helper
     const copyToClipboard = (text: string, label: string) => {
@@ -224,26 +195,6 @@ export default function PersonMasterIndividualShowPage() {
 
                     {/* Quick Action Toolbar */}
                     <div class="flex items-center flex-wrap gap-2">
-                        {/* Individual Selector Dropdown */}
-                        <Show when={individualList().length > 0}>
-                            <div class="relative min-w-48">
-                                <select
-                                    class="w-full text-xs font-medium bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 py-2 px-3 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-none cursor-pointer transition-colors shadow-2xs"
-                                    value={selectedIndividualId()}
-                                    onChange={handleSelectIndividual}
-                                    id="select-active-individual"
-                                    aria-label="Switch individual record"
-                                >
-                                    <option value="">-- Switch Individual Record --</option>
-                                    <For each={individualList()}>
-                                        {(item) => (
-                                            <option value={item.id}>{item.label || item.name}</option>
-                                        )}
-                                    </For>
-                                </select>
-                            </div>
-                        </Show>
-
                         {/* Back Button */}
                         <a
                             href="/person/master/individual"

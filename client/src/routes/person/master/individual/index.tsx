@@ -198,9 +198,147 @@ export default function PersonMasterIndividualIndexPage() {
                     </div>
                 </div>
 
-                {/* Table Container */}
+                {/* Table & Cards Container */}
                 <div class="border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-2xs overflow-hidden">
-                    <div class="overflow-x-auto">
+                    {/* Mobile View: Cards */}
+                    <div class="block md:hidden divide-y divide-neutral-200 dark:divide-neutral-700">
+                        <Show
+                            when={!isLoading()}
+                            fallback={
+                                <For each={Array.from({ length: 3 })}>
+                                    {() => (
+                                        <div class="p-4 animate-pulse space-y-3">
+                                            <div class="flex items-center gap-3">
+                                                <div class="size-12 bg-neutral-200 dark:bg-neutral-700"></div>
+                                                <div class="space-y-2 flex-1">
+                                                    <div class="h-4 w-40 bg-neutral-200 dark:bg-neutral-700"></div>
+                                                    <div class="h-3 w-24 bg-neutral-200 dark:bg-neutral-700"></div>
+                                                </div>
+                                            </div>
+                                            <div class="h-3 w-48 bg-neutral-200 dark:bg-neutral-700"></div>
+                                            <div class="flex justify-end gap-1.5 pt-2">
+                                                <div class="size-7 bg-neutral-200 dark:bg-neutral-700"></div>
+                                                <div class="size-7 bg-neutral-200 dark:bg-neutral-700"></div>
+                                                <div class="size-7 bg-neutral-200 dark:bg-neutral-700"></div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </For>
+                            }
+                        >
+                            <Show
+                                when={items().length > 0}
+                                fallback={
+                                    <div class="px-4 py-12 text-center text-neutral-500 dark:text-neutral-400">
+                                        <div class="flex flex-col items-center justify-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="size-8 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="12" cy="12" r="10" />
+                                                <line x1="12" y1="8" x2="12" y2="12" />
+                                                <line x1="12" y1="16" x2="12.01" y2="16" />
+                                            </svg>
+                                            <span class="font-semibold text-sm text-neutral-700 dark:text-neutral-300">No individual records found</span>
+                                            <span class="text-xs text-neutral-500">No data matches your query.</span>
+                                        </div>
+                                    </div>
+                                }
+                            >
+                                <For each={items()}>
+                                    {(item) => (
+                                        <div class="p-4 space-y-3 hover:bg-neutral-50 dark:hover:bg-neutral-700/30 transition-colors">
+                                            {/* Header row: Photo, Name, and Code */}
+                                            <div class="flex items-start gap-3">
+                                                <div class="size-12 shrink-0 bg-neutral-100 dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-600 overflow-hidden shadow-2xs flex items-center justify-center">
+                                                    <img
+                                                        src="/images/Portrait_Placeholder.png"
+                                                        alt="Portrait Thumbnail"
+                                                        class="w-full h-full object-cover object-top"
+                                                    />
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <a
+                                                        href={`/person/master/individual/show?id=${item.individual.id}`}
+                                                        class="font-semibold text-sm text-blue-600 dark:text-blue-400 hover:underline block truncate"
+                                                    >
+                                                        {formatFullName(item.individual)}
+                                                    </a>
+                                                    <div class="flex flex-wrap items-center gap-1.5 mt-1">
+                                                        <span class="px-1.5 py-0.5 text-xs font-mono font-medium bg-neutral-100 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-600">
+                                                            {item.individual.code || '-'}
+                                                        </span>
+                                                        <span class="text-xs text-neutral-500 dark:text-neutral-400">
+                                                            {item.gender?.name || (item.individual.gender_id === '2' ? 'Perempuan' : 'Laki-laki')}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Details Metadata */}
+                                            <div class="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-neutral-100 dark:border-neutral-700/60">
+                                                <div>
+                                                    <span class="text-neutral-500 dark:text-neutral-400 block text-[11px] uppercase tracking-wider">Birth Details</span>
+                                                    <span class="font-medium text-neutral-800 dark:text-neutral-200 block">
+                                                        {item.individual.birth_place || '-'}
+                                                    </span>
+                                                    <span class="text-neutral-500 text-[11px]">
+                                                        {item.individual.birth_date || '-'}
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <span class="text-neutral-500 dark:text-neutral-400 block text-[11px] uppercase tracking-wider">UUID</span>
+                                                    <span class="font-mono text-neutral-600 dark:text-neutral-400 text-[11px] truncate block" title={item.individual.id}>
+                                                        {item.individual.id}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            {/* Actions Toolbar */}
+                                            <div class="flex items-center justify-end gap-1.5 pt-2 border-t border-neutral-100 dark:border-neutral-700/60">
+                                                {/* Show / View Details Button */}
+                                                <a
+                                                    href={`/person/master/individual/show?id=${item.individual.id}`}
+                                                    class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
+                                                    title="View Profile Details"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3.5">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                                                    </svg>
+                                                </a>
+
+                                                {/* Edit Button */}
+                                                <a
+                                                    href={`/person/master/individual/edit?id=${item.individual.id}`}
+                                                    class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
+                                                    title="Edit Record"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M12 20h9" />
+                                                        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                                                    </svg>
+                                                </a>
+
+                                                {/* Delete Button */}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => openDeleteModal(item)}
+                                                    class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-red-600 hover:border-red-500 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:border-red-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
+                                                    title="Delete Record"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M3 6h18" />
+                                                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </For>
+                            </Show>
+                        </Show>
+                    </div>
+
+                    {/* Desktop View: Table */}
+                    <div class="hidden md:block overflow-x-auto">
                         <table class="w-full text-xs sm:text-sm text-left">
                             <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
                                 <tr>
