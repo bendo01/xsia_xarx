@@ -1,11 +1,51 @@
+use std::collections::HashMap;
+use std::sync::{Arc, LazyLock, RwLock};
 use salvo::prelude::*;
-use crate::middleware::rbac::NamedRouterExt;
 use salvo::websocket::{Message, WebSocketUpgrade};
 use salvo::sse::{self, SseEvent};
-use futures_util::StreamExt;
+use futures_util::{SinkExt, StreamExt};
+use tokio::sync::{broadcast, mpsc};
 use tokio_stream::wrappers::IntervalStream;
 use std::time::Duration;
 use serde::{Deserialize, Serialize};
+
+// ── Multi-Channel Hub State ──────────────────────────────────────────────────
+
+#[derive(Clone, Default)]
+pub struct ChannelHub {
+    channels: Arc<RwLock<HashMap<String, broadcast::Sender<String>>>>,
+}
+
+pub static HUB: LazyLock<ChannelHub> = LazyLock::new(ChannelHub::default);
+
+impl ChannelHub {
+    pub fn get_or_create(&self, channel: &str) -> broadcast::Sender<String> {
+        let mut map = self.channels.write().unwrap();
+        if let Some(sender) = map.get(channel) {
+            sender.clone()
+        } else {
+            let (tx, _rx) = broadcast::channel(256);
+            map.insert(channel.to_string(), tx.clone());
+            tx
+        }
+    }
+
+    pub fn publish(&self, channel: &str, msg: String) -> usize {
+        let map = self.channels.read().unwrap();
+        if let Some(sender) = map.get(channel) {
+            sender.send(msg).unwrap_or(0)
+        } else {
+            0
+        }
+    }
+
+    pub fn active_channels(&self) -> Vec<String> {
+        let map = self.channels.read().unwrap();
+        map.keys().cloned().collect()
+    }
+}
+
+// ── Payload DTOs ─────────────────────────────────────────────────────────────
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RealtimeNotification {
@@ -14,37 +54,220 @@ pub struct RealtimeNotification {
     pub data: serde_json::Value,
 }
 
-/// WebSocket Endpoint
-/// Upgrades HTTP connection to WebSocket, receives client messages and echoes back with timestamps.
+#[derive(Deserialize, Debug)]
+#[serde(tag = "action", rename_all = "snake_case")]
+pub enum ClientAction {
+    Subscribe {
+        channel: String,
+    },
+    Unsubscribe {
+        channel: String,
+    },
+    Publish {
+        channel: String,
+        data: serde_json::Value,
+    },
+    ListChannels,
+    Ping,
+}
+
+#[derive(Serialize, Debug)]
+#[serde(tag = "event", rename_all = "snake_case")]
+pub enum ServerEvent {
+    Subscribed {
+        channel: String,
+        message: String,
+        timestamp: String,
+    },
+    Unsubscribed {
+        channel: String,
+        timestamp: String,
+    },
+    Message {
+        channel: String,
+        data: serde_json::Value,
+        timestamp: String,
+    },
+    ChannelsList {
+        channels: Vec<String>,
+        timestamp: String,
+    },
+    Echo {
+        text: String,
+        timestamp: String,
+    },
+    Error {
+        message: String,
+        timestamp: String,
+    },
+}
+
+// ── WebSocket Handler ────────────────────────────────────────────────────────
+
 #[endpoint(
     tags("Realtime"),
-    summary = "WebSocket real-time connection",
-    description = "Upgrades HTTP connection to full-duplex WebSocket communication"
+    summary = "Multi-Channel WebSocket real-time connection",
+    description = "Upgrades HTTP connection to full-duplex Multi-Channel WebSocket communication"
 )]
 pub async fn ws_handler(req: &mut Request, res: &mut Response) -> Result<(), StatusError> {
+    let initial_channel = req.query::<String>("channel").unwrap_or_else(|| "general".to_string());
+
     WebSocketUpgrade::new()
-        .upgrade(req, res, |mut ws| async move {
-            tracing::info!("WebSocket client connected");
-            while let Some(msg) = ws.recv().await {
-                match msg {
-                    Ok(msg) if msg.is_text() => {
-                        let text = msg.as_str().unwrap_or_default();
-                        tracing::debug!("WebSocket text message received: {}", text);
-                        let reply = format!("Echo: {} (at {})", text, chrono::Utc::now().to_rfc3339());
-                        if ws.send(Message::text(reply)).await.is_err() {
-                            break;
+        .upgrade(req, res, move |ws| async move {
+            tracing::info!("WebSocket client connected. Initial channel: {}", initial_channel);
+            let (mut ws_sender, mut ws_receiver) = ws.split();
+
+            // Client-bound message queue
+            let (client_tx, mut client_rx) = mpsc::unbounded_channel::<String>();
+
+            // Spawn outgoing forwarder task to write to WebSocket
+            tokio::spawn(async move {
+                while let Some(msg_text) = client_rx.recv().await {
+                    if ws_sender.send(Message::text(msg_text)).await.is_err() {
+                        break;
+                    }
+                }
+            });
+
+            // Map of active channel subscription cancel handles: Channel -> oneshot::Sender<()>
+            let mut active_subs: HashMap<String, tokio::sync::oneshot::Sender<()>> = HashMap::new();
+
+            // Helper to subscribe this connection to a channel
+            let subscribe_channel = |chan: &str,
+                                     client_tx: &mpsc::UnboundedSender<String>,
+                                     subs: &mut HashMap<String, tokio::sync::oneshot::Sender<()>>| {
+                if subs.contains_key(chan) {
+                    return;
+                }
+
+                let (cancel_tx, mut cancel_rx) = tokio::sync::oneshot::channel::<()>();
+                let mut broadcast_rx = HUB.get_or_create(chan).subscribe();
+                let client_tx_clone = client_tx.clone();
+
+                tokio::spawn(async move {
+                    loop {
+                        tokio::select! {
+                            _ = &mut cancel_rx => {
+                                break;
+                            }
+                            recv_res = broadcast_rx.recv() => {
+                                match recv_res {
+                                    Ok(msg) => {
+                                        if client_tx_clone.send(msg).is_err() {
+                                            break;
+                                        }
+                                    }
+                                    Err(broadcast::error::RecvError::Lagged(skipped)) => {
+                                        tracing::warn!("Client lagged, skipped {} messages", skipped);
+                                    }
+                                    Err(broadcast::error::RecvError::Closed) => {
+                                        break;
+                                    }
+                                }
+                            }
                         }
                     }
-                    Ok(msg) if msg.is_binary() => {
-                        let bytes = msg.as_bytes();
-                        tracing::debug!("WebSocket binary message received: {} bytes", bytes.len());
-                        if ws.send(Message::binary(bytes.to_vec())).await.is_err() {
-                            break;
+                });
+
+                subs.insert(chan.to_string(), cancel_tx);
+
+                let ack = ServerEvent::Subscribed {
+                    channel: chan.to_string(),
+                    message: format!("Subscribed to channel '{}'", chan),
+                    timestamp: chrono::Utc::now().to_rfc3339(),
+                };
+                if let Ok(ack_str) = serde_json::to_string(&ack) {
+                    let _ = client_tx.send(ack_str);
+                }
+            };
+
+            // Auto-subscribe to initial channel
+            subscribe_channel(&initial_channel, &client_tx, &mut active_subs);
+
+            // Handle incoming client messages
+            while let Some(msg) = ws_receiver.next().await {
+                match msg {
+                    Ok(msg) if msg.is_text() => {
+                        let text = msg.as_str().unwrap_or_default().trim();
+                        tracing::debug!("WebSocket text message: {}", text);
+
+                        if text.eq_ignore_ascii_case("PING") {
+                            let pong = ServerEvent::Echo {
+                                text: "PONG".to_string(),
+                                timestamp: chrono::Utc::now().to_rfc3339(),
+                            };
+                            if let Ok(pong_str) = serde_json::to_string(&pong) {
+                                let _ = client_tx.send(pong_str);
+                            }
+                            continue;
+                        }
+
+                        // Try to parse as structured ClientAction
+                        if let Ok(action) = serde_json::from_str::<ClientAction>(text) {
+                            match action {
+                                ClientAction::Subscribe { channel } => {
+                                    subscribe_channel(&channel, &client_tx, &mut active_subs);
+                                }
+                                ClientAction::Unsubscribe { channel } => {
+                                    if let Some(cancel) = active_subs.remove(&channel) {
+                                        let _ = cancel.send(());
+                                    }
+                                    let ack = ServerEvent::Unsubscribed {
+                                        channel: channel.clone(),
+                                        timestamp: chrono::Utc::now().to_rfc3339(),
+                                    };
+                                    if let Ok(ack_str) = serde_json::to_string(&ack) {
+                                        let _ = client_tx.send(ack_str);
+                                    }
+                                }
+                                ClientAction::Publish { channel, data } => {
+                                    let payload = ServerEvent::Message {
+                                        channel: channel.clone(),
+                                        data,
+                                        timestamp: chrono::Utc::now().to_rfc3339(),
+                                    };
+                                    if let Ok(payload_str) = serde_json::to_string(&payload) {
+                                        HUB.publish(&channel, payload_str);
+                                    }
+                                }
+                                ClientAction::ListChannels => {
+                                    let channels = HUB.active_channels();
+                                    let resp = ServerEvent::ChannelsList {
+                                        channels,
+                                        timestamp: chrono::Utc::now().to_rfc3339(),
+                                    };
+                                    if let Ok(resp_str) = serde_json::to_string(&resp) {
+                                        let _ = client_tx.send(resp_str);
+                                    }
+                                }
+                                ClientAction::Ping => {
+                                    let pong = ServerEvent::Echo {
+                                        text: "PONG".to_string(),
+                                        timestamp: chrono::Utc::now().to_rfc3339(),
+                                    };
+                                    if let Ok(pong_str) = serde_json::to_string(&pong) {
+                                        let _ = client_tx.send(pong_str);
+                                    }
+                                }
+                            }
+                        } else {
+                            // Fallback raw text echo
+                            let echo = ServerEvent::Echo {
+                                text: format!("Echo: {}", text),
+                                timestamp: chrono::Utc::now().to_rfc3339(),
+                            };
+                            if let Ok(echo_str) = serde_json::to_string(&echo) {
+                                let _ = client_tx.send(echo_str);
+                            }
                         }
                     }
                     Ok(msg) if msg.is_ping() => {
-                        if ws.send(Message::pong(msg.as_bytes().to_vec())).await.is_err() {
-                            break;
+                        let pong = ServerEvent::Echo {
+                            text: "PONG".to_string(),
+                            timestamp: chrono::Utc::now().to_rfc3339(),
+                        };
+                        if let Ok(pong_str) = serde_json::to_string(&pong) {
+                            let _ = client_tx.send(pong_str);
                         }
                     }
                     Ok(msg) if msg.is_close() => {
@@ -54,13 +277,14 @@ pub async fn ws_handler(req: &mut Request, res: &mut Response) -> Result<(), Sta
                     _ => {}
                 }
             }
+
             tracing::info!("WebSocket client disconnected");
         })
         .await
 }
 
-/// Server-Sent Events (SSE) Endpoint
-/// Streams heartbeat and event notifications continuously to subscribed clients.
+// ── SSE Endpoint ─────────────────────────────────────────────────────────────
+
 #[endpoint(
     tags("Realtime"),
     summary = "Server-Sent Events (SSE) stream",
@@ -88,8 +312,8 @@ pub async fn sse_handler(_req: &mut Request, res: &mut Response) {
     sse::stream(res, stream);
 }
 
-/// WebTransport Endpoint
-/// Establishes WebTransport HTTP/3 sessions and handles bidirectional streaming channels.
+// ── WebTransport Endpoint ────────────────────────────────────────────────────
+
 #[endpoint(
     tags("Realtime"),
     summary = "WebTransport session handler",
@@ -114,11 +338,11 @@ pub async fn webtransport_handler(req: &mut Request, _res: &mut Response) -> Res
 
 pub fn router() -> Router {
     Router::with_path("realtime")
-        .push(Router::with_path("ws").get_named("realtime.ws.ws_handler", ws_handler))
-        .push(Router::with_path("sse").get_named("realtime.sse.sse_handler", sse_handler))
+        .push(Router::with_path("ws").get(ws_handler))
+        .push(Router::with_path("sse").get(sse_handler))
         .push(
             Router::with_path("webtransport")
-                .post_named("realtime.webtransport.webtransport_handler", webtransport_handler)
-                .get_named("realtime.webtransport.webtransport_handler", webtransport_handler),
+                .post(webtransport_handler)
+                .get(webtransport_handler),
         )
 }

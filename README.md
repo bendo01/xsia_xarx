@@ -23,6 +23,7 @@
   - [1. Backend Setup (`server/`)](#1-backend-setup-server)
   - [2. Frontend Setup (`client/`)](#2-frontend-setup-client)
 - [API Documentation & Swagger UI](#-api-documentation--swagger-ui)
+- [Real-time Communication & WebSockets](#-real-time-communication--websockets)
 - [Database Migrations & Entity Generation](#-database-migrations--entity-generation)
 - [Background Workers & Task Runner](#-background-workers--task-runner)
 - [Testing & Quality Assurance](#-testing--quality-assurance)
@@ -34,7 +35,8 @@
 
 - 🎓 **Academic & Campaign Management**: Student admissions, curricula, academic periods, courses, class scheduling, study plans, and grading.
 - 🔄 **PDDikti Feeder Integration**: Synchronization modules for national feeder databases (accounts, references, accumulations, recapitulations).
-- 🛡️ **Robust Auth & RBAC**: JWT-based authentication, Argon2/bcrypt password hashing, multi-tenant role-based access control, and token verification.
+- 🛡️ **Robust Auth & RBAC**: JWT-based authentication, session authentication, Argon2/bcrypt password hashing, multi-tenant role-based access control, and token verification.
+- 🌐 **Full-Duplex Real-Time Communication**: Native WebSocket (`/api/v1/realtime/ws`), Server-Sent Events (`/api/v1/realtime/sse`), and WebTransport handlers.
 - 👤 **Person & Identity Registry**: Biodata management, marital status, religion, citizenship, and identity document management.
 - 🏛️ **Institutional Architecture**: Multi-level institutional structure, faculties, study programs, campus buildings, and room allocation.
 - 📍 **Standardized Master Data**: Hierarchical location catalog (provinces, regencies, districts, villages, postal codes) and contact channels.
@@ -230,12 +232,14 @@ CURRENT_INSTITUTION_CODE="092010"
 
 2. **Install dependencies**:
    ```bash
-   pnpm install
+   bun install
+   # or: pnpm install
    ```
 
 3. **Start the development server**:
    ```bash
-   pnpm dev
+   bun run dev
+   # or: pnpm dev
    ```
    Open your browser at `http://localhost:3000` (or the port indicated in terminal).
 
@@ -250,7 +254,8 @@ The backend provides interactive OpenAPI documentation out of the box:
 
 ### Primary API Routes (`/api/v1/...`)
 
-- `/api/v1/auth` — Authentication, sessions, password reset, token validation
+- `/api/v1/auth` — Authentication, sessions (`/login-with-session`), password reset, token validation
+- `/api/v1/realtime` — Full-duplex WebSocket (`/ws`), Server-Sent Events (`/sse`), and WebTransport (`/webtransport`)
 - `/api/v1/academic` — Academic years, courses, curricula, student classes, grading
 - `/api/v1/person` — Master person records, student biodatas, staff profiles, reference data
 - `/api/v1/institution` — Institutional profiles, departments, faculties, programs
@@ -260,6 +265,30 @@ The backend provides interactive OpenAPI documentation out of the box:
 - `/api/v1/contact` — Addresses, telephone, email, and social networks
 - `/api/v1/document` — Document archives and attachments
 - `/api/v1/literate` — Library and literary catalogs
+
+---
+
+## 🌐 Real-time Communication & WebSockets
+
+When you start the backend using `cargo run`, the server automatically initializes **all real-time communication protocols and background job workers**:
+
+### 1. Active Real-time Protocols & Endpoints
+| Protocol | Endpoint | Description |
+| :--- | :--- | :--- |
+| **WebSocket** | `ws://127.0.0.1:5800/api/v1/realtime/ws` | Full-duplex bidirectional communication with ping-pong latency tracking and JSON/text echo |
+| **Server-Sent Events (SSE)** | `http://127.0.0.1:5800/api/v1/realtime/sse` | Continuous server-to-client event stream (heartbeats, status updates, notifications) |
+| **WebTransport** | `http://127.0.0.1:5800/api/v1/realtime/webtransport` | Low-latency HTTP/3 transport channels |
+
+### 2. Interactive WebSocket & Real-time Studio
+The frontend includes a built-in debugging and interactive real-time studio:
+- **Route**: [`/example/websocket`](client/src/routes/example/websocket.tsx)
+- **Features**: Live connection lifecycle manager, auto-reconnect, 5s automated heartbeat ping-pong with RTT latency measurement in ms, dual-mode text/JSON payload composer, and SSE event streaming listener.
+
+### 3. Background Job Execution (Apalis Email Worker)
+In addition to the HTTP and WebSocket endpoints, `cargo run` automatically spawns an asynchronous **Apalis** background task worker:
+- **Worker Runtime**: Tokio background task (`tokio::spawn(email_worker.run())`)
+- **Queue Storage**: Redis (`REDIS_URL="redis://127.0.0.1:6379"`)
+- **Responsibilities**: Consumes and processes queued tasks (such as transactional SMTP emails) asynchronously without blocking HTTP requests.
 
 ---
 
@@ -353,11 +382,13 @@ cargo test -- --nocapture
 ```bash
 cd client
 
-# Type-check and build production bundle
-pnpm build
+# Type-check and build production bundle using Bun
+bun run build
+# or: pnpm build
 
 # Preview production build locally
-pnpm preview
+bun run preview
+# or: pnpm preview
 ```
 
 ---
