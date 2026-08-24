@@ -115,7 +115,7 @@ sea-orm = { version = "2.0.0", features = [
     "with-arrow",
 ] }
 bcrypt = "0.19.3"
-jsonwebtoken = "11.0.0"
+jsonwebtoken = { version = "11.0.0", features = ["rust_crypto"] }
 argon2 = "0.5.3"
 rand = "0.8"
 clap = { version = "4.6.6", features = ["derive"] }

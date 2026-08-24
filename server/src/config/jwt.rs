@@ -68,3 +68,17 @@ pub fn verify_token(token: &str, config: &JwtConfig) -> JwtResult<Claims> {
 
     Ok(token_data.claims)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_create_and_verify_token() {
+        let config = JwtConfig::default();
+        let user_id = Uuid::new_v4();
+        let token = create_token(user_id, &config).expect("Failed to create token");
+        let claims = verify_token(&token, &config).expect("Failed to verify token");
+        assert_eq!(claims.sub, user_id);
+    }
+}

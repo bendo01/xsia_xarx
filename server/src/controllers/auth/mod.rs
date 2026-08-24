@@ -41,18 +41,18 @@ pub fn router() -> Router {
                 ),
         )
         // Public Auth Endpoints
-        .push(Router::with_path("register").post_named("auth.user.register", user::register))
-        .push(Router::with_path("login").post_named("auth.user.login", user::login))
-        .push(Router::with_path("login-with-session").post_named("auth.user.login_with_session", user::login_with_session))
-        .push(Router::with_path("verify/{token}").get_named("auth.user.verify_email", user::verify_email))
-        .push(Router::with_path("forgot").post_named("auth.user.forgot_password", user::forgot_password))
-        .push(Router::with_path("reset").post_named("auth.user.reset_password", user::reset_password))
-        .push(Router::with_path("resend-verification-mail").post_named("auth.user.resend_verification_mail", user::resend_verification_mail))
+        .push(Router::with_path("register").post(user::register))
+        .push(Router::with_path("login").post(user::login))
+        .push(Router::with_path("login-with-session").post(user::login_with_session))
+        .push(Router::with_path("verify/{token}").get(user::verify_email))
+        .push(Router::with_path("forgot").post(user::forgot_password))
+        .push(Router::with_path("reset").post(user::reset_password))
+        .push(Router::with_path("resend-verification-mail").post(user::resend_verification_mail))
         // Protected Auth Endpoints
         .push(
             Router::with_path("current")
                 .hoop(crate::middleware::auth::JwtAuth)
-                .get_named("auth.user.current_user", user::current_user)
+                .get(user::current_user)
         )
         .push(
             Router::with_path("role")
