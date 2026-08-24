@@ -2,6 +2,7 @@ import { createForm } from '@tanstack/solid-form';
 import { onMount, onCleanup, createSignal, Show } from 'solid-js';
 import { useNavigate, A } from '@solidjs/router';
 import { LoginUser, isAuthenticated } from '../../controllers/auth/AuthUser';
+import { processLoginSuccess, getDashboardPathForRole, getActiveRole } from '../../lib/authStore';
 import { toast } from '../../components/toast/Toaster';
 
 export default function Login() {
@@ -43,9 +44,12 @@ export default function Login() {
                         localStorage.removeItem('remember_email');
                     }
 
-                    // Smooth navigation to destination
+                    // Process roles and determine target dashboard
+                    const targetDashboard = await processLoginSuccess(response, false);
+
+                    // Smooth navigation to destination dashboard
                     setTimeout(() => {
-                        navigate("/", { replace: true });
+                        navigate(targetDashboard, { replace: true });
                     }, 400);
                 } else {
                     const msg = response.message || "Invalid email or password";
@@ -63,9 +67,9 @@ export default function Login() {
     }));
 
     onMount(() => {
-        // If already logged in, redirect to home
+        // If already logged in, redirect to own dashboard
         if (isAuthenticated()) {
-            navigate("/", { replace: true });
+            navigate(getDashboardPathForRole(getActiveRole()), { replace: true });
             return;
         }
 

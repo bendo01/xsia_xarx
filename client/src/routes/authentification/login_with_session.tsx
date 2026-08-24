@@ -2,6 +2,7 @@ import { createForm } from '@tanstack/solid-form';
 import { onMount, onCleanup, createSignal, Show } from 'solid-js';
 import { useNavigate, A } from '@solidjs/router';
 import { LoginUserWithSession, isAuthenticated } from '../../controllers/auth/AuthUser';
+import { processLoginSuccess, getDashboardPathForRole, getActiveRole } from '../../lib/authStore';
 import { toast } from '../../components/toast/Toaster';
 
 export default function LoginWithSession() {
@@ -36,9 +37,12 @@ export default function LoginWithSession() {
                     const userName = response.user?.name || "User";
                     toast.success(`Session started! Welcome back, ${userName}.`);
                     
-                    // Smooth navigation to destination
+                    // Process roles and determine target dashboard
+                    const targetDashboard = await processLoginSuccess(response, true);
+
+                    // Smooth navigation to destination dashboard
                     setTimeout(() => {
-                        navigate("/", { replace: true });
+                        navigate(targetDashboard, { replace: true });
                     }, 400);
                 } else {
                     const msg = response.message || "Invalid session credentials";
@@ -56,9 +60,9 @@ export default function LoginWithSession() {
     }));
 
     onMount(() => {
-        // Redirect if already authenticated
+        // Redirect if already authenticated to own dashboard
         if (isAuthenticated()) {
-            navigate("/", { replace: true });
+            navigate(getDashboardPathForRole(getActiveRole()), { replace: true });
             return;
         }
 
