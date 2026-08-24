@@ -9,7 +9,7 @@ use validator::Validate;
 
 use crate::dtos::auth::user::{
     CreateUserRequest, UserQuery, UserResponse, PaginatedUserResponse,
-    UpdateUserRequest, RegisterRequest, LoginRequest, LoginResponse,
+    UpdateUserRequest, RegisterRequest, LoginRequest, LoginResponse, SessionLoginResponse,
     ForgotPasswordRequest, ResetPasswordRequest, ResendVerificationRequest,
 };
 use crate::dtos::common::reference::MessageResponse;
@@ -535,6 +535,82 @@ pub async fn login(
     Ok(Json(LoginResponse {
         token,
         user: user_resp,
+    }))
+}
+
+#[endpoint(tags("Auth - Login with Session"), status_codes(200, 400, 401, 500))]
+pub async fn login_with_session(
+    req: &mut Request,
+    depot: &mut Depot,
+    res: &mut Response,
+) -> Result<Json<SessionLoginResponse>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let payload: LoginRequest = req.parse_json().await.map_err(|e| {
+        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+    })?;
+
+    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+
+    let user = entity_mod::Entity::find()
+        .filter(entity_mod::Column::Email.eq(&payload.email))
+        .filter(entity_mod::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .ok_or_else(|| StatusError::unauthorized().brief("Invalid email or password"))?;
+
+    if !verify_password(&user.password, &payload.password)? {
+        return Err(StatusError::unauthorized().brief("Invalid email or password"));
+    }
+
+    if !user.is_active {
+        return Err(StatusError::unauthorized().brief("Account is not active or verified"));
+    }
+
+    let jwt_config = JwtConfig::from_env();
+    let token = create_token(user.id, &jwt_config).map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let session_id = Uuid::new_v4().to_string();
+
+    let cookie = salvo::http::cookie::Cookie::build(("session_id", session_id.clone()))
+        .path("/")
+        .http_only(true)
+        .same_site(salvo::http::cookie::SameSite::Lax)
+        .build();
+    res.add_cookie(cookie);
+
+    let user_resp = UserResponse {
+        id: user.id,
+        pid: user.pid,
+        email: user.email.clone(),
+        password: "".to_string(),
+        api_key: user.api_key.clone(),
+        name: user.name.clone(),
+        individual_id: user.individual_id,
+        is_active: user.is_active,
+        current_role_id: user.current_role_id,
+        reset_token: None,
+        reset_sent_at: user.reset_sent_at,
+        email_verification_token: None,
+        email_verification_sent_at: user.email_verification_sent_at,
+        email_verified_at: user.email_verified_at,
+        magic_link_token: None,
+        magic_link_expiration: user.magic_link_expiration,
+        created_at: user.created_at,
+        updated_at: user.updated_at,
+        deleted_at: user.deleted_at,
+        created_by: user.created_by,
+        updated_by: user.updated_by,
+    };
+
+    Ok(Json(SessionLoginResponse {
+        session_id,
+        token,
+        user: user_resp,
+        expires_in: 86400,
     }))
 }
 

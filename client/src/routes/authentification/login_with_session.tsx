@@ -1,17 +1,16 @@
 import { createForm } from '@tanstack/solid-form';
 import { onMount, onCleanup, createSignal, Show } from 'solid-js';
 import { useNavigate, A } from '@solidjs/router';
-import { LoginUser, isAuthenticated } from '../../controllers/auth/AuthUser';
+import { LoginUserWithSession, isAuthenticated } from '../../controllers/auth/AuthUser';
 import { toast } from '../../components/toast/Toaster';
 
-export default function Login() {
+export default function LoginWithSession() {
     let canvasRef: HTMLCanvasElement | undefined;
     const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = createSignal(false);
     const [errorMessage, setErrorMessage] = createSignal<string | null>(null);
     const [showPassword, setShowPassword] = createSignal(false);
-    const [rememberMe, setRememberMe] = createSignal(true);
 
     const form = createForm(() => ({
         defaultValues: {
@@ -20,7 +19,7 @@ export default function Login() {
         },
         onSubmit: async ({ value }) => {
             if (!value.email || !value.password) {
-                setErrorMessage("Please fill in both email and password.");
+                setErrorMessage("Please enter both your email and password.");
                 return;
             }
 
@@ -28,32 +27,26 @@ export default function Login() {
             setErrorMessage(null);
 
             try {
-                const response = await LoginUser({
+                const response = await LoginUserWithSession({
                     email: value.email,
                     password: value.password,
                 });
 
                 if (response.code === 200) {
                     const userName = response.user?.name || "User";
-                    toast.success(`Welcome back, ${userName}!`);
+                    toast.success(`Session started! Welcome back, ${userName}.`);
                     
-                    if (typeof window !== 'undefined' && rememberMe()) {
-                        localStorage.setItem('remember_email', value.email);
-                    } else if (typeof window !== 'undefined') {
-                        localStorage.removeItem('remember_email');
-                    }
-
                     // Smooth navigation to destination
                     setTimeout(() => {
                         navigate("/", { replace: true });
                     }, 400);
                 } else {
-                    const msg = response.message || "Invalid email or password";
+                    const msg = response.message || "Invalid session credentials";
                     setErrorMessage(msg);
                     toast.danger(msg);
                 }
             } catch (err: any) {
-                const msg = err?.message || "Failed to connect to the authentication server";
+                const msg = err?.message || "Failed to connect to authentication server";
                 setErrorMessage(msg);
                 toast.danger(msg);
             } finally {
@@ -63,21 +56,13 @@ export default function Login() {
     }));
 
     onMount(() => {
-        // If already logged in, redirect to home
+        // Redirect if already authenticated
         if (isAuthenticated()) {
             navigate("/", { replace: true });
             return;
         }
 
-        // Load remembered email if available
-        if (typeof window !== 'undefined') {
-            const savedEmail = localStorage.getItem('remember_email');
-            if (savedEmail) {
-                form.setFieldValue('email', savedEmail);
-            }
-        }
-
-        // Initialize rain canvas animation
+        // Initialize particle/aurora canvas animation
         if (!canvasRef) return;
         const canvas = canvasRef;
         const ctx = canvas.getContext('2d');
@@ -92,87 +77,70 @@ export default function Login() {
         };
         window.addEventListener('resize', handleResize);
 
-        class Drop {
+        class Particle {
             x: number;
             y: number;
+            vx: number;
             vy: number;
-            l: number;
-            splashHeight: number;
-            
+            radius: number;
+            alpha: number;
+
             constructor() {
                 this.x = Math.random() * width;
-                this.y = Math.random() * -height;
-                this.vy = Math.random() * 8 + 15; // fall speed
-                this.l = Math.random() * 20 + 10; // drop length
-                this.splashHeight = Math.random() * height; // hit screen at random height
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.8;
+                this.vy = (Math.random() - 0.5) * 0.8;
+                this.radius = Math.random() * 2 + 1;
+                this.alpha = Math.random() * 0.5 + 0.2;
             }
 
             update() {
+                this.x += this.vx;
                 this.y += this.vy;
-                if (this.y >= this.splashHeight) {
-                    splashes.push(new Splash(this.x, this.y));
-                    this.y = Math.random() * -100;
-                    this.x = Math.random() * width;
-                    this.splashHeight = Math.random() * height;
-                }
+
+                if (this.x < 0) this.x = width;
+                if (this.x > width) this.x = 0;
+                if (this.y < 0) this.y = height;
+                if (this.y > height) this.y = 0;
             }
 
             draw() {
                 if (!ctx) return;
                 ctx.beginPath();
-                ctx.moveTo(this.x, this.y);
-                ctx.lineTo(this.x, this.y + this.l);
-                ctx.strokeStyle = 'rgba(150, 200, 255, 0.3)';
-                ctx.lineWidth = 1.5;
-                ctx.stroke();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(56, 189, 248, ${this.alpha})`;
+                ctx.fill();
             }
         }
 
-        class Splash {
-            x: number;
-            y: number;
-            r: number;
-            a: number;
-            
-            constructor(x: number, y: number) {
-                this.x = x;
-                this.y = y;
-                this.r = 1;
-                this.a = 0.6;
-            }
-
-            update() {
-                this.r += 1.2; // expansion speed
-                this.a -= 0.03; // fade speed
-            }
-
-            draw() {
-                if (!ctx) return;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-                ctx.strokeStyle = `rgba(150, 200, 255, ${this.a})`;
-                ctx.lineWidth = 1;
-                ctx.stroke();
-            }
-        }
-
-        const drops = Array.from({ length: 80 }, () => new Drop());
-        let splashes: Splash[] = [];
+        const particles = Array.from({ length: 60 }, () => new Particle());
         let animationId: number;
 
         const animate = () => {
             if (!ctx) return;
             ctx.clearRect(0, 0, width, height);
-            
-            drops.forEach(drop => {
-                drop.update();
-                drop.draw();
-            });
-            
-            splashes = splashes.filter(s => s.a > 0);
-            splashes.forEach(splash => {
-                splash.update();
-                splash.draw();
+
+            // Connect nearby particles with subtle lines
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < 100) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(56, 189, 248, ${0.15 * (1 - dist / 100)})`;
+                        ctx.lineWidth = 0.8;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            particles.forEach((p) => {
+                p.update();
+                p.draw();
             });
 
             animationId = requestAnimationFrame(animate);
@@ -187,55 +155,56 @@ export default function Login() {
     });
 
     return (
-        <div class="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-[#0F2027] px-4 py-8 select-none">
-            {/* Background Gradients */}
+        <div class="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-[#0A0F1D] px-4 py-8 select-none">
+            {/* Ambient Background Gradient Spheres */}
             <div class="absolute inset-0 w-full h-full pointer-events-none z-0">
-                {/* Top Left Deep Blue */}
-                <div class="absolute -top-[20%] -left-[10%] w-[70%] h-[70%] bg-[#0f3460] rounded-full mix-blend-screen filter blur-[100px] opacity-80"></div>
-                {/* Bottom Left Deep Red */}
-                <div class="absolute -bottom-[20%] -left-[10%] w-[60%] h-[60%] bg-[#e94560] rounded-full mix-blend-multiply filter blur-[120px] opacity-90"></div>
-                {/* Bottom Right Bright Orange */}
-                <div class="absolute -bottom-[20%] -right-[10%] w-[70%] h-[70%] bg-[#f9a826] rounded-full mix-blend-screen filter blur-[120px] opacity-70"></div>
+                {/* Emerald/Cyan Glow Top Left */}
+                <div class="absolute -top-[15%] -left-[10%] w-[65%] h-[65%] bg-[#0d9488]/30 rounded-full mix-blend-screen filter blur-[120px] opacity-70"></div>
+                {/* Deep Indigo Bottom Left */}
+                <div class="absolute -bottom-[20%] -left-[10%] w-[60%] h-[60%] bg-[#3b82f6]/25 rounded-full mix-blend-screen filter blur-[120px] opacity-60"></div>
+                {/* Emerald/Teal Glow Bottom Right */}
+                <div class="absolute -bottom-[15%] -right-[10%] w-[65%] h-[65%] bg-[#10b981]/25 rounded-full mix-blend-screen filter blur-[120px] opacity-60"></div>
 
-                {/* Custom SVG Wave for deep ambience */}
-                <svg class="absolute bottom-0 w-full h-[80%] opacity-40 mix-blend-overlay" preserveAspectRatio="none" viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg">
-                    <path fill="#ffffff" fill-opacity="1" d="M0,192L48,202.7C96,213,192,235,288,218.7C384,203,480,149,576,149.3C672,149,768,203,864,229.3C960,256,1056,256,1152,240C1248,224,1344,192,1392,176L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-                </svg>
-
-                {/* Rain Canvas */}
-                <canvas ref={canvasRef} class="absolute inset-0 w-full h-full opacity-60 mix-blend-screen"></canvas>
-
-                {/* Small floating glowing stars */}
-                <div class="absolute top-[25%] left-[20%] w-1 h-1 bg-white rounded-full opacity-60 shadow-[0_0_10px_rgba(255,255,255,0.8)]"></div>
-                <div class="absolute top-[65%] left-[10%] w-1.5 h-1.5 bg-white rounded-full opacity-40 shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
-                <div class="absolute top-[35%] right-[15%] w-1 h-1 bg-white rounded-full opacity-50 shadow-[0_0_10px_rgba(255,255,255,0.8)]"></div>
-                <div class="absolute bottom-[25%] right-[30%] w-2 h-2 bg-white rounded-full opacity-30 shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
-                <div class="absolute top-[15%] right-[40%] w-1 h-1 bg-white rounded-full opacity-30 shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+                {/* Particle Network Canvas */}
+                <canvas ref={canvasRef} class="absolute inset-0 w-full h-full opacity-70"></canvas>
             </div>
 
-            {/* Glassmorphism Card */}
-            <div class="relative z-10 w-full max-w-lg p-8 sm:p-10 bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] rounded-[2rem] flex flex-col items-center">
+            {/* Glassmorphic Session Card */}
+            <div class="relative z-10 w-full max-w-lg p-8 sm:p-10 bg-slate-900/60 backdrop-blur-2xl border border-emerald-500/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] rounded-[2rem] flex flex-col items-center">
 
-                {/* Logo */}
-                <div class="w-[90px] h-[90px] rounded-full bg-[#1A1A1D]/80 border-[3px] border-[#3A76F0] flex items-center justify-center mb-5 shadow-[0_0_30px_rgba(58,118,240,0.45)] relative overflow-hidden transition-transform duration-300 hover:scale-105">
-                    <svg width="42" height="42" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M3.5 16.5L3.5 8.5L8.5 13.5L8.5 21.5L3.5 16.5Z" fill="white" />
-                        <path d="M9.5 12.5L9.5 4.5L14.5 9.5L14.5 17.5L9.5 12.5Z" fill="white" />
-                        <path d="M15.5 8.5L15.5 0.5L20.5 5.5L20.5 13.5L15.5 8.5Z" fill="white" />
+                {/* Security Badge Pill */}
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold tracking-wide mb-5 animate-pulse">
+                    <span class="size-2 rounded-full bg-emerald-400"></span>
+                    <span>Ephemeral Session Mode</span>
+                </div>
+
+                {/* Logo with Emerald Glow */}
+                <div class="w-[85px] h-[85px] rounded-full bg-[#111827]/90 border-[3px] border-emerald-500/80 flex items-center justify-center mb-4 shadow-[0_0_30px_rgba(16,185,129,0.35)] relative overflow-hidden transition-transform duration-300 hover:scale-105">
+                    <svg class="size-10 text-emerald-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
 
                 {/* Header Titles */}
-                <h1 class="text-[28px] sm:text-[32px] font-bold text-white tracking-wide mb-1 font-sans">
-                    Macro Workspace
+                <h1 class="text-[26px] sm:text-[30px] font-bold text-white tracking-wide mb-1 font-sans">
+                    Session Authentication
                 </h1>
-                <p class="text-white/60 text-xs font-semibold tracking-wider uppercase mb-4 font-mono">
-                    Enterprise Portal
+                <p class="text-white/60 text-xs font-semibold tracking-wider uppercase mb-3 font-mono">
+                    Temporary Tab-Scoped Access
                 </p>
 
-                <p class="text-center text-white/80 text-sm font-normal leading-relaxed mb-6 px-2 max-w-[380px]">
-                    Sign in to access unified academic management, analytics, records, and services.
-                </p>
+                {/* Info Notice Box */}
+                <div class="w-full mb-6 p-3 bg-emerald-950/40 border border-emerald-500/20 rounded-xl flex items-start gap-2.5 text-emerald-200/90 text-xs leading-relaxed">
+                    <svg class="shrink-0 size-4 text-emerald-400 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="16" x2="12" y2="12"/>
+                        <line x1="12" y1="8" x2="12.01" y2="8"/>
+                    </svg>
+                    <span>
+                        Tokens are kept exclusively in memory for this browser session and automatically destroyed when you close the tab.
+                    </span>
+                </div>
 
                 {/* Error Alert Box */}
                 <Show when={errorMessage()}>
@@ -294,7 +263,7 @@ export default function Login() {
                                             field().handleChange(e.currentTarget.value);
                                             if (errorMessage()) setErrorMessage(null);
                                         }}
-                                        class="w-full bg-[#1c1a1f]/50 border border-white/10 text-white placeholder-white/30 pl-11 pr-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 focus:bg-[#1c1a1f]/75 transition-all text-sm shadow-inner"
+                                        class="w-full bg-[#111827]/70 border border-emerald-500/20 text-white placeholder-white/30 pl-11 pr-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400/50 transition-all text-sm shadow-inner"
                                     />
                                 </div>
                             </div>
@@ -305,11 +274,9 @@ export default function Login() {
                     <form.Field name="password">
                         {(field) => (
                             <div class="space-y-1">
-                                <div class="flex items-center justify-between px-1">
-                                    <label class="block text-xs font-medium text-white/80">
-                                        Password
-                                    </label>
-                                </div>
+                                <label class="block text-xs font-medium text-white/80 px-1">
+                                    Password
+                                </label>
                                 <div class="relative flex items-center">
                                     <span class="absolute left-4 text-white/40 pointer-events-none">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -328,7 +295,7 @@ export default function Login() {
                                             field().handleChange(e.currentTarget.value);
                                             if (errorMessage()) setErrorMessage(null);
                                         }}
-                                        class="w-full bg-[#1c1a1f]/50 border border-white/10 text-white placeholder-white/30 pl-11 pr-11 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 focus:bg-[#1c1a1f]/75 transition-all text-sm shadow-inner"
+                                        class="w-full bg-[#111827]/70 border border-emerald-500/20 text-white placeholder-white/30 pl-11 pr-11 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400/50 transition-all text-sm shadow-inner"
                                     />
                                     <button
                                         type="button"
@@ -355,30 +322,17 @@ export default function Login() {
                         )}
                     </form.Field>
 
-                    {/* Remember me & Options */}
-                    <div class="flex items-center justify-between pt-1 text-xs">
-                        <label class="flex items-center gap-2 cursor-pointer text-white/70 hover:text-white transition-colors">
-                            <input
-                                type="checkbox"
-                                checked={rememberMe()}
-                                onChange={(e) => setRememberMe(e.currentTarget.checked)}
-                                class="rounded border-white/20 bg-white/10 text-blue-500 focus:ring-0 focus:ring-offset-0 cursor-pointer size-3.5"
-                            />
-                            <span>Remember email</span>
-                        </label>
-                    </div>
-
                     {/* Submit Button */}
                     <form.Subscribe selector={(state) => state.canSubmit}>
                         {(canSubmit) => (
                             <button
                                 type="submit"
                                 disabled={!canSubmit() || isLoading()}
-                                class="w-full mt-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 px-4 rounded-xl border border-white/10 transition-all duration-300 shadow-[0_4px_20px_rgba(58,118,240,0.35)] hover:shadow-[0_6px_25px_rgba(58,118,240,0.5)] active:scale-[0.99] text-xs tracking-[0.12em] uppercase disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                class="w-full mt-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-3.5 px-4 rounded-xl border border-emerald-400/20 transition-all duration-300 shadow-[0_4px_20px_rgba(16,185,129,0.3)] hover:shadow-[0_6px_25px_rgba(16,185,129,0.45)] active:scale-[0.99] text-xs tracking-[0.12em] uppercase disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 <Show when={isLoading()} fallback={
                                     <>
-                                        <span>SIGN IN</span>
+                                        <span>START SECURE SESSION</span>
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M5 12h14" />
                                             <path d="m12 5 7 7-7 7" />
@@ -389,26 +343,23 @@ export default function Login() {
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    <span>SIGNING IN...</span>
+                                    <span>STARTING SESSION...</span>
                                 </Show>
                             </button>
                         )}
                     </form.Subscribe>
                 </form>
 
-                {/* Card Footer */}
+                {/* Card Footer Links */}
                 <div class="w-full pt-4 border-t border-white/10 flex items-center justify-between text-xs text-white/50">
-                    <A href="/" class="hover:text-white transition-colors flex items-center gap-1">
+                    <A href="/authentification/login" class="hover:text-emerald-300 transition-colors flex items-center gap-1">
                         <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="m15 18-6-6 6-6" />
                         </svg>
-                        Back to portal
+                        Standard Login
                     </A>
-                    <A href="/authentification/login_with_session" class="text-blue-400/80 hover:text-blue-300 transition-colors flex items-center gap-1">
-                        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        </svg>
-                        Session Mode
+                    <A href="/" class="hover:text-white transition-colors">
+                        Home Portal
                     </A>
                 </div>
             </div>

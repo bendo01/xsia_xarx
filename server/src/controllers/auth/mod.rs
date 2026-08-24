@@ -43,6 +43,7 @@ pub fn router() -> Router {
         // Public Auth Endpoints
         .push(Router::with_path("register").post_named("auth.user.register", user::register))
         .push(Router::with_path("login").post_named("auth.user.login", user::login))
+        .push(Router::with_path("login-with-session").post_named("auth.user.login_with_session", user::login_with_session))
         .push(Router::with_path("verify/{token}").get_named("auth.user.verify_email", user::verify_email))
         .push(Router::with_path("forgot").post_named("auth.user.forgot_password", user::forgot_password))
         .push(Router::with_path("reset").post_named("auth.user.reset_password", user::reset_password))

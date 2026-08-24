@@ -107,6 +107,14 @@ pub struct LoginResponse {
     pub user: UserResponse,
 }
 
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct SessionLoginResponse {
+    pub session_id: String,
+    pub token: String,
+    pub user: UserResponse,
+    pub expires_in: u64,
+}
+
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
 pub struct ForgotPasswordRequest {
     #[validate(email)]
