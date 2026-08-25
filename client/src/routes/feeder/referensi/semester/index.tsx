@@ -4,7 +4,7 @@ export default function FeederReferensiSemesterPage() {
     return (
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
             <TopBar />
-            
+
             <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
                 <div class="bg-white dark:bg-neutral-800 rounded-2xl p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -26,9 +26,9 @@ export default function FeederReferensiSemesterPage() {
                 <div class="bg-white dark:bg-neutral-800 rounded-2xl p-10 border border-neutral-200 dark:border-neutral-700 shadow-2xs flex flex-col items-center justify-center text-center min-h-[320px]">
                     <div class="size-14 rounded-2xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/80 flex items-center justify-center text-blue-600 dark:text-blue-400 mb-4 shadow-xs">
                         <svg class="size-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect width="18" height="18" x="3" y="3" rx="2"/>
-                            <path d="M3 9h18"/>
-                            <path d="M9 21V9"/>
+                            <rect width="18" height="18" x="3" y="3" rx="2" />
+                            <path d="M3 9h18" />
+                            <path d="M9 21V9" />
                         </svg>
                     </div>
                     <h3 class="text-base font-bold text-neutral-900 dark:text-white mb-1.5 font-mono">

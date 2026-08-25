@@ -1,6 +1,6 @@
 import TopBar from '~/components/navigation/TopBar';
 
-export default function AcademicCourseMasterCoursesPage() {
+export default function AcademicCourseMasterCoursePage() {
     return (
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
             <TopBar />
@@ -14,10 +14,10 @@ export default function AcademicCourseMasterCoursesPage() {
                                 <span>Academic / Course / Master</span>
                             </div>
                             <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                                Courses
+                                Course
                             </h1>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1 font-mono">
-                                Route: <span class="text-blue-600 dark:text-blue-400">/academic/course/master/courses</span>
+                                Route: <span class="text-blue-600 dark:text-blue-400">/academic/course/master/course</span>
                             </p>
                         </div>
                     </div>
@@ -32,10 +32,10 @@ export default function AcademicCourseMasterCoursesPage() {
                         </svg>
                     </div>
                     <h3 class="text-base font-bold text-neutral-900 dark:text-white mb-1.5 font-mono">
-                        Courses Workspace
+                        Course Workspace
                     </h3>
                     <p class="text-xs text-neutral-500 dark:text-neutral-400 max-w-md font-mono leading-relaxed">
-                        Data management, registry entities, and operational records for Courses.
+                        Data management, registry entities, and operational records for Course.
                     </p>
                 </div>
             </main>
