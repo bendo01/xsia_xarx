@@ -33,7 +33,7 @@ export default function WebSocketExample() {
     const [messages, setMessages] = createSignal<WsMessage[]>([]);
     const [inputMessage, setInputMessage] = createSignal("");
     const [payloadType, setPayloadType] = createSignal<"text" | "json">("json");
-    
+
     // Channels State
     const [activeChannels, setActiveChannels] = createSignal<string[]>(["general"]);
     const [targetChannel, setTargetChannel] = createSignal<string>("general");
@@ -457,7 +457,7 @@ export default function WebSocketExample() {
 
             {/* Sub-header / Title Bar */}
             <div class="border-b border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-900/60 backdrop-blur-md px-4 sm:px-8 py-5 transition-colors">
-                <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
                         <div class="flex items-center gap-2 text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1">
                             <span class="size-2 rounded-full bg-blue-500 animate-ping"></span>
@@ -475,15 +475,14 @@ export default function WebSocketExample() {
                     <div class="flex items-center gap-3 bg-neutral-200/60 dark:bg-neutral-950/80 border border-neutral-300/80 dark:border-neutral-800 p-2 rounded-2xl shadow-inner transition-colors">
                         <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-xs dark:shadow-none">
                             <span
-                                class={`size-2.5 rounded-full ${
-                                    status() === "connected"
+                                class={`size-2.5 rounded-full ${status() === "connected"
                                         ? "bg-emerald-500 dark:bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"
                                         : status() === "connecting"
-                                        ? "bg-amber-500 dark:bg-amber-400 animate-pulse"
-                                        : status() === "error"
-                                        ? "bg-rose-500"
-                                        : "bg-neutral-400 dark:bg-neutral-500"
-                                }`}
+                                            ? "bg-amber-500 dark:bg-amber-400 animate-pulse"
+                                            : status() === "error"
+                                                ? "bg-rose-500"
+                                                : "bg-neutral-400 dark:bg-neutral-500"
+                                    }`}
                             ></span>
                             <span class="text-xs font-bold uppercase tracking-wider text-neutral-800 dark:text-neutral-200">
                                 {status()}
@@ -500,8 +499,8 @@ export default function WebSocketExample() {
             </div>
 
             {/* Main Content Area */}
-            <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-8 flex flex-col gap-6">
-                
+            <main class="flex-1 w-full mx-auto p-4 sm:p-8 flex flex-col gap-6">
+
                 {/* Metric Cards Bar */}
                 <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4">
                     <div class="p-4 rounded-2xl bg-white dark:bg-neutral-900/80 border border-neutral-200 dark:border-neutral-800 shadow-xs dark:shadow-none flex flex-col transition-colors">
@@ -607,11 +606,10 @@ export default function WebSocketExample() {
                                 if (next && status() === "connected") startHeartbeat();
                                 else stopHeartbeat();
                             }}
-                            class={`px-3 py-2.5 rounded-xl border text-xs font-medium transition-all cursor-pointer ${
-                                heartbeatActive()
+                            class={`px-3 py-2.5 rounded-xl border text-xs font-medium transition-all cursor-pointer ${heartbeatActive()
                                     ? "bg-emerald-50 dark:bg-emerald-950/50 border-emerald-300 dark:border-emerald-500/50 text-emerald-700 dark:text-emerald-300 shadow-xs"
                                     : "bg-neutral-100 dark:bg-neutral-800/80 border-neutral-300 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
-                            }`}
+                                }`}
                         >
                             Heartbeat {heartbeatActive() ? "ON" : "OFF"}
                         </button>
@@ -619,11 +617,10 @@ export default function WebSocketExample() {
                         {/* SSE toggle button */}
                         <button
                             onClick={toggleSse}
-                            class={`px-3 py-2.5 rounded-xl border text-xs font-medium transition-all cursor-pointer ${
-                                sseActive()
+                            class={`px-3 py-2.5 rounded-xl border text-xs font-medium transition-all cursor-pointer ${sseActive()
                                     ? "bg-purple-50 dark:bg-purple-950/50 border-purple-300 dark:border-purple-500/50 text-purple-700 dark:text-purple-300 shadow-xs"
                                     : "bg-neutral-100 dark:bg-neutral-800/80 border-neutral-300 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
-                            }`}
+                                }`}
                         >
                             SSE {sseActive() ? "ON" : "OFF"}
                         </button>
@@ -639,11 +636,10 @@ export default function WebSocketExample() {
                         <For each={activeChannels()}>
                             {(chan) => (
                                 <div
-                                    class={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all ${
-                                        targetChannel() === chan
+                                    class={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all ${targetChannel() === chan
                                             ? "bg-purple-100 dark:bg-purple-950/60 border-purple-400 dark:border-purple-500/50 text-purple-900 dark:text-purple-200 font-bold shadow-xs"
                                             : "bg-neutral-100 dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300"
-                                    }`}
+                                        }`}
                                 >
                                     <button
                                         onClick={() => setTargetChannel(chan)}
@@ -699,7 +695,7 @@ export default function WebSocketExample() {
 
                 {/* Split Workspace */}
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
-                    
+
                     {/* Left: Message Composer */}
                     <div class="lg:col-span-5 flex flex-col gap-4">
                         <div class="p-5 rounded-3xl bg-white dark:bg-neutral-900/90 border border-neutral-200 dark:border-neutral-800 flex-1 flex flex-col shadow-sm dark:shadow-xl transition-colors">
@@ -716,21 +712,19 @@ export default function WebSocketExample() {
                                 <div class="flex items-center gap-1 bg-neutral-100 dark:bg-neutral-950 p-1 rounded-xl border border-neutral-200 dark:border-neutral-800">
                                     <button
                                         onClick={() => setPayloadType("json")}
-                                        class={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                                            payloadType() === "json"
+                                        class={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${payloadType() === "json"
                                                 ? "bg-blue-600 text-white shadow-xs"
                                                 : "text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-200"
-                                        }`}
+                                            }`}
                                     >
                                         JSON
                                     </button>
                                     <button
                                         onClick={() => setPayloadType("text")}
-                                        class={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                                            payloadType() === "text"
+                                        class={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${payloadType() === "text"
                                                 ? "bg-blue-600 text-white shadow-xs"
                                                 : "text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-200"
-                                        }`}
+                                            }`}
                                     >
                                         RAW
                                     </button>
@@ -799,7 +793,7 @@ export default function WebSocketExample() {
                     {/* Right: Message Stream Log */}
                     <div class="lg:col-span-7 flex flex-col">
                         <div class="p-5 rounded-3xl bg-white dark:bg-neutral-900/90 border border-neutral-200 dark:border-neutral-800 flex-1 flex flex-col shadow-sm dark:shadow-xl min-h-[500px] transition-colors">
-                            
+
                             {/* Stream Toolbar */}
                             <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-neutral-200 dark:border-neutral-800">
                                 <div class="flex items-center gap-2">
@@ -831,31 +825,28 @@ export default function WebSocketExample() {
                                     <div class="flex items-center bg-neutral-100 dark:bg-neutral-950 p-0.5 rounded-xl border border-neutral-200 dark:border-neutral-800 text-xs">
                                         <button
                                             onClick={() => setFilterType("all")}
-                                            class={`px-2.5 py-1 rounded-lg font-medium transition-all cursor-pointer ${
-                                                filterType() === "all"
+                                            class={`px-2.5 py-1 rounded-lg font-medium transition-all cursor-pointer ${filterType() === "all"
                                                     ? "bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-xs"
                                                     : "text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-200"
-                                            }`}
+                                                }`}
                                         >
                                             All
                                         </button>
                                         <button
                                             onClick={() => setFilterType("in")}
-                                            class={`px-2 py-1 rounded-lg font-medium transition-all cursor-pointer ${
-                                                filterType() === "in"
+                                            class={`px-2 py-1 rounded-lg font-medium transition-all cursor-pointer ${filterType() === "in"
                                                     ? "bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 font-bold"
                                                     : "text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-200"
-                                            }`}
+                                                }`}
                                         >
                                             IN
                                         </button>
                                         <button
                                             onClick={() => setFilterType("out")}
-                                            class={`px-2 py-1 rounded-lg font-medium transition-all cursor-pointer ${
-                                                filterType() === "out"
+                                            class={`px-2 py-1 rounded-lg font-medium transition-all cursor-pointer ${filterType() === "out"
                                                     ? "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 font-bold"
                                                     : "text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-200"
-                                            }`}
+                                                }`}
                                         >
                                             OUT
                                         </button>
@@ -896,24 +887,22 @@ export default function WebSocketExample() {
                                     <For each={filteredMessages()}>
                                         {(msg) => (
                                             <div
-                                                class={`p-3 rounded-2xl border transition-all ${
-                                                    msg.direction === "in"
+                                                class={`p-3 rounded-2xl border transition-all ${msg.direction === "in"
                                                         ? "bg-emerald-50/80 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-500/30 text-emerald-950 dark:text-emerald-100"
                                                         : msg.direction === "out"
-                                                        ? "bg-blue-50/80 dark:bg-blue-950/20 border-blue-200 dark:border-blue-500/30 text-blue-950 dark:text-blue-100"
-                                                        : "bg-neutral-100/80 dark:bg-neutral-950/40 border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-400"
-                                                }`}
+                                                            ? "bg-blue-50/80 dark:bg-blue-950/20 border-blue-200 dark:border-blue-500/30 text-blue-950 dark:text-blue-100"
+                                                            : "bg-neutral-100/80 dark:bg-neutral-950/40 border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-400"
+                                                    }`}
                                             >
                                                 <div class="flex items-center justify-between gap-2 mb-1.5">
                                                     <div class="flex items-center gap-2 flex-wrap">
                                                         <span
-                                                            class={`px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider ${
-                                                                msg.direction === "in"
+                                                            class={`px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider ${msg.direction === "in"
                                                                     ? "bg-emerald-200/80 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300"
                                                                     : msg.direction === "out"
-                                                                    ? "bg-blue-200/80 dark:bg-blue-500/20 text-blue-800 dark:text-blue-300"
-                                                                    : "bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-400"
-                                                            }`}
+                                                                        ? "bg-blue-200/80 dark:bg-blue-500/20 text-blue-800 dark:text-blue-300"
+                                                                        : "bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-400"
+                                                                }`}
                                                         >
                                                             {msg.direction === "in" ? "▼ RECV" : msg.direction === "out" ? "▲ SENT" : "◆ SYS"}
                                                         </span>

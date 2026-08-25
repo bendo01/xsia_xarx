@@ -5,7 +5,7 @@ export default function FeederRekapitulasiKartuhasilstudimahasiswaPage() {
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
             <TopBar />
 
-            <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
                 <div class="bg-white dark:bg-neutral-800 rounded-2xl p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>

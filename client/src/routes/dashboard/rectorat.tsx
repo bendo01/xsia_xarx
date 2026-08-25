@@ -14,7 +14,7 @@ export default function RectoratDashboard() {
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
             <TopBar />
 
-            <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
                 {/* Header Banner */}
                 <div class="bg-gradient-to-r from-purple-950 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-purple-500/20">
                     <div class="absolute -right-10 -bottom-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -33,13 +33,13 @@ export default function RectoratDashboard() {
                         </div>
 
                         <div class="flex flex-wrap items-center gap-3">
-                            <A 
-                                href="/institution/master/institution" 
+                            <A
+                                href="/institution/master/institution"
                                 class="px-4 py-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold tracking-wider uppercase transition-all shadow-md hover:shadow-purple-500/25 flex items-center gap-2"
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect width="16" height="20" x="4" y="2" rx="2" ry="2"/>
-                                    <path d="M9 22v-4h6v4"/>
+                                    <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
+                                    <path d="M9 22v-4h6v4" />
                                 </svg>
                                 Institution Governance
                             </A>
@@ -53,7 +53,7 @@ export default function RectoratDashboard() {
                         <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400 text-xs font-medium">
                             <span>Total University Students</span>
                             <div class="p-2 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400">
-                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/></svg>
+                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z" /></svg>
                             </div>
                         </div>
                         <div class="mt-3 flex items-baseline gap-2">
@@ -67,7 +67,7 @@ export default function RectoratDashboard() {
                         <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400 text-xs font-medium">
                             <span>Accreditation Rate (Unggul/A)</span>
                             <div class="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
-                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" /></svg>
                             </div>
                         </div>
                         <div class="mt-3 flex items-baseline gap-2">
@@ -80,7 +80,7 @@ export default function RectoratDashboard() {
                         <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400 text-xs font-medium">
                             <span>Faculty Doctoral Ratio</span>
                             <div class="p-2 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
-                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
                             </div>
                         </div>
                         <div class="mt-3 flex items-baseline gap-2">
@@ -93,7 +93,7 @@ export default function RectoratDashboard() {
                         <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400 text-xs font-medium">
                             <span>Research Citations</span>
                             <div class="p-2 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400">
-                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg>
                             </div>
                         </div>
                         <div class="mt-3 flex items-baseline gap-2">

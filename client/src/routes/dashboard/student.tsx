@@ -14,7 +14,7 @@ export default function StudentDashboard() {
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
             <TopBar />
 
-            <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
                 {/* Header Banner */}
                 <div class="bg-gradient-to-r from-blue-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-blue-500/20">
                     <div class="absolute -right-10 -bottom-10 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -33,23 +33,23 @@ export default function StudentDashboard() {
                         </div>
 
                         <div class="flex flex-wrap items-center gap-3">
-                            <A 
-                                href="/academic/survey/reference/bundle-category" 
+                            <A
+                                href="/academic/survey/reference/bundle-category"
                                 class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold tracking-wider uppercase transition-all shadow-md hover:shadow-blue-500/25 flex items-center gap-2"
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-                                    <path d="M6 6h10M6 10h10M6 14h6"/>
+                                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+                                    <path d="M6 6h10M6 10h10M6 14h6" />
                                 </svg>
                                 Study Plan (KRS)
                             </A>
-                            <A 
-                                href="/academic/student/reference/finance" 
+                            <A
+                                href="/academic/student/reference/finance"
                                 class="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white border border-white/15 rounded-xl text-xs font-semibold transition-colors flex items-center gap-2"
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect width="20" height="14" x="2" y="5" rx="2"/>
-                                    <line x1="2" x2="22" y1="10" y2="10"/>
+                                    <rect width="20" height="14" x="2" y="5" rx="2" />
+                                    <line x1="2" x2="22" y1="10" y2="10" />
                                 </svg>
                                 Tuition Invoice
                             </A>
@@ -63,7 +63,7 @@ export default function StudentDashboard() {
                         <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400 text-xs font-medium">
                             <span>Cumulative GPA (IPK)</span>
                             <div class="p-2 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
-                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
                             </div>
                         </div>
                         <div class="mt-3 flex items-baseline gap-2">
@@ -77,7 +77,7 @@ export default function StudentDashboard() {
                         <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400 text-xs font-medium">
                             <span>Completed Credits (SKS)</span>
                             <div class="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
-                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/></svg>
+                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" /></svg>
                             </div>
                         </div>
                         <div class="mt-3 flex items-baseline gap-2">
@@ -93,7 +93,7 @@ export default function StudentDashboard() {
                         <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400 text-xs font-medium">
                             <span>Attendance Rate</span>
                             <div class="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
-                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
                             </div>
                         </div>
                         <div class="mt-3 flex items-baseline gap-2">
@@ -106,7 +106,7 @@ export default function StudentDashboard() {
                         <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400 text-xs font-medium">
                             <span>Tuition & Finance</span>
                             <div class="p-2 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400">
-                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2" /><line x1="2" x2="22" y1="10" y2="10" /></svg>
                             </div>
                         </div>
                         <div class="mt-3 flex items-baseline gap-2">
@@ -202,8 +202,8 @@ export default function StudentDashboard() {
                         </div>
 
                         <div class="pt-2 border-t border-neutral-200 dark:border-neutral-700">
-                            <A 
-                                href="/academic/survey/reference/bundle-category" 
+                            <A
+                                href="/academic/survey/reference/bundle-category"
                                 class="w-full py-2 px-3 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 text-xs font-semibold rounded-xl text-center block text-neutral-700 dark:text-neutral-200 transition-colors"
                             >
                                 Fill Lecturer Evaluation Survey
