@@ -30,16 +30,6 @@ export default function FeederMasterRiwayatpenelitiandosenShowPage() {
                             </svg>
                             <span>Back to List</span>
                         </A>
-                        <A
-                            href="/feeder/master/riwayat-penelitian-dosen/edit"
-                            class="inline-flex items-center gap-2 px-3 py-2 text-xs font-mono font-medium rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors"
-                        >
-                            <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 20h9"/>
-                                <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
-                            </svg>
-                            <span>Edit Record</span>
-                        </A>
                     </div>
                 </div>
 
