@@ -155,12 +155,12 @@ export function getActiveRole(): string {
 }
 
 // Reactive Signals for global SolidJS state
-const [currentUserSignal, setCurrentUserSignal] = createSignal<StoredUser | null>(getStoredUser());
-const [userRolesSignal, setUserRolesSignal] = createSignal<UserRoleItem[]>(getStoredRoles());
-const [activeRoleSignal, setActiveRoleSignal] = createSignal<string>(getActiveRole());
-const [isAuthenticatedSignal, setIsAuthenticatedSignal] = createSignal<boolean>(
-    typeof window !== 'undefined' && (getStorageItem('token') !== null && getStorageItem('token') !== '')
-);
+// Initial state is SSR-safe default values so the initial client hydration pass matches the server DOM.
+// Client auth state from localStorage/sessionStorage is synchronized on client mount via refreshAuthState().
+const [currentUserSignal, setCurrentUserSignal] = createSignal<StoredUser | null>(null);
+const [userRolesSignal, setUserRolesSignal] = createSignal<UserRoleItem[]>([]);
+const [activeRoleSignal, setActiveRoleSignal] = createSignal<string>('administrator');
+const [isAuthenticatedSignal, setIsAuthenticatedSignal] = createSignal<boolean>(false);
 
 export {
     currentUserSignal,
