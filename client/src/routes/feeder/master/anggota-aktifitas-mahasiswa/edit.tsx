@@ -2,7 +2,7 @@ import { A } from '@solidjs/router';
 import { createSignal } from 'solid-js';
 import TopBar from '~/components/navigation/TopBar';
 
-export default function InstitutionMasterUnitCreatePage() {
+export default function FeederMasterAnggotaaktifitasmahasiswaEditPage() {
     const [name, setName] = createSignal('');
     const [code, setCode] = createSignal('');
     const [description, setDescription] = createSignal('');
@@ -24,18 +24,18 @@ export default function InstitutionMasterUnitCreatePage() {
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                         <div class="flex items-center gap-2 text-xs font-mono text-neutral-500 dark:text-neutral-400 mb-1">
-                            <A href="/institution/master/unit" class="hover:text-blue-600 dark:hover:text-blue-400">
-                                Unit
+                            <A href="/feeder/master/anggota-aktifitas-mahasiswa" class="hover:text-blue-600 dark:hover:text-blue-400">
+                                Anggota Aktifitas Mahasiswa
                             </A>
                             <span>/</span>
-                            <span class="text-neutral-900 dark:text-white font-semibold">Create</span>
+                            <span class="text-neutral-900 dark:text-white font-semibold">Edit</span>
                         </div>
                         <h1 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Add New Unit
+                            Edit Anggota Aktifitas Mahasiswa
                         </h1>
                     </div>
                     <A
-                        href="/institution/master/unit"
+                        href="/feeder/master/anggota-aktifitas-mahasiswa"
                         class="inline-flex items-center gap-2 px-3 py-2 text-xs font-mono font-medium rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-700/60 transition-colors self-start sm:self-auto"
                     >
                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -92,7 +92,7 @@ export default function InstitutionMasterUnitCreatePage() {
 
                         <div class="flex items-center justify-end gap-3 pt-4 border-t border-neutral-100 dark:border-neutral-700">
                             <A
-                                href="/institution/master/unit"
+                                href="/feeder/master/anggota-aktifitas-mahasiswa"
                                 class="px-4 py-2 text-xs font-mono font-medium rounded-xl border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                             >
                                 Cancel
@@ -102,7 +102,7 @@ export default function InstitutionMasterUnitCreatePage() {
                                 disabled={isSubmitting()}
                                 class="inline-flex items-center gap-2 px-5 py-2 text-xs font-mono font-semibold rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-xs disabled:opacity-50 transition-colors cursor-pointer"
                             >
-                                <span>Save Unit</span>
+                                <span>Save Changes</span>
                             </button>
                         </div>
                     </form>

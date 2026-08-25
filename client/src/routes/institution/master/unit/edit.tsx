@@ -2,7 +2,7 @@ import { A } from '@solidjs/router';
 import { createSignal } from 'solid-js';
 import TopBar from '~/components/navigation/TopBar';
 
-export default function InstitutionMasterUnitCreatePage() {
+export default function InstitutionMasterUnitEditPage() {
     const [name, setName] = createSignal('');
     const [code, setCode] = createSignal('');
     const [description, setDescription] = createSignal('');
@@ -28,10 +28,10 @@ export default function InstitutionMasterUnitCreatePage() {
                                 Unit
                             </A>
                             <span>/</span>
-                            <span class="text-neutral-900 dark:text-white font-semibold">Create</span>
+                            <span class="text-neutral-900 dark:text-white font-semibold">Edit</span>
                         </div>
                         <h1 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Add New Unit
+                            Edit Unit
                         </h1>
                     </div>
                     <A
@@ -102,7 +102,7 @@ export default function InstitutionMasterUnitCreatePage() {
                                 disabled={isSubmitting()}
                                 class="inline-flex items-center gap-2 px-5 py-2 text-xs font-mono font-semibold rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-xs disabled:opacity-50 transition-colors cursor-pointer"
                             >
-                                <span>Save Unit</span>
+                                <span>Save Changes</span>
                             </button>
                         </div>
                     </form>

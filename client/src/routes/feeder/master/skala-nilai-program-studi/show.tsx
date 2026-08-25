@@ -1,7 +1,7 @@
 import { A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 
-export default function InstitutionMasterUnitShowPage() {
+export default function FeederMasterSkalanilaiprogramstudiShowPage() {
     return (
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
             <TopBar />
@@ -10,19 +10,19 @@ export default function InstitutionMasterUnitShowPage() {
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                         <div class="flex items-center gap-2 text-xs font-mono text-neutral-500 dark:text-neutral-400 mb-1">
-                            <A href="/institution/master/unit" class="hover:text-blue-600 dark:hover:text-blue-400">
-                                Unit
+                            <A href="/feeder/master/skala-nilai-program-studi" class="hover:text-blue-600 dark:hover:text-blue-400">
+                                Skala Nilai Program Studi
                             </A>
                             <span>/</span>
                             <span class="text-neutral-900 dark:text-white font-semibold">Detail</span>
                         </div>
                         <h1 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Unit Details
+                            Skala Nilai Program Studi Details
                         </h1>
                     </div>
                     <div class="flex items-center gap-2">
                         <A
-                            href="/institution/master/unit"
+                            href="/feeder/master/skala-nilai-program-studi"
                             class="inline-flex items-center gap-2 px-3 py-2 text-xs font-mono font-medium rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-700/60 transition-colors"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -31,7 +31,7 @@ export default function InstitutionMasterUnitShowPage() {
                             <span>Back to List</span>
                         </A>
                         <A
-                            href="/institution/master/unit/edit"
+                            href="/feeder/master/skala-nilai-program-studi/edit"
                             class="inline-flex items-center gap-2 px-3 py-2 text-xs font-mono font-medium rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -50,7 +50,7 @@ export default function InstitutionMasterUnitShowPage() {
                                 Entity Name
                             </span>
                             <span class="text-sm font-semibold font-mono text-neutral-900 dark:text-white">
-                                Unit
+                                Skala Nilai Program Studi
                             </span>
                         </div>
                         <div>
@@ -58,14 +58,14 @@ export default function InstitutionMasterUnitShowPage() {
                                 Category Path
                             </span>
                             <span class="text-sm font-mono text-neutral-700 dark:text-neutral-300">
-                                Institution / Master
+                                Feeder / Master
                             </span>
                         </div>
                     </div>
 
                     <div class="rounded-xl bg-neutral-50 dark:bg-neutral-900/60 p-6 border border-neutral-200 dark:border-neutral-700 text-center">
                         <p class="text-xs font-mono text-neutral-500 dark:text-neutral-400">
-                            Select an item from the <A href="/institution/master/unit" class="text-blue-600 dark:text-blue-400 underline">Unit Registry</A> to inspect real-time attributes and relational mappings.
+                            Select an item from the <A href="/feeder/master/skala-nilai-program-studi" class="text-blue-600 dark:text-blue-400 underline">Skala Nilai Program Studi Registry</A> to inspect real-time attributes and relational mappings.
                         </p>
                     </div>
                 </div>
