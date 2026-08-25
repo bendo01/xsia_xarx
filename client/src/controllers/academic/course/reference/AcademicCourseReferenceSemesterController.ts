@@ -1,3 +1,4 @@
+import { getStorageItem } from '~/lib/storage';
 import {
     TypePaginationForm,
     TypePaginationResponse,
@@ -5,8 +6,21 @@ import {
 } from '~/lib/types';
 import type { AcademicCourseReferenceSemester } from '~/models/academic/course/reference/Semester';
 
-const getBaseUrl = () => {
-    return (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
+const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
+const path = 'academic/course/reference/semesters';
+
+const getHeaders = (): Record<string, string> => {
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+    };
+    if (typeof window !== 'undefined') {
+        const token = getStorageItem('token');
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+    }
+    return headers;
 };
 
 export async function AcademicCourseReferenceControllerSemesterIndex(
@@ -22,10 +36,15 @@ export async function AcademicCourseReferenceControllerSemesterIndex(
             params.append('code', props.code.toString());
         }
 
-        const res = await fetch(`${getBaseUrl()}/academic/course/reference/semesters?${params.toString()}`);
+        const res = await fetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+
         if (!res.ok) {
             throw new Error(`HTTP error! status: ${res.status}`);
         }
+
         const resJson = await res.json();
         return {
             pagination: {
@@ -64,10 +83,10 @@ export async function AcademicCourseReferenceControllerSemesterUpsert(
     form: TypeInputEntityReferenceForm,
 ): Promise<{ is_error: boolean; message: string; data?: AcademicCourseReferenceSemester }> {
     try {
-        const isUpdate = !!form.id;
+        const isUpdate = Boolean(form.id && form.id !== '' && form.id !== '00000000-0000-0000-0000-000000000000');
         const url = isUpdate
-            ? `${getBaseUrl()}/academic/course/reference/semesters/${form.id}`
-            : `${getBaseUrl()}/academic/course/reference/semesters`;
+            ? `${getBaseUrl()}/${path}/${form.id}`
+            : `${getBaseUrl()}/${path}`;
         const method = isUpdate ? 'PUT' : 'POST';
 
         const payload: Record<string, any> = {
@@ -78,7 +97,7 @@ export async function AcademicCourseReferenceControllerSemesterUpsert(
 
         const res = await fetch(url, {
             method,
-            headers: { 'Content-Type': 'application/json' },
+            headers: getHeaders(),
             body: JSON.stringify(payload),
         });
 
@@ -86,19 +105,19 @@ export async function AcademicCourseReferenceControllerSemesterUpsert(
         if (!res.ok) {
             return {
                 is_error: true,
-                message: resJson.message || resJson.brief || (isUpdate ? 'Failed to update semester.' : 'Failed to create semester.'),
+                message: resJson.message || resJson.brief || (isUpdate ? 'Failed to update record.' : 'Failed to create record.'),
             };
         }
 
         return {
             is_error: false,
-            message: isUpdate ? 'Semester updated successfully.' : 'Semester created successfully.',
+            message: isUpdate ? 'Record updated successfully.' : 'Record created successfully.',
             data: resJson,
         };
     } catch (error: any) {
         return {
             is_error: true,
-            message: error.message || 'Network error while saving semester.',
+            message: error.message || 'Network error while saving record.',
         };
     }
 }
@@ -107,24 +126,25 @@ export async function AcademicCourseReferenceControllerSemesterDelete(
     props: { id: string },
 ): Promise<{ is_error: boolean; message: string }> {
     try {
-        const res = await fetch(`${getBaseUrl()}/academic/course/reference/semesters/${props.id}`, {
+        const res = await fetch(`${getBaseUrl()}/${path}/${props.id}`, {
             method: 'DELETE',
+            headers: getHeaders(),
         });
         const resJson = await res.json().catch(() => ({}));
         if (!res.ok) {
             return {
                 is_error: true,
-                message: resJson.message || resJson.brief || 'Failed to delete semester.',
+                message: resJson.message || resJson.brief || 'Failed to delete record.',
             };
         }
         return {
             is_error: false,
-            message: resJson.message || 'Semester deleted successfully.',
+            message: resJson.message || 'Record deleted successfully.',
         };
     } catch (error: any) {
         return {
             is_error: true,
-            message: error.message || 'Network error while deleting semester.',
+            message: error.message || 'Network error while deleting record.',
         };
     }
 }

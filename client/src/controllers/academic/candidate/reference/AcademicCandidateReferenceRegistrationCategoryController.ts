@@ -1,3 +1,4 @@
+import { getStorageItem } from '~/lib/storage';
 import {
     TypePaginationForm,
     TypePaginationResponse,
@@ -6,8 +7,21 @@ import {
 import type { AcademicCandidateReferenceRegistrationCategory } from '~/models/academic/candidate/reference/RegistrationCategory';
 import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
 
-const getBaseUrl = () => {
-    return (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
+const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
+const path = 'academic/candidate/reference/registration-categories';
+
+const getHeaders = (): Record<string, string> => {
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+    };
+    if (typeof window !== 'undefined') {
+        const token = getStorageItem('token');
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+    }
+    return headers;
 };
 
 export async function AcademicCandidateReferenceControllerRegistrationCategoryIndex(
@@ -23,10 +37,15 @@ export async function AcademicCandidateReferenceControllerRegistrationCategoryIn
             params.append('code', props.code.toString());
         }
 
-        const res = await fetch(`${getBaseUrl()}/academic/candidate/reference/registration-categories?${params.toString()}`);
+        const res = await fetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+
         if (!res.ok) {
             throw new Error(`HTTP error! status: ${res.status}`);
         }
+
         const resJson = await res.json();
         return {
             pagination: {
@@ -65,10 +84,10 @@ export async function AcademicCandidateReferenceControllerRegistrationCategoryUp
     form: TypeInputEntityReferenceForm,
 ): Promise<{ is_error: boolean; message: string; data?: AcademicCandidateReferenceRegistrationCategory }> {
     try {
-        const isUpdate = !!form.id;
+        const isUpdate = Boolean(form.id && form.id !== '' && form.id !== '00000000-0000-0000-0000-000000000000');
         const url = isUpdate
-            ? `${getBaseUrl()}/academic/candidate/reference/registration-categories/${form.id}`
-            : `${getBaseUrl()}/academic/candidate/reference/registration-categories`;
+            ? `${getBaseUrl()}/${path}/${form.id}`
+            : `${getBaseUrl()}/${path}`;
         const method = isUpdate ? 'PUT' : 'POST';
 
         const payload: Record<string, any> = {
@@ -79,7 +98,7 @@ export async function AcademicCandidateReferenceControllerRegistrationCategoryUp
 
         const res = await fetch(url, {
             method,
-            headers: { 'Content-Type': 'application/json' },
+            headers: getHeaders(),
             body: JSON.stringify(payload),
         });
 
@@ -108,8 +127,9 @@ export async function AcademicCandidateReferenceControllerRegistrationCategoryDe
     props: { id: string },
 ): Promise<{ is_error: boolean; message: string }> {
     try {
-        const res = await fetch(`${getBaseUrl()}/academic/candidate/reference/registration-categories/${props.id}`, {
+        const res = await fetch(`${getBaseUrl()}/${path}/${props.id}`, {
             method: 'DELETE',
+            headers: getHeaders(),
         });
         const resJson = await res.json().catch(() => ({}));
         if (!res.ok) {
@@ -134,32 +154,34 @@ export async function getRegistrationCategoryLists(): Promise<{
     code: number;
     message: string | ModelSelectItem[];
 }> {
-    const server_api_url = import.meta.env.VITE_API_SERVER_URL ?? 'http://localhost:5150/api/';
     try {
-        const response = await fetch(`${server_api_url}academic/candidate/reference/registration_categories`, {
+        const response = await fetch(`${getBaseUrl()}/${path}/options`, {
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-            },
+            headers: getHeaders(),
         });
-        const data: ModelSelectItem[] = await response.json();
+        const data = await response.json();
 
         if (!response.ok) {
             return {
                 code: response.status || 500,
-                message: 'Gagal Mengambil Data Program Studi',
+                message: 'Failed to fetch options',
             };
         }
 
+        const items: ModelSelectItem[] = (Array.isArray(data) ? data : (data.data || [])).map((item: any) => ({
+            id: item.id,
+            value: item.id,
+            label: item.name || String(item.code || item.id),
+        }));
+
         return {
             code: 200,
-            message: data,
+            message: items,
         };
-    } catch (error) {
+    } catch (error: any) {
         return {
             code: 500,
-            message: 'Internal server error',
+            message: error.message || 'Internal server error',
         };
     }
 }

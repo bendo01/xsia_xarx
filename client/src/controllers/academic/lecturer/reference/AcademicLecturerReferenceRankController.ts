@@ -1,3 +1,4 @@
+import { getStorageItem } from '~/lib/storage';
 import {
     TypePaginationForm,
     TypePaginationResponse,
@@ -5,8 +6,21 @@ import {
 } from '~/lib/types';
 import type { AcademicLecturerReferenceRank } from '~/models/academic/lecturer/reference/Rank';
 
-const getBaseUrl = () => {
-    return (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
+const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
+const path = 'academic/lecturer/reference/ranks';
+
+const getHeaders = (): Record<string, string> => {
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+    };
+    if (typeof window !== 'undefined') {
+        const token = getStorageItem('token');
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+    }
+    return headers;
 };
 
 export async function AcademicLecturerReferenceControllerRankIndex(
@@ -22,10 +36,15 @@ export async function AcademicLecturerReferenceControllerRankIndex(
             params.append('code', props.code.toString());
         }
 
-        const res = await fetch(`${getBaseUrl()}/academic/lecturer/reference/ranks?${params.toString()}`);
+        const res = await fetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+
         if (!res.ok) {
             throw new Error(`HTTP error! status: ${res.status}`);
         }
+
         const resJson = await res.json();
         return {
             pagination: {
@@ -64,10 +83,10 @@ export async function AcademicLecturerReferenceControllerRankUpsert(
     form: TypeInputEntityReferenceForm,
 ): Promise<{ is_error: boolean; message: string; data?: AcademicLecturerReferenceRank }> {
     try {
-        const isUpdate = !!form.id;
+        const isUpdate = Boolean(form.id && form.id !== '' && form.id !== '00000000-0000-0000-0000-000000000000');
         const url = isUpdate
-            ? `${getBaseUrl()}/academic/lecturer/reference/ranks/${form.id}`
-            : `${getBaseUrl()}/academic/lecturer/reference/ranks`;
+            ? `${getBaseUrl()}/${path}/${form.id}`
+            : `${getBaseUrl()}/${path}`;
         const method = isUpdate ? 'PUT' : 'POST';
 
         const payload: Record<string, any> = {
@@ -78,7 +97,7 @@ export async function AcademicLecturerReferenceControllerRankUpsert(
 
         const res = await fetch(url, {
             method,
-            headers: { 'Content-Type': 'application/json' },
+            headers: getHeaders(),
             body: JSON.stringify(payload),
         });
 
@@ -107,8 +126,9 @@ export async function AcademicLecturerReferenceControllerRankDelete(
     props: { id: string },
 ): Promise<{ is_error: boolean; message: string }> {
     try {
-        const res = await fetch(`${getBaseUrl()}/academic/lecturer/reference/ranks/${props.id}`, {
+        const res = await fetch(`${getBaseUrl()}/${path}/${props.id}`, {
             method: 'DELETE',
+            headers: getHeaders(),
         });
         const resJson = await res.json().catch(() => ({}));
         if (!res.ok) {
