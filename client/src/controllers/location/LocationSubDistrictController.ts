@@ -1,10 +1,10 @@
 import type { TypePaginationForm, TypePaginationResponse } from '~/lib/types';
-import type { LocationProvince } from '~/models/location/Province';
+import type { LocationSubDistrict } from '~/models/location/SubDistrict';
 import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
 import { getStorageItem } from '~/lib/storage';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
-const path = 'provinces';
+const path = 'sub-districts';
 
 const getHeaders = (): Record<string, string> => {
     const headers: Record<string, string> = {
@@ -20,9 +20,9 @@ const getHeaders = (): Record<string, string> => {
     return headers;
 };
 
-export async function LocationProvinceControllerIndex(
+export async function LocationSubDistrictControllerIndex(
     props: TypePaginationForm,
-): Promise<TypePaginationResponse<LocationProvince>> {
+): Promise<TypePaginationResponse<LocationSubDistrict>> {
     try {
         const params = new URLSearchParams();
         if (props.page) params.append('page', props.page.toString());
@@ -30,6 +30,7 @@ export async function LocationProvinceControllerIndex(
         if (props.search) params.append('name', props.search);
         if (props.name) params.append('name', props.name);
         if (props.code) params.append('code', props.code.toString());
+        if (props.regency_id) params.append('regency_id', props.regency_id);
 
         const res = await fetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
             method: 'GET',
@@ -56,7 +57,7 @@ export async function LocationProvinceControllerIndex(
             data: Array.isArray(resJson.data) ? resJson.data : (Array.isArray(resJson) ? resJson : []),
         };
     } catch (e) {
-        console.error('Error in LocationProvinceControllerIndex:', e);
+        console.error('Error in LocationSubDistrictControllerIndex:', e);
         return {
             pagination: {
                 search: props.search || '',
@@ -74,18 +75,18 @@ export async function LocationProvinceControllerIndex(
     }
 }
 
-export async function LocationProvinceControllerUpsert(
+export async function LocationSubDistrictControllerUpsert(
     form: {
         id?: string | null;
-        code?: string | null;
+        code: string;
         name: string;
+        regency_id: string;
         dikti_code?: string | null;
-        epsbed_code?: string | null;
-        country_id?: string | null;
-        description?: string | null;
         slug?: string | null;
+        alt_slug?: string | null;
+        description?: string | null;
     },
-): Promise<{ is_error: boolean; message: string; data?: LocationProvince }> {
+): Promise<{ is_error: boolean; message: string; data?: LocationSubDistrict }> {
     try {
         const isUpdate = Boolean(form.id && form.id !== '' && form.id !== '00000000-0000-0000-0000-000000000000');
         const url = isUpdate
@@ -94,13 +95,12 @@ export async function LocationProvinceControllerUpsert(
         const method = isUpdate ? 'PUT' : 'POST';
 
         const payload: Record<string, any> = {
-            code: form.code || null,
+            code: form.code,
             name: form.name,
+            regency_id: form.regency_id,
             dikti_code: form.dikti_code || null,
-            epsbed_code: form.epsbed_code || null,
-            country_id: form.country_id && form.country_id !== '' ? form.country_id : null,
-            description: form.description || null,
             slug: form.slug || null,
+            alt_slug: form.alt_slug || null,
         };
 
         const res = await fetch(url, {
@@ -113,24 +113,24 @@ export async function LocationProvinceControllerUpsert(
         if (!res.ok) {
             return {
                 is_error: true,
-                message: resJson.message || resJson.brief || (isUpdate ? 'Failed to update province.' : 'Failed to create province.'),
+                message: resJson.message || resJson.brief || (isUpdate ? 'Failed to update sub-district.' : 'Failed to create sub-district.'),
             };
         }
 
         return {
             is_error: false,
-            message: isUpdate ? 'Province updated successfully.' : 'Province created successfully.',
+            message: isUpdate ? 'Sub-district updated successfully.' : 'Sub-district created successfully.',
             data: resJson,
         };
     } catch (error: any) {
         return {
             is_error: true,
-            message: error.message || 'Network error while saving province.',
+            message: error.message || 'Network error while saving sub-district.',
         };
     }
 }
 
-export async function LocationProvinceControllerDelete(
+export async function LocationSubDistrictControllerDelete(
     props: { id: string },
 ): Promise<{ is_error: boolean; message: string }> {
     try {
@@ -142,27 +142,32 @@ export async function LocationProvinceControllerDelete(
         if (!res.ok) {
             return {
                 is_error: true,
-                message: resJson.message || resJson.brief || 'Failed to delete province.',
+                message: resJson.message || resJson.brief || 'Failed to delete sub-district.',
             };
         }
         return {
             is_error: false,
-            message: resJson.message || 'Province deleted successfully.',
+            message: resJson.message || 'Sub-district deleted successfully.',
         };
     } catch (error: any) {
         return {
             is_error: true,
-            message: error.message || 'Network error while deleting province.',
+            message: error.message || 'Network error while deleting sub-district.',
         };
     }
 }
 
-export async function getProvinceLists(): Promise<{
+export async function getSubDistrictLists(regency_id?: string): Promise<{
     code: number;
     message: string | ModelSelectItem[];
 }> {
     try {
-        const res = await fetch(`${getBaseUrl()}/${path}?page=1&page_size=1000`, {
+        const params = new URLSearchParams();
+        params.append('page', '1');
+        params.append('page_size', '1000');
+        if (regency_id) params.append('regency_id', regency_id);
+
+        const res = await fetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -170,7 +175,7 @@ export async function getProvinceLists(): Promise<{
         if (!res.ok) {
             return {
                 code: res.status || 500,
-                message: 'Failed to fetch provinces',
+                message: 'Failed to fetch sub-districts',
             };
         }
         const list = Array.isArray(resData.data) ? resData.data : (Array.isArray(resData) ? resData : []);
@@ -191,4 +196,4 @@ export async function getProvinceLists(): Promise<{
     }
 }
 
-export const LocationProvinceControllerList = getProvinceLists;
+export const LocationSubDistrictControllerList = getSubDistrictLists;

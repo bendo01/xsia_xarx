@@ -1,10 +1,9 @@
 import type { TypePaginationForm, TypePaginationResponse } from '~/lib/types';
-import type { LocationProvince } from '~/models/location/Province';
-import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
+import type { PermissionRole } from '~/models/auth/PermissionRole';
 import { getStorageItem } from '~/lib/storage';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
-const path = 'provinces';
+const path = 'permission-role';
 
 const getHeaders = (): Record<string, string> => {
     const headers: Record<string, string> = {
@@ -20,16 +19,13 @@ const getHeaders = (): Record<string, string> => {
     return headers;
 };
 
-export async function LocationProvinceControllerIndex(
+export async function AuthPermissionRoleControllerIndex(
     props: TypePaginationForm,
-): Promise<TypePaginationResponse<LocationProvince>> {
+): Promise<TypePaginationResponse<PermissionRole>> {
     try {
         const params = new URLSearchParams();
         if (props.page) params.append('page', props.page.toString());
         if (props.per_page) params.append('page_size', props.per_page.toString());
-        if (props.search) params.append('name', props.search);
-        if (props.name) params.append('name', props.name);
-        if (props.code) params.append('code', props.code.toString());
 
         const res = await fetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
             method: 'GET',
@@ -56,7 +52,7 @@ export async function LocationProvinceControllerIndex(
             data: Array.isArray(resJson.data) ? resJson.data : (Array.isArray(resJson) ? resJson : []),
         };
     } catch (e) {
-        console.error('Error in LocationProvinceControllerIndex:', e);
+        console.error('Error in AuthPermissionRoleControllerIndex:', e);
         return {
             pagination: {
                 search: props.search || '',
@@ -74,18 +70,13 @@ export async function LocationProvinceControllerIndex(
     }
 }
 
-export async function LocationProvinceControllerUpsert(
+export async function AuthPermissionRoleControllerUpsert(
     form: {
         id?: string | null;
-        code?: string | null;
-        name: string;
-        dikti_code?: string | null;
-        epsbed_code?: string | null;
-        country_id?: string | null;
-        description?: string | null;
-        slug?: string | null;
+        role_id: string;
+        permission_id: string;
     },
-): Promise<{ is_error: boolean; message: string; data?: LocationProvince }> {
+): Promise<{ is_error: boolean; message: string; data?: PermissionRole }> {
     try {
         const isUpdate = Boolean(form.id && form.id !== '' && form.id !== '00000000-0000-0000-0000-000000000000');
         const url = isUpdate
@@ -94,13 +85,8 @@ export async function LocationProvinceControllerUpsert(
         const method = isUpdate ? 'PUT' : 'POST';
 
         const payload: Record<string, any> = {
-            code: form.code || null,
-            name: form.name,
-            dikti_code: form.dikti_code || null,
-            epsbed_code: form.epsbed_code || null,
-            country_id: form.country_id && form.country_id !== '' ? form.country_id : null,
-            description: form.description || null,
-            slug: form.slug || null,
+            role_id: form.role_id,
+            permission_id: form.permission_id,
         };
 
         const res = await fetch(url, {
@@ -113,24 +99,24 @@ export async function LocationProvinceControllerUpsert(
         if (!res.ok) {
             return {
                 is_error: true,
-                message: resJson.message || resJson.brief || (isUpdate ? 'Failed to update province.' : 'Failed to create province.'),
+                message: resJson.message || resJson.brief || (isUpdate ? 'Failed to update role permission assignment.' : 'Failed to assign permission to role.'),
             };
         }
 
         return {
             is_error: false,
-            message: isUpdate ? 'Province updated successfully.' : 'Province created successfully.',
+            message: isUpdate ? 'Role permission assignment updated.' : 'Permission assigned to role successfully.',
             data: resJson,
         };
     } catch (error: any) {
         return {
             is_error: true,
-            message: error.message || 'Network error while saving province.',
+            message: error.message || 'Network error while saving assignment.',
         };
     }
 }
 
-export async function LocationProvinceControllerDelete(
+export async function AuthPermissionRoleControllerDelete(
     props: { id: string },
 ): Promise<{ is_error: boolean; message: string }> {
     try {
@@ -142,53 +128,17 @@ export async function LocationProvinceControllerDelete(
         if (!res.ok) {
             return {
                 is_error: true,
-                message: resJson.message || resJson.brief || 'Failed to delete province.',
+                message: resJson.message || resJson.brief || 'Failed to remove permission from role.',
             };
         }
         return {
             is_error: false,
-            message: resJson.message || 'Province deleted successfully.',
+            message: resJson.message || 'Permission removed from role successfully.',
         };
     } catch (error: any) {
         return {
             is_error: true,
-            message: error.message || 'Network error while deleting province.',
+            message: error.message || 'Network error while removing assignment.',
         };
     }
 }
-
-export async function getProvinceLists(): Promise<{
-    code: number;
-    message: string | ModelSelectItem[];
-}> {
-    try {
-        const res = await fetch(`${getBaseUrl()}/${path}?page=1&page_size=1000`, {
-            method: 'GET',
-            headers: getHeaders(),
-        });
-        const resData = await res.json().catch(() => ({}));
-        if (!res.ok) {
-            return {
-                code: res.status || 500,
-                message: 'Failed to fetch provinces',
-            };
-        }
-        const list = Array.isArray(resData.data) ? resData.data : (Array.isArray(resData) ? resData : []);
-        const items: ModelSelectItem[] = list.map((item: any) => ({
-            id: item.id,
-            value: item.id,
-            label: item.name || item.code || String(item.id),
-        }));
-        return {
-            code: 200,
-            message: items,
-        };
-    } catch (error: any) {
-        return {
-            code: 500,
-            message: error?.message || 'Internal server error',
-        };
-    }
-}
-
-export const LocationProvinceControllerList = getProvinceLists;

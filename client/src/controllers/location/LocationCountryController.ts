@@ -1,10 +1,10 @@
 import type { TypePaginationForm, TypePaginationResponse } from '~/lib/types';
-import type { LocationProvince } from '~/models/location/Province';
+import type { LocationCountry } from '~/models/location/Country';
 import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
 import { getStorageItem } from '~/lib/storage';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
-const path = 'provinces';
+const path = 'countries';
 
 const getHeaders = (): Record<string, string> => {
     const headers: Record<string, string> = {
@@ -20,9 +20,9 @@ const getHeaders = (): Record<string, string> => {
     return headers;
 };
 
-export async function LocationProvinceControllerIndex(
+export async function LocationCountryControllerIndex(
     props: TypePaginationForm,
-): Promise<TypePaginationResponse<LocationProvince>> {
+): Promise<TypePaginationResponse<LocationCountry>> {
     try {
         const params = new URLSearchParams();
         if (props.page) params.append('page', props.page.toString());
@@ -56,7 +56,7 @@ export async function LocationProvinceControllerIndex(
             data: Array.isArray(resJson.data) ? resJson.data : (Array.isArray(resJson) ? resJson : []),
         };
     } catch (e) {
-        console.error('Error in LocationProvinceControllerIndex:', e);
+        console.error('Error in LocationCountryControllerIndex:', e);
         return {
             pagination: {
                 search: props.search || '',
@@ -74,18 +74,20 @@ export async function LocationProvinceControllerIndex(
     }
 }
 
-export async function LocationProvinceControllerUpsert(
+export async function LocationCountryControllerUpsert(
     form: {
         id?: string | null;
-        code?: string | null;
+        code: string;
         name: string;
+        alpha2_code: string;
+        alpha3_code: string;
+        iso3166_2_code: string;
         dikti_code?: string | null;
-        epsbed_code?: string | null;
-        country_id?: string | null;
-        description?: string | null;
+        continent_id?: string | null;
+        region_id?: string | null;
         slug?: string | null;
     },
-): Promise<{ is_error: boolean; message: string; data?: LocationProvince }> {
+): Promise<{ is_error: boolean; message: string; data?: LocationCountry }> {
     try {
         const isUpdate = Boolean(form.id && form.id !== '' && form.id !== '00000000-0000-0000-0000-000000000000');
         const url = isUpdate
@@ -94,12 +96,14 @@ export async function LocationProvinceControllerUpsert(
         const method = isUpdate ? 'PUT' : 'POST';
 
         const payload: Record<string, any> = {
-            code: form.code || null,
+            code: form.code,
             name: form.name,
+            alpha2_code: form.alpha2_code,
+            alpha3_code: form.alpha3_code,
+            iso3166_2_code: form.iso3166_2_code,
             dikti_code: form.dikti_code || null,
-            epsbed_code: form.epsbed_code || null,
-            country_id: form.country_id && form.country_id !== '' ? form.country_id : null,
-            description: form.description || null,
+            continent_id: form.continent_id && form.continent_id !== '' ? form.continent_id : null,
+            region_id: form.region_id && form.region_id !== '' ? form.region_id : null,
             slug: form.slug || null,
         };
 
@@ -113,24 +117,24 @@ export async function LocationProvinceControllerUpsert(
         if (!res.ok) {
             return {
                 is_error: true,
-                message: resJson.message || resJson.brief || (isUpdate ? 'Failed to update province.' : 'Failed to create province.'),
+                message: resJson.message || resJson.brief || (isUpdate ? 'Failed to update country.' : 'Failed to create country.'),
             };
         }
 
         return {
             is_error: false,
-            message: isUpdate ? 'Province updated successfully.' : 'Province created successfully.',
+            message: isUpdate ? 'Country updated successfully.' : 'Country created successfully.',
             data: resJson,
         };
     } catch (error: any) {
         return {
             is_error: true,
-            message: error.message || 'Network error while saving province.',
+            message: error.message || 'Network error while saving country.',
         };
     }
 }
 
-export async function LocationProvinceControllerDelete(
+export async function LocationCountryControllerDelete(
     props: { id: string },
 ): Promise<{ is_error: boolean; message: string }> {
     try {
@@ -142,22 +146,22 @@ export async function LocationProvinceControllerDelete(
         if (!res.ok) {
             return {
                 is_error: true,
-                message: resJson.message || resJson.brief || 'Failed to delete province.',
+                message: resJson.message || resJson.brief || 'Failed to delete country.',
             };
         }
         return {
             is_error: false,
-            message: resJson.message || 'Province deleted successfully.',
+            message: resJson.message || 'Country deleted successfully.',
         };
     } catch (error: any) {
         return {
             is_error: true,
-            message: error.message || 'Network error while deleting province.',
+            message: error.message || 'Network error while deleting country.',
         };
     }
 }
 
-export async function getProvinceLists(): Promise<{
+export async function LocationCountryControllerList(): Promise<{
     code: number;
     message: string | ModelSelectItem[];
 }> {
@@ -170,7 +174,7 @@ export async function getProvinceLists(): Promise<{
         if (!res.ok) {
             return {
                 code: res.status || 500,
-                message: 'Failed to fetch provinces',
+                message: 'Failed to fetch countries',
             };
         }
         const list = Array.isArray(resData.data) ? resData.data : (Array.isArray(resData) ? resData : []);
@@ -190,5 +194,3 @@ export async function getProvinceLists(): Promise<{
         };
     }
 }
-
-export const LocationProvinceControllerList = getProvinceLists;

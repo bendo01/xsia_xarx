@@ -1,10 +1,10 @@
 import type { TypePaginationForm, TypePaginationResponse } from '~/lib/types';
-import type { LocationProvince } from '~/models/location/Province';
+import type { DocumentArchiveType } from '~/models/document/ArchiveType';
 import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
 import { getStorageItem } from '~/lib/storage';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
-const path = 'provinces';
+const path = 'document/reference/archive-types';
 
 const getHeaders = (): Record<string, string> => {
     const headers: Record<string, string> = {
@@ -20,16 +20,18 @@ const getHeaders = (): Record<string, string> => {
     return headers;
 };
 
-export async function LocationProvinceControllerIndex(
+export async function DocumentArchiveTypeControllerIndex(
     props: TypePaginationForm,
-): Promise<TypePaginationResponse<LocationProvince>> {
+): Promise<TypePaginationResponse<DocumentArchiveType>> {
     try {
         const params = new URLSearchParams();
         if (props.page) params.append('page', props.page.toString());
         if (props.per_page) params.append('page_size', props.per_page.toString());
         if (props.search) params.append('name', props.search);
         if (props.name) params.append('name', props.name);
-        if (props.code) params.append('code', props.code.toString());
+        if (props.code !== undefined && props.code !== null && !isNaN(Number(props.code))) {
+            params.append('code', props.code.toString());
+        }
 
         const res = await fetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
             method: 'GET',
@@ -56,7 +58,7 @@ export async function LocationProvinceControllerIndex(
             data: Array.isArray(resJson.data) ? resJson.data : (Array.isArray(resJson) ? resJson : []),
         };
     } catch (e) {
-        console.error('Error in LocationProvinceControllerIndex:', e);
+        console.error('Error in DocumentArchiveTypeControllerIndex:', e);
         return {
             pagination: {
                 search: props.search || '',
@@ -74,18 +76,9 @@ export async function LocationProvinceControllerIndex(
     }
 }
 
-export async function LocationProvinceControllerUpsert(
-    form: {
-        id?: string | null;
-        code?: string | null;
-        name: string;
-        dikti_code?: string | null;
-        epsbed_code?: string | null;
-        country_id?: string | null;
-        description?: string | null;
-        slug?: string | null;
-    },
-): Promise<{ is_error: boolean; message: string; data?: LocationProvince }> {
+export async function DocumentArchiveTypeControllerUpsert(
+    form: { id?: string | null; code?: number | string | null; alphabet_code?: string | null; name: string },
+): Promise<{ is_error: boolean; message: string; data?: DocumentArchiveType }> {
     try {
         const isUpdate = Boolean(form.id && form.id !== '' && form.id !== '00000000-0000-0000-0000-000000000000');
         const url = isUpdate
@@ -94,13 +87,9 @@ export async function LocationProvinceControllerUpsert(
         const method = isUpdate ? 'PUT' : 'POST';
 
         const payload: Record<string, any> = {
-            code: form.code || null,
+            code: form.code !== null && form.code !== undefined && !isNaN(Number(form.code)) ? Number(form.code) : 1,
+            alphabet_code: form.alphabet_code || '',
             name: form.name,
-            dikti_code: form.dikti_code || null,
-            epsbed_code: form.epsbed_code || null,
-            country_id: form.country_id && form.country_id !== '' ? form.country_id : null,
-            description: form.description || null,
-            slug: form.slug || null,
         };
 
         const res = await fetch(url, {
@@ -113,24 +102,24 @@ export async function LocationProvinceControllerUpsert(
         if (!res.ok) {
             return {
                 is_error: true,
-                message: resJson.message || resJson.brief || (isUpdate ? 'Failed to update province.' : 'Failed to create province.'),
+                message: resJson.message || resJson.brief || (isUpdate ? 'Failed to update archive type.' : 'Failed to create archive type.'),
             };
         }
 
         return {
             is_error: false,
-            message: isUpdate ? 'Province updated successfully.' : 'Province created successfully.',
+            message: isUpdate ? 'Archive type updated successfully.' : 'Archive type created successfully.',
             data: resJson,
         };
     } catch (error: any) {
         return {
             is_error: true,
-            message: error.message || 'Network error while saving province.',
+            message: error.message || 'Network error while saving archive type.',
         };
     }
 }
 
-export async function LocationProvinceControllerDelete(
+export async function DocumentArchiveTypeControllerDelete(
     props: { id: string },
 ): Promise<{ is_error: boolean; message: string }> {
     try {
@@ -142,42 +131,51 @@ export async function LocationProvinceControllerDelete(
         if (!res.ok) {
             return {
                 is_error: true,
-                message: resJson.message || resJson.brief || 'Failed to delete province.',
+                message: resJson.message || resJson.brief || 'Failed to delete archive type.',
             };
         }
         return {
             is_error: false,
-            message: resJson.message || 'Province deleted successfully.',
+            message: resJson.message || 'Archive type deleted successfully.',
         };
     } catch (error: any) {
         return {
             is_error: true,
-            message: error.message || 'Network error while deleting province.',
+            message: error.message || 'Network error while deleting archive type.',
         };
     }
 }
 
-export async function getProvinceLists(): Promise<{
+export async function DocumentArchiveTypeControllerList(): Promise<{
     code: number;
     message: string | ModelSelectItem[];
 }> {
     try {
-        const res = await fetch(`${getBaseUrl()}/${path}?page=1&page_size=1000`, {
+        const res = await fetch(`${getBaseUrl()}/${path}/options`, {
             method: 'GET',
             headers: getHeaders(),
         });
         const resData = await res.json().catch(() => ({}));
         if (!res.ok) {
-            return {
-                code: res.status || 500,
-                message: 'Failed to fetch provinces',
-            };
+            // fallback to index if options endpoint not available
+            const indexRes = await fetch(`${getBaseUrl()}/${path}?page=1&page_size=1000`, {
+                method: 'GET',
+                headers: getHeaders(),
+            });
+            const indexData = await indexRes.json().catch(() => ({}));
+            const list = Array.isArray(indexData.data) ? indexData.data : (Array.isArray(indexData) ? indexData : []);
+            const items: ModelSelectItem[] = list.map((item: any) => ({
+                id: item.id,
+                value: item.id,
+                label: item.name || item.alphabet_code || String(item.id),
+            }));
+            return { code: 200, message: items };
         }
         const list = Array.isArray(resData.data) ? resData.data : (Array.isArray(resData) ? resData : []);
         const items: ModelSelectItem[] = list.map((item: any) => ({
-            id: item.id,
-            value: item.id,
-            label: item.name || item.code || String(item.id),
+            id: item.id || item.value,
+            value: item.id || item.value,
+            label: item.name || item.label || item.alphabet_code || String(item.id),
         }));
         return {
             code: 200,
@@ -190,5 +188,3 @@ export async function getProvinceLists(): Promise<{
         };
     }
 }
-
-export const LocationProvinceControllerList = getProvinceLists;
