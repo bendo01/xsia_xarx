@@ -52,6 +52,25 @@ CREATE TABLE auth.permission_position_type (
 ALTER TABLE auth.permission_position_type OWNER TO bendo01;
 
 --
+-- Name: permission_role; Type: TABLE; Schema: auth; Owner: bendo01
+--
+
+CREATE TABLE auth.permission_role (
+    id uuid DEFAULT public.uuid_generate_v7() NOT NULL,
+    role_id uuid DEFAULT '00000000-0000-0000-0000-000000000000'::uuid NOT NULL,
+    permission_id uuid DEFAULT '00000000-0000-0000-0000-000000000000'::uuid NOT NULL,
+    created_at timestamp(0) without time zone DEFAULT now(),
+    updated_at timestamp(0) without time zone DEFAULT now(),
+    deleted_at timestamp(0) without time zone,
+    sync_at timestamp(0) without time zone,
+    created_by uuid DEFAULT '00000000-0000-0000-0000-000000000000'::uuid,
+    updated_by uuid DEFAULT '00000000-0000-0000-0000-000000000000'::uuid
+);
+
+
+ALTER TABLE auth.permission_role OWNER TO bendo01;
+
+--
 -- Name: permission_user; Type: TABLE; Schema: auth; Owner: bendo01
 --
 
@@ -233,6 +252,14 @@ ALTER TABLE ONLY auth.verifications
 
 
 --
+-- Name: permission_role auth_permission_role_pkey; Type: CONSTRAINT; Schema: auth; Owner: bendo01
+--
+
+ALTER TABLE ONLY auth.permission_role
+    ADD CONSTRAINT auth_permission_role_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: roles roles_pkey; Type: CONSTRAINT; Schema: auth; Owner: bendo01
 --
 
@@ -245,6 +272,13 @@ ALTER TABLE ONLY auth.roles
 --
 
 CREATE UNIQUE INDEX uq_permission_position_active ON auth.permission_position_type USING btree (permission_id, position_type_id) WHERE (deleted_at IS NULL);
+
+
+--
+-- Name: uq_permission_role_active; Type: INDEX; Schema: auth; Owner: bendo01
+--
+
+CREATE UNIQUE INDEX uq_permission_role_active ON auth.permission_role USING btree (permission_id, role_id) WHERE (deleted_at IS NULL);
 
 
 --

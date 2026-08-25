@@ -169,7 +169,7 @@ impl Handler for RbacGuard {
             .await
         {
             let role_name_lower = current_role.name.to_lowercase();
-            if role_name_lower == "superadmin" || role_name_lower == "admin" {
+            if role_name_lower == "superadmin" || role_name_lower == "admin" || role_name_lower == "administrator" {
                 ctrl.call_next(req, depot, res).await;
                 return;
             }

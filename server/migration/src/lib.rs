@@ -119,6 +119,8 @@ impl MigratorTrait for Migrator {
             Box::new(auth::m20260803_160035_schema_auth_table_permission_user::Migration),
             Box::new(auth::m20260803_160042_schema_auth_table_permissions::Migration),
             Box::new(auth::m20260803_160057_schema_auth_table_user_position_type::Migration),
+            Box::new(auth::m20260812_070052_schema_auth_table_roles::Migration),
+            Box::new(auth::m20260812_070053_schema_auth_table_permission_role::Migration),
             Box::new(building::master::m20260806_135849_schema_building_master_table_buildings::Migration),
             Box::new(building::master::m20260806_135854_schema_building_master_table_rooms::Migration),
             Box::new(building::reference::m20260806_145333_schema_building_reference_table_categories::Migration),
