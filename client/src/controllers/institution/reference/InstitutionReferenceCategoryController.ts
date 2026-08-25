@@ -1,3 +1,4 @@
+import { getStorageItem } from "~/lib/storage";
 import type { TypePaginationForm, TypeInputEntityReferenceForm } from "../../../lib/types";
 import type { UpsertDeleteMessage } from "../../../models/common/reference/ModelCommonReference";
 import type { ModelCommonReferencePaginationResponse } from "../../../models/pagination/ModelPagination";
@@ -5,6 +6,21 @@ import type { ModelSelectItem } from "../../../models/common/select/ModelSelectI
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0.1:5800/api/v1/").replace(/\/+$/, "");
 const path = "institution/reference/categories";
+
+const getHeaders = (): Record<string, string> => {
+    const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+    };
+    if (typeof window !== "undefined") {
+        const token = getStorageItem("token");
+        if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
+        }
+    }
+    return headers;
+};
+
 
 export async function InstitutionReferenceControllerCategoryIndex(pagination: TypePaginationForm): Promise<ModelCommonReferencePaginationResponse> {
     try {
@@ -20,10 +36,7 @@ export async function InstitutionReferenceControllerCategoryIndex(pagination: Ty
         const url = `${getBaseUrl()}/${path}?${queryParams.toString()}`;
         const response = await fetch(url, {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
+            headers: getHeaders(),
         });
 
         if (!response.ok) {
@@ -85,10 +98,7 @@ export async function InstitutionReferenceControllerCategoryUpsert(data: TypeInp
 
         const response = await fetch(url, {
             method,
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
+            headers: getHeaders(),
             body: JSON.stringify(payload),
         });
 
@@ -130,10 +140,7 @@ export async function InstitutionReferenceControllerCategoryDelete(data: TypeInp
     try {
         const response = await fetch(`${getBaseUrl()}/${path}/${data.id}`, {
             method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
+            headers: getHeaders(),
         });
 
         const responseData = await response.json().catch(() => ({}));
@@ -161,10 +168,7 @@ export async function InstitutionReferenceControllerCategoryList(): Promise<{
     try {
         const response = await fetch(`${getBaseUrl()}/${path}?page=1&page_size=1000`, {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
+            headers: getHeaders(),
         });
         const resData = await response.json();
 
@@ -197,10 +201,7 @@ export async function InstitutionReferenceControllerCategoryOptions(search?: str
     try {
         const response = await fetch(`${getBaseUrl()}/${path}/options`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
+            headers: getHeaders(),
             body: JSON.stringify(search ? { search } : {}),
         });
         if (!response.ok) return [];
