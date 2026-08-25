@@ -2,13 +2,37 @@ import { createSignal, createEffect, onMount, For, Show } from 'solid-js';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import type { LocationVillage } from '~/models/location/Village';
+import type { LocationSubDistrict } from '~/models/location/SubDistrict';
+import type { LocationRegency } from '~/models/location/Regency';
+import type { LocationProvince } from '~/models/location/Province';
+import type { LocationCountry } from '~/models/location/Country';
 import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
 import {
     LocationVillageControllerIndex,
     LocationVillageControllerUpsert,
     LocationVillageControllerDelete,
 } from '~/controllers/location/LocationVillageController';
-import { LocationSubDistrictControllerList } from '~/controllers/location/LocationSubDistrictController';
+import { LocationSubDistrictControllerIndex } from '~/controllers/location/LocationSubDistrictController';
+import { LocationRegencyControllerIndex } from '~/controllers/location/LocationRegencyController';
+import { LocationProvinceControllerIndex } from '~/controllers/location/LocationProvinceController';
+import { LocationCountryControllerIndex } from '~/controllers/location/LocationCountryController';
+import { getStorageItem } from '~/lib/storage';
+
+const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
+
+const getHeaders = (): Record<string, string> => {
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+    };
+    if (typeof window !== 'undefined') {
+        const token = getStorageItem('token');
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+    }
+    return headers;
+};
 
 export default function LocationVillagePage() {
     const [items, setItems] = createSignal<LocationVillage[]>([]);
@@ -20,8 +44,18 @@ export default function LocationVillagePage() {
     const [totalData, setTotalData] = createSignal(0);
     const [totalPages, setTotalPages] = createSignal(1);
 
-    // Options
+    // Options & Hierarchical Maps
     const [subDistrictOptions, setSubDistrictOptions] = createSignal<ModelSelectItem[]>([]);
+    const [subDistrictsMap, setSubDistrictsMap] = createSignal<Map<string, LocationSubDistrict>>(new Map());
+    const [regenciesMap, setRegenciesMap] = createSignal<Map<string, LocationRegency>>(new Map());
+    const [provincesMap, setProvincesMap] = createSignal<Map<string, LocationProvince>>(new Map());
+    const [countriesMap, setCountriesMap] = createSignal<Map<string, LocationCountry>>(new Map());
+
+    // In-flight fetch trackers to avoid duplicate fetches
+    const pendingSubDistricts = new Set<string>();
+    const pendingRegencies = new Set<string>();
+    const pendingProvinces = new Set<string>();
+    const pendingCountries = new Set<string>();
 
     // Dialog refs
     let createDialogRef!: HTMLDialogElement;
@@ -52,18 +86,201 @@ export default function LocationVillagePage() {
     // Selected item for Delete
     const [selectedItem, setSelectedItem] = createSignal<LocationVillage | null>(null);
 
+    const fetchCountryById = async (id: string) => {
+        if (pendingCountries.has(id) || countriesMap().has(id)) return;
+        pendingCountries.add(id);
+        try {
+            const res = await fetch(`${getBaseUrl()}/countries/${id}`, {
+                headers: getHeaders(),
+            });
+            if (res.ok) {
+                const data: LocationCountry = await res.json();
+                setCountriesMap((prev) => new Map(prev).set(data.id, data));
+            }
+        } catch (e) {
+            console.error('Error fetching country by id:', e);
+        } finally {
+            pendingCountries.delete(id);
+        }
+    };
+
+    const fetchProvinceById = async (id: string) => {
+        if (pendingProvinces.has(id) || provincesMap().has(id)) return;
+        pendingProvinces.add(id);
+        try {
+            const res = await fetch(`${getBaseUrl()}/provinces/${id}`, {
+                headers: getHeaders(),
+            });
+            if (res.ok) {
+                const data: LocationProvince = await res.json();
+                setProvincesMap((prev) => new Map(prev).set(data.id, data));
+                if (data.country_id && !countriesMap().has(data.country_id)) {
+                    fetchCountryById(data.country_id);
+                }
+            }
+        } catch (e) {
+            console.error('Error fetching province by id:', e);
+        } finally {
+            pendingProvinces.delete(id);
+        }
+    };
+
+    const fetchRegencyById = async (id: string) => {
+        if (pendingRegencies.has(id) || regenciesMap().has(id)) return;
+        pendingRegencies.add(id);
+        try {
+            const res = await fetch(`${getBaseUrl()}/regencies/${id}`, {
+                headers: getHeaders(),
+            });
+            if (res.ok) {
+                const data: LocationRegency = await res.json();
+                setRegenciesMap((prev) => new Map(prev).set(data.id, data));
+                if (data.province_id && !provincesMap().has(data.province_id)) {
+                    fetchProvinceById(data.province_id);
+                }
+            }
+        } catch (e) {
+            console.error('Error fetching regency by id:', e);
+        } finally {
+            pendingRegencies.delete(id);
+        }
+    };
+
+    const fetchSubDistrictById = async (id: string) => {
+        if (pendingSubDistricts.has(id) || subDistrictsMap().has(id)) return;
+        pendingSubDistricts.add(id);
+        try {
+            const res = await fetch(`${getBaseUrl()}/sub-districts/${id}`, {
+                headers: getHeaders(),
+            });
+            if (res.ok) {
+                const data: LocationSubDistrict = await res.json();
+                setSubDistrictsMap((prev) => new Map(prev).set(data.id, data));
+                if (data.regency_id && !regenciesMap().has(data.regency_id)) {
+                    fetchRegencyById(data.regency_id);
+                }
+            }
+        } catch (e) {
+            console.error('Error fetching sub-district by id:', e);
+        } finally {
+            pendingSubDistricts.delete(id);
+        }
+    };
+
     const loadOptions = async () => {
         try {
-            const subRes = await LocationSubDistrictControllerList();
-            if (Array.isArray(subRes.message)) setSubDistrictOptions(subRes.message);
+            const [subRes, regRes, provRes, countryRes] = await Promise.all([
+                LocationSubDistrictControllerIndex({ per_page: 1000 }),
+                LocationRegencyControllerIndex({ per_page: 1000 }),
+                LocationProvinceControllerIndex({ per_page: 1000 }),
+                LocationCountryControllerIndex({ per_page: 1000 }),
+            ]);
+
+            if (subRes && subRes.data) {
+                const map = new Map<string, LocationSubDistrict>();
+                const opts: ModelSelectItem[] = [];
+                for (const sub of subRes.data) {
+                    map.set(sub.id, sub);
+                    opts.push({ id: sub.id, value: sub.id, label: sub.name || sub.code || sub.id });
+                }
+                setSubDistrictsMap(map);
+                setSubDistrictOptions(opts);
+            }
+
+            if (regRes && regRes.data) {
+                const map = new Map<string, LocationRegency>();
+                for (const reg of regRes.data) {
+                    map.set(reg.id, reg);
+                }
+                setRegenciesMap(map);
+            }
+
+            if (provRes && provRes.data) {
+                const map = new Map<string, LocationProvince>();
+                for (const prov of provRes.data) {
+                    map.set(prov.id, prov);
+                }
+                setProvincesMap(map);
+            }
+
+            if (countryRes && countryRes.data) {
+                const map = new Map<string, LocationCountry>();
+                for (const c of countryRes.data) {
+                    map.set(c.id, c);
+                }
+                setCountriesMap(map);
+            }
         } catch (e) {
-            console.error('Error loading sub-district options:', e);
+            console.error('Error loading location options and hierarchy:', e);
         }
     };
 
     onMount(() => {
         loadOptions();
     });
+
+    const getSubDistrict = (subDistrictId?: string | null): LocationSubDistrict | undefined => {
+        if (!subDistrictId) return undefined;
+        const sub = subDistrictsMap().get(subDistrictId);
+        if (!sub) {
+            fetchSubDistrictById(subDistrictId);
+            return undefined;
+        }
+        return sub;
+    };
+
+    const getRegency = (subDistrictId?: string | null): LocationRegency | undefined => {
+        const sub = getSubDistrict(subDistrictId);
+        if (!sub || !sub.regency_id) return undefined;
+        const reg = regenciesMap().get(sub.regency_id);
+        if (!reg) {
+            fetchRegencyById(sub.regency_id);
+            return undefined;
+        }
+        return reg;
+    };
+
+    const getProvince = (subDistrictId?: string | null): LocationProvince | undefined => {
+        const reg = getRegency(subDistrictId);
+        if (!reg || !reg.province_id) return undefined;
+        const prov = provincesMap().get(reg.province_id);
+        if (!prov) {
+            fetchProvinceById(reg.province_id);
+            return undefined;
+        }
+        return prov;
+    };
+
+    const getCountry = (subDistrictId?: string | null): LocationCountry | undefined => {
+        const prov = getProvince(subDistrictId);
+        if (!prov || !prov.country_id) return undefined;
+        const country = countriesMap().get(prov.country_id);
+        if (!country) {
+            fetchCountryById(prov.country_id);
+            return undefined;
+        }
+        return country;
+    };
+
+    const getSubDistrictName = (subDistrictId?: string | null): string => {
+        const sub = getSubDistrict(subDistrictId);
+        return sub?.name || '-';
+    };
+
+    const getRegencyName = (subDistrictId?: string | null): string => {
+        const reg = getRegency(subDistrictId);
+        return reg?.name || '-';
+    };
+
+    const getProvinceName = (subDistrictId?: string | null): string => {
+        const prov = getProvince(subDistrictId);
+        return prov?.name || '-';
+    };
+
+    const getCountryName = (subDistrictId?: string | null): string => {
+        const country = getCountry(subDistrictId);
+        return country?.name || '-';
+    };
 
     const fetchData = async () => {
         setIsLoading(true);
@@ -91,6 +308,13 @@ export default function LocationVillagePage() {
                 setItems(data);
                 setTotalData(response.pagination?.total_data || data.length);
                 setTotalPages(response.pagination?.total_page || 1);
+
+                // Pre-trigger hierarchy fetching for any missing items in the current page
+                for (const item of data) {
+                    if (item.sub_district_id && !subDistrictsMap().has(item.sub_district_id)) {
+                        fetchSubDistrictById(item.sub_district_id);
+                    }
+                }
             } else {
                 setItems([]);
                 setTotalData(0);
@@ -126,12 +350,6 @@ export default function LocationVillagePage() {
         const value = Number((e.target as HTMLSelectElement).value);
         setItemsPerPage(value);
         setCurrentPage(1);
-    };
-
-    const getSubDistrictName = (id?: string | null) => {
-        if (!id) return '-';
-        const found = subDistrictOptions().find((opt) => opt.id === id || opt.value === id);
-        return found ? found.label : id;
     };
 
     const openCreateModal = () => {
@@ -274,10 +492,10 @@ export default function LocationVillagePage() {
             <div class="sm:flex sm:items-center sm:justify-between mb-4 px-3 pt-4">
                 <div>
                     <h1 class="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white tracking-tight">
-                        Village / Desa & Kelurahan
+                        Village / Kelurahan & Desa
                     </h1>
                     <p class="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-                        Manage fourth-level administrative subdivisions (Desa / Kelurahan).
+                        Manage fourth-level administrative subdivisions with complete location hierarchy (Sub-District, Regency, Province, Country).
                     </p>
                 </div>
                 <div class="mt-4 sm:mt-0 flex items-center gap-2 justify-end">
@@ -362,11 +580,14 @@ export default function LocationVillagePage() {
                         <table class="w-full text-sm text-left whitespace-nowrap">
                             <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3.5 font-semibold tracking-wider w-32">Code</th>
-                                    <th scope="col" class="px-6 py-3.5 font-semibold tracking-wider">Village Name</th>
-                                    <th scope="col" class="px-6 py-3.5 font-semibold tracking-wider">Sub-District</th>
-                                    <th scope="col" class="px-6 py-3.5 font-semibold tracking-wider">Dikti Code</th>
-                                    <th scope="col" class="px-6 py-3.5 font-semibold tracking-wider text-right">Actions</th>
+                                    <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider w-28">Code</th>
+                                    <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">Village Name</th>
+                                    <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">Sub-District</th>
+                                    <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">Regency / City</th>
+                                    <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">Province</th>
+                                    <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">Country</th>
+                                    <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">Dikti Code</th>
+                                    <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
@@ -376,11 +597,14 @@ export default function LocationVillagePage() {
                                         <For each={Array.from({ length: 3 })}>
                                             {() => (
                                                 <tr class="animate-pulse hover:bg-neutral-50 dark:hover:bg-neutral-800/50">
-                                                    <td class="px-6 py-4"><div class="h-5 w-20 bg-neutral-200 dark:bg-neutral-700"></div></td>
-                                                    <td class="px-6 py-4"><div class="h-5 w-40 bg-neutral-200 dark:bg-neutral-700"></div></td>
-                                                    <td class="px-6 py-4"><div class="h-5 w-28 bg-neutral-200 dark:bg-neutral-700"></div></td>
-                                                    <td class="px-6 py-4"><div class="h-4 w-20 bg-neutral-200 dark:bg-neutral-700"></div></td>
-                                                    <td class="px-6 py-4 text-right flex justify-end gap-2">
+                                                    <td class="px-5 py-4"><div class="h-5 w-20 bg-neutral-200 dark:bg-neutral-700"></div></td>
+                                                    <td class="px-5 py-4"><div class="h-5 w-32 bg-neutral-200 dark:bg-neutral-700"></div></td>
+                                                    <td class="px-5 py-4"><div class="h-5 w-24 bg-neutral-200 dark:bg-neutral-700"></div></td>
+                                                    <td class="px-5 py-4"><div class="h-5 w-24 bg-neutral-200 dark:bg-neutral-700"></div></td>
+                                                    <td class="px-5 py-4"><div class="h-5 w-24 bg-neutral-200 dark:bg-neutral-700"></div></td>
+                                                    <td class="px-5 py-4"><div class="h-5 w-20 bg-neutral-200 dark:bg-neutral-700"></div></td>
+                                                    <td class="px-5 py-4"><div class="h-4 w-16 bg-neutral-200 dark:bg-neutral-700"></div></td>
+                                                    <td class="px-5 py-4 text-right flex justify-end gap-2">
                                                         <div class="h-8 w-8 bg-neutral-200 dark:bg-neutral-700"></div>
                                                         <div class="h-8 w-8 bg-neutral-200 dark:bg-neutral-700"></div>
                                                     </td>
@@ -393,7 +617,7 @@ export default function LocationVillagePage() {
                                         when={items().length > 0}
                                         fallback={
                                             <tr>
-                                                <td colspan="5" class="px-6 py-12 text-center text-neutral-500 dark:text-neutral-400">
+                                                <td colspan="8" class="px-6 py-12 text-center text-neutral-500 dark:text-neutral-400">
                                                     <div class="flex flex-col items-center justify-center space-y-2">
                                                         <svg class="size-8 text-neutral-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
@@ -408,22 +632,31 @@ export default function LocationVillagePage() {
                                         <For each={items()}>
                                             {(item) => (
                                                 <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-800/60 transition-colors">
-                                                    <td class="px-6 py-4 font-mono font-medium text-neutral-900 dark:text-white">
+                                                    <td class="px-5 py-4 font-mono font-medium text-neutral-900 dark:text-white">
                                                         <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200">
                                                             {item.code}
                                                         </span>
                                                     </td>
-                                                    <td class="px-6 py-4">
+                                                    <td class="px-5 py-4">
                                                         <div class="font-medium text-neutral-900 dark:text-white">{item.name}</div>
                                                         <div class="text-xs text-neutral-500 dark:text-neutral-400 font-mono">{item.id}</div>
                                                     </td>
-                                                    <td class="px-6 py-4 text-xs text-neutral-600 dark:text-neutral-300">
+                                                    <td class="px-5 py-4 text-xs font-medium text-neutral-800 dark:text-neutral-200">
                                                         {getSubDistrictName(item.sub_district_id)}
                                                     </td>
-                                                    <td class="px-6 py-4 text-xs font-mono text-neutral-500 dark:text-neutral-400">
+                                                    <td class="px-5 py-4 text-xs text-neutral-600 dark:text-neutral-300">
+                                                        {getRegencyName(item.sub_district_id)}
+                                                    </td>
+                                                    <td class="px-5 py-4 text-xs text-neutral-600 dark:text-neutral-300">
+                                                        {getProvinceName(item.sub_district_id)}
+                                                    </td>
+                                                    <td class="px-5 py-4 text-xs text-neutral-600 dark:text-neutral-300">
+                                                        {getCountryName(item.sub_district_id)}
+                                                    </td>
+                                                    <td class="px-5 py-4 text-xs font-mono text-neutral-500 dark:text-neutral-400">
                                                         {item.dikti_code || '-'}
                                                     </td>
-                                                    <td class="px-6 py-4 text-right">
+                                                    <td class="px-5 py-4 text-right">
                                                         <div class="flex justify-end gap-1">
                                                             <button
                                                                 type="button"
@@ -493,39 +726,55 @@ export default function LocationVillagePage() {
                         >
                             <For each={items()}>
                                 {(item) => (
-                                    <div class="p-4 space-y-2">
+                                    <div class="p-4 space-y-2.5">
                                         <div class="flex items-center justify-between">
                                             <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 font-mono">
                                                 Code: {item.code}
                                             </span>
-                                            <span class="text-xs text-neutral-600 dark:text-neutral-300">
-                                                {getSubDistrictName(item.sub_district_id)}
+                                            <span class="text-xs font-mono text-neutral-500 dark:text-neutral-400">
+                                                Dikti: {item.dikti_code || '-'}
                                             </span>
                                         </div>
                                         <div>
                                             <h3 class="font-medium text-neutral-900 dark:text-white">{item.name}</h3>
                                             <p class="text-xs text-neutral-500 dark:text-neutral-400 font-mono truncate">{item.id}</p>
                                         </div>
-                                        <div class="flex justify-between items-center pt-2 border-t border-neutral-100 dark:border-neutral-800">
-                                            <span class="text-xs font-mono text-neutral-500 dark:text-neutral-400">
-                                                Dikti: {item.dikti_code || '-'}
-                                            </span>
-                                            <div class="flex gap-2">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => openEditModal(item)}
-                                                    class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-yellow-50 hover:text-yellow-600 hover:border-yellow-500 dark:text-blue-400 dark:bg-blue-950/50 dark:hover:text-yellow-400 dark:hover:border-yellow-500 border border-blue-200 dark:border-blue-800 transition-colors cursor-pointer"
-                                                >
-                                                    Edit
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => openDeleteModal(item)}
-                                                    class="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-50 hover:text-red-600 hover:border-red-500 dark:text-red-400 dark:bg-red-950/50 dark:hover:text-red-400 dark:hover:border-red-500 border border-red-200 dark:border-red-800 transition-colors cursor-pointer"
-                                                >
-                                                    Delete
-                                                </button>
+                                        
+                                        {/* Location Hierarchy Grid */}
+                                        <div class="grid grid-cols-2 gap-2 text-xs py-2 bg-neutral-50 dark:bg-neutral-800/40 px-2.5 border border-neutral-200/60 dark:border-neutral-700/60">
+                                            <div>
+                                                <span class="text-neutral-500 dark:text-neutral-400 block text-[10px] uppercase font-semibold">Sub-District</span>
+                                                <span class="text-neutral-800 dark:text-neutral-200 font-medium">{getSubDistrictName(item.sub_district_id)}</span>
                                             </div>
+                                            <div>
+                                                <span class="text-neutral-500 dark:text-neutral-400 block text-[10px] uppercase font-semibold">Regency / City</span>
+                                                <span class="text-neutral-800 dark:text-neutral-200">{getRegencyName(item.sub_district_id)}</span>
+                                            </div>
+                                            <div>
+                                                <span class="text-neutral-500 dark:text-neutral-400 block text-[10px] uppercase font-semibold">Province</span>
+                                                <span class="text-neutral-800 dark:text-neutral-200">{getProvinceName(item.sub_district_id)}</span>
+                                            </div>
+                                            <div>
+                                                <span class="text-neutral-500 dark:text-neutral-400 block text-[10px] uppercase font-semibold">Country</span>
+                                                <span class="text-neutral-800 dark:text-neutral-200">{getCountryName(item.sub_district_id)}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex justify-end items-center gap-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
+                                            <button
+                                                type="button"
+                                                onClick={() => openEditModal(item)}
+                                                class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-yellow-50 hover:text-yellow-600 hover:border-yellow-500 dark:text-blue-400 dark:bg-blue-950/50 dark:hover:text-yellow-400 dark:hover:border-yellow-500 border border-blue-200 dark:border-blue-800 transition-colors cursor-pointer"
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => openDeleteModal(item)}
+                                                class="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-50 hover:text-red-600 hover:border-red-500 dark:text-red-400 dark:bg-red-950/50 dark:hover:text-red-400 dark:hover:border-red-500 border border-red-200 dark:border-red-800 transition-colors cursor-pointer"
+                                            >
+                                                Delete
+                                            </button>
                                         </div>
                                     </div>
                                 )}
@@ -657,6 +906,24 @@ export default function LocationVillagePage() {
                             {formErrors().sub_district_id && (
                                 <p class="text-xs text-red-500 mt-1">{formErrors().sub_district_id}</p>
                             )}
+
+                            {/* Location Hierarchy Preview */}
+                            <Show when={formData().sub_district_id}>
+                                <div class="mt-2.5 p-2.5 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-xs space-y-1">
+                                    <div class="text-neutral-600 dark:text-neutral-400">
+                                        <span class="font-medium text-neutral-800 dark:text-neutral-200">Regency / City:</span>{' '}
+                                        {getRegencyName(formData().sub_district_id)}
+                                    </div>
+                                    <div class="text-neutral-600 dark:text-neutral-400">
+                                        <span class="font-medium text-neutral-800 dark:text-neutral-200">Province:</span>{' '}
+                                        {getProvinceName(formData().sub_district_id)}
+                                    </div>
+                                    <div class="text-neutral-600 dark:text-neutral-400">
+                                        <span class="font-medium text-neutral-800 dark:text-neutral-200">Country:</span>{' '}
+                                        {getCountryName(formData().sub_district_id)}
+                                    </div>
+                                </div>
+                            </Show>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -793,6 +1060,24 @@ export default function LocationVillagePage() {
                             {formErrors().sub_district_id && (
                                 <p class="text-xs text-red-500 mt-1">{formErrors().sub_district_id}</p>
                             )}
+
+                            {/* Location Hierarchy Preview */}
+                            <Show when={formData().sub_district_id}>
+                                <div class="mt-2.5 p-2.5 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-xs space-y-1">
+                                    <div class="text-neutral-600 dark:text-neutral-400">
+                                        <span class="font-medium text-neutral-800 dark:text-neutral-200">Regency / City:</span>{' '}
+                                        {getRegencyName(formData().sub_district_id)}
+                                    </div>
+                                    <div class="text-neutral-600 dark:text-neutral-400">
+                                        <span class="font-medium text-neutral-800 dark:text-neutral-200">Province:</span>{' '}
+                                        {getProvinceName(formData().sub_district_id)}
+                                    </div>
+                                    <div class="text-neutral-600 dark:text-neutral-400">
+                                        <span class="font-medium text-neutral-800 dark:text-neutral-200">Country:</span>{' '}
+                                        {getCountryName(formData().sub_district_id)}
+                                    </div>
+                                </div>
+                            </Show>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
