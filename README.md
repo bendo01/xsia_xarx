@@ -335,18 +335,96 @@ The server automatically initializes an **Apalis** background monitor on startup
 - **Job Structure**: `EmailJob { to, subject, body }`
 
 ### CLI Task Runner
-Custom CLI tasks and one-off batch scripts can be executed using the integrated task runner:
+Custom CLI tasks, utilities, and one-off maintenance scripts can be executed using the integrated task runner located in `server/src/tasks/`.
 
+Both colon (`:`) and underscore (`_`) task name formats are supported interchangeably (e.g. `hash:password` or `hash_password`).
+
+#### 1. List Available Tasks
+To view all registered tasks and their descriptions:
 ```bash
 cd server
-
-# List all available CLI tasks
 cargo run -- task
-
-# Run a specific task with optional arguments
-cargo run -- task example
-cargo run -- task example --arg1 value1
 ```
+
+#### 2. Built-in Tasks & Usage Examples
+
+| Task Name | Description | Example Command |
+| :--- | :--- | :--- |
+| `hash:password` | Generates secure password hashes using Argon2id (application standard) and Bcrypt. | `cargo run -- task hash:password "MySecretPass123"` |
+| `route:list` | Displays a table of all registered system HTTP routes, methods, and handlers. | `cargo run -- task route:list` |
+| `sync_permissions` | Synchronizes predefined route permission records into the `auth.permissions` database table. | `cargo run -- task sync_permissions` |
+| `example` | Test task demonstrating argument passing and database access. | `cargo run -- task example arg1 arg2` |
+
+##### 🔑 Password Hashing Utility (`hash:password`)
+Hash a raw password string directly from command-line arguments:
+```bash
+# Generate both Argon2id and Bcrypt hashes:
+cargo run -- task hash:password "MySecretPass123"
+
+# Specify a specific algorithm (argon2 or bcrypt):
+cargo run -- task hash:password "MySecretPass123" argon2
+cargo run -- task hash:password "MySecretPass123" bcrypt
+
+# Interactive prompt (if no argument is provided):
+cargo run -- task hash:password
+```
+
+##### 🛣️ Route Listing (`route:list`)
+List and inspect registered API routes in a formatted table:
+```bash
+# List all routes
+cargo run -- task route:list
+
+# Filter routes by path, method, handler name, or keyword
+cargo run -- task route:list auth
+cargo run -- task route:list student
+```
+
+##### 🔄 Sync Permissions (`sync_permissions`)
+Sync predefined system permission constants into the PostgreSQL database:
+```bash
+cargo run -- task sync_permissions
+# or
+cargo run -- task sync:permissions
+```
+
+#### 3. Creating a Custom Task
+To create a new task:
+1. Create a new file in `server/src/tasks/` (or a sub-module like `server/src/tasks/utilities/`).
+2. Implement the `Task` trait:
+   ```rust
+   use salvo::async_trait;
+   use sea_orm::DatabaseConnection;
+   use crate::tasks::Task;
+
+   pub struct MyCustomTask;
+
+   #[async_trait]
+   impl Task for MyCustomTask {
+       fn name(&self) -> &str {
+           "custom:task"
+       }
+
+       fn description(&self) -> &str {
+           "Description of what the task does"
+       }
+
+       async fn run(&self, db: &DatabaseConnection, args: &[String]) -> Result<(), Box<dyn std::error::Error>> {
+           println!("Executing custom task with args: {:?}", args);
+           // Task logic here...
+           Ok(())
+       }
+   }
+   ```
+3. Register the task in `server/src/tasks/mod.rs` inside `get_tasks()`:
+   ```rust
+   pub fn get_tasks() -> Vec<Box<dyn Task>> {
+       vec![
+           // ...
+           Box::new(my_module::MyCustomTask),
+       ]
+   }
+   ```
 
 ---
 
