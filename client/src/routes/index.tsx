@@ -46,14 +46,14 @@ export default function Home() {
                             <Show when={isAuthenticatedSignal()} fallback={
                                 <>
                                     <A
-                                        href="/authentification/login"
+                                        href="/administrator/authentification/login"
                                         class="px-6 py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold tracking-wider uppercase transition-all shadow-lg hover:shadow-blue-500/30 flex items-center gap-2"
                                     >
                                         Standard Sign In (JWT)
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
                                     </A>
                                     <A
-                                        href="/authentification/login_with_session"
+                                        href="/administrator/authentification/login_with_session"
                                         class="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold tracking-wider uppercase transition-all shadow-lg hover:shadow-emerald-500/30 flex items-center gap-2"
                                     >
                                         Session Sign In

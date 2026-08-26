@@ -27,6 +27,9 @@
 - [Database Migrations & Entity Generation](#-database-migrations--entity-generation)
 - [Background Workers & Task Runner](#-background-workers--task-runner)
 - [Testing & Quality Assurance](#-testing--quality-assurance)
+  - [1. Backend Testing (`server/`)](#1-backend-testing-server)
+  - [2. Frontend Testing (`client/`)](#2-frontend-testing-client)
+  - [3. Frontend Production Build (`client/`)](#3-frontend-production-build-client)
 - [License](#-license)
 
 ---
@@ -430,32 +433,138 @@ To create a new task:
 
 ## 🧪 Testing & Quality Assurance
 
-### Backend Tests (`server/`)
+The repository includes a comprehensive testing matrix covering backend API integration tests, frontend white-box unit/component tests, and frontend black-box browser automation tests.
 
-Run the complete test suite using `cargo-nextest` (recommended for speed and parallelism):
+---
 
+### 1. Backend Testing (`server/`)
+
+Backend tests validate database entities, foreign key constraints, service layers, and permission relations.
+
+#### Prerequisites
+Install `cargo-nextest` for faster, parallelized test execution:
+```bash
+cargo install cargo-nextest --locked
+```
+
+#### Running Backend Tests
 ```bash
 cd server
 
-# Run all backend tests
+# Run all tests using nextest (Recommended)
 cargo nextest run
 
-# Run with stdout output enabled
+# Run tests with real-time stdout output
 cargo nextest run --no-capture
 
-# Run a specific test suite or test filter
+# Run a specific integration test file
 cargo nextest run --test auth_relations_test
 cargo nextest run --test person_relations_test
-cargo nextest run test_user_permission_relation
-```
 
-Or using standard `cargo test`:
-```bash
+# Run tests matching a specific name filter
+cargo nextest run test_user_permission_relation
+
+# Alternative: Standard cargo test
 cargo test
 cargo test -- --nocapture
 ```
 
-### Frontend Production Build (`client/`)
+---
+
+### 2. Frontend Testing (`client/`)
+
+The frontend test suite is divided into two distinct levels of testing:
+
+```mermaid
+graph LR
+    ClientTests[Frontend Testing Suite] --> WhiteBox[White-Box: Vitest + JSDOM]
+    ClientTests --> BlackBox[Black-Box: Playwright Browser Automation]
+
+    WhiteBox --> WB1[Storage Engine Unit Tests]
+    WhiteBox --> WB2[Role & Auth State Machine Tests]
+    WhiteBox --> WB3[Toaster Component & State Tests]
+    WhiteBox --> WB4[TopBar Navigation Component Tests]
+
+    BlackBox --> BB1[Landing Page & Hero Navigation]
+    BlackBox --> BB2[Dark / Light Mode Theme Toggle]
+    BlackBox --> BB3[Authentication Flows & Form Validation]
+    BlackBox --> BB4[Real-time WebSocket Studio View]
+    BlackBox --> BB5[404 Catch-All Recovery Routing]
+```
+
+#### Prerequisites (One-Time Setup)
+Make sure dependencies and the Playwright Chromium browser binary are installed:
+```bash
+cd client
+
+# Install project dependencies
+bun install
+# or: pnpm install
+
+# Install Playwright browser binaries (Chromium)
+bunx playwright install chromium
+# or: pnpm exec playwright install chromium
+```
+
+#### A. White-Box Unit & Component Testing (Vitest)
+White-box tests execute in an isolated JSDOM environment with `@solidjs/testing-library` to inspect internal state, signals, storage keys, and DOM rendering.
+
+| Test File | Target | Coverage |
+| :--- | :--- | :--- |
+| `src/lib/storage.test.ts` | Storage Helpers | `localStorage`, `sessionStorage`, key removal, existence checks |
+| `src/lib/authStore.test.ts` | Auth Engine | Role normalization, display names, route mapping, active role switcher, logout cleanup |
+| `src/components/toast/Toaster.test.tsx` | Toast Component | Toast store state machine, notifications, unique ID generation, portal rendering |
+| `src/components/navigation/TopBar.test.tsx` | Navigation Bar | Guest vs authenticated state, user badges, portal branding |
+
+```bash
+cd client
+
+# Run all white-box unit & component tests
+bun run test:unit
+# or: pnpm test:unit
+
+# Run in watch mode during development
+bun run test:unit:watch
+
+# Generate code coverage report
+bun run test:unit:coverage
+```
+
+#### B. Black-Box End-to-End Browser Testing (Playwright / Laravel Dusk Counterpart)
+Black-box tests launch a real headless or headed Chromium browser against the live SolidStart application to test complete end-to-end user workflows, routing, animations, and API communication.
+
+| Spec File | Feature Area | What is Tested |
+| :--- | :--- | :--- |
+| `tests/e2e/home.spec.ts` | Landing Page | Hero branding, action buttons, live dark/light mode toggle |
+| `tests/e2e/auth.spec.ts` | Authentication | Form inputs, password visibility toggle, remember email, navigation to session login |
+| `tests/e2e/realtime.spec.ts` | WebSocket Studio | Real-time studio controls, layout, and connection badges |
+| `tests/e2e/not-found.spec.ts` | 404 Catch-All | 404 graphic, invalid route reporting, "Back to Home" navigation |
+
+```bash
+cd client
+
+# Run all black-box browser tests (Headless Chromium)
+bun run test:e2e
+# or: pnpm test:e2e
+
+# Run with a visible browser window (Headed mode)
+bun run test:e2e:headed
+
+# Open the interactive Playwright UI & Time-Travel Debugger
+bun run test:e2e:ui
+```
+
+#### C. Run Complete Frontend Test Suite
+To run both White-Box (Vitest) and Black-Box (Playwright) suites together:
+```bash
+cd client
+bun run test
+# or: pnpm test
+```
+
+---
+
+### 3. Frontend Production Build (`client/`)
 
 ```bash
 cd client
