@@ -1,9 +1,9 @@
 import { createForm } from '@tanstack/solid-form';
 import { onMount, onCleanup, createSignal, Show } from 'solid-js';
 import { useNavigate, A } from '@solidjs/router';
-import { LoginUser, isAuthenticated } from '../../controllers/auth/AuthUser';
-import { processLoginSuccess, getDashboardPathForRole, getActiveRole } from '../../lib/authStore';
-import { toast } from '../../components/toast/Toaster';
+import { LoginUser, isAuthenticated } from '~/controllers/auth/AuthUser';
+import { processLoginSuccess, getDashboardPathForRole, getActiveRole } from '~/lib/authStore';
+import { toast } from '~/components/toast/Toaster';
 
 export default function Login() {
     let canvasRef: HTMLCanvasElement | undefined;

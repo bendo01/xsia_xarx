@@ -15,6 +15,7 @@ import { toast } from '../toast/Toaster';
 import MenuAdministrator from './administrator';
 import MenuCourseDepartment from './course_department';
 import MenuStudent from './student';
+import MenuLecturer from './lecturer';
 import MenuCandidate from './candidate';
 import MenuRectorat from './rectorat';
 import MenuGuest from './guest';
@@ -113,6 +114,9 @@ export default function DynamicMenu() {
                     </Match>
                     <Match when={activeRoleSignal() === 'student'}>
                         <MenuStudent />
+                    </Match>
+                    <Match when={activeRoleSignal() === 'lecturer'}>
+                        <MenuLecturer />
                     </Match>
                     <Match when={activeRoleSignal() === 'candidate'}>
                         <MenuCandidate />

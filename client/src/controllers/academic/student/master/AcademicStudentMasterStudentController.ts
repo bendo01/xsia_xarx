@@ -1,201 +1,169 @@
-import { getStorageItem, setStorageItem } from "../../../../lib/storage";
-import { AcademicStudentMasterStudent, ModelPagination, StudentDataObject } from "../../../../models/academic/student/master/Student";
-import { AcademicStudentMasterStudentValidate } from "../../../../models/academic/student/master/Student";
-import type { PersonMasterIndividual } from "../../../../models/person/master/Individual";
+import { getStorageItem, setStorageItem } from '~/lib/storage';
+import { AcademicStudentMasterStudent, ModelPagination, StudentDataObject } from '~/models/academic/student/master/Student';
+import { AcademicStudentMasterStudentValidate } from '~/models/academic/student/master/Student';
+import type { PersonMasterIndividual } from '~/models/person/master/Individual';
 
-const server_api_url = import.meta.env.VITE_API_SERVER_URL ?? "http://localhost:5150/api/";
+const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
+
+const getHeaders = (): Record<string, string> => {
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+    };
+    if (typeof window !== 'undefined') {
+        const token = getStorageItem('token');
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+    }
+    return headers;
+};
+
+export interface StudentMasterItem {
+    id: string;
+    code: string;
+    name: string;
+    selection_type_id: string;
+    registered: string;
+    individual_id: string;
+    status_id: string;
+    unit_id: string;
+    academic_year_id: string;
+    registration_id: string;
+    nisn?: string | null;
+    resign_status_id: string;
+    concentration_id: string;
+    curriculum_id: string;
+    class_code_id: string;
+    transfer_code?: string | null;
+    transfer_unit_id: string;
+    id_mahasiswa?: string | null;
+    id_registrasi_mahasiswa?: string | null;
+    finance_fee?: number;
+    finance_id?: string | null;
+    created_at?: string;
+    updated_at?: string;
+    // Enhanced UI
+    unit_name?: string;
+    status_name?: string;
+    selection_type_name?: string;
+    curriculum_name?: string;
+    academic_year_name?: string;
+}
+
+export async function listStudents(queryParams?: {
+    page?: number;
+    page_size?: number;
+    name?: string;
+    code?: string;
+}): Promise<{
+    data: StudentMasterItem[];
+    total: number;
+    page: number;
+    page_size: number;
+    total_pages: number;
+}> {
+    try {
+        const params = new URLSearchParams();
+        if (queryParams?.page) params.set('page', String(queryParams.page));
+        if (queryParams?.page_size) params.set('page_size', String(queryParams.page_size));
+        if (queryParams?.name) params.set('name', queryParams.name);
+        if (queryParams?.code) params.set('code', queryParams.code);
+
+        const res = await fetch(`${getBaseUrl()}/academic/student/master/students?${params.toString()}`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+
+        const json = await res.json();
+        return {
+            data: json.data || [],
+            total: json.total || (json.data ? json.data.length : 0),
+            page: json.page || 1,
+            page_size: json.page_size || 10,
+            total_pages: json.total_pages || 1,
+        };
+    } catch (err) {
+        console.warn('Error fetching student master list:', err);
+        return {
+            data: [],
+            total: 0,
+            page: 1,
+            page_size: 10,
+            total_pages: 0,
+        };
+    }
+}
+
+export async function getStudentById(id: string): Promise<StudentMasterItem | null> {
+    if (!id || id === '00000000-0000-0000-0000-000000000000') return null;
+    try {
+        const res = await fetch(`${getBaseUrl()}/academic/student/master/students/${id}`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+        if (!res.ok) return null;
+        return await res.json();
+    } catch (err) {
+        console.warn(`Error fetching student ${id}:`, err);
+        return null;
+    }
+}
 
 export async function academicStudentMasterStudent(id: string): Promise<StudentDataObject | null> {
     try {
-        const response = await fetch(`${server_api_url}academic/student/master/students/${id}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                Authorization: `Bearer ${getStorageItem("token")}`,
-            },
+        const response = await fetch(`${getBaseUrl()}/academic/student/master/students/${id}`, {
+            method: 'GET',
+            headers: getHeaders(),
         });
         const data = await response.json();
-
         if (!response.ok) {
-            console.error("Pengambilan Data Mahasiswa Gagal", data);
+            console.error('Pengambilan Data Mahasiswa Gagal', data);
             return null;
         }
-        setStorageItem("student", JSON.stringify(data));
-
+        setStorageItem('student', JSON.stringify(data));
         return data;
     } catch (error) {
-        console.error("Gagal terhubung ke server", error);
+        console.error('Gagal terhubung ke server', error);
         return null;
     }
 }
 
 export async function academicStudentMasterStudentShow(id: string): Promise<StudentDataObject | null> {
-    try {
-        const response = await fetch(`${server_api_url}academic/student/master/students/${id}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                Authorization: `Bearer ${getStorageItem("token")}`,
-            },
-        });
-        const data = await response.json();
-
-        if (!response.ok) {
-            console.error("Pengambilan Data Mahasiswa Gagal", data);
-            return null;
-        }
-
-        return data;
-    } catch (error) {
-        console.error("Gagal terhubung ke server", error);
-        return null;
-    }
+    return academicStudentMasterStudent(id);
 }
 
 export async function academicStudentMasterStudentValidate(id: string): Promise<AcademicStudentMasterStudentValidate | null> {
     try {
-        const response = await fetch(`${server_api_url}academic/student/master/students/student_validation/${id}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                Authorization: `Bearer ${getStorageItem("token")}`,
-            },
+        const response = await fetch(`${getBaseUrl()}/academic/student/master/students/student_validation/${id}`, {
+            method: 'GET',
+            headers: getHeaders(),
         });
         const data = await response.json();
-
         if (!response.ok) {
-            console.error("Pengambilan Data Mahasiswa Gagal", data);
             return null;
         }
-        setStorageItem("student", JSON.stringify(data));
-
+        setStorageItem('student', JSON.stringify(data));
         return data;
     } catch (error) {
-        console.error("Gagal terhubung ke server", error);
         return null;
     }
 }
 
-
-export async function academicStudentMasterStudentIndexInstitution(institution_id: string, paginationData: {
-    search?: string;
-    sort_by?: string;
-    column?: string;
-    sort_dir?: string;
-    page: number;
-    per_page: number;
-}): Promise<{
-    code: number;
-    message: string | ModelPagination; // Use ModelPagination which contains student data list
-}> {
+export async function listStudyUnits(): Promise<any[]> {
     try {
-        const response = await fetch(`${server_api_url}academic/student/master/students/index_institution/${institution_id}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                Authorization: `Bearer ${getStorageItem("token")}`,
-            },
-            body: JSON.stringify(paginationData),
+        const res = await fetch(`${getBaseUrl()}/institution/master/units`, {
+            method: 'GET',
+            headers: getHeaders(),
         });
-        const data = await response.json();
-
-        if (!response.ok) {
-            console.error("Gagal mengambil data mahasiswa", data);
-            return {
-                code: response.status,
-                message: data.message || "Gagal mengambil data mahasiswa",
-            };
-        }
-
-        return {
-            code: 200,
-            message: data,
-        };
-    } catch (error) {
-        console.error("Gagal terhubung ke server", error);
-        return {
-            code: 500,
-            message: "Gagal terhubung ke server",
-        };
-    }
-}
-
-export async function updateStudentFinance(student_id: string, finance_id: string): Promise<{
-    code: number;
-    message: string;
-}> {
-
-    try {
-        const response = await fetch(`${server_api_url}academic/student/master/students/update_finance`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                Authorization: `Bearer ${getStorageItem("token")}`,
-            },
-            body: JSON.stringify({
-                student_id,
-                finance_id
-            })
-        });
-        const data = await response.json();
-
-        if (!response.ok) {
-            return {
-                code: response.status || 500,
-                message: "Gagal Mengupdate Data Keuangan Mahasiswa"
-            };
-        }
-
-        return {
-            code: 200,
-            message: "Data Keuangan Mahasiswa Berhasil Diupdate"
-        };
-    } catch (error) {
-        return {
-            code: 500,
-            message: "Internal server error"
-        };
-    }
-}
-
-export async function studentCreateGuardian(student_id: string, relative_type_id: string, data: PersonMasterIndividual) {
-    try {
-        // biome-ignore lint/correctness/noUnusedVariables: <explanation>
-        const { id: _, ...payload } = data;
-        const response = await fetch(`${server_api_url}person/master/individuals/store/student/${student_id}/relative_type/${relative_type_id}`, {
-            method: "POST", // HTTP method
-            headers: {
-                "Content-Type": "application/json", // Specify the data format
-                Accept: "application/json",
-                Authorization: `Bearer ${getStorageItem("token")}`,
-            },
-            body: JSON.stringify(payload), // Send form data as JSON
-        });
-        const responseData = await response.json();
-
-        if (!response.ok) {
-            return {
-                code: responseData.code || response.status,
-                message: responseData.message || "Failed to create guardian",
-                errors: responseData.errors
-            }
-        }
-
-        return {
-            code: responseData.code || 200,
-            message: responseData.message || "Guardian created successfully",
-            data: responseData.data
-        };
-
-    } catch (error) {
-        return {
-            code: 500,
-            message: "Gagal terhubung ke server"
-        };
+        if (!res.ok) return [];
+        const json = await res.json();
+        return json.data || [];
+    } catch {
+        return [];
     }
 }

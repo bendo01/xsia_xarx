@@ -33,6 +33,9 @@ export function normalizeRoleName(rawRole: string | null | undefined): string {
     if (lower === 'student' || lower === 'mahasiswa' || lower === 'mhs') {
         return 'student';
     }
+    if (lower === 'lecturer' || lower === 'dosen' || lower === 'pengajar' || lower === 'instructor' || lower === 'faculty') {
+        return 'lecturer';
+    }
     if (lower === 'candidate' || lower === 'calon_mahasiswa' || lower === 'camaba' || lower === 'pmb' || lower === 'applicant') {
         return 'candidate';
     }
@@ -54,6 +57,8 @@ export function getRoleDisplayName(roleName: string): string {
             return 'Course & Department';
         case 'student':
             return 'Student';
+        case 'lecturer':
+            return 'Lecturer';
         case 'candidate':
             return 'Candidate / PMB';
         case 'rectorat':
@@ -71,17 +76,19 @@ export function getDashboardPathForRole(roleName: string): string {
     const norm = normalizeRoleName(roleName);
     switch (norm) {
         case 'administrator':
-            return '/dashboard/administrator';
+            return '/administrator/person/master/individual';
         case 'course_department':
-            return '/dashboard/course_department';
+            return '/course-department/academic/course/master/course';
         case 'student':
-            return '/dashboard/student';
+            return '/student/person/master/individual/show';
+        case 'lecturer':
+            return '/lecturer/academic/campaign/activity';
         case 'candidate':
-            return '/dashboard/candidate';
+            return '/candidate/academic/candidate/master/candidate';
         case 'rectorat':
             return '/dashboard/rectorat';
         default:
-            return '/dashboard/user';
+            return '/student/person/master/individual/show';
     }
 }
 
