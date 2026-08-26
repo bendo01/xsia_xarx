@@ -4,6 +4,7 @@ use sea_orm::DatabaseConnection;
 pub mod example;
 pub mod route_list;
 pub mod sync_permissions;
+pub mod utilities;
 
 #[async_trait]
 pub trait Task: Send + Sync {
@@ -22,6 +23,7 @@ pub fn get_tasks() -> Vec<Box<dyn Task>> {
         Box::new(example::ExampleTask),
         Box::new(sync_permissions::SyncPermissionsTask),
         Box::new(route_list::RouteListTask),
+        Box::new(utilities::hash_password::HashPasswordTask),
     ]
 }
 
@@ -30,7 +32,10 @@ pub async fn run_task(name: Option<String>, args: &[String], db: &DatabaseConnec
     
     if let Some(task_name) = name {
         for task in &tasks {
-            if task.name() == task_name {
+            if task.name() == task_name 
+                || task.name().replace(':', "_") == task_name 
+                || task.name().replace('_', ":") == task_name 
+            {
                 println!("Running task: {}", task.name());
                 return task.run(db, args).await;
             }
