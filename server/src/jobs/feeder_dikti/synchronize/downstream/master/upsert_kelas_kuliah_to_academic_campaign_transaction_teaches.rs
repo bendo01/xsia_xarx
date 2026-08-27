@@ -217,7 +217,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
 
     // 7. Get Staff (Specific Position Type)
     let position_type_id = uuid::Uuid::parse_str("b3ad82b8-520b-4b77-8cca-b487bf77a91c")
-        .map_err(|e| format!("Invalid UUID for position type: {}", e)))?;
+        .map_err(|e| format!("Invalid UUID for position type: {}", e).into())?;
 
     let staff = staffes::Entity::find()
         .filter(staffes::Column::UnitId.eq(unit.id))
@@ -252,7 +252,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             id: Set(new_id),
             activity_id: Set(activity.id),
             decree_date: Set(decree_date),
-            decree_number: Set("-".into(),
+            decree_number: Set("-".to_string()),
             staff_id: Set(Some(staff_id)),
             created_at: Set(Some(chrono::Utc::now().naive_utc())),
             updated_at: Set(Some(chrono::Utc::now().naive_utc())),

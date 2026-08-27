@@ -144,7 +144,7 @@ impl Worker {
             .ok_or_else(|| "Missing id_dosen".into())?;
 
         let id_dosen = uuid::Uuid::parse_str(&id_dosen_str)
-            .map_err(|e| format!("Invalid UUID for id_dosen: {}", e)))?;
+            .map_err(|e| format!("Invalid UUID for id_dosen: {}", e).into())?;
 
         // Start transaction
         let sync_time = Local::now().naive_local();
@@ -152,7 +152,7 @@ impl Worker {
         // Check if record exists
         let existing = biodata_dosen::Entity::find()
             .filter(biodata_dosen::Column::DeletedAt.is_null())
-            .filter(biodata_dosen::Column::IdDosen.eq(id_dosen.into())
+            .filter(biodata_dosen::Column::IdDosen.eq(id_dosen.to_string()))
             .one(txn)
             .await?;
 

@@ -153,7 +153,9 @@ impl Worker {
 }
 
 impl UpsertIndividual {
-    async fn upsert(&self, db: &DatabaseConnection, model: FeederMasterBiodataDosen::Model) -> Result<PersonMasterIndividual::Model, Box<dyn std::error::Error + Send + Sync>> {
+    async fn upsert(&self, db: &DatabaseConnection,
+        model: FeederMasterBiodataDosen::Model,
+    ) -> Result<PersonMasterIndividual::Model, Box<dyn std::error::Error + Send + Sync>> {
                 let data = model.clone();
 
         let nik = match &data.nik {
@@ -305,7 +307,11 @@ impl UpsertIndividual {
 }
 
 impl UpsertLecturer {
-    async fn upsert(&self, db: &DatabaseConnection, individual: PersonMasterIndividual::Model, dosen: FeederMasterDosen::Model, id_dosen: Uuid) -> Result<AcademicLecturerMasterLecturer::Model, Box<dyn std::error::Error + Send + Sync>> {
+    async fn upsert(&self, db: &DatabaseConnection,
+        individual: PersonMasterIndividual::Model,
+        dosen: FeederMasterDosen::Model,
+        id_dosen: Uuid,
+    ) -> Result<AcademicLecturerMasterLecturer::Model, Box<dyn std::error::Error + Send + Sync>> {
         
         // find status based on nama_status_aktif
         let status_name = dosen
@@ -332,7 +338,7 @@ impl UpsertLecturer {
                 return Err(format!(
                     "Status not found for Name: {}",
                     status_name
-                )));
+                ).into());
             }
         };
 
@@ -362,7 +368,7 @@ impl UpsertLecturer {
             .nidn
             .clone()
             .or(dosen.nip.clone())
-            .unwrap_or_else(|| "UNKNOWN".into();
+            .unwrap_or_else(|| "UNKNOWN".to_string());
 
         // Determine Name
         let lecturer_name = dosen
