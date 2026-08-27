@@ -11,6 +11,7 @@ import {
   currentUserSignal,
   activeRoleSignal,
   isAuthenticatedSignal,
+  isAuthenticated,
   setActiveRole,
   processLoginSuccess,
 } from "./authStore";
@@ -95,6 +96,7 @@ describe("Auth Store & Role Engine (White-Box Unit Tests)", () => {
 
   describe("Auth State Signals & Storage synchronization", () => {
     it("initializes in logged-out guest state", () => {
+      expect(isAuthenticated()).toBe(false);
       expect(isAuthenticatedSignal()).toBe(false);
       expect(currentUserSignal()).toBeNull();
     });
@@ -117,6 +119,7 @@ describe("Auth Store & Role Engine (White-Box Unit Tests)", () => {
       setStorageItem("user", JSON.stringify(mockLoginResponse.user));
       await processLoginSuccess(mockLoginResponse);
 
+      expect(isAuthenticated()).toBe(true);
       expect(isAuthenticatedSignal()).toBe(true);
       expect(currentUserSignal()?.name).toBe("Dr. Jane Doe");
       expect(activeRoleSignal()).toBe("lecturer");

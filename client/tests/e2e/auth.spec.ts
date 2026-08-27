@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Authentication Flow (Black-Box E2E Tests)", () => {
   test("renders login page and all interactive controls", async ({ page }) => {
-    await page.goto("/administrator/authentification/login");
+    await page.goto("/authentification/login");
 
     // Check header and branding titles
     await expect(page.locator("h1")).toContainText("Macro Workspace");
@@ -20,7 +20,7 @@ test.describe("Authentication Flow (Black-Box E2E Tests)", () => {
   });
 
   test("interacts with form inputs and toggles remember checkbox", async ({ page }) => {
-    await page.goto("/administrator/authentification/login");
+    await page.goto("/authentification/login");
 
     const emailInput = page.locator('input[type="email"]');
     const passwordInput = page.locator('input[type="password"]');
@@ -40,21 +40,15 @@ test.describe("Authentication Flow (Black-Box E2E Tests)", () => {
     expect(await rememberCheckbox.isChecked()).toBe(false);
   });
 
-  test("links from landing page to authentication routes", async ({ page }) => {
+  test("redirects unauthenticated visitor from root to login", async ({ page }) => {
     await page.goto("/");
-
-    const jwtLink = page.getByRole("link", { name: /Standard Sign In \(JWT\)/i });
-    await expect(jwtLink).toBeVisible();
-    const href = await jwtLink.getAttribute("href");
-    expect(href).toBe("/administrator/authentification/login");
-
-    // Navigate to destination and verify Macro Workspace login portal
-    await page.goto(href!);
+    await page.waitForURL("/authentification/login");
+    await expect(page).toHaveURL("/authentification/login");
     await expect(page.locator("h1")).toContainText("Macro Workspace");
   });
 
   test("renders session login page with security controls", async ({ page }) => {
-    await page.goto("/administrator/authentification/login_with_session");
+    await page.goto("/authentification/login_with_session");
 
     await expect(page.locator("h1")).toBeVisible();
     await expect(page.locator('input[type="email"]')).toBeVisible();

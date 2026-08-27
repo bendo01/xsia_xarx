@@ -22,53 +22,7 @@ export default function StudentAdviserIndexPage() {
                 listDecrees(),
             ]);
 
-            // Enrich counsellors if list from server is returned
-            let items = cRes.data || [];
-            if (items.length === 0) {
-                // Generate enriched realistic items if db table is initialized
-                items = [
-                    {
-                        id: '1',
-                        decree_id: 'dec-1',
-                        student_id: 'std-1',
-                        lecturer_id: 'lec-1',
-                        lecturer_name: 'Prof. Dr. Ir. Bambang Hermanto, M.Sc.',
-                        lecturer_nidn: '0415087501',
-                        lecturer_email: 'bambang.hermanto@campus.ac.id',
-                        decree_number: 'SK/REK/2024/0892',
-                        decree_date: '2024-08-15',
-                        role_type: 'Academic Advisor (PA)',
-                        notes: 'Study plan review, credit approval, and academic progress monitoring.',
-                    },
-                    {
-                        id: '2',
-                        decree_id: 'dec-2',
-                        student_id: 'std-1',
-                        lecturer_id: 'lec-2',
-                        lecturer_name: 'Dr. Sarah Nurhaliza, S.T., M.Kom.',
-                        lecturer_nidn: '0422038902',
-                        lecturer_email: 'sarah.nurhaliza@campus.ac.id',
-                        decree_number: 'SK/DEK/2024/0411',
-                        decree_date: '2024-09-01',
-                        role_type: 'Thesis Supervisor',
-                        notes: 'Undergraduate thesis proposal formulation and manuscript advising.',
-                    },
-                ];
-            } else {
-                // Enrich server items with names and decree references
-                items = items.map((it, idx) => ({
-                    ...it,
-                    lecturer_name: it.lecturer_name || (idx === 0 ? 'Prof. Dr. Ir. Bambang Hermanto, M.Sc.' : 'Dr. Sarah Nurhaliza, S.T., M.Kom.'),
-                    lecturer_nidn: it.lecturer_nidn || (idx === 0 ? '0415087501' : '0422038902'),
-                    lecturer_email: it.lecturer_email || 'advisor@campus.ac.id',
-                    decree_number: it.decree_number || 'SK/REK/2024/0892',
-                    decree_date: it.decree_date || '2024-08-15',
-                    role_type: idx === 0 ? 'Academic Advisor (PA)' : 'Thesis Supervisor',
-                    notes: idx === 0 ? 'Academic progress and semester course registration guidance.' : 'Thesis research and milestone consultations.',
-                }));
-            }
-
-            setCounsellors(items);
+            setCounsellors(cRes.data || []);
             setDecrees(dRes || []);
         } catch (err) {
             console.error('Error loading adviser records:', err);
@@ -203,10 +157,10 @@ export default function StudentAdviserIndexPage() {
                                                 </div>
                                                 <div>
                                                     <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                                        {adv.lecturer_name}
+                                                        {adv.lecturer_name || '-'}
                                                     </h3>
                                                     <p class="text-xs text-neutral-500 dark:text-neutral-400 font-mono">
-                                                        NIDN: {adv.lecturer_nidn}
+                                                        NIDN: {adv.lecturer_nidn || '-'}
                                                     </p>
                                                 </div>
                                             </div>
@@ -220,20 +174,20 @@ export default function StudentAdviserIndexPage() {
                                         <div class="p-3.5 rounded-2xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60 space-y-2 text-xs">
                                             <div class="flex justify-between">
                                                 <span class="text-neutral-400 font-mono">Assignment Decree:</span>
-                                                <span class="font-bold text-neutral-800 dark:text-neutral-200 font-mono">{adv.decree_number}</span>
+                                                <span class="font-bold text-neutral-800 dark:text-neutral-200 font-mono">{adv.decree_number || '-'}</span>
                                             </div>
                                             <div class="flex justify-between">
                                                 <span class="text-neutral-400 font-mono">Decree Date:</span>
-                                                <span class="font-bold text-neutral-800 dark:text-neutral-200">{adv.decree_date}</span>
+                                                <span class="font-bold text-neutral-800 dark:text-neutral-200">{adv.decree_date || '-'}</span>
                                             </div>
                                             <div class="flex justify-between">
                                                 <span class="text-neutral-400 font-mono">Email:</span>
-                                                <span class="font-bold text-blue-600 dark:text-blue-400">{adv.lecturer_email}</span>
+                                                <span class="font-bold text-blue-600 dark:text-blue-400">{adv.lecturer_email || '-'}</span>
                                             </div>
                                         </div>
 
                                         <p class="text-xs text-neutral-600 dark:text-neutral-300 leading-relaxed">
-                                            {adv.notes}
+                                            {adv.notes || ''}
                                         </p>
                                     </div>
 

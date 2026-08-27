@@ -36,179 +36,23 @@ export default function StudentCourseEnrollmentPage() {
         try {
             // 1. Determine active semester activity
             const actList = await listStudentActivities({ page: 1, page_size: 5 });
-            let currentAct = actList.data?.find(a => !a.is_lock) || actList.data?.[0] || null;
-            if (!currentAct) {
-                currentAct = {
-                    id: (searchParams.activity_id as string) || 'act-2024-1',
-                    name: '2024/2025 Ganjil (Semester 1)',
-                    cumulative_index: 3.85,
-                    grand_cumulative_index: 3.85,
-                    total_credit: 21,
-                    grand_total_credit: 21,
-                    student_id: 'std-1',
-                    unit_activity_id: 'unit-act-1',
-                    status_id: 'active',
-                    is_lock: false,
-                    semester_name: '2024/2025 Ganjil',
-                };
+            let currentAct: StudentActivityItem | null = null;
+            if (searchParams.activity_id && actList.data) {
+                currentAct = actList.data.find(a => a.id === searchParams.activity_id) || null;
+            }
+            if (!currentAct && actList.data) {
+                currentAct = actList.data.find(a => !a.is_lock) || actList.data[0] || null;
             }
             setActiveActivity(currentAct);
 
-            // 2. Fetch teach offerings from academic.campaign.transaction.teach
-            const [teachRes, courseMasterList, detailRes] = await Promise.all([
+            // 2. Fetch teach offerings from academic.campaign.transaction.teach and student detail activities
+            const [teachRes, detailRes] = await Promise.all([
                 listTeaches({ page: 1, page_size: 50 }),
-                listCourses(),
-                listDetailActivities({ page: 1, page_size: 50, activity_id: currentAct.id }),
+                currentAct ? listDetailActivities({ page: 1, page_size: 50, activity_id: currentAct.id }) : Promise.resolve({ data: [] }),
             ]);
 
-            // Enrich teach items
-            let teachItems = teachRes.data || [];
-            if (teachItems.length === 0) {
-                // Realistic catalog if server table has no active semester seeds
-                teachItems = [
-                    {
-                        id: 'teach-101',
-                        class_code_id: 'cls-a',
-                        course_id: 'c-101',
-                        teach_decree_id: 'dec-1',
-                        course_code: 'IF201',
-                        course_name: 'Object-Oriented Programming (Java/Rust)',
-                        credits: 4,
-                        class_name: 'Kelas A',
-                        lecturer_name: 'Prof. Dr. Ir. Bambang Hermanto, M.Sc.',
-                        schedule_time: 'Senin, 08:00 - 11:30',
-                        room_name: 'Lab Pemrograman 301',
-                        enrolled_count: 32,
-                        max_member: 40,
-                    },
-                    {
-                        id: 'teach-102',
-                        class_code_id: 'cls-b',
-                        course_id: 'c-102',
-                        teach_decree_id: 'dec-1',
-                        course_code: 'IF202',
-                        course_name: 'Web Applications & Cloud Architecture',
-                        credits: 3,
-                        class_name: 'Kelas B',
-                        lecturer_name: 'Dr. Sarah Nurhaliza, S.T., M.Kom.',
-                        schedule_time: 'Selasa, 10:00 - 12:30',
-                        room_name: 'Ruang Teori 204',
-                        enrolled_count: 28,
-                        max_member: 35,
-                    },
-                    {
-                        id: 'teach-103',
-                        class_code_id: 'cls-a',
-                        course_id: 'c-103',
-                        teach_decree_id: 'dec-2',
-                        course_code: 'IF203',
-                        course_name: 'Artificial Intelligence & Neural Nets',
-                        credits: 3,
-                        class_name: 'Kelas A',
-                        lecturer_name: 'Dr. Hendra Wijaya, M.Kom.',
-                        schedule_time: 'Rabu, 13:00 - 15:30',
-                        room_name: 'Lab AI & Data 402',
-                        enrolled_count: 35,
-                        max_member: 40,
-                    },
-                    {
-                        id: 'teach-104',
-                        class_code_id: 'cls-c',
-                        course_id: 'c-104',
-                        teach_decree_id: 'dec-2',
-                        course_code: 'IF204',
-                        course_name: 'Computer Networks & Distributed Systems',
-                        credits: 4,
-                        class_name: 'Kelas C',
-                        lecturer_name: 'Ir. Ahmad Fauzi, M.T.',
-                        schedule_time: 'Kamis, 08:00 - 11:30',
-                        room_name: 'Lab Jaringan 201',
-                        enrolled_count: 25,
-                        max_member: 30,
-                    },
-                    {
-                        id: 'teach-105',
-                        class_code_id: 'cls-a',
-                        course_id: 'c-105',
-                        teach_decree_id: 'dec-3',
-                        course_code: 'IF205',
-                        course_name: 'Cybersecurity & Cryptography',
-                        credits: 3,
-                        class_name: 'Kelas A',
-                        lecturer_name: 'Dr. Rina Oktaviani, M.Cs.',
-                        schedule_time: 'Jumat, 08:00 - 10:30',
-                        room_name: 'Ruang Teori 105',
-                        enrolled_count: 22,
-                        max_member: 35,
-                    },
-                    {
-                        id: 'teach-106',
-                        class_code_id: 'cls-b',
-                        course_id: 'c-106',
-                        teach_decree_id: 'dec-3',
-                        course_code: 'IF206',
-                        course_name: 'Human-Computer Interaction & UX',
-                        credits: 3,
-                        class_name: 'Kelas B',
-                        lecturer_name: 'Indra Gunawan, S.Kom., M.T.I.',
-                        schedule_time: 'Jumat, 13:30 - 16:00',
-                        room_name: 'Studio Desain 302',
-                        enrolled_count: 30,
-                        max_member: 35,
-                    },
-                ];
-            } else {
-                teachItems = teachItems.map((t, idx) => ({
-                    ...t,
-                    course_code: t.course_code || `IF20${idx + 1}`,
-                    course_name: t.name || t.course_name || `Course Module ${idx + 1}`,
-                    credits: t.credits || 3,
-                    class_name: t.class_name || `Class ${(idx % 3) + 1}`,
-                    lecturer_name: t.lecturer_name || 'Dr. Hendra Wijaya, M.Kom.',
-                    schedule_time: t.schedule_time || 'Senin, 08:00 - 10:30',
-                    room_name: t.room_name || 'Ruang Kuliah 201',
-                    enrolled_count: t.enrolled_count || 24,
-                    max_member: t.max_member || 40,
-                }));
-            }
-
-            setAvailableTeaches(teachItems);
-
-            // 3. Set enrolled courses
-            let enrolled = detailRes.data || [];
-            if (enrolled.length === 0) {
-                enrolled = [
-                    {
-                        id: 'det-101',
-                        course_id: 'c-101',
-                        teach_id: 'teach-101',
-                        activity_id: currentAct.id,
-                        course_code: 'IF201',
-                        course_name: 'Object-Oriented Programming (Java/Rust)',
-                        credit: 4,
-                        lecturer_name: 'Prof. Dr. Ir. Bambang Hermanto, M.Sc.',
-                    },
-                    {
-                        id: 'det-102',
-                        course_id: 'c-102',
-                        teach_id: 'teach-102',
-                        activity_id: currentAct.id,
-                        course_code: 'IF202',
-                        course_name: 'Web Applications & Cloud Architecture',
-                        credit: 3,
-                        lecturer_name: 'Dr. Sarah Nurhaliza, S.T., M.Kom.',
-                    },
-                ];
-            } else {
-                enrolled = enrolled.map((e, idx) => ({
-                    ...e,
-                    course_code: e.course_code || `IF20${idx + 1}`,
-                    course_name: e.course_name || e.name || `Enrolled Course ${idx + 1}`,
-                    credit: e.credit || 3,
-                }));
-            }
-
-            setEnrolledCourses(enrolled);
+            setAvailableTeaches(teachRes.data || []);
+            setEnrolledCourses(detailRes.data || []);
         } catch (err) {
             console.error('Error fetching enrollment data:', err);
             toast.danger('Failed to load course offerings from server.');
@@ -246,23 +90,27 @@ export default function StudentCourseEnrollmentPage() {
                 name: teach.course_name || teach.name || 'Enrolled Course',
                 credit: courseCredit,
                 course_id: teach.course_id,
-                activity_id: activeActivity()?.id || 'act-1',
+                activity_id: activeActivity()?.id || '',
                 teach_id: teach.id,
             });
 
-            const newEnrolledItem: DetailActivityItem = {
-                id: res.data?.id || `det-${Date.now()}`,
-                course_id: teach.course_id,
-                teach_id: teach.id,
-                activity_id: activeActivity()?.id || 'act-1',
-                course_code: teach.course_code || 'IF200',
-                course_name: teach.course_name || teach.name || 'Enrolled Course',
-                credit: courseCredit,
-                lecturer_name: teach.lecturer_name,
-            };
+            if (!res.is_error && res.data) {
+                const newEnrolledItem: DetailActivityItem = {
+                    id: res.data.id,
+                    course_id: teach.course_id,
+                    teach_id: teach.id,
+                    activity_id: activeActivity()?.id || '',
+                    course_code: teach.course_code || '',
+                    course_name: teach.course_name || teach.name || 'Enrolled Course',
+                    credit: courseCredit,
+                    lecturer_name: teach.lecturer_name,
+                };
 
-            setEnrolledCourses(prev => [...prev, newEnrolledItem]);
-            toast.success(`Successfully enrolled in ${teach.course_name}! (+${courseCredit} SKS)`);
+                setEnrolledCourses(prev => [...prev, newEnrolledItem]);
+                toast.success(`Successfully enrolled in ${teach.course_name || teach.name || 'course'}! (+${courseCredit} SKS)`);
+            } else {
+                toast.danger('Failed to enroll class.');
+            }
         } catch (err) {
             toast.danger('Failed to enroll class.');
         } finally {
@@ -320,7 +168,7 @@ export default function StudentCourseEnrollmentPage() {
                                 Semester Course Enrollment (KRS)
                             </h1>
                             <p class="text-neutral-300 text-xs sm:text-sm max-w-xl">
-                                Select and enroll into class offerings from the academic catalog for {activeActivity()?.name || '2024/2025 Ganjil'}.
+                                Select and enroll into class offerings from the academic catalog for {activeActivity()?.name || 'Academic Semester'}.
                             </p>
                         </div>
 
@@ -387,17 +235,17 @@ export default function StudentCourseEnrollmentPage() {
                                     <div class="space-y-1 min-w-0">
                                         <div class="flex items-center gap-2">
                                             <span class="font-mono text-[10px] font-bold text-blue-600 dark:text-blue-400">
-                                                {enr.course_code}
+                                                {enr.course_code || '-'}
                                             </span>
                                             <span class="px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 text-[10px] font-mono font-bold">
-                                                {enr.credit} SKS
+                                                {enr.credit ?? 0} SKS
                                             </span>
                                         </div>
                                         <h4 class="text-xs font-bold text-neutral-900 dark:text-white truncate">
-                                            {enr.course_name}
+                                            {enr.course_name || '-'}
                                         </h4>
                                         <p class="text-[10px] text-neutral-400 truncate">
-                                            {enr.lecturer_name || 'Assigned Faculty'}
+                                            {enr.lecturer_name || '-'}
                                         </p>
                                     </div>
 
@@ -490,29 +338,29 @@ export default function StudentCourseEnrollmentPage() {
                                             return (
                                                 <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900/30 transition-colors">
                                                     <td class="py-3.5 px-4 font-mono font-bold text-blue-600 dark:text-blue-400">
-                                                        {t.course_code || 'IF201'}
+                                                        {t.course_code || '-'}
                                                     </td>
                                                     <td class="py-3.5 px-4 font-bold text-neutral-900 dark:text-white">
-                                                        {t.course_name || t.name}
+                                                        {t.course_name || t.name || '-'}
                                                     </td>
                                                     <td class="py-3.5 px-4 text-center font-mono font-bold">
                                                         <span class="px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
-                                                            {t.credits || 3} SKS
+                                                            {t.credits ?? 0} SKS
                                                         </span>
                                                     </td>
                                                     <td class="py-3.5 px-4 text-center font-mono font-semibold text-neutral-700 dark:text-neutral-300">
-                                                        {t.class_name || 'Kelas A'}
+                                                        {t.class_name || '-'}
                                                     </td>
                                                     <td class="py-3.5 px-4 text-neutral-600 dark:text-neutral-300">
-                                                        {t.lecturer_name || 'Dr. Hendra Wijaya, M.Kom.'}
+                                                        {t.lecturer_name || '-'}
                                                     </td>
                                                     <td class="py-3.5 px-4 text-neutral-500 dark:text-neutral-400 text-[11px]">
-                                                        <span class="block text-neutral-800 dark:text-neutral-200">{t.schedule_time || 'Senin, 08:00 - 10:30'}</span>
-                                                        <span class="text-[10px] font-mono">{t.room_name || 'Ruang 201'}</span>
+                                                        <span class="block text-neutral-800 dark:text-neutral-200">{t.schedule_time || '-'}</span>
+                                                        <span class="text-[10px] font-mono">{t.room_name || '-'}</span>
                                                     </td>
                                                     <td class="py-3.5 px-4 text-center font-mono">
                                                         <span class={`font-bold ${isFull() ? 'text-red-500' : 'text-neutral-700 dark:text-neutral-300'}`}>
-                                                            {t.enrolled_count || 30} / {t.max_member || 40}
+                                                            {t.enrolled_count ?? 0} / {t.max_member ?? '-'}
                                                         </span>
                                                     </td>
                                                     <td class="py-3.5 px-4 text-end">

@@ -163,6 +163,11 @@ export function getActiveRole(): string {
     return 'student';
 }
 
+export function isAuthenticated(): boolean {
+    const token = getStorageItem('token');
+    return Boolean(token && token !== 'undefined' && token !== '');
+}
+
 // Reactive Signals for global SolidJS state
 // Initial state is SSR-safe default values so the initial client hydration pass matches the server DOM.
 // Client auth state from localStorage/sessionStorage is synchronized on client mount via refreshAuthState().

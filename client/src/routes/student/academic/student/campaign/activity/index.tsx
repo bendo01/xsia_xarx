@@ -24,56 +24,7 @@ export default function StudentCampaignActivityIndexPage() {
                 name: searchQuery() || undefined,
             });
 
-            let items = res.data || [];
-            if (items.length === 0) {
-                // Realistic data fallback if db table is empty
-                items = [
-                    {
-                        id: 'act-2024-1',
-                        name: '2024/2025 Ganjil (Semester 1)',
-                        cumulative_index: 3.85,
-                        grand_cumulative_index: 3.85,
-                        total_credit: 21,
-                        grand_total_credit: 21,
-                        student_id: 'std-1',
-                        unit_activity_id: 'unit-act-1',
-                        status_id: 'active',
-                        is_lock: false,
-                        semester_name: '2024/2025 Ganjil',
-                        status_name: 'Active Registration (KRS Open)',
-                    },
-                    {
-                        id: 'act-2023-2',
-                        name: '2023/2024 Genap (Semester 2)',
-                        cumulative_index: 3.78,
-                        grand_cumulative_index: 3.81,
-                        total_credit: 20,
-                        grand_total_credit: 41,
-                        student_id: 'std-1',
-                        unit_activity_id: 'unit-act-2',
-                        status_id: 'completed',
-                        is_lock: true,
-                        semester_name: '2023/2024 Genap',
-                        status_name: 'Completed (KHS Published)',
-                    },
-                    {
-                        id: 'act-2023-1',
-                        name: '2023/2024 Ganjil (Semester 1)',
-                        cumulative_index: 3.84,
-                        grand_cumulative_index: 3.84,
-                        total_credit: 21,
-                        grand_total_credit: 21,
-                        student_id: 'std-1',
-                        unit_activity_id: 'unit-act-3',
-                        status_id: 'completed',
-                        is_lock: true,
-                        semester_name: '2023/2024 Ganjil',
-                        status_name: 'Completed (KHS Published)',
-                    },
-                ];
-            }
-
-            setActivities(items);
+            setActivities(res.data || []);
             setTotalPages(res.total_pages || 1);
         } catch (err) {
             console.error('Error fetching student activities:', err);
@@ -94,8 +45,8 @@ export default function StudentCampaignActivityIndexPage() {
     };
 
     const latestAct = () => activities()[0] || null;
-    const currentIPK = () => (latestAct()?.grand_cumulative_index || latestAct()?.cumulative_index || 3.85).toFixed(2);
-    const totalSKS = () => latestAct()?.grand_total_credit || latestAct()?.total_credit || 21;
+    const currentIPK = () => (latestAct()?.grand_cumulative_index ?? latestAct()?.cumulative_index ?? 0).toFixed(2);
+    const totalSKS = () => latestAct()?.grand_total_credit ?? latestAct()?.total_credit ?? 0;
 
     return (
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
@@ -193,26 +144,26 @@ export default function StudentCampaignActivityIndexPage() {
                                                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/></svg>
                                                         </div>
                                                         <div>
-                                                            <span class="block">{act.name || '2024/2025 Ganjil'}</span>
-                                                            <span class="text-[10px] text-neutral-400 font-mono">ID: {act.id.slice(0, 8)}...</span>
+                                                            <span class="block">{act.name || 'Academic Semester'}</span>
+                                                            <span class="text-[10px] text-neutral-400 font-mono">ID: {act.id ? `${act.id.slice(0, 8)}...` : '-'}</span>
                                                         </div>
                                                     </div>
                                                 </td>
 
                                                 <td class="py-4 px-4 text-center font-mono font-bold">
-                                                    {act.total_credit || 20}
+                                                    {act.total_credit ?? 0}
                                                 </td>
 
                                                 <td class="py-4 px-4 text-center font-mono font-bold">
-                                                    {act.grand_total_credit || act.total_credit || 20}
+                                                    {act.grand_total_credit ?? act.total_credit ?? 0}
                                                 </td>
 
                                                 <td class="py-4 px-4 text-center font-mono font-extrabold text-blue-600 dark:text-blue-400">
-                                                    {(act.cumulative_index || 3.75).toFixed(2)}
+                                                    {(act.cumulative_index ?? 0).toFixed(2)}
                                                 </td>
 
                                                 <td class="py-4 px-4 text-center font-mono font-extrabold text-indigo-600 dark:text-indigo-400">
-                                                    {(act.grand_cumulative_index || act.cumulative_index || 3.75).toFixed(2)}
+                                                    {(act.grand_cumulative_index ?? act.cumulative_index ?? 0).toFixed(2)}
                                                 </td>
 
                                                 <td class="py-4 px-4 text-center">

@@ -30,114 +30,19 @@ export default function StudentMasterIndexPage() {
                 listStudyUnits(),
             ]);
 
-            let items = res.data || [];
-            if (items.length === 0) {
-                // Enrich realistic sample records if database is fresh
-                items = [
-                    {
-                        id: 'std-1',
-                        code: '202401001',
-                        name: 'Ahmad Fauzan Pratama',
-                        selection_type_id: 'sel-1',
-                        registered: '2024-08-01',
-                        individual_id: 'ind-1',
-                        status_id: 'stat-1',
-                        unit_id: 'unit-1',
-                        academic_year_id: 'ay-2024',
-                        registration_id: 'reg-001',
-                        nisn: '0054321987',
-                        resign_status_id: 'res-none',
-                        concentration_id: 'conc-1',
-                        curriculum_id: 'curr-2024',
-                        class_code_id: 'cls-1',
-                        transfer_unit_id: 'tr-none',
-                        unit_name: 'Informatics Engineering (S1)',
-                        status_name: 'Active / Registered',
-                        selection_type_name: 'SNBP (National Merit Selection)',
-                        academic_year_name: '2024/2025',
-                    },
-                    {
-                        id: 'std-2',
-                        code: '202401002',
-                        name: 'Nabila Syakira Putri',
-                        selection_type_id: 'sel-2',
-                        registered: '2024-08-01',
-                        individual_id: 'ind-2',
-                        status_id: 'stat-1',
-                        unit_id: 'unit-1',
-                        academic_year_id: 'ay-2024',
-                        registration_id: 'reg-002',
-                        nisn: '0054321988',
-                        resign_status_id: 'res-none',
-                        concentration_id: 'conc-1',
-                        curriculum_id: 'curr-2024',
-                        class_code_id: 'cls-1',
-                        transfer_unit_id: 'tr-none',
-                        unit_name: 'Informatics Engineering (S1)',
-                        status_name: 'Active / Registered',
-                        selection_type_name: 'SNBT (Computer-Based Test)',
-                        academic_year_name: '2024/2025',
-                    },
-                    {
-                        id: 'std-3',
-                        code: '202401003',
-                        name: 'Rian Hidayat Santoso',
-                        selection_type_id: 'sel-3',
-                        registered: '2024-08-05',
-                        individual_id: 'ind-3',
-                        status_id: 'stat-1',
-                        unit_id: 'unit-2',
-                        academic_year_id: 'ay-2024',
-                        registration_id: 'reg-003',
-                        nisn: '0054321989',
-                        resign_status_id: 'res-none',
-                        concentration_id: 'conc-2',
-                        curriculum_id: 'curr-2024',
-                        class_code_id: 'cls-2',
-                        transfer_unit_id: 'tr-none',
-                        unit_name: 'Information Systems (S1)',
-                        status_name: 'Active / Registered',
-                        selection_type_name: 'Mandiri (Institutional Exam)',
-                        academic_year_name: '2024/2025',
-                    },
-                    {
-                        id: 'std-4',
-                        code: '202401004',
-                        name: 'Dewi Lestari Kusuma',
-                        selection_type_id: 'sel-1',
-                        registered: '2024-08-01',
-                        individual_id: 'ind-4',
-                        status_id: 'stat-1',
-                        unit_id: 'unit-3',
-                        academic_year_id: 'ay-2024',
-                        registration_id: 'reg-004',
-                        nisn: '0054321990',
-                        resign_status_id: 'res-none',
-                        concentration_id: 'conc-3',
-                        curriculum_id: 'curr-2024',
-                        class_code_id: 'cls-3',
-                        transfer_unit_id: 'tr-none',
-                        unit_name: 'Data Science (S1)',
-                        status_name: 'Active / Registered',
-                        selection_type_name: 'SNBP (National Merit Selection)',
-                        academic_year_name: '2024/2025',
-                    },
-                ];
-            } else {
-                // Enrich server items
-                items = items.map((item, idx) => ({
-                    ...item,
-                    unit_name: item.unit_name || 'Informatics Engineering (S1)',
-                    status_name: item.status_name || 'Active / Registered',
-                    selection_type_name: item.selection_type_name || (idx % 2 === 0 ? 'SNBP Merit Path' : 'SNBT CBT Exam'),
-                    academic_year_name: item.academic_year_name || '2024/2025',
-                }));
-            }
+            const rawItems = res.data || [];
+            const items = rawItems.map((item) => ({
+                ...item,
+                unit_name: item.unit_name || '-',
+                status_name: item.status_name || 'Active',
+                selection_type_name: item.selection_type_name || '-',
+                academic_year_name: item.academic_year_name || '-',
+            }));
 
             setStudents(items);
             setUnits(uRes || []);
             setTotalPages(res.total_pages || 1);
-            setTotalItems(res.total || items.length);
+            setTotalItems(res.total ?? items.length);
         } catch (err) {
             console.error('Error fetching students:', err);
             toast.danger('Failed to load admitted student directory from server.');
@@ -232,8 +137,20 @@ export default function StudentMasterIndexPage() {
                                 <tbody class="divide-y divide-neutral-100 dark:divide-neutral-700/50">
                                     <For each={students()} fallback={
                                         <tr>
-                                            <td colspan="7" class="py-12 text-center text-neutral-400">
-                                                No admitted student records found.
+                                            <td colspan="7" class="py-16 text-center">
+                                                <div class="flex flex-col items-center justify-center gap-2 text-neutral-400 dark:text-neutral-500">
+                                                    <svg class="size-10 text-neutral-300 dark:text-neutral-600 mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                                                    </svg>
+                                                    <p class="text-sm font-semibold text-neutral-600 dark:text-neutral-300">
+                                                        No admitted student records found
+                                                    </p>
+                                                    <p class="text-xs text-neutral-400 max-w-sm">
+                                                        {searchQuery() 
+                                                            ? `No students matching "${searchQuery()}" were found. Try searching with a different query.` 
+                                                            : 'There are currently no admitted student records in the database.'}
+                                                    </p>
+                                                </div>
                                             </td>
                                         </tr>
                                     }>

@@ -31,7 +31,7 @@ export async function PersonMasterIndividualControllerIndex(pagination: TypePagi
             queryParams.set("search", pagination.search);
         }
         if (pagination.name) queryParams.set("name", pagination.name);
-        if (pagination.code !== undefined && pagination.code !== null && !isNaN(pagination.code)) {
+        if (pagination.code !== undefined && pagination.code !== null && String(pagination.code).trim() !== "") {
             queryParams.set("code", String(pagination.code));
         }
         if (pagination.sort_by) queryParams.set("sort_by", pagination.sort_by);
