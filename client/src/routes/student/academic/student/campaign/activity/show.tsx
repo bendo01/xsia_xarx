@@ -2,16 +2,20 @@ import { createSignal, onMount, createEffect, For, Show } from 'solid-js';
 import { useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
-import { 
-    getStudentActivityById, 
-    StudentActivityItem 
+import {
+    getStudentActivityById,
+    StudentActivityItem
 } from '~/controllers/academic/student/campaign/AcademicStudentCampaignActivityController';
-import { 
-    listDetailActivities, 
-    deleteDetailActivity, 
-    DetailActivityItem 
+import {
+    listDetailActivities,
+    deleteDetailActivity,
+    DetailActivityItem
 } from '~/controllers/academic/student/campaign/AcademicStudentCampaignDetailActivityController';
-import { listCourses } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachController';
+import {
+    listCourses,
+    listTeaches
+} from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachController';
+import { listGrades } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionGradeController';
 
 export default function StudentCampaignActivityShowPage() {
     const [searchParams] = useSearchParams();
@@ -24,26 +28,65 @@ export default function StudentCampaignActivityShowPage() {
         setIsLoading(true);
         try {
             const activityId = (searchParams.id as string) || '';
-            
-            // 1. Fetch student activity header
-            if (activityId) {
-                const act = await getStudentActivityById(activityId);
-                if (act) {
-                    setActivity(act);
-                }
+            if (!activityId) {
+                setActivity(null);
+                setDetailCourses([]);
+                setIsLoading(false);
+                return;
             }
 
-            // 2. Fetch enrolled courses (detail activities)
-            const detailRes = await listDetailActivities({
-                page: 1,
-                page_size: 50,
-                activity_id: activityId || undefined,
+            // 1. Fetch student activity, detail activities, courses, teaches, and grades directly from server
+            const [actRes, detailRes, coursesList, teachesRes, gradesRes] = await Promise.all([
+                getStudentActivityById(activityId),
+                listDetailActivities({
+                    page: 1,
+                    page_size: 100,
+                    activity_id: activityId,
+                }),
+                listCourses(),
+                listTeaches({ page: 1, page_size: 100 }),
+                listGrades({ page: 1, page_size: 100 }),
+            ]);
+
+            if (actRes) {
+                setActivity(actRes);
+            }
+
+            const rawDetails = (detailRes.data || []).filter(
+                (d) => d.activity_id === activityId || (actRes && d.activity_id === actRes.id)
+            );
+            const courses = coursesList || [];
+            const teaches = teachesRes.data || [];
+            const grades = gradesRes.data || [];
+
+            // 2. Enrich detail activities with server relation entities (or fallbacks)
+            const enrichedDetails: DetailActivityItem[] = rawDetails.map((detail) => {
+                const course = detail.course || courses.find((c: any) => c.id === detail.course_id);
+                const teach = detail.teach || teaches.find((t: any) => t.id === detail.teach_id || t.course_id === detail.course_id);
+                const grade = detail.grade || grades.find((g: any) => g.id === detail.grade_id);
+                
+                const lecturerList: string[] = detail.teach_lecturers && detail.teach_lecturers.length > 0
+                    ? detail.teach_lecturers.map((tl: any) => tl.name).filter(Boolean)
+                    : (teach?.lecturer_name ? [teach.lecturer_name] : (detail.lecturer_name ? [detail.lecturer_name] : []));
+
+                const lecturerName = lecturerList.length > 0 ? lecturerList.join(', ') : '-';
+
+                return {
+                    ...detail,
+                    course_code: course?.code || detail.course_code || '-',
+                    course_name: course?.name || detail.name || detail.course_name || '-',
+                    credit: detail.credit ?? course?.total_credit ?? course?.credit ?? 0,
+                    lecturer_name: lecturerName,
+                    lecturers: lecturerList,
+                    grade_letter: grade?.alphabet_code || detail.grade_letter || (detail.mark != null ? '-' : '-'),
+                    grade_point: grade?.grade ?? detail.grade_point ?? null,
+                };
             });
 
-            setDetailCourses(detailRes.data || []);
+            setDetailCourses(enrichedDetails);
         } catch (err) {
             console.error('Error fetching activity details:', err);
-            toast.danger('Failed to load semester course details.');
+            toast.danger('Failed to load semester course details from server.');
         } finally {
             setIsLoading(false);
         }
@@ -68,9 +111,9 @@ export default function StudentCampaignActivityShowPage() {
             const res = await deleteDetailActivity(courseId);
             if (!res.is_error) {
                 toast.success(`Dropped ${courseName} from your KRS.`);
-                setDetailCourses(prev => prev.filter(c => c.id !== courseId));
+                await fetchActivityDetail();
             } else {
-                toast.danger('Failed to drop course.');
+                toast.danger(res.message || 'Failed to drop course.');
             }
         } catch (err) {
             toast.danger('Failed to drop course.');
@@ -83,12 +126,28 @@ export default function StudentCampaignActivityShowPage() {
         window.print();
     };
 
-    const totalEnrolledSKS = () => detailCourses().reduce((acc, c) => acc + (c.credit || 0), 0);
+    const totalEnrolledSKS = () => {
+        if (activity()?.total_credit != null && activity()!.total_credit > 0) {
+            return activity()!.total_credit;
+        }
+        return detailCourses().reduce((acc, c) => acc + (c.credit || 0), 0);
+    };
+
     const calculatedIPS = () => {
+        if (activity()?.cumulative_index != null) {
+            return activity()!.cumulative_index.toFixed(2);
+        }
         if (detailCourses().length === 0) return '0.00';
         const totalPoints = detailCourses().reduce((acc, c) => acc + ((c.grade_point ?? 0) * (c.credit ?? 0)), 0);
         const totalCredits = totalEnrolledSKS();
         return totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : '0.00';
+    };
+
+    const calculatedIPK = () => {
+        if (activity()?.grand_cumulative_index != null) {
+            return activity()!.grand_cumulative_index.toFixed(2);
+        }
+        return calculatedIPS();
     };
 
     return (
@@ -125,14 +184,14 @@ export default function StudentCampaignActivityShowPage() {
                                 onClick={handlePrintKRS}
                                 class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
                             >
-                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
+                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect width="12" height="8" x="6" y="14" /></svg>
                                 <span>Print KRS / KHS</span>
                             </button>
                             <A
                                 href={`/student/academic/student/campaign/activity/enrollment?activity_id=${activity()?.id || ''}`}
                                 class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5"
                             >
-                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>
                                 <span>Add / Enroll Courses</span>
                             </A>
                         </div>
@@ -153,11 +212,8 @@ export default function StudentCampaignActivityShowPage() {
                             <span class="text-xl font-black text-indigo-600 dark:text-indigo-400">{calculatedIPS()}</span>
                         </div>
                         <div class="p-3.5 rounded-2xl bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
-                            <span class="text-[10px] text-neutral-400 font-mono uppercase block">KRS Status</span>
-                            <span class={`inline-flex items-center gap-1.5 text-xs font-bold mt-1 ${activity()?.is_lock ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
-                                <span class={`size-2 rounded-full ${activity()?.is_lock ? 'bg-amber-500' : 'bg-emerald-500'}`}></span>
-                                {activity()?.is_lock ? 'Locked / Finalized' : 'Active / KRS Open'}
-                            </span>
+                            <span class="text-[10px] text-neutral-400 font-mono uppercase block">Cumulative GPA (IPK)</span>
+                            <span class="text-xl font-black text-emerald-600 dark:text-emerald-400">{calculatedIPK()}</span>
                         </div>
                     </div>
                 </div>
@@ -215,9 +271,23 @@ export default function StudentCampaignActivityShowPage() {
                                                 <td class="py-3.5 px-4 text-center font-mono font-bold">
                                                     {c.credit ?? 0}
                                                 </td>
-                                                <td class="py-3.5 px-4 text-neutral-600 dark:text-neutral-300">
-                                                    {c.lecturer_name || '-'}
-                                                </td>
+                                                <td class="py-3.5 px-4 text-neutral-600 dark:text-neutral-300 text-xs">
+                                                     <Show
+                                                         when={c.lecturers && c.lecturers.length > 1}
+                                                         fallback={<span>{c.lecturers?.[0] || c.lecturer_name || '-'}</span>}
+                                                     >
+                                                         <div class="flex flex-col gap-1">
+                                                             <For each={c.lecturers}>
+                                                                 {(lecturer) => (
+                                                                     <span class="inline-flex items-center gap-1.5 leading-snug">
+                                                                         <span class="size-1 rounded-full bg-neutral-400 dark:bg-neutral-500 shrink-0"></span>
+                                                                         <span>{lecturer}</span>
+                                                                     </span>
+                                                                 )}
+                                                             </For>
+                                                         </div>
+                                                     </Show>
+                                                 </td>
                                                 <td class="py-3.5 px-4 text-center font-mono font-bold">
                                                     {c.mark != null ? c.mark.toFixed(1) : '-'}
                                                 </td>
@@ -230,18 +300,35 @@ export default function StudentCampaignActivityShowPage() {
                                                     {c.grade_point != null ? c.grade_point.toFixed(2) : '-'}
                                                 </td>
                                                 <td class="py-3.5 px-4 text-center">
-                                                    <span class={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${c.is_lock ? 'bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'}`}>
-                                                        {c.is_lock ? 'Locked' : 'Enrolled'}
-                                                    </span>
+                                                    <Show
+                                                        when={c.is_lock}
+                                                        fallback={
+                                                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold text-red-800 dark:text-red-300">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                                                </svg>
+                                                            </span>
+                                                        }
+                                                    >
+                                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                                                            </svg>
+                                                        </span>
+                                                    </Show>
                                                 </td>
                                                 <td class="py-3.5 px-4 text-end">
                                                     <button
                                                         type="button"
                                                         onClick={() => handleDropCourse(c.id, c.course_name || c.name || 'Course')}
-                                                        disabled={isDropping() === c.id}
-                                                        class="px-2.5 py-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50"
+                                                        disabled={Boolean(c.is_lock) || isDropping() === c.id}
+                                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                        title={c.is_lock ? 'Course is locked' : 'Drop course'}
                                                     >
-                                                        {isDropping() === c.id ? 'Dropping...' : 'Drop'}
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                                        </svg>
+                                                        <span>{isDropping() === c.id ? 'Dropping...' : 'Drop'}</span>
                                                     </button>
                                                 </td>
                                             </tr>

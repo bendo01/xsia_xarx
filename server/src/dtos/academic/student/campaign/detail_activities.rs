@@ -4,12 +4,18 @@ use uuid::Uuid;
 use validator::Validate;
 use chrono::NaiveDateTime;
 
+use crate::dtos::academic::campaign::transaction::grades::GradeResponse;
+use crate::dtos::academic::course::master::courses::CourseResponse;
+use crate::dtos::academic::campaign::transaction::teaches::TeachResponse;
+use crate::dtos::academic::campaign::transaction::teach_lecturers::TeachLecturerResponse;
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
 pub struct DetailActivityQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
     pub name: Option<String>,
+    pub activity_id: Option<Uuid>,
+    pub course_id: Option<Uuid>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
@@ -32,6 +38,10 @@ pub struct DetailActivityResponse {
     pub name: Option<String>,
     pub feeder_grade_id: Option<Uuid>,
     pub curiculum_detail_sequence: Option<i32>,
+    pub grade: Option<GradeResponse>,
+    pub course: Option<CourseResponse>,
+    pub teach: Option<TeachResponse>,
+    pub teach_lecturers: Option<Vec<TeachLecturerResponse>>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]

@@ -34,14 +34,21 @@ export interface DetailActivityItem {
     course_name?: string;
     course_code?: string;
     lecturer_name?: string;
+    lecturers?: string[];
     grade_letter?: string;
     grade_point?: number;
+    // Nested relation data from backend
+    grade?: any;
+    course?: any;
+    teach?: any;
+    teach_lecturers?: any[];
 }
 
 export async function listDetailActivities(queryParams?: {
     page?: number;
     page_size?: number;
     activity_id?: string;
+    course_id?: string;
     name?: string;
 }): Promise<{
     data: DetailActivityItem[];
@@ -55,6 +62,8 @@ export async function listDetailActivities(queryParams?: {
         if (queryParams?.page) params.set('page', String(queryParams.page));
         if (queryParams?.page_size) params.set('page_size', String(queryParams.page_size));
         if (queryParams?.name) params.set('name', queryParams.name);
+        if (queryParams?.activity_id) params.set('activity_id', queryParams.activity_id);
+        if (queryParams?.course_id) params.set('course_id', queryParams.course_id);
 
         const res = await fetch(`${getBaseUrl()}/academic/student/campaign/detail-activities?${params.toString()}`, {
             method: 'GET',

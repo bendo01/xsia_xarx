@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
@@ -11,8 +12,230 @@ use crate::dtos::academic::student::campaign::detail_activities::{
     CreateDetailActivityRequest, DetailActivityQuery, DetailActivityResponse, PaginatedDetailActivityResponse,
     UpdateDetailActivityRequest,
 };
+use crate::dtos::academic::campaign::transaction::grades::GradeResponse;
+use crate::dtos::academic::course::master::courses::CourseResponse;
+use crate::dtos::academic::campaign::transaction::teaches::TeachResponse;
+use crate::dtos::academic::campaign::transaction::teach_lecturers::TeachLecturerResponse;
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::student::campaign::detail_activities as entity_mod;
+
+async fn load_relations_for_detail_activities(
+    db: &DatabaseConnection,
+    items: &[entity_mod::Model],
+) -> Result<(
+    HashMap<Uuid, GradeResponse>,
+    HashMap<Uuid, CourseResponse>,
+    HashMap<Uuid, TeachResponse>,
+    HashMap<Uuid, Vec<TeachLecturerResponse>>,
+), StatusError> {
+    let grade_ids: Vec<Uuid> = items.iter().filter_map(|i| i.grade_id).collect();
+    let course_ids: Vec<Uuid> = items.iter().map(|i| i.course_id).collect();
+    let teach_ids: Vec<Uuid> = items.iter().filter_map(|i| i.teach_id).collect();
+
+    let grades_map: HashMap<Uuid, GradeResponse> = if grade_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::academic::campaign::transaction::grades::Entity::find()
+            .filter(crate::models::academic::campaign::transaction::grades::Column::Id.is_in(grade_ids))
+            .filter(crate::models::academic::campaign::transaction::grades::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|g| (g.id, GradeResponse {
+                id: g.id,
+                code: g.code,
+                alphabet_code: g.alphabet_code,
+                name: g.name,
+                grade: g.grade,
+                minimum: g.minimum,
+                maximum: g.maximum,
+                start_date: g.start_date,
+                end_date: g.end_date,
+                unit_id: g.unit_id,
+                created_at: g.created_at,
+                updated_at: g.updated_at,
+                deleted_at: g.deleted_at,
+                sync_at: g.sync_at,
+                created_by: g.created_by,
+                updated_by: g.updated_by,
+                feeder_id: g.feeder_id,
+            }))
+            .collect()
+    };
+
+    let courses_map: HashMap<Uuid, CourseResponse> = if course_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::academic::course::master::courses::Entity::find()
+            .filter(crate::models::academic::course::master::courses::Column::Id.is_in(course_ids))
+            .filter(crate::models::academic::course::master::courses::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|c| (c.id, CourseResponse {
+                id: c.id,
+                code: c.code,
+                name: c.name,
+                implementation_method: c.implementation_method,
+                total_credit: c.total_credit,
+                lecture_credit: c.lecture_credit,
+                practice_credit: c.practice_credit,
+                field_practice_credit: c.field_practice_credit,
+                simulation_credit: c.simulation_credit,
+                has_unit: c.has_unit,
+                has_syllabus: c.has_syllabus,
+                has_material: c.has_material,
+                has_practice: c.has_practice,
+                has_dictation: c.has_dictation,
+                group_id: c.group_id,
+                variety_id: c.variety_id,
+                unit_id: c.unit_id,
+                competence_id: c.competence_id,
+                feeder_course_group_id: c.feeder_course_group_id,
+                feeder_course_type_id: c.feeder_course_type_id,
+                feeder_course_id: c.feeder_course_id,
+                start_date: c.start_date,
+                end_date: c.end_date,
+                created_at: c.created_at,
+                updated_at: c.updated_at,
+                deleted_at: c.deleted_at,
+                sync_at: c.sync_at,
+                created_by: c.created_by,
+                updated_by: c.updated_by,
+            }))
+            .collect()
+    };
+
+    let teaches_map: HashMap<Uuid, TeachResponse> = if teach_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::academic::campaign::transaction::teaches::Entity::find()
+            .filter(crate::models::academic::campaign::transaction::teaches::Column::Id.is_in(teach_ids.clone()))
+            .filter(crate::models::academic::campaign::transaction::teaches::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|t| (t.id, TeachResponse {
+                id: t.id,
+                name: t.name,
+                class_code_id: t.class_code_id,
+                course_id: t.course_id,
+                activity_id: t.activity_id,
+                description: t.description,
+                start_date: t.start_date,
+                end_date: t.end_date,
+                practice_start_date: t.practice_start_date,
+                practice_end_date: t.practice_end_date,
+                curriculum_detail_id: t.curriculum_detail_id,
+                teach_decree_id: t.teach_decree_id,
+                is_lecturer_credit_sum_problem: t.is_lecturer_credit_sum_problem,
+                is_lock: t.is_lock,
+                encounter_category_id: t.encounter_category_id,
+                scope_id: t.scope_id,
+                created_at: t.created_at,
+                updated_at: t.updated_at,
+                deleted_at: t.deleted_at,
+                sync_at: t.sync_at,
+                created_by: t.created_by,
+                updated_by: t.updated_by,
+                max_member: t.max_member,
+                feeder_id: t.feeder_id,
+            }))
+            .collect()
+    };
+
+    let teach_lecturers_map: HashMap<Uuid, Vec<TeachLecturerResponse>> = if teach_ids.is_empty() {
+        HashMap::new()
+    } else {
+        let lecturers = crate::models::academic::campaign::transaction::teach_lecturers::Entity::find()
+            .filter(crate::models::academic::campaign::transaction::teach_lecturers::Column::TeachId.is_in(teach_ids))
+            .filter(crate::models::academic::campaign::transaction::teach_lecturers::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        let lecturer_ids: Vec<Uuid> = lecturers.iter().map(|l| l.lecturer_id).collect();
+        let lecturers_map: HashMap<Uuid, String> = if lecturer_ids.is_empty() {
+            HashMap::new()
+        } else {
+            crate::models::academic::lecturer::master::lecturers::Entity::find()
+                .filter(crate::models::academic::lecturer::master::lecturers::Column::Id.is_in(lecturer_ids))
+                .filter(crate::models::academic::lecturer::master::lecturers::Column::DeletedAt.is_null())
+                .all(db)
+                .await
+                .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                .into_iter()
+                .filter_map(|l| l.name.map(|name| (l.id, name)))
+                .collect()
+        };
+
+        let mut map: HashMap<Uuid, Vec<TeachLecturerResponse>> = HashMap::new();
+        for item in lecturers {
+            let name = item.name.or_else(|| lecturers_map.get(&item.lecturer_id).cloned());
+            map.entry(item.teach_id).or_default().push(TeachLecturerResponse {
+                id: item.id,
+                name,
+                planning: item.planning,
+                realization: item.realization,
+                credit: item.credit,
+                is_lecturer_home_base: item.is_lecturer_home_base,
+                lecturer_id: item.lecturer_id,
+                teach_id: item.teach_id,
+                created_at: item.created_at,
+                updated_at: item.updated_at,
+                deleted_at: item.deleted_at,
+                sync_at: item.sync_at,
+                created_by: item.created_by,
+                updated_by: item.updated_by,
+                feeder_id: item.feeder_id,
+            });
+        }
+        map
+    };
+
+    Ok((grades_map, courses_map, teaches_map, teach_lecturers_map))
+}
+
+fn map_model_to_response(
+    item: entity_mod::Model,
+    grades_map: &HashMap<Uuid, GradeResponse>,
+    courses_map: &HashMap<Uuid, CourseResponse>,
+    teaches_map: &HashMap<Uuid, TeachResponse>,
+    teach_lecturers_map: &HashMap<Uuid, Vec<TeachLecturerResponse>>,
+) -> DetailActivityResponse {
+    let grade = item.grade_id.and_then(|gid| grades_map.get(&gid).cloned());
+    let course = courses_map.get(&item.course_id).cloned();
+    let teach = item.teach_id.and_then(|tid| teaches_map.get(&tid).cloned());
+    let teach_lecturers = item.teach_id.and_then(|tid| teach_lecturers_map.get(&tid).cloned());
+
+    DetailActivityResponse {
+        id: item.id,
+        mark: item.mark,
+        credit: item.credit,
+        grade_id: item.grade_id,
+        course_id: item.course_id,
+        activity_id: item.activity_id,
+        teach_id: item.teach_id,
+        is_lock: item.is_lock,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+        deleted_at: item.deleted_at,
+        sync_at: item.sync_at,
+        created_by: item.created_by,
+        updated_by: item.updated_by,
+        feeder_id: item.feeder_id,
+        name: item.name,
+        feeder_grade_id: item.feeder_grade_id,
+        curiculum_detail_sequence: item.curiculum_detail_sequence,
+        grade,
+        course,
+        teach,
+        teach_lecturers,
+    }
+}
 
 #[endpoint(tags("Academic - Student - Campaign - DetailActivity"), status_codes(200, 500))]
 pub async fn list_detail_activities(
@@ -32,6 +255,12 @@ pub async fn list_detail_activities(
     if let Some(ref name) = query.name {
         select = select.filter(entity_mod::Column::Name.contains(name));
     }
+    if let Some(activity_id) = query.activity_id {
+        select = select.filter(entity_mod::Column::ActivityId.eq(activity_id));
+    }
+    if let Some(course_id) = query.course_id {
+        select = select.filter(entity_mod::Column::CourseId.eq(course_id));
+    }
 
     let paginator = select
         .order_by_asc(entity_mod::Column::Name)
@@ -42,26 +271,11 @@ pub async fn list_detail_activities(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| DetailActivityResponse {
-            id: item.id,
-            mark: item.mark,
-            credit: item.credit,
-            grade_id: item.grade_id,
-            course_id: item.course_id,
-            activity_id: item.activity_id,
-            teach_id: item.teach_id,
-            is_lock: item.is_lock,
-            created_at: item.created_at,
-            updated_at: item.updated_at,
-            deleted_at: item.deleted_at,
-            sync_at: item.sync_at,
-            created_by: item.created_by,
-            updated_by: item.updated_by,
-            feeder_id: item.feeder_id,
-            name: item.name,
-            feeder_grade_id: item.feeder_grade_id,
-            curiculum_detail_sequence: item.curiculum_detail_sequence,
+    let (grades_map, courses_map, teaches_map, teach_lecturers_map) =
+        load_relations_for_detail_activities(db, &items).await?;
 
+    let data = items.into_iter().map(|item| {
+        map_model_to_response(item, &grades_map, &courses_map, &teaches_map, &teach_lecturers_map)
     }).collect();
 
     Ok(Json(PaginatedDetailActivityResponse {
@@ -92,28 +306,19 @@ pub async fn get_detail_activitie(
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
         .ok_or_else(|| StatusError::not_found().brief("DetailActivity not found"))?;
 
-    Ok(Json(DetailActivityResponse {
-            id: item.id,
-            mark: item.mark,
-            credit: item.credit,
-            grade_id: item.grade_id,
-            course_id: item.course_id,
-            activity_id: item.activity_id,
-            teach_id: item.teach_id,
-            is_lock: item.is_lock,
-            created_at: item.created_at,
-            updated_at: item.updated_at,
-            deleted_at: item.deleted_at,
-            sync_at: item.sync_at,
-            created_by: item.created_by,
-            updated_by: item.updated_by,
-            feeder_id: item.feeder_id,
-            name: item.name,
-            feeder_grade_id: item.feeder_grade_id,
-            curiculum_detail_sequence: item.curiculum_detail_sequence,
+    let (grades_map, courses_map, teaches_map, teach_lecturers_map) =
+        load_relations_for_detail_activities(db, std::slice::from_ref(&item)).await?;
 
-    }))
-}#[endpoint(tags("Academic - Student - Campaign - DetailActivity"), status_codes(200, 400, 500))]
+    Ok(Json(map_model_to_response(
+        item,
+        &grades_map,
+        &courses_map,
+        &teaches_map,
+        &teach_lecturers_map,
+    )))
+}
+
+#[endpoint(tags("Academic - Student - Campaign - DetailActivity"), status_codes(200, 400, 500))]
 pub async fn create_detail_activitie(
         req: &mut Request,
         depot: &mut Depot,
@@ -154,27 +359,16 @@ pub async fn create_detail_activitie(
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(DetailActivityResponse {
-            id: item.id,
-            mark: item.mark,
-            credit: item.credit,
-            grade_id: item.grade_id,
-            course_id: item.course_id,
-            activity_id: item.activity_id,
-            teach_id: item.teach_id,
-            is_lock: item.is_lock,
-            created_at: item.created_at,
-            updated_at: item.updated_at,
-            deleted_at: item.deleted_at,
-            sync_at: item.sync_at,
-            created_by: item.created_by,
-            updated_by: item.updated_by,
-            feeder_id: item.feeder_id,
-            name: item.name,
-            feeder_grade_id: item.feeder_grade_id,
-            curiculum_detail_sequence: item.curiculum_detail_sequence,
+        let (grades_map, courses_map, teaches_map, teach_lecturers_map) =
+            load_relations_for_detail_activities(db, std::slice::from_ref(&item)).await?;
 
-        }))
+        Ok(Json(map_model_to_response(
+            item,
+            &grades_map,
+            &courses_map,
+            &teaches_map,
+            &teach_lecturers_map,
+        )))
 }
 
 #[endpoint(tags("Academic - Student - Campaign - DetailActivity"), status_codes(200, 400, 404, 500))]
@@ -242,27 +436,16 @@ pub async fn update_detail_activitie(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(DetailActivityResponse {
-            id: item.id,
-            mark: item.mark,
-            credit: item.credit,
-            grade_id: item.grade_id,
-            course_id: item.course_id,
-            activity_id: item.activity_id,
-            teach_id: item.teach_id,
-            is_lock: item.is_lock,
-            created_at: item.created_at,
-            updated_at: item.updated_at,
-            deleted_at: item.deleted_at,
-            sync_at: item.sync_at,
-            created_by: item.created_by,
-            updated_by: item.updated_by,
-            feeder_id: item.feeder_id,
-            name: item.name,
-            feeder_grade_id: item.feeder_grade_id,
-            curiculum_detail_sequence: item.curiculum_detail_sequence,
+        let (grades_map, courses_map, teaches_map, teach_lecturers_map) =
+            load_relations_for_detail_activities(db, std::slice::from_ref(&item)).await?;
 
-        }))
+        Ok(Json(map_model_to_response(
+            item,
+            &grades_map,
+            &courses_map,
+            &teaches_map,
+            &teach_lecturers_map,
+        )))
 }
 #[endpoint(tags("Academic - Student - Campaign - DetailActivity"), status_codes(200, 400, 404, 500))]
 pub async fn delete_detail_activitie(
