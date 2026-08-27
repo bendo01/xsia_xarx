@@ -403,6 +403,7 @@ pub async fn get_individual(
             deleted_at: u.deleted_at,
             created_by: u.created_by,
             updated_by: u.updated_by,
+            roles: None,
         });
 
     let lecturer = item

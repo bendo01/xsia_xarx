@@ -55,6 +55,13 @@ pub fn router() -> Router {
                 .get(user::current_user)
         )
         .push(
+            Router::with_path("user/set_current_role/{role_id}")
+                .hoop(crate::middleware::auth::JwtAuth)
+                .get(user::set_current_role)
+                .post(user::set_current_role)
+                .put(user::set_current_role)
+        )
+        .push(
             Router::with_path("role")
                 .get_named("auth.role.list_role", role::list_role)
                 .post_named("auth.role.create_role", role::create_role)

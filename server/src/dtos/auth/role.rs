@@ -9,6 +9,8 @@ use chrono::NaiveDateTime;
 pub struct RoleQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
+    pub user_id: Option<Uuid>,
+    pub name: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]

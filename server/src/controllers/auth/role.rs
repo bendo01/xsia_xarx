@@ -27,7 +27,15 @@ pub async fn list_role(
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
-    let select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
+    let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
+
+    if let Some(user_id) = query.user_id {
+        select = select.filter(entity_mod::Column::UserId.eq(user_id));
+    }
+
+    if let Some(name) = query.name {
+        select = select.filter(entity_mod::Column::Name.contains(&name));
+    }
 
     let paginator = select
         .order_by_asc(entity_mod::Column::Id)

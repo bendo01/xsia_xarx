@@ -102,7 +102,7 @@ export default function DynamicMenu() {
 
             {/* Role Menu Render */}
             <div class="w-full">
-                <Switch fallback={<MenuAdministrator />}>
+                <Switch fallback={<MenuStudent />}>
                     <Match when={!isAuthenticatedSignal()}>
                         <MenuGuest />
                     </Match>

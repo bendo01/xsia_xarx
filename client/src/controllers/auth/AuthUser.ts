@@ -61,6 +61,9 @@ export async function LoginUser(credential: AuthLogin, isSession: boolean = fals
             if (data.user.email) setStorageItem("email", data.user.email, isSession);
             if (data.user.is_active !== undefined) setStorageItem("is_verified", String(data.user.is_active), isSession);
             if (data.user.current_role_id) setStorageItem("current_role", String(data.user.current_role_id), isSession);
+            if (data.user.roles && Array.isArray(data.user.roles)) {
+                setStorageItem("roles", JSON.stringify(data.user.roles), isSession);
+            }
         }
 
         return {
@@ -137,6 +140,9 @@ export async function LoginUserWithSession(credential: AuthLogin) {
             if (data.user.email) setStorageItem("email", data.user.email, true);
             if (data.user.is_active !== undefined) setStorageItem("is_verified", String(data.user.is_active), true);
             if (data.user.current_role_id) setStorageItem("current_role", String(data.user.current_role_id), true);
+            if (data.user.roles && Array.isArray(data.user.roles)) {
+                setStorageItem("roles", JSON.stringify(data.user.roles), true);
+            }
         }
 
         return {
@@ -155,9 +161,12 @@ export async function LoginUserWithSession(credential: AuthLogin) {
     }
 }
 
-export async function GetUserRoles() {
+export async function GetUserRoles(userId?: string) {
     try {
-        const response = await fetch(`${getBaseUrl()}/role`, {
+        const url = userId
+            ? `${getBaseUrl()}/role?user_id=${encodeURIComponent(userId)}`
+            : `${getBaseUrl()}/role`;
+        const response = await fetch(url, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -211,6 +220,9 @@ export async function GetCurrentUser() {
         if (data.name) setStorageItem("name", data.name);
         if (data.email) setStorageItem("email", data.email);
         if (data.current_role_id) setStorageItem("current_role", String(data.current_role_id));
+        if (data.roles && Array.isArray(data.roles)) {
+            setStorageItem("roles", JSON.stringify(data.roles));
+        }
 
         return {
             code: 200,
@@ -244,6 +256,9 @@ export async function ChangeUserRole(role_id: string) {
         }
         setStorageItem("current_user", JSON.stringify(data));
         if (data.current_role_id) setStorageItem("current_role", String(data.current_role_id));
+        if (data.roles && Array.isArray(data.roles)) {
+            setStorageItem("roles", JSON.stringify(data.roles));
+        }
         return {
             code: 200,
             message: "Ubah peran berhasil",

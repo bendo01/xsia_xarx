@@ -24,22 +24,22 @@ export interface StoredUser {
 export function normalizeRoleName(rawRole: string | null | undefined): string {
     if (!rawRole) return 'guest';
     const lower = rawRole.toLowerCase().trim().replace(/[-\s]+/g, '_');
-    if (lower === 'admin' || lower === 'administrator' || lower.includes('admin')) {
+    if (lower.includes('admin') || lower === 'administrator') {
         return 'administrator';
     }
-    if (lower === 'course_department' || lower === 'coursedepartment' || lower === 'department' || lower === 'prodi' || lower === 'jurusan' || lower === 'kajur' || lower === 'kaprodi') {
-        return 'course_department';
-    }
-    if (lower === 'student' || lower === 'mahasiswa' || lower === 'mhs') {
-        return 'student';
-    }
-    if (lower === 'lecturer' || lower === 'dosen' || lower === 'pengajar' || lower === 'instructor' || lower === 'faculty') {
-        return 'lecturer';
-    }
-    if (lower === 'candidate' || lower === 'calon_mahasiswa' || lower === 'camaba' || lower === 'pmb' || lower === 'applicant') {
+    if (lower.includes('kandidat') || lower.includes('candidate') || lower.includes('camaba') || lower.includes('pmb') || lower.includes('applicant') || lower.includes('calon_mahasiswa')) {
         return 'candidate';
     }
-    if (lower === 'rectorat' || lower === 'rektorat' || lower === 'rector' || lower === 'pimpinan') {
+    if (lower.includes('mahasiswa') || lower.includes('student') || lower.includes('mhs')) {
+        return 'student';
+    }
+    if (lower.includes('dosen') || lower.includes('lecturer') || lower.includes('pengajar') || lower.includes('instructor') || lower.includes('faculty')) {
+        return 'lecturer';
+    }
+    if (lower.includes('prodi') || lower.includes('jurusan') || lower.includes('kajur') || lower.includes('kaprodi') || lower.includes('department') || lower.includes('course') || lower.includes('baak')) {
+        return 'course_department';
+    }
+    if (lower.includes('rektor') || lower.includes('rector') || lower.includes('yayasan') || lower.includes('pimpinan')) {
         return 'rectorat';
     }
     if (lower === 'user' || lower === 'staff') {
@@ -142,7 +142,7 @@ export function getActiveRole(): string {
             return normalizeRoleName(found.name);
         }
         // If currentRole is a role name directly
-        if (['administrator', 'course_department', 'student', 'candidate', 'rectorat', 'user', 'admin'].includes(currentRole.toLowerCase())) {
+        if (['administrator', 'course_department', 'student', 'lecturer', 'candidate', 'rectorat', 'user', 'admin'].includes(normalizeRoleName(currentRole))) {
             return normalizeRoleName(currentRole);
         }
     }
@@ -153,12 +153,14 @@ export function getActiveRole(): string {
     const user = getStoredUser();
     if (user?.email) {
         const emailLower = user.email.toLowerCase();
-        if (emailLower.includes('admin')) return 'administrator';
-        if (emailLower.includes('dept') || emailLower.includes('prodi') || emailLower.includes('course')) return 'course_department';
-        if (emailLower.includes('student') || emailLower.includes('mhs')) return 'student';
-        if (emailLower.includes('candidate') || emailLower.includes('pmb')) return 'candidate';
+        if (emailLower.includes('admin') || emailLower.includes('superadmin')) return 'administrator';
+        if (emailLower.includes('dept') || emailLower.includes('prodi') || emailLower.includes('course') || emailLower.includes('jurusan')) return 'course_department';
+        if (emailLower.includes('lecturer') || emailLower.includes('dosen')) return 'lecturer';
+        if (emailLower.includes('student') || emailLower.includes('mhs') || emailLower.includes('mahasiswa')) return 'student';
+        if (emailLower.includes('candidate') || emailLower.includes('pmb') || emailLower.includes('camaba') || emailLower.includes('kandidat')) return 'candidate';
+        if (emailLower.includes('rector') || emailLower.includes('rektor') || emailLower.includes('yayasan')) return 'rectorat';
     }
-    return 'administrator';
+    return 'student';
 }
 
 // Reactive Signals for global SolidJS state
@@ -166,7 +168,7 @@ export function getActiveRole(): string {
 // Client auth state from localStorage/sessionStorage is synchronized on client mount via refreshAuthState().
 const [currentUserSignal, setCurrentUserSignal] = createSignal<StoredUser | null>(null);
 const [userRolesSignal, setUserRolesSignal] = createSignal<UserRoleItem[]>([]);
-const [activeRoleSignal, setActiveRoleSignal] = createSignal<string>('administrator');
+const [activeRoleSignal, setActiveRoleSignal] = createSignal<string>('student');
 const [isAuthenticatedSignal, setIsAuthenticatedSignal] = createSignal<boolean>(false);
 
 export {
@@ -214,17 +216,17 @@ export async function processLoginSuccess(loginResponse: any, isSession: boolean
     const user = loginResponse.user || {};
     let roles: UserRoleItem[] = [];
 
-    // 1. Check if roles were provided directly with user
-    if (Array.isArray(user.roles)) {
+    // 1. Check if roles were provided directly with user or loginResponse
+    if (Array.isArray(user.roles) && user.roles.length > 0) {
         roles = user.roles;
-    } else if (Array.isArray(loginResponse.roles)) {
+    } else if (Array.isArray(loginResponse.roles) && loginResponse.roles.length > 0) {
         roles = loginResponse.roles;
     }
 
     // 2. Fetch roles from API if not embedded
-    if (roles.length === 0) {
+    if (roles.length === 0 && user.id) {
         try {
-            const roleRes = await GetUserRoles();
+            const roleRes = await GetUserRoles(user.id);
             if (roleRes.code === 200 && roleRes.data) {
                 if (Array.isArray(roleRes.data)) {
                     roles = roleRes.data;
@@ -237,34 +239,33 @@ export async function processLoginSuccess(loginResponse: any, isSession: boolean
         }
     }
 
-    // 3. If roles are still empty, derive default roles based on user credentials/profile
+    // 3. Fallback only if NO roles found from backend (Least privilege: never assign administrator by default!)
     if (roles.length === 0) {
         const email = (user.email || '').toLowerCase();
-        if (email.includes('course') || email.includes('dept') || email.includes('prodi')) {
+        if (email.includes('admin') || email.includes('superadmin')) {
             roles = [
-                { id: '1', name: 'course_department' },
-                { id: '2', name: 'administrator' }
+                { id: '1', name: 'administrator' }
             ];
-        } else if (email.includes('student') || email.includes('mhs')) {
+        } else if (email.includes('course') || email.includes('dept') || email.includes('prodi') || email.includes('jurusan')) {
             roles = [
-                { id: '1', name: 'student' }
+                { id: '1', name: 'course_department' }
             ];
-        } else if (email.includes('candidate') || email.includes('pmb') || email.includes('camaba')) {
+        } else if (email.includes('lecturer') || email.includes('dosen')) {
+            roles = [
+                { id: '1', name: 'lecturer' }
+            ];
+        } else if (email.includes('candidate') || email.includes('pmb') || email.includes('camaba') || email.includes('kandidat')) {
             roles = [
                 { id: '1', name: 'candidate' }
             ];
-        } else if (email.includes('rector') || email.includes('rektor')) {
+        } else if (email.includes('rector') || email.includes('rektor') || email.includes('yayasan')) {
             roles = [
-                { id: '1', name: 'rectorat' },
-                { id: '2', name: 'administrator' }
+                { id: '1', name: 'rectorat' }
             ];
         } else {
-            // Default multi-role administrative capabilities
+            // Default to student for standard accounts (safe least-privilege)
             roles = [
-                { id: '1', name: 'administrator' },
-                { id: '2', name: 'course_department' },
-                { id: '3', name: 'student' },
-                { id: '4', name: 'candidate' }
+                { id: '1', name: 'student' }
             ];
         }
     }
@@ -272,19 +273,23 @@ export async function processLoginSuccess(loginResponse: any, isSession: boolean
     setStorageItem('roles', JSON.stringify(roles), isSession);
 
     // 4. Determine active role
-    let activeRole = 'administrator';
+    let activeRole = '';
+    let currentRoleId = '';
     if (user.current_role_id) {
         const found = roles.find(r => r.id === user.current_role_id);
         if (found) {
             activeRole = normalizeRoleName(found.name);
+            currentRoleId = found.id;
         }
     }
     if (!activeRole || activeRole === 'guest') {
-        activeRole = normalizeRoleName(roles[0]?.name || 'administrator');
+        const firstRole = roles[0];
+        activeRole = normalizeRoleName(firstRole?.name || 'student');
+        currentRoleId = firstRole?.id || activeRole;
     }
 
     setStorageItem('active_role', activeRole, isSession);
-    setStorageItem('current_role', roles[0]?.id || activeRole, isSession);
+    setStorageItem('current_role', currentRoleId, isSession);
 
     // 5. Update global reactive signals
     refreshAuthState();

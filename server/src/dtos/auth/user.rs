@@ -35,6 +35,8 @@ pub struct UserResponse {
     pub deleted_at: Option<NaiveDateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[serde(default)]
+    pub roles: Option<Vec<crate::dtos::auth::role::RoleResponse>>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]

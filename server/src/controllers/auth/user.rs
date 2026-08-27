@@ -14,6 +14,7 @@ use crate::dtos::auth::user::{
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::auth::user as entity_mod;
+use crate::models::auth::role as role_entity;
 use crate::config::jwt::{create_token, JwtConfig};
 use crate::jobs::email::EmailJob;
 use apalis_redis::RedisStorage;
@@ -25,6 +26,31 @@ use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
 use apalis::prelude::Storage;
 use chrono::Duration;
+
+pub async fn fetch_user_roles(db: &DatabaseConnection, user_id: Uuid) -> Vec<crate::dtos::auth::role::RoleResponse> {
+    let roles = role_entity::Entity::find()
+        .filter(role_entity::Column::UserId.eq(user_id))
+        .filter(role_entity::Column::DeletedAt.is_null())
+        .order_by_asc(role_entity::Column::CreatedAt)
+        .all(db)
+        .await
+        .unwrap_or_default();
+
+    roles.into_iter().map(|item| crate::dtos::auth::role::RoleResponse {
+        id: item.id,
+        name: item.name,
+        user_id: item.user_id,
+        position_type_id: item.position_type_id,
+        roleable_id: item.roleable_id,
+        roleable_type: item.roleable_type,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+        deleted_at: item.deleted_at,
+        sync_at: item.sync_at,
+        created_by: item.created_by,
+        updated_by: item.updated_by,
+    }).collect()
+}
 
 #[endpoint(tags("Auth -  - User"), status_codes(200, 500))]
 pub async fn list_user(
@@ -76,7 +102,7 @@ pub async fn list_user(
             deleted_at: item.deleted_at,
             created_by: item.created_by,
             updated_by: item.updated_by,
-
+            roles: None,
     }).collect();
 
     Ok(Json(PaginatedUserResponse {
@@ -107,6 +133,8 @@ pub async fn get_user(
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
         .ok_or_else(|| StatusError::not_found().brief("User not found"))?;
 
+    let user_roles = fetch_user_roles(db, item.id).await;
+
     Ok(Json(UserResponse {
             id: item.id,
             pid: item.pid,
@@ -129,7 +157,7 @@ pub async fn get_user(
             deleted_at: item.deleted_at,
             created_by: item.created_by,
             updated_by: item.updated_by,
-
+            roles: Some(user_roles),
     }))
 }#[endpoint(tags("Auth -  - User"), status_codes(200, 400, 500))]
 pub async fn create_user(
@@ -197,7 +225,7 @@ pub async fn create_user(
             deleted_at: item.deleted_at,
             created_by: item.created_by,
             updated_by: item.updated_by,
-
+            roles: None,
         }))
 }
 
@@ -300,7 +328,7 @@ pub async fn update_user(
             deleted_at: item.deleted_at,
             created_by: item.created_by,
             updated_by: item.updated_by,
-
+            roles: None,
         }))
 }
 #[endpoint(tags("Auth -  - User"), status_codes(200, 400, 404, 500))]
@@ -508,6 +536,12 @@ pub async fn login(
     let jwt_config = JwtConfig::from_env();
     let token = create_token(user.id, &jwt_config).map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
+    let user_roles = fetch_user_roles(db, user.id).await;
+    let mut current_role_id = user.current_role_id;
+    if current_role_id.is_none() && !user_roles.is_empty() {
+        current_role_id = Some(user_roles[0].id);
+    }
+
     let user_resp = UserResponse {
         id: user.id,
         pid: user.pid,
@@ -517,7 +551,7 @@ pub async fn login(
         name: user.name.clone(),
         individual_id: user.individual_id,
         is_active: user.is_active,
-        current_role_id: user.current_role_id,
+        current_role_id,
         reset_token: None,
         reset_sent_at: user.reset_sent_at,
         email_verification_token: None,
@@ -530,6 +564,7 @@ pub async fn login(
         deleted_at: user.deleted_at,
         created_by: user.created_by,
         updated_by: user.updated_by,
+        roles: Some(user_roles),
     };
 
     Ok(Json(LoginResponse {
@@ -582,6 +617,12 @@ pub async fn login_with_session(
         .build();
     res.add_cookie(cookie);
 
+    let user_roles = fetch_user_roles(db, user.id).await;
+    let mut current_role_id = user.current_role_id;
+    if current_role_id.is_none() && !user_roles.is_empty() {
+        current_role_id = Some(user_roles[0].id);
+    }
+
     let user_resp = UserResponse {
         id: user.id,
         pid: user.pid,
@@ -591,7 +632,7 @@ pub async fn login_with_session(
         name: user.name.clone(),
         individual_id: user.individual_id,
         is_active: user.is_active,
-        current_role_id: user.current_role_id,
+        current_role_id,
         reset_token: None,
         reset_sent_at: user.reset_sent_at,
         email_verification_token: None,
@@ -604,6 +645,7 @@ pub async fn login_with_session(
         deleted_at: user.deleted_at,
         created_by: user.created_by,
         updated_by: user.updated_by,
+        roles: Some(user_roles),
     };
 
     Ok(Json(SessionLoginResponse {
@@ -732,6 +774,8 @@ pub async fn current_user(
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
         .ok_or_else(|| StatusError::not_found().brief("User not found"))?;
 
+    let user_roles = fetch_user_roles(db, item.id).await;
+
     Ok(Json(UserResponse {
         id: item.id,
         pid: item.pid,
@@ -754,6 +798,79 @@ pub async fn current_user(
         deleted_at: item.deleted_at,
         created_by: item.created_by,
         updated_by: item.updated_by,
+        roles: Some(user_roles),
+    }))
+}
+
+#[endpoint(tags("Auth - Set Current Role"), status_codes(200, 400, 401, 403, 404, 500))]
+pub async fn set_current_role(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<UserResponse>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let current_user_id = depot.get::<Uuid>("current_user_id").copied().map_err(|_| {
+        StatusError::unauthorized().brief("Unauthorized")
+    })?;
+
+    let role_id_str = req.param::<String>("role_id").ok_or_else(|| {
+        StatusError::bad_request().brief("Missing parameter role_id")
+    })?;
+    let role_id = Uuid::parse_str(&role_id_str).map_err(|_| {
+        StatusError::bad_request().brief("Invalid UUID format for role_id")
+    })?;
+
+    // Verify role belongs to user
+    let user_role = role_entity::Entity::find_by_id(role_id)
+        .filter(role_entity::Column::UserId.eq(current_user_id))
+        .filter(role_entity::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .ok_or_else(|| StatusError::forbidden().brief("Role does not belong to the current user"))?;
+
+    let user = entity_mod::Entity::find_by_id(current_user_id)
+        .filter(entity_mod::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .ok_or_else(|| StatusError::not_found().brief("User not found"))?;
+
+    let mut active_model = user.into_active_model();
+    active_model.current_role_id = Set(Some(user_role.id));
+    active_model.updated_at = Set(Utc::now().naive_utc());
+
+    let updated_user = active_model.update(db).await.map_err(|e| {
+        StatusError::internal_server_error().brief(e.to_string())
+    })?;
+
+    let user_roles = fetch_user_roles(db, updated_user.id).await;
+
+    Ok(Json(UserResponse {
+        id: updated_user.id,
+        pid: updated_user.pid,
+        email: updated_user.email,
+        password: "".to_string(),
+        api_key: updated_user.api_key,
+        name: updated_user.name,
+        individual_id: updated_user.individual_id,
+        is_active: updated_user.is_active,
+        current_role_id: updated_user.current_role_id,
+        reset_token: None,
+        reset_sent_at: updated_user.reset_sent_at,
+        email_verification_token: None,
+        email_verification_sent_at: updated_user.email_verification_sent_at,
+        email_verified_at: updated_user.email_verified_at,
+        magic_link_token: None,
+        magic_link_expiration: updated_user.magic_link_expiration,
+        created_at: updated_user.created_at,
+        updated_at: updated_user.updated_at,
+        deleted_at: updated_user.deleted_at,
+        created_by: updated_user.created_by,
+        updated_by: updated_user.updated_by,
+        roles: Some(user_roles),
     }))
 }
 

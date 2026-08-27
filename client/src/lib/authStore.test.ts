@@ -147,6 +147,67 @@ describe("Auth Store & Role Engine (White-Box Unit Tests)", () => {
       expect(getActiveRole()).toBe("administrator");
     });
 
+    it("correctly sets student role for marshamarshaif@gmail.com with Mahasiswa role and prevents administrator access", async () => {
+      const mockStudentResponse = {
+        token: "jwt-student-token",
+        user: {
+          id: "9bfa0478-a52d-4e24-a52e-6923ed281e49",
+          name: "MARSHA",
+          email: "marshamarshaif@gmail.com",
+          current_role_id: "9bfa0479-2211-4509-8e95-00c9ac714620",
+          roles: [
+            {
+              id: "9bfa0479-2211-4509-8e95-00c9ac714620",
+              name: "Mahasiswa",
+              user_id: "9bfa0478-a52d-4e24-a52e-6923ed281e49",
+              roleable_type: "App\\Models\\Academic\\Student\\Master\\Student",
+            },
+          ],
+        },
+      };
+
+      setStorageItem("token", "jwt-student-token");
+      setStorageItem("user", JSON.stringify(mockStudentResponse.user));
+      const dashboardPath = await processLoginSuccess(mockStudentResponse);
+
+      expect(isAuthenticatedSignal()).toBe(true);
+      expect(currentUserSignal()?.name).toBe("MARSHA");
+      expect(activeRoleSignal()).toBe("student");
+      expect(getActiveRole()).toBe("student");
+      expect(dashboardPath).toBe("/student/person/master/individual/show");
+
+      const storedRoles = getStoredRoles();
+      expect(storedRoles.length).toBe(1);
+      expect(storedRoles[0].name).toBe("Mahasiswa");
+      expect(storedRoles.some((r) => r.name.toLowerCase().includes("admin"))).toBe(false);
+    });
+
+    it("falls back to least-privileged student role for standard emails when roles are empty", async () => {
+      const mockEmptyRolesResponse = {
+        token: "jwt-generic-token",
+        user: {
+          id: "user-generic",
+          name: "Marsha Generic",
+          email: "marshamarshaif@gmail.com",
+          current_role_id: null,
+          roles: [],
+        },
+      };
+
+      setStorageItem("token", "jwt-generic-token");
+      setStorageItem("user", JSON.stringify(mockEmptyRolesResponse.user));
+      const dashboardPath = await processLoginSuccess(mockEmptyRolesResponse);
+
+      expect(activeRoleSignal()).toBe("student");
+      expect(getActiveRole()).toBe("student");
+      expect(dashboardPath).toBe("/student/person/master/individual/show");
+
+      const storedRoles = getStoredRoles();
+      expect(storedRoles.length).toBe(1);
+      expect(storedRoles[0].name).toBe("student");
+      expect(storedRoles.some((r) => r.name.toLowerCase().includes("admin"))).toBe(false);
+    });
+
     it("cleans up user state on logout", () => {
       setStorageItem("token", "token-xyz");
       setStorageItem("user", JSON.stringify({ id: "1", name: "Temp" }));
