@@ -62,6 +62,7 @@ export async function listStudentActivities(queryParams?: {
         if (queryParams?.page) params.set('page', String(queryParams.page));
         if (queryParams?.page_size) params.set('page_size', String(queryParams.page_size));
         if (queryParams?.name) params.set('name', queryParams.name);
+        if (queryParams?.student_id) params.set('student_id', queryParams.student_id);
 
         const res = await fetch(`${getBaseUrl()}/academic/student/campaign/student-activities?${params.toString()}`, {
             method: 'GET',

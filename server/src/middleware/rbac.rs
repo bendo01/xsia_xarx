@@ -162,18 +162,21 @@ impl Handler for RbacGuard {
             }
         };
 
-        // 3. Check if active role is Superadmin / Admin (bypass check)
-        if let Ok(Some(current_role)) = role::Entity::find_by_id(role_id)
+        // 3. Check active role capabilities
+        let role_name_lower = if let Ok(Some(current_role)) = role::Entity::find_by_id(role_id)
             .filter(role::Column::DeletedAt.is_null())
             .one(&db)
             .await
         {
-            let role_name_lower = current_role.name.to_lowercase();
-            if role_name_lower == "superadmin" || role_name_lower == "admin" || role_name_lower == "administrator" {
+            let name = current_role.name.to_lowercase();
+            if name == "superadmin" || name == "admin" || name == "administrator" {
                 ctrl.call_next(req, depot, res).await;
                 return;
             }
-        }
+            name
+        } else {
+            String::new()
+        };
 
         // 4. Determine action based on HTTP Method
         let action = match *req.method() {
@@ -187,13 +190,53 @@ impl Handler for RbacGuard {
         let action_permission = format!("{}.{}", route_name, action);
         let wildcard_permission = format!("{}.*", route_name);
 
+        // Check role-based capabilities
+        let is_student = role_name_lower.contains("student")
+            || role_name_lower.contains("mahasiswa")
+            || role_name_lower.contains("siswa");
+        let is_lecturer = role_name_lower.contains("lecturer")
+            || role_name_lower.contains("dosen")
+            || role_name_lower.contains("pengajar")
+            || role_name_lower.contains("guru");
+
+        let allowed_by_role_capability = if is_student {
+            // Student role can access student routes and read academic / institution catalog
+            route_name.starts_with("academic.student.")
+                || (action == "read" && (
+                    route_name.starts_with("academic.")
+                    || route_name.starts_with("institution.")
+                    || route_name.starts_with("person.")
+                    || route_name.starts_with("common.")
+                ))
+                || route_name.starts_with("person.master.individual")
+                || route_name.starts_with("person.master.biodata")
+                || route_name.starts_with("auth.user")
+        } else if is_lecturer {
+            // Lecturer role can access lecturer routes and read catalog / student records
+            route_name.starts_with("academic.lecturer.")
+                || (action == "read" && (
+                    route_name.starts_with("academic.")
+                    || route_name.starts_with("institution.")
+                    || route_name.starts_with("person.")
+                    || route_name.starts_with("common.")
+                ))
+                || route_name.starts_with("person.master.individual")
+                || route_name.starts_with("auth.user")
+        } else {
+            false
+        };
+
+        if allowed_by_role_capability {
+            ctrl.call_next(req, depot, res).await;
+            return;
+        }
+
         // 5. Query user role permissions
         let permissions: Vec<permission::Model> = match permission_role::Entity::find()
-            .inner_join(permission::Entity)
             .filter(permission_role::Column::RoleId.eq(role_id))
             .filter(permission_role::Column::DeletedAt.is_null())
-            .filter(permission::Column::DeletedAt.is_null())
             .find_also_related(permission::Entity)
+            .filter(permission::Column::DeletedAt.is_null())
             .all(&db)
             .await
         {
