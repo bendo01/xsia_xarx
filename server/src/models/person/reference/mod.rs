@@ -13,3 +13,10 @@ pub mod occupation;
 pub mod profession;
 pub mod relative_type;
 pub mod religion;
+
+pub use gender as genders;
+pub use religion as religions;
+pub use identification_type as identification_types;
+pub use marital_status as marital_statuses;
+pub use occupation as occupations;
+pub use profession as professions;

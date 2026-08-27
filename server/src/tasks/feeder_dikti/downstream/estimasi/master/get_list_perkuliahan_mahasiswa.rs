@@ -1,4 +1,4 @@
-use chrono::{Local, NaiveDate, NaiveDateTime};
+use chrono::{DateTime, Local, NaiveDate, NaiveDateTime, Utc};
 use salvo::async_trait;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, DatabaseTransaction, EntityTrait,
@@ -180,10 +180,7 @@ impl EstimateListPerkuliahanMahasiswa {
     }
 
 
-    async fn upsert_record(
-        ctx: &AppContext,
-        record: &ModelInputListPerkuliahanMahasiswa,
-    ) -> Result<String> {
+    async fn upsert_record(txn: &DatabaseTransaction, record: &ModelInputListPerkuliahanMahasiswa) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         // Validate that required fields exist - using composite key (id_registrasi_mahasiswa + id_semester)
         let id_registrasi_mahasiswa = record
             .id_registrasi_mahasiswa

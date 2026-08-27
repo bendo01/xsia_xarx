@@ -1,4 +1,4 @@
-use chrono::{Local, NaiveDate, NaiveDateTime};
+use chrono::{DateTime, Local, NaiveDate, NaiveDateTime, Utc};
 use salvo::async_trait;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, DatabaseTransaction, EntityTrait,
@@ -134,10 +134,7 @@ impl EstimateGetTingkatPrestasi {
     }
 
 
-    async fn upsert_record(
-        ctx: &AppContext,
-        record: &GetTingkatPrestasiResponse,
-    ) -> Result<String> {
+    async fn upsert_record(txn: &DatabaseTransaction, record: &GetTingkatPrestasiResponse) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         let id_tingkat_prestasi = record
             .id_tingkat_prestasi
             .clone()

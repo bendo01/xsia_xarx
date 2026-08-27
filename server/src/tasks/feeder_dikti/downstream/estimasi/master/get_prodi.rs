@@ -1,4 +1,4 @@
-use chrono::{Local, NaiveDate, NaiveDateTime};
+use chrono::{DateTime, Local, NaiveDate, NaiveDateTime, Utc};
 use salvo::async_trait;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, DatabaseTransaction, EntityTrait,
@@ -155,11 +155,7 @@ impl EstimateGetProdi {
     }
 
 
-    async fn upsert_record(
-        ctx: &AppContext,
-        record: &GetProdiResponse,
-        institution_id: Uuid,
-    ) -> Result<String> {
+    async fn upsert_record(txn: &DatabaseTransaction, record: &GetProdiResponse) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         let id_prodi = record
             .id_prodi
             .ok_or_else(|| "id_prodi is missing".into())?;

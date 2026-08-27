@@ -1,4 +1,4 @@
-use chrono::{Local, NaiveDate, NaiveDateTime};
+use chrono::{DateTime, Local, NaiveDate, NaiveDateTime, Utc};
 use salvo::async_trait;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, DatabaseTransaction, EntityTrait,
@@ -134,10 +134,7 @@ impl EstimateGetJabfung {
     }
 
 
-    async fn upsert_record(
-        ctx: &AppContext,
-        record: &GetJabatanFungsionalResponse,
-    ) -> Result<String> {
+    async fn upsert_record(txn: &DatabaseTransaction, record: &GetJabatanFungsionalResponse) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         let id_jabatan_fungsional = record
             .id_jabatan_fungsional
             .clone()
