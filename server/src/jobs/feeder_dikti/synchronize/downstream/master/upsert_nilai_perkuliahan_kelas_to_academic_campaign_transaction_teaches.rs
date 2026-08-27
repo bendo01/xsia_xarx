@@ -72,7 +72,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
 
     println!(
         "Processing Nilai Perkuliahan Kelas: ID={} - Kelas={}",
-        model.id, model.nama_kelas_kuliah
+        model.id, model.nama_kelas_kuliah.as_deref().unwrap_or("")
     );
 
     // 0. Pre-fetch Internal scope
@@ -91,15 +91,19 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
     };
 
     // 1. Get Academic Year
-    let academic_year = academic_years::Entity::find()
-        .filter(academic_years::Column::FeederName.eq(&model.id_smt))
-        .one(&txn)
-        .await
-        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
+    let academic_year = if let Some(id_smt) = &model.id_smt {
+        academic_years::Entity::find()
+            .filter(academic_years::Column::FeederName.eq(id_smt))
+            .one(&txn)
+            .await
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
+    } else {
+        None
+    };
 
     let Some(academic_year) = academic_year else {
         println!(
-            "Skipping: Academic Year not found for id_smt {}",
+            "Skipping: Academic Year not found for id_smt {:?}",
             model.id_smt
         );
         return Ok(());
@@ -107,14 +111,18 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
 
     // 2. Get Unit & Institution
     // Mapping id_prodi -> id_sms
-    let unit = units::Entity::find()
-        .filter(units::Column::FeederId.eq(model.id_sms))
-        .one(&txn)
-        .await
-        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
+    let unit = if let Some(id_sms) = model.id_sms {
+        units::Entity::find()
+            .filter(units::Column::FeederId.eq(id_sms))
+            .one(&txn)
+            .await
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
+    } else {
+        None
+    };
 
     let Some(unit) = unit else {
-        println!("Skipping: Unit not found for id_sms {}", model.id_sms);
+        println!("Skipping: Unit not found for id_sms {:?}", model.id_sms);
         return Ok(());
     };
 
@@ -129,15 +137,19 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
     };
 
     // 3. Get Course
-    let course = courses::Entity::find()
-        .filter(courses::Column::FeederCourseId.eq(model.id_matkul))
-        .one(&txn)
-        .await
-        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
+    let course = if let Some(id_matkul) = model.id_matkul {
+        courses::Entity::find()
+            .filter(courses::Column::FeederCourseId.eq(id_matkul))
+            .one(&txn)
+            .await
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
+    } else {
+        None
+    };
 
     let Some(course) = course else {
         println!(
-            "Skipping: Course not found for id_matkul {}",
+            "Skipping: Course not found for id_matkul {:?}",
             model.id_matkul
         );
         return Ok(());
@@ -160,12 +172,16 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
     };
 
     // 5. Get/Create Class Code
-    let class_code = class_codes::Entity::find()
-        .filter(class_codes::Column::ActivityId.eq(unit_activity.id))
-        .filter(class_codes::Column::AlphabetCode.eq(&model.nama_kelas_kuliah))
-        .one(&txn)
-        .await
-        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
+    let class_code = if let Some(nama_kelas_kuliah) = &model.nama_kelas_kuliah {
+        class_codes::Entity::find()
+            .filter(class_codes::Column::ActivityId.eq(unit_activity.id))
+            .filter(class_codes::Column::AlphabetCode.eq(nama_kelas_kuliah))
+            .one(&txn)
+            .await
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
+    } else {
+        None
+    };
 
     let class_code_id = if let Some(cc) = class_code {
         cc.id
@@ -211,7 +227,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             .unwrap_or(chrono::Utc::now().naive_utc().date());
         let active_model = teach_decrees::ActiveModel {
             id: Set(new_id),
-            decree_number: Set(Some("-".to_string())),
+            decree_number: Set("-".to_string()),
             decree_date: Set(decree_date),
             activity_id: Set(unit_activity.id),
             created_at: Set(Some(chrono::Utc::now().naive_utc())),

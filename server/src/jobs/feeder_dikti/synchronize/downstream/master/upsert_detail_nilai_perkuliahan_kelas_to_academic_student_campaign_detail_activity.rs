@@ -175,15 +175,15 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         );
         let active_model = campaign_activities::ActiveModel {
             id: Set(new_id),
-            name: Set(Some(name)),
+            name: Set(name),
             unit_id: Set(unit.id),
             academic_year_id: Set(academic_year.id),
             week_quantity: Set(Some(16)),
-            student_target: Set(Some(0)),
-            candidate_number: Set(Some(0)),
-            candidate_pass: Set(Some(0)),
-            became_student: Set(Some(0)),
-            transfer_student: Set(Some(0)),
+            student_target: Set(0),
+            candidate_number: Set(0),
+            candidate_pass: Set(0),
+            became_student: Set(0),
+            transfer_student: Set(0),
             total_class_member: Set(Some(0)),
             start_date: Set(academic_year.start_date),
             end_date: Set(academic_year.end_date),
@@ -197,7 +197,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         let ua = active_model.insert(&txn).await.map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
         println!(
             "✅ CREATED Unit Activity: {} for Unit {}",
-            ua.name.as_deref().unwrap_or(""), unit.code.as_deref().unwrap_or("")
+            ua.name, unit.code.as_deref().unwrap_or("")
         );
         ua
     };
@@ -245,11 +245,11 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             let active_model = class_codes::ActiveModel {
                 id: Set(new_id),
                 alphabet_code: Set(Some(nama_kelas_kuliah.clone())),
-                name: Set(Some(name)),
+                name: Set(name),
                 activity_id: Set(unit_activity.id),
                 created_at: Set(Some(chrono::Utc::now().naive_utc())),
                 updated_at: Set(Some(chrono::Utc::now().naive_utc())),
-                unit_id: Set(unit.id),
+                unit_id: Set(Some(unit.id)),
                 capacity: Set(Some(40)),
                 start_effective_date: Set(academic_year.start_date),
                 end_effective_date: Set(academic_year.end_date),
@@ -278,7 +278,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
                 .unwrap_or(chrono::Utc::now().naive_utc().date());
             let active_model = teach_decrees::ActiveModel {
                 id: Set(new_id),
-                decree_number: Set(Some("-".to_string())),
+                decree_number: Set("-".to_string()),
                 decree_date: Set(decree_date),
                 activity_id: Set(unit_activity.id),
                 created_at: Set(Some(chrono::Utc::now().naive_utc())),
@@ -319,9 +319,9 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             class_code_id: Set(class_code_id),
             course_id: Set(course.id),
             activity_id: Set(Some(unit_activity.id)),
-            teach_decree_id: Set(Some(teach_decree_id)),
+            teach_decree_id: Set(teach_decree_id),
             feeder_id: Set(Some(id_kelas_kuliah.clone())),
-            scope_id: Set(internal_scope.id),
+            scope_id: Set(Some(internal_scope.id)),
             created_at: Set(Some(chrono::Utc::now().naive_utc())),
             updated_at: Set(Some(chrono::Utc::now().naive_utc())),
             curriculum_detail_id: Set(None),
@@ -370,14 +370,14 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         let active = student_activities::ActiveModel {
             id: Set(Uuid::new_v4()),
             name: Set(Some(name)),
-            cumulative_index: Set(Some(0.0)),
-            grand_cumulative_index: Set(Some(0.0)),
+            cumulative_index: Set(0.0),
+            grand_cumulative_index: Set(0.0),
             total_credit: Set(Some(0.0)),
             grand_total_credit: Set(Some(0.0)),
             student_id: Set(student.id),
             unit_activity_id: Set(unit_activity.id),
             unit_id: Set(Some(student.unit_id)),
-            status_id: Set(Some(Uuid::nil())),        // Default to Nil
+            status_id: Set(Uuid::nil()),        // Default to Nil
             resign_status_id: Set(Some(Uuid::nil())), // Default to Nil
             is_lock: Set(Some(true)),
             feeder_id: Set(Some(Uuid::nil())),  // Default to Nil

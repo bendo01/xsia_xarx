@@ -140,7 +140,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
             active_model.name = Set(format!(
                 "Aktifitas {} {} {}",
                 institution_code,
-                unit_code,
+                unit_code.as_deref().unwrap_or(""),
                 data.id_semester.clone().unwrap_or_default()
             ));
             active_model.unit_id = Set(unit_id);
@@ -190,7 +190,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
             active_model.name = Set(format!(
                 "Aktifitas {} {} {}",
                 institution_code,
-                unit_code,
+                unit_code.as_deref().unwrap_or(""),
                 data.id_semester.clone().unwrap_or_default()
             ));
             active_model.unit_id = Set(unit_id);

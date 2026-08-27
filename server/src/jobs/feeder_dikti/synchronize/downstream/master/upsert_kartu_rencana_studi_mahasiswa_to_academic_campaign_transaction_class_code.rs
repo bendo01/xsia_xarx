@@ -33,7 +33,7 @@ pub async fn start_worker(
     Ok(Monitor::new().register(worker))
 }
 
-use crate::models::academic::campaign::transaction::activities as AcademicCampaignTransactionActivity;
+use crate::models::academic::campaign::transaction::activities;
 use crate::models::academic::campaign::transaction::class_codes::{
     self, ActiveModel,
 };

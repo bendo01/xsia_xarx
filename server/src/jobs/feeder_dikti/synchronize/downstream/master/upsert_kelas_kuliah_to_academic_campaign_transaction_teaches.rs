@@ -304,7 +304,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         active.max_member = Set(Some(40));
         active.is_lock = Set(Some(false));
         active.is_lecturer_credit_sum_problem = Set(Some(false));
-        active.feeder_id = Set(model.id_kelas_kuliah);
+        active.feeder_id = Set(Some(model.id_kelas_kuliah));
 
         match active.update(&txn).await {
             Ok(_) => "UPDATED",
@@ -329,7 +329,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             end_date: Set(academic_year.end_date),
             practice_start_date: Set(practice_start_date),
             practice_end_date: Set(practice_end_date),
-            feeder_id: Set(model.id_kelas_kuliah),
+            feeder_id: Set(Some(model.id_kelas_kuliah)),
             created_at: Set(Some(chrono::Utc::now().naive_utc())),
             updated_at: Set(Some(chrono::Utc::now().naive_utc())),
             ..Default::default()

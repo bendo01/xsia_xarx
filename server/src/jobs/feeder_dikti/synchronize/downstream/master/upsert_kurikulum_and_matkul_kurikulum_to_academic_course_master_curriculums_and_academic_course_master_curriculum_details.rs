@@ -195,7 +195,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                                 format!(
                                     "Curriculum not found after failing update: {:?}",
                                     id_kurikulum
-                                .into())
+                                )
                             })?
                     } else {
                         return Err(Box::new(e));

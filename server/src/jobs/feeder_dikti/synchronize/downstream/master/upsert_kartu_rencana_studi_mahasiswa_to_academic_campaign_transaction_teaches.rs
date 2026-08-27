@@ -33,8 +33,8 @@ pub async fn start_worker(
     Ok(Monitor::new().register(worker))
 }
 
-use crate::models::academic::campaign::transaction::activities as AcademicCampaignTransactionActivity;
-use crate::models::academic::campaign::transaction::class_codes as AcademicCampaignTransactionClassCode;
+use crate::models::academic::campaign::transaction::activities;
+use crate::models::academic::campaign::transaction::class_codes;
 use crate::models::academic::campaign::transaction::teach_decrees::{
     self as AcademicCampaignTransactionTeachDecree, ActiveModel as TeachDecreeActiveModel,
 };
@@ -209,7 +209,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
             let id = Uuid::new_v4();
             let new_decree = TeachDecreeActiveModel {
                 id: Set(id),
-                decree_number: Set(Some("-".to_string())),
+                decree_number: Set("-".to_string()),
                 decree_date: Set(academic_year.start_date.unwrap_or_default()), // Assuming start_date exists
                 activity_id: Set(unit_activity.id),
                 staff_id: Set(None),
