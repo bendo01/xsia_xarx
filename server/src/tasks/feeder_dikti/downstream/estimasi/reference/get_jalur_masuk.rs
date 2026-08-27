@@ -121,7 +121,7 @@ impl EstimateGetJalurMasuk {
 
         if let Some(record) = record {
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().copied().unwrap_or(0);
+            let current_total = active.total_data.as_ref().and_then(|&x| x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -138,7 +138,7 @@ impl EstimateGetJalurMasuk {
         let id_jalur_masuk = record
             .id_jalur_masuk
             .clone()
-            .ok_or_else(|| "id_jalur_masuk is missing".into())?;
+            .ok_or_else(|| DbErr::Custom("id_jalur_masuk is missing".to_string()))?;
 
         let sync_time = Local::now().naive_local();
 
@@ -152,7 +152,7 @@ impl EstimateGetJalurMasuk {
             let mut active: jalur_masuk::ActiveModel = existing_record.into_active_model();
 
             // Update fields that are present in GetJalurMasukResponse
-            active.nama_jalur_masuk = Set(record.nama_jalur_masuk.clone());
+            active.nama_jalur_masuk = Set(Some(record.nama_jalur_masuk.clone()));
             active.sync_at = Set(Some(sync_time));
             active.updated_at = Set(Some(sync_time));
 
@@ -163,8 +163,8 @@ impl EstimateGetJalurMasuk {
 
             let new_record = jalur_masuk::ActiveModel {
                 id: Set(pk_id),
-                id_jalur_masuk: Set(id_jalur_masuk),
-                nama_jalur_masuk: Set(record.nama_jalur_masuk.clone()),
+                id_jalur_masuk: Set(Some(id_jalur_masuk)),
+                nama_jalur_masuk: Set(Some(record.nama_jalur_masuk.clone())),
 
                 sync_at: Set(Some(sync_time)),
                 created_at: Set(Some(sync_time)),

@@ -148,7 +148,7 @@ impl EstimateListKomponenEvaluasiKelas {
 
         if let Some(record) = record {
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().copied().unwrap_or(0);
+            let current_total = active.total_data.as_ref().and_then(|&x| x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -177,31 +177,31 @@ impl EstimateListKomponenEvaluasiKelas {
         // Validate required fields
         let id_komponen_evaluasi = record
             .id_komponen_evaluasi
-            .ok_or_else(|| "Missing id_komponen_evaluasi".into())?;
+            .ok_or_else(|| DbErr::Custom("Missing id_komponen_evaluasi".to_string()))?;
 
         let id_kelas_kuliah = record
             .id_kelas_kuliah
-            .ok_or_else(|| "Missing id_kelas_kuliah".into())?;
+            .ok_or_else(|| DbErr::Custom("Missing id_kelas_kuliah".to_string()))?;
 
         let id_jenis_evaluasi = record
             .id_jenis_evaluasi
-            .ok_or_else(|| "Missing id_jenis_evaluasi".into())?;
+            .ok_or_else(|| DbErr::Custom("Missing id_jenis_evaluasi".to_string()))?;
 
         let nomor_urut = record
             .nomor_urut
-            .ok_or_else(|| "Missing nomor_urut".into())?;
+            .ok_or_else(|| DbErr::Custom("Missing nomor_urut".to_string()))?;
 
         let bobot_evaluasi = record
             .bobot_evaluasi
-            .ok_or_else(|| "Missing bobot_evaluasi".into())?;
+            .ok_or_else(|| DbErr::Custom("Missing bobot_evaluasi".to_string()))?;
 
         let last_update = record
             .last_update
-            .ok_or_else(|| "Missing last_update".into())?;
+            .ok_or_else(|| DbErr::Custom("Missing last_update".to_string()))?;
 
         let tgl_create = record
             .tgl_create
-            .ok_or_else(|| "Missing tgl_create".into())?;
+            .ok_or_else(|| DbErr::Custom("Missing tgl_create".to_string()))?;
 
         // Start transaction
         let sync_time = Local::now().naive_local();

@@ -121,7 +121,7 @@ impl EstimateGetJabfung {
 
         if let Some(record) = record {
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().copied().unwrap_or(0);
+            let current_total = active.total_data.as_ref().and_then(|&x| x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -138,7 +138,7 @@ impl EstimateGetJabfung {
         let id_jabatan_fungsional = record
             .id_jabatan_fungsional
             .clone()
-            .ok_or_else(|| "id_jabatan_fungsional is missing".into())?;
+            .ok_or_else(|| DbErr::Custom("id_jabatan_fungsional is missing".to_string()))?;
 
         let sync_time = Local::now().naive_local();
 
@@ -154,7 +154,7 @@ impl EstimateGetJabfung {
             let mut active: jabatan_fungsional::ActiveModel = existing_record.into_active_model();
 
             // Update fields that are present in GetJabatanFungsionalResponse
-            active.nama_jabatan_fungsional = Set(record.nama_jabatan_fungsional.clone());
+            active.nama_jabatan_fungsional = Set(Some(record.nama_jabatan_fungsional.clone()));
             active.sync_at = Set(Some(sync_time));
             active.updated_at = Set(Some(sync_time));
 
@@ -165,8 +165,8 @@ impl EstimateGetJabfung {
 
             let new_record = jabatan_fungsional::ActiveModel {
                 id: Set(pk_id),
-                id_jabatan_fungsional: Set(id_jabatan_fungsional),
-                nama_jabatan_fungsional: Set(record.nama_jabatan_fungsional.clone()),
+                id_jabatan_fungsional: Set(Some(id_jabatan_fungsional)),
+                nama_jabatan_fungsional: Set(Some(record.nama_jabatan_fungsional.clone())),
 
                 sync_at: Set(Some(sync_time)),
                 created_at: Set(Some(sync_time)),

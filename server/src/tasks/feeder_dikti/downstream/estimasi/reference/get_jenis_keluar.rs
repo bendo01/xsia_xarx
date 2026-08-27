@@ -122,7 +122,7 @@ impl EstimateGetJenisKeluar {
 
         if let Some(record) = record {
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().copied().unwrap_or(0);
+            let current_total = active.total_data.as_ref().and_then(|&x| x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -139,7 +139,7 @@ impl EstimateGetJenisKeluar {
         let id_jenis_keluar = record
             .id_jenis_keluar
             .clone()
-            .ok_or_else(|| "id_jenis_keluar is missing".into())?;
+            .ok_or_else(|| DbErr::Custom("id_jenis_keluar is missing".to_string()))?;
 
         let sync_time = Local::now().naive_local();
 

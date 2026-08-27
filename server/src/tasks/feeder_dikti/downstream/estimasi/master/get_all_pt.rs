@@ -157,7 +157,7 @@ impl EstimateGetAllPT {
 
         if let Some(record) = record {
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().copied().unwrap_or(0);
+            let current_total = active.total_data.as_ref().and_then(|&x| x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -173,7 +173,7 @@ impl EstimateGetAllPT {
     async fn upsert_record(txn: &DatabaseTransaction, record: &GetAllPTResponse) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         let id_perguruan_tinggi = record
             .id_perguruan_tinggi
-            .ok_or_else(|| "id_perguruan_tinggi is missing".into())?;
+            .ok_or_else(|| DbErr::Custom("id_perguruan_tinggi is missing".to_string()))?;
 
         let sync_time = Local::now().naive_local();
 

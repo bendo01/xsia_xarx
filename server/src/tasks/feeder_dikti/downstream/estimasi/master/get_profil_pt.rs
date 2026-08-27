@@ -21,15 +21,6 @@ const DEFAULT_LIMIT: i32 = 1000;
 const DEFAULT_ORDER: &str = "";
 const DEFAULT_FILTER: &str = "";
 
-/// Feeder model for GetAllPT endpoint
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct GetAllPTResponse {
-    pub id_perguruan_tinggi: Option<Uuid>,
-    pub kode_perguruan_tinggi: Option<String>,
-    pub nama_perguruan_tinggi: Option<String>,
-    pub nama_singkat: Option<String>,
-}
-
 /// Feeder model for GetProfilPT endpoint
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetProfilPTResponse {
@@ -55,7 +46,7 @@ pub struct GetProfilPTResponse {
     pub luas_tanah_milik: Option<String>,
     pub luas_tanah_bukan_milik: Option<String>,
     pub sk_pendirian: Option<String>,
-    pub tanggal_sk_pendirian: Option<String>, // Keep as String for now, parse later if needed
+    pub tanggal_sk_pendirian: Option<String>,
     pub id_status_milik: Option<String>,
     pub nama_status_milik: Option<String>,
     pub status_perguruan_tinggi: Option<String>,
@@ -73,6 +64,22 @@ impl EstimateGetProfilPT {
             }
         }
         Err("CURRENT_INSTITUTION_ID is not set or invalid".into())
+    }
+
+    fn parse_date(date_str: Option<&String>) -> Option<NaiveDate> {
+        date_str.and_then(|s| {
+            NaiveDate::parse_from_str(s, "%Y-%m-%d")
+                .or_else(|_| NaiveDate::parse_from_str(s, "%d-%m-%Y"))
+                .ok()
+        })
+    }
+
+    fn parse_datetime(date_str: Option<&String>) -> Option<NaiveDateTime> {
+        date_str.and_then(|s| {
+            NaiveDateTime::parse_from_str(s, "%Y-%m-%d %H:%M:%S")
+                .or_else(|_| NaiveDate::parse_from_str(s, "%Y-%m-%d").map(|d| d.and_hms_opt(0, 0, 0).unwrap()))
+                .ok()
+        })
     }
 
     async fn find_progress_record(
@@ -157,7 +164,7 @@ impl EstimateGetProfilPT {
 
         if let Some(record) = record {
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().copied().unwrap_or(0);
+            let current_total = active.total_data.as_ref().and_then(|&x| x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -169,25 +176,10 @@ impl EstimateGetProfilPT {
         Ok(())
     }
 
-
-    fn parse_date(date_str: Option<&String>) -> Option<NaiveDateTime> {
-        date_str.and_then(|s| {
-            // Try parsing ISO 8601 format first
-            if let Ok(dt) = NaiveDateTime::parse_from_str(s, "%Y-%m-%dT%H:%M:%S%.fZ") {
-                return Some(dt);
-            }
-            // Try parsing YYYY-MM-DD format
-            if let Ok(d) = chrono::NaiveDate::parse_from_str(s, "%Y-%m-%d") {
-                return Some(d.and_hms_opt(0, 0, 0).unwrap());
-            }
-            None
-        })
-    }
-
     async fn upsert_record(txn: &DatabaseTransaction, record: &GetProfilPTResponse) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         let id_perguruan_tinggi = record
             .id_perguruan_tinggi
-            .ok_or_else(|| "id_perguruan_tinggi is missing".into())?;
+            .ok_or_else(|| DbErr::Custom("id_perguruan_tinggi is missing".to_string()))?;
 
         let sync_time = Local::now().naive_local();
 
@@ -222,14 +214,12 @@ impl EstimateGetProfilPT {
             active.luas_tanah_milik = Set(record.luas_tanah_milik.clone());
             active.luas_tanah_bukan_milik = Set(record.luas_tanah_bukan_milik.clone());
             active.sk_pendirian = Set(record.sk_pendirian.clone());
-            active.tanggal_sk_pendirian =
-                Set(Self::parse_date(record.tanggal_sk_pendirian.as_ref()));
+            active.tanggal_sk_pendirian = Set(Self::parse_datetime(record.tanggal_sk_pendirian.as_ref()));
             active.id_status_milik = Set(record.id_status_milik.clone());
             active.nama_status_milik = Set(record.nama_status_milik.clone());
             active.status_perguruan_tinggi = Set(record.status_perguruan_tinggi.clone());
             active.sk_izin_operasional = Set(record.sk_izin_operasional.clone());
-            active.tanggal_izin_operasional =
-                Set(Self::parse_date(record.tanggal_izin_operasional.as_ref()));
+            active.tanggal_izin_operasional = Set(Self::parse_date(record.tanggal_izin_operasional.as_ref()));
             active.sync_at = Set(Some(sync_time));
             active.updated_at = Set(Some(sync_time));
 
@@ -262,31 +252,27 @@ impl EstimateGetProfilPT {
                 luas_tanah_milik: Set(record.luas_tanah_milik.clone()),
                 luas_tanah_bukan_milik: Set(record.luas_tanah_bukan_milik.clone()),
                 sk_pendirian: Set(record.sk_pendirian.clone()),
-                tanggal_sk_pendirian: Set(Self::parse_date(record.tanggal_sk_pendirian.as_ref())),
+                tanggal_sk_pendirian: Set(Self::parse_datetime(record.tanggal_sk_pendirian.as_ref())),
                 id_status_milik: Set(record.id_status_milik.clone()),
                 nama_status_milik: Set(record.nama_status_milik.clone()),
                 status_perguruan_tinggi: Set(record.status_perguruan_tinggi.clone()),
                 sk_izin_operasional: Set(record.sk_izin_operasional.clone()),
-                tanggal_izin_operasional: Set(Self::parse_date(
-                    record.tanggal_izin_operasional.as_ref(),
-                )),
+                tanggal_izin_operasional: Set(Self::parse_date(record.tanggal_izin_operasional.as_ref())),
                 sync_at: Set(Some(sync_time)),
                 created_at: Set(Some(sync_time)),
                 updated_at: Set(Some(sync_time)),
                 created_by: Set(None),
                 updated_by: Set(None),
                 deleted_at: Set(None),
-                ..Default::default()
+                nama_singkat: Set(None),
             };
 
             new_record.insert(txn).await?;
             "INSERTED"
         };
 
-
         Ok(action.to_string())
     }
-
 
     async fn process_batch(
         db: &DatabaseConnection,

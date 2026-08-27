@@ -121,7 +121,7 @@ impl EstimateGetKategoriKegiatan {
 
         if let Some(record) = record {
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().copied().unwrap_or(0);
+            let current_total = active.total_data.as_ref().and_then(|&x| x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -137,7 +137,7 @@ impl EstimateGetKategoriKegiatan {
     async fn upsert_record(txn: &DatabaseTransaction, record: &GetKategoriKegiatanResponse) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         let id_kategori_kegiatan = record
             .id_kategori_kegiatan
-            .ok_or_else(|| "id_kategori_kegiatan is missing".into())?;
+            .ok_or_else(|| DbErr::Custom("id_kategori_kegiatan is missing".to_string()))?;
 
         let sync_time = Local::now().naive_local();
 

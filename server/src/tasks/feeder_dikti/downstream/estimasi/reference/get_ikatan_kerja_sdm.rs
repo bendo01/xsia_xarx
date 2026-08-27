@@ -121,7 +121,7 @@ impl EstimateGetIkatanKerjaSdm {
 
         if let Some(record) = record {
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().copied().unwrap_or(0);
+            let current_total = active.total_data.as_ref().and_then(|&x| x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -138,7 +138,7 @@ impl EstimateGetIkatanKerjaSdm {
         let id_ikatan_kerja = record
             .id_ikatan_kerja
             .clone()
-            .ok_or_else(|| "id_ikatan_kerja is missing".into())?;
+            .ok_or_else(|| DbErr::Custom("id_ikatan_kerja is missing".to_string()))?;
 
         let sync_time = Local::now().naive_local();
 
@@ -155,7 +155,7 @@ impl EstimateGetIkatanKerjaSdm {
                 existing_record.into_active_model();
 
             // Update fields that are present in GetIkatanKerjaSdmResponse
-            active.nama_ikatan_kerja = Set(record.nama_ikatan_kerja.clone());
+            active.nama_ikatan_kerja = Set(Some(record.nama_ikatan_kerja.clone()));
             active.sync_at = Set(Some(sync_time));
             active.updated_at = Set(Some(sync_time));
 
@@ -166,8 +166,8 @@ impl EstimateGetIkatanKerjaSdm {
 
             let new_record = ikatan_kerja_sumber_daya_manusia::ActiveModel {
                 id: Set(pk_id),
-                id_ikatan_kerja: Set(id_ikatan_kerja),
-                nama_ikatan_kerja: Set(record.nama_ikatan_kerja.clone()),
+                id_ikatan_kerja: Set(Some(id_ikatan_kerja)),
+                nama_ikatan_kerja: Set(Some(record.nama_ikatan_kerja.clone())),
 
                 sync_at: Set(Some(sync_time)),
                 created_at: Set(Some(sync_time)),

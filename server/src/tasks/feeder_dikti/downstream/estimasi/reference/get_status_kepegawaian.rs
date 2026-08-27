@@ -121,7 +121,7 @@ impl EstimateGetStatusKepegawaian {
 
         if let Some(record) = record {
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().copied().unwrap_or(0);
+            let current_total = active.total_data.as_ref().and_then(|&x| x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -138,7 +138,7 @@ impl EstimateGetStatusKepegawaian {
         let id_status_pegawai = record
             .id_status_pegawai
             .clone()
-            .ok_or_else(|| "id_status_pegawai is missing".into())?;
+            .ok_or_else(|| DbErr::Custom("id_status_pegawai is missing".to_string()))?;
 
         let sync_time = Local::now().naive_local();
 

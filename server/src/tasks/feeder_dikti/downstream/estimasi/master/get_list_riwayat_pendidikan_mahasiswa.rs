@@ -194,7 +194,7 @@ impl EstimateListRiwayatPendidikanMahasiswa {
 
         if let Some(record) = record {
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().copied().unwrap_or(0);
+            let current_total = active.total_data.as_ref().and_then(|&x| x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -249,17 +249,17 @@ impl EstimateListRiwayatPendidikanMahasiswa {
             active.id_prodi = Set(record.id_prodi);
             active.nim = Set(record.nim.clone());
             active.nama_mahasiswa = Set(record.nama_mahasiswa.clone());
-            active.nama_perguruan_tinggi = Set(record.nama_perguruan_tinggi.clone());
-            active.nama_program_studi = Set(record.nama_program_studi.clone());
+            active.nama_perguruan_tinggi = Set(Some(record.nama_perguruan_tinggi.clone()));
+            active.nama_program_studi = Set(Some(record.nama_program_studi.clone()));
             active.nama_jenis_daftar = Set(record.nama_jenis_daftar.clone());
             active.keterangan_keluar = Set(record.keterangan_keluar.clone());
             active.nama_program_studi_asal = Set(record.nama_program_studi_asal.clone());
             active.nama_perguruan_tinggi_asal = Set(record.nama_perguruan_tinggi_asal.clone());
-            active.nama_periode_masuk = Set(record.nama_periode_masuk.clone());
+            active.nama_periode_masuk = Set(Some(record.nama_periode_masuk.clone()));
             active.nm_bidang_minat = Set(record.nm_bidang_minat.clone());
             active.nama_pembiayaan_awal = Set(record.nama_pembiayaan_awal.clone());
-            active.nama_ibu_kandung = Set(record.nama_ibu_kandung.clone());
-            active.status_sync = Set(record.status_sync.clone());
+            active.nama_ibu_kandung = Set(Some(record.nama_ibu_kandung.clone()));
+            active.status_sync = Set(Some(record.status_sync.clone()));
             active.id_jenis_daftar = Set(record.id_jenis_daftar);
             active.id_jalur_daftar = Set(record.id_jalur_daftar);
             active.id_periode_masuk = Set(record.id_periode_masuk.clone());
@@ -268,7 +268,7 @@ impl EstimateListRiwayatPendidikanMahasiswa {
             active.id_periode_keluar = Set(record.id_periode_keluar.clone());
             active.id_perguruan_tinggi_asal = Set(record.id_perguruan_tinggi_asal);
             active.id_prodi_asal = Set(record.id_prodi_asal);
-            active.jenis_kelamin = Set(record.jenis_kelamin.clone());
+            active.jenis_kelamin = Set(Some(record.jenis_kelamin.clone()));
             active.sks_diakui = Set(record.sks_diakui.map(|x| x as f32));
             active.biaya_masuk = Set(record.biaya_masuk);
             active.id_bidang_minat = Set(record.id_bidang_minat.clone());
@@ -293,17 +293,17 @@ impl EstimateListRiwayatPendidikanMahasiswa {
                 id_prodi: Set(record.id_prodi),
                 nim: Set(record.nim.clone()),
                 nama_mahasiswa: Set(record.nama_mahasiswa.clone()),
-                nama_perguruan_tinggi: Set(record.nama_perguruan_tinggi.clone()),
-                nama_program_studi: Set(record.nama_program_studi.clone()),
+                nama_perguruan_tinggi: Set(Some(record.nama_perguruan_tinggi.clone())),
+                nama_program_studi: Set(Some(record.nama_program_studi.clone())),
                 nama_jenis_daftar: Set(record.nama_jenis_daftar.clone()),
                 keterangan_keluar: Set(record.keterangan_keluar.clone()),
                 nama_program_studi_asal: Set(record.nama_program_studi_asal.clone()),
                 nama_perguruan_tinggi_asal: Set(record.nama_perguruan_tinggi_asal.clone()),
-                nama_periode_masuk: Set(record.nama_periode_masuk.clone()),
+                nama_periode_masuk: Set(Some(record.nama_periode_masuk.clone())),
                 nm_bidang_minat: Set(record.nm_bidang_minat.clone()),
                 nama_pembiayaan_awal: Set(record.nama_pembiayaan_awal.clone()),
-                nama_ibu_kandung: Set(record.nama_ibu_kandung.clone()),
-                status_sync: Set(record.status_sync.clone()),
+                nama_ibu_kandung: Set(Some(record.nama_ibu_kandung.clone())),
+                status_sync: Set(Some(record.status_sync.clone())),
                 id_jenis_daftar: Set(record.id_jenis_daftar),
                 id_jalur_daftar: Set(record.id_jalur_daftar),
                 id_periode_masuk: Set(record.id_periode_masuk.clone()),
@@ -312,7 +312,7 @@ impl EstimateListRiwayatPendidikanMahasiswa {
                 id_periode_keluar: Set(record.id_periode_keluar.clone()),
                 id_perguruan_tinggi_asal: Set(record.id_perguruan_tinggi_asal),
                 id_prodi_asal: Set(record.id_prodi_asal),
-                jenis_kelamin: Set(record.jenis_kelamin.clone()),
+                jenis_kelamin: Set(Some(record.jenis_kelamin.clone())),
                 sks_diakui: Set(record.sks_diakui.map(|x| x as f32)),
                 biaya_masuk: Set(record.biaya_masuk),
                 id_bidang_minat: Set(record.id_bidang_minat.clone()),

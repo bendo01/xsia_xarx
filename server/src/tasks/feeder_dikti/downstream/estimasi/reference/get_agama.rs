@@ -121,7 +121,7 @@ impl EstimateGetAgama {
 
         if let Some(record) = record {
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().copied().unwrap_or(0);
+            let current_total = active.total_data.as_ref().and_then(|&x| x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -137,7 +137,7 @@ impl EstimateGetAgama {
     async fn upsert_record(txn: &DatabaseTransaction, record: &GetAgamaResponse) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         let id_agama = record
             .id_agama
-            .ok_or_else(|| "id_agama is missing".into())?;
+            .ok_or_else(|| DbErr::Custom("id_agama is missing".to_string()))?;
 
         let sync_time = Local::now().naive_local();
 
@@ -151,7 +151,7 @@ impl EstimateGetAgama {
             let mut active: agama::ActiveModel = existing_record.into_active_model();
 
             // Update fields that are present in GetAgamaResponse
-            active.nama_agama = Set(record.nama_agama.clone());
+            active.nama_agama = Set(Some(record.nama_agama.clone()));
             active.sync_at = Set(Some(sync_time));
             active.updated_at = Set(Some(sync_time));
 
@@ -162,8 +162,8 @@ impl EstimateGetAgama {
 
             let new_record = agama::ActiveModel {
                 id: Set(pk_id),
-                id_agama: Set(id_agama),
-                nama_agama: Set(record.nama_agama.clone()),
+                id_agama: Set(Some(id_agama)),
+                nama_agama: Set(Some(record.nama_agama.clone())),
 
                 sync_at: Set(Some(sync_time)),
                 created_at: Set(Some(sync_time)),

@@ -121,7 +121,7 @@ impl EstimateGetJenjangPendidikan {
 
         if let Some(record) = record {
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().copied().unwrap_or(0);
+            let current_total = active.total_data.as_ref().and_then(|&x| x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -138,7 +138,7 @@ impl EstimateGetJenjangPendidikan {
         let id_jenjang_didik = record
             .id_jenjang_didik
             .clone()
-            .ok_or_else(|| "id_jenjang_didik is missing".into())?;
+            .ok_or_else(|| DbErr::Custom("id_jenjang_didik is missing".to_string()))?;
 
         let sync_time = Local::now().naive_local();
 

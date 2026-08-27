@@ -121,7 +121,7 @@ impl EstimateGetAlatTransportasi {
 
         if let Some(record) = record {
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().copied().unwrap_or(0);
+            let current_total = active.total_data.as_ref().and_then(|&x| x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -138,7 +138,7 @@ impl EstimateGetAlatTransportasi {
         let id_alat_transportasi = record
             .id_alat_transportasi
             .clone()
-            .ok_or_else(|| "id_alat_transportasi is missing".into())?;
+            .ok_or_else(|| DbErr::Custom("id_alat_transportasi is missing".to_string()))?;
 
         let sync_time = Local::now().naive_local();
 
@@ -152,7 +152,7 @@ impl EstimateGetAlatTransportasi {
             let mut active: alat_transportasi::ActiveModel = existing_record.into_active_model();
 
             // Update fields that are present in GetAlatTransportasiResponse
-            active.nama_alat_transportasi = Set(record.nama_alat_transportasi.clone());
+            active.nama_alat_transportasi = Set(Some(record.nama_alat_transportasi.clone()));
             active.sync_at = Set(Some(sync_time));
             active.updated_at = Set(Some(sync_time));
 
@@ -163,8 +163,8 @@ impl EstimateGetAlatTransportasi {
 
             let new_record = alat_transportasi::ActiveModel {
                 id: Set(pk_id),
-                id_alat_transportasi: Set(id_alat_transportasi),
-                nama_alat_transportasi: Set(record.nama_alat_transportasi.clone()),
+                id_alat_transportasi: Set(Some(id_alat_transportasi)),
+                nama_alat_transportasi: Set(Some(record.nama_alat_transportasi.clone())),
 
                 sync_at: Set(Some(sync_time)),
                 created_at: Set(Some(sync_time)),
