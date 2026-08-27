@@ -46,6 +46,14 @@ pub fn router() -> Router {
                 .get_named("academic.student.campaign.student_activities.list_student_activities", student_activities::list_student_activities)
                 .post_named("academic.student.campaign.student_activities.create_student_activitie", student_activities::create_student_activitie)
                 .push(
+                    Router::with_path("print_activity_plan/{id}")
+                        .get_named("academic.student.campaign.student_activities.print_activity_plan", student_activities::print_activity_plan),
+                )
+                .push(
+                    Router::with_path("print_activity_result/{id}")
+                        .get_named("academic.student.campaign.student_activities.print_activity_result", student_activities::print_activity_result),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.student.campaign.student_activities.get_student_activitie", student_activities::get_student_activitie)
                         .put_named("academic.student.campaign.student_activities.update_student_activitie", student_activities::update_student_activitie)

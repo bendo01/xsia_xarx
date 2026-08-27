@@ -13,6 +13,8 @@ use crate::dtos::academic::student::campaign::student_activities::{
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::student::campaign::student_activities as entity_mod;
+use crate::services::pdf::institution_092010::student::activity::plan::activity_plan as Institution092010StudentActivityPlan;
+use crate::services::pdf::institution_092010::student::activity::result::activity_result as Institution092010StudentActivityResult;
 
 #[endpoint(tags("Academic - Student - Campaign - StudentActivity"), status_codes(200, 500))]
 pub async fn list_student_activities(
@@ -321,4 +323,76 @@ pub async fn delete_student_activitie(
         Ok(Json(MessageResponse {
             message: "StudentActivity deleted successfully".to_string(),
         }))
+}
+
+#[endpoint(tags("Academic - Student - Campaign - StudentActivity"), status_codes(200, 400, 500))]
+pub async fn print_activity_plan(
+    req: &mut Request,
+    depot: &mut Depot,
+    res: &mut Response,
+) -> Result<(), StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let id_str = req
+        .param::<String>("id")
+        .or_else(|| req.param::<String>("activity_id"))
+        .ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+    let id = Uuid::parse_str(&id_str)
+        .map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+
+    let pdf_data = match Institution092010StudentActivityPlan::generate_pdf(db, id).await {
+        Ok(data) => data,
+        Err(e) => return Err(StatusError::internal_server_error().brief(e.to_string())),
+    };
+
+    res.headers_mut().insert(
+        salvo::http::header::CONTENT_TYPE,
+        salvo::http::HeaderValue::from_static("application/pdf"),
+    );
+    res.headers_mut().insert(
+        salvo::http::header::CONTENT_DISPOSITION,
+        salvo::http::HeaderValue::from_static("attachment; filename=report.pdf"),
+    );
+    res.write_body(pdf_data)
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    Ok(())
+}
+
+#[endpoint(tags("Academic - Student - Campaign - StudentActivity"), status_codes(200, 400, 500))]
+pub async fn print_activity_result(
+    req: &mut Request,
+    depot: &mut Depot,
+    res: &mut Response,
+) -> Result<(), StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let id_str = req
+        .param::<String>("id")
+        .or_else(|| req.param::<String>("activity_id"))
+        .ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+    let id = Uuid::parse_str(&id_str)
+        .map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+
+    let pdf_data = match Institution092010StudentActivityResult::generate_pdf(db, id).await {
+        Ok(data) => data,
+        Err(e) => return Err(StatusError::internal_server_error().brief(e.to_string())),
+    };
+
+    res.headers_mut().insert(
+        salvo::http::header::CONTENT_TYPE,
+        salvo::http::HeaderValue::from_static("application/pdf"),
+    );
+    res.headers_mut().insert(
+        salvo::http::header::CONTENT_DISPOSITION,
+        salvo::http::HeaderValue::from_static("attachment; filename=report.pdf"),
+    );
+    res.write_body(pdf_data)
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    Ok(())
 }
