@@ -2,7 +2,13 @@ import { createSignal, onMount, createEffect, Show, For } from 'solid-js';
 import { useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
-import { currentUserSignal, refreshAuthState } from '~/lib/authStore';
+import { 
+    currentUserSignal, 
+    refreshAuthState, 
+    getActiveStudentId, 
+    getActiveStudentCode, 
+    setActiveStudent 
+} from '~/lib/authStore';
 import { getStorageItem } from '~/lib/storage';
 import { GetCurrentUser } from '~/controllers/auth/AuthUser';
 import type { PersonMasterIndividualDataObject } from '~/models/person/master/Individual';
@@ -12,9 +18,11 @@ import { getStudentById, StudentMasterItem } from '~/controllers/academic/studen
 import { listCounsellors, CounsellorItem } from '~/controllers/academic/student/adviser/AcademicStudentAdviserController';
 
 export default function StudentDashboardProfilePage() {
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
     const [isLoading, setIsLoading] = createSignal(true);
+    const [isSubLoading, setIsSubLoading] = createSignal(false);
     const [individualData, setIndividualData] = createSignal<PersonMasterIndividualDataObject | null>(null);
+    const [availableStudents, setAvailableStudents] = createSignal<StudentMasterItem[]>([]);
     const [studentRecord, setStudentRecord] = createSignal<StudentMasterItem | null>(null);
     const [recentActivities, setRecentActivities] = createSignal<StudentActivityItem[]>([]);
     const [advisers, setAdvisers] = createSignal<CounsellorItem[]>([]);
@@ -45,31 +53,52 @@ export default function StudentDashboardProfilePage() {
                 if (!res.is_error && res.data) {
                     setIndividualData(res.data);
 
-                    // 2. Fetch associated student academic record for this individual
+                    // 2. Fetch and enrich all linked student identities for this individual
+                    const rawStudents = res.data.students || [];
+                    const enrichedStudents: StudentMasterItem[] = await Promise.all(
+                        rawStudents.map(async (std) => {
+                            try {
+                                const detailed = await getStudentById(std.id);
+                                return detailed || std;
+                            } catch {
+                                return std;
+                            }
+                        })
+                    );
+
+                    setAvailableStudents(enrichedStudents);
+
+                    // 3. Determine selected active student identity (by query code, saved ID/code, or first available)
+                    const targetCode = searchParams.code as string;
+                    const targetStudentId = searchParams.student_id as string;
+                    const savedStudentId = getActiveStudentId();
+                    const savedStudentCode = getActiveStudentCode();
+
                     let matchedStudent: StudentMasterItem | null = null;
-                    if (res.data.students && res.data.students.length > 0) {
-                        const linkedStudentId = res.data.students[0].id;
-                        const fullStudent = await getStudentById(linkedStudentId);
-                        matchedStudent = fullStudent || res.data.students[0];
+                    if (enrichedStudents.length > 0) {
+                        if (targetCode) {
+                            matchedStudent = enrichedStudents.find(s => s.code === targetCode) || null;
+                        }
+                        if (!matchedStudent && targetStudentId) {
+                            matchedStudent = enrichedStudents.find(s => s.id === targetStudentId) || null;
+                        }
+                        if (!matchedStudent && savedStudentCode) {
+                            matchedStudent = enrichedStudents.find(s => s.code === savedStudentCode) || null;
+                        }
+                        if (!matchedStudent && savedStudentId) {
+                            matchedStudent = enrichedStudents.find(s => s.id === savedStudentId) || null;
+                        }
+                        if (!matchedStudent) {
+                            matchedStudent = enrichedStudents[0];
+                        }
                     }
+
                     setStudentRecord(matchedStudent);
 
-                    // 3. Fetch academic activities specifically for this student
-                    if (matchedStudent?.id) {
-                        const actRes = await listStudentActivities({ student_id: matchedStudent.id, page: 1, page_size: 5 });
-                        if (actRes.data) {
-                            setRecentActivities(actRes.data);
-                        } else {
-                            setRecentActivities([]);
-                        }
-
-                        // 4. Fetch advisers specifically for this student
-                        const advRes = await listCounsellors({ student_id: matchedStudent.id, page: 1, page_size: 5 });
-                        if (advRes.data) {
-                            setAdvisers(advRes.data);
-                        } else {
-                            setAdvisers([]);
-                        }
+                    if (matchedStudent) {
+                        setActiveStudent(matchedStudent.id, matchedStudent.code);
+                        // Fetch academic activities and advisers specifically for this student
+                        await loadStudentSubRecords(matchedStudent.id);
                     } else {
                         setRecentActivities([]);
                         setAdvisers([]);
@@ -82,6 +111,34 @@ export default function StudentDashboardProfilePage() {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const loadStudentSubRecords = async (studentId: string) => {
+        setIsSubLoading(true);
+        try {
+            const [actRes, advRes] = await Promise.all([
+                listStudentActivities({ student_id: studentId, page: 1, page_size: 5 }),
+                listCounsellors({ student_id: studentId, page: 1, page_size: 5 })
+            ]);
+
+            setRecentActivities(actRes.data || []);
+            setAdvisers(advRes.data || []);
+        } catch (err) {
+            console.error('Error loading student activities or advisers:', err);
+        } finally {
+            setIsSubLoading(false);
+        }
+    };
+
+    const handleSelectStudent = async (student: StudentMasterItem) => {
+        if (studentRecord()?.id === student.id && studentRecord()?.code === student.code) return;
+        
+        setStudentRecord(student);
+        setActiveStudent(student.id, student.code);
+        setSearchParams({ code: student.code });
+        
+        toast.success(`Identitas mahasiswa aktif dialihkan ke NIM: ${student.code} (${student.unit_name || 'Program Studi'})`);
+        await loadStudentSubRecords(student.id);
     };
 
     onMount(() => {
@@ -135,10 +192,23 @@ export default function StudentDashboardProfilePage() {
                             </div>
 
                             <div class="space-y-2 text-center sm:text-start">
-                                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-mono font-semibold">
-                                    <span class="size-2 rounded-full bg-blue-400 animate-pulse"></span>
-                                    <span>NIM: {studentRecord()?.code || ind()?.code || '-'}</span>
+                                <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-mono font-bold">
+                                        <span class="size-2 rounded-full bg-blue-400 animate-pulse"></span>
+                                        <span>NIM: {studentRecord()?.code || ind()?.code || '-'}</span>
+                                    </div>
+
+                                    {/* Multiple student identities badge */}
+                                    <Show when={availableStudents().length > 1}>
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[11px] font-medium">
+                                            <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+                                            </svg>
+                                            <span>{availableStudents().length} Identitas Mahasiswa Terdaftar</span>
+                                        </span>
+                                    </Show>
                                 </div>
+
                                 <h1 class="text-2xl sm:text-3xl font-black tracking-tight">{fullName()}</h1>
                                 <p class="text-neutral-300 text-xs sm:text-sm max-w-xl">
                                     {studentRecord()?.unit_name || '-'} • Academic Batch {studentRecord()?.academic_year_name || studentRecord()?.registered?.substring(0, 4) || '-'}
@@ -163,6 +233,124 @@ export default function StudentDashboardProfilePage() {
                         </div>
                     </div>
                 </div>
+
+                {/* Multiple Student Identity Switcher Card (when user has multiple student records e.g. NIM 111301760 & 141302134) */}
+                <Show when={availableStudents().length > 1}>
+                    <div class="bg-white dark:bg-neutral-800 rounded-3xl p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-neutral-200 dark:border-neutral-700">
+                            <div class="flex items-center gap-3">
+                                <div class="size-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                                    <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h2 class="text-sm font-bold text-neutral-900 dark:text-white flex items-center gap-2">
+                                        <span>Pilih Identitas Akademik Mahasiswa</span>
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
+                                            {availableStudents().length} Identitas
+                                        </span>
+                                    </h2>
+                                    <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                        Akun ini terdaftar pada multi program studi/identitas. Klik salah satu kartu identitas untuk beralih.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="text-xs font-mono text-neutral-400 dark:text-neutral-500 self-start sm:self-auto">
+                                Identitas Aktif: <span class="font-bold text-blue-600 dark:text-blue-400">NIM {studentRecord()?.code || '-'}</span>
+                            </div>
+                        </div>
+
+                        {/* Interactive Identity Cards Grid */}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <For each={availableStudents()}>
+                                {(std) => {
+                                    const isCurrent = () => studentRecord()?.code === std.code || studentRecord()?.id === std.id;
+                                    return (
+                                        <div
+                                            role="button"
+                                            tabIndex="0"
+                                            onClick={() => handleSelectStudent(std)}
+                                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleSelectStudent(std); }}
+                                            class={`p-5 rounded-2xl border transition-all text-start cursor-pointer relative overflow-hidden flex flex-col justify-between ${
+                                                isCurrent()
+                                                    ? 'bg-blue-50/80 dark:bg-blue-950/40 border-2 border-blue-600 dark:border-blue-500 shadow-md ring-2 ring-blue-500/20'
+                                                    : 'bg-white dark:bg-neutral-800/80 border-neutral-200 dark:border-neutral-700 hover:border-blue-300 dark:hover:border-neutral-600 hover:shadow-xs'
+                                            }`}
+                                        >
+                                            {/* Selection Ribbon indicator */}
+                                            <Show when={isCurrent()}>
+                                                <div class="absolute top-0 right-0 px-3 py-1 bg-blue-600 text-white text-[10px] font-bold rounded-bl-xl tracking-wider uppercase flex items-center gap-1 shadow-xs">
+                                                    <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                                        <polyline points="20 6 9 17 4 12"/>
+                                                    </svg>
+                                                    <span>Identitas Aktif</span>
+                                                </div>
+                                            </Show>
+
+                                            <div class="space-y-2.5">
+                                                <div class="flex items-center gap-3">
+                                                    <div class={`size-11 rounded-xl flex items-center justify-center font-bold text-sm ${
+                                                        isCurrent()
+                                                            ? 'bg-blue-600 text-white shadow-sm'
+                                                            : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300'
+                                                    }`}>
+                                                        <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <div class="flex items-center gap-2">
+                                                            <span class="text-xs font-mono font-bold text-neutral-900 dark:text-white">
+                                                                NIM: {std.code}
+                                                            </span>
+                                                            <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                                                                {std.status_name || 'Terdaftar'}
+                                                            </span>
+                                                        </div>
+                                                        <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                                            {std.unit_name || 'Program Studi Mahasiswa'}
+                                                        </h3>
+                                                    </div>
+                                                </div>
+
+                                                <div class="pt-2 border-t border-neutral-100 dark:border-neutral-700/60 grid grid-cols-2 gap-2 text-xs text-neutral-600 dark:text-neutral-300">
+                                                    <div>
+                                                        <span class="text-neutral-400 block text-[10px] font-mono uppercase">Angkatan:</span>
+                                                        <span class="font-semibold">{std.academic_year_name || std.registered?.substring(0, 4) || '-'}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-neutral-400 block text-[10px] font-mono uppercase">Tgl Registrasi:</span>
+                                                        <span class="font-semibold">{std.registered || '-'}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mt-4 pt-3 flex items-center justify-between">
+                                                <Show when={isCurrent()} fallback={
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => { e.stopPropagation(); handleSelectStudent(std); }}
+                                                        class="w-full py-2 px-3 bg-neutral-100 dark:bg-neutral-700 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 rounded-xl text-xs font-bold transition-colors text-center"
+                                                    >
+                                                        Gunakan Identitas NIM {std.code} →
+                                                    </button>
+                                                }>
+                                                    <div class="w-full py-2 px-3 bg-blue-600 text-white rounded-xl text-xs font-bold text-center flex items-center justify-center gap-1.5 shadow-xs">
+                                                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                            <polyline points="20 6 9 17 4 12"/>
+                                                        </svg>
+                                                        <span>Identitas Sedang Aktif</span>
+                                                    </div>
+                                                </Show>
+                                            </div>
+                                        </div>
+                                    );
+                                }}
+                            </For>
+                        </div>
+                    </div>
+                </Show>
 
                 {/* Quick Action Navigation Grid */}
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -238,35 +426,50 @@ export default function StudentDashboardProfilePage() {
                         <button
                             type="button"
                             onClick={() => setActiveTab('overview')}
-                            class={`pb-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap ${
+                            title="Overview & Academic History"
+                            aria-label="Overview & Academic History"
+                            class={`flex items-center gap-2 pb-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap px-1 ${
                                 activeTab() === 'overview'
                                     ? 'border-blue-600 text-blue-600 dark:text-blue-400'
                                     : 'border-transparent text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200'
                             }`}
                         >
-                            Overview & Academic History
+                            <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
+                            </svg>
+                            <span class="hidden sm:inline">Overview & Academic History</span>
                         </button>
                         <button
                             type="button"
                             onClick={() => setActiveTab('biodata')}
-                            class={`pb-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap ${
+                            title="Personal Biodata & Address"
+                            aria-label="Personal Biodata & Address"
+                            class={`flex items-center gap-2 pb-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap px-1 ${
                                 activeTab() === 'biodata'
                                     ? 'border-blue-600 text-blue-600 dark:text-blue-400'
                                     : 'border-transparent text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200'
                             }`}
                         >
-                            Personal Biodata & Address
+                            <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z" />
+                            </svg>
+                            <span class="hidden sm:inline">Personal Biodata & Address</span>
                         </button>
                         <button
                             type="button"
                             onClick={() => setActiveTab('academic')}
-                            class={`pb-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap ${
+                            title="Advisers & Guidance"
+                            aria-label="Advisers & Guidance"
+                            class={`flex items-center gap-2 pb-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap px-1 ${
                                 activeTab() === 'academic'
                                     ? 'border-blue-600 text-blue-600 dark:text-blue-400'
                                     : 'border-transparent text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200'
                             }`}
                         >
-                            Advisers & Guidance
+                            <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                            </svg>
+                            <span class="hidden sm:inline">Advisers & Guidance</span>
                         </button>
                     </div>
 
@@ -283,9 +486,14 @@ export default function StudentDashboardProfilePage() {
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         {/* Academic Status Card */}
                                         <div class="p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 space-y-3">
-                                            <h3 class="text-xs font-bold font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                                                Enrollment Summary
-                                            </h3>
+                                            <div class="flex items-center justify-between">
+                                                <h3 class="text-xs font-bold font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                                                    Enrollment Summary
+                                                </h3>
+                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-mono">
+                                                    NIM: {studentRecord()?.code || '-'}
+                                                </span>
+                                            </div>
                                             <div class="grid grid-cols-2 gap-3 text-xs">
                                                 <div>
                                                     <span class="text-neutral-400 block">Student NIM</span>
@@ -339,9 +547,14 @@ export default function StudentDashboardProfilePage() {
                                     {/* Recent Semester Activity Preview */}
                                     <div class="space-y-3">
                                         <div class="flex items-center justify-between">
-                                            <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                                Recent Academic Semesters
-                                            </h3>
+                                            <div class="flex items-center gap-2">
+                                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                                    Recent Academic Semesters
+                                                </h3>
+                                                <Show when={isSubLoading()}>
+                                                    <div class="size-3.5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                                                </Show>
+                                            </div>
                                             <A href="/student/academic/student/campaign/activity" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
                                                 View All Semesters →
                                             </A>
@@ -364,7 +577,7 @@ export default function StudentDashboardProfilePage() {
                                                     <Show when={recentActivities().length > 0} fallback={
                                                         <tr>
                                                             <td colspan="7" class="py-8 text-center text-neutral-400 font-mono">
-                                                                No semester academic activities recorded yet.
+                                                                No semester academic activities recorded for NIM {studentRecord()?.code || '-'}.
                                                             </td>
                                                         </tr>
                                                     }>
@@ -473,9 +686,14 @@ export default function StudentDashboardProfilePage() {
                             <Show when={activeTab() === 'academic'}>
                                 <div class="space-y-4">
                                     <div class="flex items-center justify-between">
-                                        <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                            Assigned Academic Advisers & Counsellors
-                                        </h3>
+                                        <div class="flex items-center gap-2">
+                                            <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                                Assigned Academic Advisers & Counsellors
+                                            </h3>
+                                            <Show when={isSubLoading()}>
+                                                <div class="size-3.5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                                            </Show>
+                                        </div>
                                         <A href="/student/academic/student/adviser" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
                                             Adviser Workspace →
                                         </A>
@@ -483,7 +701,7 @@ export default function StudentDashboardProfilePage() {
 
                                     <Show when={advisers().length > 0} fallback={
                                         <div class="p-8 text-center text-neutral-400 font-mono bg-neutral-50 dark:bg-neutral-900/60 rounded-2xl border border-neutral-200/80 dark:border-neutral-700/80">
-                                            No academic advisers assigned yet.
+                                            No academic advisers assigned yet for NIM {studentRecord()?.code || '-'}.
                                         </div>
                                     }>
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

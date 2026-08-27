@@ -6,6 +6,7 @@ import {
     activeRoleSignal, 
     userRolesSignal, 
     isAuthenticatedSignal, 
+    activeStudentCodeSignal,
     logout, 
     setActiveRole, 
     getRoleDisplayName, 
@@ -71,6 +72,9 @@ export default function TopBar() {
                             <div class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800/80">
                                 <span class="size-1.5 rounded-full bg-blue-500"></span>
                                 <span>{activeRoleDisplay()}</span>
+                                <Show when={activeRoleSignal() === 'student' && activeStudentCodeSignal()}>
+                                    <span class="text-blue-500 dark:text-blue-400 font-mono">({activeStudentCodeSignal()})</span>
+                                </Show>
                             </div>
                         </Show>
                     </div>
@@ -213,9 +217,16 @@ export default function TopBar() {
                                     <div class="p-2 mb-2 bg-neutral-50 dark:bg-neutral-900/60 rounded-xl border border-neutral-200/60 dark:border-neutral-700/60">
                                         <p class="font-bold text-sm text-neutral-900 dark:text-white truncate">{userName()}</p>
                                         <p class="text-xs text-neutral-500 dark:text-neutral-400 truncate mb-1">{userEmail()}</p>
-                                        <span class="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
-                                            Current: {activeRoleDisplay()}
-                                        </span>
+                                        <div class="flex items-center gap-1.5 flex-wrap">
+                                            <span class="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
+                                                Current: {activeRoleDisplay()}
+                                            </span>
+                                            <Show when={activeRoleSignal() === 'student' && activeStudentCodeSignal()}>
+                                                <span class="inline-block text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                                                    NIM: {activeStudentCodeSignal()}
+                                                </span>
+                                            </Show>
+                                        </div>
                                     </div>
 
                                     {/* Multi-role Switcher List */}

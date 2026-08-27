@@ -176,22 +176,47 @@ const [currentUserSignal, setCurrentUserSignal] = createSignal<StoredUser | null
 const [userRolesSignal, setUserRolesSignal] = createSignal<UserRoleItem[]>([]);
 const [activeRoleSignal, setActiveRoleSignal] = createSignal<string>('student');
 const [isAuthenticatedSignal, setIsAuthenticatedSignal] = createSignal<boolean>(false);
+const [activeStudentIdSignal, setActiveStudentIdSignal] = createSignal<string>('');
+const [activeStudentCodeSignal, setActiveStudentCodeSignal] = createSignal<string>('');
 
 export {
     currentUserSignal,
     userRolesSignal,
     activeRoleSignal,
-    isAuthenticatedSignal
+    isAuthenticatedSignal,
+    activeStudentIdSignal,
+    activeStudentCodeSignal
 };
+
+export function getActiveStudentId(): string {
+    return getStorageItem('active_student_id') || '';
+}
+
+export function getActiveStudentCode(): string {
+    return getStorageItem('active_student_code') || '';
+}
+
+export function setActiveStudent(studentId: string, studentCode?: string, isSession: boolean = false): void {
+    setStorageItem('active_student_id', studentId, isSession);
+    setActiveStudentIdSignal(studentId);
+    if (studentCode) {
+        setStorageItem('active_student_code', studentCode, isSession);
+        setActiveStudentCodeSignal(studentCode);
+    }
+}
 
 export function refreshAuthState(): void {
     const user = getStoredUser();
     const roles = getStoredRoles();
     const active = getActiveRole();
     const token = getStorageItem('token');
+    const studentId = getActiveStudentId();
+    const studentCode = getActiveStudentCode();
     setCurrentUserSignal(user);
     setUserRolesSignal(roles);
     setActiveRoleSignal(active);
+    setActiveStudentIdSignal(studentId);
+    setActiveStudentCodeSignal(studentCode);
     setIsAuthenticatedSignal(Boolean(token && token !== 'undefined' && token !== ''));
 }
 
