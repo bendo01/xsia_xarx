@@ -361,7 +361,7 @@ export default function PersonMasterIndividualEditPage() {
                                 <div class="flex items-center gap-3">
                                     <div class="size-12 bg-neutral-100 dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 overflow-hidden flex items-center justify-center shrink-0">
                                         <img
-                                            src="/images/Portrait_Placeholder.png"
+                                            src="/img/Portrait_Placeholder.png"
                                             alt="Thumbnail"
                                             class="w-full h-full object-cover object-top"
                                         />

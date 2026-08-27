@@ -249,7 +249,7 @@ export default function PersonMasterIndividualIndexPage() {
                                             <div class="flex items-start gap-3">
                                                 <div class="size-12 shrink-0 bg-neutral-100 dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-600 overflow-hidden shadow-2xs flex items-center justify-center">
                                                     <img
-                                                        src="/images/Portrait_Placeholder.png"
+                                                        src="/img/Portrait_Placeholder.png"
                                                         alt="Portrait Thumbnail"
                                                         class="w-full h-full object-cover object-top"
                                                     />
@@ -393,7 +393,7 @@ export default function PersonMasterIndividualIndexPage() {
                                                     <td class="px-4 py-3">
                                                         <div class="size-10 bg-neutral-100 dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-600 overflow-hidden shadow-2xs flex items-center justify-center">
                                                             <img
-                                                                src="/images/Portrait_Placeholder.png"
+                                                                src="/img/Portrait_Placeholder.png"
                                                                 alt="Portrait Thumbnail"
                                                                 class="w-full h-full object-cover object-top"
                                                             />

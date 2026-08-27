@@ -13,7 +13,7 @@ export default function PersonMasterIndividualShowPage() {
         (searchParams.id as string) || ''
     );
     const [activeTab, setActiveTab] = createSignal<'demographics' | 'biometrics' | 'family' | 'roles' | 'audit'>('demographics');
-    const [photoSrc, setPhotoSrc] = createSignal<string>('/images/Portrait_Placeholder.png');
+    const [photoSrc, setPhotoSrc] = createSignal<string>('/img/Portrait_Placeholder.png');
     const [isPhotoModalOpen, setIsPhotoModalOpen] = createSignal(false);
 
     // Dialog refs
@@ -96,7 +96,7 @@ export default function PersonMasterIndividualShowPage() {
     };
 
     const handleResetPhoto = () => {
-        setPhotoSrc('/images/Portrait_Placeholder.png');
+        setPhotoSrc('/img/Portrait_Placeholder.png');
         toast.info('Portrait reset to default placeholder.', 3000);
         closePhotoModal();
     };
@@ -252,7 +252,7 @@ export default function PersonMasterIndividualShowPage() {
                                             alt={`Portrait of ${fullPersonName()}`}
                                             class="w-full h-full object-cover object-top"
                                             onError={(e) => {
-                                                (e.currentTarget as HTMLImageElement).src = '/images/Portrait_Placeholder.png';
+                                                (e.currentTarget as HTMLImageElement).src = '/img/Portrait_Placeholder.png';
                                             }}
                                             id="img-individual-portrait"
                                         />
@@ -447,8 +447,8 @@ export default function PersonMasterIndividualShowPage() {
                             type="button"
                             onClick={() => setActiveTab('demographics')}
                             class={`flex-1 sm:flex-none px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-2 ${activeTab() === 'demographics'
-                                    ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-white dark:bg-neutral-800'
-                                    : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
+                                ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-white dark:bg-neutral-800'
+                                : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
                                 }`}
                             id="tab-demographics"
                             title="1. Demographics & Civil ID"
@@ -464,8 +464,8 @@ export default function PersonMasterIndividualShowPage() {
                             type="button"
                             onClick={() => setActiveTab('biometrics')}
                             class={`flex-1 sm:flex-none px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-2 ${activeTab() === 'biometrics'
-                                    ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-white dark:bg-neutral-800'
-                                    : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
+                                ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-white dark:bg-neutral-800'
+                                : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
                                 }`}
                             id="tab-biometrics"
                             title="2. Biometrics & Biodata"
@@ -480,8 +480,8 @@ export default function PersonMasterIndividualShowPage() {
                             type="button"
                             onClick={() => setActiveTab('family')}
                             class={`flex-1 sm:flex-none px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-2 ${activeTab() === 'family'
-                                    ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-white dark:bg-neutral-800'
-                                    : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
+                                ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-white dark:bg-neutral-800'
+                                : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
                                 }`}
                             id="tab-family"
                             title="3. Family Card"
@@ -504,8 +504,8 @@ export default function PersonMasterIndividualShowPage() {
                             type="button"
                             onClick={() => setActiveTab('roles')}
                             class={`flex-1 sm:flex-none px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-2 ${activeTab() === 'roles'
-                                    ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-white dark:bg-neutral-800'
-                                    : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
+                                ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-white dark:bg-neutral-800'
+                                : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
                                 }`}
                             id="tab-roles"
                             title="4. Academic & Staff Roles"
@@ -526,8 +526,8 @@ export default function PersonMasterIndividualShowPage() {
                             type="button"
                             onClick={() => setActiveTab('audit')}
                             class={`flex-1 sm:flex-none px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-2 ${activeTab() === 'audit'
-                                    ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-white dark:bg-neutral-800'
-                                    : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
+                                ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-white dark:bg-neutral-800'
+                                : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
                                 }`}
                             id="tab-audit"
                             title="5. System Audit Log"
@@ -651,8 +651,8 @@ export default function PersonMasterIndividualShowPage() {
                                     <dt class="font-medium text-neutral-500 dark:text-neutral-400">Social Protection (KPS)</dt>
                                     <dd class="col-span-2">
                                         <span class={`inline-flex items-center px-2 py-0.5 text-xs font-semibold ${individualData()?.individual?.is_social_protection_card_recipient
-                                                ? 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300'
-                                                : 'bg-neutral-100 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300'
+                                            ? 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300'
+                                            : 'bg-neutral-100 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300'
                                             }`}>
                                             {individualData()?.individual?.is_social_protection_card_recipient ? 'Recipient (Penerima)' : 'No (Bukan Penerima)'}
                                         </span>
@@ -662,8 +662,8 @@ export default function PersonMasterIndividualShowPage() {
                                     <dt class="font-medium text-neutral-500 dark:text-neutral-400">Special Needs (Disabilitas)</dt>
                                     <dd class="col-span-2">
                                         <span class={`inline-flex items-center px-2 py-0.5 text-xs font-semibold ${individualData()?.individual?.is_special_need
-                                                ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300'
-                                                : 'bg-neutral-100 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300'
+                                            ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300'
+                                            : 'bg-neutral-100 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300'
                                             }`}>
                                             {individualData()?.individual?.is_special_need ? 'Yes (Berkebutuhan Khusus)' : 'None (Tidak Ada)'}
                                         </span>
@@ -1272,7 +1272,7 @@ export default function PersonMasterIndividualShowPage() {
                                 alt="Full Resolution Portrait Preview"
                                 class="w-full h-full object-cover object-top"
                                 onError={(e) => {
-                                    (e.currentTarget as HTMLImageElement).src = '/images/Portrait_Placeholder.png';
+                                    (e.currentTarget as HTMLImageElement).src = '/img/Portrait_Placeholder.png';
                                 }}
                             />
                         </div>
