@@ -78,7 +78,7 @@ export default function StudentCampaignActivityShowPage() {
                     credit: detail.credit ?? course?.total_credit ?? course?.credit ?? 0,
                     lecturer_name: lecturerName,
                     lecturers: lecturerList,
-                    grade_letter: grade?.alphabet_code || detail.grade_letter || (detail.mark != null ? '-' : '-'),
+                    grade_letter: grade?.alphabet_code || grade?.name || detail.grade_letter || '-',
                     grade_point: grade?.grade ?? detail.grade_point ?? null,
                 };
             });
@@ -187,13 +187,28 @@ export default function StudentCampaignActivityShowPage() {
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect width="12" height="8" x="6" y="14" /></svg>
                                 <span>Print KRS / KHS</span>
                             </button>
-                            <A
-                                href={`/student/academic/student/campaign/activity/enrollment?activity_id=${activity()?.id || ''}`}
-                                class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5"
+                            <Show
+                                when={!activity()?.is_lock}
+                                fallback={
+                                    <button
+                                        type="button"
+                                        disabled
+                                        class="px-5 py-2.5 bg-neutral-200 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-500 rounded-xl text-xs font-bold transition-colors cursor-not-allowed flex items-center gap-1.5 opacity-60"
+                                        title="Academic activity is locked"
+                                    >
+                                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>
+                                        <span>Add / Enroll Courses</span>
+                                    </button>
+                                }
                             >
-                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>
-                                <span>Add / Enroll Courses</span>
-                            </A>
+                                <A
+                                    href={`/student/academic/student/campaign/activity/enrollment?activity_id=${activity()?.id || ''}`}
+                                    class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5"
+                                >
+                                    <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>
+                                    <span>Add / Enroll Courses</span>
+                                </A>
+                            </Show>
                         </div>
                     </div>
 
@@ -293,11 +308,11 @@ export default function StudentCampaignActivityShowPage() {
                                                 </td>
                                                 <td class="py-3.5 px-4 text-center">
                                                     <span class="inline-block px-2 py-0.5 rounded-md font-bold text-xs bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
-                                                        {c.grade_letter || '-'}
+                                                        {c.grade_letter || c.grade?.alphabet_code || c.grade?.name || '-'}
                                                     </span>
                                                 </td>
                                                 <td class="py-3.5 px-4 text-center font-mono font-bold text-neutral-800 dark:text-neutral-200">
-                                                    {c.grade_point != null ? c.grade_point.toFixed(2) : '-'}
+                                                    {c.grade_point != null ? c.grade_point.toFixed(2) : (c.grade?.grade != null ? c.grade.grade.toFixed(2) : '-')}
                                                 </td>
                                                 <td class="py-3.5 px-4 text-center">
                                                     <Show
