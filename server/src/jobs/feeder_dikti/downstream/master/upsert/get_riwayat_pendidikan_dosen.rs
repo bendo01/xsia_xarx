@@ -1,18 +1,62 @@
-use chrono::{DateTime, Local, NaiveDate, NaiveDateTime, Utc};
+use apalis::prelude::{Data, Monitor, WorkerBuilder, WorkerFactoryFn};
+use apalis_redis::RedisStorage;
+use chrono::{DateTime, Local, NaiveDate, NaiveDate as Date, NaiveDateTime, Utc};
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, DatabaseTransaction, EntityTrait,
-    IntoActiveModel, QueryFilter, Set, TransactionTrait,
+    ActiveModelTrait, ActiveValue, ActiveValue::Set, ColumnTrait, DatabaseConnection, DatabaseTransaction, DbErr, EntityTrait,
+    IntoActiveModel, QueryFilter, TransactionTrait,
 };
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::models::feeder::master::riwayat_pendidikan_dosen as riwayat_pendidikan_dosen;
 
-
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct RiwayatPendidikanDosen {
+    pub id_dosen: Option<Uuid>,
+    pub nidn: Option<String>,
+    pub nuptk: Option<String>,
+    pub nama_dosen: Option<String>,
+    pub id_bidang_studi: Option<i64>,
+    pub nama_bidang_studi: Option<String>,
+    pub id_jenjang_pendidikan: Option<String>,
+    pub nama_jenjang_pendidikan: Option<String>,
+    pub id_gelar_akademik: Option<i64>,
+    pub nama_gelar_akademik: Option<String>,
+    pub id_perguruan_tinggi: Option<Uuid>,
+    pub nama_perguruan_tinggi: Option<String>,
+    pub fakultas: Option<String>,
+    pub tahun_lulus: Option<String>,
+    pub sks_lulus: Option<String>,
+    pub ipk: Option<String>,
+}
 
 #[derive(Deserialize, Debug, Serialize, Clone)]
 pub struct WorkerArgs {
-    pub records: Vec<FeederResponse>,
+    pub records: Vec<RiwayatPendidikanDosen>,
+}
+
+pub async fn handle_job(
+    args: WorkerArgs,
+    db: Data<DatabaseConnection>,
+) -> Result<(), std::io::Error> {
+    Worker::perform(&db, args).await.map_err(|e| std::io::Error::other(e.to_string()))
+}
+
+pub async fn start_worker(
+    redis_url: String,
+    db: DatabaseConnection,
+) -> Result<Monitor, std::io::Error> {
+    let conn = apalis_redis::connect(redis_url)
+        .await
+        .map_err(|e| std::io::Error::other(e.to_string()))?;
+    let storage: RedisStorage<WorkerArgs> = RedisStorage::new(conn);
+
+    let worker = WorkerBuilder::new("xsia-xarx:feeder_dikti:downstream:master:upsert:get_riwayat_pendidikan_dosen")
+        .data(db)
+        .backend(storage)
+        .build_fn(handle_job);
+
+    Ok(Monitor::new().register(worker))
 }
 
 pub struct Worker;
@@ -44,7 +88,7 @@ impl Worker {
     }
 
 
-    pub async fn upsert_record(txn: &DatabaseTransaction, record: &FeederResponse) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+    pub async fn upsert_record(txn: &DatabaseTransaction, record: &RiwayatPendidikanDosen) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         let id_dosen = record
             .id_dosen
             .ok_or_else(|| "id_dosen is required for upsert".into())?;

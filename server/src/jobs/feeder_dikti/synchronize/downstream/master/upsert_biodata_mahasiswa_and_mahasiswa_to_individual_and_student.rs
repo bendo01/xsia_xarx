@@ -1,9 +1,37 @@
+use apalis::prelude::{Data, Monitor, WorkerBuilder, WorkerFactoryFn};
+use apalis_redis::RedisStorage;
+use chrono::{DateTime, Local, NaiveDate, NaiveDate as Date, NaiveDateTime, Utc};
+use sea_orm::prelude::Decimal;
 use sea_orm::{
-    ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, DatabaseTransaction,
+    ActiveModelTrait, ActiveValue, ActiveValue::Set, ColumnTrait, DatabaseConnection, DatabaseTransaction, DbErr,
     EntityTrait, IntoActiveModel, QueryFilter, TransactionTrait, TryIntoModel,
 };
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+
+pub async fn handle_job(
+    args: WorkerArgs,
+    db: Data<DatabaseConnection>,
+) -> Result<(), std::io::Error> {
+    Worker::perform(&db, args).await.map_err(|e| std::io::Error::other(e.to_string()))
+}
+
+pub async fn start_worker(
+    redis_url: String,
+    db: DatabaseConnection,
+) -> Result<Monitor, std::io::Error> {
+    let conn = apalis_redis::connect(redis_url)
+        .await
+        .map_err(|e| std::io::Error::other(e.to_string()))?;
+    let storage: RedisStorage<WorkerArgs> = RedisStorage::new(conn);
+
+    let worker = WorkerBuilder::new("xsia-xarx:feeder_dikti:synchronize:downstream:master:upsert_biodata_mahasiswa_and_mahasiswa_to_individual_and_student")
+        .data(db)
+        .backend(storage)
+        .build_fn(handle_job);
+
+    Ok(Monitor::new().register(worker))
+}
 
 use std::str::FromStr;
 
@@ -40,10 +68,22 @@ pub struct WorkerArgs {
 
 
 impl Worker {
-    async fn proceed(
-        &self,
-        model: FeederMasterBiodataMahasiswa::Model,
-    ) -> Result<PersonMasterIndividual::Model> {
+    pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+        let data = args.model.clone();
+        println!("=================📄 Process Data {} =======================", data.nik.clone().unwrap_or_default());
+        match Self::proceed(db, data).await {
+            Ok(individual) => {
+                println!("✅ Successfully processed individual: {}", individual.code);
+                Ok(())
+            }
+            Err(e) => {
+                println!("❌ Failed to process individual: {}", e);
+                Err(e)
+            }
+        }
+    }
+
+    async fn proceed(db: &DatabaseConnection, model: FeederMasterBiodataMahasiswa::Model) -> Result<PersonMasterIndividual::Model, Box<dyn std::error::Error + Send + Sync>> {
         // 1. Upsert individual first
         let upsert_individual = UpsertIndividual;
 
@@ -115,16 +155,13 @@ impl Worker {
 }
 
 impl UpsertIndividual {
-    async fn upsert(
-        &self,
-        model: FeederMasterBiodataMahasiswa::Model,
-    ) -> Result<PersonMasterIndividual::Model> {
+    async fn upsert(&self, db: &DatabaseConnection, model: FeederMasterBiodataMahasiswa::Model) -> Result<PersonMasterIndividual::Model, Box<dyn std::error::Error + Send + Sync>> {
                 let data = model.clone();
 
         let nik = match &data.nik {
             Some(n) => n.clone(),
             None => {
-                return Err("NIK is required".into());
+                return Err("NIK is required".to_string(.into()));
             }
         };
 
@@ -298,7 +335,7 @@ impl UpsertStudent {
         individual: PersonMasterIndividual::Model,
         id_registrasi_mahasiswa: Option<Uuid>,
         id_mahasiswa: Uuid,
-    ) -> Result<AcademicStudentMasterStudent::Model> {
+    ) -> Result<AcademicStudentMasterStudent::Model, Box<dyn std::error::Error + Send + Sync>> {
         
         // Fetch mahasiswa record
         let mahasiswa = match FeederMasterMahasiswa::Entity::find()
@@ -308,9 +345,9 @@ impl UpsertStudent {
         {
             Ok(Some(m)) => m,
             Ok(None) => {
-                return Err(Error::Message(format!(
+                return Err(format!(
                     "Mahasiswa not found for ID: {}",
-                    id_mahasiswa.clone()
+                    id_mahasiswa.clone(.into()
                 )));
             }
             Err(e) => {
@@ -330,9 +367,9 @@ impl UpsertStudent {
             {
                 Ok(Some(r)) => r,
                 Ok(None) => {
-                    return Err(Error::Message(format!(
+                    return Err(format!(
                         "Riwayat pendidikan mahasiswa not found for ID: {}",
-                        id_mahasiswa.clone()
+                        id_mahasiswa.clone(.into()
                     )));
                 }
                 Err(e) => {
@@ -399,7 +436,7 @@ impl UpsertStudent {
                 return Err(format!(
                     "Registration not found for ID: {}",
                     id_jenis_daftar_str
-                ).into());
+                .into()));
             }
             Err(e) => {
                 tracing::error!("Error finding registration by Alphabet Code: {}", e);
@@ -410,7 +447,7 @@ impl UpsertStudent {
         // find unit based on id_prodi (mahasiswa has id_prodi)
         let id_prodi_val = mahasiswa
             .id_prodi
-            .ok_or_else(|| "Mahasiswa id_prodi is missing".into())?;
+            .ok_or_else(|| "Mahasiswa id_prodi is missing".to_string(.into()))?;
 
         let unit = match InstitutionMasterUnit::Entity::find()
             .filter(InstitutionMasterUnit::Column::FeederId.eq(id_prodi_val))
@@ -422,7 +459,7 @@ impl UpsertStudent {
                 return Err(format!(
                     "Unit not found for ID: {}",
                     id_prodi_val
-                ).into());
+                .into()));
             }
             Err(e) => {
                 tracing::error!("Error finding unit by ID: {}", e);
@@ -441,9 +478,9 @@ impl UpsertStudent {
         {
             Ok(Some(a)) => a,
             Ok(None) => {
-                return Err(Error::Message(format!(
+                return Err(format!(
                     "Academic year not found for ID: {:?}",
-                    mahasiswa.id_periode.clone()
+                    mahasiswa.id_periode.clone(.into()
                 )));
             }
             Err(e) => {
@@ -490,7 +527,7 @@ impl UpsertStudent {
                 return Err(format!(
                     "Status not found for Name: {}",
                     status_name
-                ).into());
+                .into()));
             }
         };
 
@@ -603,26 +640,4 @@ impl UpsertStudent {
 
         Ok(student)
     }
-}
-
-
-async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-
-        let data = args.model.clone();
-        println!(
-            "=================📄 Process Data {} =======================",
-            data.nik.clone().unwrap_or_default()
-        );
-
-        match self.proceed(data).await {
-            Ok(individual) => {
-                println!("✅ Successfully processed individual: {}", individual.code);
-                Ok(())
-            }
-            Err(e) => {
-                println!("❌ Failed to process individual: {}", e);
-                Err(e)
-            }
-        }
-    
 }

@@ -1,8 +1,8 @@
-use chrono::{DateTime, Local, NaiveDate, NaiveDateTime, Utc};
+use chrono::{DateTime, Local, NaiveDate, NaiveDate as Date, NaiveDateTime, Utc};
 use salvo::async_trait;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, DatabaseTransaction, EntityTrait,
-    IntoActiveModel, QueryFilter, Set, TransactionTrait,
+    ActiveModelTrait, ActiveValue, ActiveValue::Set, ColumnTrait, DatabaseConnection, DatabaseTransaction, DbErr, EntityTrait,
+    IntoActiveModel, QueryFilter, TransactionTrait,
 };
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -156,6 +156,7 @@ impl EstimateGetProdi {
 
 
     async fn upsert_record(txn: &DatabaseTransaction, record: &GetProdiResponse) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+        let institution_id = std::env::var("CURRENT_INSTITUTION_ID").ok().and_then(|s| Uuid::parse_str(&s).ok());
         let id_prodi = record
             .id_prodi
             .ok_or_else(|| "id_prodi is missing".into())?;
@@ -172,7 +173,7 @@ impl EstimateGetProdi {
             let mut active: profil_program_studi::ActiveModel = existing_record.into_active_model();
 
             // Update fields that are present in GetProdiResponse
-            active.id_perguruan_tinggi = Set(Some(institution_id));
+            active.id_perguruan_tinggi = Set(institution_id);
             active.kode_program_studi = Set(record.kode_program_studi.clone());
             active.nama_program_studi = Set(record.nama_program_studi.clone());
             active.status = Set(record.status.clone());
@@ -189,7 +190,7 @@ impl EstimateGetProdi {
             let new_record = profil_program_studi::ActiveModel {
                 id: Set(pk_id),
                 id_prodi: Set(Some(id_prodi)),
-                id_perguruan_tinggi: Set(Some(institution_id)),
+                id_perguruan_tinggi: Set(institution_id),
                 // Fields missing in GetProdiResponse but present in Entity
                 kode_perguruan_tinggi: Set(None),
                 nama_perguruan_tinggi: Set(None),

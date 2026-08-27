@@ -1,9 +1,37 @@
+use apalis::prelude::{Data, Monitor, WorkerBuilder, WorkerFactoryFn};
+use apalis_redis::RedisStorage;
+use chrono::{DateTime, Local, NaiveDate, NaiveDate as Date, NaiveDateTime, Utc};
+use sea_orm::prelude::Decimal;
 use sea_orm::{
-    ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, DatabaseTransaction,
+    ActiveModelTrait, ActiveValue, ActiveValue::Set, ColumnTrait, DatabaseConnection, DatabaseTransaction, DbErr,
     EntityTrait, IntoActiveModel, QueryFilter, TransactionTrait, TryIntoModel,
 };
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+
+pub async fn handle_job(
+    args: WorkerArgs,
+    db: Data<DatabaseConnection>,
+) -> Result<(), std::io::Error> {
+    Worker::perform(&db, args).await.map_err(|e| std::io::Error::other(e.to_string()))
+}
+
+pub async fn start_worker(
+    redis_url: String,
+    db: DatabaseConnection,
+) -> Result<Monitor, std::io::Error> {
+    let conn = apalis_redis::connect(redis_url)
+        .await
+        .map_err(|e| std::io::Error::other(e.to_string()))?;
+    let storage: RedisStorage<WorkerArgs> = RedisStorage::new(conn);
+
+    let worker = WorkerBuilder::new("xsia-xarx:feeder_dikti:synchronize:downstream:master:upsert_kelas_kuliah_to_academic_campaign_transaction_teaches")
+        .data(db)
+        .backend(storage)
+        .build_fn(handle_job);
+
+    Ok(Monitor::new().register(worker))
+}
 
 use crate::models::{
     academic::{
@@ -189,7 +217,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
 
     // 7. Get Staff (Specific Position Type)
     let position_type_id = uuid::Uuid::parse_str("b3ad82b8-520b-4b77-8cca-b487bf77a91c")
-        .map_err(|e| format!("Invalid UUID for position type: {}", e).into())?;
+        .map_err(|e| format!("Invalid UUID for position type: {}", e.into()))?;
 
     let staff = staffes::Entity::find()
         .filter(staffes::Column::UnitId.eq(unit.id))

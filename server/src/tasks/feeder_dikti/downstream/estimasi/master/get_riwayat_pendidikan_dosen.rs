@@ -1,8 +1,8 @@
-use chrono::{DateTime, Local, NaiveDate, NaiveDateTime, Utc};
+use chrono::{DateTime, Local, NaiveDate, NaiveDate as Date, NaiveDateTime, Utc};
 use salvo::async_trait;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, DatabaseTransaction, EntityTrait,
-    IntoActiveModel, QueryFilter, Set, TransactionTrait,
+    ActiveModelTrait, ActiveValue, ActiveValue::Set, ColumnTrait, DatabaseConnection, DatabaseTransaction, DbErr, EntityTrait,
+    IntoActiveModel, QueryFilter, TransactionTrait,
 };
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -21,7 +21,25 @@ const DEFAULT_LIMIT: i32 = 1000;
 const DEFAULT_ORDER: &str = "nama_dosen ASC";
 const DEFAULT_FILTER: &str = "";
 
-
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct RiwayatPendidikanDosen {
+    pub id_dosen: Option<Uuid>,
+    pub nidn: Option<String>,
+    pub nuptk: Option<String>,
+    pub nama_dosen: Option<String>,
+    pub id_bidang_studi: Option<i64>,
+    pub nama_bidang_studi: Option<String>,
+    pub id_jenjang_pendidikan: Option<String>,
+    pub nama_jenjang_pendidikan: Option<String>,
+    pub id_gelar_akademik: Option<i64>,
+    pub nama_gelar_akademik: Option<String>,
+    pub id_perguruan_tinggi: Option<Uuid>,
+    pub nama_perguruan_tinggi: Option<String>,
+    pub fakultas: Option<String>,
+    pub tahun_lulus: Option<String>,
+    pub sks_lulus: Option<String>,
+    pub ipk: Option<String>,
+}
 
 pub struct EstimateRiwayatPendidikanDosen;
 
@@ -130,7 +148,7 @@ impl EstimateRiwayatPendidikanDosen {
     }
 
 
-    async fn upsert_record(txn: &DatabaseTransaction, record: &FeederResponse) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+    async fn upsert_record(txn: &DatabaseTransaction, record: &RiwayatPendidikanDosen) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         let id_dosen = record
             .id_dosen
             .ok_or_else(|| "id_dosen is required for upsert".into())?;
@@ -232,7 +250,7 @@ impl EstimateRiwayatPendidikanDosen {
 
     async fn process_batch(
         db: &DatabaseConnection,
-        records: &[FeederResponse],
+        records: &[RiwayatPendidikanDosen],
     ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         let txn = db.begin().await?;
         let mut success_count = 0;
@@ -266,7 +284,7 @@ impl EstimateRiwayatPendidikanDosen {
     ) -> Result<usize, Box<dyn std::error::Error + Send + Sync>> {
         println!("🔄 Fetching data for offset={}, limit={}", offset, limit);
 
-        let response = RequestData::get::<FeederResponse>(
+        let response = RequestData::get::<RiwayatPendidikanDosen>(
             InputRequestData {
                 act: API_ACTION.to_string(),
                 filter: if DEFAULT_FILTER.is_empty() { None } else { Some(DEFAULT_FILTER.to_string()) },

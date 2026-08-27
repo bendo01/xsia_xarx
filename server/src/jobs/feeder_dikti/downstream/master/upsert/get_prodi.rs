@@ -1,7 +1,9 @@
-use chrono::{DateTime, Local, NaiveDate, NaiveDateTime, Utc};
+use apalis::prelude::{Data, Monitor, WorkerBuilder, WorkerFactoryFn};
+use apalis_redis::RedisStorage;
+use chrono::{DateTime, Local, NaiveDate, NaiveDate as Date, NaiveDateTime, Utc};
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, DatabaseTransaction, EntityTrait,
-    IntoActiveModel, QueryFilter, Set, TransactionTrait,
+    ActiveModelTrait, ActiveValue, ActiveValue::Set, ColumnTrait, DatabaseConnection, DatabaseTransaction, DbErr, EntityTrait,
+    IntoActiveModel, QueryFilter, TransactionTrait,
 };
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -40,6 +42,30 @@ pub struct WorkerArgs {
     pub records: Vec<GetProdiResponse>,
 }
 
+pub async fn handle_job(
+    args: WorkerArgs,
+    db: Data<DatabaseConnection>,
+) -> Result<(), std::io::Error> {
+    Worker::perform(&db, args).await.map_err(|e| std::io::Error::other(e.to_string()))
+}
+
+pub async fn start_worker(
+    redis_url: String,
+    db: DatabaseConnection,
+) -> Result<Monitor, std::io::Error> {
+    let conn = apalis_redis::connect(redis_url)
+        .await
+        .map_err(|e| std::io::Error::other(e.to_string()))?;
+    let storage: RedisStorage<WorkerArgs> = RedisStorage::new(conn);
+
+    let worker = WorkerBuilder::new("xsia-xarx:feeder_dikti:downstream:master:upsert:get_prodi")
+        .data(db)
+        .backend(storage)
+        .build_fn(handle_job);
+
+    Ok(Monitor::new().register(worker))
+}
+
 pub struct Worker;
 
 impl Worker {
@@ -70,6 +96,7 @@ impl Worker {
 
 
     pub async fn upsert_record(txn: &DatabaseTransaction, record: &GetProdiResponse) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+        let institution_id = std::env::var("CURRENT_INSTITUTION_ID").ok().and_then(|s| Uuid::parse_str(&s).ok());
         let id_prodi = record
             .id_prodi
             .ok_or_else(|| "id_prodi is missing".into())?;
@@ -86,7 +113,7 @@ impl Worker {
             let mut active: profil_program_studi::ActiveModel = existing_record.into_active_model();
 
             // Update fields that are present in GetProdiResponse
-            active.id_perguruan_tinggi = Set(Some(institution_id));
+            active.id_perguruan_tinggi = Set(institution_id);
             active.kode_program_studi = Set(record.kode_program_studi.clone());
             active.nama_program_studi = Set(record.nama_program_studi.clone());
             active.status = Set(record.status.clone());
@@ -103,7 +130,7 @@ impl Worker {
             let new_record = profil_program_studi::ActiveModel {
                 id: Set(pk_id),
                 id_prodi: Set(Some(id_prodi)),
-                id_perguruan_tinggi: Set(Some(institution_id)),
+                id_perguruan_tinggi: Set(institution_id),
                 // Fields missing in GetProdiResponse but present in Entity
                 kode_perguruan_tinggi: Set(None),
                 nama_perguruan_tinggi: Set(None),
