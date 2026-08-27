@@ -78,7 +78,7 @@ impl Worker {
         let id_alat_transportasi = record
             .id_alat_transportasi
             .clone()
-            .ok_or_else(|| "id_alat_transportasi is missing".into())?;
+            .ok_or("id_alat_transportasi is missing")?;
 
         let sync_time = Local::now().naive_local();
 

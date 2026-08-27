@@ -80,7 +80,7 @@ impl Worker {
         let id_jenis_aktivitas_mahasiswa = record
             .id_jenis_aktivitas_mahasiswa
             .clone()
-            .ok_or_else(|| "id_jenis_aktivitas_mahasiswa is missing".into())?;
+            .ok_or("id_jenis_aktivitas_mahasiswa is missing")?;
 
         let sync_time = Local::now().naive_local();
 

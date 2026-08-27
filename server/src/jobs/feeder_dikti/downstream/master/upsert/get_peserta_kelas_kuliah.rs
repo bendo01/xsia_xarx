@@ -88,7 +88,7 @@ impl Worker {
     pub async fn upsert_record(txn: &DatabaseTransaction, record: &ModelInput) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         let id_kelas_kuliah = record
             .id_kelas_kuliah
-            .ok_or_else(|| "id_kelas_kuliah is required for upsert".into())?;
+            .ok_or("id_kelas_kuliah is required for upsert")?;
 
         let id_registrasi_mahasiswa = record.id_registrasi_mahasiswa.ok_or_else(|| {
             "id_registrasi_mahasiswa is required for upsert".into()

@@ -81,7 +81,7 @@ impl Worker {
         let id_wilayah = record
             .id_wilayah
             .clone()
-            .ok_or_else(|| "id_wilayah is missing".into())?;
+            .ok_or("id_wilayah is missing")?;
 
         // Trim id_induk_wilayah as requested
         let id_induk_wilayah = record

@@ -116,25 +116,25 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .one(&txn)
         .await
         .map_err(|e| e.into())?
-        .ok_or_else(|| "Activity not found".into())?;
+        .ok_or("Activity not found")?;
 
     let unit = units::Entity::find_by_id(activity.unit_id)
         .one(&txn)
         .await
         .map_err(|e| e.into())?
-        .ok_or_else(|| "Unit not found".into())?;
+        .ok_or("Unit not found")?;
 
     let institution = institutions::Entity::find_by_id(unit.institution_id)
         .one(&txn)
         .await
         .map_err(|e| e.into())?
-        .ok_or_else(|| "Institution not found".into())?;
+        .ok_or("Institution not found")?;
 
     let academic_year = academic_years::Entity::find_by_id(activity.academic_year_id)
         .one(&txn)
         .await
         .map_err(|e| e.into())?
-        .ok_or_else(|| "Academic Year not found".into())?;
+        .ok_or("Academic Year not found")?;
 
     // println!("Teach: {:#?}", teach.clone());
     let course = courses::Entity::find_by_id(teach.course_id)

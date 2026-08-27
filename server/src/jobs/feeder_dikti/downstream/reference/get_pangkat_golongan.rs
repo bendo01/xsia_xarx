@@ -79,7 +79,7 @@ impl Worker {
         let id_pangkat_golongan = record
             .id_pangkat_golongan
             .clone()
-            .ok_or_else(|| "id_pangkat_golongan is missing".into())?;
+            .ok_or("id_pangkat_golongan is missing")?;
 
         let sync_time = Local::now().naive_local();
 

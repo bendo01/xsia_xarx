@@ -176,7 +176,7 @@ impl Worker {
         // Validate that id_mahasiswa exists (it's the unique key)
         let id_mahasiswa = record
             .id_mahasiswa
-            .ok_or_else(|| "Missing id_mahasiswa".into())?;
+            .ok_or("Missing id_mahasiswa")?;
 
         // Start transaction
         let sync_time = Local::now().naive_local();

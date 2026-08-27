@@ -78,7 +78,7 @@ impl Worker {
         let id_jenis_sertifikasi = record
             .id_jenis_sertifikasi
             .clone()
-            .ok_or_else(|| "id_jenis_sertifikasi is missing".into())?;
+            .ok_or("id_jenis_sertifikasi is missing")?;
 
         let sync_time = Local::now().naive_local();
 

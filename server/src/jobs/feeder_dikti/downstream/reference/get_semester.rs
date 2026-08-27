@@ -83,7 +83,7 @@ impl Worker {
         let id_semester = record
             .id_semester
             .clone()
-            .ok_or_else(|| "id_semester is missing".into())?;
+            .ok_or("id_semester is missing")?;
 
         // Helper to parse dates safely
         let parse_date = |date_str: Option<&String>| -> Result<Option<NaiveDate>> {

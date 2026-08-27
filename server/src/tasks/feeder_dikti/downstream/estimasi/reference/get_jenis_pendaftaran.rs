@@ -121,8 +121,8 @@ impl EstimateGetJenisPendaftaran {
             .await?;
 
         if let Some(record) = record {
+            let current_total = record.total_data.unwrap_or(0);
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().and_then(|x| *x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -139,7 +139,7 @@ impl EstimateGetJenisPendaftaran {
         let id_jenis_daftar = record
             .id_jenis_daftar
             .clone()
-            .ok_or_else(|| DbErr::Custom("id_jenis_daftar is missing".to_string()))?;
+            .ok_or("id_jenis_daftar is missing")?;
 
         let sync_time = Local::now().naive_local();
 

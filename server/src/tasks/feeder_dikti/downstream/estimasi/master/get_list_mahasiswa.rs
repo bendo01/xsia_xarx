@@ -181,8 +181,8 @@ impl EstimateListMahasiswa {
             .await?;
 
         if let Some(record) = record {
+            let current_total = record.total_data.unwrap_or(0);
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().and_then(|x| *x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -228,7 +228,7 @@ impl EstimateListMahasiswa {
             // Update existing record
             let mut active: mahasiswa::ActiveModel = existing_record.into_active_model();
 
-            active.nama_mahasiswa = Set(nama_mahasiswa.clone());
+            active.nama_mahasiswa = Set(Some(nama_mahasiswa.clone()));
             active.jenis_kelamin = Set(record.jenis_kelamin.clone());
             active.tanggal_lahir = Set(record.tanggal_lahir);
             active.id_perguruan_tinggi = Set(record.id_perguruan_tinggi);
@@ -265,8 +265,8 @@ impl EstimateListMahasiswa {
 
             let new_record = mahasiswa::ActiveModel {
                 id: Set(pk_id),
-                id_mahasiswa: Set(id_mahasiswa),
-                nama_mahasiswa: Set(nama_mahasiswa.clone()),
+                id_mahasiswa: Set(Some(id_mahasiswa)),
+                nama_mahasiswa: Set(Some(nama_mahasiswa.clone())),
                 jenis_kelamin: Set(record.jenis_kelamin.clone()),
                 tanggal_lahir: Set(record.tanggal_lahir),
                 id_perguruan_tinggi: Set(record.id_perguruan_tinggi),

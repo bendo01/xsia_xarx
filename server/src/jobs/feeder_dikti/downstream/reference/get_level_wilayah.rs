@@ -77,7 +77,7 @@ impl Worker {
     pub async fn upsert_record(txn: &DatabaseTransaction, record: &GetLevelWilayahResponse) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         let id_level_wilayah = record
             .id_level_wilayah
-            .ok_or_else(|| "id_level_wilayah is missing".into())?
+            .ok_or("id_level_wilayah is missing")?
             .to_string(); // Convert i32 to String for DB storage
 
         let sync_time = Local::now().naive_local();

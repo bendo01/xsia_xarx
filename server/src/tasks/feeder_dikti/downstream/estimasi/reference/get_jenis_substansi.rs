@@ -120,8 +120,8 @@ impl EstimateGetJenisSubstansi {
             .await?;
 
         if let Some(record) = record {
+            let current_total = record.total_data.unwrap_or(0);
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().and_then(|x| *x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -138,7 +138,7 @@ impl EstimateGetJenisSubstansi {
         let id_jenis_substansi_raw = record
             .id_jenis_substansi
             .clone()
-            .ok_or_else(|| DbErr::Custom("id_jenis_substansi is missing".to_string()))?;
+            .ok_or("id_jenis_substansi is missing")?;
 
         // Trim logic as requested by user
         let id_jenis_substansi = id_jenis_substansi_raw.trim().to_string();

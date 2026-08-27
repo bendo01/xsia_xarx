@@ -124,12 +124,12 @@ impl Worker {
         // Validate that required fields exist - using composite key (id_registrasi_mahasiswa + id_semester)
         let id_registrasi_mahasiswa = record
             .id_registrasi_mahasiswa
-            .ok_or_else(|| "Missing id_registrasi_mahasiswa".into())?;
+            .ok_or("Missing id_registrasi_mahasiswa")?;
 
         let id_semester = record
             .id_semester
             .as_ref()
-            .ok_or_else(|| "Missing id_semester".into())?;
+            .ok_or("Missing id_semester")?;
 
         // Start transaction
         let sync_time = Local::now().naive_local();

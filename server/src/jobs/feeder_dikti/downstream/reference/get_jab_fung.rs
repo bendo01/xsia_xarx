@@ -78,7 +78,7 @@ impl Worker {
         let id_jabatan_fungsional = record
             .id_jabatan_fungsional
             .clone()
-            .ok_or_else(|| "id_jabatan_fungsional is missing".into())?;
+            .ok_or("id_jabatan_fungsional is missing")?;
 
         let sync_time = Local::now().naive_local();
 

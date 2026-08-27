@@ -129,8 +129,8 @@ impl EstimateRiwayatSertifikasiDosen {
             .await?;
 
         if let Some(record) = record {
+            let current_total = record.total_data.unwrap_or(0);
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().and_then(|x| *x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -146,11 +146,11 @@ impl EstimateRiwayatSertifikasiDosen {
     async fn upsert_record(txn: &DatabaseTransaction, record: &RiwayatSertifikasiDosen) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         let id_dosen = record
             .id_dosen
-            .ok_or_else(|| DbErr::Custom("id_dosen is required for upsert".to_string()))?;
+            .ok_or("id_dosen is required for upsert")?;
 
-        let id_jenis_sertifikasi = record.id_jenis_sertifikasi.clone().ok_or_else(|| DbErr::Custom("id_jenis_sertifikasi is required for upsert".to_string()))?;
+        let id_jenis_sertifikasi = record.id_jenis_sertifikasi.clone().ok_or("id_jenis_sertifikasi is required for upsert")?;
 
-        let tahun_sertifikasi = record.tahun_sertifikasi.clone().ok_or_else(|| DbErr::Custom("tahun_sertifikasi is required for upsert".to_string()))?;
+        let tahun_sertifikasi = record.tahun_sertifikasi.clone().ok_or("tahun_sertifikasi is required for upsert")?;
 
         let sync_time = Local::now().naive_local();
 

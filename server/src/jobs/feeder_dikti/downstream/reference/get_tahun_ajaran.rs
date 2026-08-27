@@ -99,7 +99,7 @@ impl Worker {
         let id_tahun_ajaran = record
             .id_tahun_ajaran
             .clone()
-            .ok_or_else(|| "id_tahun_ajaran is missing".into())?;
+            .ok_or("id_tahun_ajaran is missing")?;
 
         let tanggal_mulai = Self::parse_date_string(record.tanggal_mulai.as_ref());
         let tanggal_selesai = Self::parse_date_string(record.tanggal_selesai.as_ref());

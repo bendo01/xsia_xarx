@@ -120,8 +120,8 @@ impl EstimateGetIkatanKerjaSdm {
             .await?;
 
         if let Some(record) = record {
+            let current_total = record.total_data.unwrap_or(0);
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().and_then(|x| *x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -138,7 +138,7 @@ impl EstimateGetIkatanKerjaSdm {
         let id_ikatan_kerja = record
             .id_ikatan_kerja
             .clone()
-            .ok_or_else(|| DbErr::Custom("id_ikatan_kerja is missing".to_string()))?;
+            .ok_or("id_ikatan_kerja is missing")?;
 
         let sync_time = Local::now().naive_local();
 

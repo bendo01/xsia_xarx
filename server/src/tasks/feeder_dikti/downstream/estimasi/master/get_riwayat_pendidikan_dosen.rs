@@ -134,8 +134,8 @@ impl EstimateRiwayatPendidikanDosen {
             .await?;
 
         if let Some(record) = record {
+            let current_total = record.total_data.unwrap_or(0);
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().and_then(|x| *x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -151,9 +151,9 @@ impl EstimateRiwayatPendidikanDosen {
     async fn upsert_record(txn: &DatabaseTransaction, record: &RiwayatPendidikanDosen) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         let id_dosen = record
             .id_dosen
-            .ok_or_else(|| DbErr::Custom("id_dosen is required for upsert".to_string()))?;
+            .ok_or("id_dosen is required for upsert")?;
 
-        let id_jenjang_pendidikan = record.id_jenjang_pendidikan.clone().ok_or_else(|| DbErr::Custom("id_jenjang_pendidikan is required for upsert".to_string()))?;
+        let id_jenjang_pendidikan = record.id_jenjang_pendidikan.clone().ok_or("id_jenjang_pendidikan is required for upsert")?;
 
         let nama_perguruan_tinggi = record.nama_perguruan_tinggi.clone().unwrap_or_default();
         let tahun_lulus = record.tahun_lulus.clone().unwrap_or_default();

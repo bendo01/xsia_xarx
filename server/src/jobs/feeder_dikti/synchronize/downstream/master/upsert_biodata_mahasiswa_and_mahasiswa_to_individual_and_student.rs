@@ -447,7 +447,7 @@ impl UpsertStudent {
         // find unit based on id_prodi (mahasiswa has id_prodi)
         let id_prodi_val = mahasiswa
             .id_prodi
-            .ok_or_else(|| "Mahasiswa id_prodi is missing".into())?;
+            .ok_or("Mahasiswa id_prodi is missing")?;
 
         let unit = match InstitutionMasterUnit::Entity::find()
             .filter(InstitutionMasterUnit::Column::FeederId.eq(id_prodi_val))

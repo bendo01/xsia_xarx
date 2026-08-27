@@ -103,11 +103,11 @@ impl Worker {
     pub async fn upsert_record(txn: &DatabaseTransaction, record: &ModelInput) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         let id_matkul = record
             .id_matkul
-            .ok_or_else(|| "id_matkul is required for upsert".into())?;
+            .ok_or("id_matkul is required for upsert")?;
 
         let id_kurikulum = record
             .id_kurikulum
-            .ok_or_else(|| "id_kurikulum is required for upsert".into())?;
+            .ok_or("id_kurikulum is required for upsert")?;
 
         let sync_time = Local::now().naive_local();
 

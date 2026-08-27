@@ -141,10 +141,10 @@ impl Worker {
         let id_dosen_str = record
             .id_dosen
             .clone()
-            .ok_or_else(|| "Missing id_dosen".into())?;
+            .ok_or("Missing id_dosen")?;
 
         let id_dosen = uuid::Uuid::parse_str(&id_dosen_str)
-            .map_err(|e| format!("Invalid UUID for id_dosen: {}", e).into())?;
+            .map_err(|e| format!("Invalid UUID for id_dosen: {}", e))?;
 
         // Start transaction
         let sync_time = Local::now().naive_local();

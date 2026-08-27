@@ -87,11 +87,11 @@ impl Worker {
     pub async fn upsert_record(txn: &DatabaseTransaction, record: &RiwayatPenelitianDosen) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         let id_dosen = record
             .id_dosen
-            .ok_or_else(|| "id_dosen is required for upsert".into())?;
+            .ok_or("id_dosen is required for upsert")?;
 
         let id_penelitian = record
             .id_penelitian
-            .ok_or_else(|| "id_penelitian is required for upsert".into())?;
+            .ok_or("id_penelitian is required for upsert")?;
 
         let sync_time = Local::now().naive_local();
 

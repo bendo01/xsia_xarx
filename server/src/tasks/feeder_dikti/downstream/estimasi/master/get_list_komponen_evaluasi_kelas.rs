@@ -147,8 +147,8 @@ impl EstimateListKomponenEvaluasiKelas {
             .await?;
 
         if let Some(record) = record {
+            let current_total = record.total_data.unwrap_or(0);
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().and_then(|x| *x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -177,31 +177,31 @@ impl EstimateListKomponenEvaluasiKelas {
         // Validate required fields
         let id_komponen_evaluasi = record
             .id_komponen_evaluasi
-            .ok_or_else(|| DbErr::Custom("Missing id_komponen_evaluasi".to_string()))?;
+            .ok_or("Missing id_komponen_evaluasi")?;
 
         let id_kelas_kuliah = record
             .id_kelas_kuliah
-            .ok_or_else(|| DbErr::Custom("Missing id_kelas_kuliah".to_string()))?;
+            .ok_or("Missing id_kelas_kuliah")?;
 
         let id_jenis_evaluasi = record
             .id_jenis_evaluasi
-            .ok_or_else(|| DbErr::Custom("Missing id_jenis_evaluasi".to_string()))?;
+            .ok_or("Missing id_jenis_evaluasi")?;
 
         let nomor_urut = record
             .nomor_urut
-            .ok_or_else(|| DbErr::Custom("Missing nomor_urut".to_string()))?;
+            .ok_or("Missing nomor_urut")?;
 
         let bobot_evaluasi = record
             .bobot_evaluasi
-            .ok_or_else(|| DbErr::Custom("Missing bobot_evaluasi".to_string()))?;
+            .ok_or("Missing bobot_evaluasi")?;
 
         let last_update = record
             .last_update
-            .ok_or_else(|| DbErr::Custom("Missing last_update".to_string()))?;
+            .ok_or("Missing last_update")?;
 
         let tgl_create = record
             .tgl_create
-            .ok_or_else(|| DbErr::Custom("Missing tgl_create".to_string()))?;
+            .ok_or("Missing tgl_create")?;
 
         // Start transaction
         let sync_time = Local::now().naive_local();
@@ -220,14 +220,14 @@ impl EstimateListKomponenEvaluasiKelas {
             let mut active: komponen_evaluasi_kelas::ActiveModel =
                 existing_record.into_active_model();
 
-            active.id_kelas_kuliah = Set(id_kelas_kuliah);
-            active.id_jenis_evaluasi = Set(id_jenis_evaluasi);
+            active.id_kelas_kuliah = Set(Some(id_kelas_kuliah));
+            active.id_jenis_evaluasi = Set(Some(id_jenis_evaluasi));
             active.nama = Set(record.nama.clone());
             active.nama_inggris = Set(record.nama_inggris.clone());
-            active.nomor_urut = Set(nomor_urut);
-            active.bobot_evaluasi = Set(bobot_evaluasi.to_string());
-            active.last_update = Set(last_update);
-            active.tgl_create = Set(tgl_create);
+            active.nomor_urut = Set(Some(nomor_urut));
+            active.bobot_evaluasi = Set(Some(bobot_evaluasi.to_string()));
+            active.last_update = Set(Some(last_update));
+            active.tgl_create = Set(Some(tgl_create));
             active.sync_at = Set(Some(sync_time));
             active.updated_at = Set(Some(sync_time));
 
@@ -239,15 +239,15 @@ impl EstimateListKomponenEvaluasiKelas {
 
             let new_record = komponen_evaluasi_kelas::ActiveModel {
                 id: Set(pk_id),
-                id_komponen_evaluasi: Set(id_komponen_evaluasi),
-                id_kelas_kuliah: Set(id_kelas_kuliah),
-                id_jenis_evaluasi: Set(id_jenis_evaluasi),
+                id_komponen_evaluasi: Set(Some(id_komponen_evaluasi)),
+                id_kelas_kuliah: Set(Some(id_kelas_kuliah)),
+                id_jenis_evaluasi: Set(Some(id_jenis_evaluasi)),
                 nama: Set(record.nama.clone()),
                 nama_inggris: Set(record.nama_inggris.clone()),
-                nomor_urut: Set(nomor_urut),
-                bobot_evaluasi: Set(bobot_evaluasi.to_string()),
-                last_update: Set(last_update),
-                tgl_create: Set(tgl_create),
+                nomor_urut: Set(Some(nomor_urut)),
+                bobot_evaluasi: Set(Some(bobot_evaluasi.to_string())),
+                last_update: Set(Some(last_update)),
+                tgl_create: Set(Some(tgl_create)),
                 sync_at: Set(Some(sync_time)),
                 created_at: Set(Some(sync_time)),
                 updated_at: Set(Some(sync_time)),

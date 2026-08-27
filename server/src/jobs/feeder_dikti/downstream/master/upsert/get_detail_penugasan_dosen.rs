@@ -144,7 +144,7 @@ impl Worker {
         // Validate that id_registrasi_dosen exists (it's the unique key)
         let id_registrasi_dosen = record
             .id_registrasi_dosen
-            .ok_or_else(|| "Missing id_registrasi_dosen".into())?;
+            .ok_or("Missing id_registrasi_dosen")?;
 
         // Start transaction
         let sync_time = Local::now().naive_local();

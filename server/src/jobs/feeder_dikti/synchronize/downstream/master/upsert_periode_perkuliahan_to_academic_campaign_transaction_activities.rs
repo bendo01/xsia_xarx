@@ -145,18 +145,18 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
             ));
             active_model.unit_id = Set(unit_id);
             active_model.academic_year_id = Set(academic_year_id);
-            active_model.week_quantity = Set(data.jumlah_minggu_pertemuan.unwrap_or(0));
+            active_model.week_quantity = Set(data.jumlah_minggu_pertemuan);
             active_model.student_target = Set(data.jumlah_target_mahasiswa_baru.unwrap_or(0));
             active_model.candidate_number = Set(data.jumlah_pendaftar_ikut_seleksi.unwrap_or(0));
             active_model.candidate_pass = Set(data.jumlah_pendaftar_lulus_seleksi.unwrap_or(0));
             active_model.became_student = Set(data.jumlah_daftar_ulang.unwrap_or(0));
             active_model.transfer_student = Set(0);
-            active_model.total_class_member = Set(40);
+            active_model.total_class_member = Set(Some(40));
             active_model.start_date = Set(data.tanggal_awal_perkuliahan);
             active_model.end_date = Set(data.tanggal_akhir_perkuliahan);
             active_model.start_transaction = Set(data.tanggal_awal_perkuliahan);
             active_model.end_transaction = Set(data.tanggal_akhir_perkuliahan);
-            active_model.is_active = Set(false);
+            active_model.is_active = Set(Some(false));
             active_model.sync_at = Set(Some(chrono::Utc::now().naive_utc()));
             active_model.updated_at = Set(Some(chrono::Utc::now().naive_utc()));
 
@@ -178,7 +178,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
             }
         } else {
             let mut active_model = AcademicCampaignTransactionActivity::ActiveModel {
-                id: Set(()),
+                id: Set(Uuid::new_v4()),
                 created_at: Set(Some(chrono::Utc::now().naive_utc())),
                 updated_at: Set(Some(chrono::Utc::now().naive_utc())),
                 ..Default::default()
@@ -195,18 +195,18 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
             ));
             active_model.unit_id = Set(unit_id);
             active_model.academic_year_id = Set(academic_year_id);
-            active_model.week_quantity = Set(data.jumlah_minggu_pertemuan.unwrap_or(0));
+            active_model.week_quantity = Set(data.jumlah_minggu_pertemuan);
             active_model.student_target = Set(data.jumlah_target_mahasiswa_baru.unwrap_or(0));
             active_model.candidate_number = Set(data.jumlah_pendaftar_ikut_seleksi.unwrap_or(0));
             active_model.candidate_pass = Set(data.jumlah_pendaftar_lulus_seleksi.unwrap_or(0));
             active_model.became_student = Set(data.jumlah_daftar_ulang.unwrap_or(0));
             active_model.transfer_student = Set(0);
-            active_model.total_class_member = Set(40);
+            active_model.total_class_member = Set(Some(40));
             active_model.start_date = Set(data.tanggal_awal_perkuliahan);
             active_model.end_date = Set(data.tanggal_akhir_perkuliahan);
             active_model.start_transaction = Set(data.tanggal_awal_perkuliahan);
             active_model.end_transaction = Set(data.tanggal_akhir_perkuliahan);
-            active_model.is_active = Set(false);
+            active_model.is_active = Set(Some(false));
             active_model.sync_at = Set(Some(chrono::Utc::now().naive_utc()));
 
             match active_model.insert(db).await {

@@ -99,7 +99,7 @@ impl Worker {
         let institution_id = std::env::var("CURRENT_INSTITUTION_ID").ok().and_then(|s| Uuid::parse_str(&s).ok());
         let id_prodi = record
             .id_prodi
-            .ok_or_else(|| "id_prodi is missing".into())?;
+            .ok_or("id_prodi is missing")?;
 
         let sync_time = Local::now().naive_local();
 

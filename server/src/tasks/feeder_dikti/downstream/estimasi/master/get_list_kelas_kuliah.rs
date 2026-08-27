@@ -171,8 +171,8 @@ impl EstimateListKelasKuliah {
             .await?;
 
         if let Some(record) = record {
+            let current_total = record.total_data.unwrap_or(0);
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().and_then(|x| *x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -221,7 +221,7 @@ impl EstimateListKelasKuliah {
             let pk_id = Uuid::new_v4();
 
             let new_record = kelas_kuliah::ActiveModel {
-                id: Set(pk_id),
+                id: Set(Some(pk_id)),
                 id_kelas_kuliah: Set(id_kelas_kuliah),
                 id_prodi: Set(record.id_prodi),
                 nama_program_studi: Set(record.nama_program_studi.clone()),

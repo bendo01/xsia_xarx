@@ -78,7 +78,7 @@ impl Worker {
         let id_jenis_substansi_raw = record
             .id_jenis_substansi
             .clone()
-            .ok_or_else(|| "id_jenis_substansi is missing".into())?;
+            .ok_or("id_jenis_substansi is missing")?;
 
         // Trim logic as requested by user
         let id_jenis_substansi = id_jenis_substansi_raw.trim().to_string();

@@ -123,8 +123,8 @@ impl EstimateGetTahunAjaran {
             .await?;
 
         if let Some(record) = record {
+            let current_total = record.total_data.unwrap_or(0);
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().and_then(|x| *x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -159,7 +159,7 @@ impl EstimateGetTahunAjaran {
         let id_tahun_ajaran = record
             .id_tahun_ajaran
             .clone()
-            .ok_or_else(|| DbErr::Custom("id_tahun_ajaran is missing".to_string()))?;
+            .ok_or("id_tahun_ajaran is missing")?;
 
         let tanggal_mulai = Self::parse_date_string(record.tanggal_mulai.as_ref());
         let tanggal_selesai = Self::parse_date_string(record.tanggal_selesai.as_ref());

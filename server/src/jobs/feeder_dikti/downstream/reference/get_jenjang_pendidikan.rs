@@ -78,7 +78,7 @@ impl Worker {
         let id_jenjang_didik = record
             .id_jenjang_didik
             .clone()
-            .ok_or_else(|| "id_jenjang_didik is missing".into())?;
+            .ok_or("id_jenjang_didik is missing")?;
 
         let sync_time = Local::now().naive_local();
 

@@ -86,7 +86,7 @@ impl Worker {
     pub async fn upsert_record(txn: &DatabaseTransaction, record: &RiwayatSertifikasiDosen) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         let id_dosen = record
             .id_dosen
-            .ok_or_else(|| "id_dosen is required for upsert".into())?;
+            .ok_or("id_dosen is required for upsert")?;
 
         let id_jenis_sertifikasi = record.id_jenis_sertifikasi.clone().ok_or_else(|| {
             "id_jenis_sertifikasi is required for upsert".into()

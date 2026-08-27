@@ -78,7 +78,7 @@ impl Worker {
         let id_status_mahasiswa = record
             .id_status_mahasiswa
             .clone()
-            .ok_or_else(|| "id_status_mahasiswa is missing".into())?;
+            .ok_or("id_status_mahasiswa is missing")?;
 
         let sync_time = Local::now().naive_local();
 

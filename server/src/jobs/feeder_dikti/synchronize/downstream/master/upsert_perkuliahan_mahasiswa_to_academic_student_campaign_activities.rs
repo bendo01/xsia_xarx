@@ -204,15 +204,15 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
 
     let action = if let Some(existing) = existing_student_activity {
         let mut active = existing.into_active_model();
-        active.name = Set(name.clone());
+        active.name = Set(Some(name.clone()));
         active.cumulative_index = Set(cumulative_index);
         active.grand_cumulative_index = Set(grand_cumulative_index);
-        active.total_credit = Set(total_credit);
-        active.grand_total_credit = Set(grand_total_credit);
-        active.finance_fee = Set(finance_fee);
+        active.total_credit = Set(Some(total_credit));
+        active.grand_total_credit = Set(Some(grand_total_credit));
+        active.finance_fee = Set(Some(finance_fee));
         active.status_id = Set(status_id);
-        active.finance_id = Set(finance_id);
-        active.is_lock = Set(true);
+        active.finance_id = Set(Some(finance_id));
+        active.is_lock = Set(Some(true));
         // We keep IDs if they exist, or update them?
         // Feeder doesn't give us new IDs for these statuses, so we might skip updating them
         // if they are already set to something meaningful.
@@ -220,7 +220,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         // Since feeder `nama_status_mahasiswa` exists, we COULD lookup.
         // For now, adhere to plan: rely on defaults or minimal updates.
         active.updated_at = Set(Some(chrono::Utc::now().naive_utc()));
-        active.feeder_id = Set(model.id);
+        active.feeder_id = Set(Some(model.id));
 
         match active.update(&txn).await {
             Ok(_) => "UPDATED",
@@ -229,21 +229,21 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         }
     } else {
         let active = student_activities::ActiveModel {
-            id: Set(()),
-            name: Set(name.clone()),
+            id: Set(Uuid::new_v4()),
+            name: Set(Some(name.clone())),
             cumulative_index: Set(cumulative_index),
             grand_cumulative_index: Set(grand_cumulative_index),
-            total_credit: Set(total_credit),
-            grand_total_credit: Set(grand_total_credit),
+            total_credit: Set(Some(total_credit)),
+            grand_total_credit: Set(Some(grand_total_credit)),
             student_id: Set(student.id),
             unit_activity_id: Set(unit_activity.id),
-            unit_id: Set(student.unit_id), // Redundant but in schema
+            unit_id: Set(Some(student.unit_id)), // Redundant but in schema
             status_id: Set(status_id),
-            resign_status_id: Set(resign_status_id),
-            is_lock: Set(true),
-            feeder_id: Set(model.id),
-            finance_id: Set(finance_id),
-            finance_fee: Set(finance_fee),
+            resign_status_id: Set(Some(resign_status_id)),
+            is_lock: Set(Some(true)),
+            feeder_id: Set(Some(model.id)),
+            finance_id: Set(Some(finance_id)),
+            finance_fee: Set(Some(finance_fee)),
             created_at: Set(Some(chrono::Utc::now().naive_utc())),
             updated_at: Set(Some(chrono::Utc::now().naive_utc())),
             ..Default::default()

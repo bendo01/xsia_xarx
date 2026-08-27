@@ -78,7 +78,7 @@ impl Worker {
         let id_status_aktif = record
             .id_status_aktif
             .clone()
-            .ok_or_else(|| "id_status_aktif is missing".into())?;
+            .ok_or("id_status_aktif is missing")?;
 
         // Requirement: Trim string on field nama_status_aktif before save to database
         let nama_status_aktif = record

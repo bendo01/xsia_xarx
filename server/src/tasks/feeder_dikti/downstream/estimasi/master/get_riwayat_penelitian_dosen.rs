@@ -130,8 +130,8 @@ impl EstimateRiwayatPenelitianDosen {
             .await?;
 
         if let Some(record) = record {
+            let current_total = record.total_data.unwrap_or(0);
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().and_then(|x| *x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -147,11 +147,11 @@ impl EstimateRiwayatPenelitianDosen {
     async fn upsert_record(txn: &DatabaseTransaction, record: &RiwayatPenelitianDosen) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         let id_dosen = record
             .id_dosen
-            .ok_or_else(|| DbErr::Custom("id_dosen is required for upsert".to_string()))?;
+            .ok_or("id_dosen is required for upsert")?;
 
         let id_penelitian = record
             .id_penelitian
-            .ok_or_else(|| DbErr::Custom("id_penelitian is required for upsert".to_string()))?;
+            .ok_or("id_penelitian is required for upsert")?;
 
         let sync_time = Local::now().naive_local();
 

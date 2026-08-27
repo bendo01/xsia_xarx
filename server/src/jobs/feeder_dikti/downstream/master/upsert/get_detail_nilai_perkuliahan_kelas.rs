@@ -112,11 +112,11 @@ impl Worker {
         // Validate that required fields exist
         let id_registrasi_mahasiswa = record
             .id_registrasi_mahasiswa
-            .ok_or_else(|| "Missing id_registrasi_mahasiswa".into())?;
+            .ok_or("Missing id_registrasi_mahasiswa")?;
 
         let id_kelas_kuliah = record
             .id_kelas_kuliah
-            .ok_or_else(|| "Missing id_kelas_kuliah".into())?;
+            .ok_or("Missing id_kelas_kuliah")?;
 
         // Start transaction
         let sync_time = Local::now().naive_local();

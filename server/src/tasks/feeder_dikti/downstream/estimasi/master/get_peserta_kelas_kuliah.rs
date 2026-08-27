@@ -131,8 +131,8 @@ impl EstimatePesertaKelasKuliah {
             .await?;
 
         if let Some(record) = record {
+            let current_total = record.total_data.unwrap_or(0);
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().and_then(|x| *x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -148,9 +148,9 @@ impl EstimatePesertaKelasKuliah {
     async fn upsert_record(txn: &DatabaseTransaction, record: &ModelInput) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         let id_kelas_kuliah = record
             .id_kelas_kuliah
-            .ok_or_else(|| DbErr::Custom("id_kelas_kuliah is required for upsert".to_string()))?;
+            .ok_or("id_kelas_kuliah is required for upsert")?;
 
-        let id_registrasi_mahasiswa = record.id_registrasi_mahasiswa.ok_or_else(|| DbErr::Custom("id_registrasi_mahasiswa is required for upsert".to_string()))?;
+        let id_registrasi_mahasiswa = record.id_registrasi_mahasiswa.ok_or("id_registrasi_mahasiswa is required for upsert")?;
 
         let sync_time = Local::now().naive_local();
 

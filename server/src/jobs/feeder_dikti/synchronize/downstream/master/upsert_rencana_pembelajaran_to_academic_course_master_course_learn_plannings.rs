@@ -87,20 +87,20 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
             .one(db)
             .await
             .map_err(|e| e.into())?
-            .ok_or_else(|| "Unit not found for course".into())?;
+            .ok_or("Unit not found for course")?;
 
         let institution = institutions::Entity::find_by_id(unit.institution_id)
             .one(db)
             .await
             .map_err(|e| e.into())?
-            .ok_or_else(|| "Institution not found for unit".into())?;
+            .ok_or("Institution not found for unit")?;
 
         let pertemuan = record.pertemuan.unwrap_or(0);
 
         // title = "RPS" space course.unit.institution.code space course.unit.code space course.code space rencana_pembelajaran.pertemuan
         let title = format!(
             "RPS {} {} {} {}",
-            institution.code, unit.code, course.code, pertemuan
+            institution.code.as_deref().unwrap_or(""), unit.code, course.code, pertemuan
         );
 
         // 3. Upsert CourseLearnPlanning
@@ -121,15 +121,14 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
         let mut active_model = if let Some(existing_model) = existing {
             existing_model.into_active_model()
         } else {
-            let id = ();
             ActiveModel {
-                id: Set(id),
+                id: Set(Uuid::new_v4()),
                 ..Default::default()
             }
         };
 
         active_model.course_id = Set(course.id);
-        active_model.feeder_id_rencana_ajar = Set(feeder_id_rencana_ajar);
+        active_model.feeder_id_rencana_ajar = Set(Some(feeder_id_rencana_ajar));
 
         // Handling potentially nullable string fields from source -> non-nullable in target if needed,
         // or just mapping options if target allows.

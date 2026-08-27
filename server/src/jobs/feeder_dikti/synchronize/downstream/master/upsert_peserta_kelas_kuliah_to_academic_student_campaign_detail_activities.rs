@@ -123,7 +123,15 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
     };
 
     // 3. Get Unit Activity
-    let unit_activity = campaign_activities::Entity::find_by_id(teach.activity_id)
+    let Some(activity_id) = teach.activity_id else {
+        println!(
+            "Skipping: Teach has no activity_id for teach {}",
+            teach.id
+        );
+        return Ok(());
+    };
+
+    let unit_activity = campaign_activities::Entity::find_by_id(activity_id)
         .one(&txn)
         .await
         .map_err(|e| {
@@ -134,7 +142,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
     let Some(unit_activity) = unit_activity else {
         println!(
             "Skipping: Unit Activity not found for activity_id {}",
-            teach.activity_id
+            activity_id
         );
         return Ok(());
     };
@@ -176,49 +184,49 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .one(&txn)
         .await
         .map_err(|e| e.into())?
-        .ok_or_else(|| "Unit not found".into())?;
+        .ok_or("Unit not found")?;
 
     // Get Institution
     let institution = institutions::Entity::find_by_id(unit.institution_id)
         .one(&txn)
         .await
         .map_err(|e| e.into())?
-        .ok_or_else(|| "Institution not found".into())?;
+        .ok_or("Institution not found")?;
 
     // Get Academic Year
     let academic_year = academic_years::Entity::find_by_id(unit_activity.academic_year_id)
         .one(&txn)
         .await
         .map_err(|e| e.into())?
-        .ok_or_else(|| "Academic Year not found".into())?;
+        .ok_or("Academic Year not found")?;
 
     // Get Course
     let course = courses::Entity::find_by_id(teach.course_id)
         .one(&txn)
         .await
         .map_err(|e| e.into())?
-        .ok_or_else(|| "Course not found".into())?;
+        .ok_or("Course not found")?;
 
     // Construct Name
     // "DetailAktifitasPerkuliahan" space student.unit.institution.code space student.unit.code space student.code unit_activity.academic_year.feeder_name teach.course.code
     let detail_activity_name = format!(
         "DetailAktifitasPerkuliahan {} {} {} {} {}",
-        institution.code, unit.code, student.code, academic_year.feeder_name, course.code
+        institution.code, unit.code, student.code, academic_year.feeder_name.as_deref().unwrap_or(""), course.code
     );
 
     if existing_detail.is_none() {
         let active = detail_activities::ActiveModel {
             id: Set(Uuid::new_v4()),
             name: Set(Some(detail_activity_name.clone())),
-            feeder_id: Set(Uuid::nil()), // As per instructions "feeder_id = uuid::nil()"
-            feeder_grade_id: Set(Uuid::nil()),
-            grade_id: Set(Uuid::nil()),
-            mark: Set(0.0),
-            credit: Set(course.total_credit),
-            curiculum_detail_sequence: Set(0),
-            is_lock: Set(true), // As per instructions "is_lock = true"
+            feeder_id: Set(Some(Uuid::nil())), // As per instructions "feeder_id = uuid::nil()"
+            feeder_grade_id: Set(Some(Uuid::nil())),
+            grade_id: Set(Some(Uuid::nil())),
+            mark: Set(Some(0.0)),
+            credit: Set(Some(course.total_credit)),
+            curiculum_detail_sequence: Set(Some(0)),
+            is_lock: Set(Some(true)), // As per instructions "is_lock = true"
             activity_id: Set(student_activity.id),
-            teach_id: Set(teach.id),
+            teach_id: Set(Some(teach.id)),
             course_id: Set(teach.course_id),
             created_at: Set(Some(chrono::Utc::now().naive_utc())),
             updated_at: Set(Some(chrono::Utc::now().naive_utc())),

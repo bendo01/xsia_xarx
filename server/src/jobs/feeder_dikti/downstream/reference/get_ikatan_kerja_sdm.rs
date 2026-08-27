@@ -78,7 +78,7 @@ impl Worker {
         let id_ikatan_kerja = record
             .id_ikatan_kerja
             .clone()
-            .ok_or_else(|| "id_ikatan_kerja is missing".into())?;
+            .ok_or("id_ikatan_kerja is missing")?;
 
         let sync_time = Local::now().naive_local();
 

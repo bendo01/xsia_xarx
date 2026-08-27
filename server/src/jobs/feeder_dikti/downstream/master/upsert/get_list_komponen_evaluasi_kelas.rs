@@ -117,31 +117,31 @@ impl Worker {
         // Validate required fields
         let id_komponen_evaluasi = record
             .id_komponen_evaluasi
-            .ok_or_else(|| "Missing id_komponen_evaluasi".into())?;
+            .ok_or("Missing id_komponen_evaluasi")?;
 
         let id_kelas_kuliah = record
             .id_kelas_kuliah
-            .ok_or_else(|| "Missing id_kelas_kuliah".into())?;
+            .ok_or("Missing id_kelas_kuliah")?;
 
         let id_jenis_evaluasi = record
             .id_jenis_evaluasi
-            .ok_or_else(|| "Missing id_jenis_evaluasi".into())?;
+            .ok_or("Missing id_jenis_evaluasi")?;
 
         let nomor_urut = record
             .nomor_urut
-            .ok_or_else(|| "Missing nomor_urut".into())?;
+            .ok_or("Missing nomor_urut")?;
 
         let bobot_evaluasi = record
             .bobot_evaluasi
-            .ok_or_else(|| "Missing bobot_evaluasi".into())?;
+            .ok_or("Missing bobot_evaluasi")?;
 
         let last_update = record
             .last_update
-            .ok_or_else(|| "Missing last_update".into())?;
+            .ok_or("Missing last_update")?;
 
         let tgl_create = record
             .tgl_create
-            .ok_or_else(|| "Missing tgl_create".into())?;
+            .ok_or("Missing tgl_create")?;
 
         // Start transaction
         let sync_time = Local::now().naive_local();
