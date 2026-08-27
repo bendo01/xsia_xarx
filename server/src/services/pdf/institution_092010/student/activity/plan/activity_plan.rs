@@ -135,6 +135,36 @@ fn get_templates() -> &'static Tera {
     })
 }
 
+fn generate_qr_signature(text: &str, relative_path: Option<&str>) -> String {
+    if let Ok(code) = QrCode::with_error_correction_level(text, EcLevel::L) {
+        let image = code.render::<image::Luma<u8>>().build();
+
+        if let Some(rel_path) = relative_path {
+            let full_path = if let Ok(app_dir) = std::env::var("APP_DIRECTORY") {
+                if !app_dir.is_empty() {
+                    std::path::Path::new(&app_dir).join(rel_path)
+                } else {
+                    std::path::PathBuf::from(rel_path)
+                }
+            } else {
+                std::path::PathBuf::from(rel_path)
+            };
+            if let Some(parent) = full_path.parent() {
+                let _ = std::fs::create_dir_all(parent);
+            }
+            let _ = image.save(&full_path);
+        }
+
+        let mut bytes: Vec<u8> = Vec::new();
+        let mut cursor = std::io::Cursor::new(&mut bytes);
+        if image.write_to(&mut cursor, image::ImageFormat::Png).is_ok() {
+            let b64 = base64::engine::general_purpose::STANDARD.encode(&bytes);
+            return format!("<img src='data:image/png;base64,{}' height='50' />", b64);
+        }
+    }
+    String::new()
+}
+
 async fn get_signature_image(
     db: &DatabaseConnection,
     archiveable_type: &str,
@@ -148,22 +178,16 @@ async fn get_signature_image(
         .one(db)
         .await;
 
-    match archive {
-        Ok(Some(archive)) => {
-            let image_path = format!("{}{}", archive.dir, archive.name);
-            match EncodeService::base64_encode(&image_path) {
-                Ok(base64) => format!(
-                    "<img src='data:{};base64,{}' height='50' />",
-                    archive.mimetype, base64
-                ),
-                Err(e) => {
-                    eprintln!("Failed to encode signature image at {}: {}", image_path, e);
-                    String::new()
-                }
-            }
+    if let Ok(Some(archive)) = archive {
+        let image_path = format!("{}{}", archive.dir, archive.name);
+        if let Ok(base64) = EncodeService::base64_encode(&image_path) {
+            return format!(
+                "<img src='data:{};base64,{}' height='50' />",
+                archive.mimetype, base64
+            );
         }
-        _ => String::new(),
     }
+    String::new()
 }
 
 pub async fn generate_html_content(
@@ -338,15 +362,9 @@ pub async fn generate_html_content(
 
         if sig.is_empty() {
             let signature_text = format!("Ditandatangani oleh mahasiswa: {} {}", st.code, st.name);
-            if let Ok(code) = QrCode::with_error_correction_level(&signature_text, EcLevel::L) {
-                let image = code.render::<image::Luma<u8>>().build();
-                let mut bytes: Vec<u8> = Vec::new();
-                let mut cursor = std::io::Cursor::new(&mut bytes);
-                if image.write_to(&mut cursor, image::ImageFormat::Png).is_ok() {
-                    let b64 = base64::engine::general_purpose::STANDARD.encode(&bytes);
-                    sig = format!("<img src='data:image/png;base64,{}' height='50' />", b64);
-                }
-            }
+            let unit_code = unit.as_ref().and_then(|u| u.code.as_deref()).unwrap_or("default");
+            let save_path = format!("public/img/academic/student/092010/{}/{}/signature.png", unit_code, st.code);
+            sig = generate_qr_signature(&signature_text, Some(&save_path));
         }
         (sig, st.name.clone(), st.code.clone())
     } else {
@@ -374,12 +392,20 @@ pub async fn generate_html_content(
 
         match staff_opt {
             Some(staff) => {
-                let sig = get_signature_image(db, "App\\Model\\Institution\\Master\\Staff", staff.id).await;
-                (
-                    sig,
-                    staff.name.unwrap_or_default(),
-                    staff.code.unwrap_or_default(),
-                )
+                let mut sig = get_signature_image(db, "App\\Model\\Institution\\Master\\Staff", staff.id).await;
+                let s_name = staff.name.unwrap_or_default();
+                let s_code = staff.code.unwrap_or_default();
+                if sig.is_empty() {
+                    let signature_text = format!("Ditandatangani oleh kepala program studi: {} {}", s_code, s_name);
+                    let unit_code = u.code.as_deref().unwrap_or("default");
+                    let save_path = format!(
+                        "public/img/institution/092010/{}/staff/{}/signature.png",
+                        unit_code,
+                        s_code.replace(' ', "_").to_lowercase()
+                    );
+                    sig = generate_qr_signature(&signature_text, Some(&save_path));
+                }
+                (sig, s_name, s_code)
             }
             None => (String::new(), String::new(), String::new()),
         }
@@ -425,12 +451,21 @@ pub async fn generate_html_content(
 
         match staff_opt {
             Some(staff) => {
-                let sig = get_signature_image(db, "App\\Model\\Institution\\Master\\Staff", staff.id).await;
-                (
-                    sig,
-                    staff.name.unwrap_or_default(),
-                    staff.code.unwrap_or_default(),
-                )
+                let mut sig = get_signature_image(db, "App\\Model\\Institution\\Master\\Staff", staff.id).await;
+                let s_name = staff.name.unwrap_or_default();
+                let s_code = staff.code.unwrap_or_default();
+                if sig.is_empty() {
+                    let signature_text = format!(
+                        "Ditandatangani oleh kepala Biro Administrasi Akademik dan Kemahasiswaan: {} {}",
+                        s_code, s_name
+                    );
+                    let save_path = format!(
+                        "public/img/institution/092010/BAAK/staff/{}/signature.png",
+                        s_code.replace(' ', "_").to_lowercase()
+                    );
+                    sig = generate_qr_signature(&signature_text, Some(&save_path));
+                }
+                (sig, s_name, s_code)
             }
             None => (String::new(), String::new(), String::new()),
         }

@@ -4,6 +4,8 @@ import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import {
     getStudentActivityById,
+    printActivityPlan,
+    printActivityResult,
     StudentActivityItem
 } from '~/controllers/academic/student/campaign/AcademicStudentCampaignActivityController';
 import {
@@ -122,8 +124,59 @@ export default function StudentCampaignActivityShowPage() {
         }
     };
 
-    const handlePrintKRS = () => {
-        window.print();
+    const [isPrintingKRS, setIsPrintingKRS] = createSignal(false);
+    const [isPrintingKHS, setIsPrintingKHS] = createSignal(false);
+
+    const handlePrintKRS = async () => {
+        const id = activity()?.id;
+        if (!id) {
+            toast.danger('Activity ID is missing.');
+            return;
+        }
+
+        setIsPrintingKRS(true);
+        try {
+            toast.info('Generating KRS (Study Plan Card) PDF...');
+            const blob = await printActivityPlan(id);
+            if (blob) {
+                const url = window.URL.createObjectURL(blob);
+                window.open(url, '_blank');
+                toast.success('KRS PDF opened successfully.');
+            } else {
+                toast.danger('Failed to generate KRS PDF.');
+            }
+        } catch (err) {
+            console.error('Error printing KRS:', err);
+            toast.danger('An error occurred while generating KRS PDF.');
+        } finally {
+            setIsPrintingKRS(false);
+        }
+    };
+
+    const handlePrintKHS = async () => {
+        const id = activity()?.id;
+        if (!id) {
+            toast.danger('Activity ID is missing.');
+            return;
+        }
+
+        setIsPrintingKHS(true);
+        try {
+            toast.info('Generating KHS (Study Result Card) PDF...');
+            const blob = await printActivityResult(id);
+            if (blob) {
+                const url = window.URL.createObjectURL(blob);
+                window.open(url, '_blank');
+                toast.success('KHS PDF opened successfully.');
+            } else {
+                toast.danger('Failed to generate KHS PDF.');
+            }
+        } catch (err) {
+            console.error('Error printing KHS:', err);
+            toast.danger('An error occurred while generating KHS PDF.');
+        } finally {
+            setIsPrintingKHS(false);
+        }
     };
 
     const totalEnrolledSKS = () => {
@@ -182,10 +235,32 @@ export default function StudentCampaignActivityShowPage() {
                             <button
                                 type="button"
                                 onClick={handlePrintKRS}
-                                class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
+                                disabled={isPrintingKRS()}
+                                class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                                title="Print Study Plan Card (KRS)"
                             >
-                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect width="12" height="8" x="6" y="14" /></svg>
-                                <span>Print KRS / KHS</span>
+                                <Show
+                                    when={!isPrintingKRS()}
+                                    fallback={<div class="size-4 border-2 border-neutral-400 border-t-transparent rounded-full animate-spin"></div>}
+                                >
+                                    <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect width="12" height="8" x="6" y="14" /></svg>
+                                </Show>
+                                <span>{isPrintingKRS() ? 'Generating KRS...' : 'Print KRS'}</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handlePrintKHS}
+                                disabled={isPrintingKHS()}
+                                class="px-4 py-2.5 bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/80 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                                title="Print Study Result Card (KHS)"
+                            >
+                                <Show
+                                    when={!isPrintingKHS()}
+                                    fallback={<div class="size-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin"></div>}
+                                >
+                                    <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
+                                </Show>
+                                <span>{isPrintingKHS() ? 'Generating KHS...' : 'Print KHS'}</span>
                             </button>
                             <Show
                                 when={!activity()?.is_lock}

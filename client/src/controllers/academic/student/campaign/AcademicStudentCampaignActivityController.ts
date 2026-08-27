@@ -173,3 +173,57 @@ export async function toggleIsLocked(id: string): Promise<{
         return { code: 500, message: 'Internal server error' };
     }
 }
+
+export async function printActivityPlan(activityId: string): Promise<Blob | null> {
+    try {
+        const token = getStorageItem('token');
+        const headers: Record<string, string> = {
+            Accept: 'application/pdf',
+        };
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const res = await fetch(`${getBaseUrl()}/academic/student/campaign/student-activities/print_activity_plan/${activityId}`, {
+            method: 'GET',
+            headers,
+        });
+
+        if (!res.ok) {
+            console.error(`Failed to print activity plan: HTTP ${res.status}`);
+            return null;
+        }
+
+        return await res.blob();
+    } catch (err) {
+        console.error('Error fetching activity plan PDF:', err);
+        return null;
+    }
+}
+
+export async function printActivityResult(activityId: string): Promise<Blob | null> {
+    try {
+        const token = getStorageItem('token');
+        const headers: Record<string, string> = {
+            Accept: 'application/pdf',
+        };
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const res = await fetch(`${getBaseUrl()}/academic/student/campaign/student-activities/print_activity_result/${activityId}`, {
+            method: 'GET',
+            headers,
+        });
+
+        if (!res.ok) {
+            console.error(`Failed to print activity result: HTTP ${res.status}`);
+            return null;
+        }
+
+        return await res.blob();
+    } catch (err) {
+        console.error('Error fetching activity result PDF:', err);
+        return null;
+    }
+}
