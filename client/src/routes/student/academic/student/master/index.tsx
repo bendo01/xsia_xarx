@@ -1,7 +1,15 @@
 import { createSignal, onMount, For, Show } from 'solid-js';
-import { A } from '@solidjs/router';
+import { A, useSearchParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
+import { 
+    currentUserSignal, 
+    refreshAuthState, 
+} from '~/lib/authStore';
+import { getStorageItem } from '~/lib/storage';
+import { GetCurrentUser } from '~/controllers/auth/AuthUser';
+import { PersonMasterIndividualControllerShow } from '~/controllers/person/master/PersonMasterIndividualController';
+import type { PersonMasterIndividual } from '~/models/person/master/Individual';
 import { 
     listStudents, 
     listStudyUnits, 
@@ -9,7 +17,9 @@ import {
 } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
 
 export default function StudentMasterIndexPage() {
+    const [searchParams] = useSearchParams();
     const [students, setStudents] = createSignal<StudentMasterItem[]>([]);
+    const [individual, setIndividual] = createSignal<PersonMasterIndividual | null>(null);
     const [units, setUnits] = createSignal<any[]>([]);
     const [isLoading, setIsLoading] = createSignal(true);
     const [searchQuery, setSearchQuery] = createSignal('');
@@ -18,20 +28,50 @@ export default function StudentMasterIndexPage() {
     const [totalPages, setTotalPages] = createSignal(1);
     const [totalItems, setTotalItems] = createSignal(0);
 
+    const resolveIndividualId = async (): Promise<string> => {
+        let targetIndId = (searchParams.id as string) || (searchParams.individual_id as string) || currentUserSignal()?.individual_id || getStorageItem('individual_id') || '';
+        if (!targetIndId || targetIndId === '00000000-0000-0000-0000-000000000000') {
+            const curUserRes = await GetCurrentUser();
+            if (curUserRes.code === 200 && curUserRes.data?.individual_id) {
+                targetIndId = curUserRes.data.individual_id;
+                refreshAuthState();
+            }
+        }
+        return targetIndId;
+    };
+
     const fetchStudents = async () => {
         setIsLoading(true);
         try {
+            const targetIndId = await resolveIndividualId();
+            
+            let indRecord: PersonMasterIndividual | null = null;
+            if (targetIndId && targetIndId !== '00000000-0000-0000-0000-000000000000') {
+                const indRes = await PersonMasterIndividualControllerShow(targetIndId);
+                if (!indRes.is_error && indRes.data?.individual) {
+                    indRecord = indRes.data.individual;
+                    setIndividual(indRecord);
+                }
+            }
+
+            const indId = indRecord?.id || targetIndId;
+
             const [res, uRes] = await Promise.all([
                 listStudents({
                     page: page(),
                     page_size: pageSize(),
                     name: searchQuery() || undefined,
+                    individual_id: indId || undefined,
                 }),
                 listStudyUnits(),
             ]);
 
             const rawItems = res.data || [];
-            const items = rawItems.map((item) => ({
+            const filteredItems = indId 
+                ? rawItems.filter((item) => item.individual_id === indId)
+                : rawItems;
+
+            const items = filteredItems.map((item) => ({
                 ...item,
                 unit_name: item.unit_name || '-',
                 status_name: item.status_name || 'Active',

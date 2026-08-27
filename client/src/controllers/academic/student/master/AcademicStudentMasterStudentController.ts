@@ -56,6 +56,7 @@ export async function listStudents(queryParams?: {
     page_size?: number;
     name?: string;
     code?: string;
+    individual_id?: string;
 }): Promise<{
     data: StudentMasterItem[];
     total: number;
@@ -69,6 +70,7 @@ export async function listStudents(queryParams?: {
         if (queryParams?.page_size) params.set('page_size', String(queryParams.page_size));
         if (queryParams?.name) params.set('name', queryParams.name);
         if (queryParams?.code) params.set('code', queryParams.code);
+        if (queryParams?.individual_id) params.set('individual_id', queryParams.individual_id);
 
         const res = await fetch(`${getBaseUrl()}/academic/student/master/students?${params.toString()}`, {
             method: 'GET',
