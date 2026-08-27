@@ -2,24 +2,23 @@ import { createSignal, onMount, createEffect, Show, For } from 'solid-js';
 import { useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
-import { currentUserSignal, activeRoleSignal, getRoleDisplayName } from '~/lib/authStore';
-import type { PersonMasterIndividual, PersonMasterIndividualDataObject } from '~/models/person/master/Individual';
-import { 
-    PersonMasterIndividualControllerShow, 
-    PersonMasterIndividualControllerIndex 
-} from '~/controllers/person/master/PersonMasterIndividualController';
+import { currentUserSignal, refreshAuthState } from '~/lib/authStore';
+import { getStorageItem } from '~/lib/storage';
+import { GetCurrentUser } from '~/controllers/auth/AuthUser';
+import type { PersonMasterIndividualDataObject } from '~/models/person/master/Individual';
+import { PersonMasterIndividualControllerShow } from '~/controllers/person/master/PersonMasterIndividualController';
 import { listStudentActivities, StudentActivityItem } from '~/controllers/academic/student/campaign/AcademicStudentCampaignActivityController';
-import { listStudents, StudentMasterItem } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
+import { getStudentById, StudentMasterItem } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
 import { listCounsellors, CounsellorItem } from '~/controllers/academic/student/adviser/AcademicStudentAdviserController';
 
 export default function StudentDashboardProfilePage() {
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
     const [isLoading, setIsLoading] = createSignal(true);
     const [individualData, setIndividualData] = createSignal<PersonMasterIndividualDataObject | null>(null);
     const [studentRecord, setStudentRecord] = createSignal<StudentMasterItem | null>(null);
     const [recentActivities, setRecentActivities] = createSignal<StudentActivityItem[]>([]);
     const [advisers, setAdvisers] = createSignal<CounsellorItem[]>([]);
-    const [activeTab, setActiveTab] = createSignal<'overview' | 'biodata' | 'academic' | 'family'>('overview');
+    const [activeTab, setActiveTab] = createSignal<'overview' | 'biodata' | 'academic'>('overview');
 
     const fetchStudentProfile = async () => {
         setIsLoading(true);
@@ -27,42 +26,55 @@ export default function StudentDashboardProfilePage() {
             let targetIndId = (searchParams.id as string) || '';
             const user = currentUserSignal();
 
-            // 1. If no specific ID, try to get from user session or search first available record
-            if (!targetIndId && user?.pid) {
-                targetIndId = user.pid;
+            // 1. Resolve individual ID from query param, reactive user signal, or storage
+            if (!targetIndId) {
+                targetIndId = user?.individual_id || getStorageItem('individual_id') || '';
             }
 
-            if (!targetIndId) {
-                // Fetch list of individuals and pick the first one matching user or general student
-                const indList = await PersonMasterIndividualControllerIndex({ page: 1, per_page: 5 });
-                if (indList.data && indList.data.length > 0) {
-                    targetIndId = indList.data[0].individual.id;
+            // If still missing or empty/default uuid, fetch current authenticated user from server
+            if (!targetIndId || targetIndId === '00000000-0000-0000-0000-000000000000') {
+                const curUserRes = await GetCurrentUser();
+                if (curUserRes.code === 200 && curUserRes.data?.individual_id) {
+                    targetIndId = curUserRes.data.individual_id;
+                    refreshAuthState();
                 }
             }
 
-            if (targetIndId) {
+            if (targetIndId && targetIndId !== '00000000-0000-0000-0000-000000000000') {
                 const res = await PersonMasterIndividualControllerShow(targetIndId);
                 if (!res.is_error && res.data) {
                     setIndividualData(res.data);
+
+                    // 2. Fetch associated student academic record for this individual
+                    let matchedStudent: StudentMasterItem | null = null;
+                    if (res.data.students && res.data.students.length > 0) {
+                        const linkedStudentId = res.data.students[0].id;
+                        const fullStudent = await getStudentById(linkedStudentId);
+                        matchedStudent = fullStudent || res.data.students[0];
+                    }
+                    setStudentRecord(matchedStudent);
+
+                    // 3. Fetch academic activities specifically for this student
+                    if (matchedStudent?.id) {
+                        const actRes = await listStudentActivities({ student_id: matchedStudent.id, page: 1, page_size: 5 });
+                        if (actRes.data) {
+                            setRecentActivities(actRes.data);
+                        } else {
+                            setRecentActivities([]);
+                        }
+
+                        // 4. Fetch advisers specifically for this student
+                        const advRes = await listCounsellors({ student_id: matchedStudent.id, page: 1, page_size: 5 });
+                        if (advRes.data) {
+                            setAdvisers(advRes.data);
+                        } else {
+                            setAdvisers([]);
+                        }
+                    } else {
+                        setRecentActivities([]);
+                        setAdvisers([]);
+                    }
                 }
-            }
-
-            // 2. Fetch associated student academic record
-            const studentListRes = await listStudents({ page: 1, page_size: 5 });
-            if (studentListRes.data && studentListRes.data.length > 0) {
-                setStudentRecord(studentListRes.data[0]);
-            }
-
-            // 3. Fetch academic activities
-            const actRes = await listStudentActivities({ page: 1, page_size: 5 });
-            if (actRes.data) {
-                setRecentActivities(actRes.data);
-            }
-
-            // 4. Fetch advisers
-            const advRes = await listCounsellors({ page: 1, page_size: 3 });
-            if (advRes.data) {
-                setAdvisers(advRes.data);
             }
         } catch (error) {
             console.error('Error fetching student profile data:', error);
@@ -91,8 +103,13 @@ export default function StudentDashboardProfilePage() {
     };
 
     const latestActivity = () => recentActivities()[0] || null;
-    const totalCredits = () => latestActivity()?.grand_total_credit || latestActivity()?.total_credit || 0;
-    const gpa = () => (latestActivity()?.grand_cumulative_index || latestActivity()?.cumulative_index || 0).toFixed(2);
+    const totalCredits = () => latestActivity()?.grand_total_credit ?? latestActivity()?.total_credit ?? 0;
+    const gpa = () => {
+        const act = latestActivity();
+        if (!act) return '0.00';
+        const val = act.grand_cumulative_index ?? act.cumulative_index ?? 0;
+        return Number(val).toFixed(2);
+    };
 
     return (
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
@@ -109,22 +126,22 @@ export default function StudentDashboardProfilePage() {
                             <div class="relative">
                                 <div class="size-24 sm:size-28 rounded-2xl bg-gradient-to-tr from-blue-500 to-indigo-500 p-1 shadow-lg">
                                     <div class="w-full h-full rounded-xl bg-neutral-800 flex items-center justify-center text-white text-3xl font-black uppercase">
-                                        {fullName().charAt(0)}
+                                        {(fullName() || 'S').charAt(0)}
                                     </div>
                                 </div>
                                 <span class="absolute -bottom-2 -right-2 px-2.5 py-0.5 rounded-full bg-emerald-500 text-[10px] font-bold tracking-wider uppercase text-white shadow-xs border-2 border-neutral-900">
-                                    Active Student
+                                    {studentRecord()?.status_name || 'Active Student'}
                                 </span>
                             </div>
 
                             <div class="space-y-2 text-center sm:text-start">
                                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-mono font-semibold">
                                     <span class="size-2 rounded-full bg-blue-400 animate-pulse"></span>
-                                    <span>NIM: {studentRecord()?.code || ind()?.code || '202401001'}</span>
+                                    <span>NIM: {studentRecord()?.code || ind()?.code || '-'}</span>
                                 </div>
                                 <h1 class="text-2xl sm:text-3xl font-black tracking-tight">{fullName()}</h1>
                                 <p class="text-neutral-300 text-xs sm:text-sm max-w-xl">
-                                    {studentRecord()?.unit_name || 'Informatics Engineering'} • Academic Batch {studentRecord()?.academic_year_name || '2024/2025'}
+                                    {studentRecord()?.unit_name || '-'} • Academic Batch {studentRecord()?.academic_year_name || studentRecord()?.registered?.substring(0, 4) || '-'}
                                 </p>
                             </div>
                         </div>
@@ -141,7 +158,7 @@ export default function StudentDashboardProfilePage() {
                             </div>
                             <div class="p-3.5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-center col-span-2 sm:col-span-1">
                                 <span class="block text-[11px] text-blue-200 font-mono uppercase tracking-wider">Academic Status</span>
-                                <span class="text-sm font-bold text-emerald-300">Registered</span>
+                                <span class="text-sm font-bold text-emerald-300">{studentRecord()?.status_name || 'Registered'}</span>
                             </div>
                         </div>
                     </div>
@@ -272,19 +289,19 @@ export default function StudentDashboardProfilePage() {
                                             <div class="grid grid-cols-2 gap-3 text-xs">
                                                 <div>
                                                     <span class="text-neutral-400 block">Student NIM</span>
-                                                    <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{studentRecord()?.code || '202401001'}</span>
+                                                    <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{studentRecord()?.code || '-'}</span>
                                                 </div>
                                                 <div>
                                                     <span class="text-neutral-400 block">Registration Date</span>
-                                                    <span class="font-bold text-neutral-800 dark:text-neutral-100">{studentRecord()?.registered || '2024-08-01'}</span>
+                                                    <span class="font-bold text-neutral-800 dark:text-neutral-100">{studentRecord()?.registered || '-'}</span>
                                                 </div>
                                                 <div>
                                                     <span class="text-neutral-400 block">Study Program</span>
-                                                    <span class="font-bold text-neutral-800 dark:text-neutral-100">{studentRecord()?.unit_name || 'Informatics Engineering'}</span>
+                                                    <span class="font-bold text-neutral-800 dark:text-neutral-100">{studentRecord()?.unit_name || '-'}</span>
                                                 </div>
                                                 <div>
                                                     <span class="text-neutral-400 block">Current Status</span>
-                                                    <span class="font-bold text-emerald-600 dark:text-emerald-400">Active / Terdaftar</span>
+                                                    <span class="font-bold text-emerald-600 dark:text-emerald-400">{studentRecord()?.status_name || 'Active / Terdaftar'}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -297,22 +314,22 @@ export default function StudentDashboardProfilePage() {
                                             <div class="grid grid-cols-2 gap-3 text-xs">
                                                 <div>
                                                     <span class="text-neutral-400 block">National ID (NIK)</span>
-                                                    <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{ind()?.code || '3201012345678901'}</span>
+                                                    <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{ind()?.code || '-'}</span>
                                                 </div>
                                                 <div>
                                                     <span class="text-neutral-400 block">NISN</span>
-                                                    <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{studentRecord()?.nisn || '0054321987'}</span>
+                                                    <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{studentRecord()?.nisn || '-'}</span>
                                                 </div>
                                                 <div>
                                                     <span class="text-neutral-400 block">Birth Place & Date</span>
                                                     <span class="font-bold text-neutral-800 dark:text-neutral-100">
-                                                        {ind()?.birth_place || 'Jakarta'}, {ind()?.birth_date || '2004-05-15'}
+                                                        {ind()?.birth_place ? `${ind()?.birth_place}, ${ind()?.birth_date || '-'}` : (ind()?.birth_date || '-')}
                                                     </span>
                                                 </div>
                                                 <div>
                                                     <span class="text-neutral-400 block">Gender</span>
                                                     <span class="font-bold text-neutral-800 dark:text-neutral-100">
-                                                        {individualData()?.gender?.name || (ind()?.gender_id ? 'Male' : 'Female')}
+                                                        {individualData()?.gender?.name || '-'}
                                                     </span>
                                                 </div>
                                             </div>
@@ -344,40 +361,48 @@ export default function StudentDashboardProfilePage() {
                                                     </tr>
                                                 </thead>
                                                 <tbody class="divide-y divide-neutral-100 dark:divide-neutral-700/50">
-                                                    <For each={recentActivities()}>
-                                                        {(act) => (
-                                                            <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900/30 transition-colors">
-                                                                <td class="py-3 px-3 font-semibold text-neutral-900 dark:text-white">
-                                                                    {act.name || '2024/2025 Ganjil'}
-                                                                </td>
-                                                                <td class="py-3 px-3 text-center font-mono">{act.total_credit || 20}</td>
-                                                                <td class="py-3 px-3 text-center font-mono">{act.grand_total_credit || act.total_credit || 20}</td>
-                                                                <td class="py-3 px-3 text-center font-mono font-bold text-blue-600 dark:text-blue-400">
-                                                                    {(act.cumulative_index || 3.75).toFixed(2)}
-                                                                </td>
-                                                                <td class="py-3 px-3 text-center font-mono font-bold text-indigo-600 dark:text-indigo-400">
-                                                                    {(act.grand_cumulative_index || act.cumulative_index || 3.75).toFixed(2)}
-                                                                </td>
-                                                                <td class="py-3 px-3 text-center">
-                                                                    <span class={`inline-flex px-2 py-0.5 text-[10px] font-bold rounded-full ${
-                                                                        act.is_lock
-                                                                            ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
-                                                                            : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
-                                                                    }`}>
-                                                                        {act.is_lock ? 'Locked' : 'Unlocked'}
-                                                                    </span>
-                                                                </td>
-                                                                <td class="py-3 px-3 text-end">
-                                                                    <A
-                                                                        href={`/student/academic/student/campaign/activity/show?id=${act.id}`}
-                                                                        class="px-2.5 py-1 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-lg text-xs font-semibold"
-                                                                    >
-                                                                        Details
-                                                                    </A>
-                                                                </td>
-                                                            </tr>
-                                                        )}
-                                                    </For>
+                                                    <Show when={recentActivities().length > 0} fallback={
+                                                        <tr>
+                                                            <td colspan="7" class="py-8 text-center text-neutral-400 font-mono">
+                                                                No semester academic activities recorded yet.
+                                                            </td>
+                                                        </tr>
+                                                    }>
+                                                        <For each={recentActivities()}>
+                                                            {(act) => (
+                                                                <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900/30 transition-colors">
+                                                                    <td class="py-3 px-3 font-semibold text-neutral-900 dark:text-white">
+                                                                        {act.name || act.semester_name || 'Academic Semester'}
+                                                                    </td>
+                                                                    <td class="py-3 px-3 text-center font-mono">{act.total_credit ?? 0}</td>
+                                                                    <td class="py-3 px-3 text-center font-mono">{act.grand_total_credit ?? act.total_credit ?? 0}</td>
+                                                                    <td class="py-3 px-3 text-center font-mono font-bold text-blue-600 dark:text-blue-400">
+                                                                        {Number(act.cumulative_index ?? 0).toFixed(2)}
+                                                                    </td>
+                                                                    <td class="py-3 px-3 text-center font-mono font-bold text-indigo-600 dark:text-indigo-400">
+                                                                        {Number(act.grand_cumulative_index ?? act.cumulative_index ?? 0).toFixed(2)}
+                                                                    </td>
+                                                                    <td class="py-3 px-3 text-center">
+                                                                        <span class={`inline-flex px-2 py-0.5 text-[10px] font-bold rounded-full ${
+                                                                            act.is_lock
+                                                                                ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+                                                                                : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                                                                        }`}>
+                                                                            {act.is_lock ? 'Locked' : 'Unlocked'}
+                                                                        </span>
+                                                                    </td>
+                                                                    <td class="py-3 px-3 text-end">
+                                                                        <A
+                                                                            href={`/student/academic/student/campaign/activity/show?id=${act.id}`}
+                                                                            class="px-2.5 py-1 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-lg text-xs font-semibold"
+                                                                        >
+                                                                            Details
+                                                                        </A>
+                                                                    </td>
+                                                                </tr>
+                                                            )}
+                                                        </For>
+                                                    </Show>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -399,19 +424,19 @@ export default function StudentDashboardProfilePage() {
                                             </div>
                                             <div class="flex justify-between py-1 border-b border-neutral-200/60 dark:border-neutral-800">
                                                 <span class="text-neutral-400">Email</span>
-                                                <span class="font-bold text-neutral-800 dark:text-neutral-100">{individualData()?.user?.email || currentUserSignal()?.email || 'student@campus.ac.id'}</span>
+                                                <span class="font-bold text-neutral-800 dark:text-neutral-100">{individualData()?.user?.email || currentUserSignal()?.email || '-'}</span>
                                             </div>
                                             <div class="flex justify-between py-1 border-b border-neutral-200/60 dark:border-neutral-800">
                                                 <span class="text-neutral-400">Phone Number</span>
-                                                <span class="font-bold text-neutral-800 dark:text-neutral-100">{individualData()?.biodata?.phone_number || '+62 812-3456-7890'}</span>
+                                                <span class="font-bold text-neutral-800 dark:text-neutral-100">{individualData()?.biodata?.phone_number || '-'}</span>
                                             </div>
                                             <div class="flex justify-between py-1 border-b border-neutral-200/60 dark:border-neutral-800">
                                                 <span class="text-neutral-400">Blood Type</span>
-                                                <span class="font-bold text-neutral-800 dark:text-neutral-100">{individualData()?.biodata?.blood_type?.name || 'O+'}</span>
+                                                <span class="font-bold text-neutral-800 dark:text-neutral-100">{individualData()?.biodata?.blood_type?.name || '-'}</span>
                                             </div>
                                             <div class="flex justify-between py-1 border-b border-neutral-200/60 dark:border-neutral-800">
                                                 <span class="text-neutral-400">Religion</span>
-                                                <span class="font-bold text-neutral-800 dark:text-neutral-100">{individualData()?.religion?.name || 'Islam'}</span>
+                                                <span class="font-bold text-neutral-800 dark:text-neutral-100">{individualData()?.religion?.name || '-'}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -423,19 +448,21 @@ export default function StudentDashboardProfilePage() {
                                         <div class="space-y-2.5">
                                             <div class="flex justify-between py-1 border-b border-neutral-200/60 dark:border-neutral-800">
                                                 <span class="text-neutral-400">Address Line</span>
-                                                <span class="font-bold text-neutral-800 dark:text-neutral-100">{individualData()?.biodata?.address || 'Jl. Kampus Merdeka No. 42'}</span>
+                                                <span class="font-bold text-neutral-800 dark:text-neutral-100">{individualData()?.biodata?.address || '-'}</span>
                                             </div>
                                             <div class="flex justify-between py-1 border-b border-neutral-200/60 dark:border-neutral-800">
                                                 <span class="text-neutral-400">Postal Code</span>
-                                                <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{individualData()?.biodata?.postal_code || '15412'}</span>
+                                                <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{individualData()?.biodata?.postal_code || '-'}</span>
                                             </div>
                                             <div class="flex justify-between py-1 border-b border-neutral-200/60 dark:border-neutral-800">
                                                 <span class="text-neutral-400">RT / RW</span>
-                                                <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">004 / 007</span>
+                                                <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">
+                                                    {individualData()?.biodata?.rt && individualData()?.biodata?.rw ? `${individualData()?.biodata?.rt} / ${individualData()?.biodata?.rw}` : '-'}
+                                                </span>
                                             </div>
                                             <div class="flex justify-between py-1 border-b border-neutral-200/60 dark:border-neutral-800">
                                                 <span class="text-neutral-400">Country</span>
-                                                <span class="font-bold text-neutral-800 dark:text-neutral-100">Indonesia (ID)</span>
+                                                <span class="font-bold text-neutral-800 dark:text-neutral-100">Indonesia</span>
                                             </div>
                                         </div>
                                     </div>
@@ -454,28 +481,34 @@ export default function StudentDashboardProfilePage() {
                                         </A>
                                     </div>
 
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        <For each={advisers()}>
-                                            {(adv, idx) => (
-                                                <div class="p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 flex items-start gap-4">
-                                                    <div class="size-10 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold flex items-center justify-center shrink-0">
-                                                        {idx() + 1}
+                                    <Show when={advisers().length > 0} fallback={
+                                        <div class="p-8 text-center text-neutral-400 font-mono bg-neutral-50 dark:bg-neutral-900/60 rounded-2xl border border-neutral-200/80 dark:border-neutral-700/80">
+                                            No academic advisers assigned yet.
+                                        </div>
+                                    }>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <For each={advisers()}>
+                                                {(adv, idx) => (
+                                                    <div class="p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 flex items-start gap-4">
+                                                        <div class="size-10 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold flex items-center justify-center shrink-0">
+                                                            {idx() + 1}
+                                                        </div>
+                                                        <div class="flex-1 min-w-0">
+                                                            <h4 class="text-xs font-bold text-neutral-900 dark:text-white truncate">
+                                                                {adv.lecturer_name || '-'}
+                                                            </h4>
+                                                            <p class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
+                                                                NIDN: {adv.lecturer_nidn || '-'}
+                                                            </p>
+                                                            <span class="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300">
+                                                                {adv.role_type || 'Academic Advisor (PA)'}
+                                                            </span>
+                                                        </div>
                                                     </div>
-                                                    <div class="flex-1 min-w-0">
-                                                        <h4 class="text-xs font-bold text-neutral-900 dark:text-white truncate">
-                                                            {adv.lecturer_name || 'Dr. Hendra Wijaya, M.Kom'}
-                                                        </h4>
-                                                        <p class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
-                                                            NIDN: {adv.lecturer_nidn || '0412098401'}
-                                                        </p>
-                                                        <span class="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300">
-                                                            Academic Advisor (PA)
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </For>
-                                    </div>
+                                                )}
+                                            </For>
+                                        </div>
+                                    </Show>
                                 </div>
                             </Show>
                         </Show>

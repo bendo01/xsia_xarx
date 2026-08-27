@@ -57,6 +57,7 @@ export async function LoginUser(credential: AuthLogin, isSession: boolean = fals
             setStorageItem("user", JSON.stringify(data.user), isSession);
             if (data.user.id) setStorageItem("id", String(data.user.id), isSession);
             if (data.user.pid) setStorageItem("pid", String(data.user.pid), isSession);
+            if (data.user.individual_id) setStorageItem("individual_id", String(data.user.individual_id), isSession);
             if (data.user.name) setStorageItem("name", data.user.name, isSession);
             if (data.user.email) setStorageItem("email", data.user.email, isSession);
             if (data.user.is_active !== undefined) setStorageItem("is_verified", String(data.user.is_active), isSession);
@@ -136,6 +137,7 @@ export async function LoginUserWithSession(credential: AuthLogin) {
             setStorageItem("user", JSON.stringify(data.user), true);
             if (data.user.id) setStorageItem("id", String(data.user.id), true);
             if (data.user.pid) setStorageItem("pid", String(data.user.pid), true);
+            if (data.user.individual_id) setStorageItem("individual_id", String(data.user.individual_id), true);
             if (data.user.name) setStorageItem("name", data.user.name, true);
             if (data.user.email) setStorageItem("email", data.user.email, true);
             if (data.user.is_active !== undefined) setStorageItem("is_verified", String(data.user.is_active), true);
@@ -217,6 +219,7 @@ export async function GetCurrentUser() {
         setStorageItem("current_user", JSON.stringify(data));
         if (data.id) setStorageItem("id", String(data.id));
         if (data.pid) setStorageItem("pid", String(data.pid));
+        if (data.individual_id) setStorageItem("individual_id", String(data.individual_id));
         if (data.name) setStorageItem("name", data.name);
         if (data.email) setStorageItem("email", data.email);
         if (data.current_role_id) setStorageItem("current_role", String(data.current_role_id));
@@ -277,6 +280,7 @@ export function LogoutUser(): boolean {
     removeStorageItem("user");
     removeStorageItem("id");
     removeStorageItem("pid");
+    removeStorageItem("individual_id");
     removeStorageItem("name");
     removeStorageItem("email");
     removeStorageItem("is_verified");

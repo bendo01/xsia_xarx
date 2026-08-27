@@ -14,6 +14,7 @@ export interface UserRoleItem {
 export interface StoredUser {
     id?: string;
     pid?: string;
+    individual_id?: string;
     name?: string;
     email?: string;
     current_role_id?: string;
