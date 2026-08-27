@@ -159,7 +159,7 @@ impl UpsertIndividual {
         let nik = match &data.nik {
             Some(n) => n.clone(),
             None => {
-                return Err("NIK is required".to_string(.into()));
+                return Err("NIK is required".into());
             }
         };
 
@@ -332,7 +332,7 @@ impl UpsertLecturer {
                 return Err(format!(
                     "Status not found for Name: {}",
                     status_name
-                .into()));
+                )));
             }
         };
 
@@ -362,7 +362,7 @@ impl UpsertLecturer {
             .nidn
             .clone()
             .or(dosen.nip.clone())
-            .unwrap_or_else(|| "UNKNOWN".to_string());
+            .unwrap_or_else(|| "UNKNOWN".into();
 
         // Determine Name
         let lecturer_name = dosen

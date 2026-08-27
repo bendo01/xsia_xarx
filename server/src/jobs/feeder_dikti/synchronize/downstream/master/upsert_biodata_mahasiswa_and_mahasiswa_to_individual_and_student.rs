@@ -161,7 +161,7 @@ impl UpsertIndividual {
         let nik = match &data.nik {
             Some(n) => n.clone(),
             None => {
-                return Err("NIK is required".to_string(.into()));
+                return Err("NIK is required".into());
             }
         };
 
@@ -347,7 +347,7 @@ impl UpsertStudent {
             Ok(None) => {
                 return Err(format!(
                     "Mahasiswa not found for ID: {}",
-                    id_mahasiswa.clone(.into()
+                    id_mahasiswa.clone()
                 )));
             }
             Err(e) => {
@@ -402,7 +402,7 @@ impl UpsertStudent {
         let resign_status_id = if let Some(code) = &riwayat_pendidikan_mahasiswa.id_jenis_keluar {
             let status = AcademicStudentReferenceResignStatus::Entity::find()
                 .filter(
-                    AcademicStudentReferenceResignStatus::Column::AlphabetCode.eq(code.to_string()),
+                    AcademicStudentReferenceResignStatus::Column::AlphabetCode.eq(code.into(),
                 )
                 .one(db)
                 .await
@@ -436,7 +436,7 @@ impl UpsertStudent {
                 return Err(format!(
                     "Registration not found for ID: {}",
                     id_jenis_daftar_str
-                .into()));
+                )));
             }
             Err(e) => {
                 tracing::error!("Error finding registration by Alphabet Code: {}", e);
@@ -447,7 +447,7 @@ impl UpsertStudent {
         // find unit based on id_prodi (mahasiswa has id_prodi)
         let id_prodi_val = mahasiswa
             .id_prodi
-            .ok_or_else(|| "Mahasiswa id_prodi is missing".to_string(.into()))?;
+            .ok_or_else(|| "Mahasiswa id_prodi is missing".into(.into())?;
 
         let unit = match InstitutionMasterUnit::Entity::find()
             .filter(InstitutionMasterUnit::Column::FeederId.eq(id_prodi_val))
@@ -459,7 +459,7 @@ impl UpsertStudent {
                 return Err(format!(
                     "Unit not found for ID: {}",
                     id_prodi_val
-                .into()));
+                )));
             }
             Err(e) => {
                 tracing::error!("Error finding unit by ID: {}", e);
@@ -598,7 +598,7 @@ impl UpsertStudent {
                     code: Set(mahasiswa
                         .nim
                         .clone()
-                        .unwrap_or_else(|| "UNKNOWN".to_string())),
+                        .unwrap_or_else(|| "UNKNOWN".into()),
                     nisn: Set(nisn),
                     name: Set(mahasiswa.nama_mahasiswa.clone()),
                     registered: Set(academic_year
