@@ -4,7 +4,7 @@ use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
 #[sea_orm::model]
-#[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
+#[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel, Serialize, Deserialize)]
 #[sea_orm(schema_name = "feeder_master", table_name = "profil_perguruan_tinggi")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]

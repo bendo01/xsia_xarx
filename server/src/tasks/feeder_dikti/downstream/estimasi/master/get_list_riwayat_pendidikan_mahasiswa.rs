@@ -194,7 +194,7 @@ impl EstimateListRiwayatPendidikanMahasiswa {
 
         if let Some(record) = record {
             let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-            let current_total = active.total_data.as_ref().and_then(|&x| x).unwrap_or(0);
+            let current_total = active.total_data.as_ref().and_then(|x| *x).unwrap_or(0);
             active.total_data = Set(Some(current_total + processed_count));
             active.last_offset = Set(Some(offset + limit));
             active.updated_at = Set(Some(Local::now().naive_local()));
@@ -243,12 +243,12 @@ impl EstimateListRiwayatPendidikanMahasiswa {
             let mut active: riwayat_pendidikan_mahasiswa::ActiveModel =
                 existing_record.into_active_model();
 
-            active.id_registrasi_mahasiswa = Set(record.id_registrasi_mahasiswa);
-            active.id_mahasiswa = Set(record.id_mahasiswa);
-            active.id_perguruan_tinggi = Set(record.id_perguruan_tinggi);
-            active.id_prodi = Set(record.id_prodi);
-            active.nim = Set(record.nim.clone());
-            active.nama_mahasiswa = Set(record.nama_mahasiswa.clone());
+            active.id_registrasi_mahasiswa = Set(Some(record.id_registrasi_mahasiswa));
+            active.id_mahasiswa = Set(Some(record.id_mahasiswa));
+            active.id_perguruan_tinggi = Set(Some(record.id_perguruan_tinggi));
+            active.id_prodi = Set(Some(record.id_prodi));
+            active.nim = Set(Some(record.nim.clone()));
+            active.nama_mahasiswa = Set(Some(record.nama_mahasiswa.clone()));
             active.nama_perguruan_tinggi = Set(Some(record.nama_perguruan_tinggi.clone()));
             active.nama_program_studi = Set(Some(record.nama_program_studi.clone()));
             active.nama_jenis_daftar = Set(record.nama_jenis_daftar.clone());
@@ -287,12 +287,12 @@ impl EstimateListRiwayatPendidikanMahasiswa {
 
             let new_record = riwayat_pendidikan_mahasiswa::ActiveModel {
                 id: Set(pk_id),
-                id_registrasi_mahasiswa: Set(record.id_registrasi_mahasiswa),
-                id_mahasiswa: Set(record.id_mahasiswa),
-                id_perguruan_tinggi: Set(record.id_perguruan_tinggi),
-                id_prodi: Set(record.id_prodi),
-                nim: Set(record.nim.clone()),
-                nama_mahasiswa: Set(record.nama_mahasiswa.clone()),
+                id_registrasi_mahasiswa: Set(Some(record.id_registrasi_mahasiswa)),
+                id_mahasiswa: Set(Some(record.id_mahasiswa)),
+                id_perguruan_tinggi: Set(Some(record.id_perguruan_tinggi)),
+                id_prodi: Set(Some(record.id_prodi)),
+                nim: Set(Some(record.nim.clone())),
+                nama_mahasiswa: Set(Some(record.nama_mahasiswa.clone())),
                 nama_perguruan_tinggi: Set(Some(record.nama_perguruan_tinggi.clone())),
                 nama_program_studi: Set(Some(record.nama_program_studi.clone())),
                 nama_jenis_daftar: Set(record.nama_jenis_daftar.clone()),
