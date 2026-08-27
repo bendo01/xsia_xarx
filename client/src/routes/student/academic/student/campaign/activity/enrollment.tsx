@@ -17,6 +17,7 @@ import {
     listStudentActivities, 
     StudentActivityItem 
 } from '~/controllers/academic/student/campaign/AcademicStudentCampaignActivityController';
+import { getActiveStudentId } from '~/lib/authStore';
 
 export default function StudentCourseEnrollmentPage() {
     const [searchParams] = useSearchParams();
@@ -35,7 +36,8 @@ export default function StudentCourseEnrollmentPage() {
         setIsLoading(true);
         try {
             // 1. Determine active semester activity
-            const actList = await listStudentActivities({ page: 1, page_size: 5 });
+            const activeStdId = getActiveStudentId();
+            const actList = await listStudentActivities({ page: 1, page_size: 5, student_id: activeStdId || undefined });
             let currentAct: StudentActivityItem | null = null;
             if (searchParams.activity_id && actList.data) {
                 currentAct = actList.data.find(a => a.id === searchParams.activity_id) || null;

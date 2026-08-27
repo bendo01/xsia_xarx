@@ -161,11 +161,17 @@ export default function StudentDashboardProfilePage() {
 
     const latestActivity = () => recentActivities()[0] || null;
     const totalCredits = () => latestActivity()?.grand_total_credit ?? latestActivity()?.total_credit ?? 0;
+    const semesterCredits = () => latestActivity()?.total_credit ?? 0;
     const gpa = () => {
         const act = latestActivity();
         if (!act) return '0.00';
         const val = act.grand_cumulative_index ?? act.cumulative_index ?? 0;
         return Number(val).toFixed(2);
+    };
+    const semesterGpa = () => {
+        const act = latestActivity();
+        if (!act) return '0.00';
+        return Number(act.cumulative_index ?? 0).toFixed(2);
     };
 
     return (
@@ -219,16 +225,19 @@ export default function StudentDashboardProfilePage() {
                         {/* Quick Stats Badges */}
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                             <div class="p-3.5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-center">
-                                <span class="block text-[11px] text-blue-200 font-mono uppercase tracking-wider">Cumulative GPA</span>
+                                <span class="block text-[11px] text-blue-200 font-mono uppercase tracking-wider">Cumulative GPA (IPK)</span>
                                 <span class="text-xl sm:text-2xl font-black text-white">{gpa()}</span>
+                                <span class="block text-[10px] text-blue-300/80 font-mono mt-0.5">IPS: {semesterGpa()}</span>
                             </div>
                             <div class="p-3.5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-center">
-                                <span class="block text-[11px] text-blue-200 font-mono uppercase tracking-wider">Total Credits</span>
+                                <span class="block text-[11px] text-blue-200 font-mono uppercase tracking-wider">Total Credits (SKS)</span>
                                 <span class="text-xl sm:text-2xl font-black text-white">{totalCredits()} <span class="text-xs font-normal text-white/70">SKS</span></span>
+                                <span class="block text-[10px] text-blue-300/80 font-mono mt-0.5">Sem: {semesterCredits()} SKS</span>
                             </div>
-                            <div class="p-3.5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-center col-span-2 sm:col-span-1">
+                            <div class="p-3.5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-center col-span-2 sm:col-span-1 flex flex-col justify-center">
                                 <span class="block text-[11px] text-blue-200 font-mono uppercase tracking-wider">Academic Status</span>
-                                <span class="text-sm font-bold text-emerald-300">{studentRecord()?.status_name || 'Registered'}</span>
+                                <span class="text-sm sm:text-base font-bold text-emerald-300">{studentRecord()?.status_name || 'Active'}</span>
+                                <span class="block text-[10px] text-neutral-300 font-mono mt-0.5 truncate">{studentRecord()?.academic_year_name || 'Reguler'}</span>
                             </div>
                         </div>
                     </div>
