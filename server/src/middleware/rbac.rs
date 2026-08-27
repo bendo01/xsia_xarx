@@ -153,51 +153,42 @@ impl Handler for RbacGuard {
             }
         };
 
-        let role_id = match current_user.current_role_id {
-            Some(rid) => rid,
-            None => {
-                let user_roles: Vec<role::Model> = role::Entity::find()
-                    .filter(role::Column::UserId.eq(user_id))
-                    .filter(role::Column::DeletedAt.is_null())
-                    .order_by_asc(role::Column::CreatedAt)
-                    .all(&db)
-                    .await
-                    .unwrap_or_default();
+        // 3. Fetch user's roles (by user_id and active current_role_id)
+        let mut user_roles: Vec<role::Model> = role::Entity::find()
+            .filter(role::Column::UserId.eq(user_id))
+            .filter(role::Column::DeletedAt.is_null())
+            .order_by_asc(role::Column::CreatedAt)
+            .all(&db)
+            .await
+            .unwrap_or_default();
 
-                if let Some(first_role) = user_roles.first() {
-                    first_role.id
-                } else {
-                    res.render(StatusError::forbidden().brief("User has no active role assigned"));
-                    ctrl.skip_rest();
-                    return;
+        if let Some(active_rid) = current_user.current_role_id {
+            if !active_rid.is_nil() && !user_roles.iter().any(|r| r.id == active_rid) {
+                if let Ok(Some(active_role)) = role::Entity::find_by_id(active_rid)
+                    .filter(role::Column::DeletedAt.is_null())
+                    .one(&db)
+                    .await
+                {
+                    user_roles.push(active_role);
                 }
             }
-        };
+        }
 
-        // 3. Check active role capabilities
-        let (role_name_lower, roleable_type_lower) = if let Ok(Some(current_role)) = role::Entity::find_by_id(role_id)
-            .filter(role::Column::DeletedAt.is_null())
-            .one(&db)
-            .await
-        {
-            let name = current_role.name.to_lowercase();
+        // Check if user has an admin / superadmin role (bypass)
+        let is_admin = user_roles.iter().any(|r| {
+            let name = r.name.to_lowercase();
             let name_clean = name.replace([' ', '-', '_'], "");
-            if name_clean == "superadmin"
+            name_clean == "superadmin"
                 || name_clean == "admin"
                 || name_clean == "administrator"
                 || name.contains("admin")
                 || name.contains("administrator")
-            {
-                ctrl.call_next(req, depot, res).await;
-                return;
-            }
-            let roleable = current_role.roleable_type
-                .map(|t| t.to_lowercase())
-                .unwrap_or_default();
-            (name, roleable)
-        } else {
-            (String::new(), String::new())
-        };
+        });
+
+        if is_admin {
+            ctrl.call_next(req, depot, res).await;
+            return;
+        }
 
         // 4. Determine action based on HTTP Method
         let action = match *req.method() {
@@ -211,28 +202,52 @@ impl Handler for RbacGuard {
         let action_permission = format!("{}.{}", route_name, action);
         let wildcard_permission = format!("{}.*", route_name);
 
-        // Check role-based capabilities (checking both name and roleable_type)
-        let is_student = role_name_lower.contains("student")
-            || role_name_lower.contains("mahasiswa")
-            || role_name_lower.contains("siswa")
-            || role_name_lower.contains("mhs")
-            || roleable_type_lower == "student"
-            || roleable_type_lower == "mahasiswa";
+        // Check role-based capabilities across all user roles
+        let mut is_student = user_roles.iter().any(|r| {
+            let name = r.name.to_lowercase();
+            let roleable = r.roleable_type.as_deref().unwrap_or_default().to_lowercase();
+            name.contains("student")
+                || name.contains("mahasiswa")
+                || name.contains("siswa")
+                || name.contains("mhs")
+                || roleable == "student"
+                || roleable == "mahasiswa"
+        });
 
-        let is_lecturer = role_name_lower.contains("lecturer")
-            || role_name_lower.contains("dosen")
-            || role_name_lower.contains("pengajar")
-            || role_name_lower.contains("guru")
-            || roleable_type_lower == "lecturer"
-            || roleable_type_lower == "dosen";
+        // Also check if user is linked to a student record via individual_id
+        if !is_student && !current_user.individual_id.is_nil() {
+            if let Ok(Some(_)) = crate::models::academic::student::master::students::Entity::find()
+                .filter(crate::models::academic::student::master::students::Column::IndividualId.eq(current_user.individual_id))
+                .filter(crate::models::academic::student::master::students::Column::DeletedAt.is_null())
+                .one(&db)
+                .await
+            {
+                is_student = true;
+            }
+        }
 
-        let is_department = role_name_lower.contains("prodi")
-            || role_name_lower.contains("jurusan")
-            || role_name_lower.contains("department")
-            || role_name_lower.contains("baak")
-            || role_name_lower.contains("course")
-            || roleable_type_lower == "staff"
-            || roleable_type_lower == "department";
+        let is_lecturer = user_roles.iter().any(|r| {
+            let name = r.name.to_lowercase();
+            let roleable = r.roleable_type.as_deref().unwrap_or_default().to_lowercase();
+            name.contains("lecturer")
+                || name.contains("dosen")
+                || name.contains("pengajar")
+                || name.contains("guru")
+                || roleable == "lecturer"
+                || roleable == "dosen"
+        });
+
+        let is_department = user_roles.iter().any(|r| {
+            let name = r.name.to_lowercase();
+            let roleable = r.roleable_type.as_deref().unwrap_or_default().to_lowercase();
+            name.contains("prodi")
+                || name.contains("jurusan")
+                || name.contains("department")
+                || name.contains("baak")
+                || name.contains("course")
+                || roleable == "staff"
+                || roleable == "department"
+        });
 
         let allowed_by_role_capability = if is_student {
             // Student role can access student routes and read academic / institution catalog
@@ -276,20 +291,25 @@ impl Handler for RbacGuard {
             return;
         }
 
-        // 5. Query user role permissions
-        let permissions: Vec<permission::Model> = match permission_role::Entity::find()
-            .filter(permission_role::Column::RoleId.eq(role_id))
-            .filter(permission_role::Column::DeletedAt.is_null())
-            .find_also_related(permission::Entity)
-            .filter(permission::Column::DeletedAt.is_null())
-            .all(&db)
-            .await
-        {
-            Ok(list) => list.into_iter().filter_map(|(_, p)| p).collect(),
-            Err(e) => {
-                res.render(StatusError::internal_server_error().brief(e.to_string()));
-                ctrl.skip_rest();
-                return;
+        // 5. Query user role permissions across all assigned roles
+        let role_ids: Vec<Uuid> = user_roles.iter().map(|r| r.id).collect();
+        let permissions: Vec<permission::Model> = if role_ids.is_empty() {
+            Vec::new()
+        } else {
+            match permission_role::Entity::find()
+                .filter(permission_role::Column::RoleId.is_in(role_ids))
+                .filter(permission_role::Column::DeletedAt.is_null())
+                .find_also_related(permission::Entity)
+                .filter(permission::Column::DeletedAt.is_null())
+                .all(&db)
+                .await
+            {
+                Ok(list) => list.into_iter().filter_map(|(_, p)| p).collect(),
+                Err(e) => {
+                    res.render(StatusError::internal_server_error().brief(e.to_string()));
+                    ctrl.skip_rest();
+                    return;
+                }
             }
         };
 
