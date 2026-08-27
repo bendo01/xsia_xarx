@@ -1,6 +1,6 @@
 use salvo::http::Method;
 use salvo::prelude::*;
-use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
+use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QueryOrder};
 use uuid::Uuid;
 
 use crate::models::auth::{permission, permission_role, role, user};
@@ -156,26 +156,47 @@ impl Handler for RbacGuard {
         let role_id = match current_user.current_role_id {
             Some(rid) => rid,
             None => {
-                res.render(StatusError::forbidden().brief("User has no active role assigned"));
-                ctrl.skip_rest();
-                return;
+                let user_roles: Vec<role::Model> = role::Entity::find()
+                    .filter(role::Column::UserId.eq(user_id))
+                    .filter(role::Column::DeletedAt.is_null())
+                    .order_by_asc(role::Column::CreatedAt)
+                    .all(&db)
+                    .await
+                    .unwrap_or_default();
+
+                if let Some(first_role) = user_roles.first() {
+                    first_role.id
+                } else {
+                    res.render(StatusError::forbidden().brief("User has no active role assigned"));
+                    ctrl.skip_rest();
+                    return;
+                }
             }
         };
 
         // 3. Check active role capabilities
-        let role_name_lower = if let Ok(Some(current_role)) = role::Entity::find_by_id(role_id)
+        let (role_name_lower, roleable_type_lower) = if let Ok(Some(current_role)) = role::Entity::find_by_id(role_id)
             .filter(role::Column::DeletedAt.is_null())
             .one(&db)
             .await
         {
             let name = current_role.name.to_lowercase();
-            if name == "superadmin" || name == "admin" || name == "administrator" {
+            let name_clean = name.replace([' ', '-', '_'], "");
+            if name_clean == "superadmin"
+                || name_clean == "admin"
+                || name_clean == "administrator"
+                || name.contains("admin")
+                || name.contains("administrator")
+            {
                 ctrl.call_next(req, depot, res).await;
                 return;
             }
-            name
+            let roleable = current_role.roleable_type
+                .map(|t| t.to_lowercase())
+                .unwrap_or_default();
+            (name, roleable)
         } else {
-            String::new()
+            (String::new(), String::new())
         };
 
         // 4. Determine action based on HTTP Method
@@ -190,14 +211,28 @@ impl Handler for RbacGuard {
         let action_permission = format!("{}.{}", route_name, action);
         let wildcard_permission = format!("{}.*", route_name);
 
-        // Check role-based capabilities
+        // Check role-based capabilities (checking both name and roleable_type)
         let is_student = role_name_lower.contains("student")
             || role_name_lower.contains("mahasiswa")
-            || role_name_lower.contains("siswa");
+            || role_name_lower.contains("siswa")
+            || role_name_lower.contains("mhs")
+            || roleable_type_lower == "student"
+            || roleable_type_lower == "mahasiswa";
+
         let is_lecturer = role_name_lower.contains("lecturer")
             || role_name_lower.contains("dosen")
             || role_name_lower.contains("pengajar")
-            || role_name_lower.contains("guru");
+            || role_name_lower.contains("guru")
+            || roleable_type_lower == "lecturer"
+            || roleable_type_lower == "dosen";
+
+        let is_department = role_name_lower.contains("prodi")
+            || role_name_lower.contains("jurusan")
+            || role_name_lower.contains("department")
+            || role_name_lower.contains("baak")
+            || role_name_lower.contains("course")
+            || roleable_type_lower == "staff"
+            || roleable_type_lower == "department";
 
         let allowed_by_role_capability = if is_student {
             // Student role can access student routes and read academic / institution catalog
@@ -218,6 +253,16 @@ impl Handler for RbacGuard {
                     route_name.starts_with("academic.")
                     || route_name.starts_with("institution.")
                     || route_name.starts_with("person.")
+                    || route_name.starts_with("common.")
+                ))
+                || route_name.starts_with("person.master.individual")
+                || route_name.starts_with("auth.user")
+        } else if is_department {
+            // Department role can access academic routes and read catalog / records
+            route_name.starts_with("academic.")
+                || route_name.starts_with("institution.")
+                || (action == "read" && (
+                    route_name.starts_with("person.")
                     || route_name.starts_with("common.")
                 ))
                 || route_name.starts_with("person.master.individual")
