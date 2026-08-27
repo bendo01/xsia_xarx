@@ -2,6 +2,7 @@ use salvo::async_trait;
 use sea_orm::DatabaseConnection;
 
 pub mod example;
+pub mod feeder_dikti;
 pub mod route_list;
 pub mod sync_permissions;
 pub mod utilities;
