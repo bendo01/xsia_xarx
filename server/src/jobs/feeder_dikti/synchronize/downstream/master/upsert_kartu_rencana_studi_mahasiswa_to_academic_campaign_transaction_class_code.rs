@@ -68,7 +68,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                 .filter(InstitutionMasterUnit::Column::FeederId.eq(id_prodi))
                 .one(db)
                 .await
-                .map_err(|e| e.into())?
+                .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
         } else {
             None
         };
@@ -82,17 +82,14 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                 );
                 return Ok(());
             }
-        };
-
-        // Load Institution for unit (needed for name generation)
-        let institution = unit
-            .find_related(InstitutionMasterInstitution::Entity)
+        };        // Load Institution for unit (needed for name generation)
+        let institution = InstitutionMasterInstitution::Entity::find_by_id(unit.institution_id)
             .one(db)
             .await
-            .map_err(|e| e.into())?;
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
         let institution_code = match institution {
-            Some(inst) => inst.code,
+            Some(inst) => inst.code.unwrap_or_else(|| "UNKNOWN".to_string()),
             None => {
                 println!(
                     "❌ Institution not found for Unit {:?}. Using default code.",
@@ -108,29 +105,14 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                 .filter(AcademicGeneralReferenceAcademicYear::Column::FeederName.eq(id_periode))
                 .one(db)
                 .await
-                .map_err(|e| e.into())?
+                .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
         } else {
             None
         };
-        // NOTE: Prompt says "academic_year.feeder_id = record.id_periode".
-        // BUT looking at academic_years model, there IS NO `feeder_id` column. There IS `feeder_name`.
-        // `kartu.id_periode` (e.g. "20231") often maps to `feeder_name` or `code` or `name` in academic years.
-        // Let's assume `feeder_name` based on common patterns or `name`.
-        // Wait, looking at `academic_years.rs` model:
-        // `pub feeder_name: String,`
-        // `pub code: i32,`
-        // `pub year: i32,`
-        // The prompt says "get academic_year (@file...) where academic_year.feeder_id = kartu_rencana_studi_mahasiswa.id_periode"
-        // But `academic_years` doesn't have `feeder_id`. It has `feeder_name`.
-        // I will use `feeder_name` because `id_periode` in feeder is string like "20231".
 
         let academic_year = match academic_year {
             Some(ay) => ay,
             None => {
-                // Fallback: try finding by name if feeder_name fails?
-                // Or maybe the user meant `name`?
-                // Given strict instructions, if I can't find `feeder_id` on model, I should look for closets match.
-                // `feeder_name` is the most likely candidate for a string "ID" from feeder.
                 println!(
                     "❌ AcademicYear not found for KMRS (id_periode: {:?}). Skipping.",
                     record.id_periode
@@ -139,46 +121,45 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
             }
         };
 
-        // 3. Get UnitActivity where unit_id = unit.id AND academic_year_id = academic_year.id
-        let unit_activity = AcademicCampaignTransactionActivity::Entity::find()
-            .filter(AcademicCampaignTransactionActivity::Column::UnitId.eq(unit.id))
-            .filter(
-                AcademicCampaignTransactionActivity::Column::AcademicYearId.eq(academic_year.id),
-            )
+        // 3. Get KegiatanPerkuliahan Activity for unit + academic_year
+        let unit_activity = activities::Entity::find()
+            .filter(activities::Column::UnitId.eq(unit.id))
+            .filter(activities::Column::AcademicYearId.eq(academic_year.id))
             .one(db)
             .await
-            .map_err(|e| e.into())?;
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
         let unit_activity = match unit_activity {
-            Some(ua) => ua,
+            Some(act) => act,
             None => {
                 println!(
-                    "❌ Activity not found for Unit {:?} and AY {:?}. Skipping.",
+                    "❌ KegiatanPerkuliahan Activity not found for Unit {:?} and AcademicYear {:?}. Skipping.",
                     unit.id, academic_year.id
                 );
                 return Ok(());
             }
         };
 
-        // 4. Get ClassCode where unit_activity_id = unit_activity.id
-        // Filter by `alphabet_code` as well to identify the specific class.
-        let class_name_from_feeder = record.nama_kelas_kuliah.clone().unwrap_or_default();
-
-        // Note: The prompt says "get class_code whre class_code.unit_activity_id = unit_activity.id"
-        // Then upsert. Implies we need to find if it exists.
-        // We will assume `alphabet_code` is the unique key per activity for this sync.
+        // 4. Find existing Class Code by activity_id + alphabet_code = kartu.nama_kelas_kuliah
+        let class_name_from_feeder = match &record.nama_kelas_kuliah {
+            Some(name) => name.clone(),
+            None => {
+                println!("❌ nama_kelas_kuliah is missing in KMRS record. Skipping.");
+                return Ok(());
+            }
+        };
 
         let existing_class = class_codes::Entity::find()
             .filter(class_codes::Column::ActivityId.eq(unit_activity.id))
             .filter(class_codes::Column::AlphabetCode.eq(&class_name_from_feeder))
             .one(db)
             .await
-            .map_err(|e| e.into())?;
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
         let mut active_model = if let Some(existing) = existing_class {
             existing.into_active_model()
         } else {
-            let id = ();
+            let id = Uuid::new_v4();
             ActiveModel {
                 id: Set(id),
                 ..Default::default()
@@ -192,7 +173,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
         // - name: "KelasKuliah" space unit.institution.code space unit.code space academic_year.feeder_name space kartu.nama_kelas_kuliah
         let generated_name = format!(
             "KelasKuliah {} {} {} {}",
-            institution_code, unit.code, academic_year.feeder_name, class_name_from_feeder
+            institution_code, unit.code.as_deref().unwrap_or(""), academic_year.feeder_name, class_name_from_feeder
         );
         active_model.name = Set(generated_name.clone());
 
@@ -206,10 +187,10 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
         active_model.end_effective_date = Set(academic_year.end_date);
 
         // - unit_id = unit.id
-        active_model.unit_id = Set(unit.id);
+        active_model.unit_id = Set(Some(unit.id));
 
         // - capacity = 40
-        active_model.capacity = Set(40);
+        active_model.capacity = Set(Some(40));
 
         match active_model.save(db).await {
             Ok(_) => {
@@ -227,7 +208,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                     );
                     return Ok(());
                 }
-                Err(e.into())
+                Err(Box::new(e))
             }
         }
     

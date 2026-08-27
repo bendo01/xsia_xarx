@@ -82,7 +82,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find Internal scope: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(internal_scope) = internal_scope else {
@@ -95,7 +95,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .filter(academic_years::Column::FeederName.eq(&model.id_smt))
         .one(&txn)
         .await
-        .map_err(|e| e.into())?;
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
     let Some(academic_year) = academic_year else {
         println!(
@@ -111,7 +111,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .filter(units::Column::FeederId.eq(model.id_sms))
         .one(&txn)
         .await
-        .map_err(|e| e.into())?;
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
     let Some(unit) = unit else {
         println!("Skipping: Unit not found for id_sms {}", model.id_sms);
@@ -121,7 +121,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
     let institution = institutions::Entity::find_by_id(unit.institution_id)
         .one(&txn)
         .await
-        .map_err(|e| e.into())?;
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
     let Some(institution) = institution else {
         println!("Skipping: Institution not found for unit {}", unit.id);
@@ -133,7 +133,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .filter(courses::Column::FeederCourseId.eq(model.id_matkul))
         .one(&txn)
         .await
-        .map_err(|e| e.into())?;
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
     let Some(course) = course else {
         println!(
@@ -149,7 +149,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .filter(activities::Column::AcademicYearId.eq(academic_year.id))
         .one(&txn)
         .await
-        .map_err(|e| e.into())?;
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
     let Some(unit_activity) = unit_activity else {
         println!(
@@ -165,25 +165,25 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .filter(class_codes::Column::AlphabetCode.eq(&model.nama_kelas_kuliah))
         .one(&txn)
         .await
-        .map_err(|e| e.into())?;
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
     let class_code_id = if let Some(cc) = class_code {
         cc.id
     } else {
-        let new_id = ();
+        let new_id = Uuid::new_v4();
         let name = format!(
             "KelasKuliah {} {} {} {}",
-            institution.code, unit.code, academic_year.feeder_name, model.nama_kelas_kuliah
+            institution.code.as_deref().unwrap_or(""), unit.code.as_deref().unwrap_or(""), academic_year.feeder_name, model.nama_kelas_kuliah.as_deref().unwrap_or("")
         );
         let active_model = class_codes::ActiveModel {
             id: Set(new_id),
-            alphabet_code: Set(Some(model.nama_kelas_kuliah.clone())),
+            alphabet_code: Set(model.nama_kelas_kuliah.clone()),
             name: Set(name),
             activity_id: Set(unit_activity.id),
             created_at: Set(Some(chrono::Utc::now().naive_utc())),
             updated_at: Set(Some(chrono::Utc::now().naive_utc())),
-            unit_id: Set(unit.id),
-            capacity: Set(40),
+            unit_id: Set(Some(unit.id)),
+            capacity: Set(Some(40)),
             start_effective_date: Set(academic_year.start_date),
             end_effective_date: Set(academic_year.end_date),
             ..Default::default()
@@ -191,7 +191,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         active_model
             .insert(&txn)
             .await
-            .map_err(|e| e.into())?
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
             .id
     };
 
@@ -200,18 +200,18 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .filter(teach_decrees::Column::ActivityId.eq(unit_activity.id))
         .one(&txn)
         .await
-        .map_err(|e| e.into())?;
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
     let teach_decree_id = if let Some(td) = teach_decree {
         td.id
     } else {
-        let new_id = ();
+        let new_id = Uuid::new_v4();
         let decree_date = academic_year
             .start_date
             .unwrap_or(chrono::Utc::now().naive_utc().date());
         let active_model = teach_decrees::ActiveModel {
             id: Set(new_id),
-            decree_number: Set("-".to_string()),
+            decree_number: Set(Some("-".to_string())),
             decree_date: Set(decree_date),
             activity_id: Set(unit_activity.id),
             created_at: Set(Some(chrono::Utc::now().naive_utc())),
@@ -221,7 +221,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         active_model
             .insert(&txn)
             .await
-            .map_err(|e| e.into())?
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
             .id
     };
 
@@ -230,11 +230,11 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .filter(teaches::Column::FeederId.eq(model.id_kelas_kuliah))
         .one(&txn)
         .await
-        .map_err(|e| e.into())?;
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
     let teach_name = format!(
         "AktifitasPengajaran {} {} {} {}",
-        institution.code, unit.code, academic_year.feeder_name, course.code
+        institution.code.as_deref().unwrap_or(""), unit.code.as_deref().unwrap_or(""), academic_year.feeder_name, course.code
     );
 
     let (practice_start, practice_end) =
@@ -255,25 +255,25 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
 
         active.class_code_id = Set(class_code_id);
         active.course_id = Set(course.id);
-        active.activity_id = Set(unit_activity.id);
+        active.activity_id = Set(Some(unit_activity.id));
         active.teach_decree_id = Set(teach_decree_id);
         // Ensure other fields are reset/set
-        active.is_lecturer_credit_sum_problem = Set(false);
-        active.is_lock = Set(false);
-        active.max_member = Set(40);
+        active.is_lecturer_credit_sum_problem = Set(Some(false));
+        active.is_lock = Set(Some(false));
+        active.max_member = Set(Some(40));
 
         active.updated_at = Set(Some(chrono::Utc::now().naive_utc()));
 
         match active.update(&txn).await {
-            Ok(_) => println!("✅ Updated Teach: {}", model.id_kelas_kuliah),
+            Ok(_) => println!("✅ Updated Teach: {:?}", model.id_kelas_kuliah),
             Err(sea_orm::DbErr::RecordNotUpdated) => {
-                println!("ℹ️ Teach up to date: {}", model.id_kelas_kuliah)
+                println!("ℹ️ Teach up to date: {:?}", model.id_kelas_kuliah)
             }
-            Err(e) => return Err(e.into()),
+            Err(e) => return Err(Box::new(e)),
         }
     } else {
         // Create
-        let new_id = ();
+        let new_id = Uuid::new_v4();
         let active = teaches::ActiveModel {
             id: Set(new_id),
             name: Set(Some(teach_name)),
@@ -281,23 +281,23 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             end_date: Set(academic_year.end_date),
             practice_start_date: Set(practice_start),
             practice_end_date: Set(practice_end),
-            is_lecturer_credit_sum_problem: Set(false),
-            is_lock: Set(false),
-            max_member: Set(40),
+            is_lecturer_credit_sum_problem: Set(Some(false)),
+            is_lock: Set(Some(false)),
+            max_member: Set(Some(40)),
             class_code_id: Set(class_code_id),
             course_id: Set(course.id),
-            activity_id: Set(unit_activity.id),
+            activity_id: Set(Some(unit_activity.id)),
             teach_decree_id: Set(teach_decree_id),
             feeder_id: Set(model.id_kelas_kuliah),
-            scope_id: Set(internal_scope.id),
+            scope_id: Set(Some(internal_scope.id)),
             created_at: Set(Some(chrono::Utc::now().naive_utc())),
             updated_at: Set(Some(chrono::Utc::now().naive_utc())),
-            curriculum_detail_id: Set(uuid::Uuid::nil()), // Default as per pattern
-            encounter_category_id: Set(uuid::Uuid::nil()), // Default as per pattern
+            curriculum_detail_id: Set(None),
+            encounter_category_id: Set(None),
             ..Default::default()
         };
-        active.insert(&txn).await.map_err(|e| e.into())?;
-        println!("✅ Created Teach: {}", model.id_kelas_kuliah);
+        active.insert(&txn).await.map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
+        println!("✅ Created Teach: {:?}", model.id_kelas_kuliah);
     }
 
     txn.commit().await?;

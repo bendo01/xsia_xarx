@@ -92,7 +92,7 @@ impl Worker {
             let mut active: alat_transportasi::ActiveModel = existing_record.into_active_model();
 
             // Update fields that are present in GetAlatTransportasiResponse
-            active.nama_alat_transportasi = Set(record.nama_alat_transportasi.clone());
+            active.nama_alat_transportasi = Set(Some(record.nama_alat_transportasi.clone()));
             active.sync_at = Set(Some(sync_time));
             active.updated_at = Set(Some(sync_time));
 
@@ -103,8 +103,8 @@ impl Worker {
 
             let new_record = alat_transportasi::ActiveModel {
                 id: Set(pk_id),
-                id_alat_transportasi: Set(id_alat_transportasi),
-                nama_alat_transportasi: Set(record.nama_alat_transportasi.clone()),
+                id_alat_transportasi: Set(Some(id_alat_transportasi)),
+                nama_alat_transportasi: Set(Some(record.nama_alat_transportasi.clone())),
 
                 sync_at: Set(Some(sync_time)),
                 created_at: Set(Some(sync_time)),

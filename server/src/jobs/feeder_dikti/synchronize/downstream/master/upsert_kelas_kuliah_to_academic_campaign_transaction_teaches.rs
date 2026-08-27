@@ -82,7 +82,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find Internal scope: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(internal_scope) = internal_scope else {
@@ -104,7 +104,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find academic year: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(academic_year) = academic_year else {
@@ -127,7 +127,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find unit: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(unit) = unit else {
@@ -140,7 +140,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find institution: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(institution) = institution else {
@@ -156,7 +156,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find activity: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(activity) = activity else {
@@ -179,7 +179,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find course: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(course) = course else {
@@ -204,7 +204,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find class code: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(class_code) = class_code else {
@@ -226,7 +226,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find staff: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     // 8. Upsert Teach Decree
@@ -236,7 +236,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find existing decree: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let teach_decree_id = if let Some(decree) = existing_decree {
@@ -259,14 +259,14 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             ..Default::default()
         };
 
-        new_decree.insert(&txn).await.map_err(|e| e.into())?.id
+        new_decree.insert(&txn).await.map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?.id
     };
 
     // 9. Upsert Teaches
     // Name pattern: "Aktifitas Pengajaran [unit_inst_code] [unit_code] [sem_feeder] [course_code]"
     let teaches_name = format!(
         "AktifitasPengajaran {} {} {} {}",
-        institution.code, unit.code, academic_year.feeder_name, course.code
+        institution.code.as_deref().unwrap_or(""), unit.code.as_deref().unwrap_or(""), academic_year.feeder_name, course.code
     );
 
     let (practice_start_date, practice_end_date) =
@@ -284,7 +284,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find teaches: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let action = if let Some(existing) = existing_teaches {
@@ -297,34 +297,34 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         active.updated_at = Set(Some(chrono::Utc::now().naive_utc()));
 
         // Ensure mandatory fields are set if they were missing or updated
-        active.scope_id = Set(internal_scope.id);
-        active.encounter_category_id = Set(Uuid::nil());
+        active.scope_id = Set(Some(internal_scope.id));
+        active.encounter_category_id = Set(None);
         active.teach_decree_id = Set(teach_decree_id);
-        active.curriculum_detail_id = Set(Uuid::nil());
-        active.max_member = Set(40);
-        active.is_lock = Set(false);
-        active.is_lecturer_credit_sum_problem = Set(false);
+        active.curriculum_detail_id = Set(None);
+        active.max_member = Set(Some(40));
+        active.is_lock = Set(Some(false));
+        active.is_lecturer_credit_sum_problem = Set(Some(false));
         active.feeder_id = Set(model.id_kelas_kuliah);
 
         match active.update(&txn).await {
             Ok(_) => "UPDATED",
             Err(sea_orm::DbErr::RecordNotUpdated) => "SKIPPED_UPDATE",
-            Err(e) => return Err(e.into()),
+            Err(e) => return Err(Box::new(e)),
         }
     } else {
         let active = teaches::ActiveModel {
             id: Set(Uuid::new_v4()),
             name: Set(Some(teaches_name.clone())),
-            activity_id: Set(activity.id),
+            activity_id: Set(Some(activity.id)),
             class_code_id: Set(class_code.id),
             course_id: Set(course.id),
-            scope_id: Set(internal_scope.id),
-            encounter_category_id: Set(Uuid::nil()),
+            scope_id: Set(Some(internal_scope.id)),
+            encounter_category_id: Set(None),
             teach_decree_id: Set(teach_decree_id),
-            curriculum_detail_id: Set(Uuid::nil()),
-            max_member: Set(40),
-            is_lock: Set(false),
-            is_lecturer_credit_sum_problem: Set(false),
+            curriculum_detail_id: Set(None),
+            max_member: Set(Some(40)),
+            is_lock: Set(Some(false)),
+            is_lecturer_credit_sum_problem: Set(Some(false)),
             start_date: Set(academic_year.start_date),
             end_date: Set(academic_year.end_date),
             practice_start_date: Set(practice_start_date),
@@ -335,7 +335,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             ..Default::default()
         };
 
-        active.insert(&txn).await.map_err(|e| e.into())?;
+        active.insert(&txn).await.map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
         "INSERTED"
     };
 

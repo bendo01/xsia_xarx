@@ -160,14 +160,14 @@ impl Worker {
             let mut active: komponen_evaluasi_kelas::ActiveModel =
                 existing_record.into_active_model();
 
-            active.id_kelas_kuliah = Set(id_kelas_kuliah);
-            active.id_jenis_evaluasi = Set(id_jenis_evaluasi);
+            active.id_kelas_kuliah = Set(Some(id_kelas_kuliah));
+            active.id_jenis_evaluasi = Set(Some(id_jenis_evaluasi));
             active.nama = Set(record.nama.clone());
             active.nama_inggris = Set(record.nama_inggris.clone());
-            active.nomor_urut = Set(nomor_urut);
-            active.bobot_evaluasi = Set(bobot_evaluasi.to_string());
-            active.last_update = Set(last_update);
-            active.tgl_create = Set(tgl_create);
+            active.nomor_urut = Set(Some(nomor_urut));
+            active.bobot_evaluasi = Set(Some(bobot_evaluasi.to_string()));
+            active.last_update = Set(Some(last_update));
+            active.tgl_create = Set(Some(tgl_create));
             active.sync_at = Set(Some(sync_time));
             active.updated_at = Set(Some(sync_time));
 
@@ -179,15 +179,15 @@ impl Worker {
 
             let new_record = komponen_evaluasi_kelas::ActiveModel {
                 id: Set(pk_id),
-                id_komponen_evaluasi: Set(id_komponen_evaluasi),
-                id_kelas_kuliah: Set(id_kelas_kuliah),
-                id_jenis_evaluasi: Set(id_jenis_evaluasi),
+                id_komponen_evaluasi: Set(Some(id_komponen_evaluasi)),
+                id_kelas_kuliah: Set(Some(id_kelas_kuliah)),
+                id_jenis_evaluasi: Set(Some(id_jenis_evaluasi)),
                 nama: Set(record.nama.clone()),
                 nama_inggris: Set(record.nama_inggris.clone()),
-                nomor_urut: Set(nomor_urut),
-                bobot_evaluasi: Set(bobot_evaluasi.to_string()),
-                last_update: Set(last_update),
-                tgl_create: Set(tgl_create),
+                nomor_urut: Set(Some(nomor_urut)),
+                bobot_evaluasi: Set(Some(bobot_evaluasi.to_string())),
+                last_update: Set(Some(last_update)),
+                tgl_create: Set(Some(tgl_create)),
                 sync_at: Set(Some(sync_time)),
                 created_at: Set(Some(sync_time)),
                 updated_at: Set(Some(sync_time)),

@@ -91,7 +91,7 @@ impl Worker {
             let mut active: agama::ActiveModel = existing_record.into_active_model();
 
             // Update fields that are present in GetAgamaResponse
-            active.nama_agama = Set(record.nama_agama.clone());
+            active.nama_agama = Set(Some(record.nama_agama.clone()));
             active.sync_at = Set(Some(sync_time));
             active.updated_at = Set(Some(sync_time));
 
@@ -102,8 +102,8 @@ impl Worker {
 
             let new_record = agama::ActiveModel {
                 id: Set(pk_id),
-                id_agama: Set(id_agama),
-                nama_agama: Set(record.nama_agama.clone()),
+                id_agama: Set(Some(id_agama)),
+                nama_agama: Set(Some(record.nama_agama.clone())),
 
                 sync_at: Set(Some(sync_time)),
                 created_at: Set(Some(sync_time)),

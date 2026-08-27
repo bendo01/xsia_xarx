@@ -110,17 +110,20 @@ impl Worker {
     }
 
 
-    fn parse_date(date_str: Option<&String>) -> Option<NaiveDateTime> {
+    fn parse_date(date_str: Option<&String>) -> Option<NaiveDate> {
         date_str.and_then(|s| {
-            // Try parsing ISO 8601 format first
-            if let Ok(dt) = NaiveDateTime::parse_from_str(s, "%Y-%m-%dT%H:%M:%S%.fZ") {
-                return Some(dt);
-            }
-            // Try parsing YYYY-MM-DD format
-            if let Ok(d) = chrono::NaiveDate::parse_from_str(s, "%Y-%m-%d") {
-                return Some(d.and_hms_opt(0, 0, 0).unwrap());
-            }
-            None
+            NaiveDate::parse_from_str(s, "%Y-%m-%d")
+                .or_else(|_| NaiveDate::parse_from_str(s, "%d-%m-%Y"))
+                .ok()
+        })
+    }
+
+    fn parse_datetime(date_str: Option<&String>) -> Option<NaiveDateTime> {
+        date_str.and_then(|s| {
+            NaiveDateTime::parse_from_str(s, "%Y-%m-%d %H:%M:%S")
+                .or_else(|_| NaiveDateTime::parse_from_str(s, "%Y-%m-%dT%H:%M:%S%.fZ"))
+                .or_else(|_| NaiveDate::parse_from_str(s, "%Y-%m-%d").map(|d| d.and_hms_opt(0, 0, 0).unwrap()))
+                .ok()
         })
     }
 
@@ -162,14 +165,12 @@ impl Worker {
             active.luas_tanah_milik = Set(record.luas_tanah_milik.clone());
             active.luas_tanah_bukan_milik = Set(record.luas_tanah_bukan_milik.clone());
             active.sk_pendirian = Set(record.sk_pendirian.clone());
-            active.tanggal_sk_pendirian =
-                Set(Self::parse_date(record.tanggal_sk_pendirian.as_ref()));
+            active.tanggal_sk_pendirian = Set(Self::parse_datetime(record.tanggal_sk_pendirian.as_ref()));
             active.id_status_milik = Set(record.id_status_milik.clone());
             active.nama_status_milik = Set(record.nama_status_milik.clone());
             active.status_perguruan_tinggi = Set(record.status_perguruan_tinggi.clone());
             active.sk_izin_operasional = Set(record.sk_izin_operasional.clone());
-            active.tanggal_izin_operasional =
-                Set(Self::parse_date(record.tanggal_izin_operasional.as_ref()));
+            active.tanggal_izin_operasional = Set(Self::parse_date(record.tanggal_izin_operasional.as_ref()));
             active.sync_at = Set(Some(sync_time));
             active.updated_at = Set(Some(sync_time));
 
@@ -202,27 +203,24 @@ impl Worker {
                 luas_tanah_milik: Set(record.luas_tanah_milik.clone()),
                 luas_tanah_bukan_milik: Set(record.luas_tanah_bukan_milik.clone()),
                 sk_pendirian: Set(record.sk_pendirian.clone()),
-                tanggal_sk_pendirian: Set(Self::parse_date(record.tanggal_sk_pendirian.as_ref())),
+                tanggal_sk_pendirian: Set(Self::parse_datetime(record.tanggal_sk_pendirian.as_ref())),
                 id_status_milik: Set(record.id_status_milik.clone()),
                 nama_status_milik: Set(record.nama_status_milik.clone()),
                 status_perguruan_tinggi: Set(record.status_perguruan_tinggi.clone()),
                 sk_izin_operasional: Set(record.sk_izin_operasional.clone()),
-                tanggal_izin_operasional: Set(Self::parse_date(
-                    record.tanggal_izin_operasional.as_ref(),
-                )),
+                tanggal_izin_operasional: Set(Self::parse_date(record.tanggal_izin_operasional.as_ref())),
                 sync_at: Set(Some(sync_time)),
                 created_at: Set(Some(sync_time)),
                 updated_at: Set(Some(sync_time)),
                 created_by: Set(None),
                 updated_by: Set(None),
                 deleted_at: Set(None),
-                ..Default::default()
+                nama_singkat: Set(None),
             };
 
             new_record.insert(txn).await?;
             "INSERTED"
         };
-
 
         Ok(action.to_string())
     }

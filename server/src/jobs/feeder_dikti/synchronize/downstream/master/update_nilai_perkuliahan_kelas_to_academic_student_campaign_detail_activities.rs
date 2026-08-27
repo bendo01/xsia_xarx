@@ -133,7 +133,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         tracing::warn!(
             "❌  UnitActivity not found for AcademicYear: {} and Unit: {}",
             academic_year.name,
-            unit.name
+            unit.name.as_deref().unwrap_or("")
         );
         return Ok(());
     };
@@ -225,22 +225,22 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         let credit = model.sks_mata_kuliah.unwrap_or(0.0) as f64;
         let grade_id = grade.map(|g| g.id).unwrap_or(Uuid::nil());
 
-        active.mark = Set(mark);
-        active.credit = Set(credit);
-        active.grade_id = Set(grade_id);
+        active.mark = Set(Some(mark));
+        active.credit = Set(Some(credit));
+        active.grade_id = Set(Some(grade_id));
         active.updated_at = Set(Some(chrono::Utc::now().naive_utc()));
 
         active.update(&txn).await?;
         println!(
             "✅ Updated DetailActivity for nim: {} nama: {} - aktifitas: {} - Course: {}",
-            student.code, student.name, student_activity.name, course.name
+            student.code, student.name, student_activity.name.as_deref().unwrap_or(""), course.name
         );
     } else {
         tracing::warn!(
             "❌  DetailActivity not found to update for nim: {} nama: {} - aktifitas: {} - Course: {}",
             student.code,
             student.name,
-            student_activity.name,
+            student_activity.name.as_deref().unwrap_or(""),
             course.name
         );
     }

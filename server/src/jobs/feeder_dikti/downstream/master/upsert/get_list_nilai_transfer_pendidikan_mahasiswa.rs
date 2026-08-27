@@ -158,30 +158,30 @@ impl Worker {
             let mut active: nilai_transfer_pendidikan_mahasiswa::ActiveModel =
                 existing_record.into_active_model();
 
-            active.id_registrasi_mahasiswa = Set(record.id_registrasi_mahasiswa);
-            active.id_matkul = Set(record.id_matkul);
-            active.nim = Set(record.nim.clone());
-            active.nama_mahasiswa = Set(record.nama_mahasiswa.clone());
-            active.id_prodi = Set(record.id_prodi);
-            active.nama_program_studi = Set(record.nama_program_studi.clone());
-            active.id_periode_masuk = Set(record.id_periode_masuk.clone());
-            active.id_semester = Set(record.id_semester.clone());
-            active.nama_semester = Set(record.nama_semester.clone());
-            active.kode_mata_kuliah_asal = Set(record.kode_mata_kuliah_asal.clone());
-            active.nama_mata_kuliah_asal = Set(record.nama_mata_kuliah_asal.clone());
+            active.id_registrasi_mahasiswa = Set(Some(record.id_registrasi_mahasiswa));
+            active.id_matkul = Set(Some(record.id_matkul));
+            active.nim = Set(Some(record.nim.clone()));
+            active.nama_mahasiswa = Set(Some(record.nama_mahasiswa.clone()));
+            active.id_prodi = Set(Some(record.id_prodi));
+            active.nama_program_studi = Set(Some(record.nama_program_studi.clone()));
+            active.id_periode_masuk = Set(Some(record.id_periode_masuk.clone()));
+            active.id_semester = Set(Some(record.id_semester.clone()));
+            active.nama_semester = Set(Some(record.nama_semester.clone()));
+            active.kode_mata_kuliah_asal = Set(Some(record.kode_mata_kuliah_asal.clone()));
+            active.nama_mata_kuliah_asal = Set(Some(record.nama_mata_kuliah_asal.clone()));
             active.sks_mata_kuliah_asal = Set(record.sks_mata_kuliah_asal);
             active.nilai_huruf_asal = Set(record.nilai_huruf_asal.clone());
-            active.kode_matkul_diakui = Set(record.kode_matkul_diakui.clone());
-            active.nama_mata_kuliah_diakui = Set(record.nama_mata_kuliah_diakui.clone());
+            active.kode_matkul_diakui = Set(Some(record.kode_matkul_diakui.clone()));
+            active.nama_mata_kuliah_diakui = Set(Some(record.nama_mata_kuliah_diakui.clone()));
             active.sks_mata_kuliah_diakui = Set(record.sks_mata_kuliah_diakui);
             active.nilai_huruf_diakui = Set(record.nilai_huruf_diakui.clone());
             active.nilai_angka_diakui = Set(record.nilai_angka_diakui);
             active.id_perguruan_tinggi = Set(record.id_perguruan_tinggi);
-            active.id_aktivitas = Set(record.id_aktivitas);
+            active.id_aktivitas = Set(record.id_aktivitas.map(|v| v.to_string()));
             active.judul = Set(record.judul.clone());
-            active.id_jenis_aktivitas = Set(record.id_jenis_aktivitas);
+            active.id_jenis_aktivitas = Set(record.id_jenis_aktivitas.map(|v| v.to_string()));
             active.nama_jenis_aktivitas = Set(record.nama_jenis_aktivitas.clone());
-            active.status_sync = Set(record.status_sync.clone());
+            active.status_sync = Set(Some(record.status_sync.clone()));
             active.sync_at = Set(Some(sync_time));
             active.updated_at = Set(Some(sync_time));
 
@@ -193,31 +193,31 @@ impl Worker {
 
             let new_record = nilai_transfer_pendidikan_mahasiswa::ActiveModel {
                 id: Set(pk_id),
-                id_transfer: Set(id_transfer),
-                id_registrasi_mahasiswa: Set(record.id_registrasi_mahasiswa),
-                id_matkul: Set(record.id_matkul),
-                nim: Set(record.nim.clone()),
-                nama_mahasiswa: Set(record.nama_mahasiswa.clone()),
-                id_prodi: Set(record.id_prodi),
-                nama_program_studi: Set(record.nama_program_studi.clone()),
-                id_periode_masuk: Set(record.id_periode_masuk.clone()),
-                id_semester: Set(record.id_semester.clone()),
-                nama_semester: Set(record.nama_semester.clone()),
-                kode_mata_kuliah_asal: Set(record.kode_mata_kuliah_asal.clone()),
-                nama_mata_kuliah_asal: Set(record.nama_mata_kuliah_asal.clone()),
+                id_transfer: Set(Some(id_transfer)),
+                id_registrasi_mahasiswa: Set(Some(record.id_registrasi_mahasiswa)),
+                id_matkul: Set(Some(record.id_matkul)),
+                nim: Set(Some(record.nim.clone())),
+                nama_mahasiswa: Set(Some(record.nama_mahasiswa.clone())),
+                id_prodi: Set(Some(record.id_prodi)),
+                nama_program_studi: Set(Some(record.nama_program_studi.clone())),
+                id_periode_masuk: Set(Some(record.id_periode_masuk.clone())),
+                id_semester: Set(Some(record.id_semester.clone())),
+                nama_semester: Set(Some(record.nama_semester.clone())),
+                kode_mata_kuliah_asal: Set(Some(record.kode_mata_kuliah_asal.clone())),
+                nama_mata_kuliah_asal: Set(Some(record.nama_mata_kuliah_asal.clone())),
                 sks_mata_kuliah_asal: Set(record.sks_mata_kuliah_asal),
                 nilai_huruf_asal: Set(record.nilai_huruf_asal.clone()),
-                kode_matkul_diakui: Set(record.kode_matkul_diakui.clone()),
-                nama_mata_kuliah_diakui: Set(record.nama_mata_kuliah_diakui.clone()),
+                kode_matkul_diakui: Set(Some(record.kode_matkul_diakui.clone())),
+                nama_mata_kuliah_diakui: Set(Some(record.nama_mata_kuliah_diakui.clone())),
                 sks_mata_kuliah_diakui: Set(record.sks_mata_kuliah_diakui),
                 nilai_huruf_diakui: Set(record.nilai_huruf_diakui.clone()),
                 nilai_angka_diakui: Set(record.nilai_angka_diakui),
                 id_perguruan_tinggi: Set(record.id_perguruan_tinggi),
-                id_aktivitas: Set(record.id_aktivitas),
+                id_aktivitas: Set(record.id_aktivitas.map(|v| v.to_string())),
                 judul: Set(record.judul.clone()),
-                id_jenis_aktivitas: Set(record.id_jenis_aktivitas),
+                id_jenis_aktivitas: Set(record.id_jenis_aktivitas.map(|v| v.to_string())),
                 nama_jenis_aktivitas: Set(record.nama_jenis_aktivitas.clone()),
-                status_sync: Set(record.status_sync.clone()),
+                status_sync: Set(Some(record.status_sync.clone())),
                 sync_at: Set(Some(sync_time)),
                 created_at: Set(Some(sync_time)),
                 updated_at: Set(Some(sync_time)),

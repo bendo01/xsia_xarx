@@ -77,7 +77,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find academic year: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(academic_year) = academic_year else {
@@ -100,7 +100,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find unit: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(unit) = unit else {
@@ -113,7 +113,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find institution: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(institution) = institution else {
@@ -129,7 +129,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find activity: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(activity) = activity else {
@@ -153,20 +153,20 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find class code: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let class_name = format!(
         "KelasKuliah {} {} {} {}",
-        institution.code, unit.code, academic_year.feeder_name, nama_kelas_kuliah
+        institution.code.as_deref().unwrap_or(""), unit.code.as_deref().unwrap_or(""), academic_year.feeder_name, nama_kelas_kuliah
     );
 
     let action = if let Some(existing) = existing_class_code {
         let mut active = existing.into_active_model();
 
-        active.unit_id = Set(unit.id);
+        active.unit_id = Set(Some(unit.id));
         active.name = Set(class_name);
-        active.capacity = Set(40);
+        active.capacity = Set(Some(40));
         active.start_effective_date = Set(academic_year.start_date);
         active.end_effective_date = Set(academic_year.end_date);
         active.updated_at = Set(Some(chrono::Utc::now().naive_utc()));
@@ -180,16 +180,16 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
                 );
                 "SKIPPED_UPDATE"
             }
-            Err(e) => return Err(e.into()),
+            Err(e) => return Err(Box::new(e)),
         }
     } else {
         let active = class_codes::ActiveModel {
             id: Set(Uuid::new_v4()),
             activity_id: Set(activity.id),
             alphabet_code: Set(Some(nama_kelas_kuliah.clone())),
-            unit_id: Set(unit.id),
+            unit_id: Set(Some(unit.id)),
             name: Set(class_name),
-            capacity: Set(40),
+            capacity: Set(Some(40)),
             start_effective_date: Set(academic_year.start_date),
             end_effective_date: Set(academic_year.end_date),
             created_at: Set(Some(chrono::Utc::now().naive_utc())),
@@ -197,7 +197,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             ..Default::default()
         };
 
-        active.insert(&txn).await.map_err(|e| e.into())?;
+        active.insert(&txn).await.map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
         "INSERTED"
     };
 

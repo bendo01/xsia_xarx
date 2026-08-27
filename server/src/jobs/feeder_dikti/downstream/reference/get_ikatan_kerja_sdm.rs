@@ -95,7 +95,7 @@ impl Worker {
                 existing_record.into_active_model();
 
             // Update fields that are present in GetIkatanKerjaSdmResponse
-            active.nama_ikatan_kerja = Set(record.nama_ikatan_kerja.clone());
+            active.nama_ikatan_kerja = Set(Some(record.nama_ikatan_kerja.clone()));
             active.sync_at = Set(Some(sync_time));
             active.updated_at = Set(Some(sync_time));
 
@@ -106,8 +106,8 @@ impl Worker {
 
             let new_record = ikatan_kerja_sumber_daya_manusia::ActiveModel {
                 id: Set(pk_id),
-                id_ikatan_kerja: Set(id_ikatan_kerja),
-                nama_ikatan_kerja: Set(record.nama_ikatan_kerja.clone()),
+                id_ikatan_kerja: Set(Some(id_ikatan_kerja)),
+                nama_ikatan_kerja: Set(Some(record.nama_ikatan_kerja.clone())),
 
                 sync_at: Set(Some(sync_time)),
                 created_at: Set(Some(sync_time)),

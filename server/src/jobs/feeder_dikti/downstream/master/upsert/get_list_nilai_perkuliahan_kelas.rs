@@ -147,10 +147,10 @@ impl Worker {
             let mut active: nilai_perkuliahan_kelas::ActiveModel =
                 existing_record.into_active_model();
 
-            active.id_matkul = Set(record.id_matkul);
-            active.kode_mata_kuliah = Set(record.kode_mata_kuliah.clone());
-            active.nama_mata_kuliah = Set(record.nama_mata_kuliah.clone());
-            active.nama_kelas_kuliah = Set(record.nama_kelas_kuliah.clone().unwrap_or_default());
+            active.id_matkul = Set(Some(record.id_matkul));
+            active.kode_mata_kuliah = Set(Some(record.kode_mata_kuliah.clone()));
+            active.nama_mata_kuliah = Set(Some(record.nama_mata_kuliah.clone()));
+            active.nama_kelas_kuliah = Set(record.nama_kelas_kuliah.clone());
             active.sks_mata_kuliah = Set(record.sks_mata_kuliah);
             active.jumlah_mahasiswa_krs = Set(record.jumlah_mahasiswa_krs);
             active.jumlah_mahasiswa_dapat_nilai = Set(record.jumlah_mahasiswa_dapat_nilai);
@@ -166,14 +166,14 @@ impl Worker {
             active.tgl_selesai_koas = Set(record.tgl_selesai_koas);
             active.id_mou = Set(record.id_mou);
             active.id_kls_pditt = Set(record.id_kls_pditt);
-            active.id_sms = Set(record.id_sms);
-            active.id_smt = Set(record.id_smt.clone());
-            active.tgl_create = Set(record.tgl_create);
+            active.id_sms = Set(Some(record.id_sms));
+            active.id_smt = Set(Some(record.id_smt.clone()));
+            active.tgl_create = Set(Some(record.tgl_create));
             active.lingkup_kelas = Set(record.lingkup_kelas);
             active.mode_kuliah = Set(record.mode_kuliah.clone());
-            active.nm_smt = Set(record.nm_smt.clone());
-            active.nama_prodi = Set(record.nama_prodi.clone());
-            active.status_sync = Set(record.status_sync.clone());
+            active.nm_smt = Set(Some(record.nm_smt.clone()));
+            active.nama_prodi = Set(Some(record.nama_prodi.clone()));
+            active.status_sync = Set(Some(record.status_sync.clone()));
             active.sync_at = Set(Some(sync_time));
             active.updated_at = Set(Some(sync_time));
 
@@ -185,11 +185,11 @@ impl Worker {
 
             let new_record = nilai_perkuliahan_kelas::ActiveModel {
                 id: Set(pk_id),
-                id_kelas_kuliah: Set(id_kelas_kuliah),
-                id_matkul: Set(record.id_matkul),
-                kode_mata_kuliah: Set(record.kode_mata_kuliah.clone()),
-                nama_mata_kuliah: Set(record.nama_mata_kuliah.clone()),
-                nama_kelas_kuliah: Set(record.nama_kelas_kuliah.clone().unwrap_or_default()),
+                id_kelas_kuliah: Set(Some(id_kelas_kuliah)),
+                id_matkul: Set(Some(record.id_matkul)),
+                kode_mata_kuliah: Set(Some(record.kode_mata_kuliah.clone())),
+                nama_mata_kuliah: Set(Some(record.nama_mata_kuliah.clone())),
+                nama_kelas_kuliah: Set(record.nama_kelas_kuliah.clone()),
                 sks_mata_kuliah: Set(record.sks_mata_kuliah),
                 jumlah_mahasiswa_krs: Set(record.jumlah_mahasiswa_krs),
                 jumlah_mahasiswa_dapat_nilai: Set(record.jumlah_mahasiswa_dapat_nilai),
@@ -205,14 +205,14 @@ impl Worker {
                 tgl_selesai_koas: Set(record.tgl_selesai_koas),
                 id_mou: Set(record.id_mou),
                 id_kls_pditt: Set(record.id_kls_pditt),
-                id_sms: Set(record.id_sms),
-                id_smt: Set(record.id_smt.clone()),
-                tgl_create: Set(record.tgl_create),
+                id_sms: Set(Some(record.id_sms)),
+                id_smt: Set(Some(record.id_smt.clone())),
+                tgl_create: Set(Some(record.tgl_create)),
                 lingkup_kelas: Set(record.lingkup_kelas),
                 mode_kuliah: Set(record.mode_kuliah.clone()),
-                nm_smt: Set(record.nm_smt.clone()),
-                nama_prodi: Set(record.nama_prodi.clone()),
-                status_sync: Set(record.status_sync.clone()),
+                nm_smt: Set(Some(record.nm_smt.clone())),
+                nama_prodi: Set(Some(record.nama_prodi.clone())),
+                status_sync: Set(Some(record.status_sync.clone())),
                 sync_at: Set(Some(sync_time)),
                 created_at: Set(Some(sync_time)),
                 updated_at: Set(Some(sync_time)),

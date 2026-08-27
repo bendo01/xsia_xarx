@@ -169,7 +169,7 @@ impl Worker {
             let pk_id = Uuid::new_v4();
 
             let new_record = kelas_kuliah::ActiveModel {
-                id: Set(pk_id),
+                id: Set(Some(pk_id)),
                 id_kelas_kuliah: Set(id_kelas_kuliah),
                 id_prodi: Set(record.id_prodi),
                 nama_program_studi: Set(record.nama_program_studi.clone()),

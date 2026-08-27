@@ -73,7 +73,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                 .filter(InstitutionMasterUnit::Column::FeederId.eq(id_prodi))
                 .one(db)
                 .await
-                .map_err(|e| e.into())?;
+                .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
             match u {
                 Some(val) => val.id,
                 None => {
@@ -97,7 +97,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                 )
                 .one(db)
                 .await
-                .map_err(|e| e.into())?;
+                .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
             match ay {
                 Some(val) => val.id,
                 None => uuid::Uuid::nil(),
@@ -111,7 +111,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
             let ct = AcademicCourseReferenceCurriculumType::Entity::find()
                 .one(db)
                 .await
-                .map_err(|e| e.into())?;
+                .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
             match ct {
                 Some(val) => val.id,
                 None => {
@@ -134,7 +134,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
             .filter(curriculums::Column::FeederId.eq(id_kurikulum))
             .one(db)
             .await
-            .map_err(|e| e.into())?;
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
         let existing = if existing.is_some() {
             existing
@@ -147,13 +147,13 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                 )
                 .one(db)
                 .await
-                .map_err(|e| e.into())?
+                .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
         };
 
         let (mut active_model, is_new) = if let Some(existing_model) = existing {
             (existing_model.into_active_model(), false)
         } else {
-            let id = ();
+            let id = Uuid::new_v4();
             (
                 ActiveModel {
                     id: Set(id),
@@ -167,9 +167,9 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
         active_model.unit_id = Set(unit_id);
         active_model.academic_year_id = Set(academic_year_id);
         active_model.curriculum_type_id = Set(curriculum_type_id);
-        active_model.total_credit = Set(record.jumlah_sks_lulus.unwrap_or(0.0) as f64);
-        active_model.mandatory_course_credit = Set(record.jumlah_sks_wajib.unwrap_or(0.0) as f64);
-        active_model.optional_course_credit = Set(record.jumlah_sks_pilihan.unwrap_or(0.0) as f64);
+        active_model.total_credit = Set(Some(record.jumlah_sks_lulus.unwrap_or(0.0) as f64));
+        active_model.mandatory_course_credit = Set(Some(record.jumlah_sks_wajib.unwrap_or(0.0) as f64));
+        active_model.optional_course_credit = Set(Some(record.jumlah_sks_pilihan.unwrap_or(0.0) as f64));
         active_model.feeder_id = Set(Some(id_kurikulum));
         active_model.is_active = Set(true);
 
@@ -177,7 +177,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
             active_model
                 .insert(db)
                 .await
-                .map_err(|e| e.into())?
+                .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
         } else {
             match active_model.update(db).await {
                 Ok(m) => m,
@@ -190,7 +190,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                             .filter(curriculums::Column::FeederId.eq(id_kurikulum))
                             .one(db)
                             .await
-                            .map_err(|e| e.into())?
+                            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
                             .ok_or_else(|| {
                                 format!(
                                     "Curriculum not found after failing update: {:?}",
@@ -198,7 +198,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                                 .into())
                             })?
                     } else {
-                        return Err(e.into());
+                        return Err(Box::new(e));
                     }
                 }
             }
@@ -211,7 +211,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
             .filter(matakuliah_kurikulum::Column::IdKurikulum.eq(id_kurikulum))
             .all(db)
             .await
-            .map_err(|e| e.into())?;
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
         for detail in feeder_details {
             let id_matkul = match detail.id_matkul {
@@ -224,7 +224,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                 .filter(AcademicCourseMasterCourse::Column::FeederCourseId.eq(id_matkul))
                 .one(db)
                 .await
-                .map_err(|e| e.into())?;
+                .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
             let course_id = match course {
                 Some(c) => c.id,
@@ -236,7 +236,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                             .filter(AcademicCourseMasterCourse::Column::UnitId.eq(unit_id))
                             .one(db)
                             .await
-                            .map_err(|e| e.into())?
+                            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
                     } else {
                         None
                     };
@@ -260,7 +260,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                 .filter(AcademicCourseReferenceSemester::Column::Code.eq(semester_num))
                 .one(db)
                 .await
-                .map_err(|e| e.into())?;
+                .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
             let semester_id = match semester {
                 Some(s) => s.id,
@@ -284,12 +284,12 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                 .filter(curriculum_details::Column::FeederId.eq(detail.id))
                 .one(db)
                 .await
-                .map_err(|e| e.into())?;
+                .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
             let (mut detail_active, is_new_detail) = if let Some(ed) = existing_detail {
                 (ed.into_active_model(), false)
             } else {
-                let id = ();
+                let id = Uuid::new_v4();
                 (
                     DetailActiveModel {
                         id: Set(id),
@@ -302,22 +302,13 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
             detail_active.curriculum_id = Set(curriculum_id);
             detail_active.course_id = Set(course_id);
             detail_active.semester_id = Set(semester_id);
-            detail_active.concentration_id = Set(concentration_id);
-            detail_active.code = Set(detail
-                .kode_mata_kuliah
-                .unwrap_or_default()
-                .parse()
-                .unwrap_or(0));
-
-            detail_active.credit = Set(detail.sks_mata_kuliah.unwrap_or(0.0) as f64);
+            detail_active.concentration_id = Set(Some(concentration_id));
+            detail_active.code = Set(Some(0));
+            detail_active.credit = Set(Some(detail.sks_mata_kuliah.unwrap_or(0.0) as f64));
             detail_active.name = Set(detail.nama_mata_kuliah);
-            detail_active.is_convertable_to_mbkm = Set(false); // Default
-            detail_active.is_convertable_to_prior_learning_recognition = Set(false); // Default
-            detail_active.feeder_id = Set(detail.id);
-
-            // Handle code parsing safely
-            // Use 0 if we can't parse or if it's not applicable.
-            detail_active.code = Set(0);
+            detail_active.is_convertable_to_mbkm = Set(Some(false)); // Default
+            detail_active.is_convertable_to_prior_learning_recognition = Set(Some(false)); // Default
+            detail_active.feeder_id = Set(Some(detail.id));
 
             let result = if is_new_detail {
                 detail_active
@@ -338,7 +329,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                         // Ignore
                     } else {
                         eprintln!("Failed to save detail: {}", e);
-                        return Err(e.into());
+                        return Err(Box::new(e));
                     }
                 }
             };

@@ -64,7 +64,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                 .filter(InstitutionMasterUnit::Column::FeederId.eq(id_prodi))
                 .one(db)
                 .await
-                .map_err(|e| e.into())?
+                .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
         } else {
             None
         };
@@ -86,7 +86,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                 .filter(AcademicCourseReferenceVariety::Column::AlphabetCode.eq(code))
                 .one(db)
                 .await
-                .map_err(|e| e.into())?;
+                .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
             match v {
                 Some(val) => val.id,
                 None => uuid::Uuid::nil(),
@@ -123,12 +123,12 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
             .filter(courses::Column::UnitId.eq(unit.id))
             .one(db)
             .await
-            .map_err(|e| e.into())?;
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
         let mut active_model = if let Some(existing_model) = existing {
             existing_model.into_active_model()
         } else {
-            let id = ();
+            let id = Uuid::new_v4();
             ActiveModel {
                 id: Set(id),
                 ..Default::default()
@@ -204,7 +204,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                     }
                 }
                 println!("❌ Error Upserting Course: {} - {}", name_val, msg);
-                Err(e.into())
+                Err(Box::new(e))
             }
         }
     

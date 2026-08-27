@@ -74,34 +74,40 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
 
     let Some(student) = student else {
         tracing::warn!(
-            "❌  Student not found for id_registrasi_mahasiswa: {}",
+            "❌  Student not found for id_registrasi_mahasiswa: {:?}",
             model.id_registrasi_mahasiswa
         );
         return Ok(());
     };
 
     // 2. Get Academic Year
-    let academic_year = academic_years_ent::Entity::find()
-        .filter(academic_years_ent::Column::FeederName.eq(&model.id_periode_masuk))
-        .one(&txn)
-        .await
-        ?;
+    let academic_year = if let Some(id_periode) = &model.id_periode_masuk {
+        academic_years_ent::Entity::find()
+            .filter(academic_years_ent::Column::FeederName.eq(id_periode))
+            .one(&txn)
+            .await?
+    } else {
+        None
+    };
 
     // 3. Get Course (Optional)
-    let course = course_master_courses::Entity::find()
-        .filter(course_master_courses::Column::FeederCourseId.eq(model.id_matkul))
-        .one(&txn)
-        .await
-        ?;
+    let course = if let Some(id_matkul) = model.id_matkul {
+        course_master_courses::Entity::find()
+            .filter(course_master_courses::Column::FeederCourseId.eq(id_matkul))
+            .one(&txn)
+            .await?
+    } else {
+        None
+    };
 
     if course.is_none() {
-        tracing::warn!("❌  Course not found for id_matkul: {}", model.id_matkul);
+        tracing::warn!("❌  Course not found for id_matkul: {:?}", model.id_matkul);
     }
 
     let (course_id, course_code) = if let Some(course) = &course {
         (course.id, course.code.clone())
     } else {
-        (Uuid::nil(), model.kode_matkul_diakui.clone())
+        (Uuid::nil(), model.kode_matkul_diakui.clone().unwrap_or_default())
     };
 
     // 4. Get Grade
@@ -129,13 +135,6 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
     };
 
     // 5. Upsert Convertion
-    let _convertion = student_convertions::Entity::find()
-        .filter(student_convertions::Column::FeederId.eq(model.id_transfer))
-        .one(&txn)
-        .await
-        ?;
-
-    // 5. Upsert Convertion
     let convertion = student_convertions::Entity::find()
         .filter(student_convertions::Column::FeederId.eq(model.id_transfer))
         .one(&txn)
@@ -146,7 +145,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         Some(c) => c.into_active_model(),
         None => {
             let mut a = student_convertions::ActiveModel {
-                id: Set(()),
+                id: Set(Uuid::new_v4()),
                 ..Default::default()
             };
             a.created_at = Set(Some(chrono::Utc::now().naive_utc()));
@@ -154,7 +153,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         }
     };
 
-    active.feeder_id = Set(Some(model.id_transfer));
+    active.feeder_id = Set(model.id_transfer);
     active.student_id = Set(student.id);
     active.academic_year_id = Set(academic_year.as_ref().map(|ay| ay.id));
     active.course_id = Set(course_id);
@@ -166,18 +165,19 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
     active.deleted_at = Set(None);
 
     // Mapping requested fields
+    let empty_str = "".to_string();
     let name = format!(
         "NilaiTransferPendidikanMahasiswa {} {} {}",
         student.code,
         academic_year
             .as_ref()
             .map(|ay| ay.feeder_name.as_str())
-            .unwrap_or(&model.id_semester),
+            .unwrap_or(model.id_semester.as_deref().unwrap_or("")),
         course_code
     );
     active.name = Set(Some(name));
-    active.origin_code = Set(Some(model.kode_mata_kuliah_asal));
-    active.origin_name = Set(Some(model.nama_mata_kuliah_asal));
+    active.origin_code = Set(model.kode_mata_kuliah_asal.clone());
+    active.origin_name = Set(model.nama_mata_kuliah_asal.clone());
 
     // Handle f32 -> f64 conversion for transfer_credit
     let credit = model.sks_mata_kuliah_asal.unwrap_or(0.0) as f64;
@@ -187,11 +187,11 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
     // Target schema says String, source is Option. Plan says map directly.
     // If source is None, we default to empty string to satisfy non-null constraint if needed,
     // but logic above checked grade existence. Let's use the value found.
-    active.origin_grade = Set(Some(model.nilai_huruf_asal.unwrap_or_default()));
-    active.transfer_code = Set(model.kode_matkul_diakui);
-    active.transfer_name = Set(model.nama_mata_kuliah_diakui);
+    active.origin_grade = Set(model.nilai_huruf_asal.clone());
+    active.transfer_code = Set(model.kode_matkul_diakui.clone().unwrap_or_default());
+    active.transfer_name = Set(model.nama_mata_kuliah_diakui.clone().unwrap_or_default());
     active.transfer_credit = Set(model.sks_mata_kuliah_diakui.unwrap_or_default() as f64);
-    active.transfer_grade = Set(model.nilai_huruf_diakui.unwrap_or_default());
+    active.transfer_grade = Set(model.nilai_huruf_diakui.clone().unwrap_or_default());
     active.is_lock = Set(Some(chrono::Utc::now().naive_utc()));
     active.updated_at = Set(Some(chrono::Utc::now().naive_utc()));
 

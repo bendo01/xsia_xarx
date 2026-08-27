@@ -117,7 +117,7 @@ impl Worker {
                 }
                 Err(e) => {
                     tracing::error!("Error finding mahasiswa: {}", e);
-                    return Err(e.into());
+                    return Err(Box::new(e));
                 }
             };
 
@@ -180,7 +180,7 @@ impl UpsertIndividual {
                 }
                 Err(e) => {
                     tracing::error!("Error fetching gender: {}", e);
-                    return Err(e.into());
+                    return Err(Box::new(e));
                 }
             }
         } else {
@@ -201,7 +201,7 @@ impl UpsertIndividual {
                 }
                 Err(e) => {
                     tracing::error!("Error fetching religion: {}", e);
-                    return Err(e.into());
+                    return Err(Box::new(e));
                 }
             }
         } else {
@@ -217,7 +217,7 @@ impl UpsertIndividual {
             Ok(result) => result,
             Err(e) => {
                 tracing::error!("Error finding individual by NIK: {}", e);
-                return Err(e.into());
+                return Err(Box::new(e));
             }
         };
 
@@ -244,18 +244,18 @@ impl UpsertIndividual {
                         Ok(model) => model,
                         Err(e) => {
                             tracing::error!("Error converting to model: {}", e);
-                            return Err(e.into());
+                            return Err(Box::new(e));
                         }
                     },
                     Err(e) => {
                         tracing::error!("Error saving individual: {}", e);
-                        return Err(e.into());
+                        return Err(Box::new(e));
                     }
                 }
             }
             None => {
                 let new_individual = PersonMasterIndividual::ActiveModel {
-                    id: Set(()),
+                    id: Set(Uuid::new_v4()),
                     code: Set(nik.clone()),
                     name: Set(data
                         .nama_mahasiswa
@@ -267,8 +267,8 @@ impl UpsertIndividual {
                     birth_place: Set(data.tempat_lahir.clone().unwrap_or_else(|| "-".to_string())),
                     gender_id: Set(gender_id),
                     religion_id: Set(religion_id),
-                    occupation_id: Set(Uuid::from_str("e619d78e-014f-4d45-b22d-cf7266965297").ok()),
-                    income_id: Set(Uuid::from_str("00000000-0000-0000-0000-000000000000").ok()),
+                    occupation_id: Set(Uuid::from_str("e619d78e-014f-4d45-b22d-cf7266965297").unwrap_or_default()),
+                    income_id: Set(Uuid::default()),
                     identification_type_id: Set(Uuid::from_str(
                         "3d59fc95-b07d-46ad-95ff-206b7e7f253f",
                     )
@@ -292,11 +292,10 @@ impl UpsertIndividual {
                                 .await;
 
                             if let Ok(Some(m)) = mahasiswa_opt {
-                                let student_upserter = UpsertStudent {
-                                    ctx: self.ctx.clone(),
-                                };
+                                let student_upserter = UpsertStudent;
                                 match student_upserter
                                     .upsert(
+                                        db,
                                         data.clone(),
                                         model.clone(),
                                         m.id_registrasi_mahasiswa,
@@ -320,7 +319,7 @@ impl UpsertIndividual {
                     }
                     Err(e) => {
                         tracing::error!("Error inserting individual: {}", e);
-                        return Err(e.into());
+                        return Err(Box::new(e));
                     }
                 }
             }
@@ -352,7 +351,7 @@ impl UpsertStudent {
             }
             Err(e) => {
                 tracing::error!("Error finding mahasiswa by ID: {}", e);
-                return Err(e.into());
+                return Err(Box::new(e));
             }
         };
 
@@ -374,7 +373,7 @@ impl UpsertStudent {
                 }
                 Err(e) => {
                     tracing::error!("Error finding riwayat pendidikan mahasiswa by ID: {}", e);
-                    return Err(e.into());
+                    return Err(Box::new(e));
                 }
             };
 
@@ -385,7 +384,7 @@ impl UpsertStudent {
                     .filter(AcademicStudentReferenceFinance::Column::Code.eq(id_pembiayaan))
                     .one(db)
                     .await
-                    .map_err(|e| e.into())?;
+                    .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
                 match finance {
                     Some(f) => (
@@ -406,7 +405,7 @@ impl UpsertStudent {
                 )
                 .one(db)
                 .await
-                .map_err(|e| e.into())?;
+                .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
             match status {
                 Some(s) => s.id,
@@ -440,7 +439,7 @@ impl UpsertStudent {
             }
             Err(e) => {
                 tracing::error!("Error finding registration by Alphabet Code: {}", e);
-                return Err(e.into());
+                return Err(Box::new(e));
             }
         };
 
@@ -463,7 +462,7 @@ impl UpsertStudent {
             }
             Err(e) => {
                 tracing::error!("Error finding unit by ID: {}", e);
-                return Err(e.into());
+                return Err(Box::new(e));
             }
         };
 
@@ -485,7 +484,7 @@ impl UpsertStudent {
             }
             Err(e) => {
                 tracing::error!("Error finding academic year by ID: {}", e);
-                return Err(e.into());
+                return Err(Box::new(e));
             }
         };
 
@@ -511,7 +510,7 @@ impl UpsertStudent {
             .unwrap_or_else(|| {
                 tracing::warn!(
                     "Mahasiswa status name is missing for {}, defaulting to 'Tidak Diketahui'",
-                    mahasiswa.nama_mahasiswa,
+                    mahasiswa.nama_mahasiswa.as_deref().unwrap_or(""),
                 );
                 "Tidak Diketahui".to_string()
             });
@@ -551,7 +550,7 @@ impl UpsertStudent {
             Ok(result) => result,
             Err(e) => {
                 tracing::error!("Error finding student by ID Mahasiswa: {}", e);
-                return Err(e.into());
+                return Err(Box::new(e));
             }
         };
 
@@ -578,12 +577,12 @@ impl UpsertStudent {
                         Ok(model) => model,
                         Err(e) => {
                             tracing::error!("Error converting to model: {}", e);
-                            return Err(e.into());
+                            return Err(Box::new(e));
                         }
                     },
                     Err(e) => {
                         tracing::error!("Error saving student: {}", e);
-                        return Err(e.into());
+                        return Err(Box::new(e));
                     }
                 }
             }
@@ -594,13 +593,13 @@ impl UpsertStudent {
                     Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap_or_default();
 
                 let new_student = AcademicStudentMasterStudent::ActiveModel {
-                    id: Set(()),
+                    id: Set(Uuid::new_v4()),
                     code: Set(mahasiswa
                         .nim
                         .clone()
                         .unwrap_or_else(|| "UNKNOWN".to_string())),
                     nisn: Set(nisn),
-                    name: Set(mahasiswa.nama_mahasiswa.clone()),
+                    name: Set(mahasiswa.nama_mahasiswa.clone().unwrap_or_default()),
                     registered: Set(academic_year
                         .start_date
                         .unwrap_or_else(|| chrono::Utc::now().date_naive())),
@@ -632,7 +631,7 @@ impl UpsertStudent {
                     Ok(model) => model,
                     Err(e) => {
                         tracing::error!("Error inserting student: {}", e);
-                        return Err(e.into());
+                        return Err(Box::new(e));
                     }
                 }
             }

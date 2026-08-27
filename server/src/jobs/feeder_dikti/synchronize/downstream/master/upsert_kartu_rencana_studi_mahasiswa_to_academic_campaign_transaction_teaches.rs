@@ -73,7 +73,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                 .filter(InstitutionMasterUnit::Column::FeederId.eq(id_prodi))
                 .one(db)
                 .await
-                .map_err(|e| e.into())?
+                .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
         } else {
             None
         };
@@ -87,17 +87,14 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                 );
                 return Ok(());
             }
-        };
-
-        // Load Institution for unit (needed for name generation)
-        let institution = unit
-            .find_related(InstitutionMasterInstitution::Entity)
+        };        // Load Institution for unit (needed for name generation)
+        let institution = InstitutionMasterInstitution::Entity::find_by_id(unit.institution_id)
             .one(db)
             .await
-            .map_err(|e| e.into())?;
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
         let institution_code = match institution {
-            Some(inst) => inst.code,
+            Some(inst) => inst.code.unwrap_or_else(|| "UNKNOWN".to_string()),
             None => {
                 println!(
                     "❌ Institution not found for Unit {:?}. Using default code.",
@@ -113,7 +110,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                 .filter(AcademicGeneralReferenceAcademicYear::Column::FeederName.eq(id_periode))
                 .one(db)
                 .await
-                .map_err(|e| e.into())?
+                .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
         } else {
             None
         };
@@ -130,14 +127,14 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
         };
 
         // 3. Get UnitActivity where unit_id = unit.id AND academic_year_id = academic_year.id
-        let unit_activity = AcademicCampaignTransactionActivity::Entity::find()
-            .filter(AcademicCampaignTransactionActivity::Column::UnitId.eq(unit.id))
+        let unit_activity = activities::Entity::find()
+            .filter(activities::Column::UnitId.eq(unit.id))
             .filter(
-                AcademicCampaignTransactionActivity::Column::AcademicYearId.eq(academic_year.id),
+                activities::Column::AcademicYearId.eq(academic_year.id),
             )
             .one(db)
             .await
-            .map_err(|e| e.into())?;
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
         let unit_activity = match unit_activity {
             Some(ua) => ua,
@@ -150,48 +147,50 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
             }
         };
 
-        // 4. Get ClassCode where activity_id, unit_id, alphabet_code match
-        let class_name = record.nama_kelas_kuliah.clone().unwrap_or_default();
-        let class_code = AcademicCampaignTransactionClassCode::Entity::find()
-            .filter(AcademicCampaignTransactionClassCode::Column::ActivityId.eq(unit_activity.id))
-            .filter(AcademicCampaignTransactionClassCode::Column::UnitId.eq(unit.id))
-            .filter(AcademicCampaignTransactionClassCode::Column::AlphabetCode.eq(&class_name))
+        // 4. Get ClassCode where unit_activity_id = unit_activity.id AND alphabet_code = kartu.nama_kelas_kuliah
+        let class_name_from_feeder = match &record.nama_kelas_kuliah {
+            Some(name) => name.clone(),
+            None => {
+                println!("❌ nama_kelas_kuliah is missing in KMRS record. Skipping.");
+                return Ok(());
+            }
+        };
+
+        let class_code = class_codes::Entity::find()
+            .filter(class_codes::Column::ActivityId.eq(unit_activity.id))
+            .filter(class_codes::Column::AlphabetCode.eq(&class_name_from_feeder))
             .one(db)
             .await
-            .map_err(|e| e.into())?;
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
         let class_code = match class_code {
             Some(cc) => cc,
             None => {
                 println!(
-                    "❌ ClassCode not found for Activity {:?} and Name {:?}. Skipping.",
-                    unit_activity.id, class_name
+                    "❌ ClassCode not found for Activity {:?} and AlphabetCode {:?}. Skipping.",
+                    unit_activity.id, class_name_from_feeder
                 );
                 return Ok(());
             }
         };
 
-        // 5. Get Course by feeder_course_id
-        let course_id_feeder = match record.id_matkul {
-            Some(id) => id,
-            None => {
-                println!("❌ KMRS has no id_matkul. Skipping.");
-                return Ok(());
-            }
+        // 5. Get Course by feeder_course_id = kartu.id_matkul
+        let course = if let Some(id_matkul) = record.id_matkul {
+            AcademicCourseMasterCourse::Entity::find()
+                .filter(AcademicCourseMasterCourse::Column::FeederCourseId.eq(id_matkul))
+                .one(db)
+                .await
+                .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
+        } else {
+            None
         };
-
-        let course = AcademicCourseMasterCourse::Entity::find()
-            .filter(AcademicCourseMasterCourse::Column::FeederCourseId.eq(course_id_feeder))
-            .one(db)
-            .await
-            .map_err(|e| e.into())?;
 
         let course = match course {
             Some(c) => c,
             None => {
                 println!(
-                    "❌ Course not found for Feeder Course ID {:?}. Skipping.",
-                    course_id_feeder
+                    "❌ Course not found for KMRS (id_matkul: {:?}). Skipping.",
+                    record.id_matkul
                 );
                 return Ok(());
             }
@@ -202,15 +201,15 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
             .filter(AcademicCampaignTransactionTeachDecree::Column::ActivityId.eq(unit_activity.id))
             .one(db)
             .await
-            .map_err(|e| e.into())?;
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
         let teach_decree_id = if let Some(td) = teach_decree {
             td.id
         } else {
-            let id = ();
+            let id = Uuid::new_v4();
             let new_decree = TeachDecreeActiveModel {
                 id: Set(id),
-                decree_number: Set("-".to_string()),
+                decree_number: Set(Some("-".to_string())),
                 decree_date: Set(academic_year.start_date.unwrap_or_default()), // Assuming start_date exists
                 activity_id: Set(unit_activity.id),
                 staff_id: Set(None),
@@ -222,7 +221,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
             new_decree
                 .insert(db)
                 .await
-                .map_err(|e| e.into())?
+                .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
                 .id
         };
 
@@ -233,12 +232,12 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
             .filter(teaches::Column::CourseId.eq(course.id))
             .one(db)
             .await
-            .map_err(|e| e.into())?;
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
         let (mut active_model, is_new) = if let Some(existing) = existing_teach {
             (existing.into_active_model(), false)
         } else {
-            let id = ();
+            let id = Uuid::new_v4();
             (
                 ActiveModel {
                     id: Set(id),
@@ -250,7 +249,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
 
         // keys
         active_model.class_code_id = Set(class_code.id);
-        active_model.activity_id = Set(unit_activity.id);
+        active_model.activity_id = Set(Some(unit_activity.id));
         active_model.course_id = Set(course.id);
 
         // fields from logic
@@ -266,23 +265,23 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
             active_model.practice_end_date = Set(academic_year.end_date);
         }
 
-        active_model.max_member = Set(40);
+        active_model.max_member = Set(Some(40));
 
         let scope_uuid =
             uuid::Uuid::parse_str("3b0a29f3-2402-44d8-8d67-62a882c59b94").unwrap_or_default();
-        active_model.scope_id = Set(scope_uuid);
+        active_model.scope_id = Set(Some(scope_uuid));
 
-        active_model.curriculum_detail_id = Set(uuid::Uuid::nil());
-        active_model.encounter_category_id = Set(uuid::Uuid::nil());
+        active_model.curriculum_detail_id = Set(None);
+        active_model.encounter_category_id = Set(None);
 
         // feeder_id = record.id_kelas
-        active_model.feeder_id = Set(record.id_kelas.unwrap_or(uuid::Uuid::nil()));
+        active_model.feeder_id = Set(record.id_kelas);
 
         active_model.teach_decree_id = Set(teach_decree_id);
 
         let teach_name = format!(
             "AktifitasPengajaran {} {} {} {}",
-            institution_code, unit.code, academic_year.feeder_name, course.code
+            institution_code, unit.code.as_deref().unwrap_or(""), academic_year.feeder_name, course.code
         );
         active_model.name = Set(Some(teach_name.clone()));
 
@@ -317,7 +316,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                     );
                     return Ok(());
                 }
-                Err(e.into())
+                Err(Box::new(e))
             }
         }
     

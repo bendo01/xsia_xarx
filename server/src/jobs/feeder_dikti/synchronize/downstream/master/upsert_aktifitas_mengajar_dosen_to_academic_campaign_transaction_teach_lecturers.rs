@@ -83,7 +83,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find teach: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(teach) = teach else {
@@ -103,7 +103,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find lecturer: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(lecturer) = lecturer else {
@@ -112,35 +112,40 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
     };
 
     // 2.1 Fetch Relations for Naming (Activity, Unit, Institution, Academic Year, Course)
-    let activity = activities::Entity::find_by_id(teach.activity_id)
+    let Some(activity_id) = teach.activity_id else {
+        println!("Skipping: Teach has no activity_id for teach {}", teach.id);
+        return Ok(());
+    };
+
+    let activity = activities::Entity::find_by_id(activity_id)
         .one(&txn)
         .await
-        .map_err(|e| e.into())?
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
         .ok_or("Activity not found")?;
 
     let unit = units::Entity::find_by_id(activity.unit_id)
         .one(&txn)
         .await
-        .map_err(|e| e.into())?
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
         .ok_or("Unit not found")?;
 
     let institution = institutions::Entity::find_by_id(unit.institution_id)
         .one(&txn)
         .await
-        .map_err(|e| e.into())?
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
         .ok_or("Institution not found")?;
 
     let academic_year = academic_years::Entity::find_by_id(activity.academic_year_id)
         .one(&txn)
         .await
-        .map_err(|e| e.into())?
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
         .ok_or("Academic Year not found")?;
 
     // println!("Teach: {:#?}", teach.clone());
     let course = courses::Entity::find_by_id(teach.course_id)
         .one(&txn)
         .await
-        .map_err(|e| e.into())?;
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
     let course = match course {
         Some(c) => c,
@@ -160,7 +165,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
 
     let name = format!(
         "DosenAktifitasPengajaran {} {} {} {} {}",
-        institution.code, unit.code, academic_year.feeder_name, course.code, lecturer_code
+        institution.code.as_deref().unwrap_or(""), unit.code.as_deref().unwrap_or(""), academic_year.feeder_name, course.code, lecturer_code
     );
 
     // 3. Upsert TeachLecturer
@@ -172,7 +177,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find teach lecturer: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     // Model fields mapping
@@ -186,14 +191,14 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         active.name = Set(Some(name.clone()));
         active.planning = Set(planning);
         active.realization = Set(realization);
-        active.credit = Set(credit);
+        active.credit = Set(Some(credit));
         active.updated_at = Set(Some(chrono::Utc::now().naive_utc()));
         active.feeder_id = Set(Some(model.id)); // Using the ID from aktifitas_mengajar_dosen
 
         match active.update(&txn).await {
             Ok(_) => "UPDATED",
             Err(sea_orm::DbErr::RecordNotUpdated) => "SKIPPED_UPDATE",
-            Err(e) => return Err(e.into()),
+            Err(e) => return Err(Box::new(e)),
         }
     } else {
         let active = teach_lecturers::ActiveModel {
@@ -201,7 +206,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             name: Set(Some(name.clone())),
             planning: Set(planning),
             realization: Set(realization),
-            credit: Set(credit),
+            credit: Set(Some(credit)),
             is_lecturer_home_base: Set(true), // Defaulting to true? Or false. Let's say true for now as they are in the system.
             lecturer_id: Set(lecturer.id),
             teach_id: Set(teach.id),
@@ -211,7 +216,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             ..Default::default()
         };
 
-        active.insert(&txn).await.map_err(|e| e.into())?;
+        active.insert(&txn).await.map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
         "INSERTED"
     };
 

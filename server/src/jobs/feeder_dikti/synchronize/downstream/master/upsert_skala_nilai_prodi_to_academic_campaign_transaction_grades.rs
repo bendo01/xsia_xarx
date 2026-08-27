@@ -75,7 +75,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find unit: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(unit) = unit else {
@@ -97,9 +97,9 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             .one(&txn)
             .await
             .map_err(|e| {
-                tracing::error!("Failed to find grade by feeder_id: {:?}", e);
-                e.into()
-            })?
+            tracing::error!("Failed to find grade by feeder_id: {:?}", e);
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
+        })?
     } else {
         None
     };
@@ -131,7 +131,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         match active.update(&txn).await {
             Ok(_) => "UPDATED",
             Err(sea_orm::DbErr::RecordNotUpdated) => "SKIPPED_UPDATE",
-            Err(e) => return Err(e.into()),
+            Err(e) => return Err(Box::new(e)),
         }
     } else {
         let active = campaign_grades::ActiveModel {
@@ -151,7 +151,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             ..Default::default()
         };
 
-        active.insert(&txn).await.map_err(|e| e.into())?;
+        active.insert(&txn).await.map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
         "INSERTED"
     };
 
@@ -160,7 +160,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         action,
         model.nilai_huruf.as_deref().unwrap_or("-"),
         grade_val,
-        unit.code
+        unit.code.as_deref().unwrap_or("-")
     );
 
     txn.commit().await?;

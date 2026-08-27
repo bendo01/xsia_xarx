@@ -94,7 +94,7 @@ impl Worker {
             let mut active: jabatan_fungsional::ActiveModel = existing_record.into_active_model();
 
             // Update fields that are present in GetJabatanFungsionalResponse
-            active.nama_jabatan_fungsional = Set(record.nama_jabatan_fungsional.clone());
+            active.nama_jabatan_fungsional = Set(Some(record.nama_jabatan_fungsional.clone()));
             active.sync_at = Set(Some(sync_time));
             active.updated_at = Set(Some(sync_time));
 
@@ -105,8 +105,8 @@ impl Worker {
 
             let new_record = jabatan_fungsional::ActiveModel {
                 id: Set(pk_id),
-                id_jabatan_fungsional: Set(id_jabatan_fungsional),
-                nama_jabatan_fungsional: Set(record.nama_jabatan_fungsional.clone()),
+                id_jabatan_fungsional: Set(Some(id_jabatan_fungsional)),
+                nama_jabatan_fungsional: Set(Some(record.nama_jabatan_fungsional.clone())),
 
                 sync_at: Set(Some(sync_time)),
                 created_at: Set(Some(sync_time)),

@@ -65,7 +65,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                 .filter(courses::Column::FeederCourseId.eq(id_matkul))
                 .one(db)
                 .await
-                .map_err(|e| e.into())?
+                .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
         } else {
             println!("❌ Rencana Pembelajaran has no id_matkul. Skipping.");
             return Ok(());
@@ -86,13 +86,13 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
         let unit = units::Entity::find_by_id(course.unit_id)
             .one(db)
             .await
-            .map_err(|e| e.into())?
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
             .ok_or("Unit not found for course")?;
 
         let institution = institutions::Entity::find_by_id(unit.institution_id)
             .one(db)
             .await
-            .map_err(|e| e.into())?
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
             .ok_or("Institution not found for unit")?;
 
         let pertemuan = record.pertemuan.unwrap_or(0);
@@ -100,7 +100,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
         // title = "RPS" space course.unit.institution.code space course.unit.code space course.code space rencana_pembelajaran.pertemuan
         let title = format!(
             "RPS {} {} {} {}",
-            institution.code.as_deref().unwrap_or(""), unit.code, course.code, pertemuan
+            institution.code.as_deref().unwrap_or(""), unit.code.as_deref().unwrap_or(""), course.code, pertemuan
         );
 
         // 3. Upsert CourseLearnPlanning
@@ -116,7 +116,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
             .filter(course_learn_plannings::Column::FeederIdRencanaAjar.eq(feeder_id_rencana_ajar))
             .one(db)
             .await
-            .map_err(|e| e.into())?;
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
         let mut active_model = if let Some(existing_model) = existing {
             existing_model.into_active_model()
@@ -182,7 +182,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                     "❌ Error Upserting CourseLearnPlanning: {} - {}",
                     title, msg
                 );
-                Err(e.into())
+                Err(Box::new(e))
             }
         }
     

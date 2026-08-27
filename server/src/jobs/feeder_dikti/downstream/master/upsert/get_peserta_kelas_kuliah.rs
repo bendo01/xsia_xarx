@@ -90,9 +90,7 @@ impl Worker {
             .id_kelas_kuliah
             .ok_or("id_kelas_kuliah is required for upsert")?;
 
-        let id_registrasi_mahasiswa = record.id_registrasi_mahasiswa.ok_or_else(|| {
-            "id_registrasi_mahasiswa is required for upsert".into()
-        })?;
+        let id_registrasi_mahasiswa = record.id_registrasi_mahasiswa.ok_or("id_registrasi_mahasiswa is required for upsert")?;
 
         let sync_time = Local::now().naive_local();
 

@@ -88,13 +88,9 @@ impl Worker {
             .id_dosen
             .ok_or("id_dosen is required for upsert")?;
 
-        let id_jenis_sertifikasi = record.id_jenis_sertifikasi.clone().ok_or_else(|| {
-            "id_jenis_sertifikasi is required for upsert".into()
-        })?;
+        let id_jenis_sertifikasi = record.id_jenis_sertifikasi.clone().ok_or("id_jenis_sertifikasi is required for upsert")?;
 
-        let tahun_sertifikasi = record.tahun_sertifikasi.clone().ok_or_else(|| {
-            "tahun_sertifikasi is required for upsert".into()
-        })?;
+        let tahun_sertifikasi = record.tahun_sertifikasi.clone().ok_or("tahun_sertifikasi is required for upsert")?;
 
         let sync_time = Local::now().naive_local();
 

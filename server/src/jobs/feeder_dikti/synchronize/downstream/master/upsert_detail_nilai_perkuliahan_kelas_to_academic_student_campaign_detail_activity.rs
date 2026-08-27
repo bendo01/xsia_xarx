@@ -93,7 +93,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find Internal scope: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(internal_scope) = internal_scope else {
@@ -105,7 +105,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .filter(units::Column::FeederId.eq(id_prodi.clone()))
         .one(&txn)
         .await
-        .map_err(|e| e.into())?;
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
     let Some(unit) = unit else {
         println!("Skipping: Unit not found for feeder_id {}", id_prodi);
         return Ok(());
@@ -114,7 +114,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
     let institution = institutions::Entity::find_by_id(unit.institution_id)
         .one(&txn)
         .await
-        .map_err(|e| e.into())?;
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
     let Some(institution) = institution else {
         println!("Skipping: Institution not found for unit {}", unit.id);
@@ -130,7 +130,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .filter(academic_years::Column::FeederName.eq(id_semester.clone()))
         .one(&txn)
         .await
-        .map_err(|e| e.into())?;
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
     let Some(academic_year) = academic_year else {
         println!(
             "Skipping: Academic Year not found for feeder_name {}",
@@ -148,7 +148,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .filter(courses::Column::FeederCourseId.eq(id_matkul.clone()))
         .one(&txn)
         .await
-        .map_err(|e| e.into())?;
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
     let Some(course) = course else {
         println!(
             "Skipping: Course not found for feeder_course_id {}",
@@ -163,41 +163,41 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .filter(campaign_activities::Column::AcademicYearId.eq(academic_year.id))
         .one(&txn)
         .await
-        .map_err(|e| e.into())?;
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
     let unit_activity = if let Some(ua) = unit_activity {
         ua
     } else {
-        let new_id = ();
+        let new_id = Uuid::new_v4();
         let name = format!(
             "KegiatanPerkuliahan {} {}",
-            academic_year.feeder_name, unit.code
+            academic_year.feeder_name, unit.code.as_deref().unwrap_or("")
         );
         let active_model = campaign_activities::ActiveModel {
             id: Set(new_id),
-            name: Set(name),
+            name: Set(Some(name)),
             unit_id: Set(unit.id),
             academic_year_id: Set(academic_year.id),
-            week_quantity: Set(16),
-            student_target: Set(0),
-            candidate_number: Set(0),
-            candidate_pass: Set(0),
-            became_student: Set(0),
-            transfer_student: Set(0),
-            total_class_member: Set(0),
+            week_quantity: Set(Some(16)),
+            student_target: Set(Some(0)),
+            candidate_number: Set(Some(0)),
+            candidate_pass: Set(Some(0)),
+            became_student: Set(Some(0)),
+            transfer_student: Set(Some(0)),
+            total_class_member: Set(Some(0)),
             start_date: Set(academic_year.start_date),
             end_date: Set(academic_year.end_date),
             start_transaction: Set(academic_year.start_date),
             end_transaction: Set(academic_year.end_date),
-            is_active: Set(true),
+            is_active: Set(Some(true)),
             created_at: Set(Some(chrono::Utc::now().naive_utc())),
             updated_at: Set(Some(chrono::Utc::now().naive_utc())),
             ..Default::default()
         };
-        let ua = active_model.insert(&txn).await.map_err(|e| e.into())?;
+        let ua = active_model.insert(&txn).await.map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
         println!(
             "✅ CREATED Unit Activity: {} for Unit {}",
-            ua.name, unit.code
+            ua.name.as_deref().unwrap_or(""), unit.code.as_deref().unwrap_or("")
         );
         ua
     };
@@ -212,7 +212,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .filter(teaches::Column::FeederId.eq(id_kelas_kuliah.clone()))
         .one(&txn)
         .await
-        .map_err(|e| e.into())?;
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
     let teach = if let Some(t) = teach {
         t
@@ -232,25 +232,25 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             .filter(class_codes::Column::AlphabetCode.eq(&nama_kelas_kuliah))
             .one(&txn)
             .await
-            .map_err(|e| e.into())?;
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
         let class_code_id = if let Some(cc) = class_code {
             cc.id
         } else {
-            let new_id = ();
+            let new_id = Uuid::new_v4();
             let name = format!(
                 "KelasKuliah {} {} {} {}",
-                institution.code, unit.code, academic_year.feeder_name, nama_kelas_kuliah
+                institution.code.as_deref().unwrap_or(""), unit.code.as_deref().unwrap_or(""), academic_year.feeder_name, nama_kelas_kuliah
             );
             let active_model = class_codes::ActiveModel {
                 id: Set(new_id),
                 alphabet_code: Set(Some(nama_kelas_kuliah.clone())),
-                name: Set(name),
+                name: Set(Some(name)),
                 activity_id: Set(unit_activity.id),
                 created_at: Set(Some(chrono::Utc::now().naive_utc())),
                 updated_at: Set(Some(chrono::Utc::now().naive_utc())),
                 unit_id: Set(unit.id),
-                capacity: Set(40),
+                capacity: Set(Some(40)),
                 start_effective_date: Set(academic_year.start_date),
                 end_effective_date: Set(academic_year.end_date),
                 ..Default::default()
@@ -258,7 +258,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             active_model
                 .insert(&txn)
                 .await
-                .map_err(|e| e.into())?
+                .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
                 .id
         };
 
@@ -267,18 +267,18 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             .filter(teach_decrees::Column::ActivityId.eq(unit_activity.id))
             .one(&txn)
             .await
-            .map_err(|e| e.into())?;
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
         let teach_decree_id = if let Some(td) = teach_decree {
             td.id
         } else {
-            let new_id = ();
+            let new_id = Uuid::new_v4();
             let decree_date = academic_year
                 .start_date
                 .unwrap_or(chrono::Utc::now().naive_utc().date());
             let active_model = teach_decrees::ActiveModel {
                 id: Set(new_id),
-                decree_number: Set("-".to_string()),
+                decree_number: Set(Some("-".to_string())),
                 decree_date: Set(decree_date),
                 activity_id: Set(unit_activity.id),
                 created_at: Set(Some(chrono::Utc::now().naive_utc())),
@@ -288,14 +288,14 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             active_model
                 .insert(&txn)
                 .await
-                .map_err(|e| e.into())?
+                .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
                 .id
         };
 
         // 4.3 Create Teach
         let teach_name = format!(
             "AktifitasPengajaran {} {} {} {}",
-            institution.code, unit.code, academic_year.feeder_name, course.code
+            institution.code.as_deref().unwrap_or(""), unit.code.as_deref().unwrap_or(""), academic_year.feeder_name, course.code
         );
 
         let (practice_start, practice_end) =
@@ -305,7 +305,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
                 (None, None)
             };
 
-        let new_id = ();
+        let new_id = Uuid::new_v4();
         let active = teaches::ActiveModel {
             id: Set(new_id),
             name: Set(Some(teach_name)),
@@ -313,22 +313,22 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             end_date: Set(academic_year.end_date),
             practice_start_date: Set(practice_start),
             practice_end_date: Set(practice_end),
-            is_lecturer_credit_sum_problem: Set(false),
-            is_lock: Set(false),
-            max_member: Set(40),
+            is_lecturer_credit_sum_problem: Set(Some(false)),
+            is_lock: Set(Some(false)),
+            max_member: Set(Some(40)),
             class_code_id: Set(class_code_id),
             course_id: Set(course.id),
-            activity_id: Set(unit_activity.id),
-            teach_decree_id: Set(teach_decree_id),
-            feeder_id: Set(id_kelas_kuliah.clone()),
+            activity_id: Set(Some(unit_activity.id)),
+            teach_decree_id: Set(Some(teach_decree_id)),
+            feeder_id: Set(Some(id_kelas_kuliah.clone())),
             scope_id: Set(internal_scope.id),
             created_at: Set(Some(chrono::Utc::now().naive_utc())),
             updated_at: Set(Some(chrono::Utc::now().naive_utc())),
-            curriculum_detail_id: Set(uuid::Uuid::nil()), // Default as per pattern
-            encounter_category_id: Set(uuid::Uuid::nil()), // Default as per pattern
+            curriculum_detail_id: Set(None),
+            encounter_category_id: Set(None),
             ..Default::default()
         };
-        let t = active.insert(&txn).await.map_err(|e| e.into())?;
+        let t = active.insert(&txn).await.map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
         println!("✅ CREATED Teach: {}", id_kelas_kuliah);
         t
     };
@@ -342,7 +342,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .filter(students::Column::IdRegistrasiMahasiswa.eq(id_registrasi_mahasiswa.clone()))
         .one(&txn)
         .await
-        .map_err(|e| e.into())?;
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
     let Some(student) = student else {
         println!(
             "Skipping: Student not found for id_registrasi_mahasiswa {}",
@@ -359,7 +359,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find student activity: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let student_activity = if let Some(sa) = student_activity {
@@ -368,28 +368,28 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         // Create Student Activity if it doesn't exist
         let name = format!("Perkuliahan {} {}", academic_year.feeder_name, student.code);
         let active = student_activities::ActiveModel {
-            id: Set(()),
-            name: Set(name),
-            cumulative_index: Set(0.0),
-            grand_cumulative_index: Set(0.0),
-            total_credit: Set(0.0),
-            grand_total_credit: Set(0.0),
+            id: Set(Uuid::new_v4()),
+            name: Set(Some(name)),
+            cumulative_index: Set(Some(0.0)),
+            grand_cumulative_index: Set(Some(0.0)),
+            total_credit: Set(Some(0.0)),
+            grand_total_credit: Set(Some(0.0)),
             student_id: Set(student.id),
             unit_activity_id: Set(unit_activity.id),
-            unit_id: Set(student.unit_id),
-            status_id: Set(Uuid::nil()),        // Default to Nil
-            resign_status_id: Set(Uuid::nil()), // Default to Nil
-            is_lock: Set(true),
-            feeder_id: Set(Uuid::nil()),  // Default to Nil
-            finance_id: Set(Uuid::nil()), // Default to Nil
-            finance_fee: Set(0.0),
+            unit_id: Set(Some(student.unit_id)),
+            status_id: Set(Some(Uuid::nil())),        // Default to Nil
+            resign_status_id: Set(Some(Uuid::nil())), // Default to Nil
+            is_lock: Set(Some(true)),
+            feeder_id: Set(Some(Uuid::nil())),  // Default to Nil
+            finance_id: Set(Some(Uuid::nil())), // Default to Nil
+            finance_fee: Set(Some(0.0)),
             created_at: Set(Some(chrono::Utc::now().naive_utc())),
             updated_at: Set(Some(chrono::Utc::now().naive_utc())),
             ..Default::default()
         };
         let new_sa = active.insert(&txn).await.map_err(|e| {
             tracing::error!("Failed to create student activity: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
         println!("  ✅ CREATED Student Activity for Student {}", student.code);
         new_sa
@@ -402,7 +402,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             .filter(grades::Column::Name.eq(nilai_huruf))
             .one(&txn)
             .await
-            .map_err(|e| e.into())?;
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
         grade.map(|g| g.id).unwrap_or(Uuid::nil())
     } else {
         Uuid::nil()
@@ -415,39 +415,39 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .filter(detail_activities::Column::ActivityId.eq(student_activity.id))
         .one(&txn)
         .await
-        .map_err(|e| e.into())?;
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
     let mark = model.nilai_indeks.unwrap_or(0.0) as f64; // Assuming nilai_indeks is convertible to f64
 
     if let Some(existing) = existing_detail {
         // Update
         let mut active: detail_activities::ActiveModel = existing.into();
-        active.mark = Set(mark);
-        active.grade_id = Set(grade_id);
+        active.mark = Set(Some(mark));
+        active.grade_id = Set(Some(grade_id));
         active.updated_at = Set(Some(chrono::Utc::now().naive_utc()));
-        active.update(&txn).await.map_err(|e| e.into())?;
+        active.update(&txn).await.map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
         println!("  ✅ UPDATED Detail Activity for Student {}", student.code);
     } else {
         // Create (Partial implementation as per request to primarily focus on updates if exists, but typically upsert implies create if not exists too.
         //  The instructions said: "if exists update mark and grade_id if not create it")
 
         let active = detail_activities::ActiveModel {
-            id: Set(()),
+            id: Set(Uuid::new_v4()),
             activity_id: Set(student_activity.id),
             teach_id: Set(teach.id),
             course_id: Set(course.id),
-            mark: Set(mark),
-            grade_id: Set(grade_id),
-            credit: Set(course.total_credit), // Assuming course credit
-            feeder_id: Set(Uuid::nil()),
-            feeder_grade_id: Set(Uuid::nil()),
-            curiculum_detail_sequence: Set(0),
-            is_lock: Set(true),
+            mark: Set(Some(mark)),
+            grade_id: Set(Some(grade_id)),
+            credit: Set(Some(course.total_credit)), // Assuming course credit
+            feeder_id: Set(Some(Uuid::nil())),
+            feeder_grade_id: Set(Some(Uuid::nil())),
+            curiculum_detail_sequence: Set(Some(0)),
+            is_lock: Set(Some(true)),
             created_at: Set(Some(chrono::Utc::now().naive_utc())),
             updated_at: Set(Some(chrono::Utc::now().naive_utc())),
             ..Default::default()
         };
-        active.insert(&txn).await.map_err(|e| e.into())?;
+        active.insert(&txn).await.map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
         println!("  ✅ CREATED Detail Activity for Student {}", student.code);
     }
 

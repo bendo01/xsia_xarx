@@ -143,16 +143,13 @@ impl Worker {
             .clone()
             .ok_or("Missing id_dosen")?;
 
-        let id_dosen = uuid::Uuid::parse_str(&id_dosen_str)
-            .map_err(|e| format!("Invalid UUID for id_dosen: {}", e))?;
-
         // Start transaction
         let sync_time = Local::now().naive_local();
 
         // Check if record exists
         let existing = biodata_dosen::Entity::find()
             .filter(biodata_dosen::Column::DeletedAt.is_null())
-            .filter(biodata_dosen::Column::IdDosen.eq(id_dosen.to_string()))
+            .filter(biodata_dosen::Column::IdDosen.eq(id_dosen_str.clone()))
             .one(txn)
             .await?;
 
@@ -213,7 +210,7 @@ impl Worker {
 
             let new_record = biodata_dosen::ActiveModel {
                 id: Set(pk_id),
-                id_dosen: Set(Some(id_dosen.to_string())),
+                id_dosen: Set(Some(id_dosen_str)),
                 nama_dosen: Set(record.nama_dosen.clone()),
                 tempat_lahir: Set(record.tempat_lahir.clone()),
                 tanggal_lahir: Set(record.tanggal_lahir),

@@ -86,7 +86,7 @@ impl Worker {
             .ok_or("id_semester is missing")?;
 
         // Helper to parse dates safely
-        let parse_date = |date_str: Option<&String>| -> Result<Option<NaiveDate>> {
+        let parse_date = |date_str: Option<&String>| -> Result<Option<NaiveDate>, Box<dyn std::error::Error + Send + Sync>> {
             if let Some(ds) = date_str {
                 match NaiveDate::parse_from_str(ds, "%Y-%m-%d") {
                     Ok(d) => Ok(Some(d)),

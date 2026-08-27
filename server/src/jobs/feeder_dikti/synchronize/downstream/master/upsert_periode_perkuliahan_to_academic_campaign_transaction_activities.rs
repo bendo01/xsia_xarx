@@ -70,11 +70,11 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                 .await
                 ?
             {
-                Some((unit, Some(institution))) => (unit.id, unit.code, institution.code),
+                Some((unit, Some(institution))) => (unit.id, unit.code, institution.code.unwrap_or_else(|| "UNKNOWN".to_string())),
                 Some((unit, None)) => {
                     tracing::warn!(
                         "Institution not found for Unit: {}. Using default code.",
-                        unit.name
+                        unit.name.as_deref().unwrap_or("")
                     );
                     (unit.id, unit.code, "UNKNOWN".to_string())
                 }
@@ -173,7 +173,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                 }
                 Err(e) => {
                     tracing::error!("Failed to update Activity: {}", e);
-                    return Err(e.into());
+                    return Err(Box::new(e));
                 }
             }
         } else {
@@ -215,7 +215,7 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
                 }
                 Err(e) => {
                     tracing::error!("Failed to insert Activity: {}", e);
-                    return Err(e.into());
+                    return Err(Box::new(e));
                 }
             }
         }

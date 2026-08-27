@@ -122,7 +122,7 @@ impl Worker {
                 }
                 Err(e) => {
                     tracing::error!("Error finding dosen: {}", e);
-                    return Err(e.into());
+                    return Err(Box::new(e));
                 }
             };
 
@@ -179,7 +179,7 @@ impl UpsertIndividual {
                 }
                 Err(e) => {
                     tracing::error!("Error fetching gender: {}", e);
-                    return Err(e.into());
+                    return Err(Box::new(e));
                 }
             }
         } else {
@@ -203,7 +203,7 @@ impl UpsertIndividual {
                         }
                         Err(e) => {
                             tracing::error!("Error fetching religion: {}", e);
-                            return Err(e.into());
+                            return Err(Box::new(e));
                         }
                     }
                 }
@@ -228,7 +228,7 @@ impl UpsertIndividual {
             Ok(result) => result,
             Err(e) => {
                 tracing::error!("Error finding individual by NIK: {}", e);
-                return Err(e.into());
+                return Err(Box::new(e));
             }
         };
 
@@ -252,18 +252,18 @@ impl UpsertIndividual {
                         Ok(model) => model,
                         Err(e) => {
                             tracing::error!("Error converting to model: {}", e);
-                            return Err(e.into());
+                            return Err(Box::new(e));
                         }
                     },
                     Err(e) => {
                         tracing::error!("Error saving individual: {}", e);
-                        return Err(e.into());
+                        return Err(Box::new(e));
                     }
                 }
             }
             None => {
                 let new_individual = PersonMasterIndividual::ActiveModel {
-                    id: Set(()),
+                    id: Set(Uuid::new_v4()),
                     code: Set(nik.clone()),
                     name: Set(data
                         .nama_dosen
@@ -275,8 +275,8 @@ impl UpsertIndividual {
                     birth_place: Set(data.tempat_lahir.clone().unwrap_or_else(|| "-".to_string())),
                     gender_id: Set(gender_id),
                     religion_id: Set(religion_id),
-                    occupation_id: Set(Uuid::from_str("e619d78e-014f-4d45-b22d-cf7266965297").ok()), // Default occupation?
-                    income_id: Set(Uuid::from_str("00000000-0000-0000-0000-000000000000").ok()),
+                    occupation_id: Set(Uuid::from_str("e619d78e-014f-4d45-b22d-cf7266965297").unwrap_or_default()), // Default occupation?
+                    income_id: Set(Uuid::default()),
                     identification_type_id: Set(Uuid::from_str(
                         "3d59fc95-b07d-46ad-95ff-206b7e7f253f",
                     )
@@ -297,7 +297,7 @@ impl UpsertIndividual {
                     }
                     Err(e) => {
                         tracing::error!("Error inserting individual: {}", e);
-                        return Err(e.into());
+                        return Err(Box::new(e));
                     }
                 }
             }
@@ -359,7 +359,7 @@ impl UpsertLecturer {
             Ok(result) => result,
             Err(e) => {
                 tracing::error!("Error finding lecturer by Feeder ID: {}", e);
-                return Err(e.into());
+                return Err(Box::new(e));
             }
         };
 
@@ -396,19 +396,19 @@ impl UpsertLecturer {
                         Ok(model) => model,
                         Err(e) => {
                             tracing::error!("Error converting to model: {}", e);
-                            return Err(e.into());
+                            return Err(Box::new(e));
                         }
                     },
                     Err(e) => {
                         tracing::error!("Error saving lecturer: {}", e);
-                        return Err(e.into());
+                        return Err(Box::new(e));
                     }
                 }
             }
             None => {
                 // Create new lecturer
                 let new_lecturer = AcademicLecturerMasterLecturer::ActiveModel {
-                    id: Set(()),
+                    id: Set(Uuid::new_v4()),
                     code: Set(lecturer_code),
                     name: Set(Some(lecturer_name)),
                     individual_id: Set(individual.id),
@@ -438,7 +438,7 @@ impl UpsertLecturer {
                     Ok(model) => model,
                     Err(e) => {
                         tracing::error!("Error inserting lecturer: {}", e);
-                        return Err(e.into());
+                        return Err(Box::new(e));
                     }
                 }
             }

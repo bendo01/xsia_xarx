@@ -82,7 +82,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find student: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(student) = student else {
@@ -105,7 +105,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find academic year: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(academic_year) = academic_year else {
@@ -125,7 +125,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find unit activity: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(unit_activity) = unit_activity else {
@@ -144,7 +144,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find student activity: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let name = format!("Perkuliahan {} {}", academic_year.feeder_name, student.code);
@@ -165,9 +165,9 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             .one(&txn)
             .await
             .map_err(|e| {
-                tracing::error!("Failed to find status: {:?}", e);
-                e.into()
-            })?;
+            tracing::error!("Failed to find status: {:?}", e);
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
+        })?;
         match status {
             Some(s) => s.id,
             None => Uuid::nil(),
@@ -185,9 +185,9 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
                 .one(&txn)
                 .await
                 .map_err(|e| {
-                    tracing::error!("Failed to find finance: {:?}", e);
-                    e.into()
-                })?;
+            tracing::error!("Failed to find finance: {:?}", e);
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
+        })?;
             match finance {
                 Some(f) => f.id,
                 None => Uuid::nil(),
@@ -225,7 +225,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         match active.update(&txn).await {
             Ok(_) => "UPDATED",
             Err(sea_orm::DbErr::RecordNotUpdated) => "SKIPPED_UPDATE",
-            Err(e) => return Err(e.into()),
+            Err(e) => return Err(Box::new(e)),
         }
     } else {
         let active = student_activities::ActiveModel {
@@ -249,7 +249,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             ..Default::default()
         };
 
-        active.insert(&txn).await.map_err(|e| e.into())?;
+        active.insert(&txn).await.map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
         "INSERTED"
     };
 

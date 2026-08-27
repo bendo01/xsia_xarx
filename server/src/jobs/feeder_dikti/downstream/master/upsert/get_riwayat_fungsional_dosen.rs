@@ -85,9 +85,7 @@ impl Worker {
             .id_dosen
             .ok_or("id_dosen is required for upsert")?;
 
-        let id_jabatan_fungsional = record.id_jabatan_fungsional.ok_or_else(|| {
-            "id_jabatan_fungsional is required for upsert".into()
-        })?;
+        let id_jabatan_fungsional = record.id_jabatan_fungsional.ok_or("id_jabatan_fungsional is required for upsert")?;
 
         let sync_time = Local::now().naive_local();
 

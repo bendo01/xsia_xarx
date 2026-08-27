@@ -88,7 +88,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find student: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(student) = student else {
@@ -111,7 +111,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find teach: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(teach) = teach else {
@@ -136,7 +136,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find unit activity: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(unit_activity) = unit_activity else {
@@ -155,7 +155,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find student activity: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(student_activity) = student_activity else {
@@ -174,7 +174,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find detail activity: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     // Prepare data for insertion (Need Unit, Institution, Academic Year, Course for name)
@@ -183,35 +183,35 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
     let unit = units::Entity::find_by_id(student.unit_id)
         .one(&txn)
         .await
-        .map_err(|e| e.into())?
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
         .ok_or("Unit not found")?;
 
     // Get Institution
     let institution = institutions::Entity::find_by_id(unit.institution_id)
         .one(&txn)
         .await
-        .map_err(|e| e.into())?
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
         .ok_or("Institution not found")?;
 
     // Get Academic Year
     let academic_year = academic_years::Entity::find_by_id(unit_activity.academic_year_id)
         .one(&txn)
         .await
-        .map_err(|e| e.into())?
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
         .ok_or("Academic Year not found")?;
 
     // Get Course
     let course = courses::Entity::find_by_id(teach.course_id)
         .one(&txn)
         .await
-        .map_err(|e| e.into())?
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?
         .ok_or("Course not found")?;
 
     // Construct Name
     // "DetailAktifitasPerkuliahan" space student.unit.institution.code space student.unit.code space student.code unit_activity.academic_year.feeder_name teach.course.code
     let detail_activity_name = format!(
         "DetailAktifitasPerkuliahan {} {} {} {} {}",
-        institution.code, unit.code, student.code, academic_year.feeder_name.as_deref().unwrap_or(""), course.code
+        institution.code.as_deref().unwrap_or(""), unit.code.as_deref().unwrap_or(""), student.code, academic_year.feeder_name, course.code
     );
 
     if existing_detail.is_none() {
@@ -233,7 +233,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             ..Default::default()
         };
 
-        active.insert(&txn).await.map_err(|e| e.into())?;
+        active.insert(&txn).await.map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
         println!("  ✅ INSERTED Detail Activity for Student {}", student.code);
     } else {
         println!(

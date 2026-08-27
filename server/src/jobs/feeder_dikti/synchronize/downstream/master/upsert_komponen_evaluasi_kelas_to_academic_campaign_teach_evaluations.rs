@@ -71,7 +71,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         Some(v) => v,
         None => {
             println!(
-                "❌ Evaluation Type not found for code: {}",
+                "❌ Evaluation Type not found for code: {:?}",
                 model.id_jenis_evaluasi
             );
             return Ok(());
@@ -88,7 +88,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         Some(v) => v,
         None => {
             println!(
-                "❌ Teach not found for feeder_id: {}",
+                "❌ Teach not found for feeder_id: {:?}",
                 model.id_kelas_kuliah
             );
             return Ok(());
@@ -104,15 +104,15 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
     if let Some(existing) = existing {
         let mut active_model = existing.into_active_model();
 
-        active_model.name = Set(model.nama.clone().unwrap_or_default());
+        active_model.name = Set(model.nama.clone());
         active_model.english_name = Set(model.nama_inggris.clone());
         active_model.thread = Set(model.nomor_urut);
 
-        let weight = model.bobot_evaluasi.parse::<f32>().unwrap_or(0.0);
-        active_model.evaluation_weight = Set(weight);
+        let weight = model.bobot_evaluasi.as_ref().and_then(|s| s.parse::<f32>().ok()).unwrap_or(0.0);
+        active_model.evaluation_weight = Set(Some(weight));
 
-        active_model.teach_id = Set(teach.id);
-        active_model.evaluation_type_id = Set(evaluation_type.id);
+        active_model.teach_id = Set(Some(teach.id));
+        active_model.evaluation_type_id = Set(Some(evaluation_type.id));
         active_model.feeder_id = Set(Some(model.id));
         active_model.sync_at = Set(Some(chrono::Utc::now().naive_utc()));
 
@@ -120,7 +120,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
 
         println!(
             "✅ Updated Teach Evaluation: {}",
-            model.nama.unwrap_or_default()
+            model.nama.as_deref().unwrap_or("")
         );
     } else {
         let mut active_model = ActiveModel {
@@ -128,15 +128,15 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             ..Default::default()
         };
 
-        active_model.name = Set(model.nama.clone().unwrap_or_default());
+        active_model.name = Set(model.nama.clone());
         active_model.english_name = Set(model.nama_inggris.clone());
         active_model.thread = Set(model.nomor_urut);
 
-        let weight = model.bobot_evaluasi.parse::<f32>().unwrap_or(0.0);
-        active_model.evaluation_weight = Set(weight);
+        let weight = model.bobot_evaluasi.as_ref().and_then(|s| s.parse::<f32>().ok()).unwrap_or(0.0);
+        active_model.evaluation_weight = Set(Some(weight));
 
-        active_model.teach_id = Set(teach.id);
-        active_model.evaluation_type_id = Set(evaluation_type.id);
+        active_model.teach_id = Set(Some(teach.id));
+        active_model.evaluation_type_id = Set(Some(evaluation_type.id));
         active_model.feeder_id = Set(Some(model.id));
         active_model.sync_at = Set(Some(chrono::Utc::now().naive_utc()));
 
@@ -144,7 +144,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
 
         println!(
             "✅ Inserted Teach Evaluation: {}",
-            model.nama.unwrap_or_default()
+            model.nama.as_deref().unwrap_or("")
         );
     }
 

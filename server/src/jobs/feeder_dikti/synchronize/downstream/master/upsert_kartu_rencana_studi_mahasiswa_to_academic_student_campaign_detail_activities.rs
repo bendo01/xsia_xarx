@@ -88,7 +88,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find unit: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(unit) = unit else {
@@ -102,7 +102,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find institution: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(institution) = institution else {
@@ -122,7 +122,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find academic year: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(academic_year) = academic_year else {
@@ -141,7 +141,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find unit activity: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(unit_activity) = unit_activity else {
@@ -164,7 +164,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find student: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(student) = student else {
@@ -183,7 +183,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find student activity: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(student_activity) = student_activity else {
@@ -206,7 +206,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find course: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(course) = course else {
@@ -226,7 +226,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find teach: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let Some(teach) = teach else {
@@ -246,12 +246,12 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         .await
         .map_err(|e| {
             tracing::error!("Failed to find detail activity: {:?}", e);
-            e.into()
+            Box::new(e) as Box<dyn std::error::Error + Send + Sync>
         })?;
 
     let detail_activity_name = format!(
         "DetailAktifitasPerkuliahan {} {} {} {} {}",
-        institution.code, unit.code, student.code, academic_year.feeder_name, course.code
+        institution.code.as_deref().unwrap_or(""), unit.code.as_deref().unwrap_or(""), student.code, academic_year.feeder_name, course.code
     );
     let credit = f64::from(model.sks_mata_kuliah.unwrap_or(0.0));
     let curiculum_detail_sequence = 0; // Default or need calculation? Using 0 as per plan (implied default)
@@ -259,38 +259,38 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
     let action = if let Some(existing) = existing_detail {
         let mut active = existing.into_active_model();
         active.name = Set(Some(detail_activity_name.clone()));
-        active.credit = Set(credit); // Model uses f64
-        active.feeder_id = Set(model.id);
+        active.credit = Set(Some(credit)); // Model uses f64
+        active.feeder_id = Set(Some(model.id));
         active.updated_at = Set(Some(chrono::Utc::now().naive_utc()));
-        active.mark = Set(0.0);
-        active.grade_id = Set(Uuid::nil());
-        active.feeder_grade_id = Set(Uuid::nil());
+        active.mark = Set(Some(0.0));
+        active.grade_id = Set(Some(Uuid::nil()));
+        active.feeder_grade_id = Set(Some(Uuid::nil()));
 
         match active.update(&txn).await {
             Ok(_) => "UPDATED",
             Err(sea_orm::DbErr::RecordNotUpdated) => "SKIPPED_UPDATE",
-            Err(e) => return Err(e.into()),
+            Err(e) => return Err(Box::new(e)),
         }
     } else {
         let active = detail_activities::ActiveModel {
             id: Set(Uuid::new_v4()),
             name: Set(Some(detail_activity_name.clone())),
-            feeder_id: Set(model.id),
-            feeder_grade_id: Set(Uuid::nil()),
-            curiculum_detail_sequence: Set(curiculum_detail_sequence),
-            mark: Set(0.0),
-            credit: Set(credit),
-            grade_id: Set(Uuid::nil()),
+            feeder_id: Set(Some(model.id)),
+            feeder_grade_id: Set(Some(Uuid::nil())),
+            curiculum_detail_sequence: Set(Some(curiculum_detail_sequence)),
+            mark: Set(Some(0.0)),
+            credit: Set(Some(credit)),
+            grade_id: Set(Some(Uuid::nil())),
             course_id: Set(course.id),
             activity_id: Set(student_activity.id),
-            teach_id: Set(teach.id),
-            is_lock: Set(false),
+            teach_id: Set(Some(teach.id)),
+            is_lock: Set(Some(false)),
             created_at: Set(Some(chrono::Utc::now().naive_utc())),
             updated_at: Set(Some(chrono::Utc::now().naive_utc())),
             ..Default::default()
         };
 
-        active.insert(&txn).await.map_err(|e| e.into())?;
+        active.insert(&txn).await.map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
         "INSERTED"
     };
 

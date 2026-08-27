@@ -93,9 +93,7 @@ impl Worker {
             .id_dosen
             .ok_or("id_dosen is required for upsert")?;
 
-        let id_jenjang_pendidikan = record.id_jenjang_pendidikan.clone().ok_or_else(|| {
-            "id_jenjang_pendidikan is required for upsert".into()
-        })?;
+        let id_jenjang_pendidikan = record.id_jenjang_pendidikan.clone().ok_or("id_jenjang_pendidikan is required for upsert")?;
 
         let nama_perguruan_tinggi = record.nama_perguruan_tinggi.clone().unwrap_or_default();
         let tahun_lulus = record.tahun_lulus.clone().unwrap_or_default();
