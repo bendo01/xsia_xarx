@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
-    pub id_perguruan_tinggi: Option<Uuid>,
+    pub id_perguruan_tinggi: NullableUuid,
     pub kode_perguruan_tinggi: Option<String>,
     pub nama_perguruan_tinggi: Option<String>,
     pub telepon: Option<String>,
@@ -20,7 +20,7 @@ pub struct Model {
     pub dusun: Option<String>,
     pub kelurahan: Option<String>,
     pub kode_pos: Option<String>,
-    pub id_wilayah: Option<String>,
+    pub id_wilayah: NullableString,
     pub nama_wilayah: Option<String>,
     pub lintang_bujur: Option<String>,
     pub bank: Option<String>,
@@ -30,7 +30,7 @@ pub struct Model {
     pub luas_tanah_milik: Option<String>,
     pub luas_tanah_bukan_milik: Option<String>,
     pub sk_pendirian: Option<String>,
-    pub id_status_milik: Option<String>,
+    pub id_status_milik: NullableString,
     pub nama_status_milik: Option<String>,
     pub status_perguruan_tinggi: Option<String>,
     pub sk_izin_operasional: Option<String>,

@@ -12,19 +12,19 @@ use serde::{Deserialize, Serialize};
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
-    pub id_transfer: Option<Uuid>,
-    pub id_registrasi_mahasiswa: Option<Uuid>,
+    pub id_transfer: NullableUuid,
+    pub id_registrasi_mahasiswa: NullableUuid,
     pub nim: Option<String>,
     pub nama_mahasiswa: Option<String>,
-    pub id_prodi: Option<Uuid>,
+    pub id_prodi: NullableUuid,
     pub nama_program_studi: Option<String>,
-    pub id_periode_masuk: Option<String>,
+    pub id_periode_masuk: NullableString,
     pub kode_mata_kuliah_asal: Option<String>,
     pub nama_mata_kuliah_asal: Option<String>,
     #[sea_orm(column_type = "Float", nullable)]
     pub sks_mata_kuliah_asal: Option<f32>,
     pub nilai_huruf_asal: Option<String>,
-    pub id_matkul: Option<Uuid>,
+    pub id_matkul: NullableUuid,
     pub kode_matkul_diakui: Option<String>,
     pub nama_mata_kuliah_diakui: Option<String>,
     #[sea_orm(column_type = "Float", nullable)]
@@ -32,13 +32,13 @@ pub struct Model {
     pub nilai_huruf_diakui: Option<String>,
     #[sea_orm(column_type = "Float", nullable)]
     pub nilai_angka_diakui: Option<f32>,
-    pub id_perguruan_tinggi: Option<Uuid>,
-    pub id_aktivitas: Option<String>,
+    pub id_perguruan_tinggi: NullableUuid,
+    pub id_aktivitas: NullableString,
     #[sea_orm(column_type = "Text", nullable)]
     pub judul: Option<String>,
-    pub id_jenis_aktivitas: Option<String>,
+    pub id_jenis_aktivitas: NullableString,
     pub nama_jenis_aktivitas: Option<String>,
-    pub id_semester: Option<String>,
+    pub id_semester: NullableString,
     pub nama_semester: Option<String>,
     pub status_sync: Option<String>,
     pub created_at: Option<DateTime>,

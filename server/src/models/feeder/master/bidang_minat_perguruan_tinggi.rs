@@ -12,9 +12,9 @@ use serde::{Deserialize, Serialize};
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
-    pub id_bidang_minat: Option<Uuid>,
+    pub id_bidang_minat: NullableUuid,
     pub nm_bidang_minat: Option<String>,
-    pub id_prodi: Option<Uuid>,
+    pub id_prodi: NullableUuid,
     pub nama_program_studi: Option<String>,
     pub smt_dimulai: Option<i32>,
     pub sk_bidang_minat: Option<i32>,

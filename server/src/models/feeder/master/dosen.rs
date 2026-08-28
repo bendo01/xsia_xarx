@@ -9,15 +9,15 @@ use serde::{Deserialize, Serialize};
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
-    pub id_dosen: Option<Uuid>,
+    pub id_dosen: NullableUuid,
     pub nama_dosen: Option<String>,
     pub nidn: Option<String>,
     pub nip: Option<String>,
     pub jenis_kelamin: Option<String>,
-    pub id_agama: Option<i32>,
+    pub id_agama: NullableI32,
     pub nama_agama: Option<String>,
     pub tanggal_lahir: Option<Date>,
-    pub id_status_aktif: Option<String>,
+    pub id_status_aktif: NullableString,
     pub nama_status_aktif: Option<String>,
     pub created_at: Option<DateTime>,
     pub updated_at: Option<DateTime>,

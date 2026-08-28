@@ -10,14 +10,14 @@ pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
     pub tgl_create: Option<Date>,
-    pub id_kurikulum: Option<Uuid>,
+    pub id_kurikulum: NullableUuid,
     pub nama_kurikulum: Option<String>,
-    pub id_matkul: Option<Uuid>,
+    pub id_matkul: NullableUuid,
     pub kode_mata_kuliah: Option<String>,
     pub nama_mata_kuliah: Option<String>,
-    pub id_prodi: Option<Uuid>,
+    pub id_prodi: NullableUuid,
     pub nama_program_studi: Option<String>,
-    pub id_semester: Option<String>,
+    pub id_semester: NullableString,
     pub semester_mulai_berlaku: Option<String>,
     #[sea_orm(column_type = "Float", nullable)]
     pub sks_mata_kuliah: Option<f32>,

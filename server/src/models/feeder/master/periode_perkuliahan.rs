@@ -16,10 +16,10 @@ pub struct Model {
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
     #[sea_orm(unique_key = "feeder_master_periode_perkuliahan_unique_prodi_semester")]
-    pub id_prodi: Option<Uuid>,
+    pub id_prodi: NullableUuid,
     pub nama_program_studi: Option<String>,
     #[sea_orm(unique_key = "feeder_master_periode_perkuliahan_unique_prodi_semester")]
-    pub id_semester: Option<String>,
+    pub id_semester: NullableString,
     pub nama_semester: Option<String>,
     pub jumlah_target_mahasiswa_baru: Option<i32>,
     pub jumlah_pendaftar_ikut_seleksi: Option<i32>,

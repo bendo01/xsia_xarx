@@ -2,6 +2,12 @@
 
 use sea_orm::entity::prelude::*;
 
+pub type NullableUuid = Option<Uuid>;
+pub type NullableString = Option<String>;
+pub type NullableI32 = Option<i32>;
+pub type NullableF32 = Option<f32>;
+pub type NullableDateTime = Option<DateTime>;
+
 #[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(schema_name = "feeder_referensi", table_name = "status_kepegawaian")]
@@ -15,7 +21,7 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
-    pub id_status_pegawai: Option<i32>,
+    pub id_status_pegawai: NullableI32,
 }
 
 

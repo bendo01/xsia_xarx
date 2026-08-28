@@ -15,12 +15,12 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
-    pub id_matkul: Option<Uuid>,
+    pub id_matkul: NullableUuid,
     #[sea_orm(column_type = "Text", nullable)]
     pub kode_mata_kuliah: Option<String>,
     #[sea_orm(column_type = "Text", nullable)]
     pub nama_mata_kuliah: Option<String>,
-    pub id_kelas_kuliah: Option<Uuid>,
+    pub id_kelas_kuliah: NullableUuid,
     #[sea_orm(column_type = "Text", nullable)]
     pub nama_kelas_kuliah: Option<String>,
     #[sea_orm(column_type = "Float", nullable)]
@@ -42,11 +42,11 @@ pub struct Model {
     pub kuota_pditt: Option<i32>,
     pub tgl_mulai_koas: Option<Date>,
     pub tgl_selesai_koas: Option<Date>,
-    pub id_mou: Option<Uuid>,
-    pub id_kls_pditt: Option<Uuid>,
-    pub id_sms: Option<Uuid>,
+    pub id_mou: NullableUuid,
+    pub id_kls_pditt: NullableUuid,
+    pub id_sms: NullableUuid,
     #[sea_orm(column_type = "Text", nullable)]
-    pub id_smt: Option<String>,
+    pub id_smt: NullableString,
     pub tgl_create: Option<Date>,
     pub lingkup_kelas: Option<i32>,
     #[sea_orm(column_type = "Text", nullable)]

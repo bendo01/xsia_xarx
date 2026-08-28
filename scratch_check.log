@@ -1,1 +1,3337 @@
-    Blocking waiting for file lock on build directory
+    Checking xsia_xarx v0.1.0 (/home/bendo01/Projects/xsia_xarx/server)
+error[E0428]: the name `Mahasiswa` is defined multiple times
+ --> src/models/feeder/master/aktifitas_kuliah_mahasiswa.rs:8:1
+  |
+8 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Mahasiswa` redefined here
+  |
+  = note: `Mahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Semester` is defined multiple times
+ --> src/models/feeder/master/aktifitas_kuliah_mahasiswa.rs:8:1
+  |
+8 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Semester` redefined here
+  |
+  = note: `Semester` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/aktifitas_kuliah_mahasiswa.rs:8:1
+  |
+8 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `StatusMahasiswa` is defined multiple times
+ --> src/models/feeder/master/aktifitas_kuliah_mahasiswa.rs:8:1
+  |
+8 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `StatusMahasiswa` redefined here
+  |
+  = note: `StatusMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/aktifitas_kuliah_mahasiswa.rs:49:34
+   |
+49 |     #[sea_orm(belongs_to, from = "id_semester", to = "id")]
+   |                                  ^^^^^^^^^^^^^
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/aktifitas_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Semester` is defined multiple times
+ --> src/models/feeder/master/aktifitas_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Semester` redefined here
+  |
+  = note: `Semester` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/aktifitas_mahasiswa.rs:38:34
+   |
+38 |     #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `Dosen` is defined multiple times
+ --> src/models/feeder/master/aktifitas_mengajar_dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Dosen` redefined here
+  |
+  = note: `Dosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/aktifitas_mengajar_dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/aktifitas_mengajar_dosen.rs:32:34
+   |
+32 |     #[sea_orm(belongs_to, from = "id_dosen", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/bidang_minat_perguruan_tinggi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/bidang_minat_perguruan_tinggi.rs:29:34
+   |
+29 |     #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `KategoriKegiatan` is defined multiple times
+ --> src/models/feeder/master/bimbing_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `KategoriKegiatan` redefined here
+  |
+  = note: `KategoriKegiatan` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Dosen` is defined multiple times
+ --> src/models/feeder/master/bimbing_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Dosen` redefined here
+  |
+  = note: `Dosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `MahasiswaBimbinganDosen` is defined multiple times
+ --> src/models/feeder/master/bimbing_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `MahasiswaBimbinganDosen` redefined here
+  |
+  = note: `MahasiswaBimbinganDosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/bimbing_mahasiswa.rs:28:34
+   |
+28 |     #[sea_orm(belongs_to, from = "id_kategori_kegiatan", to = "id")]
+   |                                  ^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0428]: the name `Dosen` is defined multiple times
+ --> src/models/feeder/master/biodata_dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Dosen` redefined here
+  |
+  = note: `Dosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Agama` is defined multiple times
+ --> src/models/feeder/master/biodata_dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Agama` redefined here
+  |
+  = note: `Agama` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PangkatGolongan` is defined multiple times
+ --> src/models/feeder/master/biodata_dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PangkatGolongan` redefined here
+  |
+  = note: `PangkatGolongan` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Wilayah` is defined multiple times
+ --> src/models/feeder/master/biodata_dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Wilayah` redefined here
+  |
+  = note: `Wilayah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/biodata_dosen.rs:62:34
+   |
+62 |     #[sea_orm(belongs_to, from = "id_dosen", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `Mahasiswa` is defined multiple times
+ --> src/models/feeder/master/biodata_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Mahasiswa` redefined here
+  |
+  = note: `Mahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Agama` is defined multiple times
+ --> src/models/feeder/master/biodata_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Agama` redefined here
+  |
+  = note: `Agama` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Negara` is defined multiple times
+ --> src/models/feeder/master/biodata_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Negara` redefined here
+  |
+  = note: `Negara` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Wilayah` is defined multiple times
+ --> src/models/feeder/master/biodata_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Wilayah` redefined here
+  |
+  = note: `Wilayah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `JenisTinggal` is defined multiple times
+ --> src/models/feeder/master/biodata_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `JenisTinggal` redefined here
+  |
+  = note: `JenisTinggal` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `AlatTransportasi` is defined multiple times
+ --> src/models/feeder/master/biodata_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `AlatTransportasi` redefined here
+  |
+  = note: `AlatTransportasi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/biodata_mahasiswa.rs:81:34
+   |
+81 |     #[sea_orm(belongs_to, from = "id_mahasiswa", to = "id")]
+   |                                  ^^^^^^^^^^^^^^
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/detail_nilai_perkuliahan_kelas.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Semester` is defined multiple times
+ --> src/models/feeder/master/detail_nilai_perkuliahan_kelas.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Semester` redefined here
+  |
+  = note: `Semester` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `KelasKuliah` is defined multiple times
+ --> src/models/feeder/master/detail_nilai_perkuliahan_kelas.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `KelasKuliah` redefined here
+  |
+  = note: `KelasKuliah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Mahasiswa` is defined multiple times
+ --> src/models/feeder/master/detail_nilai_perkuliahan_kelas.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Mahasiswa` redefined here
+  |
+  = note: `Mahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/detail_nilai_perkuliahan_kelas.rs:44:34
+   |
+44 |     #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `AktifitasMengajarDosen` is defined multiple times
+ --> src/models/feeder/master/dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `AktifitasMengajarDosen` redefined here
+  |
+  = note: `AktifitasMengajarDosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `BimbingMahasiswa` is defined multiple times
+ --> src/models/feeder/master/dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `BimbingMahasiswa` redefined here
+  |
+  = note: `BimbingMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `BiodataDosen` is defined multiple times
+ --> src/models/feeder/master/dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `BiodataDosen` redefined here
+  |
+  = note: `BiodataDosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Agama` is defined multiple times
+ --> src/models/feeder/master/dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Agama` redefined here
+  |
+  = note: `Agama` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `DosenPembimbing` is defined multiple times
+ --> src/models/feeder/master/dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `DosenPembimbing` redefined here
+  |
+  = note: `DosenPembimbing` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `DosenPengajarKelasKuliah` is defined multiple times
+ --> src/models/feeder/master/dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `DosenPengajarKelasKuliah` redefined here
+  |
+  = note: `DosenPengajarKelasKuliah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `KelasKuliah` is defined multiple times
+ --> src/models/feeder/master/dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `KelasKuliah` redefined here
+  |
+  = note: `KelasKuliah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `MahasiswaBimbinganDosen` is defined multiple times
+ --> src/models/feeder/master/dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `MahasiswaBimbinganDosen` redefined here
+  |
+  = note: `MahasiswaBimbinganDosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `MahasiswaLulusanDropout` is defined multiple times
+ --> src/models/feeder/master/dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `MahasiswaLulusanDropout` redefined here
+  |
+  = note: `MahasiswaLulusanDropout` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PenugasanDosen` is defined multiple times
+ --> src/models/feeder/master/dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PenugasanDosen` redefined here
+  |
+  = note: `PenugasanDosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `RiwayatFungsionalDosen` is defined multiple times
+ --> src/models/feeder/master/dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `RiwayatFungsionalDosen` redefined here
+  |
+  = note: `RiwayatFungsionalDosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `RiwayatPangkatDosen` is defined multiple times
+ --> src/models/feeder/master/dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `RiwayatPangkatDosen` redefined here
+  |
+  = note: `RiwayatPangkatDosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `RiwayatPendidikanDosen` is defined multiple times
+ --> src/models/feeder/master/dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `RiwayatPendidikanDosen` redefined here
+  |
+  = note: `RiwayatPendidikanDosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `RiwayatPenelitianDosen` is defined multiple times
+ --> src/models/feeder/master/dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `RiwayatPenelitianDosen` redefined here
+  |
+  = note: `RiwayatPenelitianDosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `RiwayatSertifikasiDosen` is defined multiple times
+ --> src/models/feeder/master/dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `RiwayatSertifikasiDosen` redefined here
+  |
+  = note: `RiwayatSertifikasiDosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `UjiMahasiswa` is defined multiple times
+ --> src/models/feeder/master/dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `UjiMahasiswa` redefined here
+  |
+  = note: `UjiMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/dosen.rs:39:34
+   |
+39 |     #[sea_orm(belongs_to, from = "id_agama", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `Dosen` is defined multiple times
+ --> src/models/feeder/master/dosen_pembimbing.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Dosen` redefined here
+  |
+  = note: `Dosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/dosen_pembimbing.rs:27:34
+   |
+27 |     #[sea_orm(belongs_to, from = "id_dosen", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `Dosen` is defined multiple times
+ --> src/models/feeder/master/dosen_pengajar_kelas_kuliah.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Dosen` redefined here
+  |
+  = note: `Dosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `KelasKuliah` is defined multiple times
+ --> src/models/feeder/master/dosen_pengajar_kelas_kuliah.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `KelasKuliah` redefined here
+  |
+  = note: `KelasKuliah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `JenisEvaluasi` is defined multiple times
+ --> src/models/feeder/master/dosen_pengajar_kelas_kuliah.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `JenisEvaluasi` redefined here
+  |
+  = note: `JenisEvaluasi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/dosen_pengajar_kelas_kuliah.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Semester` is defined multiple times
+ --> src/models/feeder/master/dosen_pengajar_kelas_kuliah.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Semester` redefined here
+  |
+  = note: `Semester` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/dosen_pengajar_kelas_kuliah.rs:39:34
+   |
+39 |     #[sea_orm(belongs_to, from = "id_dosen", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `JenjangPendidikan` is defined multiple times
+ --> src/models/feeder/master/fakultas.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `JenjangPendidikan` redefined here
+  |
+  = note: `JenjangPendidikan` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/fakultas.rs:24:34
+   |
+24 |     #[sea_orm(belongs_to, from = "id_jenjang_pendidikan", to = "id")]
+   |                                  ^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/hitung_transkrip_angkatan_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/hitung_transkrip_angkatan_mahasiswa.rs:24:34
+   |
+24 |     #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/kartu_rencana_studi_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/kartu_rencana_studi_mahasiswa.rs:36:34
+   |
+36 |     #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `DetailNilaiPerkuliahanKelas` is defined multiple times
+ --> src/models/feeder/master/kelas_kuliah.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `DetailNilaiPerkuliahanKelas` redefined here
+  |
+  = note: `DetailNilaiPerkuliahanKelas` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `DosenPengajarKelasKuliah` is defined multiple times
+ --> src/models/feeder/master/kelas_kuliah.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `DosenPengajarKelasKuliah` redefined here
+  |
+  = note: `DosenPengajarKelasKuliah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/kelas_kuliah.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Semester` is defined multiple times
+ --> src/models/feeder/master/kelas_kuliah.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Semester` redefined here
+  |
+  = note: `Semester` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Dosen` is defined multiple times
+ --> src/models/feeder/master/kelas_kuliah.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Dosen` redefined here
+  |
+  = note: `Dosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `KomponenEvaluasiKelas` is defined multiple times
+ --> src/models/feeder/master/kelas_kuliah.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `KomponenEvaluasiKelas` redefined here
+  |
+  = note: `KomponenEvaluasiKelas` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `NilaiPerkuliahanKelas` is defined multiple times
+ --> src/models/feeder/master/kelas_kuliah.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `NilaiPerkuliahanKelas` redefined here
+  |
+  = note: `NilaiPerkuliahanKelas` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PesertaKelasKuliah` is defined multiple times
+ --> src/models/feeder/master/kelas_kuliah.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PesertaKelasKuliah` redefined here
+  |
+  = note: `PesertaKelasKuliah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `TranskripMahasiswa` is defined multiple times
+ --> src/models/feeder/master/kelas_kuliah.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `TranskripMahasiswa` redefined here
+  |
+  = note: `TranskripMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/kelas_kuliah.rs:59:34
+   |
+59 |     #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `KelasKuliah` is defined multiple times
+ --> src/models/feeder/master/komponen_evaluasi_kelas.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `KelasKuliah` redefined here
+  |
+  = note: `KelasKuliah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `JenisEvaluasi` is defined multiple times
+ --> src/models/feeder/master/komponen_evaluasi_kelas.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `JenisEvaluasi` redefined here
+  |
+  = note: `JenisEvaluasi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/komponen_evaluasi_kelas.rs:28:34
+   |
+28 |     #[sea_orm(belongs_to, from = "id_kelas_kuliah", to = "id")]
+   |                                  ^^^^^^^^^^^^^^^^^
+
+error[E0428]: the name `Semester` is defined multiple times
+ --> src/models/feeder/master/konversi_kampus_merdeka.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Semester` redefined here
+  |
+  = note: `Semester` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/konversi_kampus_merdeka.rs:36:34
+   |
+36 |     #[sea_orm(belongs_to, from = "id_semester", to = "id")]
+   |                                  ^^^^^^^^^^^^^
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/kurikulum.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Semester` is defined multiple times
+ --> src/models/feeder/master/kurikulum.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Semester` redefined here
+  |
+  = note: `Semester` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `MatakuliahKurikulum` is defined multiple times
+ --> src/models/feeder/master/kurikulum.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `MatakuliahKurikulum` redefined here
+  |
+  = note: `MatakuliahKurikulum` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/kurikulum.rs:38:34
+   |
+38 |     #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `BiodataMahasiswa` is defined multiple times
+ --> src/models/feeder/master/mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `BiodataMahasiswa` redefined here
+  |
+  = note: `BiodataMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `DetailNilaiPerkuliahanKelas` is defined multiple times
+ --> src/models/feeder/master/mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `DetailNilaiPerkuliahanKelas` redefined here
+  |
+  = note: `DetailNilaiPerkuliahanKelas` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PerguruanTinggi` is defined multiple times
+ --> src/models/feeder/master/mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PerguruanTinggi` redefined here
+  |
+  = note: `PerguruanTinggi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Agama` is defined multiple times
+ --> src/models/feeder/master/mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Agama` redefined here
+  |
+  = note: `Agama` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `StatusMahasiswa` is defined multiple times
+ --> src/models/feeder/master/mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `StatusMahasiswa` redefined here
+  |
+  = note: `StatusMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `MahasiswaLulusanDropout` is defined multiple times
+ --> src/models/feeder/master/mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `MahasiswaLulusanDropout` redefined here
+  |
+  = note: `MahasiswaLulusanDropout` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PesertaKelasKuliah` is defined multiple times
+ --> src/models/feeder/master/mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PesertaKelasKuliah` redefined here
+  |
+  = note: `PesertaKelasKuliah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PrestasiMahasiswa` is defined multiple times
+ --> src/models/feeder/master/mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PrestasiMahasiswa` redefined here
+  |
+  = note: `PrestasiMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `RiwayatPendidikanMahasiswa` is defined multiple times
+ --> src/models/feeder/master/mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `RiwayatPendidikanMahasiswa` redefined here
+  |
+  = note: `RiwayatPendidikanMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `AktifitasKuliahMahasiswa` is defined multiple times
+ --> src/models/feeder/master/mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `AktifitasKuliahMahasiswa` redefined here
+  |
+  = note: `AktifitasKuliahMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/mahasiswa.rs:54:34
+   |
+54 |     #[sea_orm(belongs_to, from = "id_perguruan_tinggi", to = "id")]
+   |                                  ^^^^^^^^^^^^^^^^^^^^^
+
+error[E0428]: the name `BimbingMahasiswa` is defined multiple times
+ --> src/models/feeder/master/mahasiswa_bimbingan_dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `BimbingMahasiswa` redefined here
+  |
+  = note: `BimbingMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `KategoriKegiatan` is defined multiple times
+ --> src/models/feeder/master/mahasiswa_bimbingan_dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `KategoriKegiatan` redefined here
+  |
+  = note: `KategoriKegiatan` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Dosen` is defined multiple times
+ --> src/models/feeder/master/mahasiswa_bimbingan_dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Dosen` redefined here
+  |
+  = note: `Dosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/mahasiswa_bimbingan_dosen.rs:31:34
+   |
+31 |     #[sea_orm(belongs_to, from = "id_bimbing_mahasiswa", to = "id")]
+   |                                  ^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0428]: the name `Mahasiswa` is defined multiple times
+ --> src/models/feeder/master/mahasiswa_lulusan_dropout.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Mahasiswa` redefined here
+  |
+  = note: `Mahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PerguruanTinggi` is defined multiple times
+ --> src/models/feeder/master/mahasiswa_lulusan_dropout.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PerguruanTinggi` redefined here
+  |
+  = note: `PerguruanTinggi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/mahasiswa_lulusan_dropout.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `JenisKeluar` is defined multiple times
+ --> src/models/feeder/master/mahasiswa_lulusan_dropout.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `JenisKeluar` redefined here
+  |
+  = note: `JenisKeluar` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Dosen` is defined multiple times
+ --> src/models/feeder/master/mahasiswa_lulusan_dropout.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Dosen` redefined here
+  |
+  = note: `Dosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `JalurMasuk` is defined multiple times
+ --> src/models/feeder/master/mahasiswa_lulusan_dropout.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `JalurMasuk` redefined here
+  |
+  = note: `JalurMasuk` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Pembiayaan` is defined multiple times
+ --> src/models/feeder/master/mahasiswa_lulusan_dropout.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Pembiayaan` redefined here
+  |
+  = note: `Pembiayaan` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/mahasiswa_lulusan_dropout.rs:77:34
+   |
+77 |     #[sea_orm(belongs_to, from = "id_mahasiswa", to = "id")]
+   |                                  ^^^^^^^^^^^^^^
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/matakuliah.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/matakuliah.rs:49:34
+   |
+49 |     #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `Kurikulum` is defined multiple times
+ --> src/models/feeder/master/matakuliah_kurikulum.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Kurikulum` redefined here
+  |
+  = note: `Kurikulum` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/matakuliah_kurikulum.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/matakuliah_kurikulum.rs:42:34
+   |
+42 |     #[sea_orm(belongs_to, from = "id_kurikulum", to = "id")]
+   |                                  ^^^^^^^^^^^^^^
+
+error[E0428]: the name `KelasKuliah` is defined multiple times
+ --> src/models/feeder/master/nilai_perkuliahan_kelas.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `KelasKuliah` redefined here
+  |
+  = note: `KelasKuliah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/nilai_perkuliahan_kelas.rs:61:34
+   |
+61 |     #[sea_orm(belongs_to, from = "id_kelas_kuliah", to = "id")]
+   |                                  ^^^^^^^^^^^^^^^^^
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/nilai_transfer_pendidikan_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PerguruanTinggi` is defined multiple times
+ --> src/models/feeder/master/nilai_transfer_pendidikan_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PerguruanTinggi` redefined here
+  |
+  = note: `PerguruanTinggi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Semester` is defined multiple times
+ --> src/models/feeder/master/nilai_transfer_pendidikan_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Semester` redefined here
+  |
+  = note: `Semester` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/nilai_transfer_pendidikan_mahasiswa.rs:51:34
+   |
+51 |     #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `Dosen` is defined multiple times
+ --> src/models/feeder/master/penugasan_dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Dosen` redefined here
+  |
+  = note: `Dosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `TahunAjaran` is defined multiple times
+ --> src/models/feeder/master/penugasan_dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `TahunAjaran` redefined here
+  |
+  = note: `TahunAjaran` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PerguruanTinggi` is defined multiple times
+ --> src/models/feeder/master/penugasan_dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PerguruanTinggi` redefined here
+  |
+  = note: `PerguruanTinggi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/penugasan_dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/penugasan_dosen.rs:40:34
+   |
+40 |     #[sea_orm(belongs_to, from = "id_dosen", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `Mahasiswa` is defined multiple times
+ --> src/models/feeder/master/perguruan_tinggi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Mahasiswa` redefined here
+  |
+  = note: `Mahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `MahasiswaLulusanDropout` is defined multiple times
+ --> src/models/feeder/master/perguruan_tinggi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `MahasiswaLulusanDropout` redefined here
+  |
+  = note: `MahasiswaLulusanDropout` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `NilaiTransferPendidikanMahasiswa` is defined multiple times
+ --> src/models/feeder/master/perguruan_tinggi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `NilaiTransferPendidikanMahasiswa` redefined here
+  |
+  = note: `NilaiTransferPendidikanMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PenugasanDosen` is defined multiple times
+ --> src/models/feeder/master/perguruan_tinggi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PenugasanDosen` redefined here
+  |
+  = note: `PenugasanDosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `ProfilPerguruanTinggi` is defined multiple times
+ --> src/models/feeder/master/perguruan_tinggi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProfilPerguruanTinggi` redefined here
+  |
+  = note: `ProfilPerguruanTinggi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/perguruan_tinggi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `RiwayatPendidikanDosen` is defined multiple times
+ --> src/models/feeder/master/perguruan_tinggi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `RiwayatPendidikanDosen` redefined here
+  |
+  = note: `RiwayatPendidikanDosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `RiwayatPendidikanMahasiswa` is defined multiple times
+ --> src/models/feeder/master/perguruan_tinggi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `RiwayatPendidikanMahasiswa` redefined here
+  |
+  = note: `RiwayatPendidikanMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/periode_aktif.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/periode_aktif.rs:26:34
+   |
+26 |     #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/periode_perkuliahan.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Semester` is defined multiple times
+ --> src/models/feeder/master/periode_perkuliahan.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Semester` redefined here
+  |
+  = note: `Semester` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/periode_perkuliahan.rs:38:34
+   |
+38 |     #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/perkuliahan_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Semester` is defined multiple times
+ --> src/models/feeder/master/perkuliahan_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Semester` redefined here
+  |
+  = note: `Semester` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `StatusMahasiswa` is defined multiple times
+ --> src/models/feeder/master/perkuliahan_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `StatusMahasiswa` redefined here
+  |
+  = note: `StatusMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Pembiayaan` is defined multiple times
+ --> src/models/feeder/master/perkuliahan_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Pembiayaan` redefined here
+  |
+  = note: `Pembiayaan` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/perkuliahan_mahasiswa.rs:42:34
+   |
+42 |     #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `KelasKuliah` is defined multiple times
+ --> src/models/feeder/master/peserta_kelas_kuliah.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `KelasKuliah` redefined here
+  |
+  = note: `KelasKuliah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Mahasiswa` is defined multiple times
+ --> src/models/feeder/master/peserta_kelas_kuliah.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Mahasiswa` redefined here
+  |
+  = note: `Mahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/peserta_kelas_kuliah.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/peserta_kelas_kuliah.rs:32:34
+   |
+32 |     #[sea_orm(belongs_to, from = "id_kelas_kuliah", to = "id")]
+   |                                  ^^^^^^^^^^^^^^^^^
+
+error[E0428]: the name `Mahasiswa` is defined multiple times
+ --> src/models/feeder/master/prestasi_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Mahasiswa` redefined here
+  |
+  = note: `Mahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `JenisPrestasi` is defined multiple times
+ --> src/models/feeder/master/prestasi_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `JenisPrestasi` redefined here
+  |
+  = note: `JenisPrestasi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `TingkatPrestasi` is defined multiple times
+ --> src/models/feeder/master/prestasi_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `TingkatPrestasi` redefined here
+  |
+  = note: `TingkatPrestasi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/prestasi_mahasiswa.rs:31:34
+   |
+31 |     #[sea_orm(belongs_to, from = "id_mahasiswa", to = "id")]
+   |                                  ^^^^^^^^^^^^^^
+
+error[E0428]: the name `PerguruanTinggi` is defined multiple times
+ --> src/models/feeder/master/profil_perguruan_tinggi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PerguruanTinggi` redefined here
+  |
+  = note: `PerguruanTinggi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Wilayah` is defined multiple times
+ --> src/models/feeder/master/profil_perguruan_tinggi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Wilayah` redefined here
+  |
+  = note: `Wilayah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/profil_perguruan_tinggi.rs:48:34
+   |
+48 |     #[sea_orm(belongs_to, from = "id_perguruan_tinggi", to = "id")]
+   |                                  ^^^^^^^^^^^^^^^^^^^^^
+
+error[E0428]: the name `AktifitasMahasiswa` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `AktifitasMahasiswa` redefined here
+  |
+  = note: `AktifitasMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `AktifitasMengajarDosen` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `AktifitasMengajarDosen` redefined here
+  |
+  = note: `AktifitasMengajarDosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `BidangMinatPerguruanTinggi` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `BidangMinatPerguruanTinggi` redefined here
+  |
+  = note: `BidangMinatPerguruanTinggi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `DetailNilaiPerkuliahanKelas` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `DetailNilaiPerkuliahanKelas` redefined here
+  |
+  = note: `DetailNilaiPerkuliahanKelas` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `DosenPengajarKelasKuliah` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `DosenPengajarKelasKuliah` redefined here
+  |
+  = note: `DosenPengajarKelasKuliah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `HitungTranskripAngkatanMahasiswa` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `HitungTranskripAngkatanMahasiswa` redefined here
+  |
+  = note: `HitungTranskripAngkatanMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `KartuRencanaStudiMahasiswa` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `KartuRencanaStudiMahasiswa` redefined here
+  |
+  = note: `KartuRencanaStudiMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `KelasKuliah` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `KelasKuliah` redefined here
+  |
+  = note: `KelasKuliah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Kurikulum` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Kurikulum` redefined here
+  |
+  = note: `Kurikulum` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Mahasiswa` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Mahasiswa` redefined here
+  |
+  = note: `Mahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `MahasiswaLulusanDropout` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `MahasiswaLulusanDropout` redefined here
+  |
+  = note: `MahasiswaLulusanDropout` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Matakuliah` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Matakuliah` redefined here
+  |
+  = note: `Matakuliah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `MatakuliahKurikulum` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `MatakuliahKurikulum` redefined here
+  |
+  = note: `MatakuliahKurikulum` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `NilaiTransferPendidikanMahasiswa` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `NilaiTransferPendidikanMahasiswa` redefined here
+  |
+  = note: `NilaiTransferPendidikanMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PenugasanDosen` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PenugasanDosen` redefined here
+  |
+  = note: `PenugasanDosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PeriodeAktif` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PeriodeAktif` redefined here
+  |
+  = note: `PeriodeAktif` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PeriodePerkuliahan` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PeriodePerkuliahan` redefined here
+  |
+  = note: `PeriodePerkuliahan` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PerkuliahanMahasiswa` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PerkuliahanMahasiswa` redefined here
+  |
+  = note: `PerkuliahanMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PesertaKelasKuliah` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PesertaKelasKuliah` redefined here
+  |
+  = note: `PesertaKelasKuliah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PerguruanTinggi` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PerguruanTinggi` redefined here
+  |
+  = note: `PerguruanTinggi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `JenjangPendidikan` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `JenjangPendidikan` redefined here
+  |
+  = note: `JenjangPendidikan` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `RencanaEvaluasi` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `RencanaEvaluasi` redefined here
+  |
+  = note: `RencanaEvaluasi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `RencanaPembelajaran` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `RencanaPembelajaran` redefined here
+  |
+  = note: `RencanaPembelajaran` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `RiwayatNilaiMahasiswa` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `RiwayatNilaiMahasiswa` redefined here
+  |
+  = note: `RiwayatNilaiMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `RiwayatPendidikanMahasiswa` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `RiwayatPendidikanMahasiswa` redefined here
+  |
+  = note: `RiwayatPendidikanMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `SkalaNilaiProgramStudi` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `SkalaNilaiProgramStudi` redefined here
+  |
+  = note: `SkalaNilaiProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `SubstansiMatakuliah` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `SubstansiMatakuliah` redefined here
+  |
+  = note: `SubstansiMatakuliah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `AktifitasKuliahMahasiswa` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `AktifitasKuliahMahasiswa` redefined here
+  |
+  = note: `AktifitasKuliahMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PeriodeLampau` is defined multiple times
+ --> src/models/feeder/master/program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PeriodeLampau` redefined here
+  |
+  = note: `PeriodeLampau` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/program_studi.rs:88:34
+   |
+88 |     #[sea_orm(belongs_to, from = "id_perguruan_tinggi", to = "id")]
+   |                                  ^^^^^^^^^^^^^^^^^^^^^
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/rencana_evaluasi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/rencana_evaluasi.rs:36:34
+   |
+36 |     #[sea_orm(belongs_to, from = "id_jenis_evaluasi", to = "id")]
+   |                                  ^^^^^^^^^^^^^^^^^^^
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/rencana_pembelajaran.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/rencana_pembelajaran.rs:33:34
+   |
+33 |     #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `Dosen` is defined multiple times
+ --> src/models/feeder/master/riwayat_fungsional_dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Dosen` redefined here
+  |
+  = note: `Dosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `JabatanFungsional` is defined multiple times
+ --> src/models/feeder/master/riwayat_fungsional_dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `JabatanFungsional` redefined here
+  |
+  = note: `JabatanFungsional` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/riwayat_fungsional_dosen.rs:27:34
+   |
+27 |     #[sea_orm(belongs_to, from = "id_dosen", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/riwayat_nilai_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/riwayat_nilai_mahasiswa.rs:38:34
+   |
+38 |     #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `Dosen` is defined multiple times
+ --> src/models/feeder/master/riwayat_pangkat_dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Dosen` redefined here
+  |
+  = note: `Dosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PangkatGolongan` is defined multiple times
+ --> src/models/feeder/master/riwayat_pangkat_dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PangkatGolongan` redefined here
+  |
+  = note: `PangkatGolongan` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/riwayat_pangkat_dosen.rs:30:34
+   |
+30 |     #[sea_orm(belongs_to, from = "id_dosen", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `Dosen` is defined multiple times
+ --> src/models/feeder/master/riwayat_pendidikan_dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Dosen` redefined here
+  |
+  = note: `Dosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `JenjangPendidikan` is defined multiple times
+ --> src/models/feeder/master/riwayat_pendidikan_dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `JenjangPendidikan` redefined here
+  |
+  = note: `JenjangPendidikan` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PerguruanTinggi` is defined multiple times
+ --> src/models/feeder/master/riwayat_pendidikan_dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PerguruanTinggi` redefined here
+  |
+  = note: `PerguruanTinggi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/riwayat_pendidikan_dosen.rs:37:34
+   |
+37 |     #[sea_orm(belongs_to, from = "id_dosen", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `Mahasiswa` is defined multiple times
+ --> src/models/feeder/master/riwayat_pendidikan_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Mahasiswa` redefined here
+  |
+  = note: `Mahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `JenisKeluar` is defined multiple times
+ --> src/models/feeder/master/riwayat_pendidikan_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `JenisKeluar` redefined here
+  |
+  = note: `JenisKeluar` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PerguruanTinggi` is defined multiple times
+ --> src/models/feeder/master/riwayat_pendidikan_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PerguruanTinggi` redefined here
+  |
+  = note: `PerguruanTinggi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/riwayat_pendidikan_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Pembiayaan` is defined multiple times
+ --> src/models/feeder/master/riwayat_pendidikan_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Pembiayaan` redefined here
+  |
+  = note: `Pembiayaan` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/riwayat_pendidikan_mahasiswa.rs:56:34
+   |
+56 |     #[sea_orm(belongs_to, from = "id_mahasiswa", to = "id")]
+   |                                  ^^^^^^^^^^^^^^
+
+error[E0428]: the name `Dosen` is defined multiple times
+ --> src/models/feeder/master/riwayat_penelitian_dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Dosen` redefined here
+  |
+  = note: `Dosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/riwayat_penelitian_dosen.rs:32:34
+   |
+32 |     #[sea_orm(belongs_to, from = "id_dosen", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `Dosen` is defined multiple times
+ --> src/models/feeder/master/riwayat_sertifikasi_dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Dosen` redefined here
+  |
+  = note: `Dosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `JenisSertifikasi` is defined multiple times
+ --> src/models/feeder/master/riwayat_sertifikasi_dosen.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `JenisSertifikasi` redefined here
+  |
+  = note: `JenisSertifikasi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/riwayat_sertifikasi_dosen.rs:33:34
+   |
+33 |     #[sea_orm(belongs_to, from = "id_dosen", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/skala_nilai_program_studi.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/skala_nilai_program_studi.rs:36:34
+   |
+36 |     #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/master/substansi_matakuliah.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `JenisSubstansi` is defined multiple times
+ --> src/models/feeder/master/substansi_matakuliah.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `JenisSubstansi` redefined here
+  |
+  = note: `JenisSubstansi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/substansi_matakuliah.rs:34:34
+   |
+34 |     #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+   |                                  ^^^^^^^^^^
+
+error[E0428]: the name `KelasKuliah` is defined multiple times
+ --> src/models/feeder/master/transkrip_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `KelasKuliah` redefined here
+  |
+  = note: `KelasKuliah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/transkrip_mahasiswa.rs:34:34
+   |
+34 |     #[sea_orm(belongs_to, from = "id_kelas_kuliah", to = "id")]
+   |                                  ^^^^^^^^^^^^^^^^^
+
+error[E0428]: the name `KategoriKegiatan` is defined multiple times
+ --> src/models/feeder/master/uji_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `KategoriKegiatan` redefined here
+  |
+  = note: `KategoriKegiatan` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Dosen` is defined multiple times
+ --> src/models/feeder/master/uji_mahasiswa.rs:6:1
+  |
+6 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Dosen` redefined here
+  |
+  = note: `Dosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/master/uji_mahasiswa.rs:28:34
+   |
+28 |     #[sea_orm(belongs_to, from = "id_kategori_kegiatan", to = "id")]
+   |                                  ^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0428]: the name `BiodataDosen` is defined multiple times
+ --> src/models/feeder/referensi/agama.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `BiodataDosen` redefined here
+  |
+  = note: `BiodataDosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `BiodataMahasiswa` is defined multiple times
+ --> src/models/feeder/referensi/agama.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `BiodataMahasiswa` redefined here
+  |
+  = note: `BiodataMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Dosen` is defined multiple times
+ --> src/models/feeder/referensi/agama.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Dosen` redefined here
+  |
+  = note: `Dosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Mahasiswa` is defined multiple times
+ --> src/models/feeder/referensi/agama.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Mahasiswa` redefined here
+  |
+  = note: `Mahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `BiodataMahasiswa` is defined multiple times
+ --> src/models/feeder/referensi/alat_transportasi.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `BiodataMahasiswa` redefined here
+  |
+  = note: `BiodataMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `RiwayatFungsionalDosen` is defined multiple times
+ --> src/models/feeder/referensi/jabatan_fungsional.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `RiwayatFungsionalDosen` redefined here
+  |
+  = note: `RiwayatFungsionalDosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `MahasiswaLulusanDropout` is defined multiple times
+ --> src/models/feeder/referensi/jalur_masuk.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `MahasiswaLulusanDropout` redefined here
+  |
+  = note: `MahasiswaLulusanDropout` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `DosenPengajarKelasKuliah` is defined multiple times
+ --> src/models/feeder/referensi/jenis_evaluasi.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `DosenPengajarKelasKuliah` redefined here
+  |
+  = note: `DosenPengajarKelasKuliah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `KomponenEvaluasiKelas` is defined multiple times
+ --> src/models/feeder/referensi/jenis_evaluasi.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `KomponenEvaluasiKelas` redefined here
+  |
+  = note: `KomponenEvaluasiKelas` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `RencanaEvaluasi` is defined multiple times
+ --> src/models/feeder/referensi/jenis_evaluasi.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `RencanaEvaluasi` redefined here
+  |
+  = note: `RencanaEvaluasi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `MahasiswaLulusanDropout` is defined multiple times
+ --> src/models/feeder/referensi/jenis_keluar.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `MahasiswaLulusanDropout` redefined here
+  |
+  = note: `MahasiswaLulusanDropout` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `RiwayatPendidikanMahasiswa` is defined multiple times
+ --> src/models/feeder/referensi/jenis_keluar.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `RiwayatPendidikanMahasiswa` redefined here
+  |
+  = note: `RiwayatPendidikanMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PrestasiMahasiswa` is defined multiple times
+ --> src/models/feeder/referensi/jenis_prestasi.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PrestasiMahasiswa` redefined here
+  |
+  = note: `PrestasiMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `RiwayatSertifikasiDosen` is defined multiple times
+ --> src/models/feeder/referensi/jenis_sertifikasi.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `RiwayatSertifikasiDosen` redefined here
+  |
+  = note: `RiwayatSertifikasiDosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `SubstansiMatakuliah` is defined multiple times
+ --> src/models/feeder/referensi/jenis_substansi.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `SubstansiMatakuliah` redefined here
+  |
+  = note: `SubstansiMatakuliah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `BiodataMahasiswa` is defined multiple times
+ --> src/models/feeder/referensi/jenis_tinggal.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `BiodataMahasiswa` redefined here
+  |
+  = note: `BiodataMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Fakultas` is defined multiple times
+ --> src/models/feeder/referensi/jenjang_pendidikan.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Fakultas` redefined here
+  |
+  = note: `Fakultas` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `ProgramStudi` is defined multiple times
+ --> src/models/feeder/referensi/jenjang_pendidikan.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProgramStudi` redefined here
+  |
+  = note: `ProgramStudi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `RiwayatPendidikanDosen` is defined multiple times
+ --> src/models/feeder/referensi/jenjang_pendidikan.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `RiwayatPendidikanDosen` redefined here
+  |
+  = note: `RiwayatPendidikanDosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `BimbingMahasiswa` is defined multiple times
+ --> src/models/feeder/referensi/kategori_kegiatan.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `BimbingMahasiswa` redefined here
+  |
+  = note: `BimbingMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `MahasiswaBimbinganDosen` is defined multiple times
+ --> src/models/feeder/referensi/kategori_kegiatan.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `MahasiswaBimbinganDosen` redefined here
+  |
+  = note: `MahasiswaBimbinganDosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `UjiMahasiswa` is defined multiple times
+ --> src/models/feeder/referensi/kategori_kegiatan.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `UjiMahasiswa` redefined here
+  |
+  = note: `UjiMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Wilayah` is defined multiple times
+ --> src/models/feeder/referensi/level_wilayah.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Wilayah` redefined here
+  |
+  = note: `Wilayah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `BiodataMahasiswa` is defined multiple times
+ --> src/models/feeder/referensi/negara.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `BiodataMahasiswa` redefined here
+  |
+  = note: `BiodataMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Wilayah` is defined multiple times
+ --> src/models/feeder/referensi/negara.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Wilayah` redefined here
+  |
+  = note: `Wilayah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `BiodataDosen` is defined multiple times
+ --> src/models/feeder/referensi/pangkat_golongan.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `BiodataDosen` redefined here
+  |
+  = note: `BiodataDosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `RiwayatPangkatDosen` is defined multiple times
+ --> src/models/feeder/referensi/pangkat_golongan.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `RiwayatPangkatDosen` redefined here
+  |
+  = note: `RiwayatPangkatDosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `MahasiswaLulusanDropout` is defined multiple times
+ --> src/models/feeder/referensi/pembiayaan.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `MahasiswaLulusanDropout` redefined here
+  |
+  = note: `MahasiswaLulusanDropout` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PerkuliahanMahasiswa` is defined multiple times
+ --> src/models/feeder/referensi/pembiayaan.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PerkuliahanMahasiswa` redefined here
+  |
+  = note: `PerkuliahanMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `RiwayatPendidikanMahasiswa` is defined multiple times
+ --> src/models/feeder/referensi/pembiayaan.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `RiwayatPendidikanMahasiswa` redefined here
+  |
+  = note: `RiwayatPendidikanMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/referensi/periode_lampau.rs:25:34
+   |
+25 |     #[sea_orm(belongs_to, from = "id_program_studi", to = "id")]
+   |                                  ^^^^^^^^^^^^^^^^^^
+
+error[E0428]: the name `AktifitasMahasiswa` is defined multiple times
+ --> src/models/feeder/referensi/semester.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `AktifitasMahasiswa` redefined here
+  |
+  = note: `AktifitasMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `DetailNilaiPerkuliahanKelas` is defined multiple times
+ --> src/models/feeder/referensi/semester.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `DetailNilaiPerkuliahanKelas` redefined here
+  |
+  = note: `DetailNilaiPerkuliahanKelas` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `DosenPengajarKelasKuliah` is defined multiple times
+ --> src/models/feeder/referensi/semester.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `DosenPengajarKelasKuliah` redefined here
+  |
+  = note: `DosenPengajarKelasKuliah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `KelasKuliah` is defined multiple times
+ --> src/models/feeder/referensi/semester.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `KelasKuliah` redefined here
+  |
+  = note: `KelasKuliah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `KonversiKampusMerdeka` is defined multiple times
+ --> src/models/feeder/referensi/semester.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `KonversiKampusMerdeka` redefined here
+  |
+  = note: `KonversiKampusMerdeka` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Kurikulum` is defined multiple times
+ --> src/models/feeder/referensi/semester.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Kurikulum` redefined here
+  |
+  = note: `Kurikulum` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `MatakuliahKurikulum` is defined multiple times
+ --> src/models/feeder/referensi/semester.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `MatakuliahKurikulum` redefined here
+  |
+  = note: `MatakuliahKurikulum` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `NilaiTransferPendidikanMahasiswa` is defined multiple times
+ --> src/models/feeder/referensi/semester.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `NilaiTransferPendidikanMahasiswa` redefined here
+  |
+  = note: `NilaiTransferPendidikanMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PeriodePerkuliahan` is defined multiple times
+ --> src/models/feeder/referensi/semester.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PeriodePerkuliahan` redefined here
+  |
+  = note: `PeriodePerkuliahan` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PerkuliahanMahasiswa` is defined multiple times
+ --> src/models/feeder/referensi/semester.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PerkuliahanMahasiswa` redefined here
+  |
+  = note: `PerkuliahanMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `AktifitasKuliahMahasiswa` is defined multiple times
+ --> src/models/feeder/referensi/semester.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `AktifitasKuliahMahasiswa` redefined here
+  |
+  = note: `AktifitasKuliahMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PeriodeLampau` is defined multiple times
+ --> src/models/feeder/referensi/semester.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PeriodeLampau` redefined here
+  |
+  = note: `PeriodeLampau` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `TahunAjaran` is defined multiple times
+ --> src/models/feeder/referensi/semester.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `TahunAjaran` redefined here
+  |
+  = note: `TahunAjaran` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/referensi/semester.rs:61:34
+   |
+61 |     #[sea_orm(belongs_to, from = "id_tahun_ajaran", to = "id")]
+   |                                  ^^^^^^^^^^^^^^^^^
+
+error[E0428]: the name `Mahasiswa` is defined multiple times
+ --> src/models/feeder/referensi/status_mahasiswa.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Mahasiswa` redefined here
+  |
+  = note: `Mahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PerkuliahanMahasiswa` is defined multiple times
+ --> src/models/feeder/referensi/status_mahasiswa.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PerkuliahanMahasiswa` redefined here
+  |
+  = note: `PerkuliahanMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `AktifitasKuliahMahasiswa` is defined multiple times
+ --> src/models/feeder/referensi/status_mahasiswa.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `AktifitasKuliahMahasiswa` redefined here
+  |
+  = note: `AktifitasKuliahMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PenugasanDosen` is defined multiple times
+ --> src/models/feeder/referensi/tahun_ajaran.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PenugasanDosen` redefined here
+  |
+  = note: `PenugasanDosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Semester` is defined multiple times
+ --> src/models/feeder/referensi/tahun_ajaran.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Semester` redefined here
+  |
+  = note: `Semester` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `PrestasiMahasiswa` is defined multiple times
+ --> src/models/feeder/referensi/tingkat_prestasi.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `PrestasiMahasiswa` redefined here
+  |
+  = note: `PrestasiMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `BiodataDosen` is defined multiple times
+ --> src/models/feeder/referensi/wilayah.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `BiodataDosen` redefined here
+  |
+  = note: `BiodataDosen` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `BiodataMahasiswa` is defined multiple times
+ --> src/models/feeder/referensi/wilayah.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `BiodataMahasiswa` redefined here
+  |
+  = note: `BiodataMahasiswa` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `ProfilPerguruanTinggi` is defined multiple times
+ --> src/models/feeder/referensi/wilayah.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `ProfilPerguruanTinggi` redefined here
+  |
+  = note: `ProfilPerguruanTinggi` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `LevelWilayah` is defined multiple times
+ --> src/models/feeder/referensi/wilayah.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `LevelWilayah` redefined here
+  |
+  = note: `LevelWilayah` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0428]: the name `Negara` is defined multiple times
+ --> src/models/feeder/referensi/wilayah.rs:5:1
+  |
+5 | #[sea_orm::model]
+  | ^^^^^^^^^^^^^^^^^ `Negara` redefined here
+  |
+  = note: `Negara` must be defined only once in the type namespace of this enum
+  = note: this error originates in the derive macro `DeriveModelEx` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: BelongsTo<Entity> requires non-Option `from` fields
+  --> src/models/feeder/referensi/wilayah.rs:32:34
+   |
+32 |     #[sea_orm(belongs_to, from = "id_level_wilayah", to = "id")]
+   |                                  ^^^^^^^^^^^^^^^^^^
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/agama.rs:19:7
+   |
+19 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/agama.rs:22:7
+   |
+22 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/agama.rs:25:7
+   |
+25 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/agama.rs:28:7
+   |
+28 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/agama.rs:31:7
+   |
+31 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/agama.rs:34:7
+   |
+34 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/agama.rs:37:7
+   |
+37 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/agama.rs:40:7
+   |
+40 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/alat_transportasi.rs:19:7
+   |
+19 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/alat_transportasi.rs:22:7
+   |
+22 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jabatan_fungsional.rs:19:7
+   |
+19 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jabatan_fungsional.rs:22:7
+   |
+22 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jalur_masuk.rs:19:7
+   |
+19 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jalur_masuk.rs:22:7
+   |
+22 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenis_evaluasi.rs:19:7
+   |
+19 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenis_evaluasi.rs:22:7
+   |
+22 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenis_evaluasi.rs:25:7
+   |
+25 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenis_evaluasi.rs:28:7
+   |
+28 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenis_evaluasi.rs:31:7
+   |
+31 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenis_evaluasi.rs:34:7
+   |
+34 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenis_keluar.rs:20:7
+   |
+20 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenis_keluar.rs:23:7
+   |
+23 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenis_keluar.rs:26:7
+   |
+26 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenis_keluar.rs:29:7
+   |
+29 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenis_prestasi.rs:19:7
+   |
+19 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenis_prestasi.rs:22:7
+   |
+22 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenis_sertifikasi.rs:19:7
+   |
+19 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenis_sertifikasi.rs:22:7
+   |
+22 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenis_substansi.rs:19:7
+   |
+19 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenis_substansi.rs:22:7
+   |
+22 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenis_tinggal.rs:19:7
+   |
+19 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenis_tinggal.rs:22:7
+   |
+22 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenjang_pendidikan.rs:19:7
+   |
+19 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenjang_pendidikan.rs:22:7
+   |
+22 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenjang_pendidikan.rs:25:7
+   |
+25 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenjang_pendidikan.rs:28:7
+   |
+28 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenjang_pendidikan.rs:31:7
+   |
+31 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/jenjang_pendidikan.rs:34:7
+   |
+34 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/kategori_kegiatan.rs:20:7
+   |
+20 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/kategori_kegiatan.rs:23:7
+   |
+23 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/kategori_kegiatan.rs:26:7
+   |
+26 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/kategori_kegiatan.rs:29:7
+   |
+29 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/kategori_kegiatan.rs:32:7
+   |
+32 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/kategori_kegiatan.rs:35:7
+   |
+35 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/level_wilayah.rs:19:7
+   |
+19 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/level_wilayah.rs:22:7
+   |
+22 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/negara.rs:19:7
+   |
+19 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/negara.rs:22:7
+   |
+22 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/negara.rs:25:7
+   |
+25 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/negara.rs:28:7
+   |
+28 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/pangkat_golongan.rs:20:7
+   |
+20 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/pangkat_golongan.rs:23:7
+   |
+23 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/pangkat_golongan.rs:26:7
+   |
+26 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/pangkat_golongan.rs:29:7
+   |
+29 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/pembiayaan.rs:19:7
+   |
+19 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/pembiayaan.rs:22:7
+   |
+22 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/pembiayaan.rs:25:7
+   |
+25 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/pembiayaan.rs:28:7
+   |
+28 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/pembiayaan.rs:31:7
+   |
+31 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/pembiayaan.rs:34:7
+   |
+34 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/periode_lampau.rs:24:7
+   |
+24 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/periode_lampau.rs:27:7
+   |
+27 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:24:7
+   |
+24 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:27:7
+   |
+27 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:30:7
+   |
+30 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:33:7
+   |
+33 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:36:7
+   |
+36 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:39:7
+   |
+39 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:42:7
+   |
+42 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:45:7
+   |
+45 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:48:7
+   |
+48 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:51:7
+   |
+51 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:54:7
+   |
+54 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:57:7
+   |
+57 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:60:7
+   |
+60 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:63:7
+   |
+63 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:66:7
+   |
+66 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:69:7
+   |
+69 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:72:7
+   |
+72 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:75:7
+   |
+75 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:78:7
+   |
+78 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:81:7
+   |
+81 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:84:7
+   |
+84 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:87:7
+   |
+87 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:90:7
+   |
+90 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:93:7
+   |
+93 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:96:7
+   |
+96 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/semester.rs:99:7
+   |
+99 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/status_mahasiswa.rs:19:7
+   |
+19 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/status_mahasiswa.rs:22:7
+   |
+22 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/status_mahasiswa.rs:25:7
+   |
+25 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/status_mahasiswa.rs:28:7
+   |
+28 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/status_mahasiswa.rs:31:7
+   |
+31 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/status_mahasiswa.rs:34:7
+   |
+34 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/tahun_ajaran.rs:22:7
+   |
+22 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/tahun_ajaran.rs:25:7
+   |
+25 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/tahun_ajaran.rs:28:7
+   |
+28 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/tahun_ajaran.rs:31:7
+   |
+31 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/tingkat_prestasi.rs:19:7
+   |
+19 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/tingkat_prestasi.rs:22:7
+   |
+22 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/wilayah.rs:22:7
+   |
+22 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/wilayah.rs:25:7
+   |
+25 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/wilayah.rs:28:7
+   |
+28 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/wilayah.rs:31:7
+   |
+31 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/wilayah.rs:34:7
+   |
+34 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/wilayah.rs:37:7
+   |
+37 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/wilayah.rs:40:7
+   |
+40 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/wilayah.rs:43:7
+   |
+43 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/wilayah.rs:46:7
+   |
+46 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+
+error: cannot find attribute `serde` in this scope
+  --> src/models/feeder/referensi/wilayah.rs:49:7
+   |
+49 |     #[serde(skip)]
+   |       ^^^^^
+   |
+   = note: `serde` is an attribute that can be used by the derive macros `Deserialize` and `Serialize`, you might be missing a `derive` attribute
+   = note: `serde` is in scope, but it is a crate, not an attribute
+

@@ -13,7 +13,7 @@ pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
     pub angkatan: Option<i32>,
-    pub id_prodi: Option<Uuid>,
+    pub id_prodi: NullableUuid,
     pub created_at: Option<DateTime>,
     pub updated_at: Option<DateTime>,
     pub deleted_at: Option<DateTime>,

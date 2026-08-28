@@ -9,8 +9,8 @@ use serde::{Deserialize, Serialize};
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
-    pub id_substansi: Option<Uuid>,
-    pub id_prodi: Option<Uuid>,
+    pub id_substansi: NullableUuid,
+    pub id_prodi: NullableUuid,
     pub nama_program_studi: Option<String>,
     pub nama_substansi: Option<String>,
     #[sea_orm(column_type = "Float", nullable)]
@@ -23,7 +23,7 @@ pub struct Model {
     pub sks_praktek_lapangan: Option<f32>,
     #[sea_orm(column_type = "Float", nullable)]
     pub sks_simulasi: Option<f32>,
-    pub id_jenis_substansi: Option<Uuid>,
+    pub id_jenis_substansi: NullableUuid,
     pub created_at: Option<DateTime>,
     pub updated_at: Option<DateTime>,
     pub deleted_at: Option<DateTime>,

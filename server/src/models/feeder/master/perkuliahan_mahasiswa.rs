@@ -15,16 +15,16 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
-    pub id_registrasi_mahasiswa: Option<Uuid>,
+    pub id_registrasi_mahasiswa: NullableUuid,
     pub nim: Option<String>,
     pub nama_mahasiswa: Option<String>,
     pub angkatan: Option<String>,
-    pub id_prodi: Option<Uuid>,
+    pub id_prodi: NullableUuid,
     pub nama_program_studi: Option<String>,
-    pub id_periode_masuk: Option<String>,
-    pub id_semester: Option<String>,
+    pub id_periode_masuk: NullableString,
+    pub id_semester: NullableString,
     pub nama_semester: Option<String>,
-    pub id_status_mahasiswa: Option<String>,
+    pub id_status_mahasiswa: NullableString,
     pub nama_status_mahasiswa: Option<String>,
     #[sea_orm(column_type = "Float", nullable)]
     pub ips: Option<f32>,
@@ -36,7 +36,7 @@ pub struct Model {
     pub sks_total: Option<f32>,
     #[sea_orm(column_type = "Float", nullable)]
     pub biaya_kuliah_smt: Option<f32>,
-    pub id_pembiayaan: Option<String>,
+    pub id_pembiayaan: NullableString,
     pub status_sync: Option<String>,
     #[serde(skip)]
     #[sea_orm(belongs_to, from = "id_prodi", to = "id")]

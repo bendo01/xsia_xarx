@@ -2,13 +2,19 @@
 
 use sea_orm::entity::prelude::*;
 
+pub type NullableUuid = Option<Uuid>;
+pub type NullableString = Option<String>;
+pub type NullableI32 = Option<i32>;
+pub type NullableF32 = Option<f32>;
+pub type NullableDateTime = Option<DateTime>;
+
 #[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(schema_name = "feeder_referensi", table_name = "pangkat_golongan")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
-    pub id_pangkat_golongan: Option<String>,
+    pub id_pangkat_golongan: NullableString,
     pub kode_golongan: Option<String>,
     pub nama_pangkat: Option<String>,
     pub created_at: Option<DateTime>,

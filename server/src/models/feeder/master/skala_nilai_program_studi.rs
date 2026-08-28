@@ -13,8 +13,8 @@ pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
     pub tgl_create: Option<Date>,
-    pub id_bobot_nilai: Option<Uuid>,
-    pub id_prodi: Option<Uuid>,
+    pub id_bobot_nilai: NullableUuid,
+    pub id_prodi: NullableUuid,
     pub nama_program_studi: Option<String>,
     pub nilai_huruf: Option<String>,
     #[sea_orm(column_type = "Float", nullable)]

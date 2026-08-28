@@ -16,11 +16,11 @@ pub struct Model {
     pub updated_by: Option<Uuid>,
     #[sea_orm(primary_key, auto_increment = false)]
     pub id_kelas_kuliah: Uuid,
-    pub id_prodi: Option<Uuid>,
+    pub id_prodi: NullableUuid,
     pub nama_program_studi: Option<String>,
-    pub id_semester: Option<String>,
+    pub id_semester: NullableString,
     pub nama_semester: Option<String>,
-    pub id_matkul: Option<Uuid>,
+    pub id_matkul: NullableUuid,
     pub kode_mata_kuliah: Option<String>,
     pub nama_mata_kuliah: Option<String>,
     pub nama_kelas_kuliah: Option<String>,
@@ -44,7 +44,7 @@ pub struct Model {
     pub perguruan_tinggi_penyelenggara: Option<String>,
     #[sea_orm(column_type = "Float", nullable)]
     pub sks: Option<f32>,
-    pub id_dosen: Option<String>,
+    pub id_dosen: NullableString,
     #[sea_orm(column_type = "Text", nullable)]
     pub nama_dosen: Option<String>,
     pub jumlah_mahasiswa: Option<i32>,
