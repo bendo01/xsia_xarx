@@ -1,4 +1,4 @@
-use chrono::{Local, NaiveDate};
+use chrono::Local;
 use salvo::async_trait;
 use sea_orm::{
     ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, EntityTrait,
@@ -131,23 +131,7 @@ impl EstimateGetTahunAjaran {
     }
 
 
-    fn parse_date_string(date_str: Option<&String>) -> Option<NaiveDate> {
-        match date_str {
-            Some(s) if !s.is_empty() => {
-                // Try parsing with time "YYYY-MM-DDTHH:MM:SS..." first
-                if let Ok(dt) = chrono::DateTime::parse_from_rfc3339(s) {
-                    return Some(dt.naive_local().date());
-                }
-                // Try parsing just date "YYYY-MM-DD"
-                if let Ok(d) = NaiveDate::parse_from_str(s, "%Y-%m-%d") {
-                    return Some(d);
-                }
-                eprintln!("Failed to parse date string: {}", s);
-                None
-            }
-            _ => None,
-        }
-    }
+
     async fn fetch_and_process_page(
         db: &DatabaseConnection,
         _institution_id: Uuid,

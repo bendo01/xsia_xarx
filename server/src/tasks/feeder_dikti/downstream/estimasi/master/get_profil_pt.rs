@@ -1,4 +1,4 @@
-use chrono::{Local, NaiveDate, NaiveDateTime};
+use chrono::Local;
 use salvo::async_trait;
 use sea_orm::{
     ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, EntityTrait,
@@ -37,21 +37,7 @@ impl EstimateGetProfilPT {
         Err("CURRENT_INSTITUTION_ID is not set or invalid".into())
     }
 
-    fn parse_date(date_str: Option<&String>) -> Option<NaiveDate> {
-        date_str.and_then(|s| {
-            NaiveDate::parse_from_str(s, "%Y-%m-%d")
-                .or_else(|_| NaiveDate::parse_from_str(s, "%d-%m-%Y"))
-                .ok()
-        })
-    }
 
-    fn parse_datetime(date_str: Option<&String>) -> Option<NaiveDateTime> {
-        date_str.and_then(|s| {
-            NaiveDateTime::parse_from_str(s, "%Y-%m-%d %H:%M:%S")
-                .or_else(|_| NaiveDate::parse_from_str(s, "%Y-%m-%d").map(|d| d.and_hms_opt(0, 0, 0).unwrap()))
-                .ok()
-        })
-    }
 
     async fn find_progress_record(
         db: &DatabaseConnection,
