@@ -1,0 +1,1 @@
+pub mod upsert_detail_nilai_perkuliahan_kelas_to_academic_student_campaign_detail_activities;

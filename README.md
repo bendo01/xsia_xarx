@@ -132,10 +132,13 @@ Before starting, ensure you have the following installed on your machine:
 - **PostgreSQL**: `v15+` with `pgvector` extension enabled
 - **Redis**: `v7+` for background job execution
 - **SeaORM CLI**: Installed via Cargo:
+
   ```bash
   cargo install sea-orm-cli
   ```
+
 - *(Optional)* **cargo-nextest**: For ultra-fast test execution:
+
   ```bash
   cargo install cargo-nextest --locked
   ```
@@ -209,19 +212,23 @@ CURRENT_INSTITUTION_CODE="092010"
 ### 1. Backend Setup (`server/`)
 
 1. **Navigate to the server directory**:
+
    ```bash
    cd server
    ```
 
 2. **Run database migrations**:
+
    ```bash
    sea-orm-cli migrate up
    ```
 
 3. **Start the server with background email worker**:
+
    ```bash
    cargo run
    ```
+
    The backend API will start on `http://127.0.0.1:5800`.
 
 ---
@@ -229,21 +236,25 @@ CURRENT_INSTITUTION_CODE="092010"
 ### 2. Frontend Setup (`client/`)
 
 1. **Navigate to the client directory**:
+
    ```bash
    cd client
    ```
 
 2. **Install dependencies**:
+
    ```bash
    bun install
    # or: pnpm install
    ```
 
 3. **Start the development server**:
+
    ```bash
    bun run dev
    # or: pnpm dev
    ```
+
    Open your browser at `http://localhost:3000` (or the port indicated in terminal).
 
 ---
@@ -276,6 +287,7 @@ The backend provides interactive OpenAPI documentation out of the box:
 When you start the backend using `cargo run`, the server automatically initializes **all real-time communication protocols and background job workers**:
 
 ### 1. Active Real-time Protocols & Endpoints
+
 | Protocol | Endpoint | Description |
 | :--- | :--- | :--- |
 | **WebSocket** | `ws://127.0.0.1:5800/api/v1/realtime/ws` | Full-duplex bidirectional communication with ping-pong latency tracking and JSON/text echo |
@@ -283,12 +295,16 @@ When you start the backend using `cargo run`, the server automatically initializ
 | **WebTransport** | `http://127.0.0.1:5800/api/v1/realtime/webtransport` | Low-latency HTTP/3 transport channels |
 
 ### 2. Interactive WebSocket & Real-time Studio
+
 The frontend includes a built-in debugging and interactive real-time studio:
+
 - **Route**: [`/example/websocket`](client/src/routes/example/websocket.tsx)
 - **Features**: Live connection lifecycle manager, auto-reconnect, 5s automated heartbeat ping-pong with RTT latency measurement in ms, dual-mode text/JSON payload composer, and SSE event streaming listener.
 
 ### 3. Background Job Execution (Apalis Email Worker)
+
 In addition to the HTTP and WebSocket endpoints, `cargo run` automatically spawns an asynchronous **Apalis** background task worker:
+
 - **Worker Runtime**: Tokio background task (`tokio::spawn(email_worker.run())`)
 - **Queue Storage**: Redis (`REDIS_URL="redis://127.0.0.1:6379"`)
 - **Responsibilities**: Consumes and processes queued tasks (such as transactional SMTP emails) asynchronously without blocking HTTP requests.
@@ -333,17 +349,22 @@ sea-orm-cli generate entity \
 ## ⚡ Background Workers & Task Runner
 
 ### Apalis Redis Background Workers
+
 The server automatically initializes an **Apalis** background monitor on startup to process queued jobs (such as transactional emails via SMTP):
+
 - **Worker Queue**: `xsia-xarx:email`
 - **Job Structure**: `EmailJob { to, subject, body }`
 
 ### CLI Task Runner
+
 Custom CLI tasks, utilities, and one-off maintenance scripts can be executed using the integrated task runner located in `server/src/tasks/`.
 
 Both colon (`:`) and underscore (`_`) task name formats are supported interchangeably (e.g. `hash:password` or `hash_password`).
 
 #### 1. List Available Tasks
+
 To view all registered tasks and their descriptions:
+
 ```bash
 cd server
 cargo run -- task
@@ -357,9 +378,85 @@ cargo run -- task
 | `route:list` | Displays a table of all registered system HTTP routes, methods, and handlers. | `cargo run -- task route:list` |
 | `sync_permissions` | Synchronizes predefined route permission records into the `auth.permissions` database table. | `cargo run -- task sync_permissions` |
 | `example` | Test task demonstrating argument passing and database access. | `cargo run -- task example arg1 arg2` |
+| `EstimateAktifitasMengajarDosen` | Fetch and process GetAktivitasMengajarDosen data from Feeder Dikti | `cargo run -- task EstimateAktifitasMengajarDosen` |
+| `EstimateGetAllProdi` | Fetch and process GetAllProdi data from Feeder Dikti | `cargo run -- task EstimateGetAllProdi` |
+| `EstimateGetAllPT` | Fetch and process GetAllPT data from Feeder Dikti | `cargo run -- task EstimateGetAllPT` |
+| `EstimateBiodataDosen` | Fetch and process DetailBiodataDosen data from Feeder Dikti | `cargo run -- task EstimateBiodataDosen` |
+| `EstimateBiodataMahasiswa` | Fetch and process GetBiodataMahasiswa data from Feeder Dikti | `cargo run -- task EstimateBiodataMahasiswa` |
+| `EstimateDetailKelasKuliah` | Fetch and process GetDetailKelasKuliah data from Feeder Dikti | `cargo run -- task EstimateDetailKelasKuliah` |
+| `EstimateDetailKurikulum` | Fetch and process GetDetailKurikulum data from Feeder Dikti | `cargo run -- task EstimateDetailKurikulum` |
+| `EstimateDetailMahasiswaLulusDO` | Fetch and process GetDetailMahasiswaLulusDO data from Feeder Dikti | `cargo run -- task EstimateDetailMahasiswaLulusDO` |
+| `EstimateDetailMatakuliah` | Fetch and process GetDetailMataKuliah data from Feeder Dikti | `cargo run -- task EstimateDetailMatakuliah` |
+| `EstimateDetailNilaiPerkuliahanKelas` | Fetch and process GetDetailNilaiPerkuliahanKelas data from Feeder Dikti | `cargo run -- task EstimateDetailNilaiPerkuliahanKelas` |
+| `EstimateDetailPenugasanDosen` | Fetch and process GetDetailPenugasanDosen data from Feeder Dikti | `cargo run -- task EstimateDetailPenugasanDosen` |
+| `EstimateDetailPeriodePerkuliahan` | Fetch and process GetDetailPeriodePerkuliahan data from Feeder Dikti | `cargo run -- task EstimateDetailPeriodePerkuliahan` |
+| `EstimateDetailPerkuliahanMahasiswa` | Fetch and process GetDetailPerkuliahanMahasiswa data from Feeder Dikti | `cargo run -- task EstimateDetailPerkuliahanMahasiswa` |
+| `EstimateGetDosenPengajarKelasKuliah` | Fetch and process GetDosenPengajarKelasKuliah data from Feeder Dikti | `cargo run -- task EstimateGetDosenPengajarKelasKuliah` |
+| `EstimateKRSMahasiswa` | Fetch and process GetKRSMahasiswa data from Feeder Dikti | `cargo run -- task EstimateKRSMahasiswa` |
+| `EstimateListDosen` | Fetch and process GetListDosen data from Feeder Dikti | `cargo run -- task EstimateListDosen` |
+| `EstimateListKelasKuliah` | Fetch and process GetListKelasKuliah data from Feeder Dikti | `cargo run -- task EstimateListKelasKuliah` |
+| `EstimateListKomponenEvaluasiKelas` | Fetch and process GetListKomponenEvaluasiKelas data from Feeder Dikti | `cargo run -- task EstimateListKomponenEvaluasiKelas` |
+| `EstimateListKurikulum` | Fetch and process GetListKurikulum data from Feeder Dikti | `cargo run -- task EstimateListKurikulum` |
+| `EstimateListMahasiswa` | Fetch and process GetListMahasiswa data from Feeder Dikti | `cargo run -- task EstimateListMahasiswa` |
+| `EstimateListMahasiswaLulusDO` | Fetch and process GetListMahasiswaLulusDO data from Feeder Dikti | `cargo run -- task EstimateListMahasiswaLulusDO` |
+| `EstimateListMatakuliah` | Fetch and process GetListMataKuliah data from Feeder Dikti | `cargo run -- task EstimateListMatakuliah` |
+| `EstimateListNilaiPerkuliahanKelas` | Fetch and process GetListNilaiPerkuliahanKelas data from Feeder Dikti | `cargo run -- task EstimateListNilaiPerkuliahanKelas` |
+| `EstimateListNilaiTransferPendidikanMahasiswa` | Fetch and process GetNilaiTransferPendidikanMahasiswa data from Feeder Dikti | `cargo run -- task EstimateListNilaiTransferPendidikanMahasiswa` |
+| `EstimateListPenugasanDosen` | Fetch and process GetListPenugasanDosen data from Feeder Dikti | `cargo run -- task EstimateListPenugasanDosen` |
+| `EstimateListPenugasanSemuaDosen` | Fetch and process GetListPenugasanSemuaDosen data from Feeder Dikti | `cargo run -- task EstimateListPenugasanSemuaDosen` |
+| `EstimateListPeriodePerkuliahan` | Fetch and process GetListPeriodePerkuliahan data from Feeder Dikti | `cargo run -- task EstimateListPeriodePerkuliahan` |
+| `EstimateListPerkuliahanMahasiswa` | Fetch and process GetListPerkuliahanMahasiswa data from Feeder Dikti | `cargo run -- task EstimateListPerkuliahanMahasiswa` |
+| `EstimateListRencanaEvaluasi` | Fetch and process GetListRencanaEvaluasi data from Feeder Dikti | `cargo run -- task EstimateListRencanaEvaluasi` |
+| `EstimateListRencanaPembelajaran` | Fetch and process GetListRencanaPembelajaran data from Feeder Dikti | `cargo run -- task EstimateListRencanaPembelajaran` |
+| `EstimateListRiwayatPendidikanMahasiswa` | Fetch and process GetListRiwayatPendidikanMahasiswa data from Feeder Dikti | `cargo run -- task EstimateListRiwayatPendidikanMahasiswa` |
+| `EstimateListSkalaNilaiProdi` | Fetch and process GetListSkalaNilaiProdi data from Feeder Dikti | `cargo run -- task EstimateListSkalaNilaiProdi` |
+| `EstimateMatkulKurikulum` | Fetch and process GetMatkulKurikulum data from Feeder Dikti | `cargo run -- task EstimateMatkulKurikulum` |
+| `EstimatePesertaKelasKuliah` | Fetch and process GetPesertaKelasKuliah data from Feeder Dikti | `cargo run -- task EstimatePesertaKelasKuliah` |
+| `EstimateGetProdi` | Fetch and process GetProdi data from Feeder Dikti | `cargo run -- task EstimateGetProdi` |
+| `EstimateGetProfilPT` | Fetch and process GetProfilPT data from Feeder Dikti | `cargo run -- task EstimateGetProfilPT` |
+| `EstimateRiwayatFungsionalDosen` | Fetch and process GetRiwayatFungsionalDosen data from Feeder Dikti | `cargo run -- task EstimateRiwayatFungsionalDosen` |
+| `EstimateRiwayatNilaiMahasiswa` | Fetch and process GetRiwayatNilaiMahasiswa data from Feeder Dikti | `cargo run -- task EstimateRiwayatNilaiMahasiswa` |
+| `EstimateRiwayatPangkatDosen` | Fetch and process GetRiwayatPangkatDosen data from Feeder Dikti | `cargo run -- task EstimateRiwayatPangkatDosen` |
+| `EstimateRiwayatPendidikanDosen` | Fetch and process GetRiwayatPendidikanDosen data from Feeder Dikti | `cargo run -- task EstimateRiwayatPendidikanDosen` |
+| `EstimateRiwayatPenelitianDosen` | Fetch and process GetRiwayatPenelitianDosen data from Feeder Dikti | `cargo run -- task EstimateRiwayatPenelitianDosen` |
+| `EstimateRiwayatSertifikasiDosen` | Fetch and process GetRiwayatSertifikasiDosen data from Feeder Dikti | `cargo run -- task EstimateRiwayatSertifikasiDosen` |
+| `EstimateTranskripMahasiswa` | Fetch and process GetTranskripMahasiswa data from Feeder Dikti | `cargo run -- task EstimateTranskripMahasiswa` |
+| `EstimateGetAlatTransportasi` | Fetch and process GetAlatTransportasi data from Feeder Dikti | `cargo run -- task EstimateGetAlatTransportasi` |
+| `EstimateGetIkatanKerjaSdm` | Fetch and process GetIkatanKerjaSdm data from Feeder Dikti | `cargo run -- task EstimateGetIkatanKerjaSdm` |
+| `EstimateGetJabfung` | Fetch and process GetJabatanFungsional data from Feeder Dikti | `cargo run -- task EstimateGetJabfung` |
+| `EstimateGetJalurMasuk` | Fetch and process GetJalurMasuk data from Feeder Dikti | `cargo run -- task EstimateGetJalurMasuk` |
+| `EstimateGetJenisAktifitasMahasiswa` | Fetch and process GetJenisAktivitasMahasiswa data from Feeder Dikti | `cargo run -- task EstimateGetJenisAktifitasMahasiswa` |
+| `EstimateGetJenisEvaluasi` | Fetch and process GetJenisEvaluasi data from Feeder Dikti | `cargo run -- task EstimateGetJenisEvaluasi` |
+| `EstimateGetJenisKeluar` | Fetch and process GetJenisKeluar data from Feeder Dikti | `cargo run -- task EstimateGetJenisKeluar` |
+| `EstimateGetJenisPendaftaran` | Fetch and process GetJenisPendaftaran data from Feeder Dikti | `cargo run -- task EstimateGetJenisPendaftaran` |
+| `EstimateGetJenisPrestasi` | Fetch and process GetJenisPrestasi data from Feeder Dikti | `cargo run -- task EstimateGetJenisPrestasi` |
+| `EstimateGetJenisSertifikasi` | Fetch and process GetJenisSertifikasi data from Feeder Dikti | `cargo run -- task EstimateGetJenisSertifikasi` |
+| `EstimateGetJenisSMS` | Fetch and process GetJenisSMS data from Feeder Dikti | `cargo run -- task EstimateGetJenisSMS` |
+| `EstimateGetJenisSubstansi` | Fetch and process GetJenisSubstansi data from Feeder Dikti | `cargo run -- task EstimateGetJenisSubstansi` |
+| `EstimateGetJenisTinggal` | Fetch and process GetJenisTinggal data from Feeder Dikti | `cargo run -- task EstimateGetJenisTinggal` |
+| `EstimateGetJenjangPendidikan` | Fetch and process GetJenjangPendidikan data from Feeder Dikti | `cargo run -- task EstimateGetJenjangPendidikan` |
+| `EstimateGetKategoriKegiatan` | Fetch and process GetKategoriKegiatan data from Feeder Dikti | `cargo run -- task EstimateGetKategoriKegiatan` |
+| `EstimateGetLembagaPengangkat` | Fetch and process GetLembagaPengangkat data from Feeder Dikti | `cargo run -- task EstimateGetLembagaPengangkat` |
+| `EstimateGetLevelWilayah` | Fetch and process GetLevelWilayah data from Feeder Dikti | `cargo run -- task EstimateGetLevelWilayah` |
+| `EstimateGetNegara` | Fetch and process GetNegara data from Feeder Dikti | `cargo run -- task EstimateGetNegara` |
+| `EstimateGetPangkatGolongan` | Fetch and process GetPangkatGolongan data from Feeder Dikti | `cargo run -- task EstimateGetPangkatGolongan` |
+| `EstimateGetPekerjaan` | Fetch and process GetPekerjaan data from Feeder Dikti | `cargo run -- task EstimateGetPekerjaan` |
+| `EstimateGetPembiayaan` | Fetch and process GetPembiayaan data from Feeder Dikti | `cargo run -- task EstimateGetPembiayaan` |
+| `EstimateGetPenghasilan` | Fetch and process GetPenghasilan data from Feeder Dikti | `cargo run -- task EstimateGetPenghasilan` |
+| `EstimateGetSemester` | Fetch and process GetSemester data from Feeder Dikti | `cargo run -- task EstimateGetSemester` |
+| `EstimateGetStatusKeaktifanPegawai` | Fetch and process GetStatusKeaktifanPegawai data from Feeder Dikti | `cargo run -- task EstimateGetStatusKeaktifanPegawai` |
+| `EstimateGetStatusKepegawaian` | Fetch and process GetStatusKepegawaian data from Feeder Dikti | `cargo run -- task EstimateGetStatusKepegawaian` |
+| `EstimateGetStatusMahasiswa` | Fetch and process GetStatusMahasiswa data from Feeder Dikti | `cargo run -- task EstimateGetStatusMahasiswa` |
+| `EstimateGetTahunAjaran` | Fetch and process GetTahunAjaran data from Feeder Dikti | `cargo run -- task EstimateGetTahunAjaran` |
+| `EstimateGetTingkatPrestasi` | Fetch and process GetTingkatPrestasi data from Feeder Dikti | `cargo run -- task EstimateGetTingkatPrestasi` |
+| `EstimateGetWilayah` | Fetch and process GetWilayah data from Feeder Dikti | `cargo run -- task EstimateGetWilayah` |
+| `EstimateGetAgama` | Fetch and process GetAgama data from Feeder Dikti | `cargo run -- task EstimateGetAgama` |
+| `SyncNilaiPerkuliahanKelasToDetailActivities` | Upsert detail_nilai_perkuliahan_kelas to academic_student_campaign.detail_activities | `cargo run -- task SyncNilaiPerkuliahanKelasToDetailActivities` |
 
 ##### 🔑 Password Hashing Utility (`hash:password`)
+
 Hash a raw password string directly from command-line arguments:
+
 ```bash
 # Generate both Argon2id and Bcrypt hashes:
 cargo run -- task hash:password "MySecretPass123"
@@ -373,7 +470,9 @@ cargo run -- task hash:password
 ```
 
 ##### 🛣️ Route Listing (`route:list`)
+
 List and inspect registered API routes in a formatted table:
+
 ```bash
 # List all routes
 cargo run -- task route:list
@@ -384,7 +483,9 @@ cargo run -- task route:list student
 ```
 
 ##### 🔄 Sync Permissions (`sync_permissions`)
+
 Sync predefined system permission constants into the PostgreSQL database:
+
 ```bash
 cargo run -- task sync_permissions
 # or
@@ -392,9 +493,12 @@ cargo run -- task sync:permissions
 ```
 
 #### 3. Creating a Custom Task
+
 To create a new task:
+
 1. Create a new file in `server/src/tasks/` (or a sub-module like `server/src/tasks/utilities/`).
 2. Implement the `Task` trait:
+
    ```rust
    use salvo::async_trait;
    use sea_orm::DatabaseConnection;
@@ -419,7 +523,9 @@ To create a new task:
        }
    }
    ```
+
 3. Register the task in `server/src/tasks/mod.rs` inside `get_tasks()`:
+
    ```rust
    pub fn get_tasks() -> Vec<Box<dyn Task>> {
        vec![
@@ -442,12 +548,15 @@ The repository includes a comprehensive testing matrix covering backend API inte
 Backend tests validate database entities, foreign key constraints, service layers, and permission relations.
 
 #### Prerequisites
+
 Install `cargo-nextest` for faster, parallelized test execution:
+
 ```bash
 cargo install cargo-nextest --locked
 ```
 
 #### Running Backend Tests
+
 ```bash
 cd server
 
@@ -493,7 +602,9 @@ graph LR
 ```
 
 #### Prerequisites (One-Time Setup)
+
 Make sure dependencies and the Playwright Chromium browser binary are installed:
+
 ```bash
 cd client
 
@@ -507,6 +618,7 @@ bunx playwright install chromium
 ```
 
 #### A. White-Box Unit & Component Testing (Vitest)
+
 White-box tests execute in an isolated JSDOM environment with `@solidjs/testing-library` to inspect internal state, signals, storage keys, and DOM rendering.
 
 | Test File | Target | Coverage |
@@ -531,6 +643,7 @@ bun run test:unit:coverage
 ```
 
 #### B. Black-Box End-to-End Browser Testing (Playwright / Laravel Dusk Counterpart)
+
 Black-box tests launch a real headless or headed Chromium browser against the live SolidStart application to test complete end-to-end user workflows, routing, animations, and API communication.
 
 | Spec File | Feature Area | What is Tested |
@@ -555,7 +668,9 @@ bun run test:e2e:ui
 ```
 
 #### C. Run Complete Frontend Test Suite
+
 To run both White-Box (Vitest) and Black-Box (Playwright) suites together:
+
 ```bash
 cd client
 bun run test
