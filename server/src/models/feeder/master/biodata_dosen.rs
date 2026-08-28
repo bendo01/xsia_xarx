@@ -76,18 +76,6 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(belongs_to, from = "id_wilayah", to = "id")]
     pub wilayah: BelongsTo<crate::models::feeder::referensi::wilayah::Entity>,
-    #[serde(skip)]
-    #[sea_orm(belongs_to, from = "id_dosen", to = "id")]
-    pub dosen_rel: BelongsTo<Option<crate::models::feeder::master::dosen::Entity>>,
-    #[serde(skip)]
-    #[sea_orm(belongs_to, from = "id_agama", to = "id")]
-    pub agama_rel: BelongsTo<Option<crate::models::feeder::referensi::agama::Entity>>,
-    #[serde(skip)]
-    #[sea_orm(belongs_to, from = "id_pangkat_golongan", to = "id")]
-    pub pangkat_golongan_rel: BelongsTo<Option<crate::models::feeder::referensi::pangkat_golongan::Entity>>,
-    #[serde(skip)]
-    #[sea_orm(belongs_to, from = "id_wilayah", to = "id")]
-    pub wilayah_rel: BelongsTo<Option<crate::models::feeder::referensi::wilayah::Entity>>,
 }
 
 
