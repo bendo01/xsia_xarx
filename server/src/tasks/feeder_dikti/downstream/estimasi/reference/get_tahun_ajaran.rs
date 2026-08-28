@@ -8,9 +8,12 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::models::feeder::akumulasi::estimasi as FeederAkumulasiEstimasi;
-use crate::models::feeder::referensi::tahun_ajaran as tahun_ajaran;
 use crate::tasks::feeder_dikti::downstream::feeder_request::{InputRequestData, RequestData};
 use crate::tasks::Task;
+
+use crate::jobs::feeder_dikti::downstream::reference::get_tahun_ajaran::{
+    GetTahunAjaranResponse, Worker as JobWorker, WorkerArgs,
+};
 
 // Configuration constants
 const TASK_NAME: &str = "EstimateGetTahunAjaran";
@@ -21,14 +24,6 @@ const DEFAULT_LIMIT: i32 = 1000;
 const DEFAULT_ORDER: &str = "";
 const DEFAULT_FILTER: &str = "";
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct GetTahunAjaranResponse {
-    pub id_tahun_ajaran: Option<String>,
-    pub nama_tahun_ajaran: Option<String>,
-    pub a_periode_aktif: Option<String>,
-    pub tanggal_mulai: Option<String>,
-    pub tanggal_selesai: Option<String>,
-}
 
 pub struct EstimateGetTahunAjaran;
 
@@ -154,94 +149,6 @@ impl EstimateGetTahunAjaran {
             _ => None,
         }
     }
-
-    async fn upsert_record(txn: &DatabaseTransaction, record: &GetTahunAjaranResponse) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
-        let id_tahun_ajaran = record
-            .id_tahun_ajaran
-            .clone()
-            .ok_or("id_tahun_ajaran is missing")?;
-
-        let tanggal_mulai = Self::parse_date_string(record.tanggal_mulai.as_ref());
-        let tanggal_selesai = Self::parse_date_string(record.tanggal_selesai.as_ref());
-
-        let sync_time = Local::now().naive_local();
-
-        let existing = tahun_ajaran::Entity::find()
-            .filter(tahun_ajaran::Column::DeletedAt.is_null())
-            .filter(tahun_ajaran::Column::IdTahunAjaran.eq(&id_tahun_ajaran))
-            .one(txn)
-            .await?;
-
-        let action = if let Some(existing_record) = existing {
-            let mut active: tahun_ajaran::ActiveModel = existing_record.into_active_model();
-
-            // Update fields
-            active.nama_tahun_ajaran = Set(record.nama_tahun_ajaran.clone());
-            active.a_periode_aktif = Set(record.a_periode_aktif.clone());
-            active.tanggal_mulai = Set(tanggal_mulai);
-            active.tanggal_selesai = Set(tanggal_selesai);
-
-            active.sync_at = Set(Some(sync_time));
-            active.updated_at = Set(Some(sync_time));
-
-            active.update(txn).await?;
-            "UPDATED"
-        } else {
-            let pk_id = Uuid::new_v4();
-
-            let new_record = tahun_ajaran::ActiveModel {
-                id: Set(pk_id),
-                id_tahun_ajaran: Set(Some(id_tahun_ajaran)),
-                nama_tahun_ajaran: Set(record.nama_tahun_ajaran.clone()),
-                a_periode_aktif: Set(record.a_periode_aktif.clone()),
-                tanggal_mulai: Set(tanggal_mulai),
-                tanggal_selesai: Set(tanggal_selesai),
-
-                sync_at: Set(Some(sync_time)),
-                created_at: Set(Some(sync_time)),
-                updated_at: Set(Some(sync_time)),
-                created_by: Set(None),
-                updated_by: Set(None),
-                deleted_at: Set(None),
-            };
-
-            new_record.insert(txn).await?;
-            "INSERTED"
-        };
-
-
-        Ok(action.to_string())
-    }
-
-
-    async fn process_batch(
-        db: &DatabaseConnection,
-        records: &[GetTahunAjaranResponse],
-    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-        let txn = db.begin().await?;
-        let mut success_count = 0;
-        let mut error_count = 0;
-
-        for (index, record) in records.iter().enumerate() {
-            match Self::upsert_record(&txn, record).await {
-                Ok(_action) => {
-                    success_count += 1;
-                }
-                Err(e) => {
-                    error_count += 1;
-                    eprintln!("  ❌ Record {}/{}: Failed - error: {}", index + 1, records.len(), e);
-                }
-            }
-        }
-
-        if error_count > 0 {
-            eprintln!("⚠️ Batch completed with {} successes and {} errors", success_count, error_count);
-        }
-
-        txn.commit().await?;
-        Ok(())
-    }
-
     async fn fetch_and_process_page(
         db: &DatabaseConnection,
         _institution_id: Uuid,
@@ -277,7 +184,7 @@ impl EstimateGetTahunAjaran {
         }
 
         println!("📦 Fetched {} records at offset={}", count, offset);
-        Self::process_batch(db, &records).await?;
+        JobWorker::perform(db, WorkerArgs { records }).await?;
         println!("✅ Processed batch for offset={}", offset);
 
         Ok(count)

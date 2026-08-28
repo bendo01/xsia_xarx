@@ -8,9 +8,12 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::models::feeder::akumulasi::estimasi as FeederAkumulasiEstimasi;
-use crate::models::feeder::referensi::status_kepegawaian as status_kepegawaian;
 use crate::tasks::feeder_dikti::downstream::feeder_request::{InputRequestData, RequestData};
 use crate::tasks::Task;
+
+use crate::jobs::feeder_dikti::downstream::reference::get_status_kepegawaian::{
+    GetStatusKepegawaianResponse, Worker as JobWorker, WorkerArgs,
+};
 
 // Configuration constants
 const TASK_NAME: &str = "EstimateGetStatusKepegawaian";
@@ -21,11 +24,6 @@ const DEFAULT_LIMIT: i32 = 1000;
 const DEFAULT_ORDER: &str = "";
 const DEFAULT_FILTER: &str = "";
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct GetStatusKepegawaianResponse {
-    pub id_status_pegawai: Option<i32>,
-    pub nama_status_pegawai: Option<String>,
-}
 
 pub struct EstimateGetStatusKepegawaian;
 
@@ -132,85 +130,6 @@ impl EstimateGetStatusKepegawaian {
         txn.commit().await?;
         Ok(())
     }
-
-
-    async fn upsert_record(txn: &DatabaseTransaction, record: &GetStatusKepegawaianResponse) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
-        let id_status_pegawai = record
-            .id_status_pegawai
-            .clone()
-            .ok_or("id_status_pegawai is missing")?;
-
-        let sync_time = Local::now().naive_local();
-
-        let existing = status_kepegawaian::Entity::find()
-            .filter(status_kepegawaian::Column::DeletedAt.is_null())
-            .filter(status_kepegawaian::Column::IdStatusPegawai.eq(id_status_pegawai))
-            .one(txn)
-            .await?;
-
-        let action = if let Some(existing_record) = existing {
-            let mut active: status_kepegawaian::ActiveModel = existing_record.into_active_model();
-
-            // Update fields
-            active.nama_status_pegawai = Set(record.nama_status_pegawai.clone());
-            active.sync_at = Set(Some(sync_time));
-            active.updated_at = Set(Some(sync_time));
-
-            active.update(txn).await?;
-            "UPDATED"
-        } else {
-            let pk_id = Uuid::new_v4();
-
-            let new_record = status_kepegawaian::ActiveModel {
-                id: Set(pk_id),
-                id_status_pegawai: Set(Some(id_status_pegawai)),
-                nama_status_pegawai: Set(record.nama_status_pegawai.clone()),
-
-                sync_at: Set(Some(sync_time)),
-                created_at: Set(Some(sync_time)),
-                updated_at: Set(Some(sync_time)),
-                created_by: Set(None),
-                updated_by: Set(None),
-                deleted_at: Set(None),
-            };
-
-            new_record.insert(txn).await?;
-            "INSERTED"
-        };
-
-
-        Ok(action.to_string())
-    }
-
-
-    async fn process_batch(
-        db: &DatabaseConnection,
-        records: &[GetStatusKepegawaianResponse],
-    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-        let txn = db.begin().await?;
-        let mut success_count = 0;
-        let mut error_count = 0;
-
-        for (index, record) in records.iter().enumerate() {
-            match Self::upsert_record(&txn, record).await {
-                Ok(_action) => {
-                    success_count += 1;
-                }
-                Err(e) => {
-                    error_count += 1;
-                    eprintln!("  ❌ Record {}/{}: Failed - error: {}", index + 1, records.len(), e);
-                }
-            }
-        }
-
-        if error_count > 0 {
-            eprintln!("⚠️ Batch completed with {} successes and {} errors", success_count, error_count);
-        }
-
-        txn.commit().await?;
-        Ok(())
-    }
-
     async fn fetch_and_process_page(
         db: &DatabaseConnection,
         _institution_id: Uuid,
@@ -246,7 +165,7 @@ impl EstimateGetStatusKepegawaian {
         }
 
         println!("📦 Fetched {} records at offset={}", count, offset);
-        Self::process_batch(db, &records).await?;
+        JobWorker::perform(db, WorkerArgs { records }).await?;
         println!("✅ Processed batch for offset={}", offset);
 
         Ok(count)

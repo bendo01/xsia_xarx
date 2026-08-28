@@ -8,9 +8,12 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::models::feeder::akumulasi::estimasi as FeederAkumulasiEstimasi;
-use crate::models::feeder::master::profil_program_studi as profil_program_studi;
 use crate::tasks::feeder_dikti::downstream::feeder_request::{InputRequestData, RequestData};
 use crate::tasks::Task;
+
+use crate::jobs::feeder_dikti::downstream::master::upsert::get_prodi::{
+    GetProdiResponse, Worker as JobWorker, WorkerArgs,
+};
 
 // Configuration constants
 const TASK_NAME: &str = "EstimateGetProdi";
@@ -23,30 +26,9 @@ const DEFAULT_FILTER: &str = "";
 
 /// Feeder model for GetAllProdi endpoint
 /// Returns all study programs across all institutions
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct GetAllProdiResponse {
-    pub id_perguruan_tinggi: Option<Uuid>,
-    pub kode_perguruan_tinggi: Option<String>,
-    pub nama_perguruan_tinggi: Option<String>,
-    pub id_prodi: Option<Uuid>,
-    pub kode_program_studi: Option<String>,
-    pub nama_program_studi: Option<String>,
-    pub status: Option<String>,
-    pub id_jenjang_pendidikan: Option<String>,
-    pub nama_jenjang_pendidikan: Option<String>,
-}
 
 /// Feeder model for GetProdi endpoint
 /// Returns study programs for a specific institution
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct GetProdiResponse {
-    pub id_prodi: Option<Uuid>,
-    pub kode_program_studi: Option<String>,
-    pub nama_program_studi: Option<String>,
-    pub status: Option<String>,
-    pub id_jenjang_pendidikan: Option<String>,
-    pub nama_jenjang_pendidikan: Option<String>,
-}
 
 pub struct EstimateGetProdi;
 
@@ -153,98 +135,6 @@ impl EstimateGetProdi {
         txn.commit().await?;
         Ok(())
     }
-
-
-    async fn upsert_record(txn: &DatabaseTransaction, record: &GetProdiResponse) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
-        let institution_id = std::env::var("CURRENT_INSTITUTION_ID").ok().and_then(|s| Uuid::parse_str(&s).ok());
-        let id_prodi = record
-            .id_prodi
-            .ok_or("id_prodi is missing")?;
-
-        let sync_time = Local::now().naive_local();
-
-        let existing = profil_program_studi::Entity::find()
-            .filter(profil_program_studi::Column::DeletedAt.is_null())
-            .filter(profil_program_studi::Column::IdProdi.eq(id_prodi))
-            .one(txn)
-            .await?;
-
-        let action = if let Some(existing_record) = existing {
-            let mut active: profil_program_studi::ActiveModel = existing_record.into_active_model();
-
-            // Update fields that are present in GetProdiResponse
-            active.id_perguruan_tinggi = Set(institution_id);
-            active.kode_program_studi = Set(record.kode_program_studi.clone());
-            active.nama_program_studi = Set(record.nama_program_studi.clone());
-            active.status = Set(record.status.clone());
-            active.id_jenjang_pendidikan = Set(record.id_jenjang_pendidikan.clone());
-            active.nama_jenjang_pendidikan = Set(record.nama_jenjang_pendidikan.clone());
-            active.sync_at = Set(Some(sync_time));
-            active.updated_at = Set(Some(sync_time));
-
-            active.update(txn).await?;
-            "UPDATED"
-        } else {
-            let pk_id = Uuid::new_v4();
-
-            let new_record = profil_program_studi::ActiveModel {
-                id: Set(pk_id),
-                id_prodi: Set(Some(id_prodi)),
-                id_perguruan_tinggi: Set(institution_id),
-                // Fields missing in GetProdiResponse but present in Entity
-                kode_perguruan_tinggi: Set(None),
-                nama_perguruan_tinggi: Set(None),
-
-                kode_program_studi: Set(record.kode_program_studi.clone()),
-                nama_program_studi: Set(record.nama_program_studi.clone()),
-                status: Set(record.status.clone()),
-                id_jenjang_pendidikan: Set(record.id_jenjang_pendidikan.clone()),
-                nama_jenjang_pendidikan: Set(record.nama_jenjang_pendidikan.clone()),
-                sync_at: Set(Some(sync_time)),
-                created_at: Set(Some(sync_time)),
-                updated_at: Set(Some(sync_time)),
-                created_by: Set(None),
-                updated_by: Set(None),
-                deleted_at: Set(None),
-            };
-
-            new_record.insert(txn).await?;
-            "INSERTED"
-        };
-
-
-        Ok(action.to_string())
-    }
-
-
-    async fn process_batch(
-        db: &DatabaseConnection,
-        records: &[GetProdiResponse],
-    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-        let txn = db.begin().await?;
-        let mut success_count = 0;
-        let mut error_count = 0;
-
-        for (index, record) in records.iter().enumerate() {
-            match Self::upsert_record(&txn, record).await {
-                Ok(_action) => {
-                    success_count += 1;
-                }
-                Err(e) => {
-                    error_count += 1;
-                    eprintln!("  ❌ Record {}/{}: Failed - error: {}", index + 1, records.len(), e);
-                }
-            }
-        }
-
-        if error_count > 0 {
-            eprintln!("⚠️ Batch completed with {} successes and {} errors", success_count, error_count);
-        }
-
-        txn.commit().await?;
-        Ok(())
-    }
-
     async fn fetch_and_process_page(
         db: &DatabaseConnection,
         _institution_id: Uuid,
@@ -280,7 +170,7 @@ impl EstimateGetProdi {
         }
 
         println!("📦 Fetched {} records at offset={}", count, offset);
-        Self::process_batch(db, &records).await?;
+        JobWorker::perform(db, WorkerArgs { records }).await?;
         println!("✅ Processed batch for offset={}", offset);
 
         Ok(count)

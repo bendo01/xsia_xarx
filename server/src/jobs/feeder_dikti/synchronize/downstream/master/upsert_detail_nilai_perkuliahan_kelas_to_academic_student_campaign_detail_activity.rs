@@ -434,7 +434,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         let active = detail_activities::ActiveModel {
             id: Set(Uuid::new_v4()),
             activity_id: Set(student_activity.id),
-            teach_id: Set(teach.id),
+            teach_id: Set(Some(teach.id)),
             course_id: Set(course.id),
             mark: Set(Some(mark)),
             grade_id: Set(Some(grade_id)),

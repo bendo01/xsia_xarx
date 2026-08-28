@@ -8,9 +8,12 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::models::feeder::akumulasi::estimasi as FeederAkumulasiEstimasi;
-use crate::models::feeder::referensi::jalur_masuk as jalur_masuk;
 use crate::tasks::feeder_dikti::downstream::feeder_request::{InputRequestData, RequestData};
 use crate::tasks::Task;
+
+use crate::jobs::feeder_dikti::downstream::reference::get_jalur_masuk::{
+    GetJalurMasukResponse, Worker as JobWorker, WorkerArgs,
+};
 
 // Configuration constants
 const TASK_NAME: &str = "EstimateGetJalurMasuk";
@@ -21,11 +24,6 @@ const DEFAULT_LIMIT: i32 = 1000;
 const DEFAULT_ORDER: &str = "";
 const DEFAULT_FILTER: &str = "";
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct GetJalurMasukResponse {
-    pub id_jalur_masuk: Option<String>,
-    pub nama_jalur_masuk: String,
-}
 
 pub struct EstimateGetJalurMasuk;
 
@@ -132,85 +130,6 @@ impl EstimateGetJalurMasuk {
         txn.commit().await?;
         Ok(())
     }
-
-
-    async fn upsert_record(txn: &DatabaseTransaction, record: &GetJalurMasukResponse) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
-        let id_jalur_masuk = record
-            .id_jalur_masuk
-            .clone()
-            .ok_or("id_jalur_masuk is missing")?;
-
-        let sync_time = Local::now().naive_local();
-
-        let existing = jalur_masuk::Entity::find()
-            .filter(jalur_masuk::Column::DeletedAt.is_null())
-            .filter(jalur_masuk::Column::IdJalurMasuk.eq(id_jalur_masuk.clone()))
-            .one(txn)
-            .await?;
-
-        let action = if let Some(existing_record) = existing {
-            let mut active: jalur_masuk::ActiveModel = existing_record.into_active_model();
-
-            // Update fields that are present in GetJalurMasukResponse
-            active.nama_jalur_masuk = Set(Some(record.nama_jalur_masuk.clone()));
-            active.sync_at = Set(Some(sync_time));
-            active.updated_at = Set(Some(sync_time));
-
-            active.update(txn).await?;
-            "UPDATED"
-        } else {
-            let pk_id = Uuid::new_v4();
-
-            let new_record = jalur_masuk::ActiveModel {
-                id: Set(pk_id),
-                id_jalur_masuk: Set(Some(id_jalur_masuk)),
-                nama_jalur_masuk: Set(Some(record.nama_jalur_masuk.clone())),
-
-                sync_at: Set(Some(sync_time)),
-                created_at: Set(Some(sync_time)),
-                updated_at: Set(Some(sync_time)),
-                created_by: Set(None),
-                updated_by: Set(None),
-                deleted_at: Set(None),
-            };
-
-            new_record.insert(txn).await?;
-            "INSERTED"
-        };
-
-
-        Ok(action.to_string())
-    }
-
-
-    async fn process_batch(
-        db: &DatabaseConnection,
-        records: &[GetJalurMasukResponse],
-    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-        let txn = db.begin().await?;
-        let mut success_count = 0;
-        let mut error_count = 0;
-
-        for (index, record) in records.iter().enumerate() {
-            match Self::upsert_record(&txn, record).await {
-                Ok(_action) => {
-                    success_count += 1;
-                }
-                Err(e) => {
-                    error_count += 1;
-                    eprintln!("  ❌ Record {}/{}: Failed - error: {}", index + 1, records.len(), e);
-                }
-            }
-        }
-
-        if error_count > 0 {
-            eprintln!("⚠️ Batch completed with {} successes and {} errors", success_count, error_count);
-        }
-
-        txn.commit().await?;
-        Ok(())
-    }
-
     async fn fetch_and_process_page(
         db: &DatabaseConnection,
         _institution_id: Uuid,
@@ -246,7 +165,7 @@ impl EstimateGetJalurMasuk {
         }
 
         println!("📦 Fetched {} records at offset={}", count, offset);
-        Self::process_batch(db, &records).await?;
+        JobWorker::perform(db, WorkerArgs { records }).await?;
         println!("✅ Processed batch for offset={}", offset);
 
         Ok(count)

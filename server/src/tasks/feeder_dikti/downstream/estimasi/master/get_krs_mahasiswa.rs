@@ -8,9 +8,12 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::models::feeder::akumulasi::estimasi as FeederAkumulasiEstimasi;
-use crate::models::feeder::master::kartu_rencana_studi_mahasiswa as kartu_rencana_studi_mahasiswa;
 use crate::tasks::feeder_dikti::downstream::feeder_request::{InputRequestData, RequestData};
 use crate::tasks::Task;
+
+use crate::jobs::feeder_dikti::downstream::master::upsert::get_krs_mahasiswa::{
+    ModelInput, Worker as JobWorker, WorkerArgs,
+};
 
 // Configuration constants
 const TASK_NAME: &str = "EstimateKRSMahasiswa";
@@ -21,26 +24,6 @@ const DEFAULT_LIMIT: i32 = 1000;
 const DEFAULT_ORDER: &str = "nim ASC";
 const DEFAULT_FILTER: &str = "";
 
-use crate::library::deserialization::de_opt_f32;
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct ModelInput {
-    pub id: Option<Uuid>,
-    pub id_registrasi_mahasiswa: Option<Uuid>,
-    pub id_periode: Option<String>,
-    pub id_prodi: Option<Uuid>,
-    pub nama_program_studi: Option<String>,
-    pub id_matkul: Option<Uuid>,
-    pub kode_mata_kuliah: Option<String>,
-    pub nama_mata_kuliah: Option<String>,
-    pub id_kelas: Option<Uuid>,
-    pub nama_kelas_kuliah: Option<String>,
-    #[serde(deserialize_with = "de_opt_f32")]
-    pub sks_mata_kuliah: Option<f32>,
-    pub nim: Option<String>,
-    pub nama_mahasiswa: Option<String>,
-    pub angkatan: Option<String>,
-}
 
 pub struct EstimateKRSMahasiswa;
 
@@ -163,131 +146,6 @@ impl EstimateKRSMahasiswa {
     ///
     /// # Returns
     /// * `Result<String>` - "INSERTED" or "UPDATED" on success, error otherwise
-    async fn upsert_record(txn: &DatabaseTransaction, record: &ModelInput) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
-        // Start transaction
-        let sync_time = Local::now().naive_local();
-
-        // Build query to find existing record by unique combination
-        let mut query = kartu_rencana_studi_mahasiswa::Entity::find()
-            .filter(kartu_rencana_studi_mahasiswa::Column::DeletedAt.is_null());
-
-        // Filter by id_registrasi_mahasiswa if present
-        if let Some(id_reg) = record.id_registrasi_mahasiswa {
-            query = query
-                .filter(kartu_rencana_studi_mahasiswa::Column::IdRegistrasiMahasiswa.eq(id_reg));
-        }
-
-        // Filter by id_periode if present
-        if let Some(ref id_periode) = record.id_periode {
-            query = query
-                .filter(kartu_rencana_studi_mahasiswa::Column::IdPeriode.eq(id_periode.clone()));
-        }
-
-        // Filter by id_kelas if present
-        if let Some(id_kelas) = record.id_kelas {
-            query = query.filter(kartu_rencana_studi_mahasiswa::Column::IdKelas.eq(id_kelas));
-        }
-
-        // Filter by id_kelas if present
-        if let Some(id_prodi) = record.id_prodi {
-            query = query.filter(kartu_rencana_studi_mahasiswa::Column::IdProdi.eq(id_prodi));
-        }
-
-        // Filter by id_kelas if present
-        if let Some(id_matkul) = record.id_matkul {
-            query = query.filter(kartu_rencana_studi_mahasiswa::Column::IdMatkul.eq(id_matkul));
-        }
-
-        let existing = query.one(txn).await?;
-
-        let action = if let Some(existing_record) = existing {
-            // Update existing record
-            let mut active: kartu_rencana_studi_mahasiswa::ActiveModel =
-                existing_record.into_active_model();
-
-            active.id_registrasi_mahasiswa = Set(record.id_registrasi_mahasiswa);
-            active.id_periode = Set(record.id_periode.clone());
-            active.id_prodi = Set(record.id_prodi);
-            active.nama_program_studi = Set(record.nama_program_studi.clone());
-            active.id_matkul = Set(record.id_matkul);
-            active.kode_mata_kuliah = Set(record.kode_mata_kuliah.clone());
-            active.nama_mata_kuliah = Set(record.nama_mata_kuliah.clone());
-            active.id_kelas = Set(record.id_kelas);
-            active.nama_kelas_kuliah = Set(record.nama_kelas_kuliah.clone());
-            active.sks_mata_kuliah = Set(record.sks_mata_kuliah);
-            active.nim = Set(record.nim.clone());
-            active.nama_mahasiswa = Set(record.nama_mahasiswa.clone());
-            active.angkatan = Set(record.angkatan.clone());
-            active.sync_at = Set(Some(sync_time));
-            active.updated_at = Set(Some(sync_time));
-
-            active.update(txn).await?;
-            "UPDATED"
-        } else {
-            // Insert new record
-            let pk_id = Uuid::new_v4();
-
-            let new_record = kartu_rencana_studi_mahasiswa::ActiveModel {
-                id: Set(pk_id),
-                id_registrasi_mahasiswa: Set(record.id_registrasi_mahasiswa),
-                id_periode: Set(record.id_periode.clone()),
-                id_prodi: Set(record.id_prodi),
-                nama_program_studi: Set(record.nama_program_studi.clone()),
-                id_matkul: Set(record.id_matkul),
-                kode_mata_kuliah: Set(record.kode_mata_kuliah.clone()),
-                nama_mata_kuliah: Set(record.nama_mata_kuliah.clone()),
-                id_kelas: Set(record.id_kelas),
-                nama_kelas_kuliah: Set(record.nama_kelas_kuliah.clone()),
-                sks_mata_kuliah: Set(record.sks_mata_kuliah),
-                nim: Set(record.nim.clone()),
-                nama_mahasiswa: Set(record.nama_mahasiswa.clone()),
-                angkatan: Set(record.angkatan.clone()),
-                sync_at: Set(Some(sync_time)),
-                created_at: Set(Some(sync_time)),
-                updated_at: Set(Some(sync_time)),
-                created_by: Set(None),
-                updated_by: Set(None),
-                deleted_at: Set(None),
-            };
-
-            new_record.insert(txn).await?;
-            "INSERTED"
-        };
-
-        // Commit transaction
-
-        Ok(action.to_string())
-    }
-
-
-    async fn process_batch(
-        db: &DatabaseConnection,
-        records: &[ModelInput],
-    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-        let txn = db.begin().await?;
-        let mut success_count = 0;
-        let mut error_count = 0;
-
-        for (index, record) in records.iter().enumerate() {
-            match Self::upsert_record(&txn, record).await {
-                Ok(_action) => {
-                    success_count += 1;
-                }
-                Err(e) => {
-                    error_count += 1;
-                    eprintln!("  ❌ Record {}/{}: Failed - error: {}", index + 1, records.len(), e);
-                }
-            }
-        }
-
-        if error_count > 0 {
-            eprintln!("⚠️ Batch completed with {} successes and {} errors", success_count, error_count);
-        }
-
-        txn.commit().await?;
-        Ok(())
-    }
-
     async fn fetch_and_process_page(
         db: &DatabaseConnection,
         _institution_id: Uuid,
@@ -323,7 +181,7 @@ impl EstimateKRSMahasiswa {
         }
 
         println!("📦 Fetched {} records at offset={}", count, offset);
-        Self::process_batch(db, &records).await?;
+        JobWorker::perform(db, WorkerArgs { records }).await?;
         println!("✅ Processed batch for offset={}", offset);
 
         Ok(count)

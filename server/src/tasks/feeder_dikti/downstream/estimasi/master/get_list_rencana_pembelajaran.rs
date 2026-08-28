@@ -8,9 +8,12 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::models::feeder::akumulasi::estimasi as FeederAkumulasiEstimasi;
-use crate::models::feeder::master::rencana_pembelajaran as rencana_pembelajaran;
 use crate::tasks::feeder_dikti::downstream::feeder_request::{InputRequestData, RequestData};
 use crate::tasks::Task;
+
+use crate::jobs::feeder_dikti::downstream::master::upsert::get_list_rencana_pembelajaran::{
+    ModelInput, Worker as JobWorker, WorkerArgs,
+};
 
 // Configuration constants
 const TASK_NAME: &str = "EstimateListRencanaPembelajaran";
@@ -21,24 +24,6 @@ const DEFAULT_LIMIT: i32 = 1000;
 const DEFAULT_ORDER: &str = "";
 const DEFAULT_FILTER: &str = "";
 
-use crate::library::deserialization::{de_opt_f32, de_opt_i32};
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct ModelInput {
-    pub id_rencana_ajar: Uuid,
-    pub id_matkul: Option<Uuid>,
-    pub nama_mata_kuliah: Option<String>,
-    pub kode_mata_kuliah: Option<String>,
-    #[serde(deserialize_with = "de_opt_f32")]
-    pub sks_mata_kuliah: Option<f32>,
-    pub id_prodi: Option<Uuid>,
-    pub nama_program_studi: Option<String>,
-    #[serde(deserialize_with = "de_opt_i32")]
-    pub pertemuan: Option<i32>,
-    pub materi_indonesia: Option<String>,
-    pub materi_inggris: Option<String>,
-    pub status_sync: Option<String>,
-}
 
 pub struct EstimateListRencanaPembelajaran;
 
@@ -145,98 +130,6 @@ impl EstimateListRencanaPembelajaran {
         txn.commit().await?;
         Ok(())
     }
-
-
-    async fn upsert_record(txn: &DatabaseTransaction, record: &ModelInput) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
-        let id_rencana_ajar = record.id_rencana_ajar;
-
-        let sync_time = Local::now().naive_local();
-
-        let existing = rencana_pembelajaran::Entity::find()
-            .filter(rencana_pembelajaran::Column::DeletedAt.is_null())
-            .filter(rencana_pembelajaran::Column::IdRencanaAjar.eq(id_rencana_ajar))
-            .one(txn)
-            .await?;
-
-        let action = if let Some(existing_record) = existing {
-            let mut active: rencana_pembelajaran::ActiveModel = existing_record.into_active_model();
-
-            active.id_matkul = Set(record.id_matkul);
-            active.nama_mata_kuliah = Set(record.nama_mata_kuliah.clone());
-            active.kode_mata_kuliah = Set(record.kode_mata_kuliah.clone());
-            active.sks_mata_kuliah = Set(record.sks_mata_kuliah);
-            active.id_prodi = Set(record.id_prodi);
-            active.nama_program_studi = Set(record.nama_program_studi.clone());
-            active.pertemuan = Set(record.pertemuan);
-            active.materi_indonesia = Set(record.materi_indonesia.clone());
-            active.materi_inggris = Set(record.materi_inggris.clone());
-            active.status_sync = Set(record.status_sync.clone());
-            active.sync_at = Set(Some(sync_time));
-            active.updated_at = Set(Some(sync_time));
-
-            active.update(txn).await?;
-            "UPDATED"
-        } else {
-            let pk_id = Uuid::new_v4();
-
-            let new_record = rencana_pembelajaran::ActiveModel {
-                id: Set(pk_id),
-                id_rencana_ajar: Set(Some(id_rencana_ajar)),
-                id_matkul: Set(record.id_matkul),
-                nama_mata_kuliah: Set(record.nama_mata_kuliah.clone()),
-                kode_mata_kuliah: Set(record.kode_mata_kuliah.clone()),
-                sks_mata_kuliah: Set(record.sks_mata_kuliah),
-                id_prodi: Set(record.id_prodi),
-                nama_program_studi: Set(record.nama_program_studi.clone()),
-                pertemuan: Set(record.pertemuan),
-                materi_indonesia: Set(record.materi_indonesia.clone()),
-                materi_inggris: Set(record.materi_inggris.clone()),
-                status_sync: Set(record.status_sync.clone()),
-                sync_at: Set(Some(sync_time)),
-                created_at: Set(Some(sync_time)),
-                updated_at: Set(Some(sync_time)),
-                created_by: Set(None),
-                updated_by: Set(None),
-                deleted_at: Set(None),
-            };
-
-            new_record.insert(txn).await?;
-            "INSERTED"
-        };
-
-
-        Ok(action.to_string())
-    }
-
-
-    async fn process_batch(
-        db: &DatabaseConnection,
-        records: &[ModelInput],
-    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-        let txn = db.begin().await?;
-        let mut success_count = 0;
-        let mut error_count = 0;
-
-        for (index, record) in records.iter().enumerate() {
-            match Self::upsert_record(&txn, record).await {
-                Ok(_action) => {
-                    success_count += 1;
-                }
-                Err(e) => {
-                    error_count += 1;
-                    eprintln!("  ❌ Record {}/{}: Failed - error: {}", index + 1, records.len(), e);
-                }
-            }
-        }
-
-        if error_count > 0 {
-            eprintln!("⚠️ Batch completed with {} successes and {} errors", success_count, error_count);
-        }
-
-        txn.commit().await?;
-        Ok(())
-    }
-
     async fn fetch_and_process_page(
         db: &DatabaseConnection,
         _institution_id: Uuid,
@@ -272,7 +165,7 @@ impl EstimateListRencanaPembelajaran {
         }
 
         println!("📦 Fetched {} records at offset={}", count, offset);
-        Self::process_batch(db, &records).await?;
+        JobWorker::perform(db, WorkerArgs { records }).await?;
         println!("✅ Processed batch for offset={}", offset);
 
         Ok(count)

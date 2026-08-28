@@ -8,9 +8,12 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::models::feeder::akumulasi::estimasi as FeederAkumulasiEstimasi;
-use crate::models::feeder::referensi::pembiayaan as pembiayaan;
 use crate::tasks::feeder_dikti::downstream::feeder_request::{InputRequestData, RequestData};
 use crate::tasks::Task;
+
+use crate::jobs::feeder_dikti::downstream::reference::get_pembiayaan::{
+    GetPembiayaanResponse, Worker as JobWorker, WorkerArgs,
+};
 
 // Configuration constants
 const TASK_NAME: &str = "EstimateGetPembiayaan";
@@ -21,11 +24,6 @@ const DEFAULT_LIMIT: i32 = 1000;
 const DEFAULT_ORDER: &str = "";
 const DEFAULT_FILTER: &str = "";
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct GetPembiayaanResponse {
-    pub id_pembiayaan: Option<String>,
-    pub nama_pembiayaan: Option<String>,
-}
 
 pub struct EstimateGetPembiayaan;
 
@@ -132,85 +130,6 @@ impl EstimateGetPembiayaan {
         txn.commit().await?;
         Ok(())
     }
-
-
-    async fn upsert_record(txn: &DatabaseTransaction, record: &GetPembiayaanResponse) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
-        let id_pembiayaan = record
-            .id_pembiayaan
-            .clone()
-            .ok_or("id_pembiayaan is missing")?;
-
-        let sync_time = Local::now().naive_local();
-
-        let existing = pembiayaan::Entity::find()
-            .filter(pembiayaan::Column::DeletedAt.is_null())
-            .filter(pembiayaan::Column::IdPembiayaan.eq(&id_pembiayaan))
-            .one(txn)
-            .await?;
-
-        let action = if let Some(existing_record) = existing {
-            let mut active: pembiayaan::ActiveModel = existing_record.into_active_model();
-
-            // Update fields
-            active.nama_pembiayaan = Set(record.nama_pembiayaan.clone());
-            active.sync_at = Set(Some(sync_time));
-            active.updated_at = Set(Some(sync_time));
-
-            active.update(txn).await?;
-            "UPDATED"
-        } else {
-            let pk_id = Uuid::new_v4();
-
-            let new_record = pembiayaan::ActiveModel {
-                id: Set(pk_id),
-                id_pembiayaan: Set(Some(id_pembiayaan)),
-                nama_pembiayaan: Set(record.nama_pembiayaan.clone()),
-
-                sync_at: Set(Some(sync_time)),
-                created_at: Set(Some(sync_time)),
-                updated_at: Set(Some(sync_time)),
-                created_by: Set(None),
-                updated_by: Set(None),
-                deleted_at: Set(None),
-            };
-
-            new_record.insert(txn).await?;
-            "INSERTED"
-        };
-
-
-        Ok(action.to_string())
-    }
-
-
-    async fn process_batch(
-        db: &DatabaseConnection,
-        records: &[GetPembiayaanResponse],
-    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-        let txn = db.begin().await?;
-        let mut success_count = 0;
-        let mut error_count = 0;
-
-        for (index, record) in records.iter().enumerate() {
-            match Self::upsert_record(&txn, record).await {
-                Ok(_action) => {
-                    success_count += 1;
-                }
-                Err(e) => {
-                    error_count += 1;
-                    eprintln!("  ❌ Record {}/{}: Failed - error: {}", index + 1, records.len(), e);
-                }
-            }
-        }
-
-        if error_count > 0 {
-            eprintln!("⚠️ Batch completed with {} successes and {} errors", success_count, error_count);
-        }
-
-        txn.commit().await?;
-        Ok(())
-    }
-
     async fn fetch_and_process_page(
         db: &DatabaseConnection,
         _institution_id: Uuid,
@@ -246,7 +165,7 @@ impl EstimateGetPembiayaan {
         }
 
         println!("📦 Fetched {} records at offset={}", count, offset);
-        Self::process_batch(db, &records).await?;
+        JobWorker::perform(db, WorkerArgs { records }).await?;
         println!("✅ Processed batch for offset={}", offset);
 
         Ok(count)

@@ -12,6 +12,10 @@ use crate::models::feeder::referensi::agama as agama;
 use crate::tasks::feeder_dikti::downstream::feeder_request::{InputRequestData, RequestData};
 use crate::tasks::Task;
 
+use crate::jobs::feeder_dikti::downstream::reference::get_agama::{
+    GetAgamaResponse, Worker as AgamaWorker, WorkerArgs,
+};
+
 // Configuration constants
 const TASK_NAME: &str = "EstimateGetAgama";
 const API_ACTION: &str = "GetAgama";
@@ -20,12 +24,6 @@ const API_ACTION: &str = "GetAgama";
 const DEFAULT_LIMIT: i32 = 1000;
 const DEFAULT_ORDER: &str = "";
 const DEFAULT_FILTER: &str = "";
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct GetAgamaResponse {
-    pub id_agama: Option<i32>,
-    pub nama_agama: String,
-}
 
 pub struct EstimateGetAgama;
 
@@ -58,23 +56,20 @@ impl EstimateGetAgama {
         existing_record: Option<FeederAkumulasiEstimasi::Model>,
     ) -> Result<i32, Box<dyn std::error::Error + Send + Sync>> {
         let txn = db.begin().await?;
+        let now = Local::now().naive_local();
 
         let limit = match existing_record {
             Some(record) => {
-                let limit = record.total_data_per_request.unwrap_or(DEFAULT_LIMIT);
-                let mut active: FeederAkumulasiEstimasi::ActiveModel = record.into_active_model();
-                active.last_offset = Set(Some(0));
-                active.total_data = Set(Some(0));
-                active.updated_at = Set(Some(Local::now().naive_local()));
-
-                active.update(&txn).await?;
-                println!("Reset existing {} progress record", TASK_NAME);
-                limit
+                println!(
+                    "Found existing progress for {}: last_offset={}, total_data={}",
+                    TASK_NAME,
+                    record.last_offset.unwrap_or(0),
+                    record.total_data.unwrap_or(0)
+                );
+                record.total_data_per_request.unwrap_or(DEFAULT_LIMIT)
             }
             None => {
                 let pk_id = Uuid::new_v4();
-                let now = Local::now().naive_local();
-
                 let new_record = FeederAkumulasiEstimasi::ActiveModel {
                     id: Set(pk_id),
                     institution_id: Set(institution_id),
@@ -133,83 +128,6 @@ impl EstimateGetAgama {
         Ok(())
     }
 
-
-    async fn upsert_record(txn: &DatabaseTransaction, record: &GetAgamaResponse) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
-        let id_agama = record
-            .id_agama
-            .ok_or("id_agama is missing")?;
-
-        let sync_time = Local::now().naive_local();
-
-        let existing = agama::Entity::find()
-            .filter(agama::Column::DeletedAt.is_null())
-            .filter(agama::Column::IdAgama.eq(id_agama))
-            .one(txn)
-            .await?;
-
-        let action = if let Some(existing_record) = existing {
-            let mut active: agama::ActiveModel = existing_record.into_active_model();
-
-            // Update fields that are present in GetAgamaResponse
-            active.nama_agama = Set(Some(record.nama_agama.clone()));
-            active.sync_at = Set(Some(sync_time));
-            active.updated_at = Set(Some(sync_time));
-
-            active.update(txn).await?;
-            "UPDATED"
-        } else {
-            let pk_id = Uuid::new_v4();
-
-            let new_record = agama::ActiveModel {
-                id: Set(pk_id),
-                id_agama: Set(Some(id_agama)),
-                nama_agama: Set(Some(record.nama_agama.clone())),
-
-                sync_at: Set(Some(sync_time)),
-                created_at: Set(Some(sync_time)),
-                updated_at: Set(Some(sync_time)),
-                created_by: Set(None),
-                updated_by: Set(None),
-                deleted_at: Set(None),
-            };
-
-            new_record.insert(txn).await?;
-            "INSERTED"
-        };
-
-
-        Ok(action.to_string())
-    }
-
-
-    async fn process_batch(
-        db: &DatabaseConnection,
-        records: &[GetAgamaResponse],
-    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-        let txn = db.begin().await?;
-        let mut success_count = 0;
-        let mut error_count = 0;
-
-        for (index, record) in records.iter().enumerate() {
-            match Self::upsert_record(&txn, record).await {
-                Ok(_action) => {
-                    success_count += 1;
-                }
-                Err(e) => {
-                    error_count += 1;
-                    eprintln!("  ❌ Record {}/{}: Failed - error: {}", index + 1, records.len(), e);
-                }
-            }
-        }
-
-        if error_count > 0 {
-            eprintln!("⚠️ Batch completed with {} successes and {} errors", success_count, error_count);
-        }
-
-        txn.commit().await?;
-        Ok(())
-    }
-
     async fn fetch_and_process_page(
         db: &DatabaseConnection,
         _institution_id: Uuid,
@@ -245,7 +163,7 @@ impl EstimateGetAgama {
         }
 
         println!("📦 Fetched {} records at offset={}", count, offset);
-        Self::process_batch(db, &records).await?;
+        AgamaWorker::perform(db, WorkerArgs { records }).await?;
         println!("✅ Processed batch for offset={}", offset);
 
         Ok(count)

@@ -8,9 +8,12 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::models::feeder::akumulasi::estimasi as FeederAkumulasiEstimasi;
-use crate::models::feeder::master::periode_perkuliahan as periode_perkuliahan;
 use crate::tasks::feeder_dikti::downstream::feeder_request::{InputRequestData, RequestData};
 use crate::tasks::Task;
+
+use crate::jobs::feeder_dikti::downstream::master::upsert::get_list_periode_perkuliahan::{
+    ModelInputListPeriodePerkuliahan, Worker as JobWorker, WorkerArgs,
+};
 
 // Configuration constants
 const TASK_NAME: &str = "EstimateListPeriodePerkuliahan";
@@ -21,65 +24,10 @@ const DEFAULT_LIMIT: i32 = 1000;
 const DEFAULT_ORDER: &str = "id_semester DESC";
 const DEFAULT_FILTER: &str = "";
 
-use crate::library::deserialization::{de_opt_date_dmy, de_opt_i32};
 
 /// Model for GetListPeriodePerkuliahan API response
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ModelInputListPeriodePerkuliahan {
-    pub id_prodi: Uuid,
-    pub nama_program_studi: String,
-    pub id_semester: String,
-    pub nama_semester: String,
-    #[serde(deserialize_with = "de_opt_i32")]
-    pub jumlah_target_mahasiswa_baru: Option<i32>,
-    #[serde(deserialize_with = "de_opt_date_dmy")]
-    pub tanggal_awal_perkuliahan: Option<NaiveDate>,
-    #[serde(deserialize_with = "de_opt_date_dmy")]
-    pub tanggal_akhir_perkuliahan: Option<NaiveDate>,
-    #[serde(deserialize_with = "de_opt_i32")]
-    pub calon_ikut_seleksi: Option<i32>,
-    #[serde(deserialize_with = "de_opt_i32")]
-    pub calon_lulus_seleksi: Option<i32>,
-    #[serde(deserialize_with = "de_opt_i32")]
-    pub daftar_sbg_mhs: Option<i32>,
-    #[serde(deserialize_with = "de_opt_i32")]
-    pub pst_undur_diri: Option<i32>,
-    #[serde(deserialize_with = "de_opt_i32")]
-    pub jml_mgu_kul: Option<i32>,
-    pub metode_kul: Option<String>,
-    pub metode_kul_eks: Option<String>,
-    #[serde(deserialize_with = "de_opt_date_dmy")]
-    pub tgl_create: Option<NaiveDate>,
-    #[serde(deserialize_with = "de_opt_date_dmy")]
-    pub last_update: Option<NaiveDate>,
-    pub status_sync: String,
-}
 
 /// Model for GetDetailPeriodePerkuliahan API response
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ModelInputDetailPeriodePerkuliahan {
-    pub id_prodi: Uuid,
-    pub nama_program_studi: String,
-    pub id_semester: String,
-    pub nama_semester: String,
-    #[serde(deserialize_with = "de_opt_i32")]
-    pub jumlah_target_mahasiswa_baru: Option<i32>,
-    #[serde(deserialize_with = "de_opt_i32")]
-    pub jumlah_pendaftar_ikut_seleksi: Option<i32>,
-    #[serde(deserialize_with = "de_opt_i32")]
-    pub jumlah_pendaftar_lulus_seleksi: Option<i32>,
-    #[serde(deserialize_with = "de_opt_i32")]
-    pub jumlah_daftar_ulang: Option<i32>,
-    #[serde(deserialize_with = "de_opt_i32")]
-    pub jumlah_mengundurkan_diri: Option<i32>,
-    #[serde(deserialize_with = "de_opt_date_dmy")]
-    pub tanggal_awal_perkuliahan: Option<NaiveDate>,
-    #[serde(deserialize_with = "de_opt_date_dmy")]
-    pub tanggal_akhir_perkuliahan: Option<NaiveDate>,
-    #[serde(deserialize_with = "de_opt_i32")]
-    pub jumlah_minggu_pertemuan: Option<i32>,
-    pub status_sync: String,
-}
 
 pub struct EstimateListPeriodePerkuliahan;
 
@@ -200,117 +148,6 @@ impl EstimateListPeriodePerkuliahan {
     ///
     /// # Returns
     /// * `Result<String>` - "INSERTED" or "UPDATED" on success, error otherwise
-    async fn upsert_record(txn: &DatabaseTransaction, record: &ModelInputListPeriodePerkuliahan) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
-        // Start transaction
-        let sync_time = Local::now().naive_local();
-
-        // Check if record exists by unique constraint (id_prodi + id_semester)
-        let existing = periode_perkuliahan::Entity::find()
-            .filter(periode_perkuliahan::Column::DeletedAt.is_null())
-            .filter(periode_perkuliahan::Column::IdProdi.eq(record.id_prodi))
-            .filter(periode_perkuliahan::Column::IdSemester.eq(&record.id_semester))
-            .one(txn)
-            .await?;
-
-        let action = if let Some(existing_record) = existing {
-            // Update existing record
-            let mut active: periode_perkuliahan::ActiveModel = existing_record.into_active_model();
-
-            active.nama_program_studi = Set(Some(record.nama_program_studi.clone()));
-            active.nama_semester = Set(Some(record.nama_semester.clone()));
-            active.jumlah_target_mahasiswa_baru = Set(record.jumlah_target_mahasiswa_baru);
-            active.tanggal_awal_perkuliahan = Set(record.tanggal_awal_perkuliahan);
-            active.tanggal_akhir_perkuliahan = Set(record.tanggal_akhir_perkuliahan);
-
-            // Map GetListPeriodePerkuliahan fields to database columns
-            active.jumlah_pendaftar_ikut_seleksi = Set(record.calon_ikut_seleksi);
-            active.jumlah_pendaftar_lulus_seleksi = Set(record.calon_lulus_seleksi);
-            active.jumlah_daftar_ulang = Set(record.daftar_sbg_mhs);
-            active.jumlah_mengundurkan_diri = Set(record.pst_undur_diri);
-            active.jumlah_minggu_pertemuan = Set(record.jml_mgu_kul);
-
-            active.metode_kul = Set(record.metode_kul.clone());
-            active.metode_kul_eks = Set(record.metode_kul_eks.clone());
-            active.tgl_create = Set(record.tgl_create);
-            active.last_update = Set(record.last_update);
-            active.status_sync = Set(Some(record.status_sync.clone()));
-            active.sync_at = Set(Some(sync_time));
-            active.updated_at = Set(Some(sync_time));
-
-            active.update(txn).await?;
-
-            "UPDATED"
-        } else {
-            // Insert new record
-            let pk_id = Uuid::new_v4();
-
-            let new_record = periode_perkuliahan::ActiveModel {
-                id: Set(pk_id),
-                id_prodi: Set(Some(record.id_prodi)),
-                nama_program_studi: Set(Some(record.nama_program_studi.clone())),
-                id_semester: Set(Some(record.id_semester.clone())),
-                nama_semester: Set(Some(record.nama_semester.clone())),
-                jumlah_target_mahasiswa_baru: Set(record.jumlah_target_mahasiswa_baru),
-                tanggal_awal_perkuliahan: Set(record.tanggal_awal_perkuliahan),
-                tanggal_akhir_perkuliahan: Set(record.tanggal_akhir_perkuliahan),
-
-                // Map GetListPeriodePerkuliahan fields to database columns
-                jumlah_pendaftar_ikut_seleksi: Set(record.calon_ikut_seleksi),
-                jumlah_pendaftar_lulus_seleksi: Set(record.calon_lulus_seleksi),
-                jumlah_daftar_ulang: Set(record.daftar_sbg_mhs),
-                jumlah_mengundurkan_diri: Set(record.pst_undur_diri),
-                jumlah_minggu_pertemuan: Set(record.jml_mgu_kul),
-
-                metode_kul: Set(record.metode_kul.clone()),
-                metode_kul_eks: Set(record.metode_kul_eks.clone()),
-                tgl_create: Set(record.tgl_create),
-                last_update: Set(record.last_update),
-                status_sync: Set(Some(record.status_sync.clone())),
-                sync_at: Set(Some(sync_time)),
-                created_at: Set(Some(sync_time)),
-                updated_at: Set(Some(sync_time)),
-                ..Default::default()
-            };
-
-            new_record.insert(txn).await?;
-
-            "INSERTED"
-        };
-
-        // Commit transaction
-
-        Ok(action.to_string())
-    }
-
-
-    async fn process_batch(
-        db: &DatabaseConnection,
-        records: &[ModelInputListPeriodePerkuliahan],
-    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-        let txn = db.begin().await?;
-        let mut success_count = 0;
-        let mut error_count = 0;
-
-        for (index, record) in records.iter().enumerate() {
-            match Self::upsert_record(&txn, record).await {
-                Ok(_action) => {
-                    success_count += 1;
-                }
-                Err(e) => {
-                    error_count += 1;
-                    eprintln!("  ❌ Record {}/{}: Failed - error: {}", index + 1, records.len(), e);
-                }
-            }
-        }
-
-        if error_count > 0 {
-            eprintln!("⚠️ Batch completed with {} successes and {} errors", success_count, error_count);
-        }
-
-        txn.commit().await?;
-        Ok(())
-    }
-
     async fn fetch_and_process_page(
         db: &DatabaseConnection,
         _institution_id: Uuid,
@@ -346,7 +183,7 @@ impl EstimateListPeriodePerkuliahan {
         }
 
         println!("📦 Fetched {} records at offset={}", count, offset);
-        Self::process_batch(db, &records).await?;
+        JobWorker::perform(db, WorkerArgs { records }).await?;
         println!("✅ Processed batch for offset={}", offset);
 
         Ok(count)

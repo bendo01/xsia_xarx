@@ -8,9 +8,12 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::models::feeder::akumulasi::estimasi as FeederAkumulasiEstimasi;
-use crate::models::feeder::master::dosen_pengajar_kelas_kuliah as dosen_pengajar_kelas_kuliah;
 use crate::tasks::feeder_dikti::downstream::feeder_request::{InputRequestData, RequestData};
 use crate::tasks::Task;
+
+use crate::jobs::feeder_dikti::downstream::master::upsert::get_dosen_pengajar_kelas_kuliah::{
+    ModelInput, Worker as JobWorker, WorkerArgs,
+};
 
 // Configuration constants
 const TASK_NAME: &str = "EstimateGetDosenPengajarKelasKuliah";
@@ -21,33 +24,6 @@ const DEFAULT_LIMIT: i32 = 1000;
 const DEFAULT_ORDER: &str = "nama_kelas_kuliah ASC";
 const DEFAULT_FILTER: &str = "";
 
-use crate::library::deserialization::{de_opt_f32, de_opt_i32, de_opt_string_or_int};
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct ModelInput {
-    pub id_aktivitas_mengajar: Option<Uuid>,
-    pub id_registrasi_dosen: Option<Uuid>,
-    pub id_dosen: Option<Uuid>,
-    pub nidn: Option<String>,
-    pub nuptk: Option<String>,
-    pub nama_dosen: Option<String>,
-    pub id_kelas_kuliah: Option<Uuid>,
-    pub nama_kelas_kuliah: Option<String>,
-    pub id_substansi: Option<Uuid>,
-    #[serde(deserialize_with = "de_opt_f32")]
-    pub sks_substansi_total: Option<f32>,
-    #[serde(deserialize_with = "de_opt_i32")]
-    pub rencana_minggu_pertemuan: Option<i32>,
-    #[serde(deserialize_with = "de_opt_i32")]
-    pub realisasi_minggu_pertemuan: Option<i32>,
-    #[serde(deserialize_with = "de_opt_string_or_int")]
-    pub id_jenis_evaluasi: Option<String>,
-    pub nama_jenis_evaluasi: Option<String>,
-    pub id_prodi: Option<Uuid>,
-    pub id_semester: Option<String>,
-    pub perhitungan_sks: Option<String>,
-    pub sync_at: Option<DateTime<Utc>>,
-}
 
 pub struct EstimateGetDosenPengajarKelasKuliah;
 
@@ -168,117 +144,6 @@ impl EstimateGetDosenPengajarKelasKuliah {
     ///
     /// # Returns
     /// * `Result<String>` - "INSERTED" or "UPDATED" on success, error otherwise
-    async fn upsert_record(txn: &DatabaseTransaction, record: &ModelInput) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
-        // Validate that required fields exist for composite key
-        let id_aktivitas_mengajar = record.id_aktivitas_mengajar;
-        let id_registrasi_dosen = record.id_registrasi_dosen;
-        let id_kelas_kuliah = record.id_kelas_kuliah;
-
-        // Start transaction
-        let sync_time = Local::now().naive_local();
-
-        // Check if record exists using composite key
-        let existing = dosen_pengajar_kelas_kuliah::Entity::find()
-            .filter(dosen_pengajar_kelas_kuliah::Column::DeletedAt.is_null())
-            .filter(
-                dosen_pengajar_kelas_kuliah::Column::IdAktivitasMengajar.eq(id_aktivitas_mengajar),
-            )
-            .filter(dosen_pengajar_kelas_kuliah::Column::IdRegistrasiDosen.eq(id_registrasi_dosen))
-            .filter(dosen_pengajar_kelas_kuliah::Column::IdKelasKuliah.eq(id_kelas_kuliah))
-            .one(txn)
-            .await?;
-
-        let action = if let Some(existing_record) = existing {
-            // Update existing record
-            let mut active: dosen_pengajar_kelas_kuliah::ActiveModel =
-                existing_record.into_active_model();
-
-            active.id_dosen = Set(record.id_dosen);
-            active.nidn = Set(record.nidn.clone());
-            active.nuptk = Set(record.nuptk.clone());
-            active.nama_dosen = Set(record.nama_dosen.clone());
-            active.nama_kelas_kuliah = Set(record.nama_kelas_kuliah.clone());
-            active.id_substansi = Set(record.id_substansi);
-            active.sks_substansi_total = Set(record.sks_substansi_total);
-            active.rencana_minggu_pertemuan = Set(record.rencana_minggu_pertemuan);
-            active.realisasi_minggu_pertemuan = Set(record.realisasi_minggu_pertemuan);
-            active.id_jenis_evaluasi = Set(record.id_jenis_evaluasi.clone());
-            active.nama_jenis_evaluasi = Set(record.nama_jenis_evaluasi.clone());
-            active.id_prodi = Set(record.id_prodi);
-            active.id_semester = Set(record.id_semester.clone());
-            active.sync_at = Set(Some(sync_time));
-            active.updated_at = Set(Some(sync_time));
-
-            active.update(txn).await?;
-            "UPDATED"
-        } else {
-            // Insert new record
-            let pk_id = Uuid::new_v4();
-
-            let new_record = dosen_pengajar_kelas_kuliah::ActiveModel {
-                id: Set(pk_id),
-                id_aktivitas_mengajar: Set(id_aktivitas_mengajar),
-                id_registrasi_dosen: Set(id_registrasi_dosen),
-                id_dosen: Set(record.id_dosen),
-                nidn: Set(record.nidn.clone()),
-                nuptk: Set(record.nuptk.clone()),
-                nama_dosen: Set(record.nama_dosen.clone()),
-                id_kelas_kuliah: Set(id_kelas_kuliah),
-                nama_kelas_kuliah: Set(record.nama_kelas_kuliah.clone()),
-                id_substansi: Set(record.id_substansi),
-                sks_substansi_total: Set(record.sks_substansi_total),
-                rencana_minggu_pertemuan: Set(record.rencana_minggu_pertemuan),
-                realisasi_minggu_pertemuan: Set(record.realisasi_minggu_pertemuan),
-                id_jenis_evaluasi: Set(record.id_jenis_evaluasi.clone()),
-                nama_jenis_evaluasi: Set(record.nama_jenis_evaluasi.clone()),
-                id_prodi: Set(record.id_prodi),
-                id_semester: Set(record.id_semester.clone()),
-                sync_at: Set(Some(sync_time)),
-                created_at: Set(Some(sync_time)),
-                updated_at: Set(Some(sync_time)),
-                created_by: Set(None),
-                updated_by: Set(None),
-                deleted_at: Set(None),
-            };
-
-            new_record.insert(txn).await?;
-            "INSERTED"
-        };
-
-        // Commit transaction
-
-        Ok(action.to_string())
-    }
-
-
-    async fn process_batch(
-        db: &DatabaseConnection,
-        records: &[ModelInput],
-    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-        let txn = db.begin().await?;
-        let mut success_count = 0;
-        let mut error_count = 0;
-
-        for (index, record) in records.iter().enumerate() {
-            match Self::upsert_record(&txn, record).await {
-                Ok(_action) => {
-                    success_count += 1;
-                }
-                Err(e) => {
-                    error_count += 1;
-                    eprintln!("  ❌ Record {}/{}: Failed - error: {}", index + 1, records.len(), e);
-                }
-            }
-        }
-
-        if error_count > 0 {
-            eprintln!("⚠️ Batch completed with {} successes and {} errors", success_count, error_count);
-        }
-
-        txn.commit().await?;
-        Ok(())
-    }
-
     async fn fetch_and_process_page(
         db: &DatabaseConnection,
         _institution_id: Uuid,
@@ -314,7 +179,7 @@ impl EstimateGetDosenPengajarKelasKuliah {
         }
 
         println!("📦 Fetched {} records at offset={}", count, offset);
-        Self::process_batch(db, &records).await?;
+        JobWorker::perform(db, WorkerArgs { records }).await?;
         println!("✅ Processed batch for offset={}", offset);
 
         Ok(count)
