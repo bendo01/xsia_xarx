@@ -27,6 +27,15 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_mahasiswa", to = "id")]
+    pub mahasiswa: BelongsTo<crate::models::feeder::master::mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_jenis_prestasi", to = "id")]
+    pub jenis_prestasi: BelongsTo<crate::models::feeder::referensi::jenis_prestasi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_tingkat_prestasi", to = "id")]
+    pub tingkat_prestasi: BelongsTo<crate::models::feeder::referensi::tingkat_prestasi::Entity>,
 }
 
 

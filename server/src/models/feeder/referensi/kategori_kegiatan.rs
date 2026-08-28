@@ -17,6 +17,15 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub bimbing_mahasiswas: HasMany<crate::models::feeder::master::bimbing_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub mahasiswa_bimbingan_dosens: HasMany<crate::models::feeder::master::mahasiswa_bimbingan_dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub uji_mahasiswas: HasMany<crate::models::feeder::master::uji_mahasiswa::Entity>,
 }
 
 

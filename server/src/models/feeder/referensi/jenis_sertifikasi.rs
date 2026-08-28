@@ -16,6 +16,9 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub riwayat_sertifikasi_dosens: HasMany<crate::models::feeder::master::riwayat_sertifikasi_dosen::Entity>,
 }
 
 

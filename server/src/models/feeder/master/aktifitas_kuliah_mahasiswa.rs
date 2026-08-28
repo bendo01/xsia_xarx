@@ -40,6 +40,18 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_mahasiswa", to = "id")]
+    pub mahasiswa: BelongsTo<crate::models::feeder::master::mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_semester", to = "id")]
+    pub semester: BelongsTo<crate::models::feeder::referensi::semester::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+    pub prodi: BelongsTo<crate::models::feeder::master::program_studi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_status_mahasiswa", to = "id")]
+    pub status_mahasiswa: BelongsTo<crate::models::feeder::referensi::status_mahasiswa::Entity>,
 }
 
 

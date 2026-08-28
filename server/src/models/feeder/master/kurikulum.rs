@@ -34,6 +34,15 @@ pub struct Model {
     #[sea_orm(column_type = "Float", nullable)]
     pub jumlah_sks_mata_kuliah_pilihan: Option<f32>,
     pub status_sync: Option<String>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+    pub prodi: BelongsTo<crate::models::feeder::master::program_studi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_semester", to = "id")]
+    pub semester: BelongsTo<crate::models::feeder::referensi::semester::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub matakuliah_kurikulums: HasMany<crate::models::feeder::master::matakuliah_kurikulum::Entity>,
 }
 
 

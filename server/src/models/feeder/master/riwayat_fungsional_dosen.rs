@@ -23,6 +23,12 @@ pub struct Model {
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
     pub nuptk: Option<String>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_dosen", to = "id")]
+    pub dosen: BelongsTo<crate::models::feeder::master::dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_jabatan_fungsional", to = "id")]
+    pub jabatan_fungsional: BelongsTo<crate::models::feeder::referensi::jabatan_fungsional::Entity>,
 }
 
 

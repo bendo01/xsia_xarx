@@ -58,6 +58,18 @@ pub struct Model {
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
     pub id_pekerjaan_suami_istri: Option<i32>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_dosen", to = "id")]
+    pub dosen: BelongsTo<crate::models::feeder::master::dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_agama", to = "id")]
+    pub agama: BelongsTo<crate::models::feeder::referensi::agama::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_pangkat_golongan", to = "id")]
+    pub pangkat_golongan: BelongsTo<crate::models::feeder::referensi::pangkat_golongan::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_wilayah", to = "id")]
+    pub wilayah: BelongsTo<crate::models::feeder::referensi::wilayah::Entity>,
 }
 
 

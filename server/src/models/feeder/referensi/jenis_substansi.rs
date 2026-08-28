@@ -16,6 +16,9 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub substansi_matakuliahs: HasMany<crate::models::feeder::master::substansi_matakuliah::Entity>,
 }
 
 

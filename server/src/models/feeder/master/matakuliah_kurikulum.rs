@@ -38,6 +38,15 @@ pub struct Model {
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
     pub semester: Option<i32>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_kurikulum", to = "id")]
+    pub kurikulum: BelongsTo<crate::models::feeder::master::kurikulum::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+    pub prodi: BelongsTo<crate::models::feeder::master::program_studi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_semester", to = "id")]
+    pub semester_rel: BelongsTo<crate::models::feeder::referensi::semester::Entity>,
 }
 
 

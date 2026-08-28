@@ -57,6 +57,9 @@ pub struct Model {
     pub nama_prodi: Option<String>,
     #[sea_orm(column_type = "Text", nullable)]
     pub status_sync: Option<String>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_kelas_kuliah", to = "id")]
+    pub kelas_kuliah: BelongsTo<crate::models::feeder::master::kelas_kuliah::Entity>,
 }
 
 

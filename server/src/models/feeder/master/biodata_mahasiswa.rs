@@ -77,6 +77,24 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_mahasiswa", to = "id")]
+    pub mahasiswa: BelongsTo<crate::models::feeder::master::mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_agama", to = "id")]
+    pub agama: BelongsTo<crate::models::feeder::referensi::agama::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_negara", to = "id")]
+    pub negara: BelongsTo<crate::models::feeder::referensi::negara::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_wilayah", to = "id")]
+    pub wilayah: BelongsTo<crate::models::feeder::referensi::wilayah::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_jenis_tinggal", to = "id")]
+    pub jenis_tinggal: BelongsTo<crate::models::feeder::referensi::jenis_tinggal::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_alat_transportasi", to = "id")]
+    pub alat_transportasi: BelongsTo<crate::models::feeder::referensi::alat_transportasi::Entity>,
 }
 
 

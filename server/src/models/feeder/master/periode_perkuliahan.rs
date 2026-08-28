@@ -34,6 +34,12 @@ pub struct Model {
     pub tgl_create: Option<Date>,
     pub last_update: Option<Date>,
     pub status_sync: Option<String>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+    pub prodi: BelongsTo<crate::models::feeder::master::program_studi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_semester", to = "id")]
+    pub semester: BelongsTo<crate::models::feeder::referensi::semester::Entity>,
 }
 
 

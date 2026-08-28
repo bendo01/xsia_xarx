@@ -19,6 +19,21 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub biodata_dosens: HasMany<crate::models::feeder::master::biodata_dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub biodata_mahasiswas: HasMany<crate::models::feeder::master::biodata_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub profil_perguruan_tinggis: HasMany<crate::models::feeder::master::profil_perguruan_tinggi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_level_wilayah", to = "id")]
+    pub level_wilayah: BelongsTo<crate::models::feeder::referensi::level_wilayah::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_negara", to = "id")]
+    pub negara: BelongsTo<crate::models::feeder::referensi::negara::Entity>,
 }
 
 

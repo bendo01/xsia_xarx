@@ -36,6 +36,18 @@ pub struct Model {
     pub id_jns_keluar: Option<i32>,
     pub id_ikatan_kerja: Option<String>,
     pub apakah_homebase: Option<bool>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_dosen", to = "id")]
+    pub dosen: BelongsTo<crate::models::feeder::master::dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_tahun_ajaran", to = "id")]
+    pub tahun_ajaran: BelongsTo<crate::models::feeder::referensi::tahun_ajaran::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_perguruan_tinggi", to = "id")]
+    pub perguruan_tinggi: BelongsTo<crate::models::feeder::master::perguruan_tinggi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+    pub prodi: BelongsTo<crate::models::feeder::master::program_studi::Entity>,
 }
 
 

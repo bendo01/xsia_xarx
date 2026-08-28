@@ -45,6 +45,9 @@ pub struct Model {
     pub id_jenj_didik: Option<String>,
     pub tgl_create: Option<DateTime>,
     pub status_sync: Option<String>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+    pub prodi: BelongsTo<crate::models::feeder::master::program_studi::Entity>,
 }
 
 

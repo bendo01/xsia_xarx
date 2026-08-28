@@ -24,6 +24,93 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub aktifitas_kuliah_mahasiswa_as_prodis: HasMany<crate::models::feeder::master::aktifitas_kuliah_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub aktifitas_mahasiswa_as_prodis: HasMany<crate::models::feeder::master::aktifitas_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub aktifitas_mengajar_dosen_as_prodis: HasMany<crate::models::feeder::master::aktifitas_mengajar_dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub bidang_minat_perguruan_tinggi_as_prodis: HasMany<crate::models::feeder::master::bidang_minat_perguruan_tinggi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub detail_nilai_perkuliahan_kelas_as_prodis: HasMany<crate::models::feeder::master::detail_nilai_perkuliahan_kelas::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub dosen_pengajar_kelas_kuliah_as_prodis: HasMany<crate::models::feeder::master::dosen_pengajar_kelas_kuliah::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub hitung_transkrip_angkatan_mahasiswa_as_prodis: HasMany<crate::models::feeder::master::hitung_transkrip_angkatan_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub kartu_rencana_studi_mahasiswa_as_prodis: HasMany<crate::models::feeder::master::kartu_rencana_studi_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub kelas_kuliah_as_prodis: HasMany<crate::models::feeder::master::kelas_kuliah::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub kurikulum_as_prodis: HasMany<crate::models::feeder::master::kurikulum::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub mahasiswa_as_prodis: HasMany<crate::models::feeder::master::mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub mahasiswa_lulusan_dropout_as_prodis: HasMany<crate::models::feeder::master::mahasiswa_lulusan_dropout::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub matakuliah_as_prodis: HasMany<crate::models::feeder::master::matakuliah::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub matakuliah_kurikulum_as_prodis: HasMany<crate::models::feeder::master::matakuliah_kurikulum::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub nilai_transfer_pendidikan_mahasiswa_as_prodis: HasMany<crate::models::feeder::master::nilai_transfer_pendidikan_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub penugasan_dosen_as_prodis: HasMany<crate::models::feeder::master::penugasan_dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub periode_aktif_as_prodis: HasMany<crate::models::feeder::master::periode_aktif::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub periode_perkuliahan_as_prodis: HasMany<crate::models::feeder::master::periode_perkuliahan::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub perkuliahan_mahasiswa_as_prodis: HasMany<crate::models::feeder::master::perkuliahan_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub peserta_kelas_kuliah_as_prodis: HasMany<crate::models::feeder::master::peserta_kelas_kuliah::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_perguruan_tinggi", to = "id")]
+    pub perguruan_tinggi: BelongsTo<crate::models::feeder::master::perguruan_tinggi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_jenjang_pendidikan", to = "id")]
+    pub jenjang_pendidikan: BelongsTo<crate::models::feeder::referensi::jenjang_pendidikan::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub rencana_evaluasi_as_prodis: HasMany<crate::models::feeder::master::rencana_evaluasi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub rencana_pembelajaran_as_prodis: HasMany<crate::models::feeder::master::rencana_pembelajaran::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub riwayat_nilai_mahasiswa_as_prodis: HasMany<crate::models::feeder::master::riwayat_nilai_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub riwayat_pendidikan_mahasiswa_as_prodis: HasMany<crate::models::feeder::master::riwayat_pendidikan_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub skala_nilai_program_studi_as_prodis: HasMany<crate::models::feeder::master::skala_nilai_program_studi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub substansi_matakuliah_as_prodis: HasMany<crate::models::feeder::master::substansi_matakuliah::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub periode_lampaus: HasMany<crate::models::feeder::referensi::periode_lampau::Entity>,
 }
 
 

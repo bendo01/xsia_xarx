@@ -26,6 +26,54 @@ pub struct Model {
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
     pub nuptk: Option<String>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub aktifitas_mengajar_dosens: HasMany<crate::models::feeder::master::aktifitas_mengajar_dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub bimbing_mahasiswas: HasMany<crate::models::feeder::master::bimbing_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub biodata_dosens: HasMany<crate::models::feeder::master::biodata_dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_agama", to = "id")]
+    pub agama: BelongsTo<crate::models::feeder::referensi::agama::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub dosen_pembimbings: HasMany<crate::models::feeder::master::dosen_pembimbing::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub dosen_pengajar_kelas_kuliahs: HasMany<crate::models::feeder::master::dosen_pengajar_kelas_kuliah::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub kelas_kuliahs: HasMany<crate::models::feeder::master::kelas_kuliah::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub mahasiswa_bimbingan_dosens: HasMany<crate::models::feeder::master::mahasiswa_bimbingan_dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub mahasiswa_lulusan_dropouts: HasMany<crate::models::feeder::master::mahasiswa_lulusan_dropout::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub penugasan_dosens: HasMany<crate::models::feeder::master::penugasan_dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub riwayat_fungsional_dosens: HasMany<crate::models::feeder::master::riwayat_fungsional_dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub riwayat_pangkat_dosens: HasMany<crate::models::feeder::master::riwayat_pangkat_dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub riwayat_pendidikan_dosens: HasMany<crate::models::feeder::master::riwayat_pendidikan_dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub riwayat_penelitian_dosens: HasMany<crate::models::feeder::master::riwayat_penelitian_dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub riwayat_sertifikasi_dosens: HasMany<crate::models::feeder::master::riwayat_sertifikasi_dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub uji_mahasiswas: HasMany<crate::models::feeder::master::uji_mahasiswa::Entity>,
 }
 
 

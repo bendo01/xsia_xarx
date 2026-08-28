@@ -26,6 +26,12 @@ pub struct Model {
     pub nuptk: Option<String>,
     pub masa_kerja_dalam_tahun: Option<i32>,
     pub masa_kerja_dalam_bulan: Option<i32>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_dosen", to = "id")]
+    pub dosen: BelongsTo<crate::models::feeder::master::dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_pangkat_golongan", to = "id")]
+    pub pangkat_golongan: BelongsTo<crate::models::feeder::referensi::pangkat_golongan::Entity>,
 }
 
 

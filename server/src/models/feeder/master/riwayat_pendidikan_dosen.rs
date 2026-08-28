@@ -33,6 +33,15 @@ pub struct Model {
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
     pub nuptk: Option<String>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_dosen", to = "id")]
+    pub dosen: BelongsTo<crate::models::feeder::master::dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_jenjang_pendidikan", to = "id")]
+    pub jenjang_pendidikan: BelongsTo<crate::models::feeder::referensi::jenjang_pendidikan::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_perguruan_tinggi", to = "id")]
+    pub perguruan_tinggi: BelongsTo<crate::models::feeder::master::perguruan_tinggi::Entity>,
 }
 
 

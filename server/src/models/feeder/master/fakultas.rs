@@ -20,6 +20,9 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_jenjang_pendidikan", to = "id")]
+    pub jenjang_pendidikan: BelongsTo<crate::models::feeder::referensi::jenjang_pendidikan::Entity>,
 }
 
 

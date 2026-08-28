@@ -38,6 +38,18 @@ pub struct Model {
     pub biaya_kuliah_smt: Option<f32>,
     pub id_pembiayaan: Option<String>,
     pub status_sync: Option<String>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+    pub prodi: BelongsTo<crate::models::feeder::master::program_studi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_semester", to = "id")]
+    pub semester: BelongsTo<crate::models::feeder::referensi::semester::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_status_mahasiswa", to = "id")]
+    pub status_mahasiswa: BelongsTo<crate::models::feeder::referensi::status_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_pembiayaan", to = "id")]
+    pub pembiayaan: BelongsTo<crate::models::feeder::referensi::pembiayaan::Entity>,
 }
 
 

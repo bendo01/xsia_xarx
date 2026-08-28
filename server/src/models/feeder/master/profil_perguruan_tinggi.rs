@@ -44,6 +44,12 @@ pub struct Model {
     pub nama_singkat: Option<String>,
     pub rt_rw: Option<String>,
     pub tanggal_sk_pendirian: Option<DateTime>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_perguruan_tinggi", to = "id")]
+    pub perguruan_tinggi: BelongsTo<crate::models::feeder::master::perguruan_tinggi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_wilayah", to = "id")]
+    pub wilayah: BelongsTo<crate::models::feeder::referensi::wilayah::Entity>,
 }
 
 

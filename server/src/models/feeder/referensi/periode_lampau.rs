@@ -21,6 +21,12 @@ pub struct Model {
     pub deleted_at: Option<DateTimeWithTimeZone>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_program_studi", to = "id")]
+    pub program_studi_rel: BelongsTo<crate::models::feeder::master::program_studi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_semester", to = "id")]
+    pub semester_rel: BelongsTo<crate::models::feeder::referensi::semester::Entity>,
 }
 
 

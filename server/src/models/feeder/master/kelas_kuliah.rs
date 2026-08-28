@@ -49,6 +49,33 @@ pub struct Model {
     pub nama_dosen: Option<String>,
     pub jumlah_mahasiswa: Option<i32>,
     pub apa_untuk_pditt: Option<bool>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub detail_nilai_perkuliahan_kelass: HasMany<crate::models::feeder::master::detail_nilai_perkuliahan_kelas::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub dosen_pengajar_kelas_kuliahs: HasMany<crate::models::feeder::master::dosen_pengajar_kelas_kuliah::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+    pub prodi: BelongsTo<crate::models::feeder::master::program_studi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_semester", to = "id")]
+    pub semester: BelongsTo<crate::models::feeder::referensi::semester::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_dosen", to = "id")]
+    pub dosen: BelongsTo<crate::models::feeder::master::dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub komponen_evaluasi_kelass: HasMany<crate::models::feeder::master::komponen_evaluasi_kelas::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub nilai_perkuliahan_kelass: HasMany<crate::models::feeder::master::nilai_perkuliahan_kelas::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub peserta_kelas_kuliahs: HasMany<crate::models::feeder::master::peserta_kelas_kuliah::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub transkrip_mahasiswas: HasMany<crate::models::feeder::master::transkrip_mahasiswa::Entity>,
 }
 
 

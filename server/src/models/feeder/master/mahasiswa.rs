@@ -41,6 +41,39 @@ pub struct Model {
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
     pub id_prodi: Option<Uuid>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub aktifitas_kuliah_mahasiswas: HasMany<crate::models::feeder::master::aktifitas_kuliah_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub biodata_mahasiswas: HasMany<crate::models::feeder::master::biodata_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub detail_nilai_perkuliahan_kelass: HasMany<crate::models::feeder::master::detail_nilai_perkuliahan_kelas::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_perguruan_tinggi", to = "id")]
+    pub perguruan_tinggi: BelongsTo<crate::models::feeder::master::perguruan_tinggi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_agama", to = "id")]
+    pub agama: BelongsTo<crate::models::feeder::referensi::agama::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_status_mahasiswa", to = "id")]
+    pub status_mahasiswa: BelongsTo<crate::models::feeder::referensi::status_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+    pub prodi: BelongsTo<crate::models::feeder::master::program_studi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub mahasiswa_lulusan_dropouts: HasMany<crate::models::feeder::master::mahasiswa_lulusan_dropout::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub peserta_kelas_kuliahs: HasMany<crate::models::feeder::master::peserta_kelas_kuliah::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub prestasi_mahasiswas: HasMany<crate::models::feeder::master::prestasi_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub riwayat_pendidikan_mahasiswas: HasMany<crate::models::feeder::master::riwayat_pendidikan_mahasiswa::Entity>,
 }
 
 

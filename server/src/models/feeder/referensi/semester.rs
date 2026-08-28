@@ -21,6 +21,45 @@ pub struct Model {
     pub sync_at: Option<DateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub aktifitas_kuliah_mahasiswas: HasMany<crate::models::feeder::master::aktifitas_kuliah_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub aktifitas_mahasiswas: HasMany<crate::models::feeder::master::aktifitas_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub detail_nilai_perkuliahan_kelass: HasMany<crate::models::feeder::master::detail_nilai_perkuliahan_kelas::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub dosen_pengajar_kelas_kuliahs: HasMany<crate::models::feeder::master::dosen_pengajar_kelas_kuliah::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub kelas_kuliahs: HasMany<crate::models::feeder::master::kelas_kuliah::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub konversi_kampus_merdekas: HasMany<crate::models::feeder::master::konversi_kampus_merdeka::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub kurikulums: HasMany<crate::models::feeder::master::kurikulum::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub matakuliah_kurikulums: HasMany<crate::models::feeder::master::matakuliah_kurikulum::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub nilai_transfer_pendidikan_mahasiswas: HasMany<crate::models::feeder::master::nilai_transfer_pendidikan_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub periode_perkuliahans: HasMany<crate::models::feeder::master::periode_perkuliahan::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub perkuliahan_mahasiswas: HasMany<crate::models::feeder::master::perkuliahan_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub periode_lampaus: HasMany<crate::models::feeder::referensi::periode_lampau::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_tahun_ajaran", to = "id")]
+    pub tahun_ajaran: BelongsTo<crate::models::feeder::referensi::tahun_ajaran::Entity>,
 }
 
 

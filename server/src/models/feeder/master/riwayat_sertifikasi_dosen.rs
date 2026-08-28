@@ -29,6 +29,12 @@ pub struct Model {
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
     pub nuptk: Option<String>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_dosen", to = "id")]
+    pub dosen: BelongsTo<crate::models::feeder::master::dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_jenis_sertifikasi", to = "id")]
+    pub jenis_sertifikasi: BelongsTo<crate::models::feeder::referensi::jenis_sertifikasi::Entity>,
 }
 
 
