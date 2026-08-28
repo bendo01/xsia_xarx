@@ -30,6 +30,12 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(belongs_to, from = "id_jenis_evaluasi", to = "id")]
     pub jenis_evaluasi: BelongsTo<crate::models::feeder::referensi::jenis_evaluasi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_kelas_kuliah", to = "id")]
+    pub kelas_kuliah_rel: BelongsTo<Option<crate::models::feeder::master::kelas_kuliah::Entity>>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_jenis_evaluasi", to = "id")]
+    pub jenis_evaluasi_rel: BelongsTo<Option<crate::models::feeder::referensi::jenis_evaluasi::Entity>>,
 }
 
 

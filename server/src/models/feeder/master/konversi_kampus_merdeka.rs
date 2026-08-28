@@ -35,6 +35,9 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(belongs_to, from = "id_semester", to = "id")]
     pub semester: BelongsTo<crate::models::feeder::referensi::semester::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_semester", to = "id")]
+    pub semester_rel: BelongsTo<Option<crate::models::feeder::referensi::semester::Entity>>,
 }
 
 

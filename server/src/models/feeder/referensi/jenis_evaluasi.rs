@@ -25,6 +25,15 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(has_many)]
     pub rencana_evaluasis: HasMany<crate::models::feeder::master::rencana_evaluasi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub dosen_pengajar_kelas_kuliahs_rel: HasMany<crate::models::feeder::master::dosen_pengajar_kelas_kuliah::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub komponen_evaluasi_kelass_rel: HasMany<crate::models::feeder::master::komponen_evaluasi_kelas::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub rencana_evaluasis_rel: HasMany<crate::models::feeder::master::rencana_evaluasi::Entity>,
 }
 
 

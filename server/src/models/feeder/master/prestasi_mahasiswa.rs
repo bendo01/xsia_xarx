@@ -36,6 +36,15 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(belongs_to, from = "id_tingkat_prestasi", to = "id")]
     pub tingkat_prestasi: BelongsTo<crate::models::feeder::referensi::tingkat_prestasi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_mahasiswa", to = "id")]
+    pub mahasiswa_rel: BelongsTo<Option<crate::models::feeder::master::mahasiswa::Entity>>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_jenis_prestasi", to = "id")]
+    pub jenis_prestasi_rel: BelongsTo<Option<crate::models::feeder::referensi::jenis_prestasi::Entity>>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_tingkat_prestasi", to = "id")]
+    pub tingkat_prestasi_rel: BelongsTo<Option<crate::models::feeder::referensi::tingkat_prestasi::Entity>>,
 }
 
 

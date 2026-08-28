@@ -38,6 +38,9 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
     pub prodi: BelongsTo<crate::models::feeder::master::program_studi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+    pub prodi_rel: BelongsTo<Option<crate::models::feeder::master::program_studi::Entity>>,
 }
 
 

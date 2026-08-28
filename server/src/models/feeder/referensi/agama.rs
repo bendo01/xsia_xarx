@@ -28,6 +28,18 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(has_many)]
     pub mahasiswas: HasMany<crate::models::feeder::master::mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub biodata_dosens_rel: HasMany<crate::models::feeder::master::biodata_dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub biodata_mahasiswas_rel: HasMany<crate::models::feeder::master::biodata_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub dosens_rel: HasMany<crate::models::feeder::master::dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub mahasiswas_rel: HasMany<crate::models::feeder::master::mahasiswa::Entity>,
 }
 
 

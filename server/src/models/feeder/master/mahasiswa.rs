@@ -74,6 +74,39 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(has_many)]
     pub riwayat_pendidikan_mahasiswas: HasMany<crate::models::feeder::master::riwayat_pendidikan_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub biodata_mahasiswas_rel: HasMany<crate::models::feeder::master::biodata_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub detail_nilai_perkuliahan_kelass_rel: HasMany<crate::models::feeder::master::detail_nilai_perkuliahan_kelas::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_perguruan_tinggi", to = "id")]
+    pub perguruan_tinggi_rel: BelongsTo<Option<crate::models::feeder::master::perguruan_tinggi::Entity>>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_agama", to = "id")]
+    pub agama_rel: BelongsTo<Option<crate::models::feeder::referensi::agama::Entity>>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_status_mahasiswa", to = "id")]
+    pub status_mahasiswa_rel: BelongsTo<Option<crate::models::feeder::referensi::status_mahasiswa::Entity>>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+    pub prodi_rel: BelongsTo<Option<crate::models::feeder::master::program_studi::Entity>>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub mahasiswa_lulusan_dropouts_rel: HasMany<crate::models::feeder::master::mahasiswa_lulusan_dropout::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub peserta_kelas_kuliahs_rel: HasMany<crate::models::feeder::master::peserta_kelas_kuliah::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub prestasi_mahasiswas_rel: HasMany<crate::models::feeder::master::prestasi_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub riwayat_pendidikan_mahasiswas_rel: HasMany<crate::models::feeder::master::riwayat_pendidikan_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub aktifitas_kuliah_mahasiswas_rel: HasMany<crate::models::feeder::master::aktifitas_kuliah_mahasiswa::Entity>,
 }
 
 

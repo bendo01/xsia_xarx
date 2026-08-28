@@ -25,6 +25,12 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(has_many)]
     pub semesters: HasMany<crate::models::feeder::referensi::semester::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub penugasan_dosens_rel: HasMany<crate::models::feeder::master::penugasan_dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub semesters_rel: HasMany<crate::models::feeder::referensi::semester::Entity>,
 }
 
 

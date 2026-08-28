@@ -25,6 +25,15 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(has_many)]
     pub perkuliahan_mahasiswas: HasMany<crate::models::feeder::master::perkuliahan_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub mahasiswas_rel: HasMany<crate::models::feeder::master::mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub perkuliahan_mahasiswas_rel: HasMany<crate::models::feeder::master::perkuliahan_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub aktifitas_kuliah_mahasiswas_rel: HasMany<crate::models::feeder::master::aktifitas_kuliah_mahasiswa::Entity>,
 }
 
 

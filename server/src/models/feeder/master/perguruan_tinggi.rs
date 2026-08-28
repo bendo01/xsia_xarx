@@ -43,6 +43,30 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(has_many)]
     pub riwayat_pendidikan_mahasiswas: HasMany<crate::models::feeder::master::riwayat_pendidikan_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub mahasiswas_rel: HasMany<crate::models::feeder::master::mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub mahasiswa_lulusan_dropouts_rel: HasMany<crate::models::feeder::master::mahasiswa_lulusan_dropout::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub nilai_transfer_pendidikan_mahasiswas_rel: HasMany<crate::models::feeder::master::nilai_transfer_pendidikan_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub penugasan_dosens_rel: HasMany<crate::models::feeder::master::penugasan_dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub profil_perguruan_tinggis_rel: HasMany<crate::models::feeder::master::profil_perguruan_tinggi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub program_studis_rel: HasMany<crate::models::feeder::master::program_studi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub riwayat_pendidikan_dosens_rel: HasMany<crate::models::feeder::master::riwayat_pendidikan_dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub riwayat_pendidikan_mahasiswas_rel: HasMany<crate::models::feeder::master::riwayat_pendidikan_mahasiswa::Entity>,
 }
 
 

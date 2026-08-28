@@ -32,6 +32,12 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(belongs_to, from = "id_pangkat_golongan", to = "id")]
     pub pangkat_golongan: BelongsTo<crate::models::feeder::referensi::pangkat_golongan::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_dosen", to = "id")]
+    pub dosen_rel: BelongsTo<Option<crate::models::feeder::master::dosen::Entity>>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_pangkat_golongan", to = "id")]
+    pub pangkat_golongan_rel: BelongsTo<Option<crate::models::feeder::referensi::pangkat_golongan::Entity>>,
 }
 
 

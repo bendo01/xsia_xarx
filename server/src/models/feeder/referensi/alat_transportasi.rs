@@ -19,6 +19,9 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(has_many)]
     pub biodata_mahasiswas: HasMany<crate::models::feeder::master::biodata_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub biodata_mahasiswas_rel: HasMany<crate::models::feeder::master::biodata_mahasiswa::Entity>,
 }
 
 

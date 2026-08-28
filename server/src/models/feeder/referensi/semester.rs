@@ -60,6 +60,45 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(belongs_to, from = "id_tahun_ajaran", to = "id")]
     pub tahun_ajaran: BelongsTo<crate::models::feeder::referensi::tahun_ajaran::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub aktifitas_mahasiswas_rel: HasMany<crate::models::feeder::master::aktifitas_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub detail_nilai_perkuliahan_kelass_rel: HasMany<crate::models::feeder::master::detail_nilai_perkuliahan_kelas::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub dosen_pengajar_kelas_kuliahs_rel: HasMany<crate::models::feeder::master::dosen_pengajar_kelas_kuliah::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub kelas_kuliahs_rel: HasMany<crate::models::feeder::master::kelas_kuliah::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub konversi_kampus_merdekas_rel: HasMany<crate::models::feeder::master::konversi_kampus_merdeka::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub kurikulums_rel: HasMany<crate::models::feeder::master::kurikulum::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub matakuliah_kurikulums_rel: HasMany<crate::models::feeder::master::matakuliah_kurikulum::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub nilai_transfer_pendidikan_mahasiswas_rel: HasMany<crate::models::feeder::master::nilai_transfer_pendidikan_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub periode_perkuliahans_rel: HasMany<crate::models::feeder::master::periode_perkuliahan::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub perkuliahan_mahasiswas_rel: HasMany<crate::models::feeder::master::perkuliahan_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub aktifitas_kuliah_mahasiswas_rel: HasMany<crate::models::feeder::master::aktifitas_kuliah_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub periode_lampaus_rel: HasMany<crate::models::feeder::referensi::periode_lampau::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_tahun_ajaran", to = "id")]
+    pub tahun_ajaran_rel: BelongsTo<Option<crate::models::feeder::referensi::tahun_ajaran::Entity>>,
 }
 
 

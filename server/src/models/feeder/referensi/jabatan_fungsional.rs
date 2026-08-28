@@ -19,6 +19,9 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(has_many)]
     pub riwayat_fungsional_dosens: HasMany<crate::models::feeder::master::riwayat_fungsional_dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub riwayat_fungsional_dosens_rel: HasMany<crate::models::feeder::master::riwayat_fungsional_dosen::Entity>,
 }
 
 

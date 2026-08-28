@@ -23,6 +23,9 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(belongs_to, from = "id_jenjang_pendidikan", to = "id")]
     pub jenjang_pendidikan: BelongsTo<crate::models::feeder::referensi::jenjang_pendidikan::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_jenjang_pendidikan", to = "id")]
+    pub jenjang_pendidikan_rel: BelongsTo<Option<crate::models::feeder::referensi::jenjang_pendidikan::Entity>>,
 }
 
 

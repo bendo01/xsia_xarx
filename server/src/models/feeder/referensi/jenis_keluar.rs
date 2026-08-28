@@ -23,6 +23,12 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(has_many)]
     pub riwayat_pendidikan_mahasiswas: HasMany<crate::models::feeder::master::riwayat_pendidikan_mahasiswa::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub mahasiswa_lulusan_dropouts_rel: HasMany<crate::models::feeder::master::mahasiswa_lulusan_dropout::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub riwayat_pendidikan_mahasiswas_rel: HasMany<crate::models::feeder::master::riwayat_pendidikan_mahasiswa::Entity>,
 }
 
 

@@ -19,6 +19,9 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(has_many)]
     pub wilayahs: HasMany<crate::models::feeder::referensi::wilayah::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub wilayahs_rel: HasMany<crate::models::feeder::referensi::wilayah::Entity>,
 }
 
 

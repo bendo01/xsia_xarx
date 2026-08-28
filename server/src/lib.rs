@@ -9,4 +9,4 @@ pub mod jobs;
 pub mod library;
 pub mod middleware;
 pub mod tasks;
-pub mod services;pub mod scratch;
+pub mod services;

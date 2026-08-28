@@ -25,6 +25,15 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(has_many)]
     pub riwayat_pendidikan_dosens: HasMany<crate::models::feeder::master::riwayat_pendidikan_dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub fakultass_rel: HasMany<crate::models::feeder::master::fakultas::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub program_studis_rel: HasMany<crate::models::feeder::master::program_studi::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub riwayat_pendidikan_dosens_rel: HasMany<crate::models::feeder::master::riwayat_pendidikan_dosen::Entity>,
 }
 
 

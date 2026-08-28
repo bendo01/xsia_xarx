@@ -47,6 +47,12 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(belongs_to, from = "id_semester", to = "id")]
     pub semester_rel: BelongsTo<crate::models::feeder::referensi::semester::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_kurikulum", to = "id")]
+    pub kurikulum_rel: BelongsTo<Option<crate::models::feeder::master::kurikulum::Entity>>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_prodi", to = "id")]
+    pub prodi_rel: BelongsTo<Option<crate::models::feeder::master::program_studi::Entity>>,
 }
 
 

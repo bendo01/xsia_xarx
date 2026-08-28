@@ -29,6 +29,12 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(belongs_to, from = "id_jabatan_fungsional", to = "id")]
     pub jabatan_fungsional: BelongsTo<crate::models::feeder::referensi::jabatan_fungsional::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_dosen", to = "id")]
+    pub dosen_rel: BelongsTo<Option<crate::models::feeder::master::dosen::Entity>>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_jabatan_fungsional", to = "id")]
+    pub jabatan_fungsional_rel: BelongsTo<Option<crate::models::feeder::referensi::jabatan_fungsional::Entity>>,
 }
 
 

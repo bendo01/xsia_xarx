@@ -26,6 +26,9 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(belongs_to, from = "id_dosen", to = "id")]
     pub dosen: BelongsTo<crate::models::feeder::master::dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(belongs_to, from = "id_dosen", to = "id")]
+    pub dosen_rel: BelongsTo<Option<crate::models::feeder::master::dosen::Entity>>,
 }
 
 

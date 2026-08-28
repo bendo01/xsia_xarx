@@ -23,6 +23,12 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(has_many)]
     pub riwayat_pangkat_dosens: HasMany<crate::models::feeder::master::riwayat_pangkat_dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub biodata_dosens_rel: HasMany<crate::models::feeder::master::biodata_dosen::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub riwayat_pangkat_dosens_rel: HasMany<crate::models::feeder::master::riwayat_pangkat_dosen::Entity>,
 }
 
 

@@ -19,6 +19,9 @@ pub struct Model {
     #[serde(skip)]
     #[sea_orm(has_many)]
     pub substansi_matakuliahs: HasMany<crate::models::feeder::master::substansi_matakuliah::Entity>,
+    #[serde(skip)]
+    #[sea_orm(has_many)]
+    pub substansi_matakuliahs_rel: HasMany<crate::models::feeder::master::substansi_matakuliah::Entity>,
 }
 
 
