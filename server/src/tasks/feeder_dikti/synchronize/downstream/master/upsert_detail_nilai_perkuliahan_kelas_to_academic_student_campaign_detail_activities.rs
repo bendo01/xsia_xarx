@@ -27,7 +27,29 @@ impl Task for SyncNilaiPerkuliahanKelasToDetailActivities {
         "Upsert detail_nilai_perkuliahan_kelas to academic_student_campaign.detail_activities"
     }
 
-    async fn run(&self, db: &DatabaseConnection, _args: &[String]) -> Result<(), Box<dyn std::error::Error>> {
+    async fn run(&self, db: &DatabaseConnection, args: &[String]) -> Result<(), Box<dyn std::error::Error>> {
+        use indicatif::{ProgressBar, ProgressStyle};
+        use sea_orm::PaginatorTrait;
+
+        let show_progress = args.iter().any(|arg| arg == "true" || arg == "--progress");
+
+        let total_records = if show_progress {
+            FeederDetailNilai::Entity::find().count(db).await?
+        } else {
+            0
+        };
+
+        let pb = if show_progress {
+            let bar = ProgressBar::new(total_records);
+            bar.set_style(ProgressStyle::default_bar()
+                .template("{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {pos}/{len} ({eta})")
+                .unwrap_or_else(|_| ProgressStyle::default_bar())
+                .progress_chars("#>-"));
+            Some(bar)
+        } else {
+            None
+        };
+
         let mut offset = 0;
         let limit = 1000;
         
@@ -155,9 +177,17 @@ impl Task for SyncNilaiPerkuliahanKelasToDetailActivities {
                 }
                 
                 txn.commit().await?;
+                
+                if let Some(ref pb) = pb {
+                    pb.inc(1);
+                }
             }
             
             offset += limit;
+        }
+        
+        if let Some(pb) = pb {
+            pb.finish_with_message("Sync completed");
         }
         
         Ok(())

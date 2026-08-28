@@ -12062,6 +12062,7 @@ dependencies = [
  "headless_chrome",
  "image",
  "include_dir",
+ "indicatif",
  "insta",
  "jsonwebtoken",
  "lettre",

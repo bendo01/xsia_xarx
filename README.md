@@ -49,7 +49,7 @@
 
 ---
 
-## 🏗️ Architecture & Monorepo Structure
+## 🏗 Architecture & Monorepo Structure
 
 ```text
 xsia_xarx/
@@ -145,7 +145,7 @@ Before starting, ensure you have the following installed on your machine:
 
 ---
 
-## ⚙️ Environment Configuration
+## ⚙ Environment Configuration
 
 ### Server Environment (`server/.env`)
 
@@ -311,7 +311,7 @@ In addition to the HTTP and WebSocket endpoints, `cargo run` automatically spawn
 
 ---
 
-## 🗄️ Database Migrations & Entity Generation
+## 🗄 Database Migrations & Entity Generation
 
 Migrations are modularized by schema and domain under `server/migration/src/`.
 
@@ -451,7 +451,7 @@ cargo run -- task
 | `EstimateGetTingkatPrestasi` | Fetch and process GetTingkatPrestasi data from Feeder Dikti | `cargo run -- task EstimateGetTingkatPrestasi` |
 | `EstimateGetWilayah` | Fetch and process GetWilayah data from Feeder Dikti | `cargo run -- task EstimateGetWilayah` |
 | `EstimateGetAgama` | Fetch and process GetAgama data from Feeder Dikti | `cargo run -- task EstimateGetAgama` |
-| `SyncNilaiPerkuliahanKelasToDetailActivities` | Upsert detail_nilai_perkuliahan_kelas to academic_student_campaign.detail_activities | `cargo run -- task SyncNilaiPerkuliahanKelasToDetailActivities` |
+| `SyncNilaiPerkuliahanKelasToDetailActivities` | Upsert detail_nilai_perkuliahan_kelas to academic_student_campaign.detail_activities | `cargo run -- task SyncNilaiPerkuliahanKelasToDetailActivities true` |
 
 ##### 🔑 Password Hashing Utility (`hash:password`)
 
