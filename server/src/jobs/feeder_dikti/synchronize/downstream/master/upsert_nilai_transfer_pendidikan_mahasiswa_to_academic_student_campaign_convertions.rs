@@ -1,10 +1,8 @@
 use apalis::prelude::{Data, Monitor, WorkerBuilder, WorkerFactoryFn};
 use apalis_redis::RedisStorage;
-use chrono::{DateTime, Local, NaiveDate, NaiveDate as Date, NaiveDateTime, Utc};
-use sea_orm::prelude::Decimal;
 use sea_orm::{
-    ActiveModelTrait, ActiveValue, ActiveValue::Set, ColumnTrait, DatabaseConnection, DatabaseTransaction, DbErr,
-    EntityTrait, IntoActiveModel, QueryFilter, TransactionTrait, TryIntoModel,
+    ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection,
+    EntityTrait, IntoActiveModel, QueryFilter, TransactionTrait,
 };
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -165,7 +163,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
     active.deleted_at = Set(None);
 
     // Mapping requested fields
-    let empty_str = "".to_string();
+    let _empty_str = "".to_string();
     let name = format!(
         "NilaiTransferPendidikanMahasiswa {} {} {}",
         student.code,

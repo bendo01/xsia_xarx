@@ -1,8 +1,8 @@
 use apalis::prelude::{Data, Monitor, WorkerBuilder, WorkerFactoryFn};
 use apalis_redis::RedisStorage;
-use chrono::{DateTime, Local, NaiveDate, NaiveDate as Date, NaiveDateTime, Utc};
+use chrono::{DateTime, Local, Utc};
 use sea_orm::{
-    ActiveModelTrait, ActiveValue, ActiveValue::Set, ColumnTrait, DatabaseConnection, DatabaseTransaction, DbErr, EntityTrait,
+    ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, DatabaseTransaction, EntityTrait,
     IntoActiveModel, QueryFilter, TransactionTrait,
 };
 use serde::{Deserialize, Serialize};
