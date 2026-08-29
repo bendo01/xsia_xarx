@@ -26,6 +26,7 @@ pub fn get_tasks() -> Vec<Box<dyn Task>> {
         Box::new(route_list::RouteListTask),
         Box::new(utilities::hash_password::HashPasswordTask),
         Box::new(feeder_dikti::synchronize::downstream::master::upsert_detail_nilai_perkuliahan_kelas_to_academic_student_campaign_detail_activities::SyncNilaiPerkuliahanKelasToDetailActivities),
+        Box::new(feeder_dikti::synchronize::downstream::master::upsert_aktifitas_mengajar_dosen_to_academic_campaign_transaction_teach_lecturers::SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer),
     ]
 }
 
