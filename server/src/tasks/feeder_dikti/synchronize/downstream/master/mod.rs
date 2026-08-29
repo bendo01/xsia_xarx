@@ -1,1 +1,2 @@
 pub mod upsert_detail_nilai_perkuliahan_kelas_to_academic_student_campaign_detail_activities;
+pub mod upsert_aktifitas_mengajar_dosen_to_academic_campaign_transaction_teach_lecturers;

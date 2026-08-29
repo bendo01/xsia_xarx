@@ -407,6 +407,7 @@ impl UpsertLecturer {
                 // Create new lecturer
                 let new_lecturer = AcademicLecturerMasterLecturer::ActiveModel {
                     id: Set(Uuid::new_v4()),
+                    id_registrasi_dosen: Set(None),
                     code: Set(lecturer_code),
                     name: Set(Some(lecturer_name)),
                     individual_id: Set(individual.id),

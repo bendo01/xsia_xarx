@@ -149,6 +149,7 @@ pub async fn create_lecturer(
 
         let active_model = entity_mod::ActiveModel {
             id: Set(new_id),
+            id_registrasi_dosen: Set(None),
         code: Set(payload.code),
         name: Set(payload.name),
         individual_id: Set(payload.individual_id),
