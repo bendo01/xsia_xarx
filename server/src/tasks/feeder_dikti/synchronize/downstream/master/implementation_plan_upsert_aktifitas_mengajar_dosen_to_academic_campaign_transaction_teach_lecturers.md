@@ -25,7 +25,7 @@ Implement a data synchronization task that upserts records from the Feeder Dikti
  - `academic_campaign_transaction.teach_lecturers.planning` = record.rencana_minggu_pertemuan
  - `academic_campaign_transaction.teach_lecturers.realization` = record.realisasi_minggu_pertemuan
 - create file on logs directory and write data record that cannot find teach data so it can be reviewed
-- use indicatif crate to show progress bar 
+- use indicatif crate to show progress bar, where it an be shown on optional parameter
 
   
 #### [MODIFY] [mod.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/mod.rs)
