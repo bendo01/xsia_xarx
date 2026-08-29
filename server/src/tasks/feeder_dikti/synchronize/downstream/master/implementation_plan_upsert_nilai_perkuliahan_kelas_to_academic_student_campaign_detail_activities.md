@@ -6,7 +6,7 @@ Implement a data synchronization task that upserts records from the Feeder Dikti
 
 ### Task Implementation
 
-#### [MODIFY] [update_nilai_perkuliahan_kelas_to_academic_student_campaign_detail_activities.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/update_nilai_perkuliahan_kelas_to_academic_student_campaign_detail_activities.rs)
+#### [MODIFY] [upsert_nilai_perkuliahan_kelas_to_academic_student_campaign_detail_activities.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/upsert_nilai_perkuliahan_kelas_to_academic_student_campaign_detail_activities.rs)
 
 - Implement a struct `SyncNilaiPerkuliahanKelasToDetailActivities` that implements the `crate::tasks::Task` trait.
 - loop data every 1000 data Fetch all records (or batch fetch) from `crate::models::feeder::master::nilai_perkuliahan_kelas::Entity`.

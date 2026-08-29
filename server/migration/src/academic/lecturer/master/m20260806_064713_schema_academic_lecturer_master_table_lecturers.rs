@@ -70,6 +70,9 @@ impl MigrationTrait for Migration {
                         ColumnDef::new("id_dosen").uuid(),
                     )
                     .col(
+                        ColumnDef::new("id_registrasi_dosen").uuid(),
+                    )
+                    .col(
                         ColumnDef::new("group_id").uuid(),
                     )
                     .col(
