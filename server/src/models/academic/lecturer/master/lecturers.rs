@@ -23,6 +23,7 @@ pub struct Model {
     pub front_title: Option<String>,
     pub last_title: Option<String>,
     pub id_dosen: Option<Uuid>,
+    pub id_registrasi_dosen: Option<Uuid>,
     pub group_id: Option<Uuid>,
     pub nuptk: Option<String>,
     pub created_at: Option<DateTime>,
