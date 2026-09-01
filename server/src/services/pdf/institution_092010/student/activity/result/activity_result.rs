@@ -263,6 +263,40 @@ pub fn prepare_templates() -> (String, String) {
     (header_template, footer_template)
 }
 
+fn find_chrome_executable() -> Option<std::path::PathBuf> {
+    if let Ok(path) = std::env::var("CHROME_BIN").or_else(|_| std::env::var("CHROMIUM_BIN")) {
+        let p = std::path::PathBuf::from(path);
+        if p.exists() {
+            return Some(p);
+        }
+    }
+
+    let candidates = [
+        "/opt/helium-browser-bin/chrome",
+        "/opt/helium-browser-bin/helium",
+        "/usr/bin/helium-browser",
+        "/usr/bin/google-chrome-stable",
+        "/usr/bin/google-chrome",
+        "/usr/bin/chromium",
+        "/usr/bin/chromium-browser",
+        "/usr/bin/brave",
+        "/usr/bin/brave-browser",
+        "/usr/bin/edge",
+        "/usr/bin/microsoft-edge",
+        "/snap/bin/chromium",
+        "/app/bin/chromium",
+    ];
+
+    for candidate in candidates {
+        let p = std::path::PathBuf::from(candidate);
+        if p.exists() {
+            return Some(p);
+        }
+    }
+
+    None
+}
+
 pub async fn generate_pdf(
     db: &DatabaseConnection,
     activity_id: Uuid,
@@ -271,6 +305,7 @@ pub async fn generate_pdf(
     let (header_template, footer_template) = prepare_templates();
 
     let browser = Browser::new(LaunchOptions {
+        path: find_chrome_executable(),
         args: vec![
             OsStr::new("--allow-file-access-from-files"),
             OsStr::new("--no-sandbox"),
