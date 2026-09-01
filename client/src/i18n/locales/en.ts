@@ -183,7 +183,7 @@ export const en: TranslationSchema = {
         no: 'No',
         courseCode: 'Course Code',
         courseTitle: 'Course Title',
-        credit: 'Credit',
+        sks: 'Credit',
         lecturer: 'Lecturer',
         mark: 'Mark',
         grade: 'Grade',
