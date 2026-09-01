@@ -43,6 +43,12 @@ pub struct StudentResponse {
     pub sync_at: Option<NaiveDateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    pub unit_name: Option<String>,
+    pub unit_code: Option<String>,
+    pub status_name: Option<String>,
+    pub academic_year_name: Option<String>,
+    pub curriculum_name: Option<String>,
+    pub selection_type_name: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]

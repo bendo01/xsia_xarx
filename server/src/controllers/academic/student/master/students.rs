@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
@@ -13,6 +14,146 @@ use crate::dtos::academic::student::master::students::{
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::student::master::students as entity_mod;
+
+struct UnitInfo {
+    code: Option<String>,
+    name: Option<String>,
+}
+
+async fn load_relations_for_students(
+    db: &DatabaseConnection,
+    items: &[entity_mod::Model],
+) -> Result<(
+    HashMap<Uuid, UnitInfo>,
+    HashMap<Uuid, String>,
+    HashMap<Uuid, String>,
+    HashMap<Uuid, String>,
+    HashMap<Uuid, String>,
+), StatusError> {
+    let unit_ids: Vec<Uuid> = items.iter().map(|i| i.unit_id).filter(|id| *id != Uuid::nil()).collect();
+    let status_ids: Vec<Uuid> = items.iter().map(|i| i.status_id).filter(|id| *id != Uuid::nil()).collect();
+    let academic_year_ids: Vec<Uuid> = items.iter().map(|i| i.academic_year_id).filter(|id| *id != Uuid::nil()).collect();
+    let curriculum_ids: Vec<Uuid> = items.iter().map(|i| i.curriculum_id).filter(|id| *id != Uuid::nil()).collect();
+    let selection_type_ids: Vec<Uuid> = items.iter().map(|i| i.selection_type_id).filter(|id| *id != Uuid::nil()).collect();
+
+    let units_map: HashMap<Uuid, UnitInfo> = if unit_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::institution::master::units::Entity::find()
+            .filter(crate::models::institution::master::units::Column::Id.is_in(unit_ids))
+            .filter(crate::models::institution::master::units::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|u| (u.id, UnitInfo { code: u.code, name: u.name }))
+            .collect()
+    };
+
+    let statuses_map: HashMap<Uuid, String> = if status_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::academic::student::reference::statuses::Entity::find()
+            .filter(crate::models::academic::student::reference::statuses::Column::Id.is_in(status_ids))
+            .filter(crate::models::academic::student::reference::statuses::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|s| (s.id, s.name))
+            .collect()
+    };
+
+    let academic_years_map: HashMap<Uuid, String> = if academic_year_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::academic::general::reference::academic_years::Entity::find()
+            .filter(crate::models::academic::general::reference::academic_years::Column::Id.is_in(academic_year_ids))
+            .filter(crate::models::academic::general::reference::academic_years::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|a| (a.id, a.name))
+            .collect()
+    };
+
+    let curriculums_map: HashMap<Uuid, String> = if curriculum_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::academic::course::master::curriculums::Entity::find()
+            .filter(crate::models::academic::course::master::curriculums::Column::Id.is_in(curriculum_ids))
+            .filter(crate::models::academic::course::master::curriculums::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|c| (c.id, c.name))
+            .collect()
+    };
+
+    let selection_types_map: HashMap<Uuid, String> = if selection_type_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::academic::student::reference::selection_types::Entity::find()
+            .filter(crate::models::academic::student::reference::selection_types::Column::Id.is_in(selection_type_ids))
+            .filter(crate::models::academic::student::reference::selection_types::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|st| (st.id, st.name))
+            .collect()
+    };
+
+    Ok((units_map, statuses_map, academic_years_map, curriculums_map, selection_types_map))
+}
+
+fn to_response(
+    item: entity_mod::Model,
+    units_map: &HashMap<Uuid, UnitInfo>,
+    statuses_map: &HashMap<Uuid, String>,
+    academic_years_map: &HashMap<Uuid, String>,
+    curriculums_map: &HashMap<Uuid, String>,
+    selection_types_map: &HashMap<Uuid, String>,
+) -> StudentResponse {
+    let unit = units_map.get(&item.unit_id);
+    StudentResponse {
+        id: item.id,
+        code: item.code,
+        name: item.name,
+        selection_type_id: item.selection_type_id,
+        registered: item.registered,
+        individual_id: item.individual_id,
+        status_id: item.status_id,
+        unit_id: item.unit_id,
+        academic_year_id: item.academic_year_id,
+        registration_id: item.registration_id,
+        nisn: item.nisn,
+        resign_status_id: item.resign_status_id,
+        concentration_id: item.concentration_id,
+        curriculum_id: item.curriculum_id,
+        class_code_id: item.class_code_id,
+        transfer_code: item.transfer_code,
+        transfer_unit_id: item.transfer_unit_id,
+        id_mahasiswa: item.id_mahasiswa,
+        id_registrasi_mahasiswa: item.id_registrasi_mahasiswa,
+        finance_fee: item.finance_fee,
+        finance_id: item.finance_id,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+        deleted_at: item.deleted_at,
+        sync_at: item.sync_at,
+        created_by: item.created_by,
+        updated_by: item.updated_by,
+        unit_name: unit.and_then(|u| u.name.clone()),
+        unit_code: unit.and_then(|u| u.code.clone()),
+        status_name: statuses_map.get(&item.status_id).cloned(),
+        academic_year_name: academic_years_map.get(&item.academic_year_id).cloned(),
+        curriculum_name: curriculums_map.get(&item.curriculum_id).cloned(),
+        selection_type_name: selection_types_map.get(&item.selection_type_id).cloned(),
+    }
+}
 
 #[endpoint(tags("Academic - Student - Master - Student"), status_codes(200, 500))]
 pub async fn list_students(
@@ -50,35 +191,18 @@ pub async fn list_students(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| StudentResponse {
-            id: item.id,
-            code: item.code.clone(),
-            name: item.name.clone(),
-            selection_type_id: item.selection_type_id,
-            registered: item.registered,
-            individual_id: item.individual_id,
-            status_id: item.status_id,
-            unit_id: item.unit_id,
-            academic_year_id: item.academic_year_id,
-            registration_id: item.registration_id,
-            nisn: item.nisn,
-            resign_status_id: item.resign_status_id,
-            concentration_id: item.concentration_id,
-            curriculum_id: item.curriculum_id,
-            class_code_id: item.class_code_id,
-            transfer_code: item.transfer_code,
-            transfer_unit_id: item.transfer_unit_id,
-            id_mahasiswa: item.id_mahasiswa,
-            id_registrasi_mahasiswa: item.id_registrasi_mahasiswa,
-            finance_fee: item.finance_fee,
-            finance_id: item.finance_id,
-            created_at: item.created_at,
-            updated_at: item.updated_at,
-            deleted_at: item.deleted_at,
-            sync_at: item.sync_at,
-            created_by: item.created_by,
-            updated_by: item.updated_by,
+    let (units_map, statuses_map, academic_years_map, curriculums_map, selection_types_map) =
+        load_relations_for_students(db, &items).await?;
 
+    let data = items.into_iter().map(|item| {
+        to_response(
+            item,
+            &units_map,
+            &statuses_map,
+            &academic_years_map,
+            &curriculums_map,
+            &selection_types_map,
+        )
     }).collect();
 
     Ok(Json(PaginatedStudentResponse {
@@ -109,36 +233,17 @@ pub async fn get_student(
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
         .ok_or_else(|| StatusError::not_found().brief("Student not found"))?;
 
-    Ok(Json(StudentResponse {
-            id: item.id,
-            code: item.code.clone(),
-            name: item.name.clone(),
-            selection_type_id: item.selection_type_id,
-            registered: item.registered,
-            individual_id: item.individual_id,
-            status_id: item.status_id,
-            unit_id: item.unit_id,
-            academic_year_id: item.academic_year_id,
-            registration_id: item.registration_id,
-            nisn: item.nisn,
-            resign_status_id: item.resign_status_id,
-            concentration_id: item.concentration_id,
-            curriculum_id: item.curriculum_id,
-            class_code_id: item.class_code_id,
-            transfer_code: item.transfer_code,
-            transfer_unit_id: item.transfer_unit_id,
-            id_mahasiswa: item.id_mahasiswa,
-            id_registrasi_mahasiswa: item.id_registrasi_mahasiswa,
-            finance_fee: item.finance_fee,
-            finance_id: item.finance_id,
-            created_at: item.created_at,
-            updated_at: item.updated_at,
-            deleted_at: item.deleted_at,
-            sync_at: item.sync_at,
-            created_by: item.created_by,
-            updated_by: item.updated_by,
+    let (units_map, statuses_map, academic_years_map, curriculums_map, selection_types_map) =
+        load_relations_for_students(db, std::slice::from_ref(&item)).await?;
 
-    }))
+    Ok(Json(to_response(
+        item,
+        &units_map,
+        &statuses_map,
+        &academic_years_map,
+        &curriculums_map,
+        &selection_types_map,
+    )))
 }#[endpoint(tags("Academic - Student - Master - Student"), status_codes(200, 400, 500))]
 pub async fn create_student(
         req: &mut Request,
@@ -189,36 +294,17 @@ pub async fn create_student(
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(StudentResponse {
-            id: item.id,
-            code: item.code.clone(),
-            name: item.name.clone(),
-            selection_type_id: item.selection_type_id,
-            registered: item.registered,
-            individual_id: item.individual_id,
-            status_id: item.status_id,
-            unit_id: item.unit_id,
-            academic_year_id: item.academic_year_id,
-            registration_id: item.registration_id,
-            nisn: item.nisn,
-            resign_status_id: item.resign_status_id,
-            concentration_id: item.concentration_id,
-            curriculum_id: item.curriculum_id,
-            class_code_id: item.class_code_id,
-            transfer_code: item.transfer_code,
-            transfer_unit_id: item.transfer_unit_id,
-            id_mahasiswa: item.id_mahasiswa,
-            id_registrasi_mahasiswa: item.id_registrasi_mahasiswa,
-            finance_fee: item.finance_fee,
-            finance_id: item.finance_id,
-            created_at: item.created_at,
-            updated_at: item.updated_at,
-            deleted_at: item.deleted_at,
-            sync_at: item.sync_at,
-            created_by: item.created_by,
-            updated_by: item.updated_by,
+        let (units_map, statuses_map, academic_years_map, curriculums_map, selection_types_map) =
+            load_relations_for_students(db, std::slice::from_ref(&item)).await?;
 
-        }))
+        Ok(Json(to_response(
+            item,
+            &units_map,
+            &statuses_map,
+            &academic_years_map,
+            &curriculums_map,
+            &selection_types_map,
+        )))
 }
 
 #[endpoint(tags("Academic - Student - Master - Student"), status_codes(200, 400, 404, 500))]
@@ -313,36 +399,17 @@ pub async fn update_student(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(StudentResponse {
-            id: item.id,
-            code: item.code.clone(),
-            name: item.name.clone(),
-            selection_type_id: item.selection_type_id,
-            registered: item.registered,
-            individual_id: item.individual_id,
-            status_id: item.status_id,
-            unit_id: item.unit_id,
-            academic_year_id: item.academic_year_id,
-            registration_id: item.registration_id,
-            nisn: item.nisn,
-            resign_status_id: item.resign_status_id,
-            concentration_id: item.concentration_id,
-            curriculum_id: item.curriculum_id,
-            class_code_id: item.class_code_id,
-            transfer_code: item.transfer_code,
-            transfer_unit_id: item.transfer_unit_id,
-            id_mahasiswa: item.id_mahasiswa,
-            id_registrasi_mahasiswa: item.id_registrasi_mahasiswa,
-            finance_fee: item.finance_fee,
-            finance_id: item.finance_id,
-            created_at: item.created_at,
-            updated_at: item.updated_at,
-            deleted_at: item.deleted_at,
-            sync_at: item.sync_at,
-            created_by: item.created_by,
-            updated_by: item.updated_by,
+        let (units_map, statuses_map, academic_years_map, curriculums_map, selection_types_map) =
+            load_relations_for_students(db, std::slice::from_ref(&item)).await?;
 
-        }))
+        Ok(Json(to_response(
+            item,
+            &units_map,
+            &statuses_map,
+            &academic_years_map,
+            &curriculums_map,
+            &selection_types_map,
+        )))
 }
 #[endpoint(tags("Academic - Student - Master - Student"), status_codes(200, 400, 404, 500))]
 pub async fn delete_student(

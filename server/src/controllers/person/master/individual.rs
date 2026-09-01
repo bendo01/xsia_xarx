@@ -518,41 +518,98 @@ pub async fn get_individual(
         })
         .collect::<Vec<_>>();
 
-    let students = item
+    let raw_students = item
         .find_related(crate::models::academic::student::master::students::Entity)
         .filter(crate::models::academic::student::master::students::Column::DeletedAt.is_null())
         .all(db)
         .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let student_unit_ids: Vec<Uuid> = raw_students.iter().map(|s| s.unit_id).filter(|id| *id != Uuid::nil()).collect();
+    let student_status_ids: Vec<Uuid> = raw_students.iter().map(|s| s.status_id).filter(|id| *id != Uuid::nil()).collect();
+    let student_academic_year_ids: Vec<Uuid> = raw_students.iter().map(|s| s.academic_year_id).filter(|id| *id != Uuid::nil()).collect();
+
+    let student_units_map: std::collections::HashMap<Uuid, (Option<String>, Option<String>)> = if student_unit_ids.is_empty() {
+        std::collections::HashMap::new()
+    } else {
+        crate::models::institution::master::units::Entity::find()
+            .filter(crate::models::institution::master::units::Column::Id.is_in(student_unit_ids))
+            .filter(crate::models::institution::master::units::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|u| (u.id, (u.code, u.name)))
+            .collect()
+    };
+
+    let student_statuses_map: std::collections::HashMap<Uuid, String> = if student_status_ids.is_empty() {
+        std::collections::HashMap::new()
+    } else {
+        crate::models::academic::student::reference::statuses::Entity::find()
+            .filter(crate::models::academic::student::reference::statuses::Column::Id.is_in(student_status_ids))
+            .filter(crate::models::academic::student::reference::statuses::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|s| (s.id, s.name))
+            .collect()
+    };
+
+    let student_academic_years_map: std::collections::HashMap<Uuid, String> = if student_academic_year_ids.is_empty() {
+        std::collections::HashMap::new()
+    } else {
+        crate::models::academic::general::reference::academic_years::Entity::find()
+            .filter(crate::models::academic::general::reference::academic_years::Column::Id.is_in(student_academic_year_ids))
+            .filter(crate::models::academic::general::reference::academic_years::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|a| (a.id, a.name))
+            .collect()
+    };
+
+    let students = raw_students
         .into_iter()
-        .map(|s| StudentResponse {
-            id: s.id,
-            code: s.code,
-            name: s.name,
-            selection_type_id: s.selection_type_id,
-            registered: s.registered,
-            individual_id: s.individual_id,
-            status_id: s.status_id,
-            unit_id: s.unit_id,
-            academic_year_id: s.academic_year_id,
-            registration_id: s.registration_id,
-            nisn: s.nisn,
-            resign_status_id: s.resign_status_id,
-            concentration_id: s.concentration_id,
-            curriculum_id: s.curriculum_id,
-            class_code_id: s.class_code_id,
-            transfer_code: s.transfer_code,
-            transfer_unit_id: s.transfer_unit_id,
-            id_mahasiswa: s.id_mahasiswa,
-            id_registrasi_mahasiswa: s.id_registrasi_mahasiswa,
-            finance_fee: s.finance_fee,
-            finance_id: s.finance_id,
-            created_at: s.created_at,
-            updated_at: s.updated_at,
-            deleted_at: s.deleted_at,
-            sync_at: s.sync_at,
-            created_by: s.created_by,
-            updated_by: s.updated_by,
+        .map(|s| {
+            let u_info = student_units_map.get(&s.unit_id);
+            StudentResponse {
+                id: s.id,
+                code: s.code,
+                name: s.name,
+                selection_type_id: s.selection_type_id,
+                registered: s.registered,
+                individual_id: s.individual_id,
+                status_id: s.status_id,
+                unit_id: s.unit_id,
+                academic_year_id: s.academic_year_id,
+                registration_id: s.registration_id,
+                nisn: s.nisn,
+                resign_status_id: s.resign_status_id,
+                concentration_id: s.concentration_id,
+                curriculum_id: s.curriculum_id,
+                class_code_id: s.class_code_id,
+                transfer_code: s.transfer_code,
+                transfer_unit_id: s.transfer_unit_id,
+                id_mahasiswa: s.id_mahasiswa,
+                id_registrasi_mahasiswa: s.id_registrasi_mahasiswa,
+                finance_fee: s.finance_fee,
+                finance_id: s.finance_id,
+                created_at: s.created_at,
+                updated_at: s.updated_at,
+                deleted_at: s.deleted_at,
+                sync_at: s.sync_at,
+                created_by: s.created_by,
+                updated_by: s.updated_by,
+                unit_name: u_info.and_then(|u| u.1.clone()),
+                unit_code: u_info.and_then(|u| u.0.clone()),
+                status_name: student_statuses_map.get(&s.status_id).cloned(),
+                academic_year_name: student_academic_years_map.get(&s.academic_year_id).cloned(),
+                curriculum_name: None,
+                selection_type_name: None,
+            }
         })
         .collect::<Vec<_>>();
 
