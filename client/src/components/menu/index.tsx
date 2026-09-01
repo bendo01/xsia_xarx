@@ -5,11 +5,16 @@ import {
     userRolesSignal, 
     activeRoleSignal, 
     currentUserSignal, 
+    activeStudentCodeSignal,
+    activeStudentIdSignal,
+    currentRoleIdSignal,
     setActiveRole, 
+    setActiveStudent,
     getRoleDisplayName, 
     getDashboardPathForRole, 
     refreshAuthState,
-    normalizeRoleName
+    normalizeRoleName,
+    type UserRoleItem
 } from '../../lib/authStore';
 import { toast } from '../toast/Toaster';
 import MenuAdministrator from './administrator';
@@ -28,13 +33,21 @@ export default function DynamicMenu() {
         refreshAuthState();
     });
 
-    const handleRoleChange = (roleName: string) => {
-        if (normalizeRoleName(roleName) === activeRoleSignal()) return;
-        
+    const handleRoleChange = (roleOrName: UserRoleItem | string) => {
+        const role = typeof roleOrName === 'string'
+            ? userRolesSignal().find(r => r.id === roleOrName || r.name === roleOrName)
+            : roleOrName;
+        const roleName = typeof roleOrName === 'string' ? (role?.name || roleOrName) : roleOrName.name;
+        const roleId = role?.id || (typeof roleOrName === 'string' ? roleOrName : roleOrName.name);
+
         setIsSwitchingRole(true);
-        setActiveRole(roleName);
+        setActiveRole(roleId);
+        if (role && normalizeRoleName(role.name) === 'student' && role.roleable_id) {
+            setActiveStudent(role.roleable_id, role.code);
+        }
         const displayName = getRoleDisplayName(roleName);
-        toast.info(`Switched active role to ${displayName}`);
+        const codeDisplay = role?.code ? ` (${role.code})` : '';
+        toast.info(`Switched active role to ${displayName}${codeDisplay}`);
         
         const targetDashboard = getDashboardPathForRole(roleName);
         navigate(targetDashboard);
@@ -59,9 +72,16 @@ export default function DynamicMenu() {
                                 Active Role
                             </span>
                         </div>
-                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200 border border-blue-200 dark:border-blue-700">
-                            {getRoleDisplayName(activeRoleSignal())}
-                        </span>
+                        <div class="flex items-center gap-1.5 flex-wrap justify-end">
+                            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200 border border-blue-200 dark:border-blue-700">
+                                {getRoleDisplayName(activeRoleSignal())}
+                            </span>
+                            <Show when={activeRoleSignal() === 'student' && activeStudentCodeSignal()}>
+                                <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-700">
+                                    {activeStudentCodeSignal()}
+                                </span>
+                            </Show>
+                        </div>
                     </div>
 
                     {/* Multi-role Switcher (shown when user has more than 1 role) */}
@@ -73,18 +93,38 @@ export default function DynamicMenu() {
                             <div class="grid grid-cols-2 gap-1.5">
                                 <For each={userRolesSignal()}>
                                     {(roleItem) => {
-                                        const isCurrent = () => normalizeRoleName(roleItem.name) === activeRoleSignal();
+                                        const isStudent = () => normalizeRoleName(roleItem.name) === 'student';
+                                        const isCurrent = () => {
+                                            if (currentRoleIdSignal()) {
+                                                return roleItem.id === currentRoleIdSignal();
+                                            }
+                                            if (isStudent() && activeStudentIdSignal() && roleItem.roleable_id) {
+                                                return roleItem.roleable_id === activeStudentIdSignal();
+                                            }
+                                            return normalizeRoleName(roleItem.name) === activeRoleSignal();
+                                        };
+                                        const studentCode = () => roleItem.code || (isStudent() && isCurrent() ? activeStudentCodeSignal() : '');
+
                                         return (
                                             <button
                                                 type="button"
-                                                onClick={() => handleRoleChange(roleItem.name)}
+                                                onClick={() => handleRoleChange(roleItem)}
                                                 class={`px-2 py-1.5 text-xs font-medium rounded-lg text-start transition-all flex items-center justify-between border ${
                                                     isCurrent() 
                                                         ? 'bg-blue-600 text-white border-blue-600 shadow-xs font-semibold' 
                                                         : 'bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700 hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-neutral-800'
                                                 }`}
                                             >
-                                                <span class="truncate">{getRoleDisplayName(roleItem.name)}</span>
+                                                <div class="flex flex-col min-w-0">
+                                                    <span class="truncate">{getRoleDisplayName(roleItem.name)}</span>
+                                                    <Show when={isStudent() && studentCode()}>
+                                                        <span class={`text-[10px] font-mono font-bold truncate ${
+                                                            isCurrent() ? 'text-blue-100' : 'text-neutral-500 dark:text-neutral-400'
+                                                        }`}>
+                                                            {studentCode()}
+                                                        </span>
+                                                    </Show>
+                                                </div>
                                                 <Show when={isCurrent()}>
                                                     <svg class="size-3 shrink-0 ml-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                                                         <polyline points="20 6 9 17 4 12"/>

@@ -9,6 +9,7 @@ export interface UserRoleItem {
     position_type_id?: string;
     roleable_id?: string;
     roleable_type?: string;
+    code?: string;
 }
 
 export interface StoredUser {
@@ -175,6 +176,7 @@ export function isAuthenticated(): boolean {
 const [currentUserSignal, setCurrentUserSignal] = createSignal<StoredUser | null>(null);
 const [userRolesSignal, setUserRolesSignal] = createSignal<UserRoleItem[]>([]);
 const [activeRoleSignal, setActiveRoleSignal] = createSignal<string>('student');
+const [currentRoleIdSignal, setCurrentRoleIdSignal] = createSignal<string>('');
 const [isAuthenticatedSignal, setIsAuthenticatedSignal] = createSignal<boolean>(false);
 const [activeStudentIdSignal, setActiveStudentIdSignal] = createSignal<string>('');
 const [activeStudentCodeSignal, setActiveStudentCodeSignal] = createSignal<string>('');
@@ -183,6 +185,7 @@ export {
     currentUserSignal,
     userRolesSignal,
     activeRoleSignal,
+    currentRoleIdSignal,
     isAuthenticatedSignal,
     activeStudentIdSignal,
     activeStudentCodeSignal
@@ -212,9 +215,11 @@ export function refreshAuthState(): void {
     const token = getStorageItem('token');
     const studentId = getActiveStudentId();
     const studentCode = getActiveStudentCode();
+    const currentRoleId = getStorageItem('current_role') || '';
     setCurrentUserSignal(user);
     setUserRolesSignal(roles);
     setActiveRoleSignal(active);
+    setCurrentRoleIdSignal(currentRoleId);
     setActiveStudentIdSignal(studentId);
     setActiveStudentCodeSignal(studentCode);
     setIsAuthenticatedSignal(Boolean(token && token !== 'undefined' && token !== ''));

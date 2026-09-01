@@ -7,20 +7,47 @@ import {
     userRolesSignal, 
     isAuthenticatedSignal, 
     activeStudentCodeSignal,
+    activeStudentIdSignal,
+    currentRoleIdSignal,
     logout, 
     setActiveRole, 
+    setActiveStudent,
     getRoleDisplayName, 
     getDashboardPathForRole, 
     refreshAuthState,
-    normalizeRoleName
+    normalizeRoleName,
+    type UserRoleItem
 } from '../../lib/authStore';
+import { getStudentById } from '../../controllers/academic/student/master/AcademicStudentMasterStudentController';
+import { setStorageItem } from '../../lib/storage';
 import { toast } from '../toast/Toaster';
 
 export default function TopBar() {
     const navigate = useNavigate();
 
-    onMount(() => {
+    onMount(async () => {
         refreshAuthState();
+        // Enrich any student roles missing code
+        const roles = userRolesSignal();
+        let changed = false;
+        const updatedRoles = await Promise.all(roles.map(async (r) => {
+            if (normalizeRoleName(r.name) === 'student' && r.roleable_id && !r.code) {
+                try {
+                    const std = await getStudentById(r.roleable_id);
+                    if (std?.code) {
+                        changed = true;
+                        return { ...r, code: std.code };
+                    }
+                } catch {
+                    // Ignore
+                }
+            }
+            return r;
+        }));
+        if (changed) {
+            setStorageItem('roles', JSON.stringify(updatedRoles));
+            refreshAuthState();
+        }
     });
 
     const toggleDarkMode = () => {
@@ -40,10 +67,20 @@ export default function TopBar() {
         navigate('/authentification/login', { replace: true });
     };
 
-    const handleRoleSwitch = (roleName: string) => {
-        if (normalizeRoleName(roleName) === activeRoleSignal()) return;
-        setActiveRole(roleName);
-        toast.success(`Role switched to ${getRoleDisplayName(roleName)}`);
+    const handleRoleSwitch = (roleOrName: UserRoleItem | string) => {
+        const role = typeof roleOrName === 'string'
+            ? userRolesSignal().find(r => r.id === roleOrName || r.name === roleOrName)
+            : roleOrName;
+        const roleName = typeof roleOrName === 'string' ? (role?.name || roleOrName) : roleOrName.name;
+        const roleId = role?.id || (typeof roleOrName === 'string' ? roleOrName : roleOrName.name);
+
+        setActiveRole(roleId);
+        if (role && normalizeRoleName(role.name) === 'student' && role.roleable_id) {
+            setActiveStudent(role.roleable_id, role.code);
+        }
+        const displayName = getRoleDisplayName(roleName);
+        const codeDisplay = role?.code ? ` (${role.code})` : '';
+        toast.success(`Role switched to ${displayName}${codeDisplay}`);
         navigate(getDashboardPathForRole(roleName));
     };
 
@@ -238,20 +275,38 @@ export default function TopBar() {
                                             <div class="space-y-1">
                                                 <For each={userRolesSignal()}>
                                                     {(r) => {
-                                                        const isSelected = () => normalizeRoleName(r.name) === activeRoleSignal();
+                                                        const isStudent = () => normalizeRoleName(r.name) === 'student';
+                                                        const isSelected = () => {
+                                                            if (currentRoleIdSignal()) {
+                                                                return r.id === currentRoleIdSignal();
+                                                            }
+                                                            if (isStudent() && activeStudentIdSignal() && r.roleable_id) {
+                                                                return r.roleable_id === activeStudentIdSignal();
+                                                            }
+                                                            return normalizeRoleName(r.name) === activeRoleSignal();
+                                                        };
+                                                        const studentCode = () => r.code || (isStudent() && isSelected() ? activeStudentCodeSignal() : '');
+
                                                         return (
                                                             <button
                                                                 type="button"
-                                                                onClick={() => handleRoleSwitch(r.name)}
+                                                                onClick={() => handleRoleSwitch(r)}
                                                                 class={`w-full flex items-center justify-between py-1.5 px-2.5 rounded-lg text-xs font-medium transition-colors ${
                                                                     isSelected() 
                                                                         ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/70 dark:text-blue-300 font-semibold' 
                                                                         : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700'
                                                                 }`}
                                                             >
-                                                                <span>{getRoleDisplayName(r.name)}</span>
+                                                                <div class="flex items-center gap-2 min-w-0">
+                                                                    <span class="truncate">{getRoleDisplayName(r.name)}</span>
+                                                                    <Show when={isStudent() && studentCode()}>
+                                                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700">
+                                                                            {studentCode()}
+                                                                        </span>
+                                                                    </Show>
+                                                                </div>
                                                                 <Show when={isSelected()}>
-                                                                    <svg class="size-3.5 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                                    <svg class="size-3.5 text-blue-600 dark:text-blue-400 shrink-0 ms-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                                                         <polyline points="20 6 9 17 4 12"/>
                                                                     </svg>
                                                                 </Show>
