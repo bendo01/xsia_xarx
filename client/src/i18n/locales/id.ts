@@ -179,4 +179,18 @@ export const id: TranslationSchema = {
         signInTitle: 'Masuk / Autentikasi',
         signInDesc: 'Akses portal autentikasi, kredensial akun, dan area terproteksi.',
     },
+    academic: {
+        no: 'No',
+        courseCode: 'Kode MK',
+        courseTitle: 'Nama Mata Kuliah',
+        sks: 'SKS',
+        lecturer: 'Dosen Pengampu',
+        mark: 'Nilai Angka',
+        grade: 'Nilai Huruf',
+        point: 'Bobot',
+        status: 'Status',
+        action: 'Aksi',
+        noCoursesEnrolled: 'Belum ada mata kuliah yang diambil di semester ini.',
+        loadingCourses: 'Memuat data mata kuliah dari server...',
+    },
 };

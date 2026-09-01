@@ -28,6 +28,9 @@ describe('i18n Localization Engine', () => {
         expect(t('roles.course_department')).toBe('Program Studi & Jurusan');
         expect(t('nav.signInJwt')).toBe('Masuk Akun (JWT)');
         expect(t('auth.login.title')).toBe('Macro Workspace');
+        expect(t('academic.courseCode')).toBe('Kode MK');
+        expect(t('academic.courseTitle')).toBe('Nama Mata Kuliah');
+        expect(t('academic.lecturer')).toBe('Dosen Pengampu');
     });
 
     it('translates nested keys in English (en)', () => {
@@ -39,6 +42,9 @@ describe('i18n Localization Engine', () => {
         expect(t('roles.administrator')).toBe('Administrator');
         expect(t('roles.course_department')).toBe('Course & Department');
         expect(t('nav.signInJwt')).toBe('Sign In (JWT)');
+        expect(t('academic.courseCode')).toBe('Course Code');
+        expect(t('academic.courseTitle')).toBe('Course Title');
+        expect(t('academic.lecturer')).toBe('Lecturer');
     });
 
     it('interpolates parameters using {{param}} and {param}', () => {

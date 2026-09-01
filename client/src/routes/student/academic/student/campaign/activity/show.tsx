@@ -2,6 +2,7 @@ import { createSignal, onMount, createEffect, For, Show } from 'solid-js';
 import { useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
+import { t } from '~/i18n';
 import {
     getStudentActivityById,
     printActivityPlan,
@@ -66,7 +67,7 @@ export default function StudentCampaignActivityShowPage() {
                 const course = detail.course || courses.find((c: any) => c.id === detail.course_id);
                 const teach = detail.teach || teaches.find((t: any) => t.id === detail.teach_id || t.course_id === detail.course_id);
                 const grade = detail.grade || grades.find((g: any) => g.id === detail.grade_id);
-                
+
                 const cleanName = (val?: string) => {
                     if (!val || val.startsWith('DosenAktifitasPengajaran')) return '';
                     return val.trim();
@@ -335,30 +336,30 @@ export default function StudentCampaignActivityShowPage() {
                     <Show when={!isLoading()} fallback={
                         <div class="py-16 flex flex-col items-center justify-center gap-3 text-neutral-400">
                             <div class="size-8 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-                            <p class="text-xs font-mono">Loading enrolled courses from server...</p>
+                            <p class="text-xs font-mono">{t('academic.loadingCourses')}</p>
                         </div>
                     }>
                         <div class="overflow-x-auto">
                             <table class="w-full text-xs text-start">
                                 <thead class="bg-neutral-100 dark:bg-neutral-900/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-neutral-200 dark:border-neutral-700">
                                     <tr>
-                                        <th class="py-3 px-4 text-start">No</th>
-                                        <th class="py-3 px-4 text-start">Course Code</th>
-                                        <th class="py-3 px-4 text-start">Course Title</th>
-                                        <th class="py-3 px-4 text-center">SKS</th>
-                                        <th class="py-3 px-4 text-start">Lecturer</th>
-                                        <th class="py-3 px-4 text-center">Mark</th>
-                                        <th class="py-3 px-4 text-center">Grade</th>
-                                        <th class="py-3 px-4 text-center">Point</th>
-                                        <th class="py-3 px-4 text-center">Status</th>
-                                        <th class="py-3 px-4 text-end">Action</th>
+                                        <th class="py-3 px-4 text-start">{t('academic.no')}</th>
+                                        <th class="py-3 px-4 text-start">{t('academic.courseCode')}</th>
+                                        <th class="py-3 px-4 text-start">{t('academic.courseTitle')}</th>
+                                        <th class="py-3 px-4 text-center">{t('academic.credit')}</th>
+                                        <th class="py-3 px-4 text-start">{t('academic.lecturer')}</th>
+                                        <th class="py-3 px-4 text-center">{t('academic.mark')}</th>
+                                        <th class="py-3 px-4 text-center">{t('academic.grade')}</th>
+                                        <th class="py-3 px-4 text-center">{t('academic.point')}</th>
+                                        <th class="py-3 px-4 text-center">{t('academic.status')}</th>
+                                        <th class="py-3 px-4 text-end">{t('academic.action')}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-neutral-100 dark:divide-neutral-700/50">
                                     <For each={detailCourses()} fallback={
                                         <tr>
                                             <td colspan="10" class="py-12 text-center text-neutral-400">
-                                                No courses enrolled in this semester yet.
+                                                {t('academic.noCoursesEnrolled')}
                                             </td>
                                         </tr>
                                     }>
@@ -375,61 +376,61 @@ export default function StudentCampaignActivityShowPage() {
                                                     {c.credit ?? 0}
                                                 </td>
                                                 <td class="py-3.5 px-4 text-neutral-600 dark:text-neutral-300 text-xs">
-                                                     <Show
-                                                         when={c.lecturers && c.lecturers.length > 1}
-                                                         fallback={
-                                                             <span>
-                                                                 {(() => {
-                                                                     const l: any = c.lecturers?.[0];
-                                                                     if (!l) return c.lecturer_name || '-';
-                                                                     if (typeof l === 'string') return l;
-                                                                     const code = l.code?.trim();
-                                                                     const name = l.name?.trim();
-                                                                     if (code && name) {
-                                                                         return (
-                                                                             <span class="inline-flex items-center gap-1.5">
-                                                                                 <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{code}</span>
-                                                                                 <span class="text-neutral-400 dark:text-neutral-500">-</span>
-                                                                                 <span>{name}</span>
-                                                                             </span>
-                                                                         );
-                                                                     }
-                                                                     if (name) return <span>{name}</span>;
-                                                                     if (code) return <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{code}</span>;
-                                                                     return c.lecturer_name || '-';
-                                                                 })()}
-                                                             </span>
-                                                         }
-                                                     >
-                                                         <div class="flex flex-col gap-1">
-                                                             <For each={c.lecturers}>
-                                                                 {(lecturer: any) => (
-                                                                     <span class="inline-flex items-center gap-1.5 leading-snug">
-                                                                         <span class="size-1 rounded-full bg-neutral-400 dark:bg-neutral-500 shrink-0"></span>
-                                                                         {typeof lecturer === 'string' ? (
-                                                                             <span>{lecturer}</span>
-                                                                         ) : (() => {
-                                                                             const code = lecturer.code?.trim();
-                                                                             const name = lecturer.name?.trim();
-                                                                             if (code && name) {
-                                                                                 return (
-                                                                                     <span>
-                                                                                         <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{code}</span>
-                                                                                         <span class="text-neutral-400 dark:text-neutral-500 mx-1">-</span>
-                                                                                         <span>{name}</span>
-                                                                                     </span>
-                                                                                 );
-                                                                             }
-                                                                             if (name) return <span>{name}</span>;
-                                                                             if (code) return <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{code}</span>;
-                                                                             return <span>-</span>;
-                                                                         })()}
-                                                                     </span>
-                                                                 )}
-                                                             </For>
-                                                         </div>
-                                                     </Show>
-                                                 </td>
+                                                    <Show
+                                                        when={c.lecturers && c.lecturers.length > 1}
+                                                        fallback={
+                                                            <span>
+                                                                {(() => {
+                                                                    const l: any = c.lecturers?.[0];
+                                                                    if (!l) return c.lecturer_name || '-';
+                                                                    if (typeof l === 'string') return l;
+                                                                    const code = l.code?.trim();
+                                                                    const name = l.name?.trim();
+                                                                    if (code && name) {
+                                                                        return (
+                                                                            <span class="inline-flex items-center gap-1.5">
+                                                                                <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{code}</span>
+                                                                                <span class="text-neutral-400 dark:text-neutral-500">-</span>
+                                                                                <span>{name}</span>
+                                                                            </span>
+                                                                        );
+                                                                    }
+                                                                    if (name) return <span>{name}</span>;
+                                                                    if (code) return <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{code}</span>;
+                                                                    return c.lecturer_name || '-';
+                                                                })()}
+                                                            </span>
+                                                        }
+                                                    >
+                                                        <div class="flex flex-col gap-1">
+                                                            <For each={c.lecturers}>
+                                                                {(lecturer: any) => (
+                                                                    <span class="inline-flex items-center gap-1.5 leading-snug">
+                                                                        <span class="size-1 rounded-full bg-neutral-400 dark:bg-neutral-500 shrink-0"></span>
+                                                                        {typeof lecturer === 'string' ? (
+                                                                            <span>{lecturer}</span>
+                                                                        ) : (() => {
+                                                                            const code = lecturer.code?.trim();
+                                                                            const name = lecturer.name?.trim();
+                                                                            if (code && name) {
+                                                                                return (
+                                                                                    <span>
+                                                                                        <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{code}</span>
+                                                                                        <span class="text-neutral-400 dark:text-neutral-500 mx-1">-</span>
+                                                                                        <span>{name}</span>
+                                                                                    </span>
+                                                                                );
+                                                                            }
+                                                                            if (name) return <span>{name}</span>;
+                                                                            if (code) return <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{code}</span>;
+                                                                            return <span>-</span>;
+                                                                        })()}
+                                                                    </span>
+                                                                )}
+                                                            </For>
+                                                        </div>
+                                                    </Show>
+                                                </td>
                                                 <td class="py-3.5 px-4 text-center font-mono font-bold">
                                                     {c.mark != null ? c.mark.toFixed(1) : '-'}
                                                 </td>

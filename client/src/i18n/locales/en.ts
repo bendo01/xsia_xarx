@@ -179,4 +179,18 @@ export const en: TranslationSchema = {
         signInTitle: 'Sign In / Authentication',
         signInDesc: 'Access authentication portals, credentials, and secured areas.',
     },
+    academic: {
+        no: 'No',
+        courseCode: 'Course Code',
+        courseTitle: 'Course Title',
+        credit: 'Credit',
+        lecturer: 'Lecturer',
+        mark: 'Mark',
+        grade: 'Grade',
+        point: 'Point',
+        status: 'Status',
+        action: 'Action',
+        noCoursesEnrolled: 'No courses enrolled in this semester yet.',
+        loadingCourses: 'Loading enrolled courses from server...',
+    },
 };

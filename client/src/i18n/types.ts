@@ -179,4 +179,18 @@ export interface TranslationSchema {
         signInTitle: string;
         signInDesc: string;
     };
+    academic: {
+        no: string;
+        courseCode: string;
+        courseTitle: string;
+        sks: string;
+        lecturer: string;
+        mark: string;
+        grade: string;
+        point: string;
+        status: string;
+        action: string;
+        noCoursesEnrolled: string;
+        loadingCourses: string;
+    };
 }
