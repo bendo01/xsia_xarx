@@ -274,6 +274,29 @@ export default function StudentCampaignActivityShowPage() {
         </Show>
     );
 
+    const getGradeBadgeClass = (grade?: string) => {
+        if (!grade || grade === '-') {
+            return 'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400';
+        }
+        const cleanGrade = grade.trim().toUpperCase();
+        if (cleanGrade.startsWith('A')) {
+            return 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300';
+        }
+        if (cleanGrade.startsWith('B')) {
+            return 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300';
+        }
+        if (cleanGrade.startsWith('C')) {
+            return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-950 dark:text-yellow-300';
+        }
+        if (cleanGrade.startsWith('D')) {
+            return 'bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300';
+        }
+        if (cleanGrade.startsWith('E')) {
+            return 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300';
+        }
+        return 'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400';
+    };
+
     return (
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
             <TopBar />
@@ -439,7 +462,7 @@ export default function StudentCampaignActivityShowPage() {
                                                     {c.mark != null ? c.mark.toFixed(1) : '-'}
                                                 </td>
                                                 <td class="py-3.5 px-4 text-center">
-                                                    <span class="inline-block px-2 py-0.5 rounded-md font-bold text-xs bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
+                                                    <span class={`inline-block px-2 py-0.5 rounded-md font-bold text-xs ${getGradeBadgeClass(c.grade_letter || c.grade?.alphabet_code || c.grade?.name)}`}>
                                                         {c.grade_letter || c.grade?.alphabet_code || c.grade?.name || '-'}
                                                     </span>
                                                 </td>
@@ -536,7 +559,7 @@ export default function StudentCampaignActivityShowPage() {
 
                                             <div class="p-2 rounded-xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
                                                 <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('academic.grade')}</span>
-                                                <span class="inline-block px-2 py-0.5 rounded font-bold text-xs bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
+                                                <span class={`inline-block px-2 py-0.5 rounded font-bold text-xs ${getGradeBadgeClass(c.grade_letter || c.grade?.alphabet_code || c.grade?.name)}`}>
                                                     {c.grade_letter || c.grade?.alphabet_code || c.grade?.name || '-'}
                                                 </span>
                                             </div>
