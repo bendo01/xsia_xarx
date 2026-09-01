@@ -143,6 +143,7 @@ async fn load_relations_for_detail_activities(
                 updated_by: t.updated_by,
                 max_member: t.max_member,
                 feeder_id: t.feeder_id,
+                enrolled_count: None,
             }))
             .collect()
     };

@@ -41,6 +41,7 @@ pub struct TeachResponse {
     pub updated_by: Option<Uuid>,
     pub max_member: Option<i32>,
     pub feeder_id: Option<Uuid>,
+    pub enrolled_count: Option<i64>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]

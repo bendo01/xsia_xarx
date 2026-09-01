@@ -108,8 +108,7 @@ export default function StudentCourseEnrollmentPage() {
                 schedulesList,
                 roomsList,
                 unitCoursesList,
-                detailActivitiesRes,
-                allDetailActivitiesRes
+                detailActivitiesRes
             ] = await Promise.all([
                 listTeaches({ page: 1, page_size: 300, activity_id: targetActivityId }),
                 listTeachDecrees({ page_size: 100, activity_id: targetActivityId }),
@@ -120,7 +119,6 @@ export default function StudentCourseEnrollmentPage() {
                 listRooms({ page_size: 300 }),
                 targetUnitId ? listCourses({ page_size: 500, unit_id: targetUnitId }) : Promise.resolve([]),
                 listDetailActivities({ page: 1, page_size: 100, activity_id: currentAct.id }),
-                listDetailActivities({ page: 1, page_size: 500 }),
             ]);
 
             const allDecrees = decreesList || [];
@@ -190,7 +188,6 @@ export default function StudentCourseEnrollmentPage() {
             const allSchedules = schedulesList || [];
             const allRooms = roomsList || [];
             const studentDetails = detailActivitiesRes.data || [];
-            const allDetails = allDetailActivitiesRes.data || [];
 
             // 5. Filter offered teaches strictly based on:
             // - academic_campaign_transaction.teaches.activity_id = student_activity.unit_activity_id (or decree.activity_id = student_activity.unit_activity_id)
@@ -259,7 +256,7 @@ export default function StudentCourseEnrollmentPage() {
                     return r?.name || s.room_name || '';
                 }).filter(Boolean).join(', ');
 
-                const enrolledCount = allDetails.filter((d: any) => d.teach_id === t.id).length;
+                const enrolledCount = t.enrolled_count ?? 0;
 
                 return {
                     ...t,
@@ -364,14 +361,41 @@ export default function StudentCourseEnrollmentPage() {
         }
     };
 
-    const handleDrop = async (detailId: string, courseName: string) => {
-        if (!confirm(`Are you sure you want to drop "${courseName}"?`)) return;
+    const [targetToDrop, setTargetToDrop] = createSignal<{
+        detailId: string;
+        courseName: string;
+        courseCode?: string;
+        className?: string;
+        credit?: number | null;
+        lecturerName?: string;
+    } | null>(null);
 
-        setDroppingDetailId(detailId);
+    const openDropModal = (item: {
+        detailId: string;
+        courseName: string;
+        courseCode?: string;
+        className?: string;
+        credit?: number | null;
+        lecturerName?: string;
+    }) => {
+        setTargetToDrop(item);
+    };
+
+    const closeDropModal = () => {
+        if (droppingDetailId()) return;
+        setTargetToDrop(null);
+    };
+
+    const confirmDrop = async () => {
+        const item = targetToDrop();
+        if (!item) return;
+
+        setDroppingDetailId(item.detailId);
         try {
-            const res = await deleteDetailActivity(detailId);
+            const res = await deleteDetailActivity(item.detailId);
             if (!res.is_error) {
-                toast.info(`Dropped ${courseName} from study plan.`);
+                toast.info(`Dropped ${item.courseName} from study plan.`);
+                setTargetToDrop(null);
                 await fetchEnrollmentData();
             } else {
                 toast.danger(res.message || 'Failed to drop class.');
@@ -507,7 +531,14 @@ export default function StudentCourseEnrollmentPage() {
 
                                     <button
                                         type="button"
-                                        onClick={() => handleDrop(enr.id, enr.course_name || 'Course')}
+                                        onClick={() => openDropModal({
+                                            detailId: enr.id,
+                                            courseName: enr.course_name || 'Course',
+                                            courseCode: enr.course_code,
+                                            className: enr.class_name,
+                                            credit: enr.credit,
+                                            lecturerName: enr.lecturer_name,
+                                        })}
                                         disabled={droppingDetailId() === enr.id}
                                         class="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-lg text-xs font-bold transition-colors disabled:opacity-50 shrink-0"
                                         title="Drop class"
@@ -594,6 +625,11 @@ export default function StudentCourseEnrollmentPage() {
                                             const isEnrolledThis = () => isEnrolledInThisClass(t.id);
                                             const isEnrolledOther = () => isCourseEnrolledInOtherClass(t.course_id, t.id);
                                             const isFull = () => (t.enrolled_count || 0) >= (t.max_member || 40);
+                                            const enrolledDetail = () => enrolledCourses().find(c => c.teach_id === t.id);
+                                            const isDroppingThis = () => {
+                                                const d = enrolledDetail();
+                                                return d ? droppingDetailId() === d.id : false;
+                                            };
 
                                             return (
                                                 <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900/30 transition-colors">
@@ -625,9 +661,25 @@ export default function StudentCourseEnrollmentPage() {
                                                     </td>
                                                     <td class="py-3.5 px-4 text-end">
                                                         <Show when={!isEnrolledThis()} fallback={
-                                                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 text-xs font-bold">
-                                                                ✓ Enrolled
-                                                            </span>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    const d = enrolledDetail();
+                                                                    if (d) openDropModal({
+                                                                        detailId: d.id,
+                                                                        courseName: t.course_name || t.name || 'Course',
+                                                                        courseCode: t.course_code,
+                                                                        className: t.class_name,
+                                                                        credit: t.credits,
+                                                                        lecturerName: t.lecturer_name,
+                                                                    });
+                                                                }}
+                                                                disabled={isDroppingThis()}
+                                                                class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-300 dark:hover:bg-red-900/60 border border-red-200 dark:border-red-800/60 rounded-lg text-xs font-bold transition-colors shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1"
+                                                                title="Unenroll from this class"
+                                                            >
+                                                                {isDroppingThis() ? 'Dropping...' : '✕ Unenroll'}
+                                                            </button>
                                                         }>
                                                             <Show when={!isEnrolledOther()} fallback={
                                                                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-400 dark:text-neutral-500 text-[11px] font-semibold border border-neutral-200 dark:border-neutral-700 cursor-not-allowed" title="Already enrolled in this course in another class">
@@ -664,6 +716,11 @@ export default function StudentCourseEnrollmentPage() {
                                     const isEnrolledThis = () => isEnrolledInThisClass(t.id);
                                     const isEnrolledOther = () => isCourseEnrolledInOtherClass(t.course_id, t.id);
                                     const isFull = () => (t.enrolled_count || 0) >= (t.max_member || 40);
+                                    const enrolledDetail = () => enrolledCourses().find(c => c.teach_id === t.id);
+                                    const isDroppingThis = () => {
+                                        const d = enrolledDetail();
+                                        return d ? droppingDetailId() === d.id : false;
+                                    };
 
                                     return (
                                         <div class="p-4 sm:p-5 flex flex-col gap-3 hover:bg-neutral-50/60 dark:hover:bg-neutral-900/30 transition-colors">
@@ -686,9 +743,25 @@ export default function StudentCourseEnrollmentPage() {
                                                 </div>
 
                                                 <Show when={!isEnrolledThis()} fallback={
-                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 text-[10px] font-bold shrink-0">
-                                                        ✓ Enrolled
-                                                    </span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const d = enrolledDetail();
+                                                            if (d) openDropModal({
+                                                                detailId: d.id,
+                                                                courseName: t.course_name || t.name || 'Course',
+                                                                courseCode: t.course_code,
+                                                                className: t.class_name,
+                                                                credit: t.credits,
+                                                                lecturerName: t.lecturer_name,
+                                                            });
+                                                        }}
+                                                        disabled={isDroppingThis()}
+                                                        class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-300 dark:hover:bg-red-900/60 border border-red-200 dark:border-red-800/60 rounded-xl text-[10px] font-bold transition-colors shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+                                                        title="Unenroll from this class"
+                                                    >
+                                                        {isDroppingThis() ? '...' : '✕ Unenroll'}
+                                                    </button>
                                                 }>
                                                     <Show when={!isEnrolledOther()} fallback={
                                                         <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-400 dark:text-neutral-500 text-[10px] font-semibold border border-neutral-200 dark:border-neutral-700 shrink-0 cursor-not-allowed">
@@ -736,6 +809,84 @@ export default function StudentCourseEnrollmentPage() {
                     </Show>
                 </div>
             </main>
+
+            {/* Confirmation Modal for Unenroll / Drop */}
+            <Show when={targetToDrop()}>
+                {(item) => (
+                    <div 
+                        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-950/60 backdrop-blur-xs animate-in fade-in duration-150"
+                        onClick={(e) => {
+                            if (e.target === e.currentTarget) closeDropModal();
+                        }}
+                    >
+                        <div class="w-full max-w-md bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200/80 dark:border-neutral-800 shadow-2xl overflow-hidden p-6 space-y-5 transform animate-in zoom-in-95 duration-150">
+                            <div class="flex items-start gap-4">
+                                <div class="size-11 rounded-xl bg-red-100 dark:bg-red-950/80 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0">
+                                    <svg class="size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                </div>
+                                <div class="space-y-1 min-w-0">
+                                    <h3 class="text-base font-bold text-neutral-900 dark:text-white">
+                                        Confirm Unenroll Class
+                                    </h3>
+                                    <p class="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
+                                        Are you sure you want to unenroll from this course? It will be removed from your study plan.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Details summary card */}
+                            <div class="p-3.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-200/60 dark:border-neutral-700/60 space-y-2">
+                                <div class="flex items-center justify-between gap-2">
+                                    <span class="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
+                                        {item().courseCode || '-'}
+                                    </span>
+                                    <div class="flex items-center gap-1.5">
+                                        <Show when={item().credit !== undefined && item().credit !== null}>
+                                            <span class="px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 text-[10px] font-mono font-bold">
+                                                {item().credit} SKS
+                                            </span>
+                                        </Show>
+                                        <Show when={item().className && item().className !== '-'}>
+                                            <span class="px-2 py-0.5 rounded bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 text-[10px] font-mono font-semibold">
+                                                Class {item().className}
+                                            </span>
+                                        </Show>
+                                    </div>
+                                </div>
+                                <h4 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                    {item().courseName}
+                                </h4>
+                                <Show when={item().lecturerName && item().lecturerName !== '-'}>
+                                    <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                        {item().lecturerName}
+                                    </p>
+                                </Show>
+                            </div>
+
+                            <div class="flex items-center justify-end gap-3 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={closeDropModal}
+                                    disabled={droppingDetailId() !== null}
+                                    class="px-4 py-2 text-xs font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-xl transition-colors disabled:opacity-50"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={confirmDrop}
+                                    disabled={droppingDetailId() !== null}
+                                    class="px-4 py-2 text-xs font-bold text-white bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700 rounded-xl transition-colors shadow-xs disabled:opacity-50 inline-flex items-center gap-1.5"
+                                >
+                                    {droppingDetailId() ? 'Unenrolling...' : 'Yes, Unenroll'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </Show>
         </div>
     );
 }

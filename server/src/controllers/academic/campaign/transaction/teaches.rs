@@ -1,8 +1,9 @@
+use std::collections::HashMap;
 use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
-    PaginatorTrait, QueryFilter, QueryOrder, Set,
+    PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, Set,
 };
 use uuid::Uuid;
 use validator::Validate;
@@ -51,7 +52,55 @@ pub async fn list_teaches(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| TeachResponse {
+    let (counts, feeder_counts): (HashMap<Uuid, i64>, HashMap<Uuid, i64>) = if items.is_empty() {
+        (HashMap::new(), HashMap::new())
+    } else {
+        let teach_ids: Vec<Uuid> = items.iter().map(|i| i.id).collect();
+        let feeder_ids: Vec<Uuid> = items.iter().filter_map(|i| i.feeder_id).collect();
+
+        let da_counts: HashMap<Uuid, i64> = crate::models::academic::student::campaign::detail_activities::Entity::find()
+            .filter(crate::models::academic::student::campaign::detail_activities::Column::TeachId.is_in(teach_ids))
+            .filter(crate::models::academic::student::campaign::detail_activities::Column::DeletedAt.is_null())
+            .select_only()
+            .column(crate::models::academic::student::campaign::detail_activities::Column::TeachId)
+            .column_as(crate::models::academic::student::campaign::detail_activities::Column::Id.count(), "count")
+            .group_by(crate::models::academic::student::campaign::detail_activities::Column::TeachId)
+            .into_tuple::<(Option<Uuid>, i64)>()
+            .all(db)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .filter_map(|(tid, count)| tid.map(|id| (id, count)))
+            .collect();
+
+        let pk_counts: HashMap<Uuid, i64> = if feeder_ids.is_empty() {
+            HashMap::new()
+        } else {
+            crate::models::feeder::master::peserta_kelas_kuliah::Entity::find()
+                .filter(crate::models::feeder::master::peserta_kelas_kuliah::Column::IdKelasKuliah.is_in(feeder_ids))
+                .filter(crate::models::feeder::master::peserta_kelas_kuliah::Column::DeletedAt.is_null())
+                .select_only()
+                .column(crate::models::feeder::master::peserta_kelas_kuliah::Column::IdKelasKuliah)
+                .column_as(crate::models::feeder::master::peserta_kelas_kuliah::Column::Id.count(), "count")
+                .group_by(crate::models::feeder::master::peserta_kelas_kuliah::Column::IdKelasKuliah)
+                .into_tuple::<(Option<Uuid>, i64)>()
+                .all(db)
+                .await
+                .unwrap_or_default()
+                .into_iter()
+                .filter_map(|(fid, count)| fid.map(|id| (id, count)))
+                .collect()
+        };
+
+        (da_counts, pk_counts)
+    };
+
+    let data = items.into_iter().map(|item| {
+        let enrolled_count = counts.get(&item.id).copied()
+            .or_else(|| item.feeder_id.and_then(|fid| feeder_counts.get(&fid).copied()))
+            .unwrap_or(0);
+
+        TeachResponse {
             id: item.id,
             name: item.name,
             class_code_id: item.class_code_id,
@@ -76,7 +125,8 @@ pub async fn list_teaches(
             updated_by: item.updated_by,
             max_member: item.max_member,
             feeder_id: item.feeder_id,
-
+            enrolled_count: Some(enrolled_count),
+        }
     }).collect();
 
     Ok(Json(PaginatedTeachResponse {
@@ -107,6 +157,13 @@ pub async fn get_teache(
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
         .ok_or_else(|| StatusError::not_found().brief("Teach not found"))?;
 
+    let enrolled_count = crate::models::academic::student::campaign::detail_activities::Entity::find()
+        .filter(crate::models::academic::student::campaign::detail_activities::Column::TeachId.eq(item.id))
+        .filter(crate::models::academic::student::campaign::detail_activities::Column::DeletedAt.is_null())
+        .count(db)
+        .await
+        .unwrap_or(0);
+
     Ok(Json(TeachResponse {
             id: item.id,
             name: item.name,
@@ -132,9 +189,11 @@ pub async fn get_teache(
             updated_by: item.updated_by,
             max_member: item.max_member,
             feeder_id: item.feeder_id,
-
+            enrolled_count: Some(enrolled_count as i64),
     }))
-}#[endpoint(tags("Academic - Campaign - Transaction - Teach"), status_codes(200, 400, 500))]
+}
+
+#[endpoint(tags("Academic - Campaign - Transaction - Teach"), status_codes(200, 400, 500))]
 pub async fn create_teache(
         req: &mut Request,
         depot: &mut Depot,
@@ -206,7 +265,7 @@ pub async fn create_teache(
             updated_by: item.updated_by,
             max_member: item.max_member,
             feeder_id: item.feeder_id,
-
+            enrolled_count: Some(0),
         }))
 }
 
@@ -293,6 +352,13 @@ pub async fn update_teache(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
+        let enrolled_count = crate::models::academic::student::campaign::detail_activities::Entity::find()
+            .filter(crate::models::academic::student::campaign::detail_activities::Column::TeachId.eq(item.id))
+            .filter(crate::models::academic::student::campaign::detail_activities::Column::DeletedAt.is_null())
+            .count(db)
+            .await
+            .unwrap_or(0);
+
         Ok(Json(TeachResponse {
             id: item.id,
             name: item.name,
@@ -318,7 +384,7 @@ pub async fn update_teache(
             updated_by: item.updated_by,
             max_member: item.max_member,
             feeder_id: item.feeder_id,
-
+            enrolled_count: Some(enrolled_count as i64),
         }))
 }
 #[endpoint(tags("Academic - Campaign - Transaction - Teach"), status_codes(200, 400, 404, 500))]
