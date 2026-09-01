@@ -217,6 +217,63 @@ export default function StudentCampaignActivityShowPage() {
         return calculatedIPS();
     };
 
+    const renderLecturers = (c: DetailActivityItem) => (
+        <Show
+            when={c.lecturers && c.lecturers.length > 1}
+            fallback={
+                <span>
+                    {(() => {
+                        const l: any = c.lecturers?.[0];
+                        if (!l) return c.lecturer_name || '-';
+                        if (typeof l === 'string') return l;
+                        const code = l.code?.trim();
+                        const name = l.name?.trim();
+                        if (code && name) {
+                            return (
+                                <span class="inline-flex items-center gap-1.5">
+                                    <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{code}</span>
+                                    <span class="text-neutral-400 dark:text-neutral-500">-</span>
+                                    <span>{name}</span>
+                                </span>
+                            );
+                        }
+                        if (name) return <span>{name}</span>;
+                        if (code) return <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{code}</span>;
+                        return c.lecturer_name || '-';
+                    })()}
+                </span>
+            }
+        >
+            <div class="flex flex-col gap-1">
+                <For each={c.lecturers}>
+                    {(lecturer: any) => (
+                        <span class="inline-flex items-center gap-1.5 leading-snug">
+                            <span class="size-1 rounded-full bg-neutral-400 dark:bg-neutral-500 shrink-0"></span>
+                            {typeof lecturer === 'string' ? (
+                                <span>{lecturer}</span>
+                            ) : (() => {
+                                const code = lecturer.code?.trim();
+                                const name = lecturer.name?.trim();
+                                if (code && name) {
+                                    return (
+                                        <span>
+                                            <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{code}</span>
+                                            <span class="text-neutral-400 dark:text-neutral-500 mx-1">-</span>
+                                            <span>{name}</span>
+                                        </span>
+                                    );
+                                }
+                                if (name) return <span>{name}</span>;
+                                if (code) return <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{code}</span>;
+                                return <span>-</span>;
+                            })()}
+                        </span>
+                    )}
+                </For>
+            </div>
+        </Show>
+    );
+
     return (
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
             <TopBar />
@@ -324,7 +381,7 @@ export default function StudentCampaignActivityShowPage() {
 
                 {/* Enrolled Courses Table */}
                 <div class="bg-white dark:bg-neutral-800 rounded-3xl border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
-                    <div class="p-5 border-b border-neutral-200 dark:border-neutral-700 flex justify-between items-center">
+                    <div class="p-4 sm:p-5 border-b border-neutral-200 dark:border-neutral-700 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <h2 class="text-sm font-bold text-neutral-900 dark:text-white">
                             Enrolled Courses List (Rencana & Hasil Studi)
                         </h2>
@@ -339,7 +396,8 @@ export default function StudentCampaignActivityShowPage() {
                             <p class="text-xs font-mono">{t('academic.loadingCourses')}</p>
                         </div>
                     }>
-                        <div class="overflow-x-auto">
+                        {/* Desktop Table View (md and above) */}
+                        <div class="hidden md:block overflow-x-auto">
                             <table class="w-full text-xs text-start">
                                 <thead class="bg-neutral-100 dark:bg-neutral-900/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-neutral-200 dark:border-neutral-700">
                                     <tr>
@@ -375,60 +433,7 @@ export default function StudentCampaignActivityShowPage() {
                                                     {c.credit ?? 0}
                                                 </td>
                                                 <td class="py-3.5 px-4 text-neutral-600 dark:text-neutral-300 text-xs">
-                                                    <Show
-                                                        when={c.lecturers && c.lecturers.length > 1}
-                                                        fallback={
-                                                            <span>
-                                                                {(() => {
-                                                                    const l: any = c.lecturers?.[0];
-                                                                    if (!l) return c.lecturer_name || '-';
-                                                                    if (typeof l === 'string') return l;
-                                                                    const code = l.code?.trim();
-                                                                    const name = l.name?.trim();
-                                                                    if (code && name) {
-                                                                        return (
-                                                                            <span class="inline-flex items-center gap-1.5">
-                                                                                <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{code}</span>
-                                                                                <span class="text-neutral-400 dark:text-neutral-500">-</span>
-                                                                                <span>{name}</span>
-                                                                            </span>
-                                                                        );
-                                                                    }
-                                                                    if (name) return <span>{name}</span>;
-                                                                    if (code) return <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{code}</span>;
-                                                                    return c.lecturer_name || '-';
-                                                                })()}
-                                                            </span>
-                                                        }
-                                                    >
-                                                        <div class="flex flex-col gap-1">
-                                                            <For each={c.lecturers}>
-                                                                {(lecturer: any) => (
-                                                                    <span class="inline-flex items-center gap-1.5 leading-snug">
-                                                                        <span class="size-1 rounded-full bg-neutral-400 dark:bg-neutral-500 shrink-0"></span>
-                                                                        {typeof lecturer === 'string' ? (
-                                                                            <span>{lecturer}</span>
-                                                                        ) : (() => {
-                                                                            const code = lecturer.code?.trim();
-                                                                            const name = lecturer.name?.trim();
-                                                                            if (code && name) {
-                                                                                return (
-                                                                                    <span>
-                                                                                        <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{code}</span>
-                                                                                        <span class="text-neutral-400 dark:text-neutral-500 mx-1">-</span>
-                                                                                        <span>{name}</span>
-                                                                                    </span>
-                                                                                );
-                                                                            }
-                                                                            if (name) return <span>{name}</span>;
-                                                                            if (code) return <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{code}</span>;
-                                                                            return <span>-</span>;
-                                                                        })()}
-                                                                    </span>
-                                                                )}
-                                                            </For>
-                                                        </div>
-                                                    </Show>
+                                                    {renderLecturers(c)}
                                                 </td>
                                                 <td class="py-3.5 px-4 text-center font-mono font-bold">
                                                     {c.mark != null ? c.mark.toFixed(1) : '-'}
@@ -445,14 +450,14 @@ export default function StudentCampaignActivityShowPage() {
                                                     <Show
                                                         when={c.is_lock}
                                                         fallback={
-                                                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold text-red-800 dark:text-red-300">
+                                                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold text-red-800 dark:text-red-300" title="Unlocked">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                                                 </svg>
                                                             </span>
                                                         }
                                                     >
-                                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
+                                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold text-emerald-800 dark:text-emerald-300" title="Locked">
                                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
                                                             </svg>
@@ -464,6 +469,88 @@ export default function StudentCampaignActivityShowPage() {
                                     </For>
                                 </tbody>
                             </table>
+                        </div>
+
+                        {/* Mobile Card List View (below md) */}
+                        <div class="block md:hidden divide-y divide-neutral-100 dark:divide-neutral-700/50">
+                            <For each={detailCourses()} fallback={
+                                <div class="py-12 px-4 text-center text-neutral-400 font-mono text-xs">
+                                    {t('academic.noCoursesEnrolled')}
+                                </div>
+                            }>
+                                {(c, idx) => (
+                                    <div class="p-4 sm:p-5 flex flex-col gap-3 hover:bg-neutral-50/60 dark:hover:bg-neutral-900/30 transition-colors">
+                                        {/* Header Row: Index + Course Code + SKS Badge + Lock Status */}
+                                        <div class="flex items-center justify-between gap-2">
+                                            <div class="flex items-center gap-2 flex-wrap">
+                                                <span class="px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-700 font-mono text-neutral-500 dark:text-neutral-400 text-[10px] font-bold">
+                                                    #{idx() + 1}
+                                                </span>
+                                                <span class="font-mono font-bold text-xs text-blue-600 dark:text-blue-400">
+                                                    {c.course_code || '-'}
+                                                </span>
+                                                <span class="px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 font-mono text-[10px] font-bold">
+                                                    {c.credit ?? 0} {t('academic.sks')}
+                                                </span>
+                                            </div>
+
+                                            <Show
+                                                when={c.is_lock}
+                                                fallback={
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/80">
+                                                        <span class="size-1.5 rounded-full bg-amber-500"></span>
+                                                        <span>Unlocked</span>
+                                                    </span>
+                                                }
+                                            >
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80">
+                                                    <span class="size-1.5 rounded-full bg-emerald-500"></span>
+                                                    <span>Locked</span>
+                                                </span>
+                                            </Show>
+                                        </div>
+
+                                        {/* Course Title */}
+                                        <div>
+                                            <h3 class="text-sm font-bold text-neutral-900 dark:text-white leading-snug">
+                                                {c.course_name || c.name || '-'}
+                                            </h3>
+                                        </div>
+
+                                        {/* Lecturer */}
+                                        <div class="text-xs text-neutral-600 dark:text-neutral-300 flex items-start gap-1.5">
+                                            <span class="text-neutral-400 dark:text-neutral-500 shrink-0 font-medium text-[11px]">{t('academic.lecturer')}:</span>
+                                            <div class="flex-1 text-[11px]">
+                                                {renderLecturers(c)}
+                                            </div>
+                                        </div>
+
+                                        {/* Academic Performance KPI Grid */}
+                                        <div class="grid grid-cols-3 gap-2 pt-2 mt-0.5 border-t border-neutral-100 dark:border-neutral-700/40 text-center">
+                                            <div class="p-2 rounded-xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                                <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('academic.mark')}</span>
+                                                <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
+                                                    {c.mark != null ? c.mark.toFixed(1) : '-'}
+                                                </span>
+                                            </div>
+
+                                            <div class="p-2 rounded-xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                                <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('academic.grade')}</span>
+                                                <span class="inline-block px-2 py-0.5 rounded font-bold text-xs bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
+                                                    {c.grade_letter || c.grade?.alphabet_code || c.grade?.name || '-'}
+                                                </span>
+                                            </div>
+
+                                            <div class="p-2 rounded-xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                                <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('academic.point')}</span>
+                                                <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
+                                                    {c.grade_point != null ? c.grade_point.toFixed(2) : (c.grade?.grade != null ? c.grade.grade.toFixed(2) : '-')}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </For>
                         </div>
                     </Show>
                 </div>
