@@ -15,39 +15,18 @@ import {
     getRoleDisplayName, 
     getDashboardPathForRole, 
     refreshAuthState,
+    enrichUserRolesWithStudentCodes,
     normalizeRoleName,
     type UserRoleItem
 } from '../../lib/authStore';
-import { getStudentById } from '../../controllers/academic/student/master/AcademicStudentMasterStudentController';
-import { setStorageItem } from '../../lib/storage';
 import { toast } from '../toast/Toaster';
 
 export default function TopBar() {
     const navigate = useNavigate();
 
-    onMount(async () => {
+    onMount(() => {
         refreshAuthState();
-        // Enrich any student roles missing code
-        const roles = userRolesSignal();
-        let changed = false;
-        const updatedRoles = await Promise.all(roles.map(async (r) => {
-            if (normalizeRoleName(r.name) === 'student' && r.roleable_id && !r.code) {
-                try {
-                    const std = await getStudentById(r.roleable_id);
-                    if (std?.code) {
-                        changed = true;
-                        return { ...r, code: std.code };
-                    }
-                } catch {
-                    // Ignore
-                }
-            }
-            return r;
-        }));
-        if (changed) {
-            setStorageItem('roles', JSON.stringify(updatedRoles));
-            refreshAuthState();
-        }
+        enrichUserRolesWithStudentCodes();
     });
 
     const toggleDarkMode = () => {
@@ -81,7 +60,12 @@ export default function TopBar() {
         const displayName = getRoleDisplayName(roleName);
         const codeDisplay = role?.code ? ` (${role.code})` : '';
         toast.success(`Role switched to ${displayName}${codeDisplay}`);
-        navigate(getDashboardPathForRole(roleName));
+        
+        let targetDashboard = getDashboardPathForRole(roleName);
+        if (normalizeRoleName(roleName) === 'student' && role?.code) {
+            targetDashboard = `${targetDashboard}?code=${encodeURIComponent(role.code)}&student_id=${encodeURIComponent(role.roleable_id || '')}`;
+        }
+        navigate(targetDashboard);
     };
 
     const userName = () => currentUserSignal()?.name || "User Account";

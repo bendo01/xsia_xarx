@@ -1,6 +1,7 @@
 import { createSignal } from 'solid-js';
 import { getStorageItem, setStorageItem, removeStorageItem } from './storage';
 import { GetUserRoles, LogoutUser as apiLogoutUser } from '../controllers/auth/AuthUser';
+import { getStudentById } from '../controllers/academic/student/master/AcademicStudentMasterStudentController';
 
 export interface UserRoleItem {
     id: string;
@@ -208,6 +209,36 @@ export function setActiveStudent(studentId: string, studentCode?: string, isSess
     }
 }
 
+export async function enrichUserRolesWithStudentCodes(): Promise<UserRoleItem[]> {
+    const roles = getStoredRoles();
+    if (roles.length === 0) return [];
+    let changed = false;
+    const updatedRoles = await Promise.all(roles.map(async (r) => {
+        if ((normalizeRoleName(r.name) === 'student' || r.roleable_type?.includes('Student')) && r.roleable_id && !r.code) {
+            try {
+                const std = await getStudentById(r.roleable_id);
+                if (std?.code) {
+                    changed = true;
+                    return { ...r, code: std.code };
+                }
+            } catch {
+                // Ignore
+            }
+        }
+        return r;
+    }));
+
+    if (changed) {
+        setStorageItem('roles', JSON.stringify(updatedRoles));
+        setUserRolesSignal(updatedRoles);
+        const currentRole = updatedRoles.find(r => r.id === getStorageItem('current_role') || (getActiveStudentId() && r.roleable_id === getActiveStudentId()));
+        if (currentRole?.code && !getActiveStudentCode()) {
+            setActiveStudent(currentRole.roleable_id || getActiveStudentId(), currentRole.code);
+        }
+    }
+    return updatedRoles;
+}
+
 export function refreshAuthState(): void {
     const user = getStoredUser();
     const roles = getStoredRoles();
@@ -229,16 +260,19 @@ export function setActiveRole(roleNameOrId: string, isSession: boolean = false):
     const roles = getStoredRoles();
     let targetName = roleNameOrId;
     let targetId = roleNameOrId;
+    let targetRole: UserRoleItem | undefined;
 
     const matchedById = roles.find(r => r.id === roleNameOrId);
     if (matchedById) {
         targetName = matchedById.name;
         targetId = matchedById.id;
+        targetRole = matchedById;
     } else {
         const matchedByName = roles.find(r => normalizeRoleName(r.name) === normalizeRoleName(roleNameOrId));
         if (matchedByName) {
             targetName = matchedByName.name;
             targetId = matchedByName.id;
+            targetRole = matchedByName;
         }
     }
 
@@ -246,6 +280,11 @@ export function setActiveRole(roleNameOrId: string, isSession: boolean = false):
     setStorageItem('active_role', normalized, isSession);
     setStorageItem('current_role', targetId, isSession);
     setActiveRoleSignal(normalized);
+    setCurrentRoleIdSignal(targetId);
+
+    if (targetRole && normalized === 'student' && targetRole.roleable_id) {
+        setActiveStudent(targetRole.roleable_id, targetRole.code, isSession);
+    }
 }
 
 export async function processLoginSuccess(loginResponse: any, isSession: boolean = false): Promise<string> {

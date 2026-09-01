@@ -7,7 +7,9 @@ import {
     refreshAuthState, 
     getActiveStudentId, 
     getActiveStudentCode, 
-    setActiveStudent 
+    setActiveStudent,
+    activeStudentIdSignal,
+    activeStudentCodeSignal
 } from '~/lib/authStore';
 import { getStorageItem } from '~/lib/storage';
 import { GetCurrentUser } from '~/controllers/auth/AuthUser';
@@ -147,8 +149,29 @@ export default function StudentDashboardProfilePage() {
 
     createEffect(() => {
         const idFromQuery = searchParams.id as string;
-        if (idFromQuery) {
+        const codeFromQuery = searchParams.code as string;
+        const studentIdFromQuery = searchParams.student_id as string;
+        const currentStudentCode = activeStudentCodeSignal();
+        const currentStudentId = activeStudentIdSignal();
+
+        if (idFromQuery && idFromQuery !== individualData()?.individual?.id) {
             fetchStudentProfile();
+            return;
+        }
+
+        const students = availableStudents();
+        if (students.length > 0) {
+            const target = students.find(s => 
+                (codeFromQuery && s.code === codeFromQuery) ||
+                (studentIdFromQuery && s.id === studentIdFromQuery) ||
+                (currentStudentCode && s.code === currentStudentCode) ||
+                (currentStudentId && s.id === currentStudentId)
+            );
+            if (target && target.id !== studentRecord()?.id) {
+                setStudentRecord(target);
+                setActiveStudent(target.id, target.code);
+                loadStudentSubRecords(target.id);
+            }
         }
     });
 

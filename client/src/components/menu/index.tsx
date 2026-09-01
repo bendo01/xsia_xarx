@@ -10,6 +10,7 @@ import {
     currentRoleIdSignal,
     setActiveRole, 
     setActiveStudent,
+    enrichUserRolesWithStudentCodes,
     getRoleDisplayName, 
     getDashboardPathForRole, 
     refreshAuthState,
@@ -31,6 +32,7 @@ export default function DynamicMenu() {
 
     onMount(() => {
         refreshAuthState();
+        enrichUserRolesWithStudentCodes();
     });
 
     const handleRoleChange = (roleOrName: UserRoleItem | string) => {
@@ -49,7 +51,10 @@ export default function DynamicMenu() {
         const codeDisplay = role?.code ? ` (${role.code})` : '';
         toast.info(`Switched active role to ${displayName}${codeDisplay}`);
         
-        const targetDashboard = getDashboardPathForRole(roleName);
+        let targetDashboard = getDashboardPathForRole(roleName);
+        if (normalizeRoleName(roleName) === 'student' && role?.code) {
+            targetDashboard = `${targetDashboard}?code=${encodeURIComponent(role.code)}&student_id=${encodeURIComponent(role.roleable_id || '')}`;
+        }
         navigate(targetDashboard);
 
         setTimeout(() => {
