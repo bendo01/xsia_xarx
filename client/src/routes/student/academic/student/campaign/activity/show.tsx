@@ -19,6 +19,7 @@ import {
     listTeaches
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachController';
 import { listGrades } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionGradeController';
+import { openOrDownloadPdf } from '~/lib/pdfHelper';
 
 export default function StudentCampaignActivityShowPage() {
     const [searchParams] = useSearchParams();
@@ -142,8 +143,8 @@ export default function StudentCampaignActivityShowPage() {
     const [isPrintingKHS, setIsPrintingKHS] = createSignal(false);
 
     const handlePrintKRS = async () => {
-        const id = activity()?.id;
-        if (!id) {
+        const act = activity();
+        if (!act?.id) {
             toast.danger('Activity ID is missing.');
             return;
         }
@@ -151,11 +152,10 @@ export default function StudentCampaignActivityShowPage() {
         setIsPrintingKRS(true);
         try {
             toast.info('Generating KRS (Study Plan Card) PDF...');
-            const blob = await printActivityPlan(id);
+            const blob = await printActivityPlan(act.id);
             if (blob) {
-                const url = window.URL.createObjectURL(blob);
-                window.open(url, '_blank');
-                toast.success('KRS PDF opened successfully.');
+                const semName = (act.name || 'Semester').replace(/\s+/g, '_');
+                openOrDownloadPdf(blob, `KRS_${semName}.pdf`, 'KRS (Study Plan Card)');
             } else {
                 toast.danger('Failed to generate KRS PDF.');
             }
@@ -168,8 +168,8 @@ export default function StudentCampaignActivityShowPage() {
     };
 
     const handlePrintKHS = async () => {
-        const id = activity()?.id;
-        if (!id) {
+        const act = activity();
+        if (!act?.id) {
             toast.danger('Activity ID is missing.');
             return;
         }
@@ -177,11 +177,10 @@ export default function StudentCampaignActivityShowPage() {
         setIsPrintingKHS(true);
         try {
             toast.info('Generating KHS (Study Result Card) PDF...');
-            const blob = await printActivityResult(id);
+            const blob = await printActivityResult(act.id);
             if (blob) {
-                const url = window.URL.createObjectURL(blob);
-                window.open(url, '_blank');
-                toast.success('KHS PDF opened successfully.');
+                const semName = (act.name || 'Semester').replace(/\s+/g, '_');
+                openOrDownloadPdf(blob, `KHS_${semName}.pdf`, 'KHS (Study Result Card)');
             } else {
                 toast.danger('Failed to generate KHS PDF.');
             }

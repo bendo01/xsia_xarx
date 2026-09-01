@@ -15,20 +15,66 @@ import { getStorageItem } from '~/lib/storage';
 import { GetCurrentUser } from '~/controllers/auth/AuthUser';
 import type { PersonMasterIndividualDataObject } from '~/models/person/master/Individual';
 import { PersonMasterIndividualControllerShow } from '~/controllers/person/master/PersonMasterIndividualController';
-import { listStudentActivities, StudentActivityItem } from '~/controllers/academic/student/campaign/AcademicStudentCampaignActivityController';
+import { listStudentActivities, StudentActivityItem, printActivityPlan, printActivityResult } from '~/controllers/academic/student/campaign/AcademicStudentCampaignActivityController';
 import { getStudentById, StudentMasterItem } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
 import { listCounsellors, CounsellorItem } from '~/controllers/academic/student/adviser/AcademicStudentAdviserController';
+import { openOrDownloadPdf } from '~/lib/pdfHelper';
 
 export default function StudentDashboardProfilePage() {
     const [searchParams, setSearchParams] = useSearchParams();
     const [isLoading, setIsLoading] = createSignal(true);
     const [isSubLoading, setIsSubLoading] = createSignal(false);
+    const [printingId, setPrintingId] = createSignal<string | null>(null);
     const [individualData, setIndividualData] = createSignal<PersonMasterIndividualDataObject | null>(null);
     const [availableStudents, setAvailableStudents] = createSignal<StudentMasterItem[]>([]);
     const [studentRecord, setStudentRecord] = createSignal<StudentMasterItem | null>(null);
     const [recentActivities, setRecentActivities] = createSignal<StudentActivityItem[]>([]);
     const [advisers, setAdvisers] = createSignal<CounsellorItem[]>([]);
     const [activeTab, setActiveTab] = createSignal<'overview' | 'biodata' | 'academic'>('overview');
+
+    const handlePrintKRS = async (act: StudentActivityItem) => {
+        if (!act.id) return;
+        const key = `krs-${act.id}`;
+        setPrintingId(key);
+        try {
+            toast.info(`Generating KRS (${act.name || act.semester_name || 'Semester'}) PDF...`);
+            const blob = await printActivityPlan(act.id);
+            if (blob) {
+                const nim = studentRecord()?.code || 'Student';
+                const semName = (act.name || act.semester_name || 'Semester').replace(/\s+/g, '_');
+                openOrDownloadPdf(blob, `KRS_${nim}_${semName}.pdf`, `KRS (${act.name || act.semester_name || 'Semester'})`);
+            } else {
+                toast.danger('Failed to generate KRS PDF.');
+            }
+        } catch (err) {
+            console.error('Error printing KRS:', err);
+            toast.danger('An error occurred while generating KRS PDF.');
+        } finally {
+            setPrintingId(null);
+        }
+    };
+
+    const handlePrintKHS = async (act: StudentActivityItem) => {
+        if (!act.id) return;
+        const key = `khs-${act.id}`;
+        setPrintingId(key);
+        try {
+            toast.info(`Generating KHS (${act.name || act.semester_name || 'Semester'}) PDF...`);
+            const blob = await printActivityResult(act.id);
+            if (blob) {
+                const nim = studentRecord()?.code || 'Student';
+                const semName = (act.name || act.semester_name || 'Semester').replace(/\s+/g, '_');
+                openOrDownloadPdf(blob, `KHS_${nim}_${semName}.pdf`, `KHS (${act.name || act.semester_name || 'Semester'})`);
+            } else {
+                toast.danger('Failed to generate KHS PDF.');
+            }
+        } catch (err) {
+            console.error('Error printing KHS:', err);
+            toast.danger('An error occurred while generating KHS PDF.');
+        } finally {
+            setPrintingId(null);
+        }
+    };
 
     const fetchStudentProfile = async () => {
         setIsLoading(true);
@@ -637,12 +683,42 @@ export default function StudentDashboardProfilePage() {
                                                                         </span>
                                                                     </td>
                                                                     <td class="py-3 px-3 text-end">
-                                                                        <A
-                                                                            href={`/student/academic/student/campaign/activity/show?id=${act.id}`}
-                                                                            class="px-2.5 py-1 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-lg text-xs font-semibold"
-                                                                        >
-                                                                            Details
-                                                                        </A>
+                                                                        <div class="flex items-center justify-end gap-1.5">
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => handlePrintKRS(act)}
+                                                                                disabled={printingId() === `krs-${act.id}`}
+                                                                                title="Print / Download KRS (Study Plan Card)"
+                                                                                class="px-2 py-1 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-lg text-[11px] font-semibold inline-flex items-center gap-1 transition-colors disabled:opacity-50"
+                                                                            >
+                                                                                <Show when={printingId() === `krs-${act.id}`} fallback={
+                                                                                    <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+                                                                                }>
+                                                                                    <div class="size-3 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                                                                </Show>
+                                                                                <span>KRS</span>
+                                                                            </button>
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => handlePrintKHS(act)}
+                                                                                disabled={printingId() === `khs-${act.id}`}
+                                                                                title="Print / Download KHS (Study Result Card)"
+                                                                                class="px-2 py-1 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-lg text-[11px] font-semibold inline-flex items-center gap-1 transition-colors disabled:opacity-50"
+                                                                            >
+                                                                                <Show when={printingId() === `khs-${act.id}`} fallback={
+                                                                                    <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+                                                                                }>
+                                                                                    <div class="size-3 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                                                                </Show>
+                                                                                <span>KHS</span>
+                                                                            </button>
+                                                                            <A
+                                                                                href={`/student/academic/student/campaign/activity/show?id=${act.id}`}
+                                                                                class="px-2.5 py-1 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-lg text-xs font-semibold"
+                                                                            >
+                                                                                Details
+                                                                            </A>
+                                                                        </div>
                                                                     </td>
                                                                 </tr>
                                                             )}
