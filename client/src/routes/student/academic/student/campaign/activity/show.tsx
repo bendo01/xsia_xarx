@@ -67,19 +67,24 @@ export default function StudentCampaignActivityShowPage() {
                 const teach = detail.teach || teaches.find((t: any) => t.id === detail.teach_id || t.course_id === detail.course_id);
                 const grade = detail.grade || grades.find((g: any) => g.id === detail.grade_id);
                 
+                const cleanName = (val?: string) => {
+                    if (!val || val.startsWith('DosenAktifitasPengajaran')) return '';
+                    return val.trim();
+                };
+
                 const lecturerList: { code?: string; name: string }[] = detail.teach_lecturers && detail.teach_lecturers.length > 0
                     ? detail.teach_lecturers.map((tl: any) => ({
-                        code: tl.code || tl.lecturer_code || tl.lecturer?.code || '',
-                        name: tl.name || tl.lecturer_name || tl.lecturer?.name || (typeof tl === 'string' ? tl : ''),
+                        code: (tl.code || tl.lecturer_code || tl.lecturer?.code || '').trim(),
+                        name: cleanName(tl.name || tl.lecturer_name || tl.lecturer?.name || (typeof tl === 'string' ? tl : '')),
                     })).filter((l: any) => l.name || l.code)
                     : (teach?.lecturer_name || detail.lecturer_name ? [{
-                        code: teach?.lecturer_code || detail.lecturer_code || '',
-                        name: teach?.lecturer_name || detail.lecturer_name || '',
+                        code: (teach?.lecturer_code || detail.lecturer_code || '').trim(),
+                        name: cleanName(teach?.lecturer_name || detail.lecturer_name || ''),
                     }] : []);
 
                 const lecturerName = lecturerList.length > 0
-                    ? lecturerList.map(l => (l.code ? `${l.code} - ${l.name}` : l.name)).join(', ')
-                    : (detail.lecturer_name || '-');
+                    ? lecturerList.map(l => (l.code && l.name ? `${l.code} - ${l.name}` : (l.name || l.code))).join(', ')
+                    : '-';
 
                 return {
                     ...detail,

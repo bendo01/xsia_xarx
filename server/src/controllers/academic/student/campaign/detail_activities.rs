@@ -172,22 +172,23 @@ async fn load_relations_for_detail_activities(
             lecturer_records
                 .into_iter()
                 .map(|(l, ind_opt)| {
-                    let mut name = l.name.filter(|s| !s.trim().is_empty());
-                    if name.is_none() {
-                        if let Some(ind) = ind_opt {
-                            let front = l.front_title.as_deref().or(ind.front_title.as_deref()).unwrap_or("").trim();
-                            let last = l.last_title.as_deref().or(ind.last_title.as_deref()).unwrap_or("").trim();
-                            let base_name = ind.name.trim();
-                            let full = match (front.is_empty(), last.is_empty()) {
-                                (true, true) => base_name.to_string(),
-                                (false, true) => format!("{} {}", front, base_name),
-                                (true, false) => format!("{}, {}", base_name, last),
-                                (false, false) => format!("{} {}, {}", front, base_name, last),
-                            };
-                            if !full.is_empty() {
-                                name = Some(full);
-                            }
+                    let mut name = None;
+                    if let Some(ind) = ind_opt {
+                        let front = l.front_title.as_deref().or(ind.front_title.as_deref()).unwrap_or("").trim();
+                        let last = l.last_title.as_deref().or(ind.last_title.as_deref()).unwrap_or("").trim();
+                        let base_name = ind.name.trim();
+                        let full = match (front.is_empty(), last.is_empty()) {
+                            (true, true) => base_name.to_string(),
+                            (false, true) => format!("{} {}", front, base_name),
+                            (true, false) => format!("{}, {}", base_name, last),
+                            (false, false) => format!("{} {}, {}", front, base_name, last),
+                        };
+                        if !full.is_empty() {
+                            name = Some(full);
                         }
+                    }
+                    if name.is_none() {
+                        name = l.name.filter(|s| !s.trim().is_empty() && !s.starts_with("DosenAktifitasPengajaran"));
                     }
                     (l.id, (l.code, name))
                 })
@@ -197,9 +198,12 @@ async fn load_relations_for_detail_activities(
         let mut map: HashMap<Uuid, Vec<TeachLecturerResponse>> = HashMap::new();
         for item in lecturers {
             let lecturer_info = lecturers_map.get(&item.lecturer_id);
-            let name = item.name
-                .filter(|s| !s.trim().is_empty())
-                .or_else(|| lecturer_info.and_then(|info| info.1.clone()));
+            let name = lecturer_info
+                .and_then(|info| info.1.clone())
+                .or_else(|| {
+                    item.name
+                        .filter(|s| !s.trim().is_empty() && !s.starts_with("DosenAktifitasPengajaran"))
+                });
             let code = lecturer_info.map(|info| info.0.clone());
             map.entry(item.teach_id).or_default().push(TeachLecturerResponse {
                 id: item.id,
