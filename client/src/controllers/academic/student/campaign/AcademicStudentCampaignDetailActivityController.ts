@@ -33,6 +33,7 @@ export interface DetailActivityItem {
     // Enhanced info
     course_name?: string;
     course_code?: string;
+    class_name?: string;
     lecturer_code?: string;
     lecturer_name?: string;
     lecturers?: (string | { code?: string; name: string })[];

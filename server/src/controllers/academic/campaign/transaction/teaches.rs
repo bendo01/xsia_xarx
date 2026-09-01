@@ -32,6 +32,15 @@ pub async fn list_teaches(
     if let Some(ref name) = query.name {
         select = select.filter(entity_mod::Column::Name.contains(name));
     }
+    if let Some(activity_id) = query.activity_id {
+        select = select.filter(entity_mod::Column::ActivityId.eq(activity_id));
+    }
+    if let Some(teach_decree_id) = query.teach_decree_id {
+        select = select.filter(entity_mod::Column::TeachDecreeId.eq(teach_decree_id));
+    }
+    if let Some(course_id) = query.course_id {
+        select = select.filter(entity_mod::Column::CourseId.eq(course_id));
+    }
 
     let paginator = select
         .order_by_asc(entity_mod::Column::Name)

@@ -52,6 +52,9 @@ export async function listTeaches(queryParams?: {
     page?: number;
     page_size?: number;
     name?: string;
+    activity_id?: string;
+    teach_decree_id?: string;
+    course_id?: string;
 }): Promise<{
     data: TeachItem[];
     total: number;
@@ -64,6 +67,9 @@ export async function listTeaches(queryParams?: {
         if (queryParams?.page) params.set('page', String(queryParams.page));
         if (queryParams?.page_size) params.set('page_size', String(queryParams.page_size));
         if (queryParams?.name) params.set('name', queryParams.name);
+        if (queryParams?.activity_id) params.set('activity_id', queryParams.activity_id);
+        if (queryParams?.teach_decree_id) params.set('teach_decree_id', queryParams.teach_decree_id);
+        if (queryParams?.course_id) params.set('course_id', queryParams.course_id);
 
         const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/teaches?${params.toString()}`, {
             method: 'GET',
@@ -109,10 +115,47 @@ export async function getTeachById(id: string): Promise<TeachItem | null> {
     }
 }
 
-export async function listCourses(queryParams?: { page_size?: number }): Promise<any[]> {
+export async function getCourseById(id: string): Promise<any | null> {
+    if (!id || id === '00000000-0000-0000-0000-000000000000') return null;
     try {
-        const size = queryParams?.page_size || 200;
-        const res = await fetch(`${getBaseUrl()}/academic/course/master/courses?page_size=${size}`, {
+        const res = await fetch(`${getBaseUrl()}/academic/course/master/courses/${id}`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+        if (!res.ok) return null;
+        return await res.json();
+    } catch (err) {
+        console.warn(`Error fetching course ${id}:`, err);
+        return null;
+    }
+}
+
+export async function getClassCodeById(id: string): Promise<any | null> {
+    if (!id || id === '00000000-0000-0000-0000-000000000000') return null;
+    try {
+        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/class-codes/${id}`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+        if (!res.ok) return null;
+        return await res.json();
+    } catch (err) {
+        console.warn(`Error fetching class code ${id}:`, err);
+        return null;
+    }
+}
+
+export async function listCourses(queryParams?: { page?: number; page_size?: number; name?: string; code?: string; unit_id?: string }): Promise<any[]> {
+    try {
+        const params = new URLSearchParams();
+        const size = queryParams?.page_size || 500;
+        params.set('page_size', String(size));
+        if (queryParams?.page) params.set('page', String(queryParams.page));
+        if (queryParams?.name) params.set('name', queryParams.name);
+        if (queryParams?.code) params.set('code', queryParams.code);
+        if (queryParams?.unit_id) params.set('unit_id', queryParams.unit_id);
+
+        const res = await fetch(`${getBaseUrl()}/academic/course/master/courses?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -125,10 +168,15 @@ export async function listCourses(queryParams?: { page_size?: number }): Promise
     }
 }
 
-export async function listTeachDecrees(queryParams?: { page_size?: number }): Promise<any[]> {
+export async function listTeachDecrees(queryParams?: { page?: number; page_size?: number; activity_id?: string }): Promise<any[]> {
     try {
+        const params = new URLSearchParams();
         const size = queryParams?.page_size || 200;
-        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/teach-decrees?page_size=${size}`, {
+        params.set('page_size', String(size));
+        if (queryParams?.page) params.set('page', String(queryParams.page));
+        if (queryParams?.activity_id) params.set('activity_id', queryParams.activity_id);
+
+        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/teach-decrees?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });
