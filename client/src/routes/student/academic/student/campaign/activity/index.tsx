@@ -279,7 +279,8 @@ export default function StudentCampaignActivityIndexPage() {
                             <p class="text-xs font-mono">Loading academic semester activities from server...</p>
                         </div>
                     }>
-                        <div class="overflow-x-auto">
+                        {/* Desktop Table View (md and above) */}
+                        <div class="hidden md:block overflow-x-auto">
                             <table class="w-full text-xs text-start">
                                 <thead class="bg-neutral-100 dark:bg-neutral-900/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-neutral-200 dark:border-neutral-700">
                                     <tr>
@@ -364,6 +365,94 @@ export default function StudentCampaignActivityIndexPage() {
                                     </For>
                                 </tbody>
                             </table>
+                        </div>
+
+                        {/* Mobile Card List View (below md) */}
+                        <div class="block md:hidden divide-y divide-neutral-100 dark:divide-neutral-700/50">
+                            <For each={activities()} fallback={
+                                <div class="py-12 px-4 text-center text-neutral-400 font-mono text-xs">
+                                    No academic activities found for active student ({activeStudent()?.code || getActiveStudentCode() || 'N/A'}).
+                                </div>
+                            }>
+                                {(act) => (
+                                    <div class="p-4 sm:p-5 flex flex-col gap-3 hover:bg-neutral-50/60 dark:hover:bg-neutral-900/30 transition-colors">
+                                        {/* Header Row: Icon + Title + ID & Status Badge */}
+                                        <div class="flex items-start justify-between gap-2">
+                                            <div class="flex items-start gap-2.5">
+                                                <div class="size-8 rounded-lg bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold flex items-center justify-center shrink-0 mt-0.5">
+                                                    <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/></svg>
+                                                </div>
+                                                <div>
+                                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white leading-snug">
+                                                        {act.name || 'Academic Semester'}
+                                                    </h3>
+                                                    <span class="text-[10px] text-neutral-400 font-mono">
+                                                        ID: {act.id ? `${act.id.slice(0, 8)}...` : '-'}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <span class={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold rounded-full border shrink-0 ${
+                                                act.is_lock
+                                                    ? 'bg-amber-50 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 border-amber-200 dark:border-amber-800'
+                                                    : 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
+                                            }`}>
+                                                <span class={`size-1.5 rounded-full ${act.is_lock ? 'bg-amber-500' : 'bg-emerald-500'}`}></span>
+                                                {act.is_lock ? 'Locked' : 'KRS Open'}
+                                            </span>
+                                        </div>
+
+                                        {/* Academic Performance KPI Grid */}
+                                        <div class="grid grid-cols-4 gap-2 pt-2 border-t border-neutral-100 dark:border-neutral-700/40 text-center">
+                                            <div class="p-2 rounded-xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                                <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">SKS</span>
+                                                <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
+                                                    {act.total_credit ?? 0}
+                                                </span>
+                                            </div>
+
+                                            <div class="p-2 rounded-xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                                <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">Cum. SKS</span>
+                                                <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
+                                                    {act.grand_total_credit ?? act.total_credit ?? 0}
+                                                </span>
+                                            </div>
+
+                                            <div class="p-2 rounded-xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                                <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">IPS</span>
+                                                <span class="font-mono font-bold text-xs text-blue-600 dark:text-blue-400">
+                                                    {(act.cumulative_index ?? 0).toFixed(2)}
+                                                </span>
+                                            </div>
+
+                                            <div class="p-2 rounded-xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                                <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">IPK</span>
+                                                <span class="font-mono font-bold text-xs text-indigo-600 dark:text-indigo-400">
+                                                    {(act.grand_cumulative_index ?? act.cumulative_index ?? 0).toFixed(2)}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* Actions */}
+                                        <div class="flex items-center gap-2 pt-1">
+                                            <A
+                                                href={`/student/academic/student/campaign/activity/show?id=${act.id}`}
+                                                class="flex-1 py-2 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 rounded-xl text-xs font-bold text-center transition-colors"
+                                            >
+                                                View Details
+                                            </A>
+                                            <Show when={!act.is_lock}>
+                                                <A
+                                                    href={`/student/academic/student/campaign/activity/enrollment?activity_id=${act.id}`}
+                                                    class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold text-center transition-colors shadow-2xs"
+                                                >
+                                                    Enroll (KRS)
+                                                </A>
+                                            </Show>
+                                        </div>
+                                    </div>
+                                )}
+                            </For>
                         </div>
                     </Show>
                 </div>
