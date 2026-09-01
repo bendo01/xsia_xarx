@@ -45,6 +45,7 @@ pub async fn list_teach_lecturers(
     let data = items.into_iter().map(|item| TeachLecturerResponse {
             id: item.id,
             name: item.name,
+            code: None,
             planning: item.planning,
             realization: item.realization,
             credit: item.credit,
@@ -92,6 +93,7 @@ pub async fn get_teach_lecturer(
     Ok(Json(TeachLecturerResponse {
             id: item.id,
             name: item.name,
+            code: None,
             planning: item.planning,
             realization: item.realization,
             credit: item.credit,
@@ -148,6 +150,7 @@ pub async fn create_teach_lecturer(
         Ok(Json(TeachLecturerResponse {
             id: item.id,
             name: item.name,
+            code: None,
             planning: item.planning,
             realization: item.realization,
             credit: item.credit,
@@ -224,6 +227,7 @@ pub async fn update_teach_lecturer(
         Ok(Json(TeachLecturerResponse {
             id: item.id,
             name: item.name,
+            code: None,
             planning: item.planning,
             realization: item.realization,
             credit: item.credit,

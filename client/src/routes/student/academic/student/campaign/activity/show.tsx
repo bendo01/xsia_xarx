@@ -67,11 +67,19 @@ export default function StudentCampaignActivityShowPage() {
                 const teach = detail.teach || teaches.find((t: any) => t.id === detail.teach_id || t.course_id === detail.course_id);
                 const grade = detail.grade || grades.find((g: any) => g.id === detail.grade_id);
                 
-                const lecturerList: string[] = detail.teach_lecturers && detail.teach_lecturers.length > 0
-                    ? detail.teach_lecturers.map((tl: any) => tl.name).filter(Boolean)
-                    : (teach?.lecturer_name ? [teach.lecturer_name] : (detail.lecturer_name ? [detail.lecturer_name] : []));
+                const lecturerList: { code?: string; name: string }[] = detail.teach_lecturers && detail.teach_lecturers.length > 0
+                    ? detail.teach_lecturers.map((tl: any) => ({
+                        code: tl.code || tl.lecturer_code || tl.lecturer?.code || '',
+                        name: tl.name || tl.lecturer_name || tl.lecturer?.name || (typeof tl === 'string' ? tl : ''),
+                    })).filter((l: any) => l.name || l.code)
+                    : (teach?.lecturer_name || detail.lecturer_name ? [{
+                        code: teach?.lecturer_code || detail.lecturer_code || '',
+                        name: teach?.lecturer_name || detail.lecturer_name || '',
+                    }] : []);
 
-                const lecturerName = lecturerList.length > 0 ? lecturerList.join(', ') : '-';
+                const lecturerName = lecturerList.length > 0
+                    ? lecturerList.map(l => (l.code ? `${l.code} - ${l.name}` : l.name)).join(', ')
+                    : (detail.lecturer_name || '-');
 
                 return {
                     ...detail,
@@ -364,14 +372,37 @@ export default function StudentCampaignActivityShowPage() {
                                                 <td class="py-3.5 px-4 text-neutral-600 dark:text-neutral-300 text-xs">
                                                      <Show
                                                          when={c.lecturers && c.lecturers.length > 1}
-                                                         fallback={<span>{c.lecturers?.[0] || c.lecturer_name || '-'}</span>}
+                                                         fallback={
+                                                             <span>
+                                                                 {(() => {
+                                                                     const l: any = c.lecturers?.[0];
+                                                                     if (!l) return c.lecturer_name || '-';
+                                                                     if (typeof l === 'string') return l;
+                                                                     return (
+                                                                         <span class="inline-flex items-center gap-1.5">
+                                                                             {l.code && <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{l.code} -</span>}
+                                                                             <span>{l.name || '-'}</span>
+                                                                         </span>
+                                                                     );
+                                                                 })()}
+                                                             </span>
+                                                         }
                                                      >
                                                          <div class="flex flex-col gap-1">
                                                              <For each={c.lecturers}>
-                                                                 {(lecturer) => (
+                                                                 {(lecturer: any) => (
                                                                      <span class="inline-flex items-center gap-1.5 leading-snug">
                                                                          <span class="size-1 rounded-full bg-neutral-400 dark:bg-neutral-500 shrink-0"></span>
-                                                                         <span>{lecturer}</span>
+                                                                         {typeof lecturer === 'string' ? (
+                                                                             <span>{lecturer}</span>
+                                                                         ) : (
+                                                                             <span>
+                                                                                 {lecturer.code && (
+                                                                                     <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{lecturer.code} - </span>
+                                                                                 )}
+                                                                                 <span>{lecturer.name || '-'}</span>
+                                                                             </span>
+                                                                         )}
                                                                      </span>
                                                                  )}
                                                              </For>

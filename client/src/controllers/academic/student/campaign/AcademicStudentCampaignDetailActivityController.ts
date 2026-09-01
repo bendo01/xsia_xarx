@@ -33,8 +33,9 @@ export interface DetailActivityItem {
     // Enhanced info
     course_name?: string;
     course_code?: string;
+    lecturer_code?: string;
     lecturer_name?: string;
-    lecturers?: string[];
+    lecturers?: (string | { code?: string; name: string })[];
     grade_letter?: string;
     grade_point?: number;
     // Nested relation data from backend

@@ -17,6 +17,7 @@ pub struct TeachLecturerQuery {
 pub struct TeachLecturerResponse {
     pub id: Uuid,
     pub name: Option<String>,
+    pub code: Option<String>,
     pub planning: i32,
     pub realization: i32,
     #[salvo(schema(value_type = Option<String>))]

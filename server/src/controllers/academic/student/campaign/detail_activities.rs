@@ -158,7 +158,7 @@ async fn load_relations_for_detail_activities(
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         let lecturer_ids: Vec<Uuid> = lecturers.iter().map(|l| l.lecturer_id).collect();
-        let lecturers_map: HashMap<Uuid, String> = if lecturer_ids.is_empty() {
+        let lecturers_map: HashMap<Uuid, (String, Option<String>)> = if lecturer_ids.is_empty() {
             HashMap::new()
         } else {
             crate::models::academic::lecturer::master::lecturers::Entity::find()
@@ -168,16 +168,19 @@ async fn load_relations_for_detail_activities(
                 .await
                 .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
                 .into_iter()
-                .filter_map(|l| l.name.map(|name| (l.id, name)))
+                .map(|l| (l.id, (l.code, l.name)))
                 .collect()
         };
 
         let mut map: HashMap<Uuid, Vec<TeachLecturerResponse>> = HashMap::new();
         for item in lecturers {
-            let name = item.name.or_else(|| lecturers_map.get(&item.lecturer_id).cloned());
+            let lecturer_info = lecturers_map.get(&item.lecturer_id);
+            let name = item.name.or_else(|| lecturer_info.and_then(|info| info.1.clone()));
+            let code = lecturer_info.map(|info| info.0.clone());
             map.entry(item.teach_id).or_default().push(TeachLecturerResponse {
                 id: item.id,
                 name,
+                code,
                 planning: item.planning,
                 realization: item.realization,
                 credit: item.credit,
