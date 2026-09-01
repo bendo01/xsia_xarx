@@ -72,14 +72,15 @@ describe("Auth Store & Role Engine (White-Box Unit Tests)", () => {
   });
 
   describe("getRoleDisplayName", () => {
-    it("returns formatted display names for roles", () => {
+    it("returns formatted display names for roles in English and Indonesian", () => {
+      // In Indonesian (default)
       expect(getRoleDisplayName("administrator")).toBe("Administrator");
-      expect(getRoleDisplayName("course_department")).toBe("Course & Department");
-      expect(getRoleDisplayName("student")).toBe("Student");
-      expect(getRoleDisplayName("lecturer")).toBe("Lecturer");
-      expect(getRoleDisplayName("candidate")).toBe("Candidate / PMB");
-      expect(getRoleDisplayName("rectorat")).toBe("Rectorat");
-      expect(getRoleDisplayName("guest")).toBe("Guest");
+      expect(getRoleDisplayName("course_department")).toBe("Program Studi & Jurusan");
+      expect(getRoleDisplayName("student")).toBe("Mahasiswa");
+      expect(getRoleDisplayName("lecturer")).toBe("Dosen");
+      expect(getRoleDisplayName("candidate")).toBe("Calon Mahasiswa / PMB");
+      expect(getRoleDisplayName("rectorat")).toBe("Rektorat");
+      expect(getRoleDisplayName("guest")).toBe("Tamu");
     });
   });
 

@@ -1,4 +1,5 @@
 import { A } from '@solidjs/router';
+import { t } from '../../i18n';
 
 export default function MenuAdministrator() {
     return (
@@ -15,14 +16,14 @@ export default function MenuAdministrator() {
                     <rect width="7" height="9" x="14" y="12" rx="1"/>
                     <rect width="7" height="5" x="3" y="16" rx="1"/>
                 </svg>
-                <span>Administrator Dashboard</span>
+                <span>{t('menu.administrator.adminDashboard')}</span>
             </A>
 
             {/* Tree Menu Models Exactly Matching server/tree_menu.md */}
             <div class="pt-1 border-t border-neutral-200 dark:border-neutral-800">
                 <div class="px-2 py-1 flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 font-mono">
-                    <span>Models Tree</span>
-                    <span>241 entities</span>
+                    <span>{t('menu.administrator.modelsTree')}</span>
+                    <span>{t('menu.administrator.entitiesCount', { count: 241 })}</span>
                 </div>
                 <ul class="space-y-1 mt-1">
     <li>

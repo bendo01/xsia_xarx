@@ -4,6 +4,7 @@ import { Toaster, toast } from "./Toaster";
 
 describe("Toaster Component & Toast Engine (White-Box Component Tests)", () => {
   beforeEach(() => {
+    toast.clear();
     document.body.innerHTML = "";
   });
 

@@ -1,4 +1,5 @@
 import { A } from '@solidjs/router';
+import { t } from '../../i18n';
 
 export default function MenuGuest() {
     return (
@@ -14,14 +15,14 @@ export default function MenuGuest() {
                         <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                         <polyline points="9 22 9 12 15 12 15 22"/>
                     </svg>
-                    <span>Public Home Portal</span>
+                    <span>{t('menu.guest.home')}</span>
                 </A>
             </li>
 
             {/* Sign In Options */}
             <li class="pt-2 pb-1">
                 <span class="px-2.5 text-[11px] font-bold tracking-wider text-neutral-400 dark:text-neutral-500 uppercase font-mono">
-                    Authentication
+                    {t('menu.guest.authentication')}
                 </span>
             </li>
             <li>
@@ -34,7 +35,7 @@ export default function MenuGuest() {
                         <polyline points="10 17 15 12 10 7"/>
                         <line x1="15" x2="3" y1="12" y2="12"/>
                     </svg>
-                    <span>Standard Sign In (JWT)</span>
+                    <span>{t('menu.guest.jwtSignIn')}</span>
                 </A>
             </li>
             <li>
@@ -46,14 +47,14 @@ export default function MenuGuest() {
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                         <path d="m9 12 2 2 4-4"/>
                     </svg>
-                    <span>Session Sign In</span>
+                    <span>{t('menu.guest.sessionSignIn')}</span>
                 </A>
             </li>
 
             {/* Information */}
             <li class="pt-3 pb-1">
                 <span class="px-2.5 text-[11px] font-bold tracking-wider text-neutral-400 dark:text-neutral-500 uppercase font-mono">
-                    Public Information
+                    {t('menu.guest.publicInfo')}
                 </span>
             </li>
             <li>
@@ -65,7 +66,7 @@ export default function MenuGuest() {
                         <rect width="16" height="20" x="4" y="2" rx="2" ry="2"/>
                         <path d="M9 22v-4h6v4"/>
                     </svg>
-                    <span>Institution Profile</span>
+                    <span>{t('menu.guest.institutionProfile')}</span>
                 </A>
             </li>
             <li>
@@ -78,7 +79,7 @@ export default function MenuGuest() {
                         <circle cx="9" cy="7" r="4"/>
                         <path d="M19 8v6M22 11h-6"/>
                     </svg>
-                    <span>Admissions & PMB Info</span>
+                    <span>{t('menu.guest.admissionsPmb')}</span>
                 </A>
             </li>
         </ul>

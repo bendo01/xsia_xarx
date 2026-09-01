@@ -4,6 +4,7 @@ import { useNavigate, A } from '@solidjs/router';
 import { LoginUser, isAuthenticated } from '~/controllers/auth/AuthUser';
 import { processLoginSuccess, getDashboardPathForRole, getActiveRole } from '~/lib/authStore';
 import { toast } from '~/components/toast/Toaster';
+import { t, getLocale, toggleLocale } from '~/i18n';
 
 export default function Login() {
     let canvasRef: HTMLCanvasElement | undefined;
@@ -21,7 +22,7 @@ export default function Login() {
         },
         onSubmit: async ({ value }) => {
             if (!value.email || !value.password) {
-                setErrorMessage("Please fill in both email and password.");
+                setErrorMessage(t('auth.login.validationBothRequired'));
                 return;
             }
 
@@ -36,7 +37,7 @@ export default function Login() {
 
                 if (response.code === 200) {
                     const userName = response.user?.name || "User";
-                    toast.success(`Welcome back, ${userName}!`);
+                    toast.success(t('auth.login.welcomeBack', { name: userName }));
                     
                     if (typeof window !== 'undefined' && rememberMe()) {
                         localStorage.setItem('remember_email', value.email);
@@ -52,12 +53,12 @@ export default function Login() {
                         navigate(targetDashboard, { replace: true });
                     }, 400);
                 } else {
-                    const msg = response.message || "Invalid email or password";
+                    const msg = response.message || t('auth.login.invalidCredentials');
                     setErrorMessage(msg);
                     toast.danger(msg);
                 }
             } catch (err: any) {
-                const msg = err?.message || "Failed to connect to the authentication server";
+                const msg = err?.message || t('auth.login.networkError');
                 setErrorMessage(msg);
                 toast.danger(msg);
             } finally {
@@ -217,6 +218,20 @@ export default function Login() {
                 <div class="absolute top-[15%] right-[40%] w-1 h-1 bg-white rounded-full opacity-30 shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
             </div>
 
+            {/* Language Switcher on Login page */}
+            <div class="absolute top-4 right-4 z-20">
+                <button
+                    onClick={toggleLocale}
+                    type="button"
+                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs font-semibold backdrop-blur-md transition-all shadow-lg"
+                    aria-label={t('nav.selectLanguage')}
+                    title={t('nav.selectLanguage')}
+                >
+                    <span class="text-sm">{getLocale() === 'id' ? '🇮🇩' : '🇬🇧'}</span>
+                    <span class="font-mono text-xs uppercase font-bold">{getLocale()}</span>
+                </button>
+            </div>
+
             {/* Glassmorphism Card */}
             <div class="relative z-10 w-full max-w-lg p-8 sm:p-10 bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] rounded-[2rem] flex flex-col items-center">
 
@@ -231,14 +246,14 @@ export default function Login() {
 
                 {/* Header Titles */}
                 <h1 class="text-[28px] sm:text-[32px] font-bold text-white tracking-wide mb-1 font-sans">
-                    Macro Workspace
+                    {t('auth.login.title')}
                 </h1>
                 <p class="text-white/60 text-xs font-semibold tracking-wider uppercase mb-4 font-mono">
-                    Enterprise Portal
+                    {t('auth.login.subtitle')}
                 </p>
 
                 <p class="text-center text-white/80 text-sm font-normal leading-relaxed mb-6 px-2 max-w-[380px]">
-                    Sign in to access unified academic management, analytics, records, and services.
+                    {t('auth.login.description')}
                 </p>
 
                 {/* Error Alert Box */}
@@ -278,7 +293,7 @@ export default function Login() {
                         {(field) => (
                             <div class="space-y-1">
                                 <label class="block text-xs font-medium text-white/80 px-1">
-                                    Email Address
+                                    {t('auth.login.emailLabel')}
                                 </label>
                                 <div class="relative flex items-center">
                                     <span class="absolute left-4 text-white/40 pointer-events-none">
@@ -289,7 +304,7 @@ export default function Login() {
                                     </span>
                                     <input
                                         type="email"
-                                        placeholder="name@example.com"
+                                        placeholder={t('auth.login.emailPlaceholder')}
                                         required
                                         autocomplete="email"
                                         value={field().state.value}
@@ -311,7 +326,7 @@ export default function Login() {
                             <div class="space-y-1">
                                 <div class="flex items-center justify-between px-1">
                                     <label class="block text-xs font-medium text-white/80">
-                                        Password
+                                        {t('auth.login.passwordLabel')}
                                     </label>
                                 </div>
                                 <div class="relative flex items-center">
@@ -368,7 +383,7 @@ export default function Login() {
                                 onChange={(e) => setRememberMe(e.currentTarget.checked)}
                                 class="rounded border-white/20 bg-white/10 text-blue-500 focus:ring-0 focus:ring-offset-0 cursor-pointer size-3.5"
                             />
-                            <span>Remember email</span>
+                            <span>{t('auth.login.rememberMe')}</span>
                         </label>
                     </div>
 
@@ -382,19 +397,21 @@ export default function Login() {
                             >
                                 <Show when={isLoading()} fallback={
                                     <>
-                                        <span>SIGN IN</span>
+                                        <span>{t('auth.login.signInButton')}</span>
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M5 12h14" />
                                             <path d="m12 5 7 7-7 7" />
                                         </svg>
                                     </>
-                                }>
-                                    <svg class="animate-spin size-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    <span>SIGNING IN...</span>
-                                </Show>
+                                }>{(
+                                    <>
+                                        <svg class="animate-spin size-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        <span>{t('auth.login.authenticating')}</span>
+                                    </>
+                                )}</Show>
                             </button>
                         )}
                     </form.Subscribe>
@@ -406,13 +423,13 @@ export default function Login() {
                         <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="m15 18-6-6 6-6" />
                         </svg>
-                        Back to portal
+                        {t('common.back')}
                     </A>
                     <A href="/authentification/login_with_session" class="text-blue-400/80 hover:text-blue-300 transition-colors flex items-center gap-1">
                         <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                         </svg>
-                        Session Mode
+                        {t('nav.sessionLogin')}
                     </A>
                 </div>
             </div>

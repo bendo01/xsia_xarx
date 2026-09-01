@@ -1,5 +1,4 @@
-import { createStore } from "solid-js/store";
-import { For, Match, Switch } from "solid-js";
+import { createSignal, For, Match, Switch } from "solid-js";
 import { Portal } from "solid-js/web";
 import { TransitionGroup } from "solid-transition-group";
 
@@ -20,8 +19,8 @@ export interface ToastMessage {
   duration?: number;
 }
 
-// Global store for toasts
-const [toasts, setToasts] = createStore<ToastMessage[]>([]);
+// Global signal for toasts
+const [toasts, setToasts] = createSignal<ToastMessage[]>([]);
 
 // Helper to manage toasts
 export const toast = {
@@ -39,6 +38,9 @@ export const toast = {
   },
   remove: (id: string) => {
     setToasts((t) => t.filter((toast) => toast.id !== id));
+  },
+  clear: () => {
+    setToasts([]);
   },
   default: (message: string, duration = 3000) => toast.add({ type: "default", message, duration }),
   info: (message: string, duration = 3000) => toast.add({ type: "info", message, duration }),
@@ -90,15 +92,13 @@ export function Toaster(props: { position?: ToastPosition }) {
             animation: toast-shrink linear forwards;
           }
         `}</style>
-        <TransitionGroup name="toast">
-          <For each={toasts}>
-            {(t) => (
-              <div class="pointer-events-auto shrink-0 w-full max-w-sm">
-                <ToastItem toast={t} />
-              </div>
-            )}
-          </For>
-        </TransitionGroup>
+        <For each={toasts()}>
+          {(t) => (
+            <div class="pointer-events-auto shrink-0 w-full max-w-sm animate-fadeIn">
+              <ToastItem toast={t} />
+            </div>
+          )}
+        </For>
       </div>
     </Portal>
   );

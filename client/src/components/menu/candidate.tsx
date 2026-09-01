@@ -1,4 +1,5 @@
 import { A } from '@solidjs/router';
+import { t } from '../../i18n';
 
 export default function MenuCandidate() {
     return (
@@ -15,7 +16,7 @@ export default function MenuCandidate() {
                         <circle cx="9" cy="7" r="4"/>
                         <path d="M19 8v6M22 11h-6"/>
                     </svg>
-                    <span>Candidate Dashboard</span>
+                    <span>{t('menu.candidate.candidateDashboard')}</span>
                 </A>
             </li>
 
@@ -27,7 +28,7 @@ export default function MenuCandidate() {
                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                             <path d="m9 12 2 2 4-4"/>
                         </svg>
-                        <span>Admission Process</span>
+                        <span>{t('menu.candidate.admissionProcess')}</span>
                         <svg class="group-open/applicant-stage:block ms-auto hidden size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
                         <svg class="group-open/applicant-stage:hidden ms-auto block size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                     </summary>
@@ -35,22 +36,22 @@ export default function MenuCandidate() {
                         <ul class="pt-1 ps-6 space-y-1 overflow-hidden border-s-2 border-neutral-200 dark:border-neutral-700 ms-3 mt-1">
                             <li>
                                 <A href="/academic/candidate/reference/phase" class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
-                                    <span class="size-1.5 rounded-full bg-amber-400"></span> Selection Phases & Timeline
+                                    <span class="size-1.5 rounded-full bg-amber-400"></span> {t('menu.candidate.selectionPhases')}
                                 </A>
                             </li>
                             <li>
                                 <A href="/academic/candidate/reference/registration-category" class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
-                                    <span class="size-1.5 rounded-full bg-amber-400"></span> Registration Track & Program
+                                    <span class="size-1.5 rounded-full bg-amber-400"></span> {t('menu.candidate.registrationTrack')}
                                 </A>
                             </li>
                             <li>
                                 <A href="/academic/candidate/reference/document-type" class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
-                                    <span class="size-1.5 rounded-full bg-amber-400"></span> Document Verification Checklist
+                                    <span class="size-1.5 rounded-full bg-amber-400"></span> {t('menu.candidate.documentChecklist')}
                                 </A>
                             </li>
                             <li>
                                 <A href="/academic/candidate/reference/registration-type" class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
-                                    <span class="size-1.5 rounded-full bg-amber-400"></span> Pathways & Scholarships
+                                    <span class="size-1.5 rounded-full bg-amber-400"></span> {t('menu.candidate.pathwaysScholarships')}
                                 </A>
                             </li>
                         </ul>

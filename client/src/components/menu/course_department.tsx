@@ -1,4 +1,5 @@
 import { A } from '@solidjs/router';
+import { t } from '../../i18n';
 
 export default function MenuCourseDepartment() {
     return (
@@ -14,7 +15,7 @@ export default function MenuCourseDepartment() {
                         <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
                         <path d="M6 6h10M6 10h10M6 14h6"/>
                     </svg>
-                    <span>Department Dashboard</span>
+                    <span>{t('menu.courseDepartment.departmentDashboard')}</span>
                 </A>
             </li>
 
@@ -25,7 +26,7 @@ export default function MenuCourseDepartment() {
                         <svg class="size-4 shrink-0 text-emerald-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                         </svg>
-                        <span>Curriculum & Courses</span>
+                        <span>{t('menu.courseDepartment.curriculumCourses')}</span>
                         <svg class="group-open/courses:block ms-auto hidden size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
                         <svg class="group-open/courses:hidden ms-auto block size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                     </summary>
@@ -33,27 +34,27 @@ export default function MenuCourseDepartment() {
                         <ul class="pt-1 ps-6 space-y-1 overflow-hidden border-s-2 border-neutral-200 dark:border-neutral-700 ms-3 mt-1">
                             <li>
                                 <A href="/academic/course/reference/curriculum-type" class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
-                                    <span class="size-1.5 rounded-full bg-teal-400"></span> Curriculum Types
+                                    <span class="size-1.5 rounded-full bg-teal-400"></span> {t('menu.courseDepartment.curriculumTypes')}
                                 </A>
                             </li>
                             <li>
                                 <A href="/academic/course/reference/group" class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
-                                    <span class="size-1.5 rounded-full bg-teal-400"></span> Course Groups
+                                    <span class="size-1.5 rounded-full bg-teal-400"></span> {t('menu.courseDepartment.courseGroups')}
                                 </A>
                             </li>
                             <li>
                                 <A href="/academic/course/reference/competence" class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
-                                    <span class="size-1.5 rounded-full bg-teal-400"></span> Competences & Outcomes
+                                    <span class="size-1.5 rounded-full bg-teal-400"></span> {t('menu.courseDepartment.competencesOutcomes')}
                                 </A>
                             </li>
                             <li>
                                 <A href="/academic/course/reference/course-evaluation-base" class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
-                                    <span class="size-1.5 rounded-full bg-teal-400"></span> Evaluation Base
+                                    <span class="size-1.5 rounded-full bg-teal-400"></span> {t('menu.courseDepartment.evaluationBase')}
                                 </A>
                             </li>
                             <li>
                                 <A href="/academic/course/reference/evaluation-type" class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
-                                    <span class="size-1.5 rounded-full bg-teal-400"></span> Grading Types
+                                    <span class="size-1.5 rounded-full bg-teal-400"></span> {t('menu.courseDepartment.gradingTypes')}
                                 </A>
                             </li>
                         </ul>

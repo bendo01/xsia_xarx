@@ -1,4 +1,5 @@
 import { A } from '@solidjs/router';
+import { t } from '../../i18n';
 
 export default function MenuStudent() {
     return (
@@ -14,7 +15,7 @@ export default function MenuStudent() {
                         <circle cx="12" cy="8" r="5" />
                         <path d="M20 21a8 8 0 0 0-16 0" />
                     </svg>
-                    <span>Dashboard & Profile</span>
+                    <span>{t('menu.student.dashboardProfile')}</span>
                 </A>
             </li>
 
@@ -31,7 +32,7 @@ export default function MenuStudent() {
                         <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
                         <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                     </svg>
-                    <span>Academic Advisers</span>
+                    <span>{t('menu.student.academicAdvisers')}</span>
                 </A>
             </li>
 
@@ -43,7 +44,7 @@ export default function MenuStudent() {
                             <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
                             <path d="M6 6h10M6 10h10M6 14h6"/>
                         </svg>
-                        <span>Academic Activities</span>
+                        <span>{t('menu.student.academicActivities')}</span>
                         <svg class="group-open/student-academic:block ms-auto hidden size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
                         <svg class="group-open/student-academic:hidden ms-auto block size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                     </summary>
@@ -55,7 +56,7 @@ export default function MenuStudent() {
                                     activeClass="text-blue-600 dark:text-blue-400 font-semibold"
                                     class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded"
                                 >
-                                    <span class="size-1.5 rounded-full bg-indigo-500"></span> Semester Activities (KRS/KHS)
+                                    <span class="size-1.5 rounded-full bg-indigo-500"></span> {t('menu.student.semesterActivities')}
                                 </A>
                             </li>
                             <li>
@@ -64,7 +65,7 @@ export default function MenuStudent() {
                                     activeClass="text-blue-600 dark:text-blue-400 font-semibold"
                                     class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded"
                                 >
-                                    <span class="size-1.5 rounded-full bg-emerald-500"></span> Course Enrollment (KRS)
+                                    <span class="size-1.5 rounded-full bg-emerald-500"></span> {t('menu.student.courseEnrollment')}
                                 </A>
                             </li>
                         </ul>
@@ -83,7 +84,7 @@ export default function MenuStudent() {
                         <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
                         <path d="M6 12v5c3 3 9 3 12 0v-5"/>
                     </svg>
-                    <span>Admitted Students</span>
+                    <span>{t('menu.student.admittedStudents')}</span>
                 </A>
             </li>
         </ul>

@@ -1,4 +1,5 @@
 import { A } from '@solidjs/router';
+import { t } from '../../i18n';
 
 export default function MenuRectorat() {
     return (
@@ -15,7 +16,7 @@ export default function MenuRectorat() {
                         <line x1="12" x2="12" y1="20" y2="4"/>
                         <line x1="6" x2="6" y1="20" y2="14"/>
                     </svg>
-                    <span>Rectorat Executive Dashboard</span>
+                    <span>{t('menu.rectorat.executiveDashboard')}</span>
                 </A>
             </li>
 
@@ -27,7 +28,7 @@ export default function MenuRectorat() {
                             <path d="M3 3v18h18"/>
                             <path d="m19 9-5 5-4-4-3 3"/>
                         </svg>
-                        <span>Strategic Analytics</span>
+                        <span>{t('menu.rectorat.strategicAnalytics')}</span>
                         <svg class="group-open/exec-analytics:block ms-auto hidden size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
                         <svg class="group-open/exec-analytics:hidden ms-auto block size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                     </summary>
@@ -35,17 +36,17 @@ export default function MenuRectorat() {
                         <ul class="pt-1 ps-6 space-y-1 overflow-hidden border-s-2 border-neutral-200 dark:border-neutral-700 ms-3 mt-1">
                             <li>
                                 <A href="/dashboard/rectorat" class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
-                                    <span class="size-1.5 rounded-full bg-purple-400"></span> Enrollment Trends
+                                    <span class="size-1.5 rounded-full bg-purple-400"></span> {t('menu.rectorat.enrollmentTrends')}
                                 </A>
                             </li>
                             <li>
                                 <A href="/institution/master/institution" class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
-                                    <span class="size-1.5 rounded-full bg-purple-400"></span> Institutional Governance
+                                    <span class="size-1.5 rounded-full bg-purple-400"></span> {t('menu.rectorat.institutionalGovernance')}
                                 </A>
                             </li>
                             <li>
                                 <A href="/institution/master/unit" class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
-                                    <span class="size-1.5 rounded-full bg-purple-400"></span> Faculties & Departments
+                                    <span class="size-1.5 rounded-full bg-purple-400"></span> {t('menu.rectorat.facultiesDepartments')}
                                 </A>
                             </li>
                         </ul>

@@ -1,6 +1,7 @@
-import { useLocation } from "@solidjs/router";
-import { createSignal } from "solid-js";
+import { useLocation, A } from "@solidjs/router";
+import { createSignal, For } from "solid-js";
 import TopBar from "../components/navigation/TopBar";
+import { t } from "../i18n";
 
 export default function NotFound() {
   const location = useLocation();
@@ -12,10 +13,10 @@ export default function NotFound() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const quickLinks = [
+  const quickLinks = () => [
     {
-      title: "Home Page",
-      description: "Return to the main overview and portal landing page.",
+      title: t('menu.guest.home'),
+      description: t('errors.notFound.homeDesc'),
       href: "/",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -26,9 +27,9 @@ export default function NotFound() {
       badge: "Primary",
     },
     {
-      title: "User Dashboard",
-      description: "Inspect analytics, system stats, charts, and spatial maps.",
-      href: "/dashboard/user",
+      title: t('menu.administrator.adminDashboard'),
+      description: t('errors.notFound.dashboardDesc'),
+      href: "/dashboard/administrator",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect width="7" height="9" x="3" y="3" rx="1" />
@@ -40,8 +41,8 @@ export default function NotFound() {
       badge: "Overview",
     },
     {
-      title: "Person Reference Catalog",
-      description: "Browse master reference catalogs, demographics, and classifications.",
+      title: t('errors.notFound.referenceCatalog'),
+      description: t('errors.notFound.catalogDesc'),
       href: "/administrator/person/reference/age-classification",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -51,11 +52,11 @@ export default function NotFound() {
           <path d="M16 3.13a4 4 0 0 1 0 7.75" />
         </svg>
       ),
-      badge: "13 Modules",
+      badge: "Master",
     },
     {
-      title: "Sign In / Authentication",
-      description: "Access authentication portals, credentials, and secured areas.",
+      title: t('menu.guest.authentication'),
+      description: t('errors.notFound.signInDesc'),
       href: "/authentification/login",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -87,7 +88,7 @@ export default function NotFound() {
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
               <span class="relative inline-flex rounded-full size-2 bg-red-500" />
             </span>
-            <span>Error 404 • Page Not Found</span>
+            <span>{t('errors.notFound.status')}</span>
           </div>
 
           {/* Hero 404 Graphic */}
@@ -109,16 +110,16 @@ export default function NotFound() {
 
           {/* Title & Description */}
           <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white mt-2">
-            Lost in the Digital Void
+            {t('errors.notFound.title')}
           </h2>
           <p class="mt-3 text-sm sm:text-base text-neutral-600 dark:text-neutral-400 max-w-lg mx-auto leading-relaxed">
-            The page you are looking for might have been removed, had its name changed, or is temporarily unreachable.
+            {t('errors.notFound.description')}
           </p>
 
           {/* Requested Path Badge with Copy */}
           <div class="mt-5 inline-flex items-center gap-2 p-1.5 px-3 bg-white dark:bg-neutral-800/80 border border-neutral-200 dark:border-neutral-700 shadow-2xs max-w-full">
             <span class="text-xs font-medium text-neutral-500 dark:text-neutral-400 shrink-0">
-              Target:
+              {t('errors.notFound.target')}:
             </span>
             <code class="text-xs font-mono text-neutral-800 dark:text-neutral-200 truncate max-w-xs sm:max-w-md">
               {location.pathname}
@@ -145,7 +146,7 @@ export default function NotFound() {
 
           {/* Action Buttons */}
           <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <a
+            <A
               href="/"
               class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100 shadow-xs hover:shadow-md transition-all cursor-pointer"
             >
@@ -153,8 +154,8 @@ export default function NotFound() {
                 <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 <polyline points="9 22 9 12 15 12 15 22" />
               </svg>
-              Back to Home
-            </a>
+              {t('errors.notFound.backToHome')}
+            </A>
 
             <button
               type="button"
@@ -165,11 +166,11 @@ export default function NotFound() {
                 <path d="m12 19-7-7 7-7" />
                 <path d="M19 12H5" />
               </svg>
-              Go Back
+              {t('errors.notFound.goBack')}
             </button>
 
-            <a
-              href="/person/reference/age-classification"
+            <A
+              href="/administrator/person/reference/age-classification"
               class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-blue-700 bg-blue-50 hover:bg-yellow-50 hover:text-yellow-600 hover:border-yellow-500 dark:text-blue-400 dark:bg-blue-950/50 dark:hover:text-yellow-400 dark:hover:border-yellow-500 border border-blue-200 dark:border-blue-800 shadow-2xs transition-all cursor-pointer"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -177,50 +178,52 @@ export default function NotFound() {
                 <path d="M6 6h10" />
                 <path d="M6 10h10" />
               </svg>
-              Reference Master
-            </a>
+              {t('errors.notFound.referenceMaster')}
+            </A>
           </div>
 
           {/* Quick Links Section */}
           <div class="mt-12 text-left">
             <div class="flex items-center justify-between mb-4 border-b border-neutral-200 dark:border-neutral-700 pb-2">
               <h3 class="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                Popular Destinations
+                {t('errors.notFound.popularDestinations')}
               </h3>
               <span class="text-xs text-neutral-400 dark:text-neutral-500">
-                Quick Navigation
+                {t('errors.notFound.quickNav')}
               </span>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {quickLinks.map((link) => (
-                <a
-                  href={link.href}
-                  class="group flex items-start gap-3 p-3.5 bg-white dark:bg-neutral-800/90 border border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 hover:shadow-sm transition-all"
-                >
-                  <div class="size-9 shrink-0 flex items-center justify-center bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 group-hover:bg-neutral-900 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-neutral-900 transition-colors">
-                    {link.icon}
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <div class="flex items-center justify-between gap-2">
-                      <div class="text-sm font-semibold text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                        {link.title}
-                      </div>
-                      <span class="text-[10px] font-medium px-1.5 py-0.5 bg-neutral-100 dark:bg-neutral-700/80 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-600">
-                        {link.badge}
-                      </span>
+              <For each={quickLinks()}>
+                {(link) => (
+                  <A
+                    href={link.href}
+                    class="group flex items-start gap-3 p-3.5 bg-white dark:bg-neutral-800/90 border border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 hover:shadow-sm transition-all"
+                  >
+                    <div class="size-9 shrink-0 flex items-center justify-center bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 group-hover:bg-neutral-900 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-neutral-900 transition-colors">
+                      {link.icon}
                     </div>
-                    <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1 leading-snug line-clamp-2">
-                      {link.description}
-                    </p>
-                  </div>
-                  <div class="shrink-0 text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white group-hover:translate-x-0.5 transition-all self-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="m9 18 6-6-6-6" />
-                    </svg>
-                  </div>
-                </a>
-              ))}
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center justify-between gap-2">
+                        <div class="text-sm font-semibold text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                          {link.title}
+                        </div>
+                        <span class="text-[10px] font-medium px-1.5 py-0.5 bg-neutral-100 dark:bg-neutral-700/80 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-600">
+                          {link.badge}
+                        </span>
+                      </div>
+                      <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1 leading-snug line-clamp-2">
+                        {link.description}
+                      </p>
+                    </div>
+                    <div class="shrink-0 text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white group-hover:translate-x-0.5 transition-all self-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m9 18 6-6-6-6" />
+                      </svg>
+                    </div>
+                  </A>
+                )}
+              </For>
             </div>
           </div>
 
@@ -232,7 +235,7 @@ export default function NotFound() {
                 <path d="M12 16v-4" />
                 <path d="M12 8h.01" />
               </svg>
-              <span>Need help? Check the sidebar menu in the top right corner.</span>
+              <span>{t('errors.notFound.helpText')}</span>
             </div>
             <div class="font-mono text-[11px] text-neutral-400 dark:text-neutral-500">
               ERR_CODE: 404_PAGE_NOT_FOUND

@@ -1,4 +1,5 @@
 import { A } from '@solidjs/router';
+import { t } from '../../i18n';
 
 export default function MenuLecturer() {
     return (
@@ -14,7 +15,7 @@ export default function MenuLecturer() {
                         <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
                         <path d="M6 6h10M6 10h10M6 14h6"/>
                     </svg>
-                    <span>Teaching Activities & Classes</span>
+                    <span>{t('menu.lecturer.teachingActivities')}</span>
                 </A>
             </li>
 
@@ -29,7 +30,7 @@ export default function MenuLecturer() {
                         <circle cx="12" cy="8" r="5" />
                         <path d="M20 21a8 8 0 0 0-16 0" />
                     </svg>
-                    <span>Lecturer Profile</span>
+                    <span>{t('menu.lecturer.lecturerProfile')}</span>
                 </A>
             </li>
         </ul>

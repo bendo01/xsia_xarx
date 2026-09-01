@@ -2,6 +2,7 @@ import { createSignal } from 'solid-js';
 import { getStorageItem, setStorageItem, removeStorageItem } from './storage';
 import { GetUserRoles, LogoutUser as apiLogoutUser } from '../controllers/auth/AuthUser';
 import { getStudentById } from '../controllers/academic/student/master/AcademicStudentMasterStudentController';
+import { t } from '../i18n';
 
 export interface UserRoleItem {
     id: string;
@@ -55,21 +56,21 @@ export function getRoleDisplayName(roleName: string): string {
     const norm = normalizeRoleName(roleName);
     switch (norm) {
         case 'administrator':
-            return 'Administrator';
+            return t('roles.administrator');
         case 'course_department':
-            return 'Course & Department';
+            return t('roles.course_department');
         case 'student':
-            return 'Student';
+            return t('roles.student');
         case 'lecturer':
-            return 'Lecturer';
+            return t('roles.lecturer');
         case 'candidate':
-            return 'Candidate / PMB';
+            return t('roles.candidate');
         case 'rectorat':
-            return 'Rectorat';
+            return t('roles.rectorat');
         case 'user':
-            return 'Standard User';
+            return t('roles.user');
         case 'guest':
-            return 'Guest';
+            return t('roles.guest');
         default:
             return roleName.charAt(0).toUpperCase() + roleName.slice(1);
     }

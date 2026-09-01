@@ -9,7 +9,7 @@ import {
     activeStudentIdSignal,
     currentRoleIdSignal,
     setActiveRole, 
-    setActiveStudent,
+    setActiveStudent, 
     enrichUserRolesWithStudentCodes,
     getRoleDisplayName, 
     getDashboardPathForRole, 
@@ -18,6 +18,7 @@ import {
     type UserRoleItem
 } from '../../lib/authStore';
 import { toast } from '../toast/Toaster';
+import { t } from '../../i18n';
 import MenuAdministrator from './administrator';
 import MenuCourseDepartment from './course_department';
 import MenuStudent from './student';
@@ -49,7 +50,7 @@ export default function DynamicMenu() {
         }
         const displayName = getRoleDisplayName(roleName);
         const codeDisplay = role?.code ? ` (${role.code})` : '';
-        toast.info(`Switched active role to ${displayName}${codeDisplay}`);
+        toast.info(t('auth.login.roleSwitched', { role: `${displayName}${codeDisplay}` }));
         
         let targetDashboard = getDashboardPathForRole(roleName);
         if (normalizeRoleName(roleName) === 'student' && role?.code) {
@@ -74,7 +75,7 @@ export default function DynamicMenu() {
                                 <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                             </span>
                             <span class="text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-mono">
-                                Active Role
+                                {t('nav.activeRole')}
                             </span>
                         </div>
                         <div class="flex items-center gap-1.5 flex-wrap justify-end">
@@ -93,7 +94,7 @@ export default function DynamicMenu() {
                     <Show when={userRolesSignal().length > 1}>
                         <div class="mt-2 pt-2 border-t border-neutral-200 dark:border-neutral-700/60">
                             <label class="block text-[10px] font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 mb-1.5 font-mono">
-                                Switch Workspace Role ({userRolesSignal().length} Available)
+                                {t('nav.switchRole')} ({t('nav.rolesAvailable', { count: userRolesSignal().length })})
                             </label>
                             <div class="grid grid-cols-2 gap-1.5">
                                 <For each={userRolesSignal()}>
