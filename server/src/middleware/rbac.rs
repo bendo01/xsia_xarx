@@ -250,11 +250,13 @@ impl Handler for RbacGuard {
         });
 
         let allowed_by_role_capability = if is_student {
-            // Student role can access student routes and read academic / institution catalog
+            // Student role can access student routes and read academic / institution / building / location catalog
             route_name.starts_with("academic.student.")
                 || (action == "read" && (
                     route_name.starts_with("academic.")
                     || route_name.starts_with("institution.")
+                    || route_name.starts_with("building.")
+                    || route_name.starts_with("location.")
                     || route_name.starts_with("person.")
                     || route_name.starts_with("common.")
                 ))
@@ -267,6 +269,8 @@ impl Handler for RbacGuard {
                 || (action == "read" && (
                     route_name.starts_with("academic.")
                     || route_name.starts_with("institution.")
+                    || route_name.starts_with("building.")
+                    || route_name.starts_with("location.")
                     || route_name.starts_with("person.")
                     || route_name.starts_with("common.")
                 ))
@@ -276,6 +280,8 @@ impl Handler for RbacGuard {
             // Department role can access academic routes and read catalog / records
             route_name.starts_with("academic.")
                 || route_name.starts_with("institution.")
+                || route_name.starts_with("building.")
+                || route_name.starts_with("location.")
                 || (action == "read" && (
                     route_name.starts_with("person.")
                     || route_name.starts_with("common.")

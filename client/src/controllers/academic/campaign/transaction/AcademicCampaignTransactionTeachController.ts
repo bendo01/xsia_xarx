@@ -109,9 +109,10 @@ export async function getTeachById(id: string): Promise<TeachItem | null> {
     }
 }
 
-export async function listCourses(): Promise<any[]> {
+export async function listCourses(queryParams?: { page_size?: number }): Promise<any[]> {
     try {
-        const res = await fetch(`${getBaseUrl()}/academic/course/master/courses?page_size=100`, {
+        const size = queryParams?.page_size || 200;
+        const res = await fetch(`${getBaseUrl()}/academic/course/master/courses?page_size=${size}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -120,6 +121,102 @@ export async function listCourses(): Promise<any[]> {
         return json.data || [];
     } catch (err) {
         console.warn('Error fetching courses:', err);
+        return [];
+    }
+}
+
+export async function listTeachDecrees(queryParams?: { page_size?: number }): Promise<any[]> {
+    try {
+        const size = queryParams?.page_size || 200;
+        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/teach-decrees?page_size=${size}`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+        if (!res.ok) return [];
+        const json = await res.json();
+        return json.data || [];
+    } catch (err) {
+        console.warn('Error fetching teach decrees:', err);
+        return [];
+    }
+}
+
+export async function listClassCodes(queryParams?: { page_size?: number }): Promise<any[]> {
+    try {
+        const size = queryParams?.page_size || 200;
+        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/class-codes?page_size=${size}`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+        if (!res.ok) return [];
+        const json = await res.json();
+        return json.data || [];
+    } catch (err) {
+        console.warn('Error fetching class codes:', err);
+        return [];
+    }
+}
+
+export async function listTeachLecturers(queryParams?: { page_size?: number }): Promise<any[]> {
+    try {
+        const size = queryParams?.page_size || 200;
+        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/teach-lecturers?page_size=${size}`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+        if (!res.ok) return [];
+        const json = await res.json();
+        return json.data || [];
+    } catch (err) {
+        console.warn('Error fetching teach lecturers:', err);
+        return [];
+    }
+}
+
+export async function listSchedules(queryParams?: { page_size?: number }): Promise<any[]> {
+    try {
+        const size = queryParams?.page_size || 200;
+        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/schedules?page_size=${size}`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+        if (!res.ok) return [];
+        const json = await res.json();
+        return json.data || [];
+    } catch (err) {
+        console.warn('Error fetching schedules:', err);
+        return [];
+    }
+}
+
+export async function listLecturers(queryParams?: { page_size?: number }): Promise<any[]> {
+    try {
+        const size = queryParams?.page_size || 200;
+        const res = await fetch(`${getBaseUrl()}/academic/lecturer/master/lecturers?page_size=${size}`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+        if (!res.ok) return [];
+        const json = await res.json();
+        return json.data || [];
+    } catch (err) {
+        console.warn('Error fetching lecturers:', err);
+        return [];
+    }
+}
+
+export async function listRooms(queryParams?: { page_size?: number }): Promise<any[]> {
+    try {
+        const size = queryParams?.page_size || 200;
+        const res = await fetch(`${getBaseUrl()}/building/master/rooms?page_size=${size}`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+        if (!res.ok) return [];
+        const json = await res.json();
+        return json.data || [];
+    } catch (err) {
+        console.warn('Error fetching rooms:', err);
         return [];
     }
 }

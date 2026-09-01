@@ -1,10 +1,16 @@
-import { createSignal, onMount, For, Show } from 'solid-js';
+import { createSignal, onMount, createEffect, For, Show } from 'solid-js';
 import { useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { 
     listTeaches, 
     listCourses, 
+    listTeachDecrees, 
+    listClassCodes, 
+    listTeachLecturers, 
+    listLecturers, 
+    listSchedules, 
+    listRooms, 
     TeachItem 
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachController';
 import { 
@@ -17,6 +23,11 @@ import {
     listStudentActivities, 
     StudentActivityItem 
 } from '~/controllers/academic/student/campaign/AcademicStudentCampaignActivityController';
+import { 
+    getStudentById, 
+    listStudents, 
+    StudentMasterItem 
+} from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
 import { getActiveStudentId } from '~/lib/authStore';
 
 export default function StudentCourseEnrollmentPage() {
@@ -24,6 +35,7 @@ export default function StudentCourseEnrollmentPage() {
     const [availableTeaches, setAvailableTeaches] = createSignal<TeachItem[]>([]);
     const [enrolledCourses, setEnrolledCourses] = createSignal<DetailActivityItem[]>([]);
     const [activeActivity, setActiveActivity] = createSignal<StudentActivityItem | null>(null);
+    const [activeStudent, setActiveStudentState] = createSignal<StudentMasterItem | null>(null);
     const [isLoading, setIsLoading] = createSignal(true);
     const [searchQuery, setSearchQuery] = createSignal('');
     const [selectedCreditFilter, setSelectedCreditFilter] = createSignal('all');
@@ -35,9 +47,23 @@ export default function StudentCourseEnrollmentPage() {
     const fetchEnrollmentData = async () => {
         setIsLoading(true);
         try {
-            // 1. Determine active semester activity
-            const activeStdId = getActiveStudentId();
-            const actList = await listStudentActivities({ page: 1, page_size: 5, student_id: activeStdId || undefined });
+            // 1. Resolve student info
+            let targetStudentId = getActiveStudentId();
+            let studentRecord: StudentMasterItem | null = null;
+            if (targetStudentId) {
+                studentRecord = await getStudentById(targetStudentId);
+            }
+            if (!studentRecord) {
+                const stdList = await listStudents({ page: 1, page_size: 10 });
+                studentRecord = stdList.data?.[0] || null;
+                if (studentRecord) {
+                    targetStudentId = studentRecord.id;
+                }
+            }
+            setActiveStudentState(studentRecord);
+
+            // 2. Determine active semester activity
+            const actList = await listStudentActivities({ page: 1, page_size: 20, student_id: targetStudentId || undefined });
             let currentAct: StudentActivityItem | null = null;
             if (searchParams.activity_id && actList.data) {
                 currentAct = actList.data.find(a => a.id === searchParams.activity_id) || null;
@@ -47,14 +73,142 @@ export default function StudentCourseEnrollmentPage() {
             }
             setActiveActivity(currentAct);
 
-            // 2. Fetch teach offerings from academic.campaign.transaction.teach and student detail activities
-            const [teachRes, detailRes] = await Promise.all([
-                listTeaches({ page: 1, page_size: 50 }),
-                currentAct ? listDetailActivities({ page: 1, page_size: 50, activity_id: currentAct.id }) : Promise.resolve({ data: [] }),
+            if (!currentAct) {
+                setAvailableTeaches([]);
+                setEnrolledCourses([]);
+                setIsLoading(false);
+                return;
+            }
+
+            const targetActivityId = currentAct.unit_activity_id || currentAct.id;
+            const targetUnitId = currentAct.unit_id || studentRecord?.unit_id;
+
+            // 3. Fetch real relation data from server in parallel
+            const [
+                teachesRes,
+                decreesList,
+                classesList,
+                teachLecturersList,
+                lecturersList,
+                schedulesList,
+                roomsList,
+                coursesList,
+                detailActivitiesRes,
+                allDetailActivitiesRes
+            ] = await Promise.all([
+                listTeaches({ page: 1, page_size: 300 }),
+                listTeachDecrees({ page_size: 300 }),
+                listClassCodes({ page_size: 300 }),
+                listTeachLecturers({ page_size: 500 }),
+                listLecturers({ page_size: 300 }),
+                listSchedules({ page_size: 300 }),
+                listRooms({ page_size: 300 }),
+                listCourses({ page_size: 300 }),
+                listDetailActivities({ page: 1, page_size: 100, activity_id: currentAct.id }),
+                listDetailActivities({ page: 1, page_size: 500 }),
             ]);
 
-            setAvailableTeaches(teachRes.data || []);
-            setEnrolledCourses(detailRes.data || []);
+            const allTeaches = teachesRes.data || [];
+            const allDecrees = decreesList || [];
+            const allClasses = classesList || [];
+            const allTeachLecturers = teachLecturersList || [];
+            const allLecturers = lecturersList || [];
+            const allSchedules = schedulesList || [];
+            const allRooms = roomsList || [];
+            const allCourses = coursesList || [];
+            const studentDetails = detailActivitiesRes.data || [];
+            const allDetails = allDetailActivitiesRes.data || [];
+
+            // 4. Find relevant teach decree IDs for this student's unit activity
+            const relevantDecreeIds = new Set(
+                allDecrees
+                    .filter((d: any) => d.activity_id === targetActivityId)
+                    .map((d: any) => d.id)
+            );
+
+            // 5. Filter teaches strictly based on student's current activity and unit
+            const filteredRawTeaches = allTeaches.filter((t: TeachItem) => {
+                const matchesActivity = 
+                    t.activity_id === targetActivityId || 
+                    (t.teach_decree_id && relevantDecreeIds.has(t.teach_decree_id));
+
+                if (!matchesActivity) return false;
+
+                // If unit filter is available, verify course unit or activity unit
+                if (targetUnitId) {
+                    const course = allCourses.find((c: any) => c.id === t.course_id);
+                    if (course && course.unit_id && course.unit_id !== targetUnitId) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+
+            // 6. Enrich teaches with real related entity information (no scaffold data)
+            const cleanName = (val?: string) => {
+                if (!val || val.startsWith('DosenAktifitasPengajaran')) return '';
+                return val.trim();
+            };
+
+            const enrichedTeaches: TeachItem[] = filteredRawTeaches.map((t: TeachItem) => {
+                const course = allCourses.find((c: any) => c.id === t.course_id);
+                const classCode = allClasses.find((cc: any) => cc.id === t.class_code_id);
+                
+                const assignedTeachLecturers = allTeachLecturers.filter((tl: any) => tl.teach_id === t.id);
+                const lecturerNames = assignedTeachLecturers.map((tl: any) => {
+                    const lec = allLecturers.find((l: any) => l.id === tl.lecturer_id);
+                    const code = (lec?.code || '').trim();
+                    const name = cleanName(lec?.name || tl.name || tl.lecturer_name || '');
+                    return code && name ? `${code} - ${name}` : (name || code);
+                }).filter(Boolean).join(', ');
+
+                const assignedSchedules = allSchedules.filter((s: any) => s.teach_id === t.id);
+                const scheduleTime = assignedSchedules.map((s: any) => {
+                    if (s.start_hour && s.end_hour) {
+                        return `${String(s.start_hour).slice(0, 5)} - ${String(s.end_hour).slice(0, 5)}`;
+                    }
+                    return s.name || '';
+                }).filter(Boolean).join(', ');
+
+                const roomNames = assignedSchedules.map((s: any) => {
+                    const r = allRooms.find((rm: any) => rm.id === s.room_id);
+                    return r?.name || s.room_name || '';
+                }).filter(Boolean).join(', ');
+
+                const enrolledCount = allDetails.filter((d: any) => d.teach_id === t.id).length;
+
+                return {
+                    ...t,
+                    course_code: course?.code || t.course_code || '-',
+                    course_name: course?.name || t.name || t.course_name || '-',
+                    credits: course?.total_credit ?? course?.credit ?? t.credits ?? 0,
+                    class_name: classCode?.alphabet_code || classCode?.name || classCode?.code || t.class_name || '-',
+                    lecturer_name: lecturerNames || t.lecturer_name || '-',
+                    schedule_time: scheduleTime || t.schedule_time || '-',
+                    room_name: roomNames || t.room_name || '-',
+                    enrolled_count: enrolledCount,
+                    max_member: t.max_member ?? 40,
+                };
+            });
+
+            setAvailableTeaches(enrichedTeaches);
+
+            // 7. Enrich student's enrolled courses with actual relation data
+            const enrichedEnrolled: DetailActivityItem[] = studentDetails.map((detail: any) => {
+                const course = allCourses.find((c: any) => c.id === detail.course_id);
+                const teach = enrichedTeaches.find((t: any) => t.id === detail.teach_id) || allTeaches.find((t: any) => t.id === detail.teach_id);
+
+                return {
+                    ...detail,
+                    course_code: course?.code || detail.course_code || teach?.course_code || '-',
+                    course_name: course?.name || detail.name || detail.course_name || teach?.course_name || '-',
+                    credit: detail.credit ?? course?.total_credit ?? course?.credit ?? teach?.credits ?? 0,
+                    lecturer_name: teach?.lecturer_name || detail.lecturer_name || '-',
+                };
+            });
+
+            setEnrolledCourses(enrichedEnrolled);
         } catch (err) {
             console.error('Error fetching enrollment data:', err);
             toast.danger('Failed to load course offerings from server.');
@@ -67,6 +221,11 @@ export default function StudentCourseEnrollmentPage() {
         fetchEnrollmentData();
     });
 
+    createEffect(() => {
+        const _id = searchParams.activity_id;
+        fetchEnrollmentData();
+    });
+
     const totalCurrentSKS = () => enrolledCourses().reduce((acc, c) => acc + (c.credit || 0), 0);
     const remainingSKS = () => Math.max(0, maxAllowedSKS - totalCurrentSKS());
 
@@ -75,7 +234,7 @@ export default function StudentCourseEnrollmentPage() {
     };
 
     const handleEnroll = async (teach: TeachItem) => {
-        const courseCredit = teach.credits || 3;
+        const courseCredit = teach.credits ?? 0;
         if (totalCurrentSKS() + courseCredit > maxAllowedSKS) {
             toast.danger(`Cannot enroll. Exceeds maximum SKS allowance of ${maxAllowedSKS} SKS.`);
             return;
@@ -97,21 +256,10 @@ export default function StudentCourseEnrollmentPage() {
             });
 
             if (!res.is_error && res.data) {
-                const newEnrolledItem: DetailActivityItem = {
-                    id: res.data.id,
-                    course_id: teach.course_id,
-                    teach_id: teach.id,
-                    activity_id: activeActivity()?.id || '',
-                    course_code: teach.course_code || '',
-                    course_name: teach.course_name || teach.name || 'Enrolled Course',
-                    credit: courseCredit,
-                    lecturer_name: teach.lecturer_name,
-                };
-
-                setEnrolledCourses(prev => [...prev, newEnrolledItem]);
                 toast.success(`Successfully enrolled in ${teach.course_name || teach.name || 'course'}! (+${courseCredit} SKS)`);
+                await fetchEnrollmentData();
             } else {
-                toast.danger('Failed to enroll class.');
+                toast.danger(res.message || 'Failed to enroll class.');
             }
         } catch (err) {
             toast.danger('Failed to enroll class.');
@@ -125,9 +273,13 @@ export default function StudentCourseEnrollmentPage() {
 
         setDroppingDetailId(detailId);
         try {
-            await deleteDetailActivity(detailId);
-            setEnrolledCourses(prev => prev.filter(c => c.id !== detailId));
-            toast.info(`Dropped ${courseName} from study plan.`);
+            const res = await deleteDetailActivity(detailId);
+            if (!res.is_error) {
+                toast.info(`Dropped ${courseName} from study plan.`);
+                await fetchEnrollmentData();
+            } else {
+                toast.danger(res.message || 'Failed to drop class.');
+            }
         } catch (err) {
             toast.danger('Failed to drop class.');
         } finally {
@@ -228,7 +380,7 @@ export default function StudentCourseEnrollmentPage() {
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                         <For each={enrolledCourses()} fallback={
-                            <div class="col-span-3 py-6 text-center text-neutral-400 text-xs">
+                            <div class="col-span-1 sm:col-span-2 lg:col-span-3 py-6 text-center text-neutral-400 text-xs">
                                 No courses selected yet. Choose from the available offerings below.
                             </div>
                         }>
@@ -272,10 +424,10 @@ export default function StudentCourseEnrollmentPage() {
                     <div class="p-6 border-b border-neutral-200 dark:border-neutral-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <h2 class="text-base font-bold text-neutral-900 dark:text-white">
-                                Available Class Offerings (`academic.campaign.transaction.teach`)
+                                Available Class Offerings
                             </h2>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                Choose courses to add to your semester study card.
+                                Course classes available for your active semester activity and unit.
                             </p>
                         </div>
 
@@ -297,21 +449,24 @@ export default function StudentCourseEnrollmentPage() {
                                 class="py-1.5 px-3 text-xs rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-hidden"
                             >
                                 <option value="all">All SKS</option>
+                                <option value="1">1 SKS</option>
                                 <option value="2">2 SKS</option>
                                 <option value="3">3 SKS</option>
                                 <option value="4">4 SKS</option>
+                                <option value="6">6 SKS</option>
                             </select>
                         </div>
                     </div>
 
-                    {/* Offerings Table */}
+                    {/* Offerings Content */}
                     <Show when={!isLoading()} fallback={
                         <div class="py-16 flex flex-col items-center justify-center gap-3 text-neutral-400">
                             <div class="size-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                             <p class="text-xs font-mono">Loading teach class offerings from server...</p>
                         </div>
                     }>
-                        <div class="overflow-x-auto">
+                        {/* Desktop Table View (md and above) */}
+                        <div class="hidden md:block overflow-x-auto">
                             <table class="w-full text-xs text-start">
                                 <thead class="bg-neutral-100 dark:bg-neutral-900/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-neutral-200 dark:border-neutral-700">
                                     <tr>
@@ -329,7 +484,7 @@ export default function StudentCourseEnrollmentPage() {
                                     <For each={filteredTeaches()} fallback={
                                         <tr>
                                             <td colspan="8" class="py-12 text-center text-neutral-400">
-                                                No class offerings matching your search.
+                                                No class offerings available for current semester activity and unit.
                                             </td>
                                         </tr>
                                     }>
@@ -374,7 +529,7 @@ export default function StudentCourseEnrollmentPage() {
                                                             <button
                                                                 type="button"
                                                                 onClick={() => handleEnroll(t)}
-                                                                disabled={enrollingTeachId() === t.id || isFull() || remainingSKS() < (t.credits || 3)}
+                                                                disabled={enrollingTeachId() === t.id || isFull() || remainingSKS() < (t.credits ?? 0)}
                                                                 class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-colors shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed"
                                                             >
                                                                 {enrollingTeachId() === t.id ? 'Enrolling...' : isFull() ? 'Class Full' : '+ Enroll'}
@@ -387,6 +542,80 @@ export default function StudentCourseEnrollmentPage() {
                                     </For>
                                 </tbody>
                             </table>
+                        </div>
+
+                        {/* Mobile Card View (below md) */}
+                        <div class="block md:hidden divide-y divide-neutral-100 dark:divide-neutral-700/50">
+                            <For each={filteredTeaches()} fallback={
+                                <div class="py-12 px-4 text-center text-neutral-400 font-mono text-xs">
+                                    No class offerings available for current semester activity and unit.
+                                </div>
+                            }>
+                                {(t) => {
+                                    const isEnrolled = () => isCourseAlreadyEnrolled(t.course_id, t.id);
+                                    const isFull = () => (t.enrolled_count || 0) >= (t.max_member || 40);
+
+                                    return (
+                                        <div class="p-4 sm:p-5 flex flex-col gap-3 hover:bg-neutral-50/60 dark:hover:bg-neutral-900/30 transition-colors">
+                                            <div class="flex items-start justify-between gap-2">
+                                                <div>
+                                                    <div class="flex items-center gap-2 flex-wrap mb-1">
+                                                        <span class="font-mono font-bold text-xs text-blue-600 dark:text-blue-400">
+                                                            {t.course_code || '-'}
+                                                        </span>
+                                                        <span class="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-mono text-[10px] font-bold">
+                                                            {t.credits ?? 0} SKS
+                                                        </span>
+                                                        <span class="px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 font-mono text-[10px] font-semibold">
+                                                            Class: {t.class_name || '-'}
+                                                        </span>
+                                                    </div>
+                                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white leading-snug">
+                                                        {t.course_name || t.name || '-'}
+                                                    </h3>
+                                                </div>
+
+                                                <Show when={!isEnrolled()} fallback={
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 text-[10px] font-bold shrink-0">
+                                                        ✓ Enrolled
+                                                    </span>
+                                                }>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleEnroll(t)}
+                                                        disabled={enrollingTeachId() === t.id || isFull() || remainingSKS() < (t.credits ?? 0)}
+                                                        class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+                                                    >
+                                                        {enrollingTeachId() === t.id ? '...' : isFull() ? 'Full' : '+ Enroll'}
+                                                    </button>
+                                                </Show>
+                                            </div>
+
+                                            <div class="text-xs text-neutral-600 dark:text-neutral-300 flex items-start gap-1.5">
+                                                <span class="text-neutral-400 dark:text-neutral-500 shrink-0 font-medium text-[11px]">Lecturer:</span>
+                                                <span class="text-[11px]">{t.lecturer_name || '-'}</span>
+                                            </div>
+
+                                            <div class="grid grid-cols-2 gap-2 pt-2 border-t border-neutral-100 dark:border-neutral-700/40 text-xs">
+                                                <div class="p-2 rounded-xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                                    <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">Schedule / Room</span>
+                                                    <span class="text-[11px] text-neutral-800 dark:text-neutral-200 block truncate">
+                                                        {t.schedule_time !== '-' ? t.schedule_time : ''} {t.room_name !== '-' ? `(${t.room_name})` : ''}
+                                                        {t.schedule_time === '-' && t.room_name === '-' ? '-' : ''}
+                                                    </span>
+                                                </div>
+
+                                                <div class="p-2 rounded-xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                                    <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">Quota Enrolled</span>
+                                                    <span class={`font-mono font-bold text-xs ${isFull() ? 'text-red-500' : 'text-neutral-800 dark:text-neutral-200'}`}>
+                                                        {t.enrolled_count ?? 0} / {t.max_member ?? '-'}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                }}
+                            </For>
                         </div>
                     </Show>
                 </div>
