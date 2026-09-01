@@ -1,16 +1,19 @@
 import { defineConfig } from "vitest/config";
 import solidPlugin from "vite-plugin-solid";
-import path from "path";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 export default defineConfig({
   plugins: [solidPlugin()],
   resolve: {
     conditions: ["development", "browser"],
     alias: {
-      "~": path.resolve(import.meta.dirname, "./src"),
-      "solid-js/web": path.resolve(import.meta.dirname, "./node_modules/solid-js/web/dist/dev.js"),
-      "solid-js/store": path.resolve(import.meta.dirname, "./node_modules/solid-js/store/dist/dev.js"),
-      "solid-js": path.resolve(import.meta.dirname, "./node_modules/solid-js/dist/dev.js"),
+      "~": path.resolve(__dirname, "./src"),
+      "solid-js/web": path.resolve(__dirname, "./node_modules/solid-js/web/dist/dev.js"),
+      "solid-js/store": path.resolve(__dirname, "./node_modules/solid-js/store/dist/dev.js"),
+      "solid-js": path.resolve(__dirname, "./node_modules/solid-js/dist/dev.js"),
     },
   },
   test: {
