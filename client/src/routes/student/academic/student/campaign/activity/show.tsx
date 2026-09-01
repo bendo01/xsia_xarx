@@ -378,12 +378,20 @@ export default function StudentCampaignActivityShowPage() {
                                                                      const l: any = c.lecturers?.[0];
                                                                      if (!l) return c.lecturer_name || '-';
                                                                      if (typeof l === 'string') return l;
-                                                                     return (
-                                                                         <span class="inline-flex items-center gap-1.5">
-                                                                             {l.code && <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{l.code} -</span>}
-                                                                             <span>{l.name || '-'}</span>
-                                                                         </span>
-                                                                     );
+                                                                     const code = l.code?.trim();
+                                                                     const name = l.name?.trim();
+                                                                     if (code && name) {
+                                                                         return (
+                                                                             <span class="inline-flex items-center gap-1.5">
+                                                                                 <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{code}</span>
+                                                                                 <span class="text-neutral-400 dark:text-neutral-500">-</span>
+                                                                                 <span>{name}</span>
+                                                                             </span>
+                                                                         );
+                                                                     }
+                                                                     if (name) return <span>{name}</span>;
+                                                                     if (code) return <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{code}</span>;
+                                                                     return c.lecturer_name || '-';
                                                                  })()}
                                                              </span>
                                                          }
@@ -395,14 +403,22 @@ export default function StudentCampaignActivityShowPage() {
                                                                          <span class="size-1 rounded-full bg-neutral-400 dark:bg-neutral-500 shrink-0"></span>
                                                                          {typeof lecturer === 'string' ? (
                                                                              <span>{lecturer}</span>
-                                                                         ) : (
-                                                                             <span>
-                                                                                 {lecturer.code && (
-                                                                                     <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{lecturer.code} - </span>
-                                                                                 )}
-                                                                                 <span>{lecturer.name || '-'}</span>
-                                                                             </span>
-                                                                         )}
+                                                                         ) : (() => {
+                                                                             const code = lecturer.code?.trim();
+                                                                             const name = lecturer.name?.trim();
+                                                                             if (code && name) {
+                                                                                 return (
+                                                                                     <span>
+                                                                                         <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{code}</span>
+                                                                                         <span class="text-neutral-400 dark:text-neutral-500 mx-1">-</span>
+                                                                                         <span>{name}</span>
+                                                                                     </span>
+                                                                                 );
+                                                                             }
+                                                                             if (name) return <span>{name}</span>;
+                                                                             if (code) return <span class="font-mono font-medium text-blue-600 dark:text-blue-400">{code}</span>;
+                                                                             return <span>-</span>;
+                                                                         })()}
                                                                      </span>
                                                                  )}
                                                              </For>
