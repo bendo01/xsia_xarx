@@ -5,12 +5,29 @@ import { currentUserSignal, refreshAuthState } from '~/lib/authStore';
 import { getStorageItem } from '~/lib/storage';
 import { GetCurrentUser } from '~/controllers/auth/AuthUser';
 import type { PersonMasterIndividualDataObject } from '~/models/person/master/Individual';
+import type { AcademicLecturerMasterLecturer } from '~/models/academic/lecturer/master/Lecturer';
+import type { AcademicLecturerTransactionHomebase } from '~/models/academic/lecturer/transaction/Homebase';
+import type { AcademicLecturerTransactionAcademicRank } from '~/models/academic/lecturer/transaction/AcademicRank';
+import type { AcademicLecturerTransactionAcademicGroup } from '~/models/academic/lecturer/transaction/AcademicGroup';
 import { PersonMasterIndividualControllerShow } from '~/controllers/person/master/PersonMasterIndividualController';
+import {
+    getLecturerMasterByIndividual,
+    getLecturerHomebases,
+    getLecturerAcademicRanks,
+    getLecturerAcademicGroups
+} from '~/controllers/academic/lecturer/AcademicLecturerTransactionController';
 
 export default function LecturerIndividualShowPage() {
     const user = () => currentUserSignal();
     const [isLoading, setIsLoading] = createSignal(true);
     const [individualData, setIndividualData] = createSignal<PersonMasterIndividualDataObject | null>(null);
+    const [lecturerMaster, setLecturerMaster] = createSignal<AcademicLecturerMasterLecturer | null>(null);
+    const [latestHomebase, setLatestHomebase] = createSignal<AcademicLecturerTransactionHomebase | null>(null);
+    const [allHomebases, setAllHomebases] = createSignal<AcademicLecturerTransactionHomebase[]>([]);
+    const [latestAcademicRank, setLatestAcademicRank] = createSignal<AcademicLecturerTransactionAcademicRank | null>(null);
+    const [allAcademicRanks, setAllAcademicRanks] = createSignal<AcademicLecturerTransactionAcademicRank[]>([]);
+    const [latestAcademicGroup, setLatestAcademicGroup] = createSignal<AcademicLecturerTransactionAcademicGroup | null>(null);
+    const [allAcademicGroups, setAllAcademicGroups] = createSignal<AcademicLecturerTransactionAcademicGroup[]>([]);
     const [activeTab, setActiveTab] = createSignal<'overview' | 'biodata' | 'academic'>('overview');
 
     const fetchLecturerProfile = async () => {
@@ -24,10 +41,36 @@ export default function LecturerIndividualShowPage() {
                     indId = userRes.data.individual_id;
                 }
             }
+
             if (indId && indId !== '00000000-0000-0000-0000-000000000000') {
-                const profileRes = await PersonMasterIndividualControllerShow(indId);
+                const [profileRes, masterLecturerRes] = await Promise.all([
+                    PersonMasterIndividualControllerShow(indId),
+                    getLecturerMasterByIndividual(indId),
+                ]);
+
                 if (profileRes && !profileRes.is_error && profileRes.data) {
                     setIndividualData(profileRes.data);
+                }
+
+                const resolvedLecturer = masterLecturerRes || profileRes.data?.lecturer || null;
+                setLecturerMaster(resolvedLecturer);
+
+                if (resolvedLecturer?.id) {
+                    const lecturerId = resolvedLecturer.id;
+                    const [hbRes, rankRes, groupRes] = await Promise.all([
+                        getLecturerHomebases(lecturerId),
+                        getLecturerAcademicRanks(lecturerId),
+                        getLecturerAcademicGroups(lecturerId),
+                    ]);
+
+                    setLatestHomebase(hbRes.latestHomebase);
+                    setAllHomebases(hbRes.homebases);
+
+                    setLatestAcademicRank(rankRes.latestAcademicRank);
+                    setAllAcademicRanks(rankRes.academicRanks);
+
+                    setLatestAcademicGroup(groupRes.latestAcademicGroup);
+                    setAllAcademicGroups(groupRes.academicGroups);
                 }
             }
         } catch (err) {
@@ -42,7 +85,7 @@ export default function LecturerIndividualShowPage() {
     });
 
     const ind = () => individualData()?.individual;
-    const lecturer = () => individualData()?.lecturer;
+    const lecturer = () => lecturerMaster() || individualData()?.lecturer;
 
     const formattedFullName = () => {
         const item = ind();
@@ -56,6 +99,30 @@ export default function LecturerIndividualShowPage() {
         if (last) return `${baseName}, ${last}`;
         return baseName;
     };
+
+    // NIDN or NUPTK from academic_lecturer_master.lecturers
+    const lecturerNidn = () => lecturer()?.code || lecturer()?.nidn || '';
+    const lecturerNuptk = () => lecturer()?.nuptk || '';
+    const nidnOrNuptkBadge = () => {
+        const nidn = lecturerNidn();
+        const nuptk = lecturerNuptk();
+        if (nidn && nuptk) return `NIDN: ${nidn} • NUPTK: ${nuptk}`;
+        if (nidn) return `NIDN: ${nidn}`;
+        if (nuptk) return `NUPTK: ${nuptk}`;
+        return ind()?.code ? `NIDN / NIK: ${ind()?.code}` : 'NIDN / NUPTK: -';
+    };
+
+    // Unit name from latest academic_lecturer_transaction.homebases
+    const currentUnitName = () => latestHomebase()?.unit_name || lecturer()?.unit_name || 'Program Studi Homebase';
+
+    // Academic rank from latest academic_lecturer_transaction.academic_ranks
+    const currentRankName = () => latestAcademicRank()?.rank_name || lecturer()?.rank_name || 'Tenaga Pengajar';
+
+    // Lecturer group from latest academic_lecturer_transaction.academic_groups
+    const currentGroupName = () => latestAcademicGroup()?.group_name || lecturer()?.group_name || '';
+
+    // Employment status from latest homebase or lecturer master
+    const currentStatusName = () => latestHomebase()?.status_name || lecturer()?.status_name || 'Dosen Tetap';
 
     return (
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
@@ -89,13 +156,13 @@ export default function LecturerIndividualShowPage() {
 
                             <div class="text-center sm:text-start space-y-1">
                                 <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-200 text-xs font-mono font-semibold border border-indigo-400/30">
-                                    <span>NIDN / NUPN: {lecturer()?.nidn || ind()?.code || '-'}</span>
+                                    <span>{nidnOrNuptkBadge()}</span>
                                 </div>
                                 <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
                                     {formattedFullName()}
                                 </h1>
                                 <p class="text-xs sm:text-sm text-indigo-200/80 font-medium">
-                                    {lecturer()?.unit_name || 'Dosen Tetap Program Studi'} • {lecturer()?.rank_name || 'Tenaga Pengajar'}
+                                    {currentUnitName()} • {currentRankName()}{currentGroupName() ? ` (${currentGroupName()})` : ''}
                                 </p>
                                 <p class="text-xs text-indigo-300/60 font-mono">
                                     {user()?.email || individualData()?.user?.email || 'lecturer@tritunas.ac.id'}
@@ -177,25 +244,33 @@ export default function LecturerIndividualShowPage() {
                                             Faculty Appointment
                                         </h3>
                                         <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 font-mono">
-                                            Dosen Aktif
+                                            {currentStatusName()}
                                         </span>
                                     </div>
                                     <div class="grid grid-cols-2 gap-3 text-xs">
                                         <div>
-                                            <span class="text-neutral-400 block">NIDN / NUPN</span>
-                                            <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{lecturer()?.nidn || ind()?.code || '-'}</span>
+                                            <span class="text-neutral-400 block">NIDN</span>
+                                            <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{lecturerNidn() || '-'}</span>
                                         </div>
                                         <div>
-                                            <span class="text-neutral-400 block">Academic Status</span>
-                                            <span class="font-bold text-emerald-600 dark:text-emerald-400">Aktif Mengajar</span>
+                                            <span class="text-neutral-400 block">NUPTK</span>
+                                            <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{lecturerNuptk() || '-'}</span>
                                         </div>
                                         <div>
                                             <span class="text-neutral-400 block">Study Program (Homebase)</span>
-                                            <span class="font-bold text-neutral-800 dark:text-neutral-100">{lecturer()?.unit_name || 'Kebidanan / Farmasi'}</span>
+                                            <span class="font-bold text-neutral-800 dark:text-neutral-100">{currentUnitName()}</span>
                                         </div>
                                         <div>
                                             <span class="text-neutral-400 block">Academic Rank</span>
-                                            <span class="font-bold text-neutral-800 dark:text-neutral-100">{lecturer()?.rank_name || 'Tenaga Pengajar / Asisten Ahli'}</span>
+                                            <span class="font-bold text-neutral-800 dark:text-neutral-100">{currentRankName()}</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-neutral-400 block">Golongan / Pangkat</span>
+                                            <span class="font-bold text-neutral-800 dark:text-neutral-100">{currentGroupName() || '-'}</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-neutral-400 block">Academic Status</span>
+                                            <span class="font-bold text-emerald-600 dark:text-emerald-400">{currentStatusName()}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -307,40 +382,167 @@ export default function LecturerIndividualShowPage() {
 
                     {/* Tab 3: Academic Details */}
                     <Show when={activeTab() === 'academic'}>
-                        <div class="p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-6 shadow-2xs">
-                            <div class="border-b border-neutral-200/80 dark:border-neutral-700/80 pb-4">
-                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                    Academic Employment & Faculty Registration
-                                </h3>
-                                <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                    Higher education teaching credentials and accreditation records.
-                                </p>
+                        <div class="space-y-6">
+                            {/* Primary Faculty Credentials Card */}
+                            <div class="p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-6 shadow-2xs">
+                                <div class="border-b border-neutral-200/80 dark:border-neutral-700/80 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                    <div>
+                                        <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                            Academic Employment & Faculty Registration
+                                        </h3>
+                                        <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                            Higher education teaching credentials, homebase assignment, and functional ranks.
+                                        </p>
+                                    </div>
+                                    <span class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 self-start sm:self-auto">
+                                        {currentStatusName()}
+                                    </span>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 text-xs">
+                                    <div>
+                                        <span class="text-neutral-400 block mb-0.5">NIDN (Nomor Induk Dosen Nasional)</span>
+                                        <span class="font-bold text-neutral-900 dark:text-white font-mono">{lecturerNidn() || '-'}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-neutral-400 block mb-0.5">NUPTK / NUPN</span>
+                                        <span class="font-bold text-neutral-900 dark:text-white font-mono">{lecturerNuptk() || '-'}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-neutral-400 block mb-0.5">Academic Rank (Jabatan Fungsional)</span>
+                                        <span class="font-bold text-neutral-800 dark:text-neutral-200">{currentRankName()}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-neutral-400 block mb-0.5">Academic Group (Golongan / Pangkat)</span>
+                                        <span class="font-bold text-neutral-800 dark:text-neutral-200">{currentGroupName() || '-'}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-neutral-400 block mb-0.5">Homebase Study Program</span>
+                                        <span class="font-bold text-neutral-800 dark:text-neutral-200">{currentUnitName()}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-neutral-400 block mb-0.5">Employment Status</span>
+                                        <span class="font-bold text-emerald-600 dark:text-emerald-400">{currentStatusName()}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-neutral-400 block mb-0.5">Highest Education Degree</span>
+                                        <span class="font-bold text-neutral-800 dark:text-neutral-200">{individualData()?.education?.name || 'Magister (S2)'}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-neutral-400 block mb-0.5">Registered Email</span>
+                                        <span class="font-bold text-neutral-800 dark:text-neutral-200 font-mono">{user()?.email || individualData()?.user?.email || '-'}</span>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 text-xs">
-                                <div>
-                                    <span class="text-neutral-400 block mb-0.5">NIDN / NUPN</span>
-                                    <span class="font-bold text-neutral-900 dark:text-white font-mono">{lecturer()?.nidn || ind()?.code || '-'}</span>
+                            {/* Homebases & Rank History Records */}
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                {/* Homebase Assignment History */}
+                                <div class="p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-4 shadow-2xs">
+                                    <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
+                                        <div class="flex items-center gap-2">
+                                            <div class="size-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs">
+                                                HB
+                                            </div>
+                                            <div>
+                                                <h4 class="text-xs font-bold text-neutral-900 dark:text-white">Homebase Assignment History</h4>
+                                                <p class="text-[10px] text-neutral-500 font-mono">academic_lecturer_transaction.homebases</p>
+                                            </div>
+                                        </div>
+                                        <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300">
+                                            {allHomebases().length} Records
+                                        </span>
+                                    </div>
+
+                                    <Show when={allHomebases().length > 0} fallback={
+                                        <div class="py-6 text-center text-xs text-neutral-400 font-mono">
+                                            Current active homebase: <span class="font-bold text-neutral-700 dark:text-neutral-300">{currentUnitName()}</span>
+                                        </div>
+                                    }>
+                                        <div class="space-y-3">
+                                            <For each={allHomebases()}>
+                                                {(hb, idx) => (
+                                                    <div class="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60 flex items-center justify-between text-xs">
+                                                        <div class="space-y-0.5">
+                                                            <div class="flex items-center gap-2">
+                                                                <span class="font-bold text-neutral-900 dark:text-white">{hb.unit_name || 'Program Studi'}</span>
+                                                                <Show when={idx() === 0}>
+                                                                    <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">Active</span>
+                                                                </Show>
+                                                            </div>
+                                                            <span class="text-[11px] text-neutral-500">{hb.status_name || 'Dosen Tetap'}</span>
+                                                        </div>
+                                                        <div class="text-[10px] font-mono text-neutral-400">
+                                                            {hb.created_at ? new Date(hb.created_at).toLocaleDateString('id-ID') : '-'}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </For>
+                                        </div>
+                                    </Show>
                                 </div>
-                                <div>
-                                    <span class="text-neutral-400 block mb-0.5">Academic Rank (Jabatan Fungsional)</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-200">{lecturer()?.rank_name || 'Tenaga Pengajar'}</span>
-                                </div>
-                                <div>
-                                    <span class="text-neutral-400 block mb-0.5">Employment Status</span>
-                                    <span class="font-bold text-emerald-600 dark:text-emerald-400">{lecturer()?.status_name || 'Dosen Tetap'}</span>
-                                </div>
-                                <div>
-                                    <span class="text-neutral-400 block mb-0.5">Homebase Study Program</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-200">{lecturer()?.unit_name || 'Program Studi Kebidanan / Farmasi'}</span>
-                                </div>
-                                <div>
-                                    <span class="text-neutral-400 block mb-0.5">Highest Education Degree</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-200">{individualData()?.education?.name || 'Magister (S2)'}</span>
-                                </div>
-                                <div>
-                                    <span class="text-neutral-400 block mb-0.5">Registered Email</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-200 font-mono">{user()?.email || individualData()?.user?.email || '-'}</span>
+
+                                {/* Academic Rank Progression */}
+                                <div class="p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-4 shadow-2xs">
+                                    <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
+                                        <div class="flex items-center gap-2">
+                                            <div class="size-8 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-xs">
+                                                RK
+                                            </div>
+                                            <div>
+                                                <h4 class="text-xs font-bold text-neutral-900 dark:text-white">Academic Rank & Group History</h4>
+                                                <p class="text-[10px] text-neutral-500 font-mono">academic_ranks & academic_groups</p>
+                                            </div>
+                                        </div>
+                                        <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300">
+                                            {allAcademicRanks().length + allAcademicGroups().length} Records
+                                        </span>
+                                    </div>
+
+                                    <Show when={allAcademicRanks().length > 0 || allAcademicGroups().length > 0} fallback={
+                                        <div class="py-6 text-center text-xs text-neutral-400 font-mono">
+                                            Current rank: <span class="font-bold text-neutral-700 dark:text-neutral-300">{currentRankName()}</span> {currentGroupName() ? `• ${currentGroupName()}` : ''}
+                                        </div>
+                                    }>
+                                        <div class="space-y-3">
+                                            <For each={allAcademicRanks()}>
+                                                {(rk, idx) => (
+                                                    <div class="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60 flex items-center justify-between text-xs">
+                                                        <div class="space-y-0.5">
+                                                            <div class="flex items-center gap-2">
+                                                                <span class="font-bold text-neutral-900 dark:text-white">{rk.rank_name || 'Jabatan Fungsional'}</span>
+                                                                <Show when={idx() === 0}>
+                                                                    <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300">Latest</span>
+                                                                </Show>
+                                                            </div>
+                                                            <span class="text-[10px] text-neutral-500 font-mono">SK: {rk.decree_number || '-'} {rk.decree_date ? `(${rk.decree_date})` : ''}</span>
+                                                        </div>
+                                                        <div class="text-[10px] font-mono text-neutral-400">
+                                                            TMT: {rk.start_date || '-'}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </For>
+                                            <For each={allAcademicGroups()}>
+                                                {(gp, idx) => (
+                                                    <div class="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60 flex items-center justify-between text-xs">
+                                                        <div class="space-y-0.5">
+                                                            <div class="flex items-center gap-2">
+                                                                <span class="font-bold text-neutral-900 dark:text-white">Golongan: {gp.group_name || 'Golongan'}</span>
+                                                                <Show when={idx() === 0}>
+                                                                    <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">Latest</span>
+                                                                </Show>
+                                                            </div>
+                                                            <span class="text-[10px] text-neutral-500 font-mono">SK: {gp.decree_number || '-'} {gp.decree_date ? `(${gp.decree_date})` : ''}</span>
+                                                        </div>
+                                                        <div class="text-[10px] font-mono text-neutral-400">
+                                                            TMT: {gp.start_date || '-'}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </For>
+                                        </div>
+                                    </Show>
                                 </div>
                             </div>
                         </div>
