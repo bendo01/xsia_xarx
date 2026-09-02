@@ -37,6 +37,10 @@ pub async fn list_lecturers(
         select = select.filter(entity_mod::Column::Code.eq(code));
     }
 
+    if let Some(individual_id) = query.individual_id {
+        select = select.filter(entity_mod::Column::IndividualId.eq(individual_id));
+    }
+
     let paginator = select
         .order_by_asc(entity_mod::Column::Name)
         .paginate(db, page_size);

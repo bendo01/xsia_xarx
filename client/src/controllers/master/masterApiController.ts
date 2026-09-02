@@ -43,15 +43,15 @@ export async function masterApiIndex<T = any>(
 ): Promise<MasterPaginationResponse<T>> {
     try {
         const queryParams = new URLSearchParams();
-        if (params.page) queryParams.set("page", String(params.page));
-        if (params.per_page) queryParams.set("page_size", String(params.per_page));
-        if (params.search) queryParams.set("search", params.search);
-        if (params.name) queryParams.set("name", params.name);
-        if (params.code !== undefined && params.code !== null && params.code !== "") {
-            queryParams.set("code", String(params.code));
-        }
-        if (params.sort_by) queryParams.set("sort_by", params.sort_by);
-        if (params.sort_dir) queryParams.set("sort_dir", params.sort_dir);
+        Object.entries(params).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && value !== "") {
+                if (key === "per_page") {
+                    queryParams.set("page_size", String(value));
+                } else {
+                    queryParams.set(key, String(value));
+                }
+            }
+        });
 
         const url = `${getBaseApiUrl()}/${apiPath.replace(/^\/+/, "")}?${queryParams.toString()}`;
         const response = await fetch(url, {

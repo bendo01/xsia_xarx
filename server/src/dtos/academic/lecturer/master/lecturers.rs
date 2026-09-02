@@ -11,6 +11,7 @@ pub struct LecturerQuery {
     pub page_size: Option<u64>,
     pub name: Option<String>,
     pub code: Option<String>,
+    pub individual_id: Option<Uuid>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]

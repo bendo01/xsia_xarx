@@ -9,6 +9,7 @@ use chrono::{NaiveDate, NaiveDateTime};
 pub struct AcademicGroupQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
+    pub lecturer_id: Option<Uuid>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]

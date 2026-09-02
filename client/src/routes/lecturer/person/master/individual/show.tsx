@@ -113,7 +113,7 @@ export default function LecturerIndividualShowPage() {
     };
 
     // Unit name from latest academic_lecturer_transaction.homebases
-    const currentUnitName = () => latestHomebase()?.unit_name || lecturer()?.unit_name || 'Program Studi Homebase';
+    const currentUnitName = () => latestHomebase()?.unit_name || lecturer()?.unit_name || allHomebases().find(h => h.unit_name)?.unit_name || '-';
 
     // Academic rank from latest academic_lecturer_transaction.academic_ranks
     const currentRankName = () => latestAcademicRank()?.rank_name || lecturer()?.rank_name || 'Tenaga Pengajar';
@@ -123,6 +123,9 @@ export default function LecturerIndividualShowPage() {
 
     // Employment status from latest homebase or lecturer master
     const currentStatusName = () => latestHomebase()?.status_name || lecturer()?.status_name || 'Dosen Tetap';
+
+    // Contract type from latest homebase
+    const currentContractName = () => latestHomebase()?.contract_name || '';
 
     return (
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
@@ -272,6 +275,12 @@ export default function LecturerIndividualShowPage() {
                                             <span class="text-neutral-400 block">Academic Status</span>
                                             <span class="font-bold text-emerald-600 dark:text-emerald-400">{currentStatusName()}</span>
                                         </div>
+                                        <Show when={currentContractName()}>
+                                            <div class="col-span-2">
+                                                <span class="text-neutral-400 block">Contract Agreement</span>
+                                                <span class="font-bold text-neutral-800 dark:text-neutral-100">{currentContractName()}</span>
+                                            </div>
+                                        </Show>
                                     </div>
                                 </div>
 
@@ -425,6 +434,10 @@ export default function LecturerIndividualShowPage() {
                                         <span class="font-bold text-emerald-600 dark:text-emerald-400">{currentStatusName()}</span>
                                     </div>
                                     <div>
+                                        <span class="text-neutral-400 block mb-0.5">Contract Agreement</span>
+                                        <span class="font-bold text-neutral-800 dark:text-neutral-200">{currentContractName() || '-'}</span>
+                                    </div>
+                                    <div>
                                         <span class="text-neutral-400 block mb-0.5">Highest Education Degree</span>
                                         <span class="font-bold text-neutral-800 dark:text-neutral-200">{individualData()?.education?.name || 'Magister (S2)'}</span>
                                     </div>
@@ -470,7 +483,13 @@ export default function LecturerIndividualShowPage() {
                                                                     <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">Active</span>
                                                                 </Show>
                                                             </div>
-                                                            <span class="text-[11px] text-neutral-500">{hb.status_name || 'Dosen Tetap'}</span>
+                                                            <div class="flex items-center gap-2 text-[11px] text-neutral-500">
+                                                                <span>{hb.status_name || 'Dosen Tetap'}</span>
+                                                                <Show when={hb.contract_name}>
+                                                                    <span>•</span>
+                                                                    <span class="font-medium text-neutral-600 dark:text-neutral-400">{hb.contract_name}</span>
+                                                                </Show>
+                                                            </div>
                                                         </div>
                                                         <div class="text-[10px] font-mono text-neutral-400">
                                                             {hb.created_at ? new Date(hb.created_at).toLocaleDateString('id-ID') : '-'}
