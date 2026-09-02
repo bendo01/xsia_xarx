@@ -27,10 +27,12 @@ async fn load_relations_for_detail_activities(
     HashMap<Uuid, CourseResponse>,
     HashMap<Uuid, TeachResponse>,
     HashMap<Uuid, Vec<TeachLecturerResponse>>,
+    HashMap<Uuid, (String, String)>,
 ), StatusError> {
     let grade_ids: Vec<Uuid> = items.iter().filter_map(|i| i.grade_id).collect();
     let course_ids: Vec<Uuid> = items.iter().map(|i| i.course_id).collect();
     let teach_ids: Vec<Uuid> = items.iter().filter_map(|i| i.teach_id).collect();
+    let activity_ids: Vec<Uuid> = items.iter().map(|i| i.activity_id).collect();
 
     let grades_map: HashMap<Uuid, GradeResponse> = if grade_ids.is_empty() {
         HashMap::new()
@@ -159,24 +161,38 @@ async fn load_relations_for_detail_activities(
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         let lecturer_ids: Vec<Uuid> = lecturers.iter().map(|l| l.lecturer_id).collect();
-        let lecturers_map: HashMap<Uuid, (String, Option<String>)> = if lecturer_ids.is_empty() {
+        let lecturers_map: HashMap<Uuid, (Option<String>, Option<String>)> = if lecturer_ids.is_empty() {
             HashMap::new()
         } else {
-            let lecturer_records = crate::models::academic::lecturer::master::lecturers::Entity::find()
+            let lecturer_list = crate::models::academic::lecturer::master::lecturers::Entity::find()
                 .filter(crate::models::academic::lecturer::master::lecturers::Column::Id.is_in(lecturer_ids))
                 .filter(crate::models::academic::lecturer::master::lecturers::Column::DeletedAt.is_null())
-                .find_also_related(crate::models::person::master::individual::Entity)
                 .all(db)
                 .await
                 .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-            lecturer_records
+            let individual_ids: Vec<Uuid> = lecturer_list.iter().map(|l| l.individual_id).collect();
+            let individuals_map: HashMap<Uuid, crate::models::person::master::individual::Model> = if individual_ids.is_empty() {
+                HashMap::new()
+            } else {
+                crate::models::person::master::individual::Entity::find()
+                    .filter(crate::models::person::master::individual::Column::Id.is_in(individual_ids))
+                    .filter(crate::models::person::master::individual::Column::DeletedAt.is_null())
+                    .all(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                    .into_iter()
+                    .map(|ind| (ind.id, ind))
+                    .collect()
+            };
+
+            lecturer_list
                 .into_iter()
-                .map(|(l, ind_opt)| {
+                .map(|l| {
                     let mut name = None;
-                    if let Some(ind) = ind_opt {
-                        let front = l.front_title.as_deref().or(ind.front_title.as_deref()).unwrap_or("").trim();
-                        let last = l.last_title.as_deref().or(ind.last_title.as_deref()).unwrap_or("").trim();
+                    if let Some(ind) = individuals_map.get(&l.individual_id) {
+                        let front = ind.front_title.as_deref().unwrap_or("").trim();
+                        let last = ind.last_title.as_deref().unwrap_or("").trim();
                         let base_name = ind.name.trim();
                         let full = match (front.is_empty(), last.is_empty()) {
                             (true, true) => base_name.to_string(),
@@ -188,10 +204,7 @@ async fn load_relations_for_detail_activities(
                             name = Some(full);
                         }
                     }
-                    if name.is_none() {
-                        name = l.name.filter(|s| !s.trim().is_empty() && !s.starts_with("DosenAktifitasPengajaran"));
-                    }
-                    (l.id, (l.code, name))
+                    (l.id, (Some(l.code), name))
                 })
                 .collect()
         };
@@ -205,7 +218,7 @@ async fn load_relations_for_detail_activities(
                     item.name
                         .filter(|s| !s.trim().is_empty() && !s.starts_with("DosenAktifitasPengajaran"))
                 });
-            let code = lecturer_info.map(|info| info.0.clone());
+            let code = lecturer_info.and_then(|info| info.0.clone());
             map.entry(item.teach_id).or_default().push(TeachLecturerResponse {
                 id: item.id,
                 name,
@@ -228,7 +241,37 @@ async fn load_relations_for_detail_activities(
         map
     };
 
-    Ok((grades_map, courses_map, teaches_map, teach_lecturers_map))
+    let students_map: HashMap<Uuid, (String, String)> = if activity_ids.is_empty() {
+        HashMap::new()
+    } else {
+        let sa_list = crate::models::academic::student::campaign::student_activities::Entity::find()
+            .filter(crate::models::academic::student::campaign::student_activities::Column::Id.is_in(activity_ids))
+            .filter(crate::models::academic::student::campaign::student_activities::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .unwrap_or_default();
+        let student_ids: Vec<Uuid> = sa_list.iter().map(|sa| sa.student_id).collect();
+        let st_list = if student_ids.is_empty() {
+            vec![]
+        } else {
+            crate::models::academic::student::master::students::Entity::find()
+                .filter(crate::models::academic::student::master::students::Column::Id.is_in(student_ids))
+                .filter(crate::models::academic::student::master::students::Column::DeletedAt.is_null())
+                .all(db)
+                .await
+                .unwrap_or_default()
+        };
+        let st_map: HashMap<Uuid, (String, String)> = st_list.into_iter().map(|s| (s.id, (s.name, s.code))).collect();
+        let mut sa_map: HashMap<Uuid, (String, String)> = HashMap::new();
+        for sa in sa_list {
+            if let Some(info) = st_map.get(&sa.student_id) {
+                sa_map.insert(sa.id, info.clone());
+            }
+        }
+        sa_map
+    };
+
+    Ok((grades_map, courses_map, teaches_map, teach_lecturers_map, students_map))
 }
 
 fn map_model_to_response(
@@ -237,11 +280,16 @@ fn map_model_to_response(
     courses_map: &HashMap<Uuid, CourseResponse>,
     teaches_map: &HashMap<Uuid, TeachResponse>,
     teach_lecturers_map: &HashMap<Uuid, Vec<TeachLecturerResponse>>,
+    students_map: &HashMap<Uuid, (String, String)>,
 ) -> DetailActivityResponse {
     let grade = item.grade_id.and_then(|gid| grades_map.get(&gid).cloned());
     let course = courses_map.get(&item.course_id).cloned();
     let teach = item.teach_id.and_then(|tid| teaches_map.get(&tid).cloned());
     let teach_lecturers = item.teach_id.and_then(|tid| teach_lecturers_map.get(&tid).cloned());
+    let (student_name, student_nim) = students_map
+        .get(&item.activity_id)
+        .map(|(n, c)| (Some(n.clone()), Some(c.clone())))
+        .unwrap_or((None, None));
 
     DetailActivityResponse {
         id: item.id,
@@ -262,6 +310,8 @@ fn map_model_to_response(
         name: item.name,
         feeder_grade_id: item.feeder_grade_id,
         curiculum_detail_sequence: item.curiculum_detail_sequence,
+        student_name,
+        student_nim,
         grade,
         course,
         teach,
@@ -306,11 +356,11 @@ pub async fn list_detail_activities(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let (grades_map, courses_map, teaches_map, teach_lecturers_map) =
+    let (grades_map, courses_map, teaches_map, teach_lecturers_map, students_map) =
         load_relations_for_detail_activities(db, &items).await?;
 
     let data = items.into_iter().map(|item| {
-        map_model_to_response(item, &grades_map, &courses_map, &teaches_map, &teach_lecturers_map)
+        map_model_to_response(item, &grades_map, &courses_map, &teaches_map, &teach_lecturers_map, &students_map)
     }).collect();
 
     Ok(Json(PaginatedDetailActivityResponse {
@@ -341,7 +391,7 @@ pub async fn get_detail_activitie(
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
         .ok_or_else(|| StatusError::not_found().brief("DetailActivity not found"))?;
 
-    let (grades_map, courses_map, teaches_map, teach_lecturers_map) =
+    let (grades_map, courses_map, teaches_map, teach_lecturers_map, students_map) =
         load_relations_for_detail_activities(db, std::slice::from_ref(&item)).await?;
 
     Ok(Json(map_model_to_response(
@@ -350,6 +400,7 @@ pub async fn get_detail_activitie(
         &courses_map,
         &teaches_map,
         &teach_lecturers_map,
+        &students_map,
     )))
 }
 
@@ -394,7 +445,7 @@ pub async fn create_detail_activitie(
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        let (grades_map, courses_map, teaches_map, teach_lecturers_map) =
+        let (grades_map, courses_map, teaches_map, teach_lecturers_map, students_map) =
             load_relations_for_detail_activities(db, std::slice::from_ref(&item)).await?;
 
         Ok(Json(map_model_to_response(
@@ -403,6 +454,7 @@ pub async fn create_detail_activitie(
             &courses_map,
             &teaches_map,
             &teach_lecturers_map,
+            &students_map,
         )))
 }
 
@@ -471,7 +523,7 @@ pub async fn update_detail_activitie(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        let (grades_map, courses_map, teaches_map, teach_lecturers_map) =
+        let (grades_map, courses_map, teaches_map, teach_lecturers_map, students_map) =
             load_relations_for_detail_activities(db, std::slice::from_ref(&item)).await?;
 
         Ok(Json(map_model_to_response(
@@ -480,6 +532,7 @@ pub async fn update_detail_activitie(
             &courses_map,
             &teaches_map,
             &teach_lecturers_map,
+            &students_map,
         )))
 }
 #[endpoint(tags("Academic - Student - Campaign - DetailActivity"), status_codes(200, 400, 404, 500))]

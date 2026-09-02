@@ -30,6 +30,8 @@ export interface DetailActivityItem {
     name?: string | null;
     feeder_grade_id?: string | null;
     curiculum_detail_sequence?: number;
+    student_name?: string | null;
+    student_nim?: string | null;
     // Enhanced info
     course_name?: string;
     course_code?: string;

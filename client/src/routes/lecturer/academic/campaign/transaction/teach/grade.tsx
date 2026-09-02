@@ -125,7 +125,7 @@ export default function LecturerTeachGradePage() {
 
             // 2. Fetch Grading Scale Reference (academic_campaign_transaction.grades)
             // Filter by academic_campaign_transaction.grades.unit_id where academic_course_master.courses.unit_id
-            const courseUnitId = course?.unit_id || teach?.unit_id;
+            const courseUnitId = course?.unit_id;
             let sortedGrades: GradeItem[] = [];
 
             if (courseUnitId) {
@@ -192,22 +192,61 @@ export default function LecturerTeachGradePage() {
                     };
                 }
 
-                // Calculate final mark from components or stored mark
-                const calcMark = calculateStudentFinalMark(scoreMap, evals);
-                const gradeInfo = findGradeForMark(calcMark, sortedGrades);
+                // Calculate final mark:
+                // If evaluation component scores are present, compute weighted mark.
+                // Otherwise, use the pre-stored final mark in detail_activities (da.mark).
+                let calcMark = 0;
+                if (compScores.length > 0 && evals.length > 0) {
+                    calcMark = calculateStudentFinalMark(scoreMap, evals);
+                } else if (da.mark != null && !isNaN(Number(da.mark))) {
+                    calcMark = Number(da.mark);
+                }
+
+                // Resolve grade (letter, point, id):
+                let gradeInfo = (da.grade_id && sortedGrades.find(g => g.id === da.grade_id))
+                    || (da.feeder_grade_id && sortedGrades.find(g => g.id === da.feeder_grade_id))
+                    || null;
+
+                let gradeLetter = '-';
+                let gradePoint = 0;
+                let gradeId = da.grade_id || da.feeder_grade_id || null;
+
+                if (gradeInfo) {
+                    gradeLetter = gradeInfo.alphabet_code || gradeInfo.name || '-';
+                    gradePoint = gradeInfo.grade ?? 0;
+                    gradeId = gradeInfo.id;
+                } else if (da.grade) {
+                    gradeLetter = da.grade.alphabet_code || da.grade.name || '-';
+                    gradePoint = Number(da.grade.grade) || 0;
+                    gradeId = da.grade.id || gradeId;
+                } else if (calcMark > 0 || (da.mark != null && sortedGrades.length > 0)) {
+                    gradeInfo = findGradeForMark(calcMark, sortedGrades);
+                    if (gradeInfo) {
+                        gradeLetter = gradeInfo.alphabet_code || gradeInfo.name || '-';
+                        gradePoint = gradeInfo.grade ?? 0;
+                        gradeId = gradeInfo.id;
+                    }
+                }
+
+                // Student name & NIM resolution
+                const resolvedName = da.student_name 
+                    || (da.name && !da.name.startsWith('DetailAktifitasPerkuliahan') ? da.name : null)
+                    || `Mahasiswa ${rows.length + 1}`;
+                const resolvedCode = da.student_nim 
+                    || (da.curiculum_detail_sequence ? `NIM: ${da.curiculum_detail_sequence}` : `ID: ${da.id.substring(0, 8)}`);
 
                 rows.push({
                     detail_activity_id: da.id,
                     student_id: da.activity_id,
-                    student_name: da.name || `Mahasiswa ${rows.length + 1}`,
-                    student_code: da.curiculum_detail_sequence ? `NIM: ${da.curiculum_detail_sequence}` : `ID: ${da.id.substring(0, 8)}`,
+                    student_name: resolvedName,
+                    student_code: resolvedCode,
                     is_lock: Boolean(da.is_lock),
                     credit: Number(da.credit) || 0,
                     component_scores: scoreMap,
                     calculated_mark: calcMark,
-                    grade_id: gradeInfo?.id || da.grade_id,
-                    grade_letter: gradeInfo?.alphabet_code || gradeInfo?.name || '-',
-                    grade_point: gradeInfo?.grade ?? 0,
+                    grade_id: gradeId,
+                    grade_letter: gradeLetter,
+                    grade_point: gradePoint,
                     is_dirty: false,
                 });
             }
@@ -1010,9 +1049,9 @@ export default function LecturerTeachGradePage() {
                                 Berdasarkan skala program studi / unit perkuliahan (<span class="font-mono font-semibold text-neutral-600 dark:text-neutral-300">academic_campaign_transaction.grades.unit_id</span>).
                             </p>
                         </div>
-                        <Show when={courseData()?.unit_id || teachData()?.unit_id}>
+                        <Show when={courseData()?.unit_id}>
                             <span class="px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300">
-                                Unit ID: {courseData()?.unit_id || teachData()?.unit_id}
+                                Unit ID: {courseData()?.unit_id}
                             </span>
                         </Show>
                     </div>

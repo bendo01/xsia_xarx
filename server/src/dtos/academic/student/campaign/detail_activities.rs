@@ -39,6 +39,8 @@ pub struct DetailActivityResponse {
     pub name: Option<String>,
     pub feeder_grade_id: Option<Uuid>,
     pub curiculum_detail_sequence: Option<i32>,
+    pub student_name: Option<String>,
+    pub student_nim: Option<String>,
     pub grade: Option<GradeResponse>,
     pub course: Option<CourseResponse>,
     pub teach: Option<TeachResponse>,
