@@ -176,12 +176,12 @@ export default function LecturerIndividualShowPage() {
                         {/* Quick Action Badges */}
                         <div class="flex items-center justify-center gap-3">
                             <A
-                                href="/lecturer/academic/campaign/activity"
+                                href="/lecturer/academic/campaign/transaction/teach"
                                 class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-xs flex items-center gap-2 shadow-md transition-colors"
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-                                    <path d="M6 6h10M6 10h10M6 14h6"/>
+                                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+                                    <path d="M6 6h10M6 10h10M6 14h6" />
                                 </svg>
                                 <span>Teaching Classes</span>
                             </A>
@@ -194,37 +194,34 @@ export default function LecturerIndividualShowPage() {
                     <button
                         type="button"
                         onClick={() => setActiveTab('overview')}
-                        class={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-all border-b-2 -mb-px flex items-center gap-2 ${
-                            activeTab() === 'overview'
-                                ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 bg-white dark:bg-neutral-800'
-                                : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
-                        }`}
+                        class={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-all border-b-2 -mb-px flex items-center gap-2 ${activeTab() === 'overview'
+                            ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 bg-white dark:bg-neutral-800'
+                            : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
+                            }`}
                     >
-                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>
+                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z" /></svg>
                         <span>Profile Overview</span>
                     </button>
                     <button
                         type="button"
                         onClick={() => setActiveTab('biodata')}
-                        class={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-all border-b-2 -mb-px flex items-center gap-2 ${
-                            activeTab() === 'biodata'
-                                ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 bg-white dark:bg-neutral-800'
-                                : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
-                        }`}
+                        class={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-all border-b-2 -mb-px flex items-center gap-2 ${activeTab() === 'biodata'
+                            ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 bg-white dark:bg-neutral-800'
+                            : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
+                            }`}
                     >
-                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
+                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5" /><path d="M20 21a8 8 0 0 0-16 0" /></svg>
                         <span>Personal Biodata</span>
                     </button>
                     <button
                         type="button"
                         onClick={() => setActiveTab('academic')}
-                        class={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-all border-b-2 -mb-px flex items-center gap-2 ${
-                            activeTab() === 'academic'
-                                ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 bg-white dark:bg-neutral-800'
-                                : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
-                        }`}
+                        class={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-all border-b-2 -mb-px flex items-center gap-2 ${activeTab() === 'academic'
+                            ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 bg-white dark:bg-neutral-800'
+                            : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
+                            }`}
                     >
-                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" /></svg>
                         <span>Academic & Faculty Details</span>
                     </button>
                 </div>
@@ -327,7 +324,7 @@ export default function LecturerIndividualShowPage() {
                                     </p>
                                 </div>
                                 <A
-                                    href="/lecturer/academic/campaign/activity"
+                                    href="/lecturer/academic/campaign/transaction/teach"
                                     class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-xs inline-flex items-center gap-2 transition-colors shrink-0"
                                 >
                                     <span>Go to Teaching Portal →</span>
