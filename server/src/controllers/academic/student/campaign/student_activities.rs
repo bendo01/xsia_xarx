@@ -138,6 +138,10 @@ pub async fn list_student_activities(
         acc_map
     };
 
+    let mut running_total_credit = 0.0;
+    let mut running_graded_credit = 0.0;
+    let mut running_weighted_sum = 0.0;
+
     let data = items.into_iter().map(|item| {
         let (ay_id, ay_code, ay_name) = unit_activities_map.get(&item.unit_activity_id).cloned().unwrap_or((Uuid::nil(), 0, String::new()));
         let academic_year = if !ay_name.is_empty() {
@@ -177,14 +181,32 @@ pub async fn list_student_activities(
             item.cumulative_index
         };
 
-        let grand_total_credit = if item.grand_total_credit.unwrap_or(0.0) > 0.0 {
+        let current_sem_sks = total_credit.unwrap_or(0.0);
+        let current_graded_sks = if graded_sks > 0.0 { graded_sks } else { current_sem_sks };
+        let current_weighted = if weighted_sum > 0.0 { weighted_sum } else { cumulative_index * current_graded_sks };
+
+        running_total_credit += current_sem_sks;
+        running_graded_credit += current_graded_sks;
+        running_weighted_sum += current_weighted;
+
+        let computed_ipk = if running_graded_credit > 0.0 {
+            running_weighted_sum / running_graded_credit
+        } else {
+            cumulative_index
+        };
+
+        let grand_total_credit = if item.grand_total_credit.unwrap_or(0.0) > 0.0 && item.grand_total_credit.unwrap_or(0.0) != total_credit.unwrap_or(0.0) {
             item.grand_total_credit
+        } else if running_total_credit > 0.0 {
+            Some(running_total_credit)
         } else {
             total_credit
         };
 
-        let grand_cumulative_index = if item.grand_cumulative_index > 0.0 {
+        let grand_cumulative_index = if item.grand_cumulative_index > 0.0 && (item.grand_cumulative_index - cumulative_index).abs() > 0.0001 {
             item.grand_cumulative_index
+        } else if computed_ipk > 0.0 {
+            computed_ipk
         } else {
             cumulative_index
         };

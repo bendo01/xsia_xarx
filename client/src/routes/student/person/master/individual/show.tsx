@@ -286,9 +286,36 @@ export default function StudentDashboardProfilePage() {
         return map;
     };
 
+    // Robust chronological sort (e.g. "2011 / 1" -> "2011 / 2" -> "2012 / 1" -> ... -> "2013 / 2")
+    const chronologicalActivities = () => {
+        const list = [...recentActivities()];
+        return list.sort((a, b) => {
+            const nameA = a.academic_year?.name || a.name || a.semester_name || '';
+            const nameB = b.academic_year?.name || b.name || b.semester_name || '';
+
+            const matchA = nameA.match(/(\d{4})\s*[\/-]?\s*(\d+)/);
+            const matchB = nameB.match(/(\d{4})\s*[\/-]?\s*(\d+)/);
+
+            if (matchA && matchB) {
+                const yearA = parseInt(matchA[1], 10);
+                const semA = parseInt(matchA[2], 10);
+                const yearB = parseInt(matchB[1], 10);
+                const semB = parseInt(matchB[2], 10);
+
+                if (yearA !== yearB) return yearA - yearB;
+                return semA - semB;
+            }
+
+            if (a.created_at && b.created_at) {
+                return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+            }
+            return nameA.localeCompare(nameB);
+        });
+    };
+
     // Calculate progressive cumulative SKS and cumulative IPK across chronological semesters
     const cumulativeStatsMap = () => {
-        const list = [...recentActivities()].reverse();
+        const list = chronologicalActivities();
         const actMap = activityStatsMap();
         const resMap = new Map<string, { cumulativeCredits: number; ipk: number }>();
 
@@ -298,22 +325,24 @@ export default function StudentDashboardProfilePage() {
 
         for (const act of list) {
             const entry = actMap.get(act.id);
-            const semSks = (act.total_credit && act.total_credit > 0) ? act.total_credit : (entry?.semesterCredits || 0);
-            const semIps = (act.cumulative_index && act.cumulative_index > 0) ? act.cumulative_index : (entry?.ips || 0);
-            const graded = entry?.gradedCredits || semSks;
-            const weighted = entry?.weightedGradeSum || (semIps * graded);
+            const semSks = (entry?.semesterCredits && entry.semesterCredits > 0)
+                ? entry.semesterCredits
+                : ((act.total_credit && act.total_credit > 0) ? act.total_credit : 0);
+            const semIps = (entry?.ips && entry.ips > 0)
+                ? entry.ips
+                : ((act.cumulative_index && act.cumulative_index > 0) ? act.cumulative_index : 0);
+            const graded = (entry?.gradedCredits && entry.gradedCredits > 0) ? entry.gradedCredits : semSks;
+            const weighted = (entry?.weightedGradeSum && entry.weightedGradeSum > 0) ? entry.weightedGradeSum : (semIps * graded);
 
             runningCredits += semSks;
             runningGraded += graded;
             runningWeighted += weighted;
 
             const computedIpk = runningGraded > 0 ? (runningWeighted / runningGraded) : semIps;
-            const finalIpk = (act.grand_cumulative_index && act.grand_cumulative_index > 0) ? act.grand_cumulative_index : computedIpk;
-            const finalTotalCredits = (act.grand_total_credit && act.grand_total_credit > 0) ? act.grand_total_credit : runningCredits;
 
             resMap.set(act.id, {
-                cumulativeCredits: finalTotalCredits,
-                ipk: finalIpk,
+                cumulativeCredits: runningCredits,
+                ipk: computedIpk,
             });
         }
 
@@ -321,50 +350,67 @@ export default function StudentDashboardProfilePage() {
     };
 
     const getActSemesterSks = (act: StudentActivityItem) => {
+        const fromDetails = activityStatsMap().get(act.id)?.semesterCredits;
+        if (fromDetails !== undefined && fromDetails > 0) return fromDetails;
         if (act.total_credit && act.total_credit > 0) return act.total_credit;
-        return activityStatsMap().get(act.id)?.semesterCredits || 0;
+        return 0;
     };
 
     const getActTotalSks = (act: StudentActivityItem) => {
-        if (act.grand_total_credit && act.grand_total_credit > 0) return act.grand_total_credit;
-        return cumulativeStatsMap().get(act.id)?.cumulativeCredits || getActSemesterSks(act);
+        const fromCumulative = cumulativeStatsMap().get(act.id)?.cumulativeCredits;
+        if (fromCumulative !== undefined && fromCumulative > 0) return fromCumulative;
+        if (act.grand_total_credit && act.grand_total_credit > 0 && act.grand_total_credit !== act.total_credit) {
+            return act.grand_total_credit;
+        }
+        return getActSemesterSks(act);
     };
 
     const getActIps = (act: StudentActivityItem) => {
+        const fromDetails = activityStatsMap().get(act.id)?.ips;
+        if (fromDetails !== undefined && fromDetails > 0) return fromDetails;
         if (act.cumulative_index && act.cumulative_index > 0) return act.cumulative_index;
-        return activityStatsMap().get(act.id)?.ips || 0;
+        return 0;
     };
 
     const getActIpk = (act: StudentActivityItem) => {
-        if (act.grand_cumulative_index && act.grand_cumulative_index > 0) return act.grand_cumulative_index;
-        return cumulativeStatsMap().get(act.id)?.ipk || getActIps(act);
+        const fromCumulative = cumulativeStatsMap().get(act.id)?.ipk;
+        if (fromCumulative !== undefined && fromCumulative > 0) return fromCumulative;
+        if (act.grand_cumulative_index && act.grand_cumulative_index > 0 && Math.abs(act.grand_cumulative_index - (act.cumulative_index || 0)) > 0.001) {
+            return act.grand_cumulative_index;
+        }
+        return getActIps(act);
+    };
+
+    const latestChronologicalActivity = () => {
+        const list = chronologicalActivities();
+        return list[list.length - 1] || recentActivities()[0] || null;
     };
 
     const latestActivity = () => recentActivities()[0] || null;
     const totalCredits = () => {
-        const act = latestActivity();
+        const act = latestChronologicalActivity();
         if (!act) return 0;
         return getActTotalSks(act);
     };
     const semesterCredits = () => {
-        const act = latestActivity();
+        const act = latestChronologicalActivity();
         if (!act) return 0;
         return getActSemesterSks(act);
     };
     const gpa = () => {
-        const act = latestActivity();
+        const act = latestChronologicalActivity();
         if (!act) return '0.00';
         return Number(getActIpk(act)).toFixed(2);
     };
     const semesterGpa = () => {
-        const act = latestActivity();
+        const act = latestChronologicalActivity();
         if (!act) return '0.00';
         return Number(getActIps(act)).toFixed(2);
     };
 
     // --- Multiline Chart Calculations (Academic Year vs IPK & IPS, Max 4.0) ---
     const timelineActivities = () => {
-        return [...recentActivities()].reverse();
+        return chronologicalActivities();
     };
 
     const chartDims = { w: 540, h: 220, padL: 42, padR: 24, padT: 24, padB: 44 };
