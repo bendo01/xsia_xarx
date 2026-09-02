@@ -32,6 +32,12 @@ pub async fn list_teach_lecturers(
     if let Some(ref name) = query.name {
         select = select.filter(entity_mod::Column::Name.contains(name));
     }
+    if let Some(lecturer_id) = query.lecturer_id {
+        select = select.filter(entity_mod::Column::LecturerId.eq(lecturer_id));
+    }
+    if let Some(teach_id) = query.teach_id {
+        select = select.filter(entity_mod::Column::TeachId.eq(teach_id));
+    }
 
     let paginator = select
         .order_by_asc(entity_mod::Column::Name)

@@ -11,6 +11,8 @@ pub struct TeachLecturerQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
     pub name: Option<String>,
+    pub lecturer_id: Option<Uuid>,
+    pub teach_id: Option<Uuid>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]

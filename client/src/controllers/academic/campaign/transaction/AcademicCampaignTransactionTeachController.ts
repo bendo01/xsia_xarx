@@ -205,10 +205,49 @@ export async function listClassCodes(queryParams?: { page_size?: number }): Prom
     }
 }
 
-export async function listTeachLecturers(queryParams?: { page_size?: number }): Promise<any[]> {
+export interface LecturerAssignedTeachItem {
+    teach_lecturer_id: string;
+    teach_id: string;
+    lecturer_id: string;
+    planning: number;
+    realization: number;
+    credit: number;
+    is_lecturer_home_base: boolean;
+    role_name?: string | null;
+    
+    // Teach info
+    teach_name?: string | null;
+    description?: string | null;
+    start_date?: string | null;
+    end_date?: string | null;
+    max_member?: number;
+    activity_id?: string | null;
+    
+    // Course info (from academic_course_master.courses)
+    course_id: string;
+    course_code?: string;
+    course_name?: string;
+    course_total_credit?: number;
+    course_lecture_credit?: number;
+    course_practice_credit?: number;
+    
+    // Class code info (from academic_campaign_transaction.class_codes)
+    class_code_id: string;
+    class_name?: string;
+    class_alphabet_code?: string;
+    class_capacity?: number;
+}
+
+export async function listTeachLecturers(queryParams?: { page?: number; page_size?: number; lecturer_id?: string; teach_id?: string }): Promise<any[]> {
     try {
         const size = queryParams?.page_size || 200;
-        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/teach-lecturers?page_size=${size}`, {
+        const params = new URLSearchParams();
+        params.set('page_size', String(size));
+        if (queryParams?.page) params.set('page', String(queryParams.page));
+        if (queryParams?.lecturer_id) params.set('lecturer_id', queryParams.lecturer_id);
+        if (queryParams?.teach_id) params.set('teach_id', queryParams.teach_id);
+
+        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/teach-lecturers?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -217,6 +256,90 @@ export async function listTeachLecturers(queryParams?: { page_size?: number }): 
         return json.data || [];
     } catch (err) {
         console.warn('Error fetching teach lecturers:', err);
+        return [];
+    }
+}
+
+export async function getLecturerAssignedTeaches(lecturerId: string): Promise<LecturerAssignedTeachItem[]> {
+    if (!lecturerId || lecturerId === '00000000-0000-0000-0000-000000000000') return [];
+    try {
+        const [teachLecturers, coursesList, classCodesList] = await Promise.all([
+            listTeachLecturers({ lecturer_id: lecturerId, page_size: 500 }),
+            listCourses({ page_size: 1000 }),
+            listClassCodes({ page_size: 1000 }),
+        ]);
+
+        const filteredTeachLecturers = Array.isArray(teachLecturers) 
+            ? teachLecturers.filter(tl => tl.lecturer_id === lecturerId || !tl.lecturer_id)
+            : [];
+
+        if (filteredTeachLecturers.length === 0) return [];
+
+        const coursesMap = new Map<string, any>();
+        coursesList.forEach((c: any) => { if (c.id) coursesMap.set(c.id, c); });
+
+        const classCodesMap = new Map<string, any>();
+        classCodesList.forEach((cc: any) => { if (cc.id) classCodesMap.set(cc.id, cc); });
+
+        const results: LecturerAssignedTeachItem[] = [];
+
+        await Promise.all(
+            filteredTeachLecturers.map(async (tl) => {
+                let teach: any = null;
+                if (tl.teach_id) {
+                    teach = await getTeachById(tl.teach_id);
+                }
+
+                const courseId = teach?.course_id || '';
+                let course = courseId ? coursesMap.get(courseId) : null;
+                if (!course && courseId) {
+                    course = await getCourseById(courseId);
+                    if (course) coursesMap.set(courseId, course);
+                }
+
+                const classCodeId = teach?.class_code_id || '';
+                let classCode = classCodeId ? classCodesMap.get(classCodeId) : null;
+                if (!classCode && classCodeId) {
+                    classCode = await getClassCodeById(classCodeId);
+                    if (classCode) classCodesMap.set(classCodeId, classCode);
+                }
+
+                results.push({
+                    teach_lecturer_id: tl.id,
+                    teach_id: tl.teach_id,
+                    lecturer_id: tl.lecturer_id,
+                    planning: Number(tl.planning) || 0,
+                    realization: Number(tl.realization) || 0,
+                    credit: Number(tl.credit) || (course?.total_credit ? Number(course.total_credit) : 0),
+                    is_lecturer_home_base: Boolean(tl.is_lecturer_home_base),
+                    role_name: tl.name || null,
+
+                    teach_name: teach?.name || null,
+                    description: teach?.description || null,
+                    start_date: teach?.start_date || null,
+                    end_date: teach?.end_date || null,
+                    max_member: teach?.max_member || 0,
+                    activity_id: teach?.activity_id || null,
+
+                    course_id: courseId,
+                    course_code: course?.code || '-',
+                    course_name: course?.name || (teach?.name ? `Mata Kuliah (${teach.name})` : 'Mata Kuliah'),
+                    course_total_credit: course?.total_credit ? Number(course.total_credit) : (Number(tl.credit) || 0),
+                    course_lecture_credit: course?.lecture_credit ? Number(course.lecture_credit) : 0,
+                    course_practice_credit: course?.practice_credit ? Number(course.practice_credit) : 0,
+
+                    class_code_id: classCodeId,
+                    class_name: classCode?.name || (classCode?.alphabet_code ? `Kelas ${classCode.alphabet_code}` : 'Kelas'),
+                    class_alphabet_code: classCode?.alphabet_code || classCode?.name || '-',
+                    class_capacity: classCode?.capacity || teach?.max_member || 0,
+                });
+            })
+        );
+
+        results.sort((a, b) => (a.course_name || '').localeCompare(b.course_name || ''));
+        return results;
+    } catch (err) {
+        console.error('Error getting lecturer assigned teaches:', err);
         return [];
     }
 }
