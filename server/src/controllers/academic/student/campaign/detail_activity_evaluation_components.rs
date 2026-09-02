@@ -32,6 +32,12 @@ pub async fn list_detail_activity_evaluation_components(
     if let Some(ref name) = query.name {
         select = select.filter(entity_mod::Column::Name.contains(name));
     }
+    if let Some(detail_activity_id) = query.detail_activity_id {
+        select = select.filter(entity_mod::Column::DetailActivityId.eq(detail_activity_id));
+    }
+    if let Some(course_evaluation_planning_id) = query.course_evaluation_planning_id {
+        select = select.filter(entity_mod::Column::CourseEvaluationPlanningId.eq(course_evaluation_planning_id));
+    }
 
     let paginator = select
         .order_by_asc(entity_mod::Column::Name)

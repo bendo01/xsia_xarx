@@ -32,8 +32,12 @@ pub async fn list_teach_evaluations(
     if let Some(ref name) = query.name {
         select = select.filter(entity_mod::Column::Name.contains(name));
     }
+    if let Some(teach_id) = query.teach_id {
+        select = select.filter(entity_mod::Column::TeachId.eq(teach_id));
+    }
 
     let paginator = select
+        .order_by_asc(entity_mod::Column::Thread)
         .order_by_asc(entity_mod::Column::Name)
         .paginate(db, page_size);
 

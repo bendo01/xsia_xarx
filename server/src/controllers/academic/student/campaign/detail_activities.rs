@@ -293,6 +293,9 @@ pub async fn list_detail_activities(
     if let Some(course_id) = query.course_id {
         select = select.filter(entity_mod::Column::CourseId.eq(course_id));
     }
+    if let Some(teach_id) = query.teach_id {
+        select = select.filter(entity_mod::Column::TeachId.eq(teach_id));
+    }
 
     let paginator = select
         .order_by_asc(entity_mod::Column::Name)

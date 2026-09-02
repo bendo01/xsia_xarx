@@ -16,6 +16,7 @@ pub struct DetailActivityQuery {
     pub name: Option<String>,
     pub activity_id: Option<Uuid>,
     pub course_id: Option<Uuid>,
+    pub teach_id: Option<Uuid>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]

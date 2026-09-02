@@ -10,6 +10,8 @@ pub struct DetailActivityEvaluationComponentQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
     pub name: Option<String>,
+    pub detail_activity_id: Option<Uuid>,
+    pub course_evaluation_planning_id: Option<Uuid>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]

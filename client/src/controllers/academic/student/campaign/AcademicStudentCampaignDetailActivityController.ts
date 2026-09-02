@@ -51,6 +51,7 @@ export async function listDetailActivities(queryParams?: {
     page_size?: number;
     activity_id?: string;
     course_id?: string;
+    teach_id?: string;
     name?: string;
 }): Promise<{
     data: DetailActivityItem[];
@@ -62,10 +63,11 @@ export async function listDetailActivities(queryParams?: {
     try {
         const params = new URLSearchParams();
         if (queryParams?.page) params.set('page', String(queryParams.page));
-        if (queryParams?.page_size) params.set('page_size', String(queryParams.page_size));
+        if (queryParams?.page_size) params.set('page_size', String(queryParams.page_size || 100));
         if (queryParams?.name) params.set('name', queryParams.name);
         if (queryParams?.activity_id) params.set('activity_id', queryParams.activity_id);
         if (queryParams?.course_id) params.set('course_id', queryParams.course_id);
+        if (queryParams?.teach_id) params.set('teach_id', queryParams.teach_id);
 
         const res = await fetch(`${getBaseUrl()}/academic/student/campaign/detail-activities?${params.toString()}`, {
             method: 'GET',
@@ -142,6 +144,62 @@ export async function createDetailActivity(payload: {
         return {
             is_error: true,
             message: err?.message || 'Network error while enrolling course',
+        };
+    }
+}
+
+export async function getDetailActivity(id: string): Promise<DetailActivityItem | null> {
+    try {
+        const res = await fetch(`${getBaseUrl()}/academic/student/campaign/detail-activities/${id}`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+        if (!res.ok) return null;
+        return await res.json();
+    } catch {
+        return null;
+    }
+}
+
+export async function updateDetailActivity(
+    id: string,
+    payload: {
+        mark?: number | null;
+        credit?: number | null;
+        grade_id?: string | null;
+        course_id?: string;
+        activity_id?: string;
+        teach_id?: string | null;
+        is_lock?: boolean | null;
+        name?: string | null;
+        feeder_grade_id?: string | null;
+        curiculum_detail_sequence?: number;
+    }
+): Promise<{ is_error: boolean; message: string; data?: DetailActivityItem }> {
+    try {
+        const res = await fetch(`${getBaseUrl()}/academic/student/campaign/detail-activities/${id}`, {
+            method: 'PUT',
+            headers: getHeaders(),
+            body: JSON.stringify(payload),
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            return {
+                is_error: true,
+                message: data.message || data.brief || 'Failed to update detail activity',
+            };
+        }
+
+        return {
+            is_error: false,
+            message: 'Detail activity updated successfully',
+            data,
+        };
+    } catch (err: any) {
+        return {
+            is_error: true,
+            message: err?.message || 'Network error while updating detail activity',
         };
     }
 }

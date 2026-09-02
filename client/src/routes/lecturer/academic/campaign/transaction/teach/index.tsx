@@ -443,7 +443,7 @@ export default function LecturerTeachIndexPage() {
                                                         Roster & Presensi
                                                     </A>
                                                     <A
-                                                        href={`/lecturer/academic/campaign/activity`}
+                                                        href={`/lecturer/academic/campaign/transaction/teach/grade?id=${item.teach_id}`}
                                                         class="py-2 px-3 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700/80 text-neutral-700 dark:text-neutral-200 font-semibold rounded-xl text-xs transition-colors shrink-0"
                                                         title="Nilai Mahasiswa"
                                                     >
@@ -533,7 +533,7 @@ export default function LecturerTeachIndexPage() {
                                                                     Presensi
                                                                 </A>
                                                                 <A
-                                                                    href={`/lecturer/academic/campaign/activity`}
+                                                                    href={`/lecturer/academic/campaign/transaction/teach/grade?id=${item.teach_id}`}
                                                                     class="px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 font-semibold rounded-lg text-xs transition-colors"
                                                                 >
                                                                     Nilai
