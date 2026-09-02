@@ -18,6 +18,9 @@ import { PersonMasterIndividualControllerShow } from '~/controllers/person/maste
 import { listStudentActivities, StudentActivityItem, printActivityPlan, printActivityResult } from '~/controllers/academic/student/campaign/AcademicStudentCampaignActivityController';
 import { getStudentById, StudentMasterItem } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
 import { listCounsellors, CounsellorItem } from '~/controllers/academic/student/adviser/AcademicStudentAdviserController';
+import { listDetailActivities, DetailActivityItem } from '~/controllers/academic/student/campaign/AcademicStudentCampaignDetailActivityController';
+import { AcademicCourseReferenceControllerVarietyIndex } from '~/controllers/academic/course/reference/AcademicCourseReferenceVarietyController';
+import type { AcademicCourseReferenceVariety } from '~/models/academic/course/reference/Variety';
 import { openOrDownloadPdf } from '~/lib/pdfHelper';
 
 export default function StudentDashboardProfilePage() {
@@ -30,6 +33,10 @@ export default function StudentDashboardProfilePage() {
     const [studentRecord, setStudentRecord] = createSignal<StudentMasterItem | null>(null);
     const [recentActivities, setRecentActivities] = createSignal<StudentActivityItem[]>([]);
     const [advisers, setAdvisers] = createSignal<CounsellorItem[]>([]);
+    const [studentDetailActivities, setStudentDetailActivities] = createSignal<DetailActivityItem[]>([]);
+    const [courseVarieties, setCourseVarieties] = createSignal<AcademicCourseReferenceVariety[]>([]);
+    const [hoveredTimelineIdx, setHoveredTimelineIdx] = createSignal<number | null>(null);
+    const [hoveredVarietyIdx, setHoveredVarietyIdx] = createSignal<number | null>(null);
     const [activeTab, setActiveTab] = createSignal<'overview' | 'biodata' | 'academic'>('overview');
 
     const handlePrintKRS = async (act: StudentActivityItem) => {
@@ -166,13 +173,27 @@ export default function StudentDashboardProfilePage() {
     const loadStudentSubRecords = async (studentId: string) => {
         setIsSubLoading(true);
         try {
-            const [actRes, advRes] = await Promise.all([
-                listStudentActivities({ student_id: studentId, page: 1, page_size: 5 }),
-                listCounsellors({ student_id: studentId, page: 1, page_size: 5 })
+            const [actRes, advRes, varietiesRes] = await Promise.all([
+                listStudentActivities({ student_id: studentId, page: 1, page_size: 50 }),
+                listCounsellors({ student_id: studentId, page: 1, page_size: 10 }),
+                AcademicCourseReferenceControllerVarietyIndex({ page: 1, per_page: 100 }).catch(() => ({ data: [] }))
             ]);
 
-            setRecentActivities(actRes.data || []);
+            const activities = actRes.data || [];
+            setRecentActivities(activities);
             setAdvisers(advRes.data || []);
+            setCourseVarieties(Array.isArray(varietiesRes.data) ? varietiesRes.data : []);
+
+            if (activities.length > 0) {
+                const detailPromises = activities.slice(0, 10).map(act =>
+                    listDetailActivities({ activity_id: act.id, page: 1, page_size: 100 }).catch(() => ({ data: [] }))
+                );
+                const detailResults = await Promise.all(detailPromises);
+                const allDetails = detailResults.flatMap(r => r.data || []);
+                setStudentDetailActivities(allDetails);
+            } else {
+                setStudentDetailActivities([]);
+            }
         } catch (err) {
             console.error('Error loading student activities or advisers:', err);
         } finally {
@@ -244,6 +265,199 @@ export default function StudentDashboardProfilePage() {
         if (!act) return '0.00';
         return Number(act.cumulative_index ?? 0).toFixed(2);
     };
+
+    // --- Multiline Chart Calculations (Academic Year vs IPK & IPS, Max 4.0) ---
+    const timelineActivities = () => {
+        return [...recentActivities()].reverse();
+    };
+
+    const chartDims = { w: 540, h: 220, padL: 42, padR: 24, padT: 24, padB: 44 };
+    const plotW = () => chartDims.w - chartDims.padL - chartDims.padR; // 474
+    const plotH = () => chartDims.h - chartDims.padT - chartDims.padB; // 152
+
+    const getYCoord = (val: number) => {
+        const clamped = Math.min(Math.max(val, 0), 4);
+        return chartDims.padT + plotH() * (1 - clamped / 4);
+    };
+
+    const getXCoord = (index: number, total: number) => {
+        if (total <= 1) return chartDims.padL + plotW() / 2;
+        return chartDims.padL + (index / (total - 1)) * plotW();
+    };
+
+    const multilinePoints = () => {
+        const list = timelineActivities();
+        const n = list.length;
+        return list.map((act, idx) => {
+            const x = getXCoord(idx, n);
+            const ips = Number(act.cumulative_index ?? 0);
+            const ipk = Number(act.grand_cumulative_index ?? act.cumulative_index ?? 0);
+            const yIps = getYCoord(ips);
+            const yIpk = getYCoord(ipk);
+            const semName = act.academic_year?.name || act.name || act.semester_name || `Sem ${idx + 1}`;
+            return {
+                act,
+                idx,
+                x,
+                ips,
+                ipk,
+                yIps,
+                yIpk,
+                semName,
+                sks: act.total_credit ?? 0,
+                totalSks: act.grand_total_credit ?? act.total_credit ?? 0,
+            };
+        });
+    };
+
+    const ipkPath = () => {
+        const pts = multilinePoints();
+        if (pts.length === 0) return '';
+        return pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.yIpk.toFixed(1)}`).join(' ');
+    };
+
+    const ipkAreaPath = () => {
+        const pts = multilinePoints();
+        if (pts.length === 0) return '';
+        const baseline = chartDims.padT + plotH();
+        const firstX = pts[0].x.toFixed(1);
+        const lastX = pts[pts.length - 1].x.toFixed(1);
+        const linePart = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.yIpk.toFixed(1)}`).join(' ');
+        return `${linePart} L ${lastX} ${baseline} L ${firstX} ${baseline} Z`;
+    };
+
+    const ipsPath = () => {
+        const pts = multilinePoints();
+        if (pts.length === 0) return '';
+        return pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.yIps.toFixed(1)}`).join(' ');
+    };
+
+    const ipsAreaPath = () => {
+        const pts = multilinePoints();
+        if (pts.length === 0) return '';
+        const baseline = chartDims.padT + plotH();
+        const firstX = pts[0].x.toFixed(1);
+        const lastX = pts[pts.length - 1].x.toFixed(1);
+        const linePart = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.yIps.toFixed(1)}`).join(' ');
+        return `${linePart} L ${lastX} ${baseline} L ${firstX} ${baseline} Z`;
+    };
+
+    // --- Pie / Donut Chart Calculations (Course Varieties Cumulative Index Scope) ---
+    const varietyPalette = [
+        '#6366f1', // Indigo
+        '#10b981', // Emerald
+        '#f59e0b', // Amber
+        '#06b6d4', // Cyan
+        '#ec4899', // Pink
+        '#8b5cf6', // Purple
+        '#3b82f6', // Blue
+        '#14b8a6', // Teal
+        '#f97316', // Orange
+    ];
+
+    const varietyScopeData = () => {
+        const details = studentDetailActivities();
+        const varieties = courseVarieties();
+
+        const map = new Map<string, {
+            varietyId: string;
+            varietyName: string;
+            courseCount: number;
+            totalCredits: number;
+            gradedCredits: number;
+            weightedGradeSum: number;
+        }>();
+
+        for (const v of varieties) {
+            if (v.id) {
+                map.set(v.id, {
+                    varietyId: v.id,
+                    varietyName: v.name,
+                    courseCount: 0,
+                    totalCredits: 0,
+                    gradedCredits: 0,
+                    weightedGradeSum: 0,
+                });
+            }
+        }
+
+        const fallbackKey = 'other';
+        map.set(fallbackKey, {
+            varietyId: fallbackKey,
+            varietyName: 'Mata Kuliah Umum / Lainnya',
+            courseCount: 0,
+            totalCredits: 0,
+            gradedCredits: 0,
+            weightedGradeSum: 0,
+        });
+
+        for (const d of details) {
+            const vId = d.course?.variety_id || fallbackKey;
+            const entry = map.get(vId) || map.get(fallbackKey)!;
+            const cred = Number(d.credit ?? d.course?.total_credit ?? d.course?.credit ?? 0) || 0;
+            const gp = d.grade_point != null ? Number(d.grade_point) : (d.grade?.grade != null ? Number(d.grade.grade) : null);
+
+            entry.courseCount += 1;
+            entry.totalCredits += cred;
+            if (gp != null && !isNaN(gp)) {
+                entry.gradedCredits += cred;
+                entry.weightedGradeSum += gp * cred;
+            }
+        }
+
+        const activeGroups = Array.from(map.values()).filter(g => g.courseCount > 0);
+        const totalAllCredits = activeGroups.reduce((acc, g) => acc + (g.totalCredits || g.courseCount), 0) || 1;
+
+        let currentAngle = -Math.PI / 2;
+
+        return activeGroups.map((g, idx) => {
+            const cumulativeIndex = g.gradedCredits > 0 ? (g.weightedGradeSum / g.gradedCredits) : 0;
+            const share = (g.totalCredits || g.courseCount) / totalAllCredits;
+            const angle = share * 2 * Math.PI;
+            const startAngle = currentAngle;
+            const endAngle = currentAngle + angle;
+            currentAngle = endAngle;
+
+            return {
+                ...g,
+                color: varietyPalette[idx % varietyPalette.length],
+                cumulativeIndex: Number(cumulativeIndex.toFixed(2)),
+                share,
+                percent: Math.round(share * 100),
+                startAngle,
+                endAngle,
+            };
+        });
+    };
+
+    function describeDonutSlice(
+        cx: number,
+        cy: number,
+        innerR: number,
+        outerR: number,
+        startAngle: number,
+        endAngle: number
+    ): string {
+        const eps = 0.0001;
+        let actualEnd = endAngle;
+        if (endAngle - startAngle >= 2 * Math.PI - eps) {
+            actualEnd = startAngle + 2 * Math.PI - eps;
+        }
+
+        const x1 = cx + outerR * Math.cos(startAngle);
+        const y1 = cy + outerR * Math.sin(startAngle);
+        const x2 = cx + outerR * Math.cos(actualEnd);
+        const y2 = cy + outerR * Math.sin(actualEnd);
+
+        const x3 = cx + innerR * Math.cos(actualEnd);
+        const y3 = cy + innerR * Math.sin(actualEnd);
+        const x4 = cx + innerR * Math.cos(startAngle);
+        const y4 = cy + innerR * Math.sin(startAngle);
+
+        const largeArc = actualEnd - startAngle > Math.PI ? 1 : 0;
+
+        return `M ${x1.toFixed(2)} ${y1.toFixed(2)} A ${outerR} ${outerR} 0 ${largeArc} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} L ${x3.toFixed(2)} ${y3.toFixed(2)} A ${innerR} ${innerR} 0 ${largeArc} 0 ${x4.toFixed(2)} ${y4.toFixed(2)} Z`;
+    }
 
     return (
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
@@ -618,7 +832,325 @@ export default function StudentDashboardProfilePage() {
                                             </div>
                                         </div>
                                     </div>
-                                    {/* Chart Semester Activity*/}
+                                    {/* ACADEMIC PERFORMANCE & COURSE VARIETY ANALYTICS CHARTS */}
+                                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                        {/* Chart 1: Multiline Academic Progress Trend (IPK & IPS by Academic Year, Max 4.0) */}
+                                        <div class="p-5 rounded-3xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 flex flex-col justify-between space-y-4">
+                                            <div class="flex items-start justify-between gap-3">
+                                                <div>
+                                                    <div class="flex items-center gap-2">
+                                                        <div class="size-7 rounded-lg bg-indigo-100 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+                                                            <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                                                        </div>
+                                                        <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                                            Academic Performance Trend
+                                                        </h3>
+                                                    </div>
+                                                    <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
+                                                        Semester IPS & Cumulative IPK over Academic Years (Scale: 0.0 - 4.0)
+                                                    </p>
+                                                </div>
+
+                                                {/* Legend */}
+                                                <div class="flex items-center gap-3 text-[11px] font-mono shrink-0">
+                                                    <div class="flex items-center gap-1.5">
+                                                        <span class="size-2.5 rounded-full bg-indigo-600"></span>
+                                                        <span class="text-neutral-700 dark:text-neutral-300 font-semibold">IPK</span>
+                                                    </div>
+                                                    <div class="flex items-center gap-1.5">
+                                                        <span class="size-2.5 rounded-full bg-sky-500"></span>
+                                                        <span class="text-neutral-700 dark:text-neutral-300 font-semibold">IPS</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <Show when={multilinePoints().length > 0} fallback={
+                                                <div class="py-16 text-center text-neutral-400 font-mono text-xs flex flex-col items-center justify-center gap-2">
+                                                    <svg class="size-8 text-neutral-300 dark:text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                                                    <span>No academic semester activity records found to plot trends.</span>
+                                                </div>
+                                            }>
+                                                <div class="relative w-full overflow-hidden">
+                                                    <svg viewBox={`0 0 ${chartDims.w} ${chartDims.h}`} class="w-full h-auto max-h-[240px] select-none">
+                                                        <defs>
+                                                            <linearGradient id="ipkGrad" x1="0" y1="0" x2="0" y2="1">
+                                                                <stop offset="0%" stop-color="#6366f1" stop-opacity="0.3" />
+                                                                <stop offset="100%" stop-color="#6366f1" stop-opacity="0.0" />
+                                                            </linearGradient>
+                                                            <linearGradient id="ipsGrad" x1="0" y1="0" x2="0" y2="1">
+                                                                <stop offset="0%" stop-color="#0284c7" stop-opacity="0.2" />
+                                                                <stop offset="100%" stop-color="#0284c7" stop-opacity="0.0" />
+                                                            </linearGradient>
+                                                        </defs>
+
+                                                        {/* Horizontal Grid lines & Y-Axis values (0.0 to 4.0) */}
+                                                        <For each={[4.0, 3.0, 2.0, 1.0, 0.0]}>
+                                                            {(val) => {
+                                                                const y = getYCoord(val);
+                                                                return (
+                                                                    <g>
+                                                                        <line
+                                                                            x1={chartDims.padL}
+                                                                            y1={y}
+                                                                            x2={chartDims.w - chartDims.padR}
+                                                                            y2={y}
+                                                                            stroke="currentColor"
+                                                                            class="text-neutral-200 dark:text-neutral-800"
+                                                                            stroke-dasharray={val > 0 && val < 4 ? "4 4" : "0"}
+                                                                            stroke-width="1"
+                                                                        />
+                                                                        <text
+                                                                            x={chartDims.padL - 8}
+                                                                            y={y + 3.5}
+                                                                            text-anchor="end"
+                                                                            class="fill-neutral-400 font-mono text-[10px]"
+                                                                        >
+                                                                            {val.toFixed(1)}
+                                                                        </text>
+                                                                    </g>
+                                                                );
+                                                            }}
+                                                        </For>
+
+                                                        {/* Shaded Areas */}
+                                                        <path d={ipkAreaPath()} fill="url(#ipkGrad)" />
+                                                        <path d={ipsAreaPath()} fill="url(#ipsGrad)" />
+
+                                                        {/* Lines */}
+                                                        <path
+                                                            d={ipsPath()}
+                                                            fill="none"
+                                                            stroke="#0284c7"
+                                                            stroke-width="2.5"
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                        />
+                                                        <path
+                                                            d={ipkPath()}
+                                                            fill="none"
+                                                            stroke="#6366f1"
+                                                            stroke-width="2.5"
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                        />
+
+                                                        {/* Interactive Hover Guides & Data Points */}
+                                                        <For each={multilinePoints()}>
+                                                            {(p) => {
+                                                                const isHovered = () => hoveredTimelineIdx() === p.idx;
+                                                                return (
+                                                                    <g>
+                                                                        {/* Vertical guideline on hover */}
+                                                                        <Show when={isHovered()}>
+                                                                            <line
+                                                                                x1={p.x}
+                                                                                y1={chartDims.padT}
+                                                                                x2={p.x}
+                                                                                y2={chartDims.padT + plotH()}
+                                                                                stroke="#818cf8"
+                                                                                stroke-width="1.5"
+                                                                                stroke-dasharray="3 3"
+                                                                            />
+                                                                        </Show>
+
+                                                                        {/* X-axis label (Academic Year name) */}
+                                                                        <text
+                                                                            x={p.x}
+                                                                            y={chartDims.padT + plotH() + 18}
+                                                                            text-anchor="middle"
+                                                                            class={`font-mono text-[10px] transition-colors ${
+                                                                                isHovered()
+                                                                                    ? 'fill-indigo-600 dark:fill-indigo-400 font-bold'
+                                                                                    : 'fill-neutral-500 dark:fill-neutral-400'
+                                                                            }`}
+                                                                        >
+                                                                            {p.semName}
+                                                                        </text>
+
+                                                                        {/* IPS Point */}
+                                                                        <circle
+                                                                            cx={p.x}
+                                                                            cy={p.yIps}
+                                                                            r={isHovered() ? 5 : 3.5}
+                                                                            fill="#ffffff"
+                                                                            stroke="#0284c7"
+                                                                            stroke-width="2"
+                                                                            class="transition-all"
+                                                                        />
+
+                                                                        {/* IPK Point */}
+                                                                        <circle
+                                                                            cx={p.x}
+                                                                            cy={p.yIpk}
+                                                                            r={isHovered() ? 5.5 : 4}
+                                                                            fill="#ffffff"
+                                                                            stroke="#6366f1"
+                                                                            stroke-width="2.5"
+                                                                            class="transition-all"
+                                                                        />
+
+                                                                        {/* Invisible hover trigger column */}
+                                                                        <rect
+                                                                            x={p.x - plotW() / (multilinePoints().length * 2 || 1)}
+                                                                            y={0}
+                                                                            width={plotW() / (multilinePoints().length || 1)}
+                                                                            height={chartDims.h}
+                                                                            fill="transparent"
+                                                                            class="cursor-pointer"
+                                                                            onPointerEnter={() => setHoveredTimelineIdx(p.idx)}
+                                                                            onPointerLeave={() => setHoveredTimelineIdx(null)}
+                                                                        />
+                                                                    </g>
+                                                                );
+                                                            }}
+                                                        </For>
+                                                    </svg>
+
+                                                    {/* Tooltip Card Overlay */}
+                                                    <Show when={hoveredTimelineIdx() !== null && multilinePoints()[hoveredTimelineIdx()!]}>
+                                                        {(() => {
+                                                            const p = multilinePoints()[hoveredTimelineIdx()!];
+                                                            return (
+                                                                <div class="mt-2 p-2.5 rounded-xl bg-neutral-900/90 text-white dark:bg-neutral-800/95 border border-neutral-700 shadow-lg text-[11px] flex items-center justify-between gap-4 font-mono transition-all">
+                                                                    <div class="flex items-center gap-2">
+                                                                        <span class="font-bold text-white text-xs">{p.semName}</span>
+                                                                        <span class="text-neutral-400">({p.sks} SKS)</span>
+                                                                    </div>
+                                                                    <div class="flex items-center gap-4">
+                                                                        <div>
+                                                                            <span class="text-neutral-400 mr-1">Semester IPS:</span>
+                                                                            <span class="font-bold text-sky-400">{p.ips.toFixed(2)}</span>
+                                                                        </div>
+                                                                        <div>
+                                                                            <span class="text-neutral-400 mr-1">Cumulative IPK:</span>
+                                                                            <span class="font-bold text-indigo-400">{p.ipk.toFixed(2)}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })()}
+                                                    </Show>
+                                                </div>
+                                            </Show>
+                                        </div>
+
+                                        {/* Chart 2: Courses Cumulative Index Scope by academic_course_reference.varieties (Pie / Donut) */}
+                                        <div class="p-5 rounded-3xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 flex flex-col justify-between space-y-4">
+                                            <div class="flex items-start justify-between gap-3">
+                                                <div>
+                                                    <div class="flex items-center gap-2">
+                                                        <div class="size-7 rounded-lg bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+                                                            <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                                                        </div>
+                                                        <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                                            Course Variety & IPK Scope
+                                                        </h3>
+                                                    </div>
+                                                    <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
+                                                        Cumulative Index Breakdown by Course Classification Varieties
+                                                    </p>
+                                                </div>
+
+                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 font-mono">
+                                                    {varietyScopeData().length} Varieties
+                                                </span>
+                                            </div>
+
+                                            <Show when={varietyScopeData().length > 0} fallback={
+                                                <div class="py-16 text-center text-neutral-400 font-mono text-xs flex flex-col items-center justify-center gap-2">
+                                                    <svg class="size-8 text-neutral-300 dark:text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                                                    <span>No course variety records or grade details enrolled yet.</span>
+                                                </div>
+                                            }>
+                                                <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+                                                    {/* Donut Chart SVG */}
+                                                    <div class="sm:col-span-5 flex items-center justify-center relative">
+                                                        <svg viewBox="0 0 220 220" class="size-48 max-w-full">
+                                                            <For each={varietyScopeData()}>
+                                                                {(slice, idx) => {
+                                                                    const isHovered = () => hoveredVarietyIdx() === idx();
+                                                                    const pathD = describeDonutSlice(110, 110, 56, isHovered() ? 92 : 86, slice.startAngle, slice.endAngle);
+                                                                    return (
+                                                                        <path
+                                                                            d={pathD}
+                                                                            fill={slice.color}
+                                                                            class="transition-all duration-200 cursor-pointer hover:opacity-90"
+                                                                            stroke="currentColor"
+                                                                            stroke-width="1.5"
+                                                                            stroke-opacity="0.1"
+                                                                            onPointerEnter={() => setHoveredVarietyIdx(idx())}
+                                                                            onPointerLeave={() => setHoveredVarietyIdx(null)}
+                                                                        />
+                                                                    );
+                                                                }}
+                                                            </For>
+
+                                                            {/* Center Stats */}
+                                                            <g pointer-events="none">
+                                                                <text
+                                                                    x="110"
+                                                                    y="104"
+                                                                    text-anchor="middle"
+                                                                    class="font-mono font-extrabold text-base fill-neutral-900 dark:fill-white"
+                                                                >
+                                                                    {hoveredVarietyIdx() !== null
+                                                                        ? varietyScopeData()[hoveredVarietyIdx()!].cumulativeIndex.toFixed(2)
+                                                                        : gpa()}
+                                                                </text>
+                                                                <text
+                                                                    x="110"
+                                                                    y="122"
+                                                                    text-anchor="middle"
+                                                                    class="font-mono uppercase text-[9px] fill-neutral-400 tracking-wider"
+                                                                >
+                                                                    {hoveredVarietyIdx() !== null ? 'Variety IPK' : 'Overall IPK'}
+                                                                </text>
+                                                            </g>
+                                                        </svg>
+                                                    </div>
+
+                                                    {/* Legend & Breakdown List */}
+                                                    <div class="sm:col-span-7 space-y-2 max-h-56 overflow-y-auto pr-1 text-xs">
+                                                        <For each={varietyScopeData()}>
+                                                            {(slice, idx) => {
+                                                                const isHovered = () => hoveredVarietyIdx() === idx();
+                                                                return (
+                                                                    <div
+                                                                        onPointerEnter={() => setHoveredVarietyIdx(idx())}
+                                                                        onPointerLeave={() => setHoveredVarietyIdx(null)}
+                                                                        class={`p-2 rounded-xl border transition-all cursor-pointer ${
+                                                                            isHovered()
+                                                                                ? 'bg-neutral-100 dark:bg-neutral-800 border-neutral-300 dark:border-neutral-600 shadow-2xs'
+                                                                                : 'bg-white dark:bg-neutral-800/60 border-neutral-200/60 dark:border-neutral-700/60'
+                                                                        }`}
+                                                                    >
+                                                                        <div class="flex items-center justify-between gap-2">
+                                                                            <div class="flex items-center gap-2 min-w-0">
+                                                                                <span
+                                                                                    class="size-2.5 rounded-full shrink-0"
+                                                                                    style={{ "background-color": slice.color }}
+                                                                                ></span>
+                                                                                <span class="font-bold text-neutral-800 dark:text-neutral-200 truncate">
+                                                                                    {slice.varietyName}
+                                                                                </span>
+                                                                            </div>
+                                                                            <span class="font-mono font-extrabold text-indigo-600 dark:text-indigo-400 shrink-0">
+                                                                                IPK {slice.cumulativeIndex.toFixed(2)}
+                                                                            </span>
+                                                                        </div>
+                                                                        <div class="flex items-center justify-between text-[10px] text-neutral-400 font-mono mt-1 pl-4.5">
+                                                                            <span>{slice.courseCount} Courses • {slice.totalCredits} SKS</span>
+                                                                            <span class="font-semibold text-neutral-500 dark:text-neutral-400">{slice.percent}% share</span>
+                                                                        </div>
+                                                                    </div>
+                                                                );
+                                                            }}
+                                                        </For>
+                                                    </div>
+                                                </div>
+                                            </Show>
+                                        </div>
+                                    </div>
 
                                     {/* Recent Semester Activity Preview */}
                                     <div class="space-y-3">
