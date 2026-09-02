@@ -1,4 +1,4 @@
-import { createSignal, onMount, createEffect, Show, For } from 'solid-js';
+import { createSignal, onMount, createEffect, Show, For, createMemo, lazy, Suspense } from 'solid-js';
 import { useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
@@ -22,6 +22,9 @@ import { listDetailActivities, DetailActivityItem } from '~/controllers/academic
 import { AcademicCourseReferenceControllerVarietyIndex } from '~/controllers/academic/course/reference/AcademicCourseReferenceVarietyController';
 import type { AcademicCourseReferenceVariety } from '~/models/academic/course/reference/Variety';
 import { openOrDownloadPdf } from '~/lib/pdfHelper';
+import type { AcademicTrendPoint } from '~/components/chart/academic_performance_chart';
+
+const AcademicPerformanceChart = lazy(() => import('~/components/chart/academic_performance_chart'));
 
 export default function StudentDashboardProfilePage() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -35,7 +38,6 @@ export default function StudentDashboardProfilePage() {
     const [advisers, setAdvisers] = createSignal<CounsellorItem[]>([]);
     const [studentDetailActivities, setStudentDetailActivities] = createSignal<DetailActivityItem[]>([]);
     const [courseVarieties, setCourseVarieties] = createSignal<AcademicCourseReferenceVariety[]>([]);
-    const [hoveredTimelineIdx, setHoveredTimelineIdx] = createSignal<number | null>(null);
     const [hoveredVarietyIdx, setHoveredVarietyIdx] = createSignal<number | null>(null);
     const [activeTab, setActiveTab] = createSignal<'overview' | 'biodata' | 'academic'>('overview');
 
@@ -408,81 +410,26 @@ export default function StudentDashboardProfilePage() {
         return Number(getActIps(act)).toFixed(2);
     };
 
-    // --- Multiline Chart Calculations (Academic Year vs IPK & IPS, Max 4.0) ---
+    // --- Academic Performance Chart Data (IPK & IPS by Academic Year) ---
     const timelineActivities = () => {
         return chronologicalActivities();
     };
 
-    const chartDims = { w: 540, h: 220, padL: 42, padR: 24, padT: 24, padB: 44 };
-    const plotW = () => chartDims.w - chartDims.padL - chartDims.padR; // 474
-    const plotH = () => chartDims.h - chartDims.padT - chartDims.padB; // 152
-
-    const getYCoord = (val: number) => {
-        const clamped = Math.min(Math.max(val, 0), 4);
-        return chartDims.padT + plotH() * (1 - clamped / 4);
-    };
-
-    const getXCoord = (index: number, total: number) => {
-        if (total <= 1) return chartDims.padL + plotW() / 2;
-        return chartDims.padL + (index / (total - 1)) * plotW();
-    };
-
-    const multilinePoints = () => {
+    const chartData = createMemo((): AcademicTrendPoint[] => {
         const list = timelineActivities();
-        const n = list.length;
         return list.map((act, idx) => {
-            const x = getXCoord(idx, n);
             const ips = Number(getActIps(act));
             const ipk = Number(getActIpk(act));
-            const yIps = getYCoord(ips);
-            const yIpk = getYCoord(ipk);
             const semName = act.academic_year?.name || act.name || act.semester_name || `Sem ${idx + 1}`;
             return {
-                act,
-                idx,
-                x,
+                semName,
                 ips,
                 ipk,
-                yIps,
-                yIpk,
-                semName,
                 sks: getActSemesterSks(act),
                 totalSks: getActTotalSks(act),
             };
         });
-    };
-
-    const ipkPath = () => {
-        const pts = multilinePoints();
-        if (pts.length === 0) return '';
-        return pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.yIpk.toFixed(1)}`).join(' ');
-    };
-
-    const ipkAreaPath = () => {
-        const pts = multilinePoints();
-        if (pts.length === 0) return '';
-        const baseline = chartDims.padT + plotH();
-        const firstX = pts[0].x.toFixed(1);
-        const lastX = pts[pts.length - 1].x.toFixed(1);
-        const linePart = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.yIpk.toFixed(1)}`).join(' ');
-        return `${linePart} L ${lastX} ${baseline} L ${firstX} ${baseline} Z`;
-    };
-
-    const ipsPath = () => {
-        const pts = multilinePoints();
-        if (pts.length === 0) return '';
-        return pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.yIps.toFixed(1)}`).join(' ');
-    };
-
-    const ipsAreaPath = () => {
-        const pts = multilinePoints();
-        if (pts.length === 0) return '';
-        const baseline = chartDims.padT + plotH();
-        const firstX = pts[0].x.toFixed(1);
-        const lastX = pts[pts.length - 1].x.toFixed(1);
-        const linePart = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.yIps.toFixed(1)}`).join(' ');
-        return `${linePart} L ${lastX} ${baseline} L ${firstX} ${baseline} Z`;
-    };
+    });
 
     // --- Pie / Donut Chart Calculations (Course Varieties Cumulative Index Scope) ---
     const varietyPalette = [
@@ -1006,173 +953,20 @@ export default function StudentDashboardProfilePage() {
                                                 </div>
                                             </div>
 
-                                            <Show when={multilinePoints().length > 0} fallback={
+                                            <Show when={chartData().length > 0} fallback={
                                                 <div class="py-16 text-center text-neutral-400 font-mono text-xs flex flex-col items-center justify-center gap-2">
                                                     <svg class="size-8 text-neutral-300 dark:text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
                                                     <span>No academic semester activity records found to plot trends.</span>
                                                 </div>
                                             }>
-                                                <div class="relative w-full overflow-hidden">
-                                                    <svg viewBox={`0 0 ${chartDims.w} ${chartDims.h}`} class="w-full h-auto max-h-[240px] select-none">
-                                                        <defs>
-                                                            <linearGradient id="ipkGrad" x1="0" y1="0" x2="0" y2="1">
-                                                                <stop offset="0%" stop-color="#6366f1" stop-opacity="0.3" />
-                                                                <stop offset="100%" stop-color="#6366f1" stop-opacity="0.0" />
-                                                            </linearGradient>
-                                                            <linearGradient id="ipsGrad" x1="0" y1="0" x2="0" y2="1">
-                                                                <stop offset="0%" stop-color="#0284c7" stop-opacity="0.2" />
-                                                                <stop offset="100%" stop-color="#0284c7" stop-opacity="0.0" />
-                                                            </linearGradient>
-                                                        </defs>
-
-                                                        {/* Horizontal Grid lines & Y-Axis values (0.0 to 4.0) */}
-                                                        <For each={[4.0, 3.0, 2.0, 1.0, 0.0]}>
-                                                            {(val) => {
-                                                                const y = getYCoord(val);
-                                                                return (
-                                                                    <g>
-                                                                        <line
-                                                                            x1={chartDims.padL}
-                                                                            y1={y}
-                                                                            x2={chartDims.w - chartDims.padR}
-                                                                            y2={y}
-                                                                            stroke="currentColor"
-                                                                            class="text-neutral-200 dark:text-neutral-800"
-                                                                            stroke-dasharray={val > 0 && val < 4 ? "4 4" : "0"}
-                                                                            stroke-width="1"
-                                                                        />
-                                                                        <text
-                                                                            x={chartDims.padL - 8}
-                                                                            y={y + 3.5}
-                                                                            text-anchor="end"
-                                                                            class="fill-neutral-400 font-mono text-[10px]"
-                                                                        >
-                                                                            {val.toFixed(1)}
-                                                                        </text>
-                                                                    </g>
-                                                                );
-                                                            }}
-                                                        </For>
-
-                                                        {/* Shaded Areas */}
-                                                        <path d={ipkAreaPath()} fill="url(#ipkGrad)" />
-                                                        <path d={ipsAreaPath()} fill="url(#ipsGrad)" />
-
-                                                        {/* Lines */}
-                                                        <path
-                                                            d={ipsPath()}
-                                                            fill="none"
-                                                            stroke="#0284c7"
-                                                            stroke-width="2.5"
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                        />
-                                                        <path
-                                                            d={ipkPath()}
-                                                            fill="none"
-                                                            stroke="#6366f1"
-                                                            stroke-width="2.5"
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                        />
-
-                                                        {/* Interactive Hover Guides & Data Points */}
-                                                        <For each={multilinePoints()}>
-                                                            {(p) => {
-                                                                const isHovered = () => hoveredTimelineIdx() === p.idx;
-                                                                return (
-                                                                    <g>
-                                                                        {/* Vertical guideline on hover */}
-                                                                        <Show when={isHovered()}>
-                                                                            <line
-                                                                                x1={p.x}
-                                                                                y1={chartDims.padT}
-                                                                                x2={p.x}
-                                                                                y2={chartDims.padT + plotH()}
-                                                                                stroke="#818cf8"
-                                                                                stroke-width="1.5"
-                                                                                stroke-dasharray="3 3"
-                                                                            />
-                                                                        </Show>
-
-                                                                        {/* X-axis label (Academic Year name) */}
-                                                                        <text
-                                                                            x={p.x}
-                                                                            y={chartDims.padT + plotH() + 18}
-                                                                            text-anchor="middle"
-                                                                            class={`font-mono text-[10px] transition-colors ${
-                                                                                isHovered()
-                                                                                    ? 'fill-indigo-600 dark:fill-indigo-400 font-bold'
-                                                                                    : 'fill-neutral-500 dark:fill-neutral-400'
-                                                                            }`}
-                                                                        >
-                                                                            {p.semName}
-                                                                        </text>
-
-                                                                        {/* IPS Point */}
-                                                                        <circle
-                                                                            cx={p.x}
-                                                                            cy={p.yIps}
-                                                                            r={isHovered() ? 5 : 3.5}
-                                                                            fill="#ffffff"
-                                                                            stroke="#0284c7"
-                                                                            stroke-width="2"
-                                                                            class="transition-all"
-                                                                        />
-
-                                                                        {/* IPK Point */}
-                                                                        <circle
-                                                                            cx={p.x}
-                                                                            cy={p.yIpk}
-                                                                            r={isHovered() ? 5.5 : 4}
-                                                                            fill="#ffffff"
-                                                                            stroke="#6366f1"
-                                                                            stroke-width="2.5"
-                                                                            class="transition-all"
-                                                                        />
-
-                                                                        {/* Invisible hover trigger column */}
-                                                                        <rect
-                                                                            x={p.x - plotW() / (multilinePoints().length * 2 || 1)}
-                                                                            y={0}
-                                                                            width={plotW() / (multilinePoints().length || 1)}
-                                                                            height={chartDims.h}
-                                                                            fill="transparent"
-                                                                            class="cursor-pointer"
-                                                                            onPointerEnter={() => setHoveredTimelineIdx(p.idx)}
-                                                                            onPointerLeave={() => setHoveredTimelineIdx(null)}
-                                                                        />
-                                                                    </g>
-                                                                );
-                                                            }}
-                                                        </For>
-                                                    </svg>
-
-                                                    {/* Tooltip Card Overlay */}
-                                                    <Show when={hoveredTimelineIdx() !== null && multilinePoints()[hoveredTimelineIdx()!]}>
-                                                        {(() => {
-                                                            const p = multilinePoints()[hoveredTimelineIdx()!];
-                                                            return (
-                                                                <div class="mt-2 p-2.5 rounded-xl bg-neutral-900/90 text-white dark:bg-neutral-800/95 border border-neutral-700 shadow-lg text-[11px] flex items-center justify-between gap-4 font-mono transition-all">
-                                                                    <div class="flex items-center gap-2">
-                                                                        <span class="font-bold text-white text-xs">{p.semName}</span>
-                                                                        <span class="text-neutral-400">({p.sks} SKS)</span>
-                                                                    </div>
-                                                                    <div class="flex items-center gap-4">
-                                                                        <div>
-                                                                            <span class="text-neutral-400 mr-1">Semester IPS:</span>
-                                                                            <span class="font-bold text-sky-400">{p.ips.toFixed(2)}</span>
-                                                                        </div>
-                                                                        <div>
-                                                                            <span class="text-neutral-400 mr-1">Cumulative IPK:</span>
-                                                                            <span class="font-bold text-indigo-400">{p.ipk.toFixed(2)}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            );
-                                                        })()}
-                                                    </Show>
-                                                </div>
+                                                <Suspense fallback={
+                                                    <div class="py-16 text-center flex flex-col items-center justify-center gap-2">
+                                                        <div class="size-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                                                        <span class="text-xs font-mono text-neutral-400">Loading chart...</span>
+                                                    </div>
+                                                }>
+                                                    <AcademicPerformanceChart data={chartData()} />
+                                                </Suspense>
                                             </Show>
                                         </div>
 

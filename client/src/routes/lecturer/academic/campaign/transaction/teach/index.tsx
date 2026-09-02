@@ -1,4 +1,4 @@
-import { createSignal, onMount, For, Show, createMemo } from 'solid-js';
+import { createSignal, onMount, For, Show, createMemo, lazy, Suspense } from 'solid-js';
 import { A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { currentUserSignal, refreshAuthState, getStoredRoles, normalizeRoleName } from '~/lib/authStore';
@@ -12,11 +12,9 @@ import {
     LecturerAssignedTeachItem 
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachController';
 import type { AcademicLecturerMasterLecturer } from '~/models/academic/lecturer/master/Lecturer';
-import { defineChart, lineY, areaY } from '@tanstack/charts';
-import { scaleLinear } from '@tanstack/charts/scales/linear';
-import { scalePoint } from '@tanstack/charts/scales/point';
-import { tooltip } from '@tanstack/charts/tooltip';
-import { Chart } from '@tanstack/charts/solid';
+import type { YearlyCreditTrend } from '~/components/chart/teach_credit_chart';
+
+const TeachCreditChart = lazy(() => import('~/components/chart/teach_credit_chart'));
 
 export default function LecturerTeachIndexPage() {
     const user = () => currentUserSignal();
@@ -223,41 +221,7 @@ export default function LecturerTeachIndexPage() {
         return list;
     });
 
-    const chartDefinition = createMemo(() => {
-        const data = yearlyCreditTrends();
-        if (data.length === 0) return null;
 
-        return defineChart({
-            marks: [
-                areaY(data, {
-                    id: 'teach-credits-area',
-                    x: 'yearName',
-                    y: 'totalCredit',
-                    fill: '#6366f1',
-                    fillOpacity: 0.15,
-                }),
-                lineY(data, {
-                    id: 'teach-credits-line',
-                    x: 'yearName',
-                    y: 'totalCredit',
-                    points: true,
-                    stroke: '#6366f1',
-                    strokeWidth: 3,
-                }),
-            ],
-            x: {
-                scale: () => scalePoint<string>().padding(0.25),
-                axis: { label: 'Tahun Akademik' },
-            },
-            y: {
-                scale: scaleLinear,
-                nice: true,
-                grid: true,
-                axis: { label: 'Total SKS' },
-            },
-            tooltip,
-        });
-    });
 
     const avgCreditPerYear = createMemo(() => {
         const list = yearlyCreditTrends();
@@ -412,7 +376,7 @@ export default function LecturerTeachIndexPage() {
                     </div>
 
                     <Show
-                        when={chartDefinition()}
+                        when={yearlyCreditTrends().length > 0}
                         fallback={
                             <div class="py-12 text-center text-neutral-400 font-mono text-xs flex flex-col items-center justify-center gap-2">
                                 <svg class="size-8 text-neutral-300 dark:text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -422,16 +386,14 @@ export default function LecturerTeachIndexPage() {
                             </div>
                         }
                     >
-                        {(def) => (
-                            <div class="w-full">
-                                <Chart
-                                    definition={def()}
-                                    ariaLabel="Total Teaching Credits per Academic Year"
-                                    height={260}
-                                    class="w-full"
-                                />
+                        <Suspense fallback={
+                            <div class="py-12 text-center flex flex-col items-center justify-center gap-2">
+                                <div class="size-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                                <span class="text-xs font-mono text-neutral-400">Loading chart...</span>
                             </div>
-                        )}
+                        }>
+                            <TeachCreditChart data={yearlyCreditTrends()} />
+                        </Suspense>
                     </Show>
                 </div>
 
