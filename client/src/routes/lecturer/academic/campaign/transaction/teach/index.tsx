@@ -12,6 +12,11 @@ import {
     LecturerAssignedTeachItem 
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachController';
 import type { AcademicLecturerMasterLecturer } from '~/models/academic/lecturer/master/Lecturer';
+import { defineChart, lineY, areaY } from '@tanstack/charts';
+import { scaleLinear } from '@tanstack/charts/scales/linear';
+import { scalePoint } from '@tanstack/charts/scales/point';
+import { tooltip } from '@tanstack/charts/tooltip';
+import { Chart } from '@tanstack/charts/solid';
 
 export default function LecturerTeachIndexPage() {
     const user = () => currentUserSignal();
@@ -158,6 +163,115 @@ export default function LecturerTeachIndexPage() {
     const lecturerName = () => lecturerMaster()?.name || user()?.name || 'Lecturer';
     const lecturerNidn = () => lecturerMaster()?.code || lecturerMaster()?.nidn || '-';
 
+    // --- @tanstack/charts: Total Teaching Credits per Academic Year ---
+    const yearlyCreditTrends = createMemo(() => {
+        const map = new Map<string, {
+            yearId: string;
+            yearName: string;
+            yearCode: number | string | null;
+            totalCredit: number;
+            classCount: number;
+            totalPlannedSessions: number;
+            totalRealizedSessions: number;
+            courses: { name: string; code?: string; credit: number; className?: string }[];
+        }>();
+
+        for (const item of assignedTeaches()) {
+            const yId = item.academic_year_id || 'unknown';
+            const yName = item.academic_year_name || (item.academic_year_code ? `Tahun ${item.academic_year_code}` : 'Tahun Akademik');
+            const yCode = item.academic_year_code;
+            const cr = Number(item.credit || item.course_total_credit) || 0;
+
+            if (!map.has(yId)) {
+                map.set(yId, {
+                    yearId: yId,
+                    yearName: yName,
+                    yearCode: yCode ?? null,
+                    totalCredit: 0,
+                    classCount: 0,
+                    totalPlannedSessions: 0,
+                    totalRealizedSessions: 0,
+                    courses: [],
+                });
+            }
+
+            const entry = map.get(yId)!;
+            entry.totalCredit += cr;
+            entry.classCount += 1;
+            entry.totalPlannedSessions += (Number(item.planning) || 0);
+            entry.totalRealizedSessions += (Number(item.realization) || 0);
+            entry.courses.push({
+                name: item.course_name || 'Mata Kuliah',
+                code: item.course_code,
+                credit: cr,
+                className: item.class_name || (item.class_alphabet_code ? `Kelas ${item.class_alphabet_code}` : undefined),
+            });
+        }
+
+        const list = Array.from(map.values()).filter(entry => entry.yearId !== 'unknown' || entry.totalCredit > 0);
+
+        // Sort chronologically (earliest to latest academic year) for standard left-to-right timeline trend
+        list.sort((a, b) => {
+            const codeA = Number(a.yearCode) || 0;
+            const codeB = Number(b.yearCode) || 0;
+            if (codeA !== 0 && codeB !== 0 && codeA !== codeB) {
+                return codeA - codeB;
+            }
+            return a.yearName.localeCompare(b.yearName);
+        });
+
+        return list;
+    });
+
+    const chartDefinition = createMemo(() => {
+        const data = yearlyCreditTrends();
+        if (data.length === 0) return null;
+
+        return defineChart({
+            marks: [
+                areaY(data, {
+                    id: 'teach-credits-area',
+                    x: 'yearName',
+                    y: 'totalCredit',
+                    fill: '#6366f1',
+                    fillOpacity: 0.15,
+                }),
+                lineY(data, {
+                    id: 'teach-credits-line',
+                    x: 'yearName',
+                    y: 'totalCredit',
+                    points: true,
+                    stroke: '#6366f1',
+                    strokeWidth: 3,
+                }),
+            ],
+            x: {
+                scale: () => scalePoint<string>().padding(0.25),
+                axis: { label: 'Tahun Akademik' },
+            },
+            y: {
+                scale: scaleLinear,
+                nice: true,
+                grid: true,
+                axis: { label: 'Total SKS' },
+            },
+            tooltip,
+        });
+    });
+
+    const avgCreditPerYear = createMemo(() => {
+        const list = yearlyCreditTrends();
+        if (list.length === 0) return '0.0';
+        const total = list.reduce((acc, curr) => acc + curr.totalCredit, 0);
+        return (total / list.length).toFixed(1);
+    });
+
+    const maxYearCreditItem = createMemo(() => {
+        const list = yearlyCreditTrends();
+        if (list.length === 0) return null;
+        return list.reduce((prev, curr) => curr.totalCredit > prev.totalCredit ? curr : prev, list[0]);
+    });
+
     return (
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
             <TopBar />
@@ -260,6 +374,65 @@ export default function LecturerTeachIndexPage() {
                             <span class="text-xs text-neutral-400 font-medium">Recorded</span>
                         </div>
                     </div>
+                </div>
+
+                {/* Chart Total Credit per Academic Year */}
+                <div class="p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-5">
+                    {/* Header */}
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <div class="size-7 rounded-lg bg-indigo-100 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs">
+                                    <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
+                                    </svg>
+                                </div>
+                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                    Total Teaching Credits per Academic Year
+                                </h3>
+                            </div>
+                            <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                Tren beban SKS perkuliahan yang diampu di setiap Tahun Akademik (Y-Axis: Total SKS, X-Axis: Tahun Akademik).
+                            </p>
+                        </div>
+
+                        {/* Summary Badges */}
+                        <div class="flex items-center gap-2 flex-wrap text-xs font-mono">
+                            <Show when={maxYearCreditItem()}>
+                                <div class="px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/60 text-purple-700 dark:text-purple-300">
+                                    <span class="text-[10px] text-purple-500 block uppercase font-sans">Beban Tertinggi:</span>
+                                    <span class="font-bold">{maxYearCreditItem()?.totalCredit} SKS ({maxYearCreditItem()?.yearName})</span>
+                                </div>
+                            </Show>
+                            <div class="px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800/60 text-indigo-700 dark:text-indigo-300">
+                                <span class="text-[10px] text-indigo-500 block uppercase font-sans">Rata-Rata / Tahun:</span>
+                                <span class="font-bold">{avgCreditPerYear()} SKS</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <Show
+                        when={chartDefinition()}
+                        fallback={
+                            <div class="py-12 text-center text-neutral-400 font-mono text-xs flex flex-col items-center justify-center gap-2">
+                                <svg class="size-8 text-neutral-300 dark:text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
+                                </svg>
+                                <span>Belum ada data penugasan perkuliahan dengan Tahun Akademik untuk ditampilkan di grafik.</span>
+                            </div>
+                        }
+                    >
+                        {(def) => (
+                            <div class="w-full">
+                                <Chart
+                                    definition={def()}
+                                    ariaLabel="Total Teaching Credits per Academic Year"
+                                    height={260}
+                                    class="w-full"
+                                />
+                            </div>
+                        )}
+                    </Show>
                 </div>
 
                 {/* Filter & View Toolbar */}
