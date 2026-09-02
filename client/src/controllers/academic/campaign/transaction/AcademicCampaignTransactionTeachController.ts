@@ -222,6 +222,10 @@ export interface LecturerAssignedTeachItem {
     end_date?: string | null;
     max_member?: number;
     activity_id?: string | null;
+    activity_name?: string | null;
+    academic_year_id?: string | null;
+    academic_year_name?: string | null;
+    academic_year_code?: number | string | null;
     
     // Course info (from academic_course_master.courses)
     course_id: string;
@@ -236,6 +240,68 @@ export interface LecturerAssignedTeachItem {
     class_name?: string;
     class_alphabet_code?: string;
     class_capacity?: number;
+}
+
+export async function listActivities(queryParams?: { page_size?: number }): Promise<any[]> {
+    try {
+        const size = queryParams?.page_size || 500;
+        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/activities?page_size=${size}`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+        if (!res.ok) return [];
+        const json = await res.json();
+        return json.data || [];
+    } catch (err) {
+        console.warn('Error fetching activities:', err);
+        return [];
+    }
+}
+
+export async function getActivityById(id: string): Promise<any | null> {
+    if (!id || id === '00000000-0000-0000-0000-000000000000') return null;
+    try {
+        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/activities/${id}`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+        if (!res.ok) return null;
+        return await res.json();
+    } catch (err) {
+        console.warn(`Error fetching activity ${id}:`, err);
+        return null;
+    }
+}
+
+export async function listAcademicYears(queryParams?: { page_size?: number }): Promise<any[]> {
+    try {
+        const size = queryParams?.page_size || 500;
+        const res = await fetch(`${getBaseUrl()}/academic/general/reference/academic-years?page_size=${size}`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+        if (!res.ok) return [];
+        const json = await res.json();
+        return json.data || [];
+    } catch (err) {
+        console.warn('Error fetching academic years:', err);
+        return [];
+    }
+}
+
+export async function getAcademicYearById(id: string): Promise<any | null> {
+    if (!id || id === '00000000-0000-0000-0000-000000000000') return null;
+    try {
+        const res = await fetch(`${getBaseUrl()}/academic/general/reference/academic-years/${id}`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+        if (!res.ok) return null;
+        return await res.json();
+    } catch (err) {
+        console.warn(`Error fetching academic year ${id}:`, err);
+        return null;
+    }
 }
 
 export async function listTeachLecturers(queryParams?: { page?: number; page_size?: number; lecturer_id?: string; teach_id?: string }): Promise<any[]> {
@@ -263,14 +329,16 @@ export async function listTeachLecturers(queryParams?: { page?: number; page_siz
 export async function getLecturerAssignedTeaches(lecturerId: string): Promise<LecturerAssignedTeachItem[]> {
     if (!lecturerId || lecturerId === '00000000-0000-0000-0000-000000000000') return [];
     try {
-        const [teachLecturers, coursesList, classCodesList] = await Promise.all([
+        const [teachLecturers, coursesList, classCodesList, activitiesList, academicYearsList] = await Promise.all([
             listTeachLecturers({ lecturer_id: lecturerId, page_size: 500 }),
             listCourses({ page_size: 1000 }),
             listClassCodes({ page_size: 1000 }),
+            listActivities({ page_size: 1000 }),
+            listAcademicYears({ page_size: 500 }),
         ]);
 
         const filteredTeachLecturers = Array.isArray(teachLecturers) 
-            ? teachLecturers.filter(tl => tl.lecturer_id === lecturerId || !tl.lecturer_id)
+            ? teachLecturers.filter(tl => tl.lecturer_id === lecturerId)
             : [];
 
         if (filteredTeachLecturers.length === 0) return [];
@@ -280,6 +348,12 @@ export async function getLecturerAssignedTeaches(lecturerId: string): Promise<Le
 
         const classCodesMap = new Map<string, any>();
         classCodesList.forEach((cc: any) => { if (cc.id) classCodesMap.set(cc.id, cc); });
+
+        const activitiesMap = new Map<string, any>();
+        activitiesList.forEach((a: any) => { if (a.id) activitiesMap.set(a.id, a); });
+
+        const academicYearsMap = new Map<string, any>();
+        academicYearsList.forEach((ay: any) => { if (ay.id) academicYearsMap.set(ay.id, ay); });
 
         const results: LecturerAssignedTeachItem[] = [];
 
@@ -304,6 +378,20 @@ export async function getLecturerAssignedTeaches(lecturerId: string): Promise<Le
                     if (classCode) classCodesMap.set(classCodeId, classCode);
                 }
 
+                const activityId = teach?.activity_id || null;
+                let activity = activityId ? activitiesMap.get(activityId) : null;
+                if (!activity && activityId) {
+                    activity = await getActivityById(activityId);
+                    if (activity) activitiesMap.set(activityId, activity);
+                }
+
+                const academicYearId = activity?.academic_year_id || null;
+                let academicYear = academicYearId ? academicYearsMap.get(academicYearId) : null;
+                if (!academicYear && academicYearId) {
+                    academicYear = await getAcademicYearById(academicYearId);
+                    if (academicYear) academicYearsMap.set(academicYearId, academicYear);
+                }
+
                 results.push({
                     teach_lecturer_id: tl.id,
                     teach_id: tl.teach_id,
@@ -319,7 +407,11 @@ export async function getLecturerAssignedTeaches(lecturerId: string): Promise<Le
                     start_date: teach?.start_date || null,
                     end_date: teach?.end_date || null,
                     max_member: teach?.max_member || 0,
-                    activity_id: teach?.activity_id || null,
+                    activity_id: activityId,
+                    activity_name: activity?.name || null,
+                    academic_year_id: academicYearId,
+                    academic_year_name: academicYear?.name || (academicYear?.code ? String(academicYear.code) : null),
+                    academic_year_code: academicYear?.code || null,
 
                     course_id: courseId,
                     course_code: course?.code || '-',
@@ -336,7 +428,19 @@ export async function getLecturerAssignedTeaches(lecturerId: string): Promise<Le
             })
         );
 
-        results.sort((a, b) => (a.course_name || '').localeCompare(b.course_name || ''));
+        results.sort((a, b) => {
+            const yearCodeA = Number(a.academic_year_code) || 0;
+            const yearCodeB = Number(b.academic_year_code) || 0;
+            if (yearCodeA !== yearCodeB) {
+                return yearCodeB - yearCodeA;
+            }
+            const yearNameA = a.academic_year_name || '';
+            const yearNameB = b.academic_year_name || '';
+            const yearComp = yearNameB.localeCompare(yearNameA);
+            if (yearComp !== 0) return yearComp;
+
+            return (a.course_name || '').localeCompare(b.course_name || '');
+        });
         return results;
     } catch (err) {
         console.error('Error getting lecturer assigned teaches:', err);

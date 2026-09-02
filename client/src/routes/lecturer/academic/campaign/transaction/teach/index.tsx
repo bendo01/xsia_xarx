@@ -1,10 +1,12 @@
 import { createSignal, onMount, For, Show, createMemo } from 'solid-js';
 import { A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
-import { currentUserSignal, refreshAuthState } from '~/lib/authStore';
+import { currentUserSignal, refreshAuthState, getStoredRoles, normalizeRoleName } from '~/lib/authStore';
 import { getStorageItem } from '~/lib/storage';
 import { GetCurrentUser } from '~/controllers/auth/AuthUser';
 import { getLecturerMasterByIndividual } from '~/controllers/academic/lecturer/AcademicLecturerTransactionController';
+import { PersonMasterIndividualControllerShow } from '~/controllers/person/master/PersonMasterIndividualController';
+import { masterApiShow } from '~/controllers/master/masterApiController';
 import { 
     getLecturerAssignedTeaches, 
     LecturerAssignedTeachItem 
@@ -18,12 +20,22 @@ export default function LecturerTeachIndexPage() {
     const [assignedTeaches, setAssignedTeaches] = createSignal<LecturerAssignedTeachItem[]>([]);
     const [searchQuery, setSearchQuery] = createSignal('');
     const [viewMode, setViewMode] = createSignal<'grid' | 'table'>('grid');
-    const [selectedCreditFilter, setSelectedCreditFilter] = createSignal<string>('all');
+    const [selectedAcademicYearFilter, setSelectedAcademicYearFilter] = createSignal<string>('all');
 
     const loadLecturerTeaches = async () => {
         setIsLoading(true);
         try {
             await refreshAuthState();
+
+            // 1. First check if active role has roleable_id pointing to lecturer
+            const roles = getStoredRoles();
+            const lecturerRole = roles.find(r => 
+                normalizeRoleName(r.name) === 'lecturer' || 
+                r.roleable_type?.toLowerCase().includes('lecturer')
+            );
+            const directRoleLecturerId = lecturerRole?.roleable_id || '';
+
+            // 2. Check individual_id
             let indId = user()?.individual_id || getStorageItem('individual_id');
             if (!indId || indId === '00000000-0000-0000-0000-000000000000') {
                 const userRes = await GetCurrentUser();
@@ -32,17 +44,44 @@ export default function LecturerTeachIndexPage() {
                 }
             }
 
-            if (indId && indId !== '00000000-0000-0000-0000-000000000000') {
-                const masterLecturer = await getLecturerMasterByIndividual(indId);
-                setLecturerMaster(masterLecturer);
+            let resolvedLecturer: AcademicLecturerMasterLecturer | null = null;
 
-                if (masterLecturer?.id) {
-                    const teaches = await getLecturerAssignedTeaches(masterLecturer.id);
-                    setAssignedTeaches(teaches);
+            if (indId && indId !== '00000000-0000-0000-0000-000000000000') {
+                const [profileRes, masterLecturerRes] = await Promise.all([
+                    PersonMasterIndividualControllerShow(indId),
+                    getLecturerMasterByIndividual(indId),
+                ]);
+
+                resolvedLecturer = masterLecturerRes || profileRes.data?.lecturer || null;
+            }
+
+            // 3. Fallback to direct role lecturer_id if master not found by individual_id
+            if (!resolvedLecturer && directRoleLecturerId && directRoleLecturerId !== '00000000-0000-0000-0000-000000000000') {
+                try {
+                    const lRes = await masterApiShow<AcademicLecturerMasterLecturer>('academic/lecturer/master/lecturers', directRoleLecturerId);
+                    if (lRes.data) {
+                        resolvedLecturer = lRes.data;
+                    }
+                } catch (e) {
+                    console.warn('Failed to load lecturer by direct roleable_id:', e);
                 }
+            }
+
+            setLecturerMaster(resolvedLecturer);
+
+            const lecturerId = resolvedLecturer?.id || (directRoleLecturerId !== '00000000-0000-0000-0000-000000000000' ? directRoleLecturerId : '');
+
+            if (lecturerId) {
+                const teaches = await getLecturerAssignedTeaches(lecturerId);
+                // Strictly filter only teaches assigned to this lecturer.id
+                const lecturerTeaches = teaches.filter(item => item.lecturer_id === lecturerId);
+                setAssignedTeaches(lecturerTeaches);
+            } else {
+                setAssignedTeaches([]);
             }
         } catch (err) {
             console.error('Error loading lecturer teaching assignments:', err);
+            setAssignedTeaches([]);
         } finally {
             setIsLoading(false);
         }
@@ -52,24 +91,61 @@ export default function LecturerTeachIndexPage() {
         loadLecturerTeaches();
     });
 
-    // Filtered list based on search and credit filters
+    // Distinct Academic Years extracted from assigned teaches (where teaches.activity_id = activities.id and activities.academic_year_id = academic_years.id)
+    const distinctAcademicYears = createMemo(() => {
+        const yearMap = new Map<string, { id: string; name: string; code?: number | string | null }>();
+        for (const item of assignedTeaches()) {
+            if (item.academic_year_id) {
+                if (!yearMap.has(item.academic_year_id)) {
+                    yearMap.set(item.academic_year_id, {
+                        id: item.academic_year_id,
+                        name: item.academic_year_name || (item.academic_year_code ? `Tahun Akademik ${item.academic_year_code}` : 'Tahun Akademik'),
+                        code: item.academic_year_code,
+                    });
+                }
+            }
+        }
+        return Array.from(yearMap.values()).sort((a, b) => {
+            const codeA = Number(a.code) || 0;
+            const codeB = Number(b.code) || 0;
+            if (codeA !== codeB) return codeB - codeA;
+            return a.name.localeCompare(b.name);
+        });
+    });
+
+    // Filtered list based on search and academic year filters, ordered by academic_year
     const filteredTeaches = createMemo(() => {
         const query = searchQuery().toLowerCase().trim();
-        const creditFilter = selectedCreditFilter();
+        const yearFilter = selectedAcademicYearFilter();
 
-        return assignedTeaches().filter(item => {
+        const filtered = assignedTeaches().filter(item => {
             const matchesQuery = !query || 
                 (item.course_name && item.course_name.toLowerCase().includes(query)) ||
                 (item.course_code && item.course_code.toLowerCase().includes(query)) ||
                 (item.class_name && item.class_name.toLowerCase().includes(query)) ||
                 (item.class_alphabet_code && item.class_alphabet_code.toLowerCase().includes(query)) ||
-                (item.teach_name && item.teach_name.toLowerCase().includes(query));
+                (item.teach_name && item.teach_name.toLowerCase().includes(query)) ||
+                (item.activity_name && item.activity_name.toLowerCase().includes(query)) ||
+                (item.academic_year_name && item.academic_year_name.toLowerCase().includes(query));
 
-            const matchesCredit = creditFilter === 'all' || 
-                String(item.credit) === creditFilter || 
-                String(item.course_total_credit) === creditFilter;
+            const matchesYear = yearFilter === 'all' || 
+                item.academic_year_id === yearFilter;
 
-            return matchesQuery && matchesCredit;
+            return matchesQuery && matchesYear;
+        });
+
+        return filtered.sort((a, b) => {
+            const yearCodeA = Number(a.academic_year_code) || 0;
+            const yearCodeB = Number(b.academic_year_code) || 0;
+            if (yearCodeA !== yearCodeB) {
+                return yearCodeB - yearCodeA; // Latest academic year first
+            }
+            const yearNameA = a.academic_year_name || '';
+            const yearNameB = b.academic_year_name || '';
+            const yearComp = yearNameB.localeCompare(yearNameA);
+            if (yearComp !== 0) return yearComp;
+
+            return (a.course_name || '').localeCompare(b.course_name || '');
         });
     });
 
@@ -204,18 +280,20 @@ export default function LecturerTeachIndexPage() {
 
                     {/* Filter controls */}
                     <div class="flex items-center gap-2 shrink-0">
-                        {/* Credits Filter */}
+                        {/* Academic Year (Tahun Akademik) Filter */}
                         <select
-                            value={selectedCreditFilter()}
-                            onChange={(e) => setSelectedCreditFilter(e.currentTarget.value)}
-                            class="px-3 py-2 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xl text-xs text-neutral-700 dark:text-neutral-300 focus:outline-none focus:border-indigo-500"
+                            value={selectedAcademicYearFilter()}
+                            onChange={(e) => setSelectedAcademicYearFilter(e.currentTarget.value)}
+                            class="px-3 py-2 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xl text-xs text-neutral-700 dark:text-neutral-300 focus:outline-none focus:border-indigo-500 font-medium"
                         >
-                            <option value="all">All SKS Credits</option>
-                            <option value="1">1 SKS</option>
-                            <option value="2">2 SKS</option>
-                            <option value="3">3 SKS</option>
-                            <option value="4">4 SKS</option>
-                            <option value="6">6 SKS</option>
+                            <option value="all">Semua Tahun Akademik</option>
+                            <For each={distinctAcademicYears()}>
+                                {(year) => (
+                                    <option value={year.id}>
+                                        {year.name}
+                                    </option>
+                                )}
+                            </For>
                         </select>
 
                         {/* View Switcher */}
@@ -277,10 +355,10 @@ export default function LecturerTeachIndexPage() {
                                         ? `No classes matching "${searchQuery()}". Try clearing search filters.`
                                         : 'You have not been assigned to any semester teaching classes yet.'}
                                 </p>
-                                <Show when={searchQuery() || selectedCreditFilter() !== 'all'}>
+                                <Show when={searchQuery() || selectedAcademicYearFilter() !== 'all'}>
                                     <button
                                         type="button"
-                                        onClick={() => { setSearchQuery(''); setSelectedCreditFilter('all'); }}
+                                        onClick={() => { setSearchQuery(''); setSelectedAcademicYearFilter('all'); }}
                                         class="px-4 py-2 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 font-semibold rounded-xl text-xs transition-colors"
                                     >
                                         Clear Filters
@@ -306,7 +384,12 @@ export default function LecturerTeachIndexPage() {
                                                         <span class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
                                                             {item.course_code || 'COURSE'}
                                                         </span>
-                                                        <div class="flex items-center gap-1.5">
+                                                        <div class="flex items-center gap-1.5 flex-wrap">
+                                                            <Show when={item.academic_year_name}>
+                                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-mono">
+                                                                    {item.academic_year_name}
+                                                                </span>
+                                                            </Show>
                                                             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-mono">
                                                                 {item.credit || item.course_total_credit || 0} SKS
                                                             </span>
@@ -395,9 +478,16 @@ export default function LecturerTeachIndexPage() {
                                                     <tr class="hover:bg-neutral-50/80 dark:hover:bg-neutral-750/50 transition-colors">
                                                         <td class="px-6 py-4">
                                                             <div class="space-y-0.5">
-                                                                <span class="font-mono text-[11px] font-bold text-indigo-600 dark:text-indigo-400">
-                                                                    {item.course_code}
-                                                                </span>
+                                                                <div class="flex items-center gap-2">
+                                                                    <span class="font-mono text-[11px] font-bold text-indigo-600 dark:text-indigo-400">
+                                                                        {item.course_code}
+                                                                    </span>
+                                                                    <Show when={item.academic_year_name}>
+                                                                        <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
+                                                                            {item.academic_year_name}
+                                                                        </span>
+                                                                    </Show>
+                                                                </div>
                                                                 <h4 class="font-bold text-neutral-900 dark:text-white">
                                                                     {item.course_name}
                                                                 </h4>
