@@ -43,6 +43,8 @@ export interface StudentActivityItem {
     // UI enhancements
     semester_name?: string;
     status_name?: string;
+    academic_year?: { id?: string; name?: string; code?: string } | null;
+    academic_year_name?: string;
 }
 
 export async function listStudentActivities(queryParams?: {

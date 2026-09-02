@@ -36,6 +36,10 @@ pub struct StudentActivityResponse {
     pub feeder_id: Option<Uuid>,
     pub finance_id: Option<Uuid>,
     pub finance_fee: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub academic_year: Option<crate::dtos::common::reference::ReferenceResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub academic_year_name: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]

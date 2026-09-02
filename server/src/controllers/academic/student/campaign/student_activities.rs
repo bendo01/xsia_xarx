@@ -47,7 +47,63 @@ pub async fn list_student_activities(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| StudentActivityResponse {
+    let unit_activity_ids: Vec<Uuid> = items.iter().map(|item| item.unit_activity_id).collect();
+    let unit_activities_map: std::collections::HashMap<Uuid, (Uuid, i32, String)> = if unit_activity_ids.is_empty() {
+        std::collections::HashMap::new()
+    } else {
+        let uas = crate::models::academic::campaign::transaction::activities::Entity::find()
+            .filter(crate::models::academic::campaign::transaction::activities::Column::Id.is_in(unit_activity_ids))
+            .filter(crate::models::academic::campaign::transaction::activities::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .unwrap_or_default();
+
+        let ay_ids: Vec<Uuid> = uas.iter().map(|ua| ua.academic_year_id).collect();
+        let ays = if ay_ids.is_empty() {
+            vec![]
+        } else {
+            crate::models::academic::general::reference::academic_years::Entity::find()
+                .filter(crate::models::academic::general::reference::academic_years::Column::Id.is_in(ay_ids))
+                .filter(crate::models::academic::general::reference::academic_years::Column::DeletedAt.is_null())
+                .all(db)
+                .await
+                .unwrap_or_default()
+        };
+        let ay_map: std::collections::HashMap<Uuid, (i32, String)> = ays
+            .into_iter()
+            .map(|ay| (ay.id, (ay.code, ay.name)))
+            .collect();
+
+        uas.into_iter()
+            .filter_map(|ua| {
+                ay_map.get(&ua.academic_year_id).map(|(code, name)| {
+                    (ua.id, (ua.academic_year_id, *code, name.clone()))
+                })
+            })
+            .collect()
+    };
+
+    let data = items.into_iter().map(|item| {
+        let (ay_id, ay_code, ay_name) = unit_activities_map.get(&item.unit_activity_id).cloned().unwrap_or((Uuid::nil(), 0, String::new()));
+        let academic_year = if !ay_name.is_empty() {
+            Some(crate::dtos::common::reference::ReferenceResponse {
+                id: ay_id,
+                code: ay_code,
+                alphabet_code: String::new(),
+                name: ay_name.clone(),
+                created_at: chrono::Utc::now().naive_utc(),
+                updated_at: chrono::Utc::now().naive_utc(),
+                deleted_at: None,
+                sync_at: None,
+                created_by: None,
+                updated_by: None,
+            })
+        } else {
+            None
+        };
+        let academic_year_name = if !ay_name.is_empty() { Some(ay_name) } else { None };
+
+        StudentActivityResponse {
             id: item.id,
             name: item.name,
             cumulative_index: item.cumulative_index,
@@ -69,7 +125,9 @@ pub async fn list_student_activities(
             feeder_id: item.feeder_id,
             finance_id: item.finance_id,
             finance_fee: item.finance_fee,
-
+            academic_year,
+            academic_year_name,
+        }
     }).collect();
 
     Ok(Json(PaginatedStudentActivityResponse {
@@ -100,6 +158,38 @@ pub async fn get_student_activitie(
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
         .ok_or_else(|| StatusError::not_found().brief("StudentActivity not found"))?;
 
+    let (academic_year, academic_year_name) = if let Ok(Some(ua)) = crate::models::academic::campaign::transaction::activities::Entity::find_by_id(item.unit_activity_id)
+        .filter(crate::models::academic::campaign::transaction::activities::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+    {
+        if let Ok(Some(ay)) = crate::models::academic::general::reference::academic_years::Entity::find_by_id(ua.academic_year_id)
+            .filter(crate::models::academic::general::reference::academic_years::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+        {
+            (
+                Some(crate::dtos::common::reference::ReferenceResponse {
+                    id: ay.id,
+                    code: ay.code,
+                    alphabet_code: String::new(),
+                    name: ay.name.clone(),
+                    created_at: ay.created_at.unwrap_or_else(|| chrono::Utc::now().naive_utc()),
+                    updated_at: ay.updated_at.unwrap_or_else(|| chrono::Utc::now().naive_utc()),
+                    deleted_at: ay.deleted_at,
+                    sync_at: ay.sync_at,
+                    created_by: ay.created_by,
+                    updated_by: ay.updated_by,
+                }),
+                Some(ay.name),
+            )
+        } else {
+            (None, None)
+        }
+    } else {
+        (None, None)
+    };
+
     Ok(Json(StudentActivityResponse {
             id: item.id,
             name: item.name,
@@ -122,7 +212,8 @@ pub async fn get_student_activitie(
             feeder_id: item.feeder_id,
             finance_id: item.finance_id,
             finance_fee: item.finance_fee,
-
+            academic_year,
+            academic_year_name,
     }))
 }#[endpoint(tags("Academic - Student - Campaign - StudentActivity"), status_codes(200, 400, 500))]
 pub async fn create_student_activitie(
@@ -190,7 +281,8 @@ pub async fn create_student_activitie(
             feeder_id: item.feeder_id,
             finance_id: item.finance_id,
             finance_fee: item.finance_fee,
-
+            academic_year: None,
+            academic_year_name: None,
         }))
 }
 
@@ -290,7 +382,8 @@ pub async fn update_student_activitie(
             feeder_id: item.feeder_id,
             finance_id: item.finance_id,
             finance_fee: item.finance_fee,
-
+            academic_year: None,
+            academic_year_name: None,
         }))
 }
 #[endpoint(tags("Academic - Student - Campaign - StudentActivity"), status_codes(200, 400, 404, 500))]

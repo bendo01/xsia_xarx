@@ -2,11 +2,11 @@ import { createSignal, onMount, createEffect, Show, For } from 'solid-js';
 import { useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
-import { 
-    currentUserSignal, 
-    refreshAuthState, 
-    getActiveStudentId, 
-    getActiveStudentCode, 
+import {
+    currentUserSignal,
+    refreshAuthState,
+    getActiveStudentId,
+    getActiveStudentCode,
     setActiveStudent,
     activeStudentIdSignal,
     activeStudentCodeSignal
@@ -37,12 +37,13 @@ export default function StudentDashboardProfilePage() {
         const key = `krs-${act.id}`;
         setPrintingId(key);
         try {
-            toast.info(`Generating KRS (${act.name || act.semester_name || 'Semester'}) PDF...`);
+            const semLabel = act.academic_year?.name || act.name || act.semester_name || 'Semester';
+            toast.info(`Generating KRS (${semLabel}) PDF...`);
             const blob = await printActivityPlan(act.id);
             if (blob) {
                 const nim = studentRecord()?.code || 'Student';
-                const semName = (act.name || act.semester_name || 'Semester').replace(/\s+/g, '_');
-                openOrDownloadPdf(blob, `KRS_${nim}_${semName}.pdf`, `KRS (${act.name || act.semester_name || 'Semester'})`);
+                const semName = semLabel.replace(/\s+/g, '_');
+                openOrDownloadPdf(blob, `KRS_${nim}_${semName}.pdf`, `KRS (${semLabel})`);
             } else {
                 toast.danger('Failed to generate KRS PDF.');
             }
@@ -59,12 +60,13 @@ export default function StudentDashboardProfilePage() {
         const key = `khs-${act.id}`;
         setPrintingId(key);
         try {
-            toast.info(`Generating KHS (${act.name || act.semester_name || 'Semester'}) PDF...`);
+            const semLabel = act.academic_year?.name || act.name || act.semester_name || 'Semester';
+            toast.info(`Generating KHS (${semLabel}) PDF...`);
             const blob = await printActivityResult(act.id);
             if (blob) {
                 const nim = studentRecord()?.code || 'Student';
-                const semName = (act.name || act.semester_name || 'Semester').replace(/\s+/g, '_');
-                openOrDownloadPdf(blob, `KHS_${nim}_${semName}.pdf`, `KHS (${act.name || act.semester_name || 'Semester'})`);
+                const semName = semLabel.replace(/\s+/g, '_');
+                openOrDownloadPdf(blob, `KHS_${nim}_${semName}.pdf`, `KHS (${semLabel})`);
             } else {
                 toast.danger('Failed to generate KHS PDF.');
             }
@@ -180,11 +182,11 @@ export default function StudentDashboardProfilePage() {
 
     const handleSelectStudent = async (student: StudentMasterItem) => {
         if (studentRecord()?.id === student.id && studentRecord()?.code === student.code) return;
-        
+
         setStudentRecord(student);
         setActiveStudent(student.id, student.code);
         setSearchParams({ code: student.code });
-        
+
         toast.success(`Identitas mahasiswa aktif dialihkan ke NIM: ${student.code} (${student.unit_name || 'Program Studi'})`);
         await loadStudentSubRecords(student.id);
     };
@@ -207,7 +209,7 @@ export default function StudentDashboardProfilePage() {
 
         const students = availableStudents();
         if (students.length > 0) {
-            const target = students.find(s => 
+            const target = students.find(s =>
                 (codeFromQuery && s.code === codeFromQuery) ||
                 (studentIdFromQuery && s.id === studentIdFromQuery) ||
                 (currentStudentCode && s.code === currentStudentCode) ||
@@ -350,17 +352,16 @@ export default function StudentDashboardProfilePage() {
                                             tabIndex="0"
                                             onClick={() => handleSelectStudent(std)}
                                             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleSelectStudent(std); }}
-                                            class={`p-5 rounded-2xl border transition-all text-start cursor-pointer relative overflow-hidden flex flex-col justify-between ${
-                                                isCurrent()
+                                            class={`p-5 rounded-2xl border transition-all text-start cursor-pointer relative overflow-hidden flex flex-col justify-between ${isCurrent()
                                                     ? 'bg-blue-50/80 dark:bg-blue-950/40 border-2 border-blue-600 dark:border-blue-500 shadow-md ring-2 ring-blue-500/20'
                                                     : 'bg-white dark:bg-neutral-800/80 border-neutral-200 dark:border-neutral-700 hover:border-blue-300 dark:hover:border-neutral-600 hover:shadow-xs'
-                                            }`}
+                                                }`}
                                         >
                                             {/* Selection Ribbon indicator */}
                                             <Show when={isCurrent()}>
                                                 <div class="absolute top-0 right-0 px-3 py-1 bg-blue-600 text-white text-[10px] font-bold rounded-bl-xl tracking-wider uppercase flex items-center gap-1 shadow-xs">
                                                     <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                                                        <polyline points="20 6 9 17 4 12"/>
+                                                        <polyline points="20 6 9 17 4 12" />
                                                     </svg>
                                                     <span>Identitas Aktif</span>
                                                 </div>
@@ -368,11 +369,10 @@ export default function StudentDashboardProfilePage() {
 
                                             <div class="space-y-2.5">
                                                 <div class="flex items-center gap-3">
-                                                    <div class={`size-11 rounded-xl flex items-center justify-center font-bold text-sm ${
-                                                        isCurrent()
+                                                    <div class={`size-11 rounded-xl flex items-center justify-center font-bold text-sm ${isCurrent()
                                                             ? 'bg-blue-600 text-white shadow-sm'
                                                             : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300'
-                                                    }`}>
+                                                        }`}>
                                                         <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
                                                             <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
                                                         </svg>
@@ -416,7 +416,7 @@ export default function StudentDashboardProfilePage() {
                                                 }>
                                                     <div class="w-full py-2 px-3 bg-blue-600 text-white rounded-xl text-xs font-bold text-center flex items-center justify-center gap-1.5 shadow-xs">
                                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                                            <polyline points="20 6 9 17 4 12"/>
+                                                            <polyline points="20 6 9 17 4 12" />
                                                         </svg>
                                                         <span>Identitas Sedang Aktif</span>
                                                     </div>
@@ -438,7 +438,7 @@ export default function StudentDashboardProfilePage() {
                     >
                         <div class="flex items-center gap-3.5">
                             <div class="size-11 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
-                                <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                                <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>
                             </div>
                             <div>
                                 <h3 class="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Course Enrollment</h3>
@@ -454,7 +454,7 @@ export default function StudentDashboardProfilePage() {
                     >
                         <div class="flex items-center gap-3.5">
                             <div class="size-11 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
-                                <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10M6 14h6"/></svg>
+                                <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" /><path d="M6 6h10M6 10h10M6 14h6" /></svg>
                             </div>
                             <div>
                                 <h3 class="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Semester Activities</h3>
@@ -470,7 +470,7 @@ export default function StudentDashboardProfilePage() {
                     >
                         <div class="flex items-center gap-3.5">
                             <div class="size-11 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
-                                <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                             </div>
                             <div>
                                 <h3 class="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Academic Advisers</h3>
@@ -486,7 +486,7 @@ export default function StudentDashboardProfilePage() {
                     >
                         <div class="flex items-center gap-3.5">
                             <div class="size-11 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold">
-                                <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                                <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" /></svg>
                             </div>
                             <div>
                                 <h3 class="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">Admitted Students</h3>
@@ -506,11 +506,10 @@ export default function StudentDashboardProfilePage() {
                             onClick={() => setActiveTab('overview')}
                             title="Overview & Academic History"
                             aria-label="Overview & Academic History"
-                            class={`flex items-center gap-2 pb-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap px-1 ${
-                                activeTab() === 'overview'
+                            class={`flex items-center gap-2 pb-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap px-1 ${activeTab() === 'overview'
                                     ? 'border-blue-600 text-blue-600 dark:text-blue-400'
                                     : 'border-transparent text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200'
-                            }`}
+                                }`}
                         >
                             <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
@@ -522,11 +521,10 @@ export default function StudentDashboardProfilePage() {
                             onClick={() => setActiveTab('biodata')}
                             title="Personal Biodata & Address"
                             aria-label="Personal Biodata & Address"
-                            class={`flex items-center gap-2 pb-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap px-1 ${
-                                activeTab() === 'biodata'
+                            class={`flex items-center gap-2 pb-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap px-1 ${activeTab() === 'biodata'
                                     ? 'border-blue-600 text-blue-600 dark:text-blue-400'
                                     : 'border-transparent text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200'
-                            }`}
+                                }`}
                         >
                             <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z" />
@@ -538,11 +536,10 @@ export default function StudentDashboardProfilePage() {
                             onClick={() => setActiveTab('academic')}
                             title="Advisers & Guidance"
                             aria-label="Advisers & Guidance"
-                            class={`flex items-center gap-2 pb-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap px-1 ${
-                                activeTab() === 'academic'
+                            class={`flex items-center gap-2 pb-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap px-1 ${activeTab() === 'academic'
                                     ? 'border-blue-600 text-blue-600 dark:text-blue-400'
                                     : 'border-transparent text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200'
-                            }`}
+                                }`}
                         >
                             <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
@@ -621,6 +618,7 @@ export default function StudentDashboardProfilePage() {
                                             </div>
                                         </div>
                                     </div>
+                                    {/* Chart Semester Activity*/}
 
                                     {/* Recent Semester Activity Preview */}
                                     <div class="space-y-3">
@@ -638,7 +636,8 @@ export default function StudentDashboardProfilePage() {
                                             </A>
                                         </div>
 
-                                        <div class="overflow-x-auto">
+                                        {/* Desktop Table View (md and above) */}
+                                        <div class="hidden md:block overflow-x-auto">
                                             <table class="w-full text-xs text-start">
                                                 <thead class="bg-neutral-100 dark:bg-neutral-900/50 text-neutral-500 font-mono uppercase text-[10px]">
                                                     <tr>
@@ -663,7 +662,7 @@ export default function StudentDashboardProfilePage() {
                                                             {(act) => (
                                                                 <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900/30 transition-colors">
                                                                     <td class="py-3 px-3 font-semibold text-neutral-900 dark:text-white">
-                                                                        {act.name || act.semester_name || 'Academic Semester'}
+                                                                        {act.academic_year?.name || act.name || act.semester_name || 'Academic Semester'}
                                                                     </td>
                                                                     <td class="py-3 px-3 text-center font-mono">{act.total_credit ?? 0}</td>
                                                                     <td class="py-3 px-3 text-center font-mono">{act.grand_total_credit ?? act.total_credit ?? 0}</td>
@@ -674,11 +673,10 @@ export default function StudentDashboardProfilePage() {
                                                                         {Number(act.grand_cumulative_index ?? act.cumulative_index ?? 0).toFixed(2)}
                                                                     </td>
                                                                     <td class="py-3 px-3 text-center">
-                                                                        <span class={`inline-flex px-2 py-0.5 text-[10px] font-bold rounded-full ${
-                                                                            act.is_lock
+                                                                        <span class={`inline-flex px-2 py-0.5 text-[10px] font-bold rounded-full ${act.is_lock
                                                                                 ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
                                                                                 : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
-                                                                        }`}>
+                                                                            }`}>
                                                                             {act.is_lock ? 'Locked' : 'Unlocked'}
                                                                         </span>
                                                                     </td>
@@ -692,7 +690,7 @@ export default function StudentDashboardProfilePage() {
                                                                                 class="px-2 py-1 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-lg text-[11px] font-semibold inline-flex items-center gap-1 transition-colors disabled:opacity-50"
                                                                             >
                                                                                 <Show when={printingId() === `krs-${act.id}`} fallback={
-                                                                                    <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+                                                                                    <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><path d="M6 14h12v8H6z" /></svg>
                                                                                 }>
                                                                                     <div class="size-3 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                                                                                 </Show>
@@ -706,7 +704,7 @@ export default function StudentDashboardProfilePage() {
                                                                                 class="px-2 py-1 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-lg text-[11px] font-semibold inline-flex items-center gap-1 transition-colors disabled:opacity-50"
                                                                             >
                                                                                 <Show when={printingId() === `khs-${act.id}`} fallback={
-                                                                                    <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+                                                                                    <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><path d="M6 14h12v8H6z" /></svg>
                                                                                 }>
                                                                                     <div class="size-3 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                                                                                 </Show>
@@ -726,6 +724,111 @@ export default function StudentDashboardProfilePage() {
                                                     </Show>
                                                 </tbody>
                                             </table>
+                                        </div>
+
+                                        {/* Mobile Card View (below md) */}
+                                        <div class="block md:hidden space-y-3">
+                                            <Show when={recentActivities().length > 0} fallback={
+                                                <div class="p-6 text-center text-neutral-400 font-mono text-xs rounded-2xl bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200/80 dark:border-neutral-700/80">
+                                                    No semester academic activities recorded for NIM {studentRecord()?.code || '-'}.
+                                                </div>
+                                            }>
+                                                <For each={recentActivities()}>
+                                                    {(act) => (
+                                                        <div class="p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 space-y-3 hover:border-neutral-300 dark:hover:border-neutral-600 transition-colors">
+                                                            {/* Card Header: Icon, Semester Title, ID, and Lock Badge */}
+                                                            <div class="flex items-start justify-between gap-2">
+                                                                <div class="flex items-start gap-2.5">
+                                                                    <div class="size-8 rounded-lg bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold flex items-center justify-center shrink-0 mt-0.5">
+                                                                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" /></svg>
+                                                                    </div>
+                                                                    <div>
+                                                                        <h4 class="text-xs font-bold text-neutral-900 dark:text-white leading-snug">
+                                                                            {act.academic_year?.name || act.name || act.semester_name || 'Academic Semester'}
+                                                                        </h4>
+                                                                        <span class="text-[10px] text-neutral-400 font-mono">
+                                                                            ID: {act.id ? `${act.id.slice(0, 8)}...` : '-'}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                                <span class={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-bold rounded-full shrink-0 ${act.is_lock
+                                                                        ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+                                                                        : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                                                                    }`}>
+                                                                    <span class={`size-1.5 rounded-full ${act.is_lock ? 'bg-amber-500' : 'bg-emerald-500'}`}></span>
+                                                                    {act.is_lock ? 'Locked' : 'Unlocked'}
+                                                                </span>
+                                                            </div>
+
+                                                            {/* Metric Grid: Semester SKS, Total SKS, IPS, IPK */}
+                                                            <div class="grid grid-cols-4 gap-2 pt-2 border-t border-neutral-200/60 dark:border-neutral-800 text-center">
+                                                                <div class="p-2 rounded-xl bg-white dark:bg-neutral-800/80 border border-neutral-200/60 dark:border-neutral-700/60">
+                                                                    <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">Sem. SKS</span>
+                                                                    <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
+                                                                        {act.total_credit ?? 0}
+                                                                    </span>
+                                                                </div>
+                                                                <div class="p-2 rounded-xl bg-white dark:bg-neutral-800/80 border border-neutral-200/60 dark:border-neutral-700/60">
+                                                                    <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">Total SKS</span>
+                                                                    <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
+                                                                        {act.grand_total_credit ?? act.total_credit ?? 0}
+                                                                    </span>
+                                                                </div>
+                                                                <div class="p-2 rounded-xl bg-white dark:bg-neutral-800/80 border border-neutral-200/60 dark:border-neutral-700/60">
+                                                                    <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">IPS</span>
+                                                                    <span class="font-mono font-bold text-xs text-blue-600 dark:text-blue-400">
+                                                                        {Number(act.cumulative_index ?? 0).toFixed(2)}
+                                                                    </span>
+                                                                </div>
+                                                                <div class="p-2 rounded-xl bg-white dark:bg-neutral-800/80 border border-neutral-200/60 dark:border-neutral-700/60">
+                                                                    <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">IPK</span>
+                                                                    <span class="font-mono font-bold text-xs text-indigo-600 dark:text-indigo-400">
+                                                                        {Number(act.grand_cumulative_index ?? act.cumulative_index ?? 0).toFixed(2)}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Actions */}
+                                                            <div class="flex items-center gap-2 pt-1">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handlePrintKRS(act)}
+                                                                    disabled={printingId() === `krs-${act.id}`}
+                                                                    title="Print / Download KRS (Study Plan Card)"
+                                                                    class="flex-1 py-1.5 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-xl text-xs font-semibold inline-flex items-center justify-center gap-1 transition-colors disabled:opacity-50"
+                                                                >
+                                                                    <Show when={printingId() === `krs-${act.id}`} fallback={
+                                                                        <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><path d="M6 14h12v8H6z" /></svg>
+                                                                    }>
+                                                                        <div class="size-3 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                                                    </Show>
+                                                                    <span>KRS</span>
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handlePrintKHS(act)}
+                                                                    disabled={printingId() === `khs-${act.id}`}
+                                                                    title="Print / Download KHS (Study Result Card)"
+                                                                    class="flex-1 py-1.5 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-lg text-xs font-semibold inline-flex items-center justify-center gap-1 transition-colors disabled:opacity-50"
+                                                                >
+                                                                    <Show when={printingId() === `khs-${act.id}`} fallback={
+                                                                        <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><path d="M6 14h12v8H6z" /></svg>
+                                                                    }>
+                                                                        <div class="size-3 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                                                    </Show>
+                                                                    <span>KHS</span>
+                                                                </button>
+                                                                <A
+                                                                    href={`/student/academic/student/campaign/activity/show?id=${act.id}`}
+                                                                    class="flex-1 py-1.5 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-xl text-xs font-semibold text-center transition-colors"
+                                                                >
+                                                                    Details
+                                                                </A>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </For>
+                                            </Show>
                                         </div>
                                     </div>
                                 </div>
