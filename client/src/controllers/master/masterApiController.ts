@@ -39,7 +39,7 @@ export interface MasterPaginationResponse<T = any> {
 
 export async function masterApiIndex<T = any>(
     apiPath: string,
-    params: TypePaginationForm = { page: 1, per_page: 10 }
+    params: Partial<TypePaginationForm> = { page: 1, per_page: 10 }
 ): Promise<MasterPaginationResponse<T>> {
     try {
         const queryParams = new URLSearchParams();

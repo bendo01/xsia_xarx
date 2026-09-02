@@ -1,8 +1,13 @@
-import { masterApiIndex, masterApiShow } from '../master/masterApiController';
+import { masterApiIndex, masterApiShow } from '~/controllers/master/masterApiController';
 import type { AcademicLecturerMasterLecturer } from '~/models/academic/lecturer/master/Lecturer';
 import type { AcademicLecturerTransactionHomebase } from '~/models/academic/lecturer/transaction/Homebase';
 import type { AcademicLecturerTransactionAcademicRank } from '~/models/academic/lecturer/transaction/AcademicRank';
 import type { AcademicLecturerTransactionAcademicGroup } from '~/models/academic/lecturer/transaction/AcademicGroup';
+
+interface BaseReferenceItem {
+    id?: string;
+    name?: string;
+}
 
 // Cache reference maps to avoid redundant network queries
 let unitNameCache = new Map<string, string>();
@@ -16,7 +21,7 @@ async function ensureReferencesLoaded() {
 
         if (unitNameCache.size === 0) {
             promises.push(
-                masterApiIndex('institution/master/units', { per_page: 100 })
+                masterApiIndex<BaseReferenceItem>('institution/master/units', { page: 1, per_page: 100 })
                     .then(res => {
                         if (Array.isArray(res.data)) {
                             for (const u of res.data) {
@@ -30,7 +35,7 @@ async function ensureReferencesLoaded() {
 
         if (rankNameCache.size === 0) {
             promises.push(
-                masterApiIndex('academic/lecturer/reference/ranks', { per_page: 100 })
+                masterApiIndex<BaseReferenceItem>('academic/lecturer/reference/ranks', { page: 1, per_page: 100 })
                     .then(res => {
                         if (Array.isArray(res.data)) {
                             for (const r of res.data) {
@@ -44,7 +49,7 @@ async function ensureReferencesLoaded() {
 
         if (groupNameCache.size === 0) {
             promises.push(
-                masterApiIndex('academic/lecturer/reference/groups', { per_page: 100 })
+                masterApiIndex<BaseReferenceItem>('academic/lecturer/reference/groups', { page: 1, per_page: 100 })
                     .then(res => {
                         if (Array.isArray(res.data)) {
                             for (const g of res.data) {
@@ -58,7 +63,7 @@ async function ensureReferencesLoaded() {
 
         if (statusNameCache.size === 0) {
             promises.push(
-                masterApiIndex('academic/lecturer/reference/statuses', { per_page: 100 })
+                masterApiIndex<BaseReferenceItem>('academic/lecturer/reference/statuses', { page: 1, per_page: 100 })
                     .then(res => {
                         if (Array.isArray(res.data)) {
                             for (const s of res.data) {
@@ -83,6 +88,7 @@ export async function getLecturerMasterByIndividual(individualId: string): Promi
     if (!individualId || individualId === '00000000-0000-0000-0000-000000000000') return null;
     try {
         const res = await masterApiIndex<AcademicLecturerMasterLecturer>('academic/lecturer/master/lecturers', {
+            page: 1,
             per_page: 100,
         });
         if (Array.isArray(res.data)) {
@@ -111,6 +117,7 @@ export async function getLecturerHomebases(lecturerId: string): Promise<{
     try {
         await ensureReferencesLoaded();
         const res = await masterApiIndex<AcademicLecturerTransactionHomebase>('academic/lecturer/transaction/homebases', {
+            page: 1,
             per_page: 100,
         });
 
@@ -180,6 +187,7 @@ export async function getLecturerAcademicRanks(lecturerId: string): Promise<{
     try {
         await ensureReferencesLoaded();
         const res = await masterApiIndex<AcademicLecturerTransactionAcademicRank>('academic/lecturer/transaction/academic-ranks', {
+            page: 1,
             per_page: 100,
         });
 
@@ -237,6 +245,7 @@ export async function getLecturerAcademicGroups(lecturerId: string): Promise<{
     try {
         await ensureReferencesLoaded();
         const res = await masterApiIndex<AcademicLecturerTransactionAcademicGroup>('academic/lecturer/transaction/academic-groups', {
+            page: 1,
             per_page: 100,
         });
 
