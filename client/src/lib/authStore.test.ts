@@ -89,7 +89,7 @@ describe("Auth Store & Role Engine (White-Box Unit Tests)", () => {
       expect(getDashboardPathForRole("administrator")).toBe("/administrator/person/master/individual");
       expect(getDashboardPathForRole("course_department")).toBe("/course-department/academic/course/master/course");
       expect(getDashboardPathForRole("student")).toBe("/student/person/master/individual/show");
-      expect(getDashboardPathForRole("lecturer")).toBe("/lecturer/academic/campaign/activity");
+      expect(getDashboardPathForRole("lecturer")).toBe("/lecturer/person/master/individual/show");
       expect(getDashboardPathForRole("candidate")).toBe("/candidate/academic/candidate/master/candidate");
       expect(getDashboardPathForRole("rectorat")).toBe("/dashboard/rectorat");
     });

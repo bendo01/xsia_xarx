@@ -86,7 +86,7 @@ export function getDashboardPathForRole(roleName: string): string {
         case 'student':
             return '/student/person/master/individual/show';
         case 'lecturer':
-            return '/lecturer/academic/campaign/activity';
+            return '/lecturer/person/master/individual/show';
         case 'candidate':
             return '/candidate/academic/candidate/master/candidate';
         case 'rectorat':
