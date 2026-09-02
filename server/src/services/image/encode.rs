@@ -84,13 +84,12 @@ impl EncodeService {
             return path.to_path_buf();
         }
 
-        if let Ok(app_dir) = std::env::var("APP_DIRECTORY") {
-            if !app_dir.is_empty() {
+        if let Ok(app_dir) = std::env::var("APP_DIRECTORY")
+            && !app_dir.is_empty() {
                 let resolved = Path::new(&app_dir).join(image_path);
                 if resolved.exists() {
                     return resolved;
                 }
-            }
         }
 
         path.to_path_buf()

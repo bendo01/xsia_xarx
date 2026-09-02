@@ -529,15 +529,7 @@ impl UpsertStudent {
         };
 
         // check if biodata_mahasiswa.nisn is not null and biodata_mahasiswa.nisn != "0000000000"
-        let nisn = if let Some(nisn) = biodata_mahasiswa.nisn.clone() {
-            if nisn.is_empty() || nisn == "0000000000" {
-                None
-            } else {
-                Some(nisn)
-            }
-        } else {
-            None
-        };
+        let nisn = biodata_mahasiswa.nisn.clone().filter(|nisn| !nisn.is_empty() && nisn != "0000000000");
 
         // Check if student already exists
         let existing_student = match AcademicStudentMasterStudent::Entity::find()

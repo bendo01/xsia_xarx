@@ -80,7 +80,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
     );
 
     // 1. Get Unit (Prodi)
-    let Some(id_prodi) = model.id_prodi.clone() else {
+    let Some(id_prodi) = model.id_prodi else {
         println!("Skipping: id_prodi is missing");
         return Ok(());
     };
@@ -100,7 +100,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
     };
 
     let unit = units::Entity::find()
-        .filter(units::Column::FeederId.eq(id_prodi.clone()))
+        .filter(units::Column::FeederId.eq(id_prodi))
         .one(&txn)
         .await
         .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
@@ -120,30 +120,30 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
     };
 
     // 2. Get Academic Year
-    let Some(id_semester) = model.id_semester.clone() else {
+    let Some(id_semester) = &model.id_semester else {
         println!("Skipping: id_semester is missing");
         return Ok(());
     };
     let academic_year = academic_years::Entity::find()
-        .filter(academic_years::Column::FeederName.eq(id_semester.clone()))
+        .filter(academic_years::Column::FeederName.eq(id_semester))
         .one(&txn)
         .await
         .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
     let Some(academic_year) = academic_year else {
         println!(
-            "Skipping: Academic Year not found for feeder_name {}",
+            "Skipping: Academic Year not found for feeder_id {}",
             id_semester
         );
         return Ok(());
     };
 
     // 3. Get Course
-    let Some(id_matkul) = model.id_matkul.clone() else {
+    let Some(id_matkul) = model.id_matkul else {
         println!("Skipping: id_matkul is missing");
         return Ok(());
     };
     let course = courses::Entity::find()
-        .filter(courses::Column::FeederCourseId.eq(id_matkul.clone()))
+        .filter(courses::Column::FeederCourseId.eq(id_matkul))
         .one(&txn)
         .await
         .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
@@ -201,13 +201,13 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
     };
 
     // 5. Get or Create Teach
-    let Some(id_kelas_kuliah) = model.id_kelas_kuliah.clone() else {
+    let Some(id_kelas_kuliah) = model.id_kelas_kuliah else {
         println!("Skipping: id_kelas_kuliah is missing");
         return Ok(());
     };
 
     let teach = teaches::Entity::find()
-        .filter(teaches::Column::FeederId.eq(id_kelas_kuliah.clone()))
+        .filter(teaches::Column::FeederId.eq(id_kelas_kuliah))
         .one(&txn)
         .await
         .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
@@ -216,18 +216,17 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
         t
     } else {
         // Create Logic from UpsertNilaiPerkuliahanKelasToAcademicCampaignTeachesWorker
-        let Some(nama_kelas_kuliah) = model.nama_kelas_kuliah.clone() else {
+        let Some(nama_kelas_kuliah) = model.nama_kelas_kuliah else {
             println!(
-                "Skipping: nama_kelas_kuliah is missing for NEW TEACH creation (id: {})",
+                "Skipping: nama_kelas_kuliah is missing for feeder_id {}",
                 id_kelas_kuliah
             );
             return Ok(());
         };
 
-        // 5.1 Get/Create Class Code
+        // 5a. Get or Create Class Code
         let class_code = class_codes::Entity::find()
-            .filter(class_codes::Column::ActivityId.eq(unit_activity.id))
-            .filter(class_codes::Column::AlphabetCode.eq(&nama_kelas_kuliah))
+            .filter(class_codes::Column::Name.eq(nama_kelas_kuliah.clone()))
             .one(&txn)
             .await
             .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
@@ -318,7 +317,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
             course_id: Set(course.id),
             activity_id: Set(Some(unit_activity.id)),
             teach_decree_id: Set(teach_decree_id),
-            feeder_id: Set(Some(id_kelas_kuliah.clone())),
+            feeder_id: Set(Some(id_kelas_kuliah)),
             scope_id: Set(Some(internal_scope.id)),
             created_at: Set(Some(chrono::Utc::now().naive_utc())),
             updated_at: Set(Some(chrono::Utc::now().naive_utc())),
@@ -332,12 +331,12 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
     };
 
     // 6. Get Student
-    let Some(id_registrasi_mahasiswa) = model.id_registrasi_mahasiswa.clone() else {
+    let Some(id_registrasi_mahasiswa) = model.id_registrasi_mahasiswa else {
         println!("Skipping: id_registrasi_mahasiswa is missing");
         return Ok(());
     };
     let student = students::Entity::find()
-        .filter(students::Column::IdRegistrasiMahasiswa.eq(id_registrasi_mahasiswa.clone()))
+        .filter(students::Column::IdRegistrasiMahasiswa.eq(id_registrasi_mahasiswa))
         .one(&txn)
         .await
         .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;

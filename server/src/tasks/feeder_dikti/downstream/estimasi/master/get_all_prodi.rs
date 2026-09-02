@@ -24,19 +24,17 @@ const DEFAULT_ORDER: &str = "";
 const DEFAULT_FILTER: &str = "";
 
 /// Feeder model for GetAllProdi endpoint
-/// Returns all study programs across all institutions
-
 /// Feeder model for GetProdi endpoint
-/// Returns study programs for a specific institution
-
 pub struct EstimateGetAllProdi;
 
 impl EstimateGetAllProdi {
     fn get_institution_id() -> Result<Uuid, Box<dyn std::error::Error + Send + Sync>> {
-        if let Ok(id_str) = std::env::var("CURRENT_INSTITUTION_ID") {
-            if let Ok(id) = Uuid::parse_str(&id_str) {
+        if let Ok(id_str) = std::env::var("CURRENT_INSTITUTION_ID")
+
+            && let Ok(id) = Uuid::parse_str(&id_str) {
+
                 return Ok(id);
-            }
+
         }
         Err("CURRENT_INSTITUTION_ID is not set or invalid".into())
     }

@@ -107,11 +107,9 @@ impl Handler for RbacGuard {
             .filter(permission::Column::DeletedAt.is_null())
             .one(&db)
             .await
-        {
-            if perm.is_open {
+            && perm.is_open {
                 ctrl.call_next(req, depot, res).await;
                 return;
-            }
         }
 
         // 2. Extract authenticated user
@@ -162,16 +160,14 @@ impl Handler for RbacGuard {
             .await
             .unwrap_or_default();
 
-        if let Some(active_rid) = current_user.current_role_id {
-            if !active_rid.is_nil() && !user_roles.iter().any(|r| r.id == active_rid) {
-                if let Ok(Some(active_role)) = role::Entity::find_by_id(active_rid)
-                    .filter(role::Column::DeletedAt.is_null())
-                    .one(&db)
-                    .await
-                {
+        if let Some(active_rid) = current_user.current_role_id
+            && !active_rid.is_nil()
+            && !user_roles.iter().any(|r| r.id == active_rid)
+            && let Ok(Some(active_role)) = role::Entity::find_by_id(active_rid)
+                .filter(role::Column::DeletedAt.is_null())
+                .one(&db)
+                .await {
                     user_roles.push(active_role);
-                }
-            }
         }
 
         // Check if user has an admin / superadmin role (bypass)
@@ -215,15 +211,14 @@ impl Handler for RbacGuard {
         });
 
         // Also check if user is linked to a student record via individual_id
-        if !is_student && !current_user.individual_id.is_nil() {
-            if let Ok(Some(_)) = crate::models::academic::student::master::students::Entity::find()
+        if !is_student
+            && !current_user.individual_id.is_nil()
+            && let Ok(Some(_)) = crate::models::academic::student::master::students::Entity::find()
                 .filter(crate::models::academic::student::master::students::Column::IndividualId.eq(current_user.individual_id))
                 .filter(crate::models::academic::student::master::students::Column::DeletedAt.is_null())
                 .one(&db)
-                .await
-            {
-                is_student = true;
-            }
+                .await {
+                    is_student = true;
         }
 
         let is_lecturer = user_roles.iter().any(|r| {

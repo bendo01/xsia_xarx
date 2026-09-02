@@ -165,15 +165,14 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
                     None
                 };
 
-                if teach_opt.is_none() {
-                    if let (Some(class_code), Some(course), Some(unit_activity)) = (&class_code_opt, &course_opt, &unit_activity_opt) {
+                if teach_opt.is_none()
+                    && let (Some(class_code), Some(course), Some(unit_activity)) = (&class_code_opt, &course_opt, &unit_activity_opt) {
                         teach_opt = AcademicTeach::Entity::find()
                             .filter(AcademicTeach::Column::ClassCodeId.eq(class_code.id))
                             .filter(AcademicTeach::Column::CourseId.eq(course.id))
                             .filter(AcademicTeach::Column::ActivityId.eq(unit_activity.id))
                             .one(&txn)
                             .await?;
-                    }
                 }
 
                 if teach_opt.is_none() {

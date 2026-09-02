@@ -77,7 +77,6 @@ impl Worker {
     pub async fn upsert_record(txn: &DatabaseTransaction, record: &GetTingkatPrestasiResponse) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         let id_tingkat_prestasi = record
             .id_tingkat_prestasi
-            .clone()
             .ok_or("id_tingkat_prestasi is missing")?;
 
         let sync_time = Local::now().naive_local();

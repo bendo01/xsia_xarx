@@ -65,13 +65,12 @@ pub async fn list_institutions(
     }
 
     let mut category_filter_uuids = Vec::new();
-    if let Some(ref raw_cats) = query.category_ids.as_ref().or(query.category_id.as_ref()) {
+    if let Some(raw_cats) = query.category_ids.as_deref().or(query.category_id.as_deref()) {
         for val in raw_cats.split(',') {
             let val_trimmed = val.trim();
-            if !val_trimmed.is_empty() {
-                if let Ok(u) = Uuid::parse_str(val_trimmed) {
+            if !val_trimmed.is_empty()
+                && let Ok(u) = Uuid::parse_str(val_trimmed) {
                     category_filter_uuids.push(u);
-                }
             }
         }
     }
@@ -80,13 +79,12 @@ pub async fn list_institutions(
     }
 
     let mut variety_filter_uuids = Vec::new();
-    if let Some(ref raw_vars) = query.variety_ids.as_ref().or(query.variety_id.as_ref()) {
+    if let Some(raw_vars) = query.variety_ids.as_deref().or(query.variety_id.as_deref()) {
         for val in raw_vars.split(',') {
             let val_trimmed = val.trim();
-            if !val_trimmed.is_empty() {
-                if let Ok(u) = Uuid::parse_str(val_trimmed) {
+            if !val_trimmed.is_empty()
+                && let Ok(u) = Uuid::parse_str(val_trimmed) {
                     variety_filter_uuids.push(u);
-                }
             }
         }
     }

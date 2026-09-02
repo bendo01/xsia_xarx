@@ -24,18 +24,16 @@ const DEFAULT_ORDER: &str = "id_semester DESC";
 const DEFAULT_FILTER: &str = "";
 
 
-/// Model for GetListPeriodePerkuliahan API response
-
-/// Model for GetDetailPeriodePerkuliahan API response
-
 pub struct EstimateDetailPeriodePerkuliahan;
 
 impl EstimateDetailPeriodePerkuliahan {
     fn get_institution_id() -> Result<Uuid, Box<dyn std::error::Error + Send + Sync>> {
-        if let Ok(id_str) = std::env::var("CURRENT_INSTITUTION_ID") {
-            if let Ok(id) = Uuid::parse_str(&id_str) {
+        if let Ok(id_str) = std::env::var("CURRENT_INSTITUTION_ID")
+
+            && let Ok(id) = Uuid::parse_str(&id_str) {
+
                 return Ok(id);
-            }
+
         }
         Err("CURRENT_INSTITUTION_ID is not set or invalid".into())
     }

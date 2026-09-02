@@ -153,10 +153,9 @@ async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dy
         active_model.decription_english = ActiveValue::Set(r.deskrips_inggris.clone());
 
         // sync_at logic
-        if let Some(status) = &r.status_sync {
-            if status.to_lowercase() == "sudah sync" {
+        if let Some(status) = &r.status_sync
+            && status.to_lowercase() == "sudah sync" {
                 active_model.sync_at = ActiveValue::Set(Some(chrono::Utc::now().naive_utc()));
-            }
         }
 
         active_model.save(db).await?;
