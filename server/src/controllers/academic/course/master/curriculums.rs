@@ -33,6 +33,10 @@ pub async fn list_curriculums(
         select = select.filter(entity_mod::Column::Name.contains(name));
     }
 
+    if let Some(unit_id) = query.unit_id {
+        select = select.filter(entity_mod::Column::UnitId.eq(unit_id));
+    }
+
     let paginator = select
         .order_by_asc(entity_mod::Column::Name)
         .paginate(db, page_size);

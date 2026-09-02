@@ -52,8 +52,8 @@ export default function DynamicMenu() {
         const codeDisplay = role?.code ? ` (${role.code})` : '';
         toast.info(t('auth.login.roleSwitched', { role: `${displayName}${codeDisplay}` }));
         
-        let targetDashboard = getDashboardPathForRole(roleName);
-        if (normalizeRoleName(roleName) === 'student' && role?.code) {
+        let targetDashboard = getDashboardPathForRole(roleName, role);
+        if (normalizeRoleName(roleName, role) === 'student' && role?.code) {
             targetDashboard = `${targetDashboard}?code=${encodeURIComponent(role.code)}&student_id=${encodeURIComponent(role.roleable_id || '')}`;
         }
         navigate(targetDashboard);

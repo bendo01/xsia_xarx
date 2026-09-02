@@ -9,6 +9,8 @@ export interface UserRoleItem {
     name: string;
     user_id?: string;
     position_type_id?: string;
+    position_type_name?: string;
+    position_type?: any;
     roleable_id?: string;
     roleable_type?: string;
     code?: string;
@@ -23,9 +25,61 @@ export interface StoredUser {
     current_role_id?: string;
     is_active?: boolean;
     roles?: UserRoleItem[];
+    position_types?: any[];
 }
 
-export function normalizeRoleName(rawRole: string | null | undefined): string {
+export function isProgramStudiPosition(positionNameOrType: any): boolean {
+    if (!positionNameOrType) return false;
+    const name = typeof positionNameOrType === 'string' 
+        ? positionNameOrType 
+        : (positionNameOrType.name || positionNameOrType.title || '');
+    const lower = name.toLowerCase().trim();
+    return (
+        lower.includes('kepala program studi') ||
+        lower.includes('sekertaris program studi') ||
+        lower.includes('sekretaris program studi') ||
+        lower.includes('staff program studi') ||
+        lower.includes('staf program studi') ||
+        lower.includes('staff prodi') ||
+        lower.includes('staf prodi') ||
+        lower.includes('kaprodi') ||
+        lower.includes('sekprodi')
+    );
+}
+
+export function isStaffProgramStudi(role?: UserRoleItem | string | null, user?: StoredUser | null): boolean {
+    if (!role && !user) return false;
+    
+    // Check role name directly
+    const roleName = typeof role === 'string' ? role : role?.name;
+    if (roleName && isProgramStudiPosition(roleName)) {
+        return true;
+    }
+
+    // Check position_type on role item
+    if (typeof role === 'object' && role !== null) {
+        if (role.position_type && isProgramStudiPosition(role.position_type)) {
+            return true;
+        }
+        if (role.position_type_name && isProgramStudiPosition(role.position_type_name)) {
+            return true;
+        }
+    }
+
+    // Check position_types on stored user
+    const u = user || getStoredUser();
+    if (u && (u as any).position_types && Array.isArray((u as any).position_types)) {
+        const hasPos = (u as any).position_types.some((pt: any) => isProgramStudiPosition(pt));
+        if (hasPos) return true;
+    }
+
+    return false;
+}
+
+export function normalizeRoleName(rawRole: string | null | undefined, roleItem?: UserRoleItem | null): string {
+    if (roleItem && isStaffProgramStudi(roleItem)) {
+        return 'course_department';
+    }
     if (!rawRole) return 'guest';
     const lower = rawRole.toLowerCase().trim().replace(/[-\s]+/g, '_');
     if (lower.includes('admin') || lower === 'administrator') {
@@ -40,13 +94,30 @@ export function normalizeRoleName(rawRole: string | null | undefined): string {
     if (lower.includes('dosen') || lower.includes('lecturer') || lower.includes('pengajar') || lower.includes('instructor') || lower.includes('faculty')) {
         return 'lecturer';
     }
-    if (lower.includes('prodi') || lower.includes('jurusan') || lower.includes('kajur') || lower.includes('kaprodi') || lower.includes('department') || lower.includes('course') || lower.includes('baak')) {
+    if (
+        lower.includes('prodi') || 
+        lower.includes('jurusan') || 
+        lower.includes('kajur') || 
+        lower.includes('kaprodi') || 
+        lower.includes('sekprodi') ||
+        lower.includes('department') || 
+        lower.includes('course') || 
+        lower.includes('baak') ||
+        lower.includes('kepala_program_studi') ||
+        lower.includes('sekertaris_program_studi') ||
+        lower.includes('sekretaris_program_studi') ||
+        lower.includes('staff_program_studi') ||
+        lower.includes('staf_program_studi')
+    ) {
         return 'course_department';
     }
     if (lower.includes('rektor') || lower.includes('rector') || lower.includes('yayasan') || lower.includes('pimpinan')) {
         return 'rectorat';
     }
     if (lower === 'user' || lower === 'staff') {
+        if (isStaffProgramStudi(rawRole)) {
+            return 'course_department';
+        }
         return 'user';
     }
     return lower;
@@ -76,13 +147,16 @@ export function getRoleDisplayName(roleName: string): string {
     }
 }
 
-export function getDashboardPathForRole(roleName: string): string {
-    const norm = normalizeRoleName(roleName);
+export function getDashboardPathForRole(roleName: string, roleItem?: UserRoleItem): string {
+    if (roleItem && isStaffProgramStudi(roleItem)) {
+        return '/course-department/institution/master/unit/show';
+    }
+    const norm = normalizeRoleName(roleName, roleItem);
     switch (norm) {
         case 'administrator':
             return '/administrator/person/master/individual';
         case 'course_department':
-            return '/course-department/academic/course/master/course';
+            return '/course-department/institution/master/unit/show';
         case 'student':
             return '/student/person/master/individual/show';
         case 'lecturer':
@@ -92,6 +166,9 @@ export function getDashboardPathForRole(roleName: string): string {
         case 'rectorat':
             return '/dashboard/rectorat';
         default:
+            if (isStaffProgramStudi(roleName)) {
+                return '/course-department/institution/master/unit/show';
+            }
             return '/student/person/master/individual/show';
     }
 }
@@ -351,17 +428,20 @@ export async function processLoginSuccess(loginResponse: any, isSession: boolean
     // 4. Determine active role
     let activeRole = '';
     let currentRoleId = '';
+    let activeRoleItem: UserRoleItem | undefined;
     if (user.current_role_id) {
         const found = roles.find(r => r.id === user.current_role_id);
         if (found) {
-            activeRole = normalizeRoleName(found.name);
+            activeRole = normalizeRoleName(found.name, found);
             currentRoleId = found.id;
+            activeRoleItem = found;
         }
     }
     if (!activeRole || activeRole === 'guest') {
         const firstRole = roles[0];
-        activeRole = normalizeRoleName(firstRole?.name || 'student');
+        activeRole = normalizeRoleName(firstRole?.name || 'student', firstRole);
         currentRoleId = firstRole?.id || activeRole;
+        activeRoleItem = firstRole;
     }
 
     setStorageItem('active_role', activeRole, isSession);
@@ -370,7 +450,7 @@ export async function processLoginSuccess(loginResponse: any, isSession: boolean
     // 5. Update global reactive signals
     refreshAuthState();
 
-    return getDashboardPathForRole(activeRole);
+    return getDashboardPathForRole(activeRole, activeRoleItem);
 }
 
 export function logout(): void {

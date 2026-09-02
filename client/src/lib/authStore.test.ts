@@ -87,11 +87,23 @@ describe("Auth Store & Role Engine (White-Box Unit Tests)", () => {
   describe("getDashboardPathForRole", () => {
     it("maps roles to their respective primary dashboard route", () => {
       expect(getDashboardPathForRole("administrator")).toBe("/administrator/person/master/individual");
-      expect(getDashboardPathForRole("course_department")).toBe("/course-department/academic/course/master/course");
+      expect(getDashboardPathForRole("course_department")).toBe("/course-department/institution/master/unit/show");
       expect(getDashboardPathForRole("student")).toBe("/student/person/master/individual/show");
       expect(getDashboardPathForRole("lecturer")).toBe("/lecturer/person/master/individual/show");
       expect(getDashboardPathForRole("candidate")).toBe("/candidate/academic/candidate/master/candidate");
       expect(getDashboardPathForRole("rectorat")).toBe("/dashboard/rectorat");
+    });
+
+    it("redirects staff with position type Kepala/Sekertaris/Staff Program Studi to unit show page", () => {
+      expect(getDashboardPathForRole("Kepala Program Studi")).toBe("/course-department/institution/master/unit/show");
+      expect(getDashboardPathForRole("Sekertaris Program Studi")).toBe("/course-department/institution/master/unit/show");
+      expect(getDashboardPathForRole("Sekretaris Program Studi")).toBe("/course-department/institution/master/unit/show");
+      expect(getDashboardPathForRole("Staff Program Studi")).toBe("/course-department/institution/master/unit/show");
+
+      // When passed as role item with position_type or position_type_name
+      expect(getDashboardPathForRole("staff", { id: "1", name: "Staff", position_type_name: "Kepala Program Studi" })).toBe("/course-department/institution/master/unit/show");
+      expect(getDashboardPathForRole("staff", { id: "2", name: "Staff", position_type: { name: "Sekertaris Program Studi" } })).toBe("/course-department/institution/master/unit/show");
+      expect(getDashboardPathForRole("staff", { id: "3", name: "Staff", position_type: { name: "Staff Program Studi" } })).toBe("/course-department/institution/master/unit/show");
     });
   });
 

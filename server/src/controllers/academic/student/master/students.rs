@@ -182,6 +182,10 @@ pub async fn list_students(
         select = select.filter(entity_mod::Column::IndividualId.eq(individual_id));
     }
 
+    if let Some(unit_id) = query.unit_id {
+        select = select.filter(entity_mod::Column::UnitId.eq(unit_id));
+    }
+
     let paginator = select
         .order_by_asc(entity_mod::Column::Name)
         .paginate(db, page_size);
