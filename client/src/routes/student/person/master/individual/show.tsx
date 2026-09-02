@@ -251,19 +251,115 @@ export default function StudentDashboardProfilePage() {
         return [item.front_title, item.name, item.last_title].filter(Boolean).join(' ') || item.name;
     };
 
+    // Map detail activities per student activity to compute SKS and IPS fallback
+    const activityStatsMap = () => {
+        const details = studentDetailActivities();
+        const map = new Map<string, {
+            semesterCredits: number;
+            gradedCredits: number;
+            weightedGradeSum: number;
+            ips: number;
+        }>();
+
+        for (const d of details) {
+            if (!d.activity_id) continue;
+            const cred = Number(d.credit ?? d.course?.total_credit ?? d.course?.credit ?? 0) || 0;
+            const gp = d.grade_point != null ? Number(d.grade_point) : (d.grade?.grade != null ? Number(d.grade.grade) : null);
+
+            let entry = map.get(d.activity_id);
+            if (!entry) {
+                entry = { semesterCredits: 0, gradedCredits: 0, weightedGradeSum: 0, ips: 0 };
+                map.set(d.activity_id, entry);
+            }
+
+            entry.semesterCredits += cred;
+            if (gp != null && !isNaN(gp)) {
+                entry.gradedCredits += cred;
+                entry.weightedGradeSum += gp * cred;
+            }
+        }
+
+        for (const entry of map.values()) {
+            entry.ips = entry.gradedCredits > 0 ? (entry.weightedGradeSum / entry.gradedCredits) : 0;
+        }
+
+        return map;
+    };
+
+    // Calculate progressive cumulative SKS and cumulative IPK across chronological semesters
+    const cumulativeStatsMap = () => {
+        const list = [...recentActivities()].reverse();
+        const actMap = activityStatsMap();
+        const resMap = new Map<string, { cumulativeCredits: number; ipk: number }>();
+
+        let runningGraded = 0;
+        let runningWeighted = 0;
+        let runningCredits = 0;
+
+        for (const act of list) {
+            const entry = actMap.get(act.id);
+            const semSks = (act.total_credit && act.total_credit > 0) ? act.total_credit : (entry?.semesterCredits || 0);
+            const semIps = (act.cumulative_index && act.cumulative_index > 0) ? act.cumulative_index : (entry?.ips || 0);
+            const graded = entry?.gradedCredits || semSks;
+            const weighted = entry?.weightedGradeSum || (semIps * graded);
+
+            runningCredits += semSks;
+            runningGraded += graded;
+            runningWeighted += weighted;
+
+            const computedIpk = runningGraded > 0 ? (runningWeighted / runningGraded) : semIps;
+            const finalIpk = (act.grand_cumulative_index && act.grand_cumulative_index > 0) ? act.grand_cumulative_index : computedIpk;
+            const finalTotalCredits = (act.grand_total_credit && act.grand_total_credit > 0) ? act.grand_total_credit : runningCredits;
+
+            resMap.set(act.id, {
+                cumulativeCredits: finalTotalCredits,
+                ipk: finalIpk,
+            });
+        }
+
+        return resMap;
+    };
+
+    const getActSemesterSks = (act: StudentActivityItem) => {
+        if (act.total_credit && act.total_credit > 0) return act.total_credit;
+        return activityStatsMap().get(act.id)?.semesterCredits || 0;
+    };
+
+    const getActTotalSks = (act: StudentActivityItem) => {
+        if (act.grand_total_credit && act.grand_total_credit > 0) return act.grand_total_credit;
+        return cumulativeStatsMap().get(act.id)?.cumulativeCredits || getActSemesterSks(act);
+    };
+
+    const getActIps = (act: StudentActivityItem) => {
+        if (act.cumulative_index && act.cumulative_index > 0) return act.cumulative_index;
+        return activityStatsMap().get(act.id)?.ips || 0;
+    };
+
+    const getActIpk = (act: StudentActivityItem) => {
+        if (act.grand_cumulative_index && act.grand_cumulative_index > 0) return act.grand_cumulative_index;
+        return cumulativeStatsMap().get(act.id)?.ipk || getActIps(act);
+    };
+
     const latestActivity = () => recentActivities()[0] || null;
-    const totalCredits = () => latestActivity()?.grand_total_credit ?? latestActivity()?.total_credit ?? 0;
-    const semesterCredits = () => latestActivity()?.total_credit ?? 0;
+    const totalCredits = () => {
+        const act = latestActivity();
+        if (!act) return 0;
+        return getActTotalSks(act);
+    };
+    const semesterCredits = () => {
+        const act = latestActivity();
+        if (!act) return 0;
+        return getActSemesterSks(act);
+    };
     const gpa = () => {
         const act = latestActivity();
         if (!act) return '0.00';
-        const val = act.grand_cumulative_index ?? act.cumulative_index ?? 0;
-        return Number(val).toFixed(2);
+        return Number(getActIpk(act)).toFixed(2);
     };
     const semesterGpa = () => {
         const act = latestActivity();
         if (!act) return '0.00';
-        return Number(act.cumulative_index ?? 0).toFixed(2);
+        return Number(getActIps(act)).toFixed(2);
     };
 
     // --- Multiline Chart Calculations (Academic Year vs IPK & IPS, Max 4.0) ---
@@ -290,8 +386,8 @@ export default function StudentDashboardProfilePage() {
         const n = list.length;
         return list.map((act, idx) => {
             const x = getXCoord(idx, n);
-            const ips = Number(act.cumulative_index ?? 0);
-            const ipk = Number(act.grand_cumulative_index ?? act.cumulative_index ?? 0);
+            const ips = Number(getActIps(act));
+            const ipk = Number(getActIpk(act));
             const yIps = getYCoord(ips);
             const yIpk = getYCoord(ipk);
             const semName = act.academic_year?.name || act.name || act.semester_name || `Sem ${idx + 1}`;
@@ -304,8 +400,8 @@ export default function StudentDashboardProfilePage() {
                 yIps,
                 yIpk,
                 semName,
-                sks: act.total_credit ?? 0,
-                totalSks: act.grand_total_credit ?? act.total_credit ?? 0,
+                sks: getActSemesterSks(act),
+                totalSks: getActTotalSks(act),
             };
         });
     };
@@ -1196,13 +1292,13 @@ export default function StudentDashboardProfilePage() {
                                                                     <td class="py-3 px-3 font-semibold text-neutral-900 dark:text-white">
                                                                         {act.academic_year?.name || act.name || act.semester_name || 'Academic Semester'}
                                                                     </td>
-                                                                    <td class="py-3 px-3 text-center font-mono">{act.total_credit ?? 0}</td>
-                                                                    <td class="py-3 px-3 text-center font-mono">{act.grand_total_credit ?? act.total_credit ?? 0}</td>
+                                                                    <td class="py-3 px-3 text-center font-mono">{getActSemesterSks(act)}</td>
+                                                                    <td class="py-3 px-3 text-center font-mono">{getActTotalSks(act)}</td>
                                                                     <td class="py-3 px-3 text-center font-mono font-bold text-blue-600 dark:text-blue-400">
-                                                                        {Number(act.cumulative_index ?? 0).toFixed(2)}
+                                                                        {Number(getActIps(act)).toFixed(2)}
                                                                     </td>
                                                                     <td class="py-3 px-3 text-center font-mono font-bold text-indigo-600 dark:text-indigo-400">
-                                                                        {Number(act.grand_cumulative_index ?? act.cumulative_index ?? 0).toFixed(2)}
+                                                                        {Number(getActIpk(act)).toFixed(2)}
                                                                     </td>
                                                                     <td class="py-3 px-3 text-center">
                                                                         <span class={`inline-flex px-2 py-0.5 text-[10px] font-bold rounded-full ${act.is_lock
@@ -1297,25 +1393,25 @@ export default function StudentDashboardProfilePage() {
                                                                 <div class="p-2 rounded-xl bg-white dark:bg-neutral-800/80 border border-neutral-200/60 dark:border-neutral-700/60">
                                                                     <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">Sem. SKS</span>
                                                                     <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
-                                                                        {act.total_credit ?? 0}
+                                                                        {getActSemesterSks(act)}
                                                                     </span>
                                                                 </div>
                                                                 <div class="p-2 rounded-xl bg-white dark:bg-neutral-800/80 border border-neutral-200/60 dark:border-neutral-700/60">
                                                                     <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">Total SKS</span>
                                                                     <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
-                                                                        {act.grand_total_credit ?? act.total_credit ?? 0}
+                                                                        {getActTotalSks(act)}
                                                                     </span>
                                                                 </div>
                                                                 <div class="p-2 rounded-xl bg-white dark:bg-neutral-800/80 border border-neutral-200/60 dark:border-neutral-700/60">
                                                                     <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">IPS</span>
                                                                     <span class="font-mono font-bold text-xs text-blue-600 dark:text-blue-400">
-                                                                        {Number(act.cumulative_index ?? 0).toFixed(2)}
+                                                                        {Number(getActIps(act)).toFixed(2)}
                                                                     </span>
                                                                 </div>
                                                                 <div class="p-2 rounded-xl bg-white dark:bg-neutral-800/80 border border-neutral-200/60 dark:border-neutral-700/60">
                                                                     <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">IPK</span>
                                                                     <span class="font-mono font-bold text-xs text-indigo-600 dark:text-indigo-400">
-                                                                        {Number(act.grand_cumulative_index ?? act.cumulative_index ?? 0).toFixed(2)}
+                                                                        {Number(getActIpk(act)).toFixed(2)}
                                                                     </span>
                                                                 </div>
                                                             </div>

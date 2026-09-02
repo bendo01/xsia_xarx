@@ -83,6 +83,61 @@ pub async fn list_student_activities(
             .collect()
     };
 
+    let activity_ids: Vec<Uuid> = items.iter().map(|item| item.id).collect();
+    let details_map: std::collections::HashMap<Uuid, (f64, f64, f64)> = if activity_ids.is_empty() {
+        std::collections::HashMap::new()
+    } else {
+        let details = crate::models::academic::student::campaign::detail_activities::Entity::find()
+            .filter(crate::models::academic::student::campaign::detail_activities::Column::ActivityId.is_in(activity_ids))
+            .filter(crate::models::academic::student::campaign::detail_activities::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .unwrap_or_default();
+
+        let grade_ids: Vec<Uuid> = details.iter().filter_map(|d| d.grade_id).collect();
+        let grades_map: std::collections::HashMap<Uuid, f64> = if grade_ids.is_empty() {
+            std::collections::HashMap::new()
+        } else {
+            crate::models::academic::campaign::transaction::grades::Entity::find()
+                .filter(crate::models::academic::campaign::transaction::grades::Column::Id.is_in(grade_ids))
+                .filter(crate::models::academic::campaign::transaction::grades::Column::DeletedAt.is_null())
+                .all(db)
+                .await
+                .unwrap_or_default()
+                .into_iter()
+                .map(|g| (g.id, g.grade))
+                .collect()
+        };
+
+        let course_ids: Vec<Uuid> = details.iter().map(|d| d.course_id).collect();
+        let courses_map: std::collections::HashMap<Uuid, f64> = if course_ids.is_empty() {
+            std::collections::HashMap::new()
+        } else {
+            crate::models::academic::course::master::courses::Entity::find()
+                .filter(crate::models::academic::course::master::courses::Column::Id.is_in(course_ids))
+                .filter(crate::models::academic::course::master::courses::Column::DeletedAt.is_null())
+                .all(db)
+                .await
+                .unwrap_or_default()
+                .into_iter()
+                .map(|c| (c.id, c.total_credit))
+                .collect()
+        };
+
+        let mut acc_map: std::collections::HashMap<Uuid, (f64, f64, f64)> = std::collections::HashMap::new();
+        for d in details {
+            let cred = d.credit.or_else(|| courses_map.get(&d.course_id).copied()).unwrap_or(0.0);
+            let grade_opt = d.grade_id.and_then(|gid| grades_map.get(&gid).copied());
+            let entry = acc_map.entry(d.activity_id).or_insert((0.0, 0.0, 0.0));
+            entry.0 += cred;
+            if let Some(g) = grade_opt {
+                entry.1 += cred;
+                entry.2 += g * cred;
+            }
+        }
+        acc_map
+    };
+
     let data = items.into_iter().map(|item| {
         let (ay_id, ay_code, ay_name) = unit_activities_map.get(&item.unit_activity_id).cloned().unwrap_or((Uuid::nil(), 0, String::new()));
         let academic_year = if !ay_name.is_empty() {
@@ -103,13 +158,44 @@ pub async fn list_student_activities(
         };
         let academic_year_name = if !ay_name.is_empty() { Some(ay_name) } else { None };
 
+        let (calc_sks, graded_sks, weighted_sum) = details_map.get(&item.id).copied().unwrap_or((0.0, 0.0, 0.0));
+        let calc_ips = if graded_sks > 0.0 { weighted_sum / graded_sks } else { 0.0 };
+
+        let total_credit = if item.total_credit.unwrap_or(0.0) > 0.0 {
+            item.total_credit
+        } else if calc_sks > 0.0 {
+            Some(calc_sks)
+        } else {
+            item.total_credit
+        };
+
+        let cumulative_index = if item.cumulative_index > 0.0 {
+            item.cumulative_index
+        } else if calc_ips > 0.0 {
+            calc_ips
+        } else {
+            item.cumulative_index
+        };
+
+        let grand_total_credit = if item.grand_total_credit.unwrap_or(0.0) > 0.0 {
+            item.grand_total_credit
+        } else {
+            total_credit
+        };
+
+        let grand_cumulative_index = if item.grand_cumulative_index > 0.0 {
+            item.grand_cumulative_index
+        } else {
+            cumulative_index
+        };
+
         StudentActivityResponse {
             id: item.id,
             name: item.name,
-            cumulative_index: item.cumulative_index,
-            grand_cumulative_index: item.grand_cumulative_index,
-            total_credit: item.total_credit,
-            grand_total_credit: item.grand_total_credit,
+            cumulative_index,
+            grand_cumulative_index,
+            total_credit,
+            grand_total_credit,
             student_id: item.student_id,
             unit_activity_id: item.unit_activity_id,
             status_id: item.status_id,
