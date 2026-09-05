@@ -1,0 +1,3117 @@
+@startuml
+!theme plain
+hide circle
+skinparam linetype ortho
+skinparam roundcorner 5
+skinparam shadowing false
+skinparam handwritten false
+
+' ========================================================================
+' Schema: academic_campaign_reference
+' ========================================================================
+package "academic_campaign_reference" {
+  entity "academic_campaign_reference.attend_types" as academic_campaign_reference__attend_types {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_campaign_reference.calendar_categories" as academic_campaign_reference__calendar_categories {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_campaign_reference.encounter_categories" as academic_campaign_reference__encounter_categories {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_campaign_reference.implementations" as academic_campaign_reference__implementations {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_campaign_reference.scopes" as academic_campaign_reference__scopes {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_campaign_reference.substances" as academic_campaign_reference__substances {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: academic_campaign_transaction
+' ========================================================================
+package "academic_campaign_transaction" {
+  entity "academic_campaign_transaction.activities" as academic_campaign_transaction__activities {
+    * id : uuid <<PK>>
+    --
+    name : varchar(255)
+    week_quantity : integer
+    student_target : integer
+    candidate_number : integer
+    candidate_pass : integer
+    became_student : integer
+    transfer_student : integer
+    total_class_member : integer
+    start_date : date
+    end_date : date
+    start_transaction : date
+    end_transaction : date
+    unit_id : uuid <<FK>> //references institution_master.units//
+    academic_year_id : uuid <<FK>> //references academic_general_reference.academic_years//
+    is_active : boolean
+    feeder_id : uuid
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_campaign_transaction.calendar_details" as academic_campaign_transaction__calendar_details {
+    * id : uuid <<PK>>
+    --
+    name : varchar(255)
+    calendar_category_id : uuid <<FK>> //references academic_campaign_reference.calendar_categories//
+    calendar_id : uuid <<FK>> //references academic_campaign_transaction.calendars//
+    start_date : date
+    end_date : date
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_campaign_transaction.calendars" as academic_campaign_transaction__calendars {
+    * id : uuid <<PK>>
+    --
+    name : varchar(255)
+    academic_year_id : uuid <<FK>> //references academic_general_reference.academic_years//
+    institution_id : uuid <<FK>> //references institution_master.institutions//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_campaign_transaction.class_codes" as academic_campaign_transaction__class_codes {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    activity_id : uuid <<FK>> //references academic_campaign_transaction.activities//
+    start_effective_date : date
+    end_effective_date : date
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+    unit_id : uuid <<FK>> //references institution_master.units//
+    capacity : integer
+  }
+
+  entity "academic_campaign_transaction.grades" as academic_campaign_transaction__grades {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    grade : float8
+    minimum : float8
+    maximum : float8
+    start_date : date
+    end_date : date
+    unit_id : uuid <<FK>> //references institution_master.units//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+    feeder_id : uuid
+  }
+
+  entity "academic_campaign_transaction.schedules" as academic_campaign_transaction__schedules {
+    * id : uuid <<PK>>
+    --
+    name : text
+    start_hour : time
+    end_hour : time
+    weekday_id : uuid
+    room_id : uuid <<FK>> //references building_master.rooms//
+    teach_id : uuid <<FK>> //references academic_campaign_transaction.teaches//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_campaign_transaction.teach_decrees" as academic_campaign_transaction__teach_decrees {
+    * id : uuid <<PK>>
+    --
+    decree_number : varchar(255)
+    decree_date : date
+    activity_id : uuid <<FK>> //references academic_campaign_transaction.activities//
+    staff_id : uuid <<FK>> //references institution_master.staffes//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+    feeder_id : uuid
+  }
+
+  entity "academic_campaign_transaction.teach_evaluations" as academic_campaign_transaction__teach_evaluations {
+    * id : uuid <<PK>>
+    --
+    thread : integer
+    name : varchar(255)
+    english_name : varchar(255)
+    evaluation_weight : float4
+    evaluation_type_id : uuid <<FK>> //references academic_course_reference.evaluation_types//
+    feeder_id : uuid
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+    teach_id : uuid <<FK>> //references academic_campaign_transaction.teaches//
+  }
+
+  entity "academic_campaign_transaction.teach_lecturers" as academic_campaign_transaction__teach_lecturers {
+    * id : uuid <<PK>>
+    --
+    name : varchar(255)
+    planning : integer
+    realization : integer
+    credit : numeric(3,1)
+    is_lecturer_home_base : boolean
+    lecturer_id : uuid <<FK>> //references academic_lecturer_master.lecturers//
+    teach_id : uuid <<FK>> //references academic_campaign_transaction.teaches//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+    feeder_id : uuid
+  }
+
+  entity "academic_campaign_transaction.teaches" as academic_campaign_transaction__teaches {
+    * id : uuid <<PK>>
+    --
+    name : text
+    class_code_id : uuid <<FK>> //references academic_campaign_transaction.class_codes//
+    course_id : uuid <<FK>> //references academic_course_master.courses//
+    activity_id : uuid <<FK>> //references academic_campaign_transaction.activities//
+    description : text
+    start_date : date
+    end_date : date
+    practice_start_date : date
+    practice_end_date : date
+    curriculum_detail_id : uuid <<FK>> //references academic_course_master.curriculum_details//
+    teach_decree_id : uuid <<FK>> //references academic_campaign_transaction.teach_decrees//
+    is_lecturer_credit_sum_problem : boolean
+    is_lock : boolean
+    encounter_category_id : uuid <<FK>> //references academic_campaign_reference.encounter_categories//
+    scope_id : uuid <<FK>> //references academic_campaign_reference.scopes//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+    max_member : integer
+    feeder_id : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: academic_candidate_master
+' ========================================================================
+package "academic_candidate_master" {
+  entity "academic_candidate_master.candidate_unit" as academic_candidate_master__candidate_unit {
+    * id : uuid <<PK>>
+    --
+    candidate_id : uuid <<FK>> //references academic_candidate_master.candidates//
+    unit_id : uuid <<FK>> //references institution_master.units//
+    registration_category_id : uuid <<FK>> //references academic_candidate_reference.registration_categories//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_candidate_master.candidates" as academic_candidate_master__candidates {
+    * id : uuid <<PK>>
+    --
+    thread : integer
+    code : varchar(255)
+    name : varchar(255)
+    student_national_number : varchar(255)
+    school_name : varchar(255)
+    school_regency_id : uuid <<FK>> //references location.regencies//
+    state_smart_card_number : varchar(255)
+    individual_id : uuid <<FK>> //references person_master.individuals//
+    academic_year_id : uuid <<FK>> //references academic_general_reference.academic_years//
+    student_id : uuid <<FK>> //references academic_student_master.students//
+    user_id : uuid <<FK>> //references auth.users//
+    registration_type_id : uuid <<FK>> //references academic_candidate_reference.registration_types//
+    institution_id : uuid <<FK>> //references institution_master.institutions//
+    guidence_name : varchar(255)
+    guidence_phone_number : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_candidate_master.exam_classes" as academic_candidate_master__exam_classes {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    phase_id : uuid <<FK>> //references academic_candidate_reference.phases//
+    start_date : timestamp
+    end_date : timestamp
+    start_time : time
+    end_time : time
+    capacity : integer
+    lms_category : integer
+    is_online : boolean
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: academic_candidate_reference
+' ========================================================================
+package "academic_candidate_reference" {
+  entity "academic_candidate_reference.document_types" as academic_candidate_reference__document_types {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_candidate_reference.phases" as academic_candidate_reference__phases {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_candidate_reference.registration_categories" as academic_candidate_reference__registration_categories {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_candidate_reference.registration_types" as academic_candidate_reference__registration_types {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+    student_registration_id : uuid <<FK>> //references academic_student_reference.registrations//
+    unit_id : uuid <<FK>> //references institution_master.units//
+    registration_category_id : uuid <<FK>> //references academic_candidate_reference.registration_categories//
+    institution_id : uuid <<FK>> //references institution_master.institutions//
+  }
+
+}
+
+' ========================================================================
+' Schema: academic_candidate_transaction
+' ========================================================================
+package "academic_candidate_transaction" {
+  entity "academic_candidate_transaction.candidate_unit_choices" as academic_candidate_transaction__candidate_unit_choices {
+    * id : uuid <<PK>>
+    --
+    candidate_id : uuid <<FK>> //references academic_candidate_master.candidates//
+    unit_id : uuid <<FK>> //references institution_master.units//
+    student_registration_id : uuid <<FK>> //references academic_student_reference.registrations//
+    registration_category_id : uuid <<FK>> //references academic_candidate_reference.registration_categories//
+    phase_id : uuid <<FK>> //references academic_candidate_reference.phases//
+    priority : integer
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_candidate_transaction.documents" as academic_candidate_transaction__documents {
+    * id : uuid <<PK>>
+    --
+    candidate_id : uuid <<FK>> //references academic_candidate_master.candidates//
+    document_type_id : uuid <<FK>> //references academic_candidate_reference.document_types//
+    filename : varchar(255)
+    dir : varchar(255)
+    type : varchar(255)
+    size : integer
+    is_verified : boolean
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_candidate_transaction.exams" as academic_candidate_transaction__exams {
+    * id : uuid <<PK>>
+    --
+    candidate_id : uuid <<FK>> //references academic_candidate_master.candidates//
+    exam_class_id : uuid <<FK>> //references academic_candidate_master.exam_classes//
+    score : float8
+    is_present : boolean
+    is_pass : boolean
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: academic_course_master
+' ========================================================================
+package "academic_course_master" {
+  entity "academic_course_master.concentrations" as academic_course_master__concentrations {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    name : varchar(255)
+    unit_id : uuid <<FK>> //references institution_master.units//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_course_master.course_evaluation_plannings" as academic_course_master__course_evaluation_plannings {
+    * id : uuid <<PK>>
+    --
+    name : varchar(255)
+    percentage : float4
+    decription_indonesian : text
+    decription_english : text
+    course_id : uuid <<FK>> //references academic_course_master.courses//
+    evaluation_type_id : uuid <<FK>> //references academic_course_reference.evaluation_types//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+    code : integer
+  }
+
+  entity "academic_course_master.course_learn_plannings" as academic_course_master__course_learn_plannings {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    name : varchar(255)
+    decription_indonesian : text
+    decription_english : text
+    course_id : uuid <<FK>> //references academic_course_master.courses//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+    feeder_id_rencana_ajar : uuid
+  }
+
+  entity "academic_course_master.courses" as academic_course_master__courses {
+    * id : uuid <<PK>>
+    --
+    code : varchar(255)
+    name : varchar(255)
+    implementation_method : text
+    total_credit : float8
+    lecture_credit : float8
+    practice_credit : float8
+    field_practice_credit : float8
+    simulation_credit : float8
+    has_unit : boolean
+    has_syllabus : boolean
+    has_material : boolean
+    has_practice : boolean
+    has_dictation : boolean
+    group_id : uuid <<FK>> //references academic_course_reference.groups//
+    variety_id : uuid <<FK>> //references academic_course_reference.varieties//
+    unit_id : uuid <<FK>> //references institution_master.units//
+    competence_id : uuid <<FK>> //references academic_course_reference.competences//
+    feeder_course_group_id : uuid
+    feeder_course_type_id : uuid
+    feeder_course_id : uuid
+    start_date : date
+    end_date : date
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_course_master.curriculum_details" as academic_course_master__curriculum_details {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    curriculum_id : uuid <<FK>> //references academic_course_master.curriculums//
+    semester_id : uuid <<FK>> //references academic_course_reference.semesters//
+    course_id : uuid <<FK>> //references academic_course_master.courses//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+    credit : float8
+    name : varchar
+    concentration_id : uuid <<FK>> //references academic_course_master.concentrations//
+    is_convertable_to_mbkm : boolean
+    feeder_id : uuid
+    is_convertable_to_prior_learning_recognition : boolean
+  }
+
+  entity "academic_course_master.curriculums" as academic_course_master__curriculums {
+    * id : uuid <<PK>>
+    --
+    name : varchar(255)
+    unit_id : uuid <<FK>> //references institution_master.units//
+    academic_year_id : uuid <<FK>> //references academic_general_reference.academic_years//
+    curriculum_type_id : uuid <<FK>> //references academic_course_reference.curriculum_types//
+    total_credit : float8
+    mandatory_course_credit : float8
+    optional_course_credit : float8
+    feeder_id : uuid
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+    start_date : date
+    end_date : date
+    is_active : boolean
+  }
+
+}
+
+' ========================================================================
+' Schema: academic_course_reference
+' ========================================================================
+package "academic_course_reference" {
+  entity "academic_course_reference.competences" as academic_course_reference__competences {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    start_effective_date : date
+    end_effective_date : date
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_course_reference.course_evaluation_bases" as academic_course_reference__course_evaluation_bases {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    evaluation_base : varchar(255)
+    component_evaluation : varchar(255)
+    start_effective_date : date
+    end_effective_date : date
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_course_reference.curriculum_types" as academic_course_reference__curriculum_types {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    start_effective_date : date
+    end_effective_date : date
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_course_reference.encounter_types" as academic_course_reference__encounter_types {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_course_reference.evaluation_types" as academic_course_reference__evaluation_types {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    english_name : varchar(255)
+    feeder_id : uuid
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_course_reference.groups" as academic_course_reference__groups {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    abbreviation : varchar(255)
+    start_effective_date : date
+    end_effective_date : date
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_course_reference.semesters" as academic_course_reference__semesters {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    is_odd : boolean
+    start_effective_date : date
+    end_effective_date : date
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_course_reference.varieties" as academic_course_reference__varieties {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    curriculum_type_id : uuid <<FK>> //references academic_course_reference.curriculum_types//
+    start_effective_date : date
+    end_effective_date : date
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: academic_general_reference
+' ========================================================================
+package "academic_general_reference" {
+  entity "academic_general_reference.academic_year_categories" as academic_general_reference__academic_year_categories {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_general_reference.academic_years" as academic_general_reference__academic_years {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    year : integer
+    name : varchar(255)
+    feeder_name : varchar(255)
+    academic_year_category_id : uuid <<FK>> //references academic_general_reference.academic_year_categories//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+    is_active : boolean
+    start_date : date
+    end_date : date
+  }
+
+}
+
+' ========================================================================
+' Schema: academic_lecturer_master
+' ========================================================================
+package "academic_lecturer_master" {
+  entity "academic_lecturer_master.lecturers" as academic_lecturer_master__lecturers {
+    * id : uuid <<PK>>
+    --
+    code : varchar(255)
+    name : varchar(255)
+    individual_id : uuid <<FK>> //references person_master.individuals//
+    institution_id : uuid <<FK>> //references institution_master.institutions//
+    alternative_code : varchar(255)
+    accessor_number : varchar(255)
+    identification_number : varchar(255)
+    status_id : uuid <<FK>> //references academic_lecturer_reference.statuses//
+    contract_id : uuid <<FK>> //references academic_lecturer_reference.contracts//
+    rank_id : uuid <<FK>> //references academic_lecturer_reference.ranks//
+    start_date : date
+    end_date : date
+    front_title : varchar(255)
+    last_title : varchar(255)
+    id_dosen : uuid
+    group_id : uuid <<FK>> //references academic_lecturer_reference.groups//
+    nuptk : varchar
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: academic_lecturer_reference
+' ========================================================================
+package "academic_lecturer_reference" {
+  entity "academic_lecturer_reference.contracts" as academic_lecturer_reference__contracts {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_lecturer_reference.groups" as academic_lecturer_reference__groups {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_lecturer_reference.ranks" as academic_lecturer_reference__ranks {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_lecturer_reference.statuses" as academic_lecturer_reference__statuses {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: academic_lecturer_transaction
+' ========================================================================
+package "academic_lecturer_transaction" {
+  entity "academic_lecturer_transaction.academic_groups" as academic_lecturer_transaction__academic_groups {
+    * id : uuid <<PK>>
+    --
+    decree_number : varchar(255)
+    decree_date : date
+    lecturer_id : uuid <<FK>> //references academic_lecturer_master.lecturers//
+    group_id : uuid <<FK>> //references academic_lecturer_reference.groups//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+    start_date : date
+    end_date : date
+  }
+
+  entity "academic_lecturer_transaction.academic_ranks" as academic_lecturer_transaction__academic_ranks {
+    * id : uuid <<PK>>
+    --
+    decree_number : varchar(255)
+    decree_date : date
+    lecturer_id : uuid <<FK>> //references academic_lecturer_master.lecturers//
+    rank_id : uuid <<FK>> //references academic_lecturer_reference.ranks//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+    start_date : date
+    end_date : date
+  }
+
+  entity "academic_lecturer_transaction.homebases" as academic_lecturer_transaction__homebases {
+    * id : uuid <<PK>>
+    --
+    lecturer_id : uuid <<FK>> //references academic_lecturer_master.lecturers//
+    unit_id : uuid <<FK>> //references institution_master.units//
+    institution_id : uuid <<FK>> //references institution_master.institutions//
+    status_id : uuid <<FK>> //references academic_lecturer_reference.statuses//
+    contract_id : uuid <<FK>> //references academic_lecturer_reference.contracts//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: academic_prior_learning_recognition_reference
+' ========================================================================
+package "academic_prior_learning_recognition_reference" {
+  entity "academic_prior_learning_recognition_reference.evaluator_types" as academic_prior_learning_recognition_reference__evaluator_types {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    description : text
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamptz
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_prior_learning_recognition_reference.evidence_categories" as academic_prior_learning_recognition_reference__evidence_categories {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    description : text
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamptz
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_prior_learning_recognition_reference.evidence_types" as academic_prior_learning_recognition_reference__evidence_types {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamptz
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_prior_learning_recognition_reference.professionalisms" as academic_prior_learning_recognition_reference__professionalisms {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamptz
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: academic_prior_learning_recognition_transaction
+' ========================================================================
+package "academic_prior_learning_recognition_transaction" {
+  entity "academic_prior_learning_recognition_transaction.decrees" as academic_prior_learning_recognition_transaction__decrees {
+    * id : uuid <<PK>>
+    --
+    decree_number : varchar(255)
+    decree_date : date
+    evaluation_id : uuid <<FK>> //references academic_prior_learning_recognition_transaction.evaluations//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamptz
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_prior_learning_recognition_transaction.evaluation_details" as academic_prior_learning_recognition_transaction__evaluation_details {
+    * id : uuid <<PK>>
+    --
+    evaluation_id : uuid <<FK>> //references academic_prior_learning_recognition_transaction.evaluations//
+    archive_id : uuid <<FK>> //references document_transaction.archives//
+    evidence_type_id : uuid <<FK>> //references academic_prior_learning_recognition_reference.evidence_types//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamptz
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_prior_learning_recognition_transaction.evaluations" as academic_prior_learning_recognition_transaction__evaluations {
+    * id : uuid <<PK>>
+    --
+    recognition_id : uuid <<FK>> //references academic_prior_learning_recognition_transaction.recognitions//
+    course_evaluation_planning_id : uuid <<FK>> //references academic_course_master.course_evaluation_plannings//
+    professionalism_id : uuid <<FK>> //references academic_prior_learning_recognition_reference.professionalisms//
+    evidence_type_id : uuid <<FK>> //references academic_prior_learning_recognition_reference.evidence_types//
+    evaluator_id : uuid <<FK>> //references academic_prior_learning_recognition_transaction.evaluators//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamptz
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_prior_learning_recognition_transaction.evaluators" as academic_prior_learning_recognition_transaction__evaluators {
+    * id : uuid <<PK>>
+    --
+    individual_id : uuid <<FK>> //references person_master.individuals//
+    evaluator_type_id : uuid <<FK>> //references academic_prior_learning_recognition_reference.evaluator_types//
+    recognition_id : uuid <<FK>> //references academic_prior_learning_recognition_transaction.recognitions//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamptz
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_prior_learning_recognition_transaction.recognitions" as academic_prior_learning_recognition_transaction__recognitions {
+    * id : uuid <<PK>>
+    --
+    name : varchar(255)
+    candidate_id : uuid <<FK>> //references academic_candidate_master.candidates//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamptz
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+    curriculum_id : uuid <<FK>> //references academic_course_master.curriculums//
+    unit_id : uuid <<FK>> //references institution_master.units//
+  }
+
+}
+
+' ========================================================================
+' Schema: academic_student_adviser
+' ========================================================================
+package "academic_student_adviser" {
+  entity "academic_student_adviser.counsellors" as academic_student_adviser__counsellors {
+    * id : uuid <<PK>>
+    --
+    decree_id : uuid <<FK>> //references academic_student_adviser.decrees//
+    student_id : uuid <<FK>> //references academic_student_master.students//
+    lecturer_id : uuid <<FK>> //references academic_lecturer_master.lecturers//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_student_adviser.decrees" as academic_student_adviser__decrees {
+    * id : uuid <<PK>>
+    --
+    decree_date : date
+    decree_number : varchar(255)
+    unit_id : uuid <<FK>> //references institution_master.units//
+    staff_id : uuid <<FK>> //references institution_master.staffes//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: academic_student_campaign
+' ========================================================================
+package "academic_student_campaign" {
+  entity "academic_student_campaign.convertions" as academic_student_campaign__convertions {
+    * id : uuid <<PK>>
+    --
+    student_id : uuid <<FK>> //references academic_student_master.students//
+    course_id : uuid <<FK>> //references academic_course_master.courses//
+    grade_id : uuid <<FK>> //references academic_campaign_transaction.grades//
+    transfer_code : varchar(255)
+    transfer_name : varchar(255)
+    transfer_credit : float8
+    transfer_grade : varchar(255)
+    is_lock : timestamp
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+    feeder_id : uuid
+    name : varchar(255)
+    academic_year_id : uuid <<FK>> //references academic_general_reference.academic_years//
+    origin_code : varchar(255)
+    origin_name : varchar(255)
+    origin_credit : float8
+    origin_grade : varchar(255)
+  }
+
+  entity "academic_student_campaign.detail_activities" as academic_student_campaign__detail_activities {
+    * id : uuid <<PK>>
+    --
+    mark : float8
+    credit : float8
+    grade_id : uuid <<FK>> //references academic_campaign_transaction.grades//
+    course_id : uuid <<FK>> //references academic_course_master.courses//
+    activity_id : uuid <<FK>> //references academic_campaign_transaction.activities//
+    teach_id : uuid <<FK>> //references academic_campaign_transaction.teaches//
+    is_lock : boolean
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+    feeder_id : uuid
+    name : varchar
+    feeder_grade_id : uuid
+    curiculum_detail_sequence : integer
+  }
+
+  entity "academic_student_campaign.detail_activity_evaluation_components" as academic_student_campaign__detail_activity_evaluation_components {
+    * id : uuid <<PK>>
+    --
+    name : text
+    detail_activity_id : uuid <<FK>> //references academic_student_campaign.detail_activities//
+    course_evaluation_planning_id : uuid <<FK>> //references academic_course_master.course_evaluation_plannings//
+    mark : float4
+    percentage : float4
+    total : float4
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_student_campaign.student_activities" as academic_student_campaign__student_activities {
+    * id : uuid <<PK>>
+    --
+    name : varchar(255)
+    cumulative_index : float8
+    grand_cumulative_index : float8
+    total_credit : float8
+    grand_total_credit : float8
+    student_id : uuid <<FK>> //references academic_student_master.students//
+    unit_activity_id : uuid <<FK>> //references academic_campaign_transaction.activities//
+    status_id : uuid <<FK>> //references academic_student_reference.statuses//
+    resign_status_id : uuid <<FK>> //references academic_student_reference.resign_statuses//
+    unit_id : uuid <<FK>> //references institution_master.units//
+    is_lock : boolean
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+    feeder_id : uuid
+    finance_id : uuid <<FK>> //references academic_student_reference.finances//
+    finance_fee : float8
+  }
+
+}
+
+' ========================================================================
+' Schema: academic_student_final_assignment_reference
+' ========================================================================
+package "academic_student_final_assignment_reference" {
+  entity "academic_student_final_assignment_reference.adviser_categories" as academic_student_final_assignment_reference__adviser_categories {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_student_final_assignment_reference.approval_types" as academic_student_final_assignment_reference__approval_types {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_student_final_assignment_reference.categories" as academic_student_final_assignment_reference__categories {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_student_final_assignment_reference.requirements" as academic_student_final_assignment_reference__requirements {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    stage_id : uuid <<FK>> //references academic_student_final_assignment_reference.stages//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_student_final_assignment_reference.stages" as academic_student_final_assignment_reference__stages {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_student_final_assignment_reference.varieties" as academic_student_final_assignment_reference__varieties {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: academic_student_final_assignment_transaction
+' ========================================================================
+package "academic_student_final_assignment_transaction" {
+  entity "academic_student_final_assignment_transaction.advisers" as academic_student_final_assignment_transaction__advisers {
+    * id : uuid <<PK>>
+    --
+    thread : integer
+    lecturer_id : uuid <<FK>> //references academic_lecturer_master.lecturers//
+    detail_activity_id : uuid <<FK>> //references academic_student_campaign.detail_activities//
+    submission_id : uuid <<FK>> //references academic_student_final_assignment_transaction.submissions//
+    adviser_category_id : uuid <<FK>> //references academic_student_final_assignment_reference.adviser_categories//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_student_final_assignment_transaction.evaluation_details" as academic_student_final_assignment_transaction__evaluation_details {
+    * id : uuid <<PK>>
+    --
+    evaluation_summary_id : uuid <<FK>> //references academic_student_final_assignment_transaction.evaluation_summaries//
+    adviser_id : uuid <<FK>> //references academic_student_final_assignment_transaction.advisers//
+    mark : float4
+    grade_id : uuid <<FK>> //references academic_campaign_transaction.grades//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_student_final_assignment_transaction.evaluation_summaries" as academic_student_final_assignment_transaction__evaluation_summaries {
+    * id : uuid <<PK>>
+    --
+    submission_id : uuid <<FK>> //references academic_student_final_assignment_transaction.submissions//
+    detail_activity_id : uuid <<FK>> //references academic_student_campaign.detail_activities//
+    stage_id : uuid <<FK>> //references academic_student_final_assignment_reference.stages//
+    mark : float4
+    grade_id : uuid <<FK>> //references academic_campaign_transaction.grades//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_student_final_assignment_transaction.final_assignment_decrees" as academic_student_final_assignment_transaction__final_assignment_decrees {
+    * id : uuid <<PK>>
+    --
+    decree_number : varchar(255)
+    decree_date : date
+    unit_id : uuid <<FK>> //references institution_master.units//
+    activity_id : uuid <<FK>> //references academic_campaign_transaction.activities//
+    staff_id : uuid <<FK>> //references institution_master.staffes//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_student_final_assignment_transaction.prerequisites" as academic_student_final_assignment_transaction__prerequisites {
+    * id : uuid <<PK>>
+    --
+    thread : integer
+    requirement_id : uuid <<FK>> //references academic_student_final_assignment_reference.requirements//
+    submission_id : uuid <<FK>> //references academic_student_final_assignment_transaction.submissions//
+    approval_type_id : uuid <<FK>> //references academic_student_final_assignment_reference.approval_types//
+    stage_id : uuid <<FK>> //references academic_student_final_assignment_reference.stages//
+    filename : varchar(255)
+    dir : varchar(255)
+    type : varchar(255)
+    filesize : integer
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_student_final_assignment_transaction.schedules" as academic_student_final_assignment_transaction__schedules {
+    * id : uuid <<PK>>
+    --
+    ecree_number : varchar(255)
+    schedule_date : date
+    schedule_time : time
+    submission_id : uuid <<FK>> //references academic_student_final_assignment_transaction.submissions//
+    detail_activity_id : uuid <<FK>> //references academic_student_campaign.detail_activities//
+    stage_id : uuid <<FK>> //references academic_student_final_assignment_reference.stages//
+    room_id : uuid <<FK>> //references building_master.rooms//
+    zoom_meeting : text
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_student_final_assignment_transaction.submissions" as academic_student_final_assignment_transaction__submissions {
+    * id : uuid <<PK>>
+    --
+    title : text
+    student_id : uuid <<FK>> //references academic_student_master.students//
+    approval_type_id : uuid <<FK>> //references academic_student_final_assignment_reference.approval_types//
+    category_id : uuid <<FK>> //references academic_student_final_assignment_reference.categories//
+    stage_id : uuid <<FK>> //references academic_student_final_assignment_reference.stages//
+    final_assignment_decree_id : uuid <<FK>> //references academic_student_final_assignment_transaction.final_assignment_decrees//
+    detail_activity_id : uuid <<FK>> //references academic_student_campaign.detail_activities//
+    is_taken : timestamp
+    is_lock : timestamp
+    filename : varchar(255)
+    dir : varchar(255)
+    type : varchar(255)
+    filesize : integer
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: academic_student_master
+' ========================================================================
+package "academic_student_master" {
+  entity "academic_student_master.images" as academic_student_master__images {
+    * id : uuid <<PK>>
+    --
+    student_id : uuid <<FK>> //references academic_student_master.students//
+    filename : varchar(255)
+    dir : varchar(255)
+    mimetype : varchar(255)
+    size : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_student_master.students" as academic_student_master__students {
+    * id : uuid <<PK>>
+    --
+    code : varchar(255)
+    name : varchar(255)
+    selection_type_id : uuid <<FK>> //references academic_student_reference.selection_types//
+    registered : date
+    individual_id : uuid <<FK>> //references person_master.individuals//
+    status_id : uuid <<FK>> //references academic_student_reference.statuses//
+    unit_id : uuid <<FK>> //references institution_master.units//
+    academic_year_id : uuid <<FK>> //references academic_general_reference.academic_years//
+    registration_id : uuid <<FK>> //references academic_student_reference.registrations//
+    nisn : varchar(255)
+    resign_status_id : uuid <<FK>> //references academic_student_reference.resign_statuses//
+    concentration_id : uuid <<FK>> //references academic_course_master.concentrations//
+    curriculum_id : uuid <<FK>> //references academic_course_master.curriculums//
+    class_code_id : uuid <<FK>> //references academic_campaign_transaction.class_codes//
+    transfer_code : varchar(255)
+    transfer_unit_id : uuid <<FK>> //references institution_master.units//
+    id_mahasiswa : uuid
+    id_registrasi_mahasiswa : uuid
+    finance_fee : float8
+    finance_id : uuid <<FK>> //references academic_student_reference.finances//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: academic_student_reference
+' ========================================================================
+package "academic_student_reference" {
+  entity "academic_student_reference.finances" as academic_student_reference__finances {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamptz
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_student_reference.registrations" as academic_student_reference__registrations {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamptz
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_student_reference.resign_statuses" as academic_student_reference__resign_statuses {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamptz
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_student_reference.selection_types" as academic_student_reference__selection_types {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamptz
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_student_reference.statuses" as academic_student_reference__statuses {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamptz
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: academic_survey_master
+' ========================================================================
+package "academic_survey_master" {
+  entity "academic_survey_master.answers" as academic_survey_master__answers {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    question_id : uuid <<FK>> //references academic_survey_master.questions//
+    point : float8
+    suggestion : text
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamptz
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_survey_master.bundle_question" as academic_survey_master__bundle_question {
+    * id : uuid <<PK>>
+    --
+    bundle_id : uuid <<FK>> //references academic_survey_master.bundles//
+    question_id : uuid <<FK>> //references academic_survey_master.questions//
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamptz
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_survey_master.bundles" as academic_survey_master__bundles {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    institution_id : uuid <<FK>> //references institution_master.institutions//
+    bundle_category_id : uuid <<FK>> //references academic_survey_reference.bundle_categories//
+    unit_id : uuid <<FK>> //references institution_master.units//
+    suggestion : text
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamptz
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_survey_master.questions" as academic_survey_master__questions {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : text
+    institution_id : uuid <<FK>> //references institution_master.institutions//
+    question_variety_id : uuid <<FK>> //references academic_survey_reference.question_varieties//
+    suggestion : text
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamptz
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: academic_survey_reference
+' ========================================================================
+package "academic_survey_reference" {
+  entity "academic_survey_reference.bundle_categories" as academic_survey_reference__bundle_categories {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamptz
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_survey_reference.question_varieties" as academic_survey_reference__question_varieties {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamptz
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: academic_survey_transaction
+' ========================================================================
+package "academic_survey_transaction" {
+  entity "academic_survey_transaction.conducts" as academic_survey_transaction__conducts {
+    * id : uuid <<PK>>
+    --
+    alphabet_code : varchar(255)
+    name : text
+    bundle_id : uuid <<FK>> //references academic_survey_master.bundles//
+    conductable_type : varchar(255)
+    conductable_id : uuid
+    is_finish : boolean
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamptz
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "academic_survey_transaction.responds" as academic_survey_transaction__responds {
+    * id : uuid <<PK>>
+    --
+    name : text
+    conduct_id : uuid <<FK>> //references academic_survey_transaction.conducts//
+    bundle_id : uuid <<FK>> //references academic_survey_master.bundles//
+    question_id : uuid <<FK>> //references academic_survey_master.questions//
+    answer_id : uuid <<FK>> //references academic_survey_master.answers//
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamptz
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: auth
+' ========================================================================
+package "auth" {
+  entity "auth.permission_position_type" as auth__permission_position_type {
+    * id : uuid <<PK>>
+    --
+    permission_id : uuid <<FK>> //references auth.permissions//
+    position_type_id : uuid <<FK>> //references institution_reference.position_types//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "auth.permission_role" as auth__permission_role {
+    * id : uuid <<PK>>
+    --
+    role_id : uuid <<FK>> //references auth.roles//
+    permission_id : uuid <<FK>> //references auth.permissions//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "auth.permission_user" as auth__permission_user {
+    * id : uuid <<PK>>
+    --
+    user_id : uuid <<FK>> //references auth.users//
+    permission_id : uuid <<FK>> //references auth.permissions//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "auth.permissions" as auth__permissions {
+    * id : uuid <<PK>>
+    --
+    name : varchar(255)
+    uri : text
+    is_open : boolean
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "auth.roles" as auth__roles {
+    * id : uuid <<PK>>
+    --
+    name : varchar(255)
+    user_id : uuid <<FK>> //references auth.users//
+    position_type_id : uuid <<FK>> //references institution_reference.position_types//
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+    roleable_id : uuid
+    roleable_type : varchar(255)
+  }
+
+  entity "auth.user_position_type" as auth__user_position_type {
+    * id : uuid <<PK>>
+    --
+    user_id : uuid <<FK>> //references auth.users//
+    position_type_id : uuid <<FK>> //references institution_reference.position_types//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "auth.users" as auth__users {
+    * id : uuid <<PK>>
+    --
+    name : varchar(255)
+    email : varchar(255)
+    email_verified_at : timestamp
+    password : varchar(255)
+    remember_token : varchar(100)
+    individual_id : uuid <<FK>> //references person_master.individuals//
+    is_active : boolean
+    current_role_id : uuid <<FK>> //references auth.roles//
+    pid : uuid
+    api_key : varchar
+    reset_token : varchar
+    email_verification_token : varchar
+    reset_sent_at : timestamp
+    email_verification_sent_at : timestamp
+    magic_link_token : varchar
+    magic_link_expiration : timestamp
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "auth.verifications" as auth__verifications {
+    * id : uuid <<PK>>
+    --
+    email : varchar(255)
+    token : varchar(255)
+    is_password_recovery : boolean
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: building_master
+' ========================================================================
+package "building_master" {
+  entity "building_master.buildings" as building_master__buildings {
+    * id : uuid <<PK>>
+    --
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    long : float4
+    wide : float4
+    high : float4
+    variety_id : uuid <<FK>> //references building_reference.varieties//
+    category_id : uuid <<FK>> //references building_reference.categories//
+    total_floor : integer
+    residence_id : uuid <<FK>> //references contact_master.residences//
+    condition_id : uuid <<FK>> //references building_reference.conditions//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "building_master.rooms" as building_master__rooms {
+    * id : uuid <<PK>>
+    --
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    long : float4
+    wide : float4
+    high : float4
+    room_type_id : uuid <<FK>> //references building_reference.room_types//
+    unit_id : uuid <<FK>> //references institution_master.units//
+    building_id : uuid <<FK>> //references building_master.buildings//
+    condition_id : uuid <<FK>> //references building_reference.conditions//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: building_reference
+' ========================================================================
+package "building_reference" {
+  entity "building_reference.categories" as building_reference__categories {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "building_reference.conditions" as building_reference__conditions {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "building_reference.room_types" as building_reference__room_types {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "building_reference.varieties" as building_reference__varieties {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: contact_master
+' ========================================================================
+package "contact_master" {
+  entity "contact_master.electronic_mails" as contact_master__electronic_mails {
+    * id : uuid <<PK>>
+    --
+    email_address : varchar(255)
+    electronic_mail_type_id : uuid <<FK>> //references contact_reference.electronic_mail_types//
+    electronic_mailable_id : uuid
+    electronic_mailable_type : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "contact_master.phones" as contact_master__phones {
+    * id : uuid <<PK>>
+    --
+    phone_number : varchar(255)
+    phone_type_id : uuid <<FK>> //references contact_reference.phone_types//
+    phoneable_id : uuid
+    phoneable_type : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "contact_master.residences" as contact_master__residences {
+    * id : uuid <<PK>>
+    --
+    street : varchar(255)
+    citizens_association : integer
+    neighborhood_association : integer
+    province_id : uuid <<FK>> //references location.provinces//
+    regency_id : uuid <<FK>> //references location.regencies//
+    sub_district_id : uuid <<FK>> //references location.sub_districts//
+    village_id : uuid <<FK>> //references location.villages//
+    residence_type_id : uuid <<FK>> //references contact_reference.residence_types//
+    residenceable_type : varchar(255)
+    residenceable_id : uuid
+    latitude : float8
+    longitude : float8
+    zoom : integer
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "contact_master.websites" as contact_master__websites {
+    * id : uuid <<PK>>
+    --
+    website_url : varchar(255)
+    website_type_id : uuid <<FK>> //references contact_reference.website_types//
+    websiteable_id : uuid
+    websiteable_type : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: contact_reference
+' ========================================================================
+package "contact_reference" {
+  entity "contact_reference.electronic_mail_types" as contact_reference__electronic_mail_types {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "contact_reference.phone_types" as contact_reference__phone_types {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "contact_reference.residence_types" as contact_reference__residence_types {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "contact_reference.website_types" as contact_reference__website_types {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: document_reference
+' ========================================================================
+package "document_reference" {
+  entity "document_reference.archive_types" as document_reference__archive_types {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamptz
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: document_transaction
+' ========================================================================
+package "document_transaction" {
+  entity "document_transaction.archives" as document_transaction__archives {
+    * id : uuid <<PK>>
+    --
+    name : varchar(255)
+    dir : varchar(255)
+    mimetype : varchar(255)
+    size : integer
+    archiveable_id : uuid
+    archiveable_type : varchar(255)
+    archive_type_id : uuid <<FK>> //references document_reference.archive_types//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamptz
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+    description : text
+    is_knowledge : boolean
+  }
+
+}
+
+' ========================================================================
+' Schema: institution_master
+' ========================================================================
+package "institution_master" {
+  entity "institution_master.employees" as institution_master__employees {
+    * id : uuid <<PK>>
+    --
+    code : varchar(255)
+    name : varchar(255)
+    institution_id : uuid <<FK>> //references institution_master.institutions//
+    individual_id : uuid <<FK>> //references person_master.individuals//
+    decree_number : varchar(255)
+    decree_date : date
+    is_active : boolean
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "institution_master.institutions" as institution_master__institutions {
+    * id : uuid <<PK>>
+    --
+    code : varchar(255)
+    name : varchar(255)
+    alphabet_code : varchar(255)
+    is_active : boolean
+    variety_id : uuid <<FK>> //references institution_reference.varieties//
+    category_id : uuid <<FK>> //references institution_reference.categories//
+    country_id : uuid <<FK>> //references location.countries//
+    parent_id : uuid <<FK>> //references institution_master.institutions//
+    feeder_id : uuid
+    academic_year_id : uuid <<FK>> //references academic_general_reference.academic_years//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "institution_master.staffes" as institution_master__staffes {
+    * id : uuid <<PK>>
+    --
+    code : varchar(255)
+    name : varchar(255)
+    decree_number : varchar(255)
+    decree_date : date
+    start_date : date
+    end_date : date
+    employee_id : uuid <<FK>> //references institution_master.employees//
+    unit_id : uuid <<FK>> //references institution_master.units//
+    position_type_id : uuid <<FK>> //references institution_reference.position_types//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "institution_master.units" as institution_master__units {
+    * id : uuid <<PK>>
+    --
+    code : varchar(255)
+    name : varchar(255)
+    is_active : boolean
+    unit_type_id : uuid <<FK>> //references institution_reference.unit_types//
+    institution_id : uuid <<FK>> //references institution_master.institutions//
+    parent_id : uuid <<FK>> //references institution_master.units//
+    education_id : uuid <<FK>> //references literate.educations//
+    feeder_id : uuid
+    lft : bigint
+    rght : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: institution_reference
+' ========================================================================
+package "institution_reference" {
+  entity "institution_reference.categories" as institution_reference__categories {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamptz
+    created_by : uuid
+    updated_by : uuid
+    sync_at : timestamp
+  }
+
+  entity "institution_reference.position_types" as institution_reference__position_types {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamptz
+    created_by : uuid
+    updated_by : uuid
+    sync_at : timestamp
+  }
+
+  entity "institution_reference.unit_types" as institution_reference__unit_types {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamptz
+    created_by : uuid
+    updated_by : uuid
+    sync_at : timestamp
+  }
+
+  entity "institution_reference.varieties" as institution_reference__varieties {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamptz
+    created_by : uuid
+    updated_by : uuid
+    sync_at : timestamp
+  }
+
+}
+
+' ========================================================================
+' Schema: literate
+' ========================================================================
+package "literate" {
+  entity "literate.categories" as literate__categories {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "literate.educations" as literate__educations {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    abbreviation : varchar(255)
+    name : varchar(255)
+    level_id : uuid <<FK>> //references literate.levels//
+    group_id : uuid <<FK>> //references literate.groups//
+    category_id : uuid <<FK>> //references literate.categories//
+    variety_id : uuid <<FK>> //references literate.varieties//
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "literate.groups" as literate__groups {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "literate.levels" as literate__levels {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "literate.varieties" as literate__varieties {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: location
+' ========================================================================
+package "location" {
+  entity "location.continents" as location__continents {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    slug : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "location.countries" as location__countries {
+    * id : uuid <<PK>>
+    --
+    code : varchar(255)
+    name : varchar(255)
+    alpha2_code : varchar(255)
+    alpha3_code : varchar(255)
+    iso3166_2_code : varchar(255)
+    dikti_code : varchar(255)
+    continent_id : uuid <<FK>> //references location.continents//
+    region_id : uuid <<FK>> //references location.regions//
+    slug : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "location.provinces" as location__provinces {
+    * id : uuid <<PK>>
+    --
+    code : varchar(255)
+    name : varchar(255)
+    dikti_code : varchar(255)
+    epsbed_code : varchar(255)
+    slug : varchar(255)
+    description : text
+    alt_slug : varchar(255)
+    state_ministry_code : varchar(255)
+    state_ministry_full_code : varchar(255)
+    state_post_department_code : varchar(255)
+    state_ministry_name : varchar(255)
+    dikti_name : varchar(255)
+    validation_code : varchar(255)
+    latitude : float8
+    longitude : float8
+    zoom : integer
+    country_id : uuid <<FK>> //references location.countries//
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "location.regencies" as location__regencies {
+    * id : uuid <<PK>>
+    --
+    code : varchar(255)
+    name : varchar(255)
+    dikti_code : varchar(255)
+    epsbed_code : varchar(255)
+    province_id : uuid <<FK>> //references location.provinces//
+    regency_type_id : uuid <<FK>> //references location.regency_types//
+    slug : varchar(255)
+    description : text
+    alt_slug : varchar(255)
+    state_ministry_code : varchar(255)
+    state_ministry_full_code : varchar(255)
+    state_post_department_code : varchar(255)
+    state_ministry_name : varchar(255)
+    dikti_name : varchar(255)
+    validation_code : varchar(255)
+    latitude : float8
+    longitude : float8
+    zoom : integer
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "location.regency_types" as location__regency_types {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "location.regions" as location__regions {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    slug : varchar(255)
+    alt_slug : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "location.sub_districts" as location__sub_districts {
+    * id : uuid <<PK>>
+    --
+    code : varchar(255)
+    name : varchar(255)
+    dikti_code : varchar(255)
+    regency_id : uuid <<FK>> //references location.regencies//
+    slug : varchar(255)
+    alt_slug : varchar(255)
+    state_ministry_code : varchar(255)
+    state_ministry_full_code : varchar(255)
+    state_post_department_code : varchar(255)
+    state_ministry_name : varchar(255)
+    dikti_name : varchar(255)
+    validation_code : varchar(255)
+    agriculture_department_name : varchar(255)
+    latitude : float8
+    longitude : float8
+    zoom : integer
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "location.villages" as location__villages {
+    * id : uuid <<PK>>
+    --
+    code : varchar(255)
+    name : varchar(255)
+    sub_district_id : uuid <<FK>> //references location.sub_districts//
+    slug : varchar(255)
+    alt_slug : varchar(255)
+    state_ministry_code : varchar(255)
+    state_post_department_code : varchar(255)
+    state_ministry_name : varchar(255)
+    dikti_name : varchar(255)
+    dikti_code : varchar(255)
+    latitude : float8
+    longitude : float8
+    zoom : integer
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Schema: person_master
+' ========================================================================
+package "person_master" {
+  entity "person_master.biodatas" as person_master__biodatas {
+    * id : uuid <<PK>>
+    --
+    height : float8
+    weight : float8
+    is_positive_blood_rhesus : boolean
+    blood_type_id : uuid <<FK>> //references person_reference.blood_types//
+    hair_type_id : uuid <<FK>> //references person_reference.hair_types//
+    hair_color_id : uuid <<FK>> //references person_reference.hair_colors//
+    eye_color_id : uuid <<FK>> //references person_reference.eye_colors//
+    individual_id : uuid <<FK>> //references person_master.individuals//
+    bust : float8
+    waist : float8
+    hip : float8
+    arm_circumference : float8
+    menarche_age : integer
+    menopause_age : integer
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamptz
+    created_by : uuid
+    updated_by : uuid
+    sync_at : timestamp
+  }
+
+  entity "person_master.family_card_members" as person_master__family_card_members {
+    * id : uuid <<PK>>
+    --
+    family_card_id : uuid <<FK>> //references person_master.family_cards//
+    individual_id : uuid <<FK>> //references person_master.individuals//
+    relative_id : uuid <<FK>> //references person_master.individuals//
+    relative_type_id : uuid <<FK>> //references person_reference.relative_types//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamptz
+    created_by : uuid
+    updated_by : uuid
+    sync_at : timestamp
+  }
+
+  entity "person_master.family_cards" as person_master__family_cards {
+    * id : uuid <<PK>>
+    --
+    code : varchar(255)
+    individual_id : uuid <<FK>> //references person_master.individuals//
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamptz
+    created_by : uuid
+    updated_by : uuid
+    sync_at : timestamp
+  }
+
+  entity "person_master.images" as person_master__images {
+    * id : uuid <<PK>>
+    --
+    individual_id : uuid <<FK>> //references person_master.individuals//
+    filename : varchar(255)
+    dir : varchar(255)
+    mimetype : varchar(255)
+    size : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "person_master.individuals" as person_master__individuals {
+    * id : uuid <<PK>>
+    --
+    code : varchar(255)
+    name : varchar(255)
+    front_title : varchar(255)
+    last_title : varchar(255)
+    birth_date : date
+    birth_place : varchar(255)
+    gender_id : uuid <<FK>> //references person_reference.genders//
+    religion_id : uuid <<FK>> //references person_reference.religions//
+    occupation_id : uuid <<FK>> //references person_reference.occupations//
+    education_id : uuid <<FK>> //references literate.educations//
+    income_id : uuid <<FK>> //references person_reference.incomes//
+    identification_type_id : uuid <<FK>> //references person_reference.identification_types//
+    marital_status_id : uuid <<FK>> //references person_reference.marital_statuses//
+    profession_id : uuid <<FK>> //references person_reference.professions//
+    age_classification_id : uuid <<FK>> //references person_reference.age_classifications//
+    is_special_need : boolean
+    is_social_protection_card_recipient : boolean
+    is_deceased : boolean
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamptz
+    created_by : uuid
+    updated_by : uuid
+    sync_at : timestamp
+  }
+
+}
+
+' ========================================================================
+' Schema: person_reference
+' ========================================================================
+package "person_reference" {
+  entity "person_reference.age_classifications" as person_reference__age_classifications {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    minimum : integer
+    maximum : integer
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamptz
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "person_reference.blood_types" as person_reference__blood_types {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "person_reference.eye_colors" as person_reference__eye_colors {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "person_reference.genders" as person_reference__genders {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "person_reference.hair_colors" as person_reference__hair_colors {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamptz
+    sync_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "person_reference.hair_types" as person_reference__hair_types {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "person_reference.identification_types" as person_reference__identification_types {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "person_reference.incomes" as person_reference__incomes {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    minimum : float8
+    maximum : float8
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "person_reference.marital_statuses" as person_reference__marital_statuses {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "person_reference.occupations" as person_reference__occupations {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "person_reference.professions" as person_reference__professions {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "person_reference.relative_types" as person_reference__relative_types {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+  entity "person_reference.religions" as person_reference__religions {
+    * id : uuid <<PK>>
+    --
+    code : integer
+    alphabet_code : varchar(255)
+    name : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    sync_at : timestamp
+    deleted_at : timestamp
+    created_by : uuid
+    updated_by : uuid
+  }
+
+}
+
+' ========================================================================
+' Relationships
+' ========================================================================
+
+  ' Schema: academic_campaign_transaction
+  academic_general_reference__academic_years ||--o{ academic_campaign_transaction__activities : "academic_year_id"
+  institution_master__units ||--o{ academic_campaign_transaction__activities : "unit_id"
+  academic_campaign_reference__calendar_categories ||--o{ academic_campaign_transaction__calendar_details : "calendar_category_id"
+  academic_campaign_transaction__calendars ||--o{ academic_campaign_transaction__calendar_details : "calendar_id"
+  academic_general_reference__academic_years ||--o{ academic_campaign_transaction__calendars : "academic_year_id"
+  institution_master__institutions ||--o{ academic_campaign_transaction__calendars : "institution_id"
+  academic_campaign_transaction__activities ||--o{ academic_campaign_transaction__class_codes : "activity_id"
+  institution_master__units ||--o{ academic_campaign_transaction__class_codes : "unit_id"
+  institution_master__units ||--o{ academic_campaign_transaction__grades : "unit_id"
+  building_master__rooms ||--o{ academic_campaign_transaction__schedules : "room_id"
+  academic_campaign_transaction__teaches ||--o{ academic_campaign_transaction__schedules : "teach_id"
+  academic_campaign_transaction__activities ||--o{ academic_campaign_transaction__teach_decrees : "activity_id"
+  institution_master__staffes ||--o{ academic_campaign_transaction__teach_decrees : "staff_id"
+  academic_course_reference__evaluation_types ||--o{ academic_campaign_transaction__teach_evaluations : "evaluation_type_id"
+  academic_campaign_transaction__teaches ||--o{ academic_campaign_transaction__teach_evaluations : "teach_id"
+  academic_lecturer_master__lecturers ||--o{ academic_campaign_transaction__teach_lecturers : "lecturer_id"
+  academic_campaign_transaction__teaches ||--o{ academic_campaign_transaction__teach_lecturers : "teach_id"
+  academic_campaign_transaction__activities ||--o{ academic_campaign_transaction__teaches : "activity_id"
+  academic_campaign_transaction__class_codes ||--o{ academic_campaign_transaction__teaches : "class_code_id"
+  academic_course_master__courses ||--o{ academic_campaign_transaction__teaches : "course_id"
+  academic_course_master__curriculum_details ||--o{ academic_campaign_transaction__teaches : "curriculum_detail_id"
+  academic_campaign_reference__encounter_categories ||--o{ academic_campaign_transaction__teaches : "encounter_category_id"
+  academic_campaign_reference__scopes ||--o{ academic_campaign_transaction__teaches : "scope_id"
+  academic_campaign_transaction__teach_decrees ||--o{ academic_campaign_transaction__teaches : "teach_decree_id"
+  ' Schema: academic_candidate_master
+  academic_candidate_master__candidates ||--o{ academic_candidate_master__candidate_unit : "candidate_id"
+  academic_candidate_reference__registration_categories ||--o{ academic_candidate_master__candidate_unit : "registration_category_id"
+  institution_master__units ||--o{ academic_candidate_master__candidate_unit : "unit_id"
+  academic_general_reference__academic_years ||--o{ academic_candidate_master__candidates : "academic_year_id"
+  person_master__individuals ||--o{ academic_candidate_master__candidates : "individual_id"
+  institution_master__institutions ||--o{ academic_candidate_master__candidates : "institution_id"
+  academic_candidate_reference__registration_types ||--o{ academic_candidate_master__candidates : "registration_type_id"
+  location__regencies ||--o{ academic_candidate_master__candidates : "school_regency_id"
+  academic_student_master__students ||--o{ academic_candidate_master__candidates : "student_id"
+  auth__users ||--o{ academic_candidate_master__candidates : "user_id"
+  academic_candidate_reference__phases ||--o{ academic_candidate_master__exam_classes : "phase_id"
+  ' Schema: academic_candidate_reference
+  institution_master__institutions ||--o{ academic_candidate_reference__registration_types : "institution_id"
+  academic_candidate_reference__registration_categories ||--o{ academic_candidate_reference__registration_types : "registration_category_id"
+  academic_student_reference__registrations ||--o{ academic_candidate_reference__registration_types : "student_registration_id"
+  institution_master__units ||--o{ academic_candidate_reference__registration_types : "unit_id"
+  ' Schema: academic_candidate_transaction
+  academic_candidate_master__candidates ||--o{ academic_candidate_transaction__candidate_unit_choices : "candidate_id"
+  academic_candidate_reference__phases ||--o{ academic_candidate_transaction__candidate_unit_choices : "phase_id"
+  academic_candidate_reference__registration_categories ||--o{ academic_candidate_transaction__candidate_unit_choices : "registration_category_id"
+  academic_student_reference__registrations ||--o{ academic_candidate_transaction__candidate_unit_choices : "student_registration_id"
+  institution_master__units ||--o{ academic_candidate_transaction__candidate_unit_choices : "unit_id"
+  academic_candidate_master__candidates ||--o{ academic_candidate_transaction__documents : "candidate_id"
+  academic_candidate_reference__document_types ||--o{ academic_candidate_transaction__documents : "document_type_id"
+  academic_candidate_master__candidates ||--o{ academic_candidate_transaction__exams : "candidate_id"
+  academic_candidate_master__exam_classes ||--o{ academic_candidate_transaction__exams : "exam_class_id"
+  ' Schema: academic_course_master
+  institution_master__units ||--o{ academic_course_master__concentrations : "unit_id"
+  academic_course_master__courses ||--o{ academic_course_master__course_evaluation_plannings : "course_id"
+  academic_course_reference__evaluation_types ||--o{ academic_course_master__course_evaluation_plannings : "evaluation_type_id"
+  academic_course_master__courses ||--o{ academic_course_master__course_learn_plannings : "course_id"
+  academic_course_reference__competences ||--o{ academic_course_master__courses : "competence_id"
+  academic_course_reference__groups ||--o{ academic_course_master__courses : "group_id"
+  institution_master__units ||--o{ academic_course_master__courses : "unit_id"
+  academic_course_reference__varieties ||--o{ academic_course_master__courses : "variety_id"
+  academic_course_master__concentrations ||--o{ academic_course_master__curriculum_details : "concentration_id"
+  academic_course_master__courses ||--o{ academic_course_master__curriculum_details : "course_id"
+  academic_course_master__curriculums ||--o{ academic_course_master__curriculum_details : "curriculum_id"
+  academic_course_reference__semesters ||--o{ academic_course_master__curriculum_details : "semester_id"
+  academic_general_reference__academic_years ||--o{ academic_course_master__curriculums : "academic_year_id"
+  academic_course_reference__curriculum_types ||--o{ academic_course_master__curriculums : "curriculum_type_id"
+  institution_master__units ||--o{ academic_course_master__curriculums : "unit_id"
+  ' Schema: academic_course_reference
+  academic_course_reference__curriculum_types ||--o{ academic_course_reference__varieties : "curriculum_type_id"
+  ' Schema: academic_general_reference
+  academic_general_reference__academic_year_categories ||--o{ academic_general_reference__academic_years : "academic_year_category_id"
+  ' Schema: academic_lecturer_master
+  academic_lecturer_reference__contracts ||--o{ academic_lecturer_master__lecturers : "contract_id"
+  academic_lecturer_reference__groups ||--o{ academic_lecturer_master__lecturers : "group_id"
+  person_master__individuals ||--o| academic_lecturer_master__lecturers : "individual_id"
+  institution_master__institutions ||--o{ academic_lecturer_master__lecturers : "institution_id"
+  academic_lecturer_reference__ranks ||--o{ academic_lecturer_master__lecturers : "rank_id"
+  academic_lecturer_reference__statuses ||--o{ academic_lecturer_master__lecturers : "status_id"
+  ' Schema: academic_lecturer_transaction
+  academic_lecturer_reference__groups ||--o{ academic_lecturer_transaction__academic_groups : "group_id"
+  academic_lecturer_master__lecturers ||--o{ academic_lecturer_transaction__academic_groups : "lecturer_id"
+  academic_lecturer_master__lecturers ||--o{ academic_lecturer_transaction__academic_ranks : "lecturer_id"
+  academic_lecturer_reference__ranks ||--o{ academic_lecturer_transaction__academic_ranks : "rank_id"
+  academic_lecturer_reference__contracts ||--o{ academic_lecturer_transaction__homebases : "contract_id"
+  institution_master__institutions ||--o{ academic_lecturer_transaction__homebases : "institution_id"
+  academic_lecturer_master__lecturers ||--o{ academic_lecturer_transaction__homebases : "lecturer_id"
+  academic_lecturer_reference__statuses ||--o{ academic_lecturer_transaction__homebases : "status_id"
+  institution_master__units ||--o{ academic_lecturer_transaction__homebases : "unit_id"
+  ' Schema: academic_prior_learning_recognition_transaction
+  academic_prior_learning_recognition_transaction__evaluations ||--o{ academic_prior_learning_recognition_transaction__decrees : "evaluation_id"
+  document_transaction__archives ||--o{ academic_prior_learning_recognition_transaction__evaluation_details : "archive_id"
+  academic_prior_learning_recognition_transaction__evaluations ||--o{ academic_prior_learning_recognition_transaction__evaluation_details : "evaluation_id"
+  academic_prior_learning_recognition_reference__evidence_types ||--o{ academic_prior_learning_recognition_transaction__evaluation_details : "evidence_type_id"
+  academic_course_master__course_evaluation_plannings ||--o{ academic_prior_learning_recognition_transaction__evaluations : "course_evaluation_planning_id"
+  academic_prior_learning_recognition_transaction__evaluators ||--o{ academic_prior_learning_recognition_transaction__evaluations : "evaluator_id"
+  academic_prior_learning_recognition_reference__evidence_types ||--o{ academic_prior_learning_recognition_transaction__evaluations : "evidence_type_id"
+  academic_prior_learning_recognition_reference__professionalisms ||--o{ academic_prior_learning_recognition_transaction__evaluations : "professionalism_id"
+  academic_prior_learning_recognition_transaction__recognitions ||--o{ academic_prior_learning_recognition_transaction__evaluations : "recognition_id"
+  academic_prior_learning_recognition_reference__evaluator_types ||--o{ academic_prior_learning_recognition_transaction__evaluators : "evaluator_type_id"
+  person_master__individuals ||--o{ academic_prior_learning_recognition_transaction__evaluators : "individual_id"
+  academic_prior_learning_recognition_transaction__recognitions ||--o{ academic_prior_learning_recognition_transaction__evaluators : "recognition_id"
+  academic_candidate_master__candidates ||--o{ academic_prior_learning_recognition_transaction__recognitions : "candidate_id"
+  academic_course_master__curriculums ||--o{ academic_prior_learning_recognition_transaction__recognitions : "curriculum_id"
+  institution_master__units ||--o{ academic_prior_learning_recognition_transaction__recognitions : "unit_id"
+  ' Schema: academic_student_adviser
+  academic_student_adviser__decrees ||--o{ academic_student_adviser__counsellors : "decree_id"
+  academic_lecturer_master__lecturers ||--o{ academic_student_adviser__counsellors : "lecturer_id"
+  academic_student_master__students ||--o{ academic_student_adviser__counsellors : "student_id"
+  institution_master__staffes ||--o{ academic_student_adviser__decrees : "staff_id"
+  institution_master__units ||--o{ academic_student_adviser__decrees : "unit_id"
+  ' Schema: academic_student_campaign
+  academic_general_reference__academic_years ||--o{ academic_student_campaign__convertions : "academic_year_id"
+  academic_course_master__courses ||--o{ academic_student_campaign__convertions : "course_id"
+  academic_campaign_transaction__grades ||--o{ academic_student_campaign__convertions : "grade_id"
+  academic_student_master__students ||--o{ academic_student_campaign__convertions : "student_id"
+  academic_campaign_transaction__activities ||--o{ academic_student_campaign__detail_activities : "activity_id"
+  academic_course_master__courses ||--o{ academic_student_campaign__detail_activities : "course_id"
+  academic_campaign_transaction__grades ||--o{ academic_student_campaign__detail_activities : "grade_id"
+  academic_campaign_transaction__teaches ||--o{ academic_student_campaign__detail_activities : "teach_id"
+  academic_course_master__course_evaluation_plannings ||--o{ academic_student_campaign__detail_activity_evaluation_components : "course_evaluation_planning_id"
+  academic_student_campaign__detail_activities ||--o{ academic_student_campaign__detail_activity_evaluation_components : "detail_activity_id"
+  academic_student_reference__finances ||--o{ academic_student_campaign__student_activities : "finance_id"
+  academic_student_reference__resign_statuses ||--o{ academic_student_campaign__student_activities : "resign_status_id"
+  academic_student_reference__statuses ||--o{ academic_student_campaign__student_activities : "status_id"
+  academic_student_master__students ||--o{ academic_student_campaign__student_activities : "student_id"
+  academic_campaign_transaction__activities ||--o{ academic_student_campaign__student_activities : "unit_activity_id"
+  institution_master__units ||--o{ academic_student_campaign__student_activities : "unit_id"
+  ' Schema: academic_student_final_assignment_reference
+  academic_student_final_assignment_reference__stages ||--o{ academic_student_final_assignment_reference__requirements : "stage_id"
+  ' Schema: academic_student_final_assignment_transaction
+  academic_student_final_assignment_reference__adviser_categories ||--o{ academic_student_final_assignment_transaction__advisers : "adviser_category_id"
+  academic_student_campaign__detail_activities ||--o{ academic_student_final_assignment_transaction__advisers : "detail_activity_id"
+  academic_lecturer_master__lecturers ||--o{ academic_student_final_assignment_transaction__advisers : "lecturer_id"
+  academic_student_final_assignment_transaction__submissions ||--o{ academic_student_final_assignment_transaction__advisers : "submission_id"
+  academic_student_final_assignment_transaction__advisers ||--o{ academic_student_final_assignment_transaction__evaluation_details : "adviser_id"
+  academic_student_final_assignment_transaction__evaluation_summaries ||--o{ academic_student_final_assignment_transaction__evaluation_details : "evaluation_summary_id"
+  academic_campaign_transaction__grades ||--o{ academic_student_final_assignment_transaction__evaluation_details : "grade_id"
+  academic_student_campaign__detail_activities ||--o{ academic_student_final_assignment_transaction__evaluation_summaries : "detail_activity_id"
+  academic_campaign_transaction__grades ||--o{ academic_student_final_assignment_transaction__evaluation_summaries : "grade_id"
+  academic_student_final_assignment_reference__stages ||--o{ academic_student_final_assignment_transaction__evaluation_summaries : "stage_id"
+  academic_student_final_assignment_transaction__submissions ||--o{ academic_student_final_assignment_transaction__evaluation_summaries : "submission_id"
+  academic_campaign_transaction__activities ||--o{ academic_student_final_assignment_transaction__final_assignment_decrees : "activity_id"
+  institution_master__staffes ||--o{ academic_student_final_assignment_transaction__final_assignment_decrees : "staff_id"
+  institution_master__units ||--o{ academic_student_final_assignment_transaction__final_assignment_decrees : "unit_id"
+  academic_student_final_assignment_reference__approval_types ||--o{ academic_student_final_assignment_transaction__prerequisites : "approval_type_id"
+  academic_student_final_assignment_reference__requirements ||--o{ academic_student_final_assignment_transaction__prerequisites : "requirement_id"
+  academic_student_final_assignment_reference__stages ||--o{ academic_student_final_assignment_transaction__prerequisites : "stage_id"
+  academic_student_final_assignment_transaction__submissions ||--o{ academic_student_final_assignment_transaction__prerequisites : "submission_id"
+  academic_student_campaign__detail_activities ||--o{ academic_student_final_assignment_transaction__schedules : "detail_activity_id"
+  building_master__rooms ||--o{ academic_student_final_assignment_transaction__schedules : "room_id"
+  academic_student_final_assignment_reference__stages ||--o{ academic_student_final_assignment_transaction__schedules : "stage_id"
+  academic_student_final_assignment_transaction__submissions ||--o{ academic_student_final_assignment_transaction__schedules : "submission_id"
+  academic_student_final_assignment_reference__approval_types ||--o{ academic_student_final_assignment_transaction__submissions : "approval_type_id"
+  academic_student_final_assignment_reference__categories ||--o{ academic_student_final_assignment_transaction__submissions : "category_id"
+  academic_student_campaign__detail_activities ||--o{ academic_student_final_assignment_transaction__submissions : "detail_activity_id"
+  academic_student_final_assignment_transaction__final_assignment_decrees ||--o{ academic_student_final_assignment_transaction__submissions : "final_assignment_decree_id"
+  academic_student_final_assignment_reference__stages ||--o{ academic_student_final_assignment_transaction__submissions : "stage_id"
+  academic_student_master__students ||--o{ academic_student_final_assignment_transaction__submissions : "student_id"
+  ' Schema: academic_student_master
+  academic_student_master__students ||--o{ academic_student_master__images : "student_id"
+  academic_general_reference__academic_years ||--o{ academic_student_master__students : "academic_year_id"
+  academic_campaign_transaction__class_codes ||--o{ academic_student_master__students : "class_code_id"
+  academic_course_master__concentrations ||--o{ academic_student_master__students : "concentration_id"
+  academic_course_master__curriculums ||--o{ academic_student_master__students : "curriculum_id"
+  academic_student_reference__finances ||--o{ academic_student_master__students : "finance_id"
+  person_master__individuals ||--o{ academic_student_master__students : "individual_id"
+  academic_student_reference__registrations ||--o{ academic_student_master__students : "registration_id"
+  academic_student_reference__resign_statuses ||--o{ academic_student_master__students : "resign_status_id"
+  academic_student_reference__selection_types ||--o{ academic_student_master__students : "selection_type_id"
+  academic_student_reference__statuses ||--o{ academic_student_master__students : "status_id"
+  institution_master__units ||--o{ academic_student_master__students : "transfer_unit_id"
+  institution_master__units ||--o{ academic_student_master__students : "unit_id"
+  ' Schema: academic_survey_master
+  academic_survey_master__questions ||--o{ academic_survey_master__answers : "question_id"
+  academic_survey_master__bundles ||--o{ academic_survey_master__bundle_question : "bundle_id"
+  academic_survey_master__questions ||--o{ academic_survey_master__bundle_question : "question_id"
+  academic_survey_reference__bundle_categories ||--o{ academic_survey_master__bundles : "bundle_category_id"
+  institution_master__institutions ||--o{ academic_survey_master__bundles : "institution_id"
+  institution_master__units ||--o{ academic_survey_master__bundles : "unit_id"
+  institution_master__institutions ||--o{ academic_survey_master__questions : "institution_id"
+  academic_survey_reference__question_varieties ||--o{ academic_survey_master__questions : "question_variety_id"
+  ' Schema: academic_survey_transaction
+  academic_survey_master__bundles ||--o{ academic_survey_transaction__conducts : "bundle_id"
+  academic_survey_master__answers ||--o{ academic_survey_transaction__responds : "answer_id"
+  academic_survey_master__bundles ||--o{ academic_survey_transaction__responds : "bundle_id"
+  academic_survey_transaction__conducts ||--o{ academic_survey_transaction__responds : "conduct_id"
+  academic_survey_master__questions ||--o{ academic_survey_transaction__responds : "question_id"
+  ' Schema: auth
+  auth__permissions ||--o{ auth__permission_position_type : "permission_id"
+  institution_reference__position_types ||--o{ auth__permission_position_type : "position_type_id"
+  auth__permissions ||--o{ auth__permission_role : "permission_id"
+  auth__roles ||--o{ auth__permission_role : "role_id"
+  auth__permissions ||--o{ auth__permission_user : "permission_id"
+  auth__users ||--o{ auth__permission_user : "user_id"
+  institution_reference__position_types ||--o{ auth__roles : "position_type_id"
+  auth__users ||--o{ auth__roles : "user_id"
+  institution_reference__position_types ||--o{ auth__user_position_type : "position_type_id"
+  auth__users ||--o{ auth__user_position_type : "user_id"
+  auth__roles ||--o{ auth__users : "current_role_id"
+  person_master__individuals ||--o| auth__users : "individual_id"
+  ' Schema: building_master
+  building_reference__categories ||--o{ building_master__buildings : "category_id"
+  building_reference__conditions ||--o{ building_master__buildings : "condition_id"
+  contact_master__residences ||--o{ building_master__buildings : "residence_id"
+  building_reference__varieties ||--o{ building_master__buildings : "variety_id"
+  building_master__buildings ||--o{ building_master__rooms : "building_id"
+  building_reference__conditions ||--o{ building_master__rooms : "condition_id"
+  building_reference__room_types ||--o{ building_master__rooms : "room_type_id"
+  institution_master__units ||--o{ building_master__rooms : "unit_id"
+  ' Schema: contact_master
+  contact_reference__electronic_mail_types ||--o{ contact_master__electronic_mails : "electronic_mail_type_id"
+  contact_reference__phone_types ||--o{ contact_master__phones : "phone_type_id"
+  location__provinces ||--o{ contact_master__residences : "province_id"
+  location__regencies ||--o{ contact_master__residences : "regency_id"
+  contact_reference__residence_types ||--o{ contact_master__residences : "residence_type_id"
+  location__sub_districts ||--o{ contact_master__residences : "sub_district_id"
+  location__villages ||--o{ contact_master__residences : "village_id"
+  contact_reference__website_types ||--o{ contact_master__websites : "website_type_id"
+  ' Schema: document_transaction
+  document_reference__archive_types ||--o{ document_transaction__archives : "archive_type_id"
+  ' Schema: institution_master
+  person_master__individuals ||--o{ institution_master__employees : "individual_id"
+  institution_master__institutions ||--o{ institution_master__employees : "institution_id"
+  academic_general_reference__academic_years ||--o{ institution_master__institutions : "academic_year_id"
+  institution_reference__categories ||--o{ institution_master__institutions : "category_id"
+  location__countries ||--o{ institution_master__institutions : "country_id"
+  institution_master__institutions ||--o{ institution_master__institutions : "parent_id"
+  institution_reference__varieties ||--o{ institution_master__institutions : "variety_id"
+  institution_master__employees ||--o{ institution_master__staffes : "employee_id"
+  institution_reference__position_types ||--o{ institution_master__staffes : "position_type_id"
+  institution_master__units ||--o{ institution_master__staffes : "unit_id"
+  literate__educations ||--o{ institution_master__units : "education_id"
+  institution_master__institutions ||--o{ institution_master__units : "institution_id"
+  institution_master__units ||--o{ institution_master__units : "parent_id"
+  institution_reference__unit_types ||--o{ institution_master__units : "unit_type_id"
+  ' Schema: literate
+  literate__categories ||--o{ literate__educations : "category_id"
+  literate__groups ||--o{ literate__educations : "group_id"
+  literate__levels ||--o{ literate__educations : "level_id"
+  literate__varieties ||--o{ literate__educations : "variety_id"
+  ' Schema: location
+  location__continents ||--o{ location__countries : "continent_id"
+  location__regions ||--o{ location__countries : "region_id"
+  location__countries ||--o{ location__provinces : "country_id"
+  location__provinces ||--o{ location__regencies : "province_id"
+  location__regency_types ||--o{ location__regencies : "regency_type_id"
+  location__regencies ||--o{ location__sub_districts : "regency_id"
+  location__sub_districts ||--o{ location__villages : "sub_district_id"
+  ' Schema: person_master
+  person_reference__blood_types ||--o{ person_master__biodatas : "blood_type_id"
+  person_reference__eye_colors ||--o{ person_master__biodatas : "eye_color_id"
+  person_reference__hair_colors ||--o{ person_master__biodatas : "hair_color_id"
+  person_reference__hair_types ||--o{ person_master__biodatas : "hair_type_id"
+  person_master__individuals ||--o| person_master__biodatas : "individual_id"
+  person_master__family_cards ||--o{ person_master__family_card_members : "family_card_id"
+  person_master__individuals ||--o{ person_master__family_card_members : "individual_id"
+  person_master__individuals ||--o{ person_master__family_card_members : "relative_id"
+  person_reference__relative_types ||--o{ person_master__family_card_members : "relative_type_id"
+  person_master__individuals ||--o{ person_master__family_cards : "individual_id"
+  person_master__individuals ||--o{ person_master__images : "individual_id"
+  person_reference__age_classifications ||--o{ person_master__individuals : "age_classification_id"
+  literate__educations ||--o{ person_master__individuals : "education_id"
+  person_reference__genders ||--o{ person_master__individuals : "gender_id"
+  person_reference__identification_types ||--o{ person_master__individuals : "identification_type_id"
+  person_reference__incomes ||--o{ person_master__individuals : "income_id"
+  person_reference__marital_statuses ||--o{ person_master__individuals : "marital_status_id"
+  person_reference__occupations ||--o{ person_master__individuals : "occupation_id"
+  person_reference__professions ||--o{ person_master__individuals : "profession_id"
+  person_reference__religions ||--o{ person_master__individuals : "religion_id"
+@enduml

@@ -1,0 +1,2883 @@
+erDiagram
+    %% ========================================================================
+    %% Schema: academic_campaign_reference
+    %% ========================================================================
+
+    academic_campaign_reference__attend_types["academic_campaign_reference.attend_types"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_campaign_reference__calendar_categories["academic_campaign_reference.calendar_categories"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_campaign_reference__encounter_categories["academic_campaign_reference.encounter_categories"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_campaign_reference__implementations["academic_campaign_reference.implementations"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_campaign_reference__scopes["academic_campaign_reference.scopes"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_campaign_reference__substances["academic_campaign_reference.substances"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: academic_campaign_transaction
+    %% ========================================================================
+
+    academic_campaign_transaction__activities["academic_campaign_transaction.activities"] {
+        uuid id PK
+        varchar(255) name
+        integer week_quantity
+        integer student_target
+        integer candidate_number
+        integer candidate_pass
+        integer became_student
+        integer transfer_student
+        integer total_class_member
+        date start_date
+        date end_date
+        date start_transaction
+        date end_transaction
+        uuid unit_id FK "references institution_master.units"
+        uuid academic_year_id FK "references academic_general_reference.academic_years"
+        boolean is_active
+        uuid feeder_id
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_campaign_transaction__calendar_details["academic_campaign_transaction.calendar_details"] {
+        uuid id PK
+        varchar(255) name
+        uuid calendar_category_id FK "references academic_campaign_reference.calendar_categories"
+        uuid calendar_id FK "references academic_campaign_transaction.calendars"
+        date start_date
+        date end_date
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_campaign_transaction__calendars["academic_campaign_transaction.calendars"] {
+        uuid id PK
+        varchar(255) name
+        uuid academic_year_id FK "references academic_general_reference.academic_years"
+        uuid institution_id FK "references institution_master.institutions"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_campaign_transaction__class_codes["academic_campaign_transaction.class_codes"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        uuid activity_id FK "references academic_campaign_transaction.activities"
+        date start_effective_date
+        date end_effective_date
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+        uuid unit_id FK "references institution_master.units"
+        integer capacity
+    }
+
+    academic_campaign_transaction__grades["academic_campaign_transaction.grades"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        float8 grade
+        float8 minimum
+        float8 maximum
+        date start_date
+        date end_date
+        uuid unit_id FK "references institution_master.units"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+        uuid feeder_id
+    }
+
+    academic_campaign_transaction__schedules["academic_campaign_transaction.schedules"] {
+        uuid id PK
+        text name
+        time start_hour
+        time end_hour
+        uuid weekday_id
+        uuid room_id FK "references building_master.rooms"
+        uuid teach_id FK "references academic_campaign_transaction.teaches"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_campaign_transaction__teach_decrees["academic_campaign_transaction.teach_decrees"] {
+        uuid id PK
+        varchar(255) decree_number
+        date decree_date
+        uuid activity_id FK "references academic_campaign_transaction.activities"
+        uuid staff_id FK "references institution_master.staffes"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+        uuid feeder_id
+    }
+
+    academic_campaign_transaction__teach_evaluations["academic_campaign_transaction.teach_evaluations"] {
+        uuid id PK
+        integer thread
+        varchar(255) name
+        varchar(255) english_name
+        float4 evaluation_weight
+        uuid evaluation_type_id FK "references academic_course_reference.evaluation_types"
+        uuid feeder_id
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+        uuid teach_id FK "references academic_campaign_transaction.teaches"
+    }
+
+    academic_campaign_transaction__teach_lecturers["academic_campaign_transaction.teach_lecturers"] {
+        uuid id PK
+        varchar(255) name
+        integer planning
+        integer realization
+        numeric(3,1) credit
+        boolean is_lecturer_home_base
+        uuid lecturer_id FK "references academic_lecturer_master.lecturers"
+        uuid teach_id FK "references academic_campaign_transaction.teaches"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+        uuid feeder_id
+    }
+
+    academic_campaign_transaction__teaches["academic_campaign_transaction.teaches"] {
+        uuid id PK
+        text name
+        uuid class_code_id FK "references academic_campaign_transaction.class_codes"
+        uuid course_id FK "references academic_course_master.courses"
+        uuid activity_id FK "references academic_campaign_transaction.activities"
+        text description
+        date start_date
+        date end_date
+        date practice_start_date
+        date practice_end_date
+        uuid curriculum_detail_id FK "references academic_course_master.curriculum_details"
+        uuid teach_decree_id FK "references academic_campaign_transaction.teach_decrees"
+        boolean is_lecturer_credit_sum_problem
+        boolean is_lock
+        uuid encounter_category_id FK "references academic_campaign_reference.encounter_categories"
+        uuid scope_id FK "references academic_campaign_reference.scopes"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+        integer max_member
+        uuid feeder_id
+    }
+
+    %% ========================================================================
+    %% Schema: academic_candidate_master
+    %% ========================================================================
+
+    academic_candidate_master__candidate_unit["academic_candidate_master.candidate_unit"] {
+        uuid id PK
+        uuid candidate_id FK "references academic_candidate_master.candidates"
+        uuid unit_id FK "references institution_master.units"
+        uuid registration_category_id FK "references academic_candidate_reference.registration_categories"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_candidate_master__candidates["academic_candidate_master.candidates"] {
+        uuid id PK
+        integer thread
+        varchar(255) code
+        varchar(255) name
+        varchar(255) student_national_number
+        varchar(255) school_name
+        uuid school_regency_id FK "references location.regencies"
+        varchar(255) state_smart_card_number
+        uuid individual_id FK "references person_master.individuals"
+        uuid academic_year_id FK "references academic_general_reference.academic_years"
+        uuid student_id FK "references academic_student_master.students"
+        uuid user_id FK "references auth.users"
+        uuid registration_type_id FK "references academic_candidate_reference.registration_types"
+        uuid institution_id FK "references institution_master.institutions"
+        varchar(255) guidence_name
+        varchar(255) guidence_phone_number
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_candidate_master__exam_classes["academic_candidate_master.exam_classes"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        uuid phase_id FK "references academic_candidate_reference.phases"
+        timestamp start_date
+        timestamp end_date
+        time start_time
+        time end_time
+        integer capacity
+        integer lms_category
+        boolean is_online
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: academic_candidate_reference
+    %% ========================================================================
+
+    academic_candidate_reference__document_types["academic_candidate_reference.document_types"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_candidate_reference__phases["academic_candidate_reference.phases"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_candidate_reference__registration_categories["academic_candidate_reference.registration_categories"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_candidate_reference__registration_types["academic_candidate_reference.registration_types"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+        uuid student_registration_id FK "references academic_student_reference.registrations"
+        uuid unit_id FK "references institution_master.units"
+        uuid registration_category_id FK "references academic_candidate_reference.registration_categories"
+        uuid institution_id FK "references institution_master.institutions"
+    }
+
+    %% ========================================================================
+    %% Schema: academic_candidate_transaction
+    %% ========================================================================
+
+    academic_candidate_transaction__candidate_unit_choices["academic_candidate_transaction.candidate_unit_choices"] {
+        uuid id PK
+        uuid candidate_id FK "references academic_candidate_master.candidates"
+        uuid unit_id FK "references institution_master.units"
+        uuid student_registration_id FK "references academic_student_reference.registrations"
+        uuid registration_category_id FK "references academic_candidate_reference.registration_categories"
+        uuid phase_id FK "references academic_candidate_reference.phases"
+        integer priority
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_candidate_transaction__documents["academic_candidate_transaction.documents"] {
+        uuid id PK
+        uuid candidate_id FK "references academic_candidate_master.candidates"
+        uuid document_type_id FK "references academic_candidate_reference.document_types"
+        varchar(255) filename
+        varchar(255) dir
+        varchar(255) type
+        integer size
+        boolean is_verified
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_candidate_transaction__exams["academic_candidate_transaction.exams"] {
+        uuid id PK
+        uuid candidate_id FK "references academic_candidate_master.candidates"
+        uuid exam_class_id FK "references academic_candidate_master.exam_classes"
+        float8 score
+        boolean is_present
+        boolean is_pass
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: academic_course_master
+    %% ========================================================================
+
+    academic_course_master__concentrations["academic_course_master.concentrations"] {
+        uuid id PK
+        integer code
+        varchar(255) name
+        uuid unit_id FK "references institution_master.units"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_course_master__course_evaluation_plannings["academic_course_master.course_evaluation_plannings"] {
+        uuid id PK
+        varchar(255) name
+        float4 percentage
+        text decription_indonesian
+        text decription_english
+        uuid course_id FK "references academic_course_master.courses"
+        uuid evaluation_type_id FK "references academic_course_reference.evaluation_types"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+        integer code
+    }
+
+    academic_course_master__course_learn_plannings["academic_course_master.course_learn_plannings"] {
+        uuid id PK
+        integer code
+        varchar(255) name
+        text decription_indonesian
+        text decription_english
+        uuid course_id FK "references academic_course_master.courses"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+        uuid feeder_id_rencana_ajar
+    }
+
+    academic_course_master__courses["academic_course_master.courses"] {
+        uuid id PK
+        varchar(255) code
+        varchar(255) name
+        text implementation_method
+        float8 total_credit
+        float8 lecture_credit
+        float8 practice_credit
+        float8 field_practice_credit
+        float8 simulation_credit
+        boolean has_unit
+        boolean has_syllabus
+        boolean has_material
+        boolean has_practice
+        boolean has_dictation
+        uuid group_id FK "references academic_course_reference.groups"
+        uuid variety_id FK "references academic_course_reference.varieties"
+        uuid unit_id FK "references institution_master.units"
+        uuid competence_id FK "references academic_course_reference.competences"
+        uuid feeder_course_group_id
+        uuid feeder_course_type_id
+        uuid feeder_course_id
+        date start_date
+        date end_date
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_course_master__curriculum_details["academic_course_master.curriculum_details"] {
+        uuid id PK
+        integer code
+        uuid curriculum_id FK "references academic_course_master.curriculums"
+        uuid semester_id FK "references academic_course_reference.semesters"
+        uuid course_id FK "references academic_course_master.courses"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+        float8 credit
+        varchar name
+        uuid concentration_id FK "references academic_course_master.concentrations"
+        boolean is_convertable_to_mbkm
+        uuid feeder_id
+        boolean is_convertable_to_prior_learning_recognition
+    }
+
+    academic_course_master__curriculums["academic_course_master.curriculums"] {
+        uuid id PK
+        varchar(255) name
+        uuid unit_id FK "references institution_master.units"
+        uuid academic_year_id FK "references academic_general_reference.academic_years"
+        uuid curriculum_type_id FK "references academic_course_reference.curriculum_types"
+        float8 total_credit
+        float8 mandatory_course_credit
+        float8 optional_course_credit
+        uuid feeder_id
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+        date start_date
+        date end_date
+        boolean is_active
+    }
+
+    %% ========================================================================
+    %% Schema: academic_course_reference
+    %% ========================================================================
+
+    academic_course_reference__competences["academic_course_reference.competences"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        date start_effective_date
+        date end_effective_date
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_course_reference__course_evaluation_bases["academic_course_reference.course_evaluation_bases"] {
+        uuid id PK
+        integer code
+        varchar(255) evaluation_base
+        varchar(255) component_evaluation
+        date start_effective_date
+        date end_effective_date
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_course_reference__curriculum_types["academic_course_reference.curriculum_types"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        date start_effective_date
+        date end_effective_date
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_course_reference__encounter_types["academic_course_reference.encounter_types"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_course_reference__evaluation_types["academic_course_reference.evaluation_types"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        varchar(255) english_name
+        uuid feeder_id
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_course_reference__groups["academic_course_reference.groups"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        varchar(255) abbreviation
+        date start_effective_date
+        date end_effective_date
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_course_reference__semesters["academic_course_reference.semesters"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        boolean is_odd
+        date start_effective_date
+        date end_effective_date
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_course_reference__varieties["academic_course_reference.varieties"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        uuid curriculum_type_id FK "references academic_course_reference.curriculum_types"
+        date start_effective_date
+        date end_effective_date
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: academic_general_reference
+    %% ========================================================================
+
+    academic_general_reference__academic_year_categories["academic_general_reference.academic_year_categories"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_general_reference__academic_years["academic_general_reference.academic_years"] {
+        uuid id PK
+        integer code
+        integer year
+        varchar(255) name
+        varchar(255) feeder_name
+        uuid academic_year_category_id FK "references academic_general_reference.academic_year_categories"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+        boolean is_active
+        date start_date
+        date end_date
+    }
+
+    %% ========================================================================
+    %% Schema: academic_lecturer_master
+    %% ========================================================================
+
+    academic_lecturer_master__lecturers["academic_lecturer_master.lecturers"] {
+        uuid id PK
+        varchar(255) code
+        varchar(255) name
+        uuid individual_id FK "references person_master.individuals"
+        uuid institution_id FK "references institution_master.institutions"
+        varchar(255) alternative_code
+        varchar(255) accessor_number
+        varchar(255) identification_number
+        uuid status_id FK "references academic_lecturer_reference.statuses"
+        uuid contract_id FK "references academic_lecturer_reference.contracts"
+        uuid rank_id FK "references academic_lecturer_reference.ranks"
+        date start_date
+        date end_date
+        varchar(255) front_title
+        varchar(255) last_title
+        uuid id_dosen
+        uuid group_id FK "references academic_lecturer_reference.groups"
+        varchar nuptk
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: academic_lecturer_reference
+    %% ========================================================================
+
+    academic_lecturer_reference__contracts["academic_lecturer_reference.contracts"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_lecturer_reference__groups["academic_lecturer_reference.groups"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_lecturer_reference__ranks["academic_lecturer_reference.ranks"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_lecturer_reference__statuses["academic_lecturer_reference.statuses"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: academic_lecturer_transaction
+    %% ========================================================================
+
+    academic_lecturer_transaction__academic_groups["academic_lecturer_transaction.academic_groups"] {
+        uuid id PK
+        varchar(255) decree_number
+        date decree_date
+        uuid lecturer_id FK "references academic_lecturer_master.lecturers"
+        uuid group_id FK "references academic_lecturer_reference.groups"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+        date start_date
+        date end_date
+    }
+
+    academic_lecturer_transaction__academic_ranks["academic_lecturer_transaction.academic_ranks"] {
+        uuid id PK
+        varchar(255) decree_number
+        date decree_date
+        uuid lecturer_id FK "references academic_lecturer_master.lecturers"
+        uuid rank_id FK "references academic_lecturer_reference.ranks"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+        date start_date
+        date end_date
+    }
+
+    academic_lecturer_transaction__homebases["academic_lecturer_transaction.homebases"] {
+        uuid id PK
+        uuid lecturer_id FK "references academic_lecturer_master.lecturers"
+        uuid unit_id FK "references institution_master.units"
+        uuid institution_id FK "references institution_master.institutions"
+        uuid status_id FK "references academic_lecturer_reference.statuses"
+        uuid contract_id FK "references academic_lecturer_reference.contracts"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: academic_prior_learning_recognition_reference
+    %% ========================================================================
+
+    academic_prior_learning_recognition_reference__evaluator_types["academic_prior_learning_recognition_reference.evaluator_types"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        text description
+        timestamp created_at
+        timestamp updated_at
+        timestamptz deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_prior_learning_recognition_reference__evidence_categories["academic_prior_learning_recognition_reference.evidence_categories"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        text description
+        timestamp created_at
+        timestamp updated_at
+        timestamptz deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_prior_learning_recognition_reference__evidence_types["academic_prior_learning_recognition_reference.evidence_types"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamptz deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_prior_learning_recognition_reference__professionalisms["academic_prior_learning_recognition_reference.professionalisms"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamptz deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: academic_prior_learning_recognition_transaction
+    %% ========================================================================
+
+    academic_prior_learning_recognition_transaction__decrees["academic_prior_learning_recognition_transaction.decrees"] {
+        uuid id PK
+        varchar(255) decree_number
+        date decree_date
+        uuid evaluation_id FK "references academic_prior_learning_recognition_transaction.evaluations"
+        timestamp created_at
+        timestamp updated_at
+        timestamptz deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_prior_learning_recognition_transaction__evaluation_details["academic_prior_learning_recognition_transaction.evaluation_details"] {
+        uuid id PK
+        uuid evaluation_id FK "references academic_prior_learning_recognition_transaction.evaluations"
+        uuid archive_id FK "references document_transaction.archives"
+        uuid evidence_type_id FK "references academic_prior_learning_recognition_reference.evidence_types"
+        timestamp created_at
+        timestamp updated_at
+        timestamptz deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_prior_learning_recognition_transaction__evaluations["academic_prior_learning_recognition_transaction.evaluations"] {
+        uuid id PK
+        uuid recognition_id FK "references academic_prior_learning_recognition_transaction.recognitions"
+        uuid course_evaluation_planning_id FK "references academic_course_master.course_evaluation_plannings"
+        uuid professionalism_id FK "references academic_prior_learning_recognition_reference.professionalisms"
+        uuid evidence_type_id FK "references academic_prior_learning_recognition_reference.evidence_types"
+        uuid evaluator_id FK "references academic_prior_learning_recognition_transaction.evaluators"
+        timestamp created_at
+        timestamp updated_at
+        timestamptz deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_prior_learning_recognition_transaction__evaluators["academic_prior_learning_recognition_transaction.evaluators"] {
+        uuid id PK
+        uuid individual_id FK "references person_master.individuals"
+        uuid evaluator_type_id FK "references academic_prior_learning_recognition_reference.evaluator_types"
+        uuid recognition_id FK "references academic_prior_learning_recognition_transaction.recognitions"
+        timestamp created_at
+        timestamp updated_at
+        timestamptz deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_prior_learning_recognition_transaction__recognitions["academic_prior_learning_recognition_transaction.recognitions"] {
+        uuid id PK
+        varchar(255) name
+        uuid candidate_id FK "references academic_candidate_master.candidates"
+        timestamp created_at
+        timestamp updated_at
+        timestamptz deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+        uuid curriculum_id FK "references academic_course_master.curriculums"
+        uuid unit_id FK "references institution_master.units"
+    }
+
+    %% ========================================================================
+    %% Schema: academic_student_adviser
+    %% ========================================================================
+
+    academic_student_adviser__counsellors["academic_student_adviser.counsellors"] {
+        uuid id PK
+        uuid decree_id FK "references academic_student_adviser.decrees"
+        uuid student_id FK "references academic_student_master.students"
+        uuid lecturer_id FK "references academic_lecturer_master.lecturers"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_student_adviser__decrees["academic_student_adviser.decrees"] {
+        uuid id PK
+        date decree_date
+        varchar(255) decree_number
+        uuid unit_id FK "references institution_master.units"
+        uuid staff_id FK "references institution_master.staffes"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: academic_student_campaign
+    %% ========================================================================
+
+    academic_student_campaign__convertions["academic_student_campaign.convertions"] {
+        uuid id PK
+        uuid student_id FK "references academic_student_master.students"
+        uuid course_id FK "references academic_course_master.courses"
+        uuid grade_id FK "references academic_campaign_transaction.grades"
+        varchar(255) transfer_code
+        varchar(255) transfer_name
+        float8 transfer_credit
+        varchar(255) transfer_grade
+        timestamp is_lock
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+        uuid feeder_id
+        varchar(255) name
+        uuid academic_year_id FK "references academic_general_reference.academic_years"
+        varchar(255) origin_code
+        varchar(255) origin_name
+        float8 origin_credit
+        varchar(255) origin_grade
+    }
+
+    academic_student_campaign__detail_activities["academic_student_campaign.detail_activities"] {
+        uuid id PK
+        float8 mark
+        float8 credit
+        uuid grade_id FK "references academic_campaign_transaction.grades"
+        uuid course_id FK "references academic_course_master.courses"
+        uuid activity_id FK "references academic_campaign_transaction.activities"
+        uuid teach_id FK "references academic_campaign_transaction.teaches"
+        boolean is_lock
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+        uuid feeder_id
+        varchar name
+        uuid feeder_grade_id
+        integer curiculum_detail_sequence
+    }
+
+    academic_student_campaign__detail_activity_evaluation_components["academic_student_campaign.detail_activity_evaluation_components"] {
+        uuid id PK
+        text name
+        uuid detail_activity_id FK "references academic_student_campaign.detail_activities"
+        uuid course_evaluation_planning_id FK "references academic_course_master.course_evaluation_plannings"
+        float4 mark
+        float4 percentage
+        float4 total
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_student_campaign__student_activities["academic_student_campaign.student_activities"] {
+        uuid id PK
+        varchar(255) name
+        float8 cumulative_index
+        float8 grand_cumulative_index
+        float8 total_credit
+        float8 grand_total_credit
+        uuid student_id FK "references academic_student_master.students"
+        uuid unit_activity_id FK "references academic_campaign_transaction.activities"
+        uuid status_id FK "references academic_student_reference.statuses"
+        uuid resign_status_id FK "references academic_student_reference.resign_statuses"
+        uuid unit_id FK "references institution_master.units"
+        boolean is_lock
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+        uuid feeder_id
+        uuid finance_id FK "references academic_student_reference.finances"
+        float8 finance_fee
+    }
+
+    %% ========================================================================
+    %% Schema: academic_student_final_assignment_reference
+    %% ========================================================================
+
+    academic_student_final_assignment_reference__adviser_categories["academic_student_final_assignment_reference.adviser_categories"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_student_final_assignment_reference__approval_types["academic_student_final_assignment_reference.approval_types"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_student_final_assignment_reference__categories["academic_student_final_assignment_reference.categories"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_student_final_assignment_reference__requirements["academic_student_final_assignment_reference.requirements"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        uuid stage_id FK "references academic_student_final_assignment_reference.stages"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_student_final_assignment_reference__stages["academic_student_final_assignment_reference.stages"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_student_final_assignment_reference__varieties["academic_student_final_assignment_reference.varieties"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: academic_student_final_assignment_transaction
+    %% ========================================================================
+
+    academic_student_final_assignment_transaction__advisers["academic_student_final_assignment_transaction.advisers"] {
+        uuid id PK
+        integer thread
+        uuid lecturer_id FK "references academic_lecturer_master.lecturers"
+        uuid detail_activity_id FK "references academic_student_campaign.detail_activities"
+        uuid submission_id FK "references academic_student_final_assignment_transaction.submissions"
+        uuid adviser_category_id FK "references academic_student_final_assignment_reference.adviser_categories"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_student_final_assignment_transaction__evaluation_details["academic_student_final_assignment_transaction.evaluation_details"] {
+        uuid id PK
+        uuid evaluation_summary_id FK "references academic_student_final_assignment_transaction.evaluation_summaries"
+        uuid adviser_id FK "references academic_student_final_assignment_transaction.advisers"
+        float4 mark
+        uuid grade_id FK "references academic_campaign_transaction.grades"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_student_final_assignment_transaction__evaluation_summaries["academic_student_final_assignment_transaction.evaluation_summaries"] {
+        uuid id PK
+        uuid submission_id FK "references academic_student_final_assignment_transaction.submissions"
+        uuid detail_activity_id FK "references academic_student_campaign.detail_activities"
+        uuid stage_id FK "references academic_student_final_assignment_reference.stages"
+        float4 mark
+        uuid grade_id FK "references academic_campaign_transaction.grades"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_student_final_assignment_transaction__final_assignment_decrees["academic_student_final_assignment_transaction.final_assignment_decrees"] {
+        uuid id PK
+        varchar(255) decree_number
+        date decree_date
+        uuid unit_id FK "references institution_master.units"
+        uuid activity_id FK "references academic_campaign_transaction.activities"
+        uuid staff_id FK "references institution_master.staffes"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_student_final_assignment_transaction__prerequisites["academic_student_final_assignment_transaction.prerequisites"] {
+        uuid id PK
+        integer thread
+        uuid requirement_id FK "references academic_student_final_assignment_reference.requirements"
+        uuid submission_id FK "references academic_student_final_assignment_transaction.submissions"
+        uuid approval_type_id FK "references academic_student_final_assignment_reference.approval_types"
+        uuid stage_id FK "references academic_student_final_assignment_reference.stages"
+        varchar(255) filename
+        varchar(255) dir
+        varchar(255) type
+        integer filesize
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_student_final_assignment_transaction__schedules["academic_student_final_assignment_transaction.schedules"] {
+        uuid id PK
+        varchar(255) ecree_number
+        date schedule_date
+        time schedule_time
+        uuid submission_id FK "references academic_student_final_assignment_transaction.submissions"
+        uuid detail_activity_id FK "references academic_student_campaign.detail_activities"
+        uuid stage_id FK "references academic_student_final_assignment_reference.stages"
+        uuid room_id FK "references building_master.rooms"
+        text zoom_meeting
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_student_final_assignment_transaction__submissions["academic_student_final_assignment_transaction.submissions"] {
+        uuid id PK
+        text title
+        uuid student_id FK "references academic_student_master.students"
+        uuid approval_type_id FK "references academic_student_final_assignment_reference.approval_types"
+        uuid category_id FK "references academic_student_final_assignment_reference.categories"
+        uuid stage_id FK "references academic_student_final_assignment_reference.stages"
+        uuid final_assignment_decree_id FK "references academic_student_final_assignment_transaction.final_assignment_decrees"
+        uuid detail_activity_id FK "references academic_student_campaign.detail_activities"
+        timestamp is_taken
+        timestamp is_lock
+        varchar(255) filename
+        varchar(255) dir
+        varchar(255) type
+        integer filesize
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: academic_student_master
+    %% ========================================================================
+
+    academic_student_master__images["academic_student_master.images"] {
+        uuid id PK
+        uuid student_id FK "references academic_student_master.students"
+        varchar(255) filename
+        varchar(255) dir
+        varchar(255) mimetype
+        bigint size
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_student_master__students["academic_student_master.students"] {
+        uuid id PK
+        varchar(255) code
+        varchar(255) name
+        uuid selection_type_id FK "references academic_student_reference.selection_types"
+        date registered
+        uuid individual_id FK "references person_master.individuals"
+        uuid status_id FK "references academic_student_reference.statuses"
+        uuid unit_id FK "references institution_master.units"
+        uuid academic_year_id FK "references academic_general_reference.academic_years"
+        uuid registration_id FK "references academic_student_reference.registrations"
+        varchar(255) nisn
+        uuid resign_status_id FK "references academic_student_reference.resign_statuses"
+        uuid concentration_id FK "references academic_course_master.concentrations"
+        uuid curriculum_id FK "references academic_course_master.curriculums"
+        uuid class_code_id FK "references academic_campaign_transaction.class_codes"
+        varchar(255) transfer_code
+        uuid transfer_unit_id FK "references institution_master.units"
+        uuid id_mahasiswa
+        uuid id_registrasi_mahasiswa
+        float8 finance_fee
+        uuid finance_id FK "references academic_student_reference.finances"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: academic_student_reference
+    %% ========================================================================
+
+    academic_student_reference__finances["academic_student_reference.finances"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamptz deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_student_reference__registrations["academic_student_reference.registrations"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamptz deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_student_reference__resign_statuses["academic_student_reference.resign_statuses"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamptz deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_student_reference__selection_types["academic_student_reference.selection_types"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamptz deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_student_reference__statuses["academic_student_reference.statuses"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamptz deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: academic_survey_master
+    %% ========================================================================
+
+    academic_survey_master__answers["academic_survey_master.answers"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        uuid question_id FK "references academic_survey_master.questions"
+        float8 point
+        text suggestion
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamptz deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_survey_master__bundle_question["academic_survey_master.bundle_question"] {
+        uuid id PK
+        uuid bundle_id FK "references academic_survey_master.bundles"
+        uuid question_id FK "references academic_survey_master.questions"
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamptz deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_survey_master__bundles["academic_survey_master.bundles"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        uuid institution_id FK "references institution_master.institutions"
+        uuid bundle_category_id FK "references academic_survey_reference.bundle_categories"
+        uuid unit_id FK "references institution_master.units"
+        text suggestion
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamptz deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_survey_master__questions["academic_survey_master.questions"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        text name
+        uuid institution_id FK "references institution_master.institutions"
+        uuid question_variety_id FK "references academic_survey_reference.question_varieties"
+        text suggestion
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamptz deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: academic_survey_reference
+    %% ========================================================================
+
+    academic_survey_reference__bundle_categories["academic_survey_reference.bundle_categories"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamptz deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_survey_reference__question_varieties["academic_survey_reference.question_varieties"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamptz deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: academic_survey_transaction
+    %% ========================================================================
+
+    academic_survey_transaction__conducts["academic_survey_transaction.conducts"] {
+        uuid id PK
+        varchar(255) alphabet_code
+        text name
+        uuid bundle_id FK "references academic_survey_master.bundles"
+        varchar(255) conductable_type
+        uuid conductable_id
+        boolean is_finish
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamptz deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    academic_survey_transaction__responds["academic_survey_transaction.responds"] {
+        uuid id PK
+        text name
+        uuid conduct_id FK "references academic_survey_transaction.conducts"
+        uuid bundle_id FK "references academic_survey_master.bundles"
+        uuid question_id FK "references academic_survey_master.questions"
+        uuid answer_id FK "references academic_survey_master.answers"
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamptz deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: auth
+    %% ========================================================================
+
+    auth__permission_position_type["auth.permission_position_type"] {
+        uuid id PK
+        uuid permission_id FK "references auth.permissions"
+        uuid position_type_id FK "references institution_reference.position_types"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    auth__permission_role["auth.permission_role"] {
+        uuid id PK
+        uuid role_id FK "references auth.roles"
+        uuid permission_id FK "references auth.permissions"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    auth__permission_user["auth.permission_user"] {
+        uuid id PK
+        uuid user_id FK "references auth.users"
+        uuid permission_id FK "references auth.permissions"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    auth__permissions["auth.permissions"] {
+        uuid id PK
+        varchar(255) name
+        text uri
+        boolean is_open
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    auth__roles["auth.roles"] {
+        uuid id PK
+        varchar(255) name
+        uuid user_id FK "references auth.users"
+        uuid position_type_id FK "references institution_reference.position_types"
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+        uuid roleable_id
+        varchar(255) roleable_type
+    }
+
+    auth__user_position_type["auth.user_position_type"] {
+        uuid id PK
+        uuid user_id FK "references auth.users"
+        uuid position_type_id FK "references institution_reference.position_types"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    auth__users["auth.users"] {
+        uuid id PK
+        varchar(255) name
+        varchar(255) email
+        timestamp email_verified_at
+        varchar(255) password
+        varchar(100) remember_token
+        uuid individual_id FK "references person_master.individuals"
+        boolean is_active
+        uuid current_role_id FK "references auth.roles"
+        uuid pid
+        varchar api_key
+        varchar reset_token
+        varchar email_verification_token
+        timestamp reset_sent_at
+        timestamp email_verification_sent_at
+        varchar magic_link_token
+        timestamp magic_link_expiration
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    auth__verifications["auth.verifications"] {
+        uuid id PK
+        varchar(255) email
+        varchar(255) token
+        boolean is_password_recovery
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: building_master
+    %% ========================================================================
+
+    building_master__buildings["building_master.buildings"] {
+        uuid id PK
+        varchar(255) alphabet_code
+        varchar(255) name
+        float4 long
+        float4 wide
+        float4 high
+        uuid variety_id FK "references building_reference.varieties"
+        uuid category_id FK "references building_reference.categories"
+        integer total_floor
+        uuid residence_id FK "references contact_master.residences"
+        uuid condition_id FK "references building_reference.conditions"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    building_master__rooms["building_master.rooms"] {
+        uuid id PK
+        varchar(255) alphabet_code
+        varchar(255) name
+        float4 long
+        float4 wide
+        float4 high
+        uuid room_type_id FK "references building_reference.room_types"
+        uuid unit_id FK "references institution_master.units"
+        uuid building_id FK "references building_master.buildings"
+        uuid condition_id FK "references building_reference.conditions"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: building_reference
+    %% ========================================================================
+
+    building_reference__categories["building_reference.categories"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    building_reference__conditions["building_reference.conditions"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    building_reference__room_types["building_reference.room_types"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    building_reference__varieties["building_reference.varieties"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: contact_master
+    %% ========================================================================
+
+    contact_master__electronic_mails["contact_master.electronic_mails"] {
+        uuid id PK
+        varchar(255) email_address
+        uuid electronic_mail_type_id FK "references contact_reference.electronic_mail_types"
+        uuid electronic_mailable_id
+        varchar(255) electronic_mailable_type
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    contact_master__phones["contact_master.phones"] {
+        uuid id PK
+        varchar(255) phone_number
+        uuid phone_type_id FK "references contact_reference.phone_types"
+        uuid phoneable_id
+        varchar(255) phoneable_type
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    contact_master__residences["contact_master.residences"] {
+        uuid id PK
+        varchar(255) street
+        integer citizens_association
+        integer neighborhood_association
+        uuid province_id FK "references location.provinces"
+        uuid regency_id FK "references location.regencies"
+        uuid sub_district_id FK "references location.sub_districts"
+        uuid village_id FK "references location.villages"
+        uuid residence_type_id FK "references contact_reference.residence_types"
+        varchar(255) residenceable_type
+        uuid residenceable_id
+        float8 latitude
+        float8 longitude
+        integer zoom
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    contact_master__websites["contact_master.websites"] {
+        uuid id PK
+        varchar(255) website_url
+        uuid website_type_id FK "references contact_reference.website_types"
+        uuid websiteable_id
+        varchar(255) websiteable_type
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: contact_reference
+    %% ========================================================================
+
+    contact_reference__electronic_mail_types["contact_reference.electronic_mail_types"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    contact_reference__phone_types["contact_reference.phone_types"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    contact_reference__residence_types["contact_reference.residence_types"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    contact_reference__website_types["contact_reference.website_types"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: document_reference
+    %% ========================================================================
+
+    document_reference__archive_types["document_reference.archive_types"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamptz deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: document_transaction
+    %% ========================================================================
+
+    document_transaction__archives["document_transaction.archives"] {
+        uuid id PK
+        varchar(255) name
+        varchar(255) dir
+        varchar(255) mimetype
+        integer size
+        uuid archiveable_id
+        varchar(255) archiveable_type
+        uuid archive_type_id FK "references document_reference.archive_types"
+        timestamp created_at
+        timestamp updated_at
+        timestamptz deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+        text description
+        boolean is_knowledge
+    }
+
+    %% ========================================================================
+    %% Schema: institution_master
+    %% ========================================================================
+
+    institution_master__employees["institution_master.employees"] {
+        uuid id PK
+        varchar(255) code
+        varchar(255) name
+        uuid institution_id FK "references institution_master.institutions"
+        uuid individual_id FK "references person_master.individuals"
+        varchar(255) decree_number
+        date decree_date
+        boolean is_active
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    institution_master__institutions["institution_master.institutions"] {
+        uuid id PK
+        varchar(255) code
+        varchar(255) name
+        varchar(255) alphabet_code
+        boolean is_active
+        uuid variety_id FK "references institution_reference.varieties"
+        uuid category_id FK "references institution_reference.categories"
+        uuid country_id FK "references location.countries"
+        uuid parent_id FK "references institution_master.institutions"
+        uuid feeder_id
+        uuid academic_year_id FK "references academic_general_reference.academic_years"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    institution_master__staffes["institution_master.staffes"] {
+        uuid id PK
+        varchar(255) code
+        varchar(255) name
+        varchar(255) decree_number
+        date decree_date
+        date start_date
+        date end_date
+        uuid employee_id FK "references institution_master.employees"
+        uuid unit_id FK "references institution_master.units"
+        uuid position_type_id FK "references institution_reference.position_types"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    institution_master__units["institution_master.units"] {
+        uuid id PK
+        varchar(255) code
+        varchar(255) name
+        boolean is_active
+        uuid unit_type_id FK "references institution_reference.unit_types"
+        uuid institution_id FK "references institution_master.institutions"
+        uuid parent_id FK "references institution_master.units"
+        uuid education_id FK "references literate.educations"
+        uuid feeder_id
+        bigint lft
+        bigint rght
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: institution_reference
+    %% ========================================================================
+
+    institution_reference__categories["institution_reference.categories"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamptz deleted_at
+        uuid created_by
+        uuid updated_by
+        timestamp sync_at
+    }
+
+    institution_reference__position_types["institution_reference.position_types"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamptz deleted_at
+        uuid created_by
+        uuid updated_by
+        timestamp sync_at
+    }
+
+    institution_reference__unit_types["institution_reference.unit_types"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamptz deleted_at
+        uuid created_by
+        uuid updated_by
+        timestamp sync_at
+    }
+
+    institution_reference__varieties["institution_reference.varieties"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamptz deleted_at
+        uuid created_by
+        uuid updated_by
+        timestamp sync_at
+    }
+
+    %% ========================================================================
+    %% Schema: literate
+    %% ========================================================================
+
+    literate__categories["literate.categories"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    literate__educations["literate.educations"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) abbreviation
+        varchar(255) name
+        uuid level_id FK "references literate.levels"
+        uuid group_id FK "references literate.groups"
+        uuid category_id FK "references literate.categories"
+        uuid variety_id FK "references literate.varieties"
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    literate__groups["literate.groups"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    literate__levels["literate.levels"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    literate__varieties["literate.varieties"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: location
+    %% ========================================================================
+
+    location__continents["location.continents"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        varchar(255) slug
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    location__countries["location.countries"] {
+        uuid id PK
+        varchar(255) code
+        varchar(255) name
+        varchar(255) alpha2_code
+        varchar(255) alpha3_code
+        varchar(255) iso3166_2_code
+        varchar(255) dikti_code
+        uuid continent_id FK "references location.continents"
+        uuid region_id FK "references location.regions"
+        varchar(255) slug
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    location__provinces["location.provinces"] {
+        uuid id PK
+        varchar(255) code
+        varchar(255) name
+        varchar(255) dikti_code
+        varchar(255) epsbed_code
+        varchar(255) slug
+        text description
+        varchar(255) alt_slug
+        varchar(255) state_ministry_code
+        varchar(255) state_ministry_full_code
+        varchar(255) state_post_department_code
+        varchar(255) state_ministry_name
+        varchar(255) dikti_name
+        varchar(255) validation_code
+        float8 latitude
+        float8 longitude
+        integer zoom
+        uuid country_id FK "references location.countries"
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    location__regencies["location.regencies"] {
+        uuid id PK
+        varchar(255) code
+        varchar(255) name
+        varchar(255) dikti_code
+        varchar(255) epsbed_code
+        uuid province_id FK "references location.provinces"
+        uuid regency_type_id FK "references location.regency_types"
+        varchar(255) slug
+        text description
+        varchar(255) alt_slug
+        varchar(255) state_ministry_code
+        varchar(255) state_ministry_full_code
+        varchar(255) state_post_department_code
+        varchar(255) state_ministry_name
+        varchar(255) dikti_name
+        varchar(255) validation_code
+        float8 latitude
+        float8 longitude
+        integer zoom
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    location__regency_types["location.regency_types"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    location__regions["location.regions"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        varchar(255) slug
+        varchar(255) alt_slug
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    location__sub_districts["location.sub_districts"] {
+        uuid id PK
+        varchar(255) code
+        varchar(255) name
+        varchar(255) dikti_code
+        uuid regency_id FK "references location.regencies"
+        varchar(255) slug
+        varchar(255) alt_slug
+        varchar(255) state_ministry_code
+        varchar(255) state_ministry_full_code
+        varchar(255) state_post_department_code
+        varchar(255) state_ministry_name
+        varchar(255) dikti_name
+        varchar(255) validation_code
+        varchar(255) agriculture_department_name
+        float8 latitude
+        float8 longitude
+        integer zoom
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    location__villages["location.villages"] {
+        uuid id PK
+        varchar(255) code
+        varchar(255) name
+        uuid sub_district_id FK "references location.sub_districts"
+        varchar(255) slug
+        varchar(255) alt_slug
+        varchar(255) state_ministry_code
+        varchar(255) state_post_department_code
+        varchar(255) state_ministry_name
+        varchar(255) dikti_name
+        varchar(255) dikti_code
+        float8 latitude
+        float8 longitude
+        integer zoom
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Schema: person_master
+    %% ========================================================================
+
+    person_master__biodatas["person_master.biodatas"] {
+        uuid id PK
+        float8 height
+        float8 weight
+        boolean is_positive_blood_rhesus
+        uuid blood_type_id FK "references person_reference.blood_types"
+        uuid hair_type_id FK "references person_reference.hair_types"
+        uuid hair_color_id FK "references person_reference.hair_colors"
+        uuid eye_color_id FK "references person_reference.eye_colors"
+        uuid individual_id FK "references person_master.individuals"
+        float8 bust
+        float8 waist
+        float8 hip
+        float8 arm_circumference
+        integer menarche_age
+        integer menopause_age
+        timestamp created_at
+        timestamp updated_at
+        timestamptz deleted_at
+        uuid created_by
+        uuid updated_by
+        timestamp sync_at
+    }
+
+    person_master__family_card_members["person_master.family_card_members"] {
+        uuid id PK
+        uuid family_card_id FK "references person_master.family_cards"
+        uuid individual_id FK "references person_master.individuals"
+        uuid relative_id FK "references person_master.individuals"
+        uuid relative_type_id FK "references person_reference.relative_types"
+        timestamp created_at
+        timestamp updated_at
+        timestamptz deleted_at
+        uuid created_by
+        uuid updated_by
+        timestamp sync_at
+    }
+
+    person_master__family_cards["person_master.family_cards"] {
+        uuid id PK
+        varchar(255) code
+        uuid individual_id FK "references person_master.individuals"
+        timestamp created_at
+        timestamp updated_at
+        timestamptz deleted_at
+        uuid created_by
+        uuid updated_by
+        timestamp sync_at
+    }
+
+    person_master__images["person_master.images"] {
+        uuid id PK
+        uuid individual_id FK "references person_master.individuals"
+        varchar(255) filename
+        varchar(255) dir
+        varchar(255) mimetype
+        bigint size
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    person_master__individuals["person_master.individuals"] {
+        uuid id PK
+        varchar(255) code
+        varchar(255) name
+        varchar(255) front_title
+        varchar(255) last_title
+        date birth_date
+        varchar(255) birth_place
+        uuid gender_id FK "references person_reference.genders"
+        uuid religion_id FK "references person_reference.religions"
+        uuid occupation_id FK "references person_reference.occupations"
+        uuid education_id FK "references literate.educations"
+        uuid income_id FK "references person_reference.incomes"
+        uuid identification_type_id FK "references person_reference.identification_types"
+        uuid marital_status_id FK "references person_reference.marital_statuses"
+        uuid profession_id FK "references person_reference.professions"
+        uuid age_classification_id FK "references person_reference.age_classifications"
+        boolean is_special_need
+        boolean is_social_protection_card_recipient
+        boolean is_deceased
+        timestamp created_at
+        timestamp updated_at
+        timestamptz deleted_at
+        uuid created_by
+        uuid updated_by
+        timestamp sync_at
+    }
+
+    %% ========================================================================
+    %% Schema: person_reference
+    %% ========================================================================
+
+    person_reference__age_classifications["person_reference.age_classifications"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        integer minimum
+        integer maximum
+        timestamp created_at
+        timestamp updated_at
+        timestamptz deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    person_reference__blood_types["person_reference.blood_types"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    person_reference__eye_colors["person_reference.eye_colors"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    person_reference__genders["person_reference.genders"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    person_reference__hair_colors["person_reference.hair_colors"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamptz deleted_at
+        timestamp sync_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    person_reference__hair_types["person_reference.hair_types"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    person_reference__identification_types["person_reference.identification_types"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    person_reference__incomes["person_reference.incomes"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        float8 minimum
+        float8 maximum
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    person_reference__marital_statuses["person_reference.marital_statuses"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    person_reference__occupations["person_reference.occupations"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    person_reference__professions["person_reference.professions"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    person_reference__relative_types["person_reference.relative_types"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    person_reference__religions["person_reference.religions"] {
+        uuid id PK
+        integer code
+        varchar(255) alphabet_code
+        varchar(255) name
+        timestamp created_at
+        timestamp updated_at
+        timestamp sync_at
+        timestamp deleted_at
+        uuid created_by
+        uuid updated_by
+    }
+
+    %% ========================================================================
+    %% Relationships
+    %% ========================================================================
+
+    %% Schema: academic_campaign_transaction
+    academic_general_reference__academic_years ||--o{ academic_campaign_transaction__activities : "academic_year_id"
+    institution_master__units ||--o{ academic_campaign_transaction__activities : "unit_id"
+    academic_campaign_reference__calendar_categories ||--o{ academic_campaign_transaction__calendar_details : "calendar_category_id"
+    academic_campaign_transaction__calendars ||--o{ academic_campaign_transaction__calendar_details : "calendar_id"
+    academic_general_reference__academic_years ||--o{ academic_campaign_transaction__calendars : "academic_year_id"
+    institution_master__institutions ||--o{ academic_campaign_transaction__calendars : "institution_id"
+    academic_campaign_transaction__activities ||--o{ academic_campaign_transaction__class_codes : "activity_id"
+    institution_master__units ||--o{ academic_campaign_transaction__class_codes : "unit_id"
+    institution_master__units ||--o{ academic_campaign_transaction__grades : "unit_id"
+    building_master__rooms ||--o{ academic_campaign_transaction__schedules : "room_id"
+    academic_campaign_transaction__teaches ||--o{ academic_campaign_transaction__schedules : "teach_id"
+    academic_campaign_transaction__activities ||--o{ academic_campaign_transaction__teach_decrees : "activity_id"
+    institution_master__staffes ||--o{ academic_campaign_transaction__teach_decrees : "staff_id"
+    academic_course_reference__evaluation_types ||--o{ academic_campaign_transaction__teach_evaluations : "evaluation_type_id"
+    academic_campaign_transaction__teaches ||--o{ academic_campaign_transaction__teach_evaluations : "teach_id"
+    academic_lecturer_master__lecturers ||--o{ academic_campaign_transaction__teach_lecturers : "lecturer_id"
+    academic_campaign_transaction__teaches ||--o{ academic_campaign_transaction__teach_lecturers : "teach_id"
+    academic_campaign_transaction__activities ||--o{ academic_campaign_transaction__teaches : "activity_id"
+    academic_campaign_transaction__class_codes ||--o{ academic_campaign_transaction__teaches : "class_code_id"
+    academic_course_master__courses ||--o{ academic_campaign_transaction__teaches : "course_id"
+    academic_course_master__curriculum_details ||--o{ academic_campaign_transaction__teaches : "curriculum_detail_id"
+    academic_campaign_reference__encounter_categories ||--o{ academic_campaign_transaction__teaches : "encounter_category_id"
+    academic_campaign_reference__scopes ||--o{ academic_campaign_transaction__teaches : "scope_id"
+    academic_campaign_transaction__teach_decrees ||--o{ academic_campaign_transaction__teaches : "teach_decree_id"
+    %% Schema: academic_candidate_master
+    academic_candidate_master__candidates ||--o{ academic_candidate_master__candidate_unit : "candidate_id"
+    academic_candidate_reference__registration_categories ||--o{ academic_candidate_master__candidate_unit : "registration_category_id"
+    institution_master__units ||--o{ academic_candidate_master__candidate_unit : "unit_id"
+    academic_general_reference__academic_years ||--o{ academic_candidate_master__candidates : "academic_year_id"
+    person_master__individuals ||--o{ academic_candidate_master__candidates : "individual_id"
+    institution_master__institutions ||--o{ academic_candidate_master__candidates : "institution_id"
+    academic_candidate_reference__registration_types ||--o{ academic_candidate_master__candidates : "registration_type_id"
+    location__regencies ||--o{ academic_candidate_master__candidates : "school_regency_id"
+    academic_student_master__students ||--o{ academic_candidate_master__candidates : "student_id"
+    auth__users ||--o{ academic_candidate_master__candidates : "user_id"
+    academic_candidate_reference__phases ||--o{ academic_candidate_master__exam_classes : "phase_id"
+    %% Schema: academic_candidate_reference
+    institution_master__institutions ||--o{ academic_candidate_reference__registration_types : "institution_id"
+    academic_candidate_reference__registration_categories ||--o{ academic_candidate_reference__registration_types : "registration_category_id"
+    academic_student_reference__registrations ||--o{ academic_candidate_reference__registration_types : "student_registration_id"
+    institution_master__units ||--o{ academic_candidate_reference__registration_types : "unit_id"
+    %% Schema: academic_candidate_transaction
+    academic_candidate_master__candidates ||--o{ academic_candidate_transaction__candidate_unit_choices : "candidate_id"
+    academic_candidate_reference__phases ||--o{ academic_candidate_transaction__candidate_unit_choices : "phase_id"
+    academic_candidate_reference__registration_categories ||--o{ academic_candidate_transaction__candidate_unit_choices : "registration_category_id"
+    academic_student_reference__registrations ||--o{ academic_candidate_transaction__candidate_unit_choices : "student_registration_id"
+    institution_master__units ||--o{ academic_candidate_transaction__candidate_unit_choices : "unit_id"
+    academic_candidate_master__candidates ||--o{ academic_candidate_transaction__documents : "candidate_id"
+    academic_candidate_reference__document_types ||--o{ academic_candidate_transaction__documents : "document_type_id"
+    academic_candidate_master__candidates ||--o{ academic_candidate_transaction__exams : "candidate_id"
+    academic_candidate_master__exam_classes ||--o{ academic_candidate_transaction__exams : "exam_class_id"
+    %% Schema: academic_course_master
+    institution_master__units ||--o{ academic_course_master__concentrations : "unit_id"
+    academic_course_master__courses ||--o{ academic_course_master__course_evaluation_plannings : "course_id"
+    academic_course_reference__evaluation_types ||--o{ academic_course_master__course_evaluation_plannings : "evaluation_type_id"
+    academic_course_master__courses ||--o{ academic_course_master__course_learn_plannings : "course_id"
+    academic_course_reference__competences ||--o{ academic_course_master__courses : "competence_id"
+    academic_course_reference__groups ||--o{ academic_course_master__courses : "group_id"
+    institution_master__units ||--o{ academic_course_master__courses : "unit_id"
+    academic_course_reference__varieties ||--o{ academic_course_master__courses : "variety_id"
+    academic_course_master__concentrations ||--o{ academic_course_master__curriculum_details : "concentration_id"
+    academic_course_master__courses ||--o{ academic_course_master__curriculum_details : "course_id"
+    academic_course_master__curriculums ||--o{ academic_course_master__curriculum_details : "curriculum_id"
+    academic_course_reference__semesters ||--o{ academic_course_master__curriculum_details : "semester_id"
+    academic_general_reference__academic_years ||--o{ academic_course_master__curriculums : "academic_year_id"
+    academic_course_reference__curriculum_types ||--o{ academic_course_master__curriculums : "curriculum_type_id"
+    institution_master__units ||--o{ academic_course_master__curriculums : "unit_id"
+    %% Schema: academic_course_reference
+    academic_course_reference__curriculum_types ||--o{ academic_course_reference__varieties : "curriculum_type_id"
+    %% Schema: academic_general_reference
+    academic_general_reference__academic_year_categories ||--o{ academic_general_reference__academic_years : "academic_year_category_id"
+    %% Schema: academic_lecturer_master
+    academic_lecturer_reference__contracts ||--o{ academic_lecturer_master__lecturers : "contract_id"
+    academic_lecturer_reference__groups ||--o{ academic_lecturer_master__lecturers : "group_id"
+    person_master__individuals ||--o| academic_lecturer_master__lecturers : "individual_id"
+    institution_master__institutions ||--o{ academic_lecturer_master__lecturers : "institution_id"
+    academic_lecturer_reference__ranks ||--o{ academic_lecturer_master__lecturers : "rank_id"
+    academic_lecturer_reference__statuses ||--o{ academic_lecturer_master__lecturers : "status_id"
+    %% Schema: academic_lecturer_transaction
+    academic_lecturer_reference__groups ||--o{ academic_lecturer_transaction__academic_groups : "group_id"
+    academic_lecturer_master__lecturers ||--o{ academic_lecturer_transaction__academic_groups : "lecturer_id"
+    academic_lecturer_master__lecturers ||--o{ academic_lecturer_transaction__academic_ranks : "lecturer_id"
+    academic_lecturer_reference__ranks ||--o{ academic_lecturer_transaction__academic_ranks : "rank_id"
+    academic_lecturer_reference__contracts ||--o{ academic_lecturer_transaction__homebases : "contract_id"
+    institution_master__institutions ||--o{ academic_lecturer_transaction__homebases : "institution_id"
+    academic_lecturer_master__lecturers ||--o{ academic_lecturer_transaction__homebases : "lecturer_id"
+    academic_lecturer_reference__statuses ||--o{ academic_lecturer_transaction__homebases : "status_id"
+    institution_master__units ||--o{ academic_lecturer_transaction__homebases : "unit_id"
+    %% Schema: academic_prior_learning_recognition_transaction
+    academic_prior_learning_recognition_transaction__evaluations ||--o{ academic_prior_learning_recognition_transaction__decrees : "evaluation_id"
+    document_transaction__archives ||--o{ academic_prior_learning_recognition_transaction__evaluation_details : "archive_id"
+    academic_prior_learning_recognition_transaction__evaluations ||--o{ academic_prior_learning_recognition_transaction__evaluation_details : "evaluation_id"
+    academic_prior_learning_recognition_reference__evidence_types ||--o{ academic_prior_learning_recognition_transaction__evaluation_details : "evidence_type_id"
+    academic_course_master__course_evaluation_plannings ||--o{ academic_prior_learning_recognition_transaction__evaluations : "course_evaluation_planning_id"
+    academic_prior_learning_recognition_transaction__evaluators ||--o{ academic_prior_learning_recognition_transaction__evaluations : "evaluator_id"
+    academic_prior_learning_recognition_reference__evidence_types ||--o{ academic_prior_learning_recognition_transaction__evaluations : "evidence_type_id"
+    academic_prior_learning_recognition_reference__professionalisms ||--o{ academic_prior_learning_recognition_transaction__evaluations : "professionalism_id"
+    academic_prior_learning_recognition_transaction__recognitions ||--o{ academic_prior_learning_recognition_transaction__evaluations : "recognition_id"
+    academic_prior_learning_recognition_reference__evaluator_types ||--o{ academic_prior_learning_recognition_transaction__evaluators : "evaluator_type_id"
+    person_master__individuals ||--o{ academic_prior_learning_recognition_transaction__evaluators : "individual_id"
+    academic_prior_learning_recognition_transaction__recognitions ||--o{ academic_prior_learning_recognition_transaction__evaluators : "recognition_id"
+    academic_candidate_master__candidates ||--o{ academic_prior_learning_recognition_transaction__recognitions : "candidate_id"
+    academic_course_master__curriculums ||--o{ academic_prior_learning_recognition_transaction__recognitions : "curriculum_id"
+    institution_master__units ||--o{ academic_prior_learning_recognition_transaction__recognitions : "unit_id"
+    %% Schema: academic_student_adviser
+    academic_student_adviser__decrees ||--o{ academic_student_adviser__counsellors : "decree_id"
+    academic_lecturer_master__lecturers ||--o{ academic_student_adviser__counsellors : "lecturer_id"
+    academic_student_master__students ||--o{ academic_student_adviser__counsellors : "student_id"
+    institution_master__staffes ||--o{ academic_student_adviser__decrees : "staff_id"
+    institution_master__units ||--o{ academic_student_adviser__decrees : "unit_id"
+    %% Schema: academic_student_campaign
+    academic_general_reference__academic_years ||--o{ academic_student_campaign__convertions : "academic_year_id"
+    academic_course_master__courses ||--o{ academic_student_campaign__convertions : "course_id"
+    academic_campaign_transaction__grades ||--o{ academic_student_campaign__convertions : "grade_id"
+    academic_student_master__students ||--o{ academic_student_campaign__convertions : "student_id"
+    academic_campaign_transaction__activities ||--o{ academic_student_campaign__detail_activities : "activity_id"
+    academic_course_master__courses ||--o{ academic_student_campaign__detail_activities : "course_id"
+    academic_campaign_transaction__grades ||--o{ academic_student_campaign__detail_activities : "grade_id"
+    academic_campaign_transaction__teaches ||--o{ academic_student_campaign__detail_activities : "teach_id"
+    academic_course_master__course_evaluation_plannings ||--o{ academic_student_campaign__detail_activity_evaluation_components : "course_evaluation_planning_id"
+    academic_student_campaign__detail_activities ||--o{ academic_student_campaign__detail_activity_evaluation_components : "detail_activity_id"
+    academic_student_reference__finances ||--o{ academic_student_campaign__student_activities : "finance_id"
+    academic_student_reference__resign_statuses ||--o{ academic_student_campaign__student_activities : "resign_status_id"
+    academic_student_reference__statuses ||--o{ academic_student_campaign__student_activities : "status_id"
+    academic_student_master__students ||--o{ academic_student_campaign__student_activities : "student_id"
+    academic_campaign_transaction__activities ||--o{ academic_student_campaign__student_activities : "unit_activity_id"
+    institution_master__units ||--o{ academic_student_campaign__student_activities : "unit_id"
+    %% Schema: academic_student_final_assignment_reference
+    academic_student_final_assignment_reference__stages ||--o{ academic_student_final_assignment_reference__requirements : "stage_id"
+    %% Schema: academic_student_final_assignment_transaction
+    academic_student_final_assignment_reference__adviser_categories ||--o{ academic_student_final_assignment_transaction__advisers : "adviser_category_id"
+    academic_student_campaign__detail_activities ||--o{ academic_student_final_assignment_transaction__advisers : "detail_activity_id"
+    academic_lecturer_master__lecturers ||--o{ academic_student_final_assignment_transaction__advisers : "lecturer_id"
+    academic_student_final_assignment_transaction__submissions ||--o{ academic_student_final_assignment_transaction__advisers : "submission_id"
+    academic_student_final_assignment_transaction__advisers ||--o{ academic_student_final_assignment_transaction__evaluation_details : "adviser_id"
+    academic_student_final_assignment_transaction__evaluation_summaries ||--o{ academic_student_final_assignment_transaction__evaluation_details : "evaluation_summary_id"
+    academic_campaign_transaction__grades ||--o{ academic_student_final_assignment_transaction__evaluation_details : "grade_id"
+    academic_student_campaign__detail_activities ||--o{ academic_student_final_assignment_transaction__evaluation_summaries : "detail_activity_id"
+    academic_campaign_transaction__grades ||--o{ academic_student_final_assignment_transaction__evaluation_summaries : "grade_id"
+    academic_student_final_assignment_reference__stages ||--o{ academic_student_final_assignment_transaction__evaluation_summaries : "stage_id"
+    academic_student_final_assignment_transaction__submissions ||--o{ academic_student_final_assignment_transaction__evaluation_summaries : "submission_id"
+    academic_campaign_transaction__activities ||--o{ academic_student_final_assignment_transaction__final_assignment_decrees : "activity_id"
+    institution_master__staffes ||--o{ academic_student_final_assignment_transaction__final_assignment_decrees : "staff_id"
+    institution_master__units ||--o{ academic_student_final_assignment_transaction__final_assignment_decrees : "unit_id"
+    academic_student_final_assignment_reference__approval_types ||--o{ academic_student_final_assignment_transaction__prerequisites : "approval_type_id"
+    academic_student_final_assignment_reference__requirements ||--o{ academic_student_final_assignment_transaction__prerequisites : "requirement_id"
+    academic_student_final_assignment_reference__stages ||--o{ academic_student_final_assignment_transaction__prerequisites : "stage_id"
+    academic_student_final_assignment_transaction__submissions ||--o{ academic_student_final_assignment_transaction__prerequisites : "submission_id"
+    academic_student_campaign__detail_activities ||--o{ academic_student_final_assignment_transaction__schedules : "detail_activity_id"
+    building_master__rooms ||--o{ academic_student_final_assignment_transaction__schedules : "room_id"
+    academic_student_final_assignment_reference__stages ||--o{ academic_student_final_assignment_transaction__schedules : "stage_id"
+    academic_student_final_assignment_transaction__submissions ||--o{ academic_student_final_assignment_transaction__schedules : "submission_id"
+    academic_student_final_assignment_reference__approval_types ||--o{ academic_student_final_assignment_transaction__submissions : "approval_type_id"
+    academic_student_final_assignment_reference__categories ||--o{ academic_student_final_assignment_transaction__submissions : "category_id"
+    academic_student_campaign__detail_activities ||--o{ academic_student_final_assignment_transaction__submissions : "detail_activity_id"
+    academic_student_final_assignment_transaction__final_assignment_decrees ||--o{ academic_student_final_assignment_transaction__submissions : "final_assignment_decree_id"
+    academic_student_final_assignment_reference__stages ||--o{ academic_student_final_assignment_transaction__submissions : "stage_id"
+    academic_student_master__students ||--o{ academic_student_final_assignment_transaction__submissions : "student_id"
+    %% Schema: academic_student_master
+    academic_student_master__students ||--o{ academic_student_master__images : "student_id"
+    academic_general_reference__academic_years ||--o{ academic_student_master__students : "academic_year_id"
+    academic_campaign_transaction__class_codes ||--o{ academic_student_master__students : "class_code_id"
+    academic_course_master__concentrations ||--o{ academic_student_master__students : "concentration_id"
+    academic_course_master__curriculums ||--o{ academic_student_master__students : "curriculum_id"
+    academic_student_reference__finances ||--o{ academic_student_master__students : "finance_id"
+    person_master__individuals ||--o{ academic_student_master__students : "individual_id"
+    academic_student_reference__registrations ||--o{ academic_student_master__students : "registration_id"
+    academic_student_reference__resign_statuses ||--o{ academic_student_master__students : "resign_status_id"
+    academic_student_reference__selection_types ||--o{ academic_student_master__students : "selection_type_id"
+    academic_student_reference__statuses ||--o{ academic_student_master__students : "status_id"
+    institution_master__units ||--o{ academic_student_master__students : "transfer_unit_id"
+    institution_master__units ||--o{ academic_student_master__students : "unit_id"
+    %% Schema: academic_survey_master
+    academic_survey_master__questions ||--o{ academic_survey_master__answers : "question_id"
+    academic_survey_master__bundles ||--o{ academic_survey_master__bundle_question : "bundle_id"
+    academic_survey_master__questions ||--o{ academic_survey_master__bundle_question : "question_id"
+    academic_survey_reference__bundle_categories ||--o{ academic_survey_master__bundles : "bundle_category_id"
+    institution_master__institutions ||--o{ academic_survey_master__bundles : "institution_id"
+    institution_master__units ||--o{ academic_survey_master__bundles : "unit_id"
+    institution_master__institutions ||--o{ academic_survey_master__questions : "institution_id"
+    academic_survey_reference__question_varieties ||--o{ academic_survey_master__questions : "question_variety_id"
+    %% Schema: academic_survey_transaction
+    academic_survey_master__bundles ||--o{ academic_survey_transaction__conducts : "bundle_id"
+    academic_survey_master__answers ||--o{ academic_survey_transaction__responds : "answer_id"
+    academic_survey_master__bundles ||--o{ academic_survey_transaction__responds : "bundle_id"
+    academic_survey_transaction__conducts ||--o{ academic_survey_transaction__responds : "conduct_id"
+    academic_survey_master__questions ||--o{ academic_survey_transaction__responds : "question_id"
+    %% Schema: auth
+    auth__permissions ||--o{ auth__permission_position_type : "permission_id"
+    institution_reference__position_types ||--o{ auth__permission_position_type : "position_type_id"
+    auth__permissions ||--o{ auth__permission_role : "permission_id"
+    auth__roles ||--o{ auth__permission_role : "role_id"
+    auth__permissions ||--o{ auth__permission_user : "permission_id"
+    auth__users ||--o{ auth__permission_user : "user_id"
+    institution_reference__position_types ||--o{ auth__roles : "position_type_id"
+    auth__users ||--o{ auth__roles : "user_id"
+    institution_reference__position_types ||--o{ auth__user_position_type : "position_type_id"
+    auth__users ||--o{ auth__user_position_type : "user_id"
+    auth__roles ||--o{ auth__users : "current_role_id"
+    person_master__individuals ||--o| auth__users : "individual_id"
+    %% Schema: building_master
+    building_reference__categories ||--o{ building_master__buildings : "category_id"
+    building_reference__conditions ||--o{ building_master__buildings : "condition_id"
+    contact_master__residences ||--o{ building_master__buildings : "residence_id"
+    building_reference__varieties ||--o{ building_master__buildings : "variety_id"
+    building_master__buildings ||--o{ building_master__rooms : "building_id"
+    building_reference__conditions ||--o{ building_master__rooms : "condition_id"
+    building_reference__room_types ||--o{ building_master__rooms : "room_type_id"
+    institution_master__units ||--o{ building_master__rooms : "unit_id"
+    %% Schema: contact_master
+    contact_reference__electronic_mail_types ||--o{ contact_master__electronic_mails : "electronic_mail_type_id"
+    contact_reference__phone_types ||--o{ contact_master__phones : "phone_type_id"
+    location__provinces ||--o{ contact_master__residences : "province_id"
+    location__regencies ||--o{ contact_master__residences : "regency_id"
+    contact_reference__residence_types ||--o{ contact_master__residences : "residence_type_id"
+    location__sub_districts ||--o{ contact_master__residences : "sub_district_id"
+    location__villages ||--o{ contact_master__residences : "village_id"
+    contact_reference__website_types ||--o{ contact_master__websites : "website_type_id"
+    %% Schema: document_transaction
+    document_reference__archive_types ||--o{ document_transaction__archives : "archive_type_id"
+    %% Schema: institution_master
+    person_master__individuals ||--o{ institution_master__employees : "individual_id"
+    institution_master__institutions ||--o{ institution_master__employees : "institution_id"
+    academic_general_reference__academic_years ||--o{ institution_master__institutions : "academic_year_id"
+    institution_reference__categories ||--o{ institution_master__institutions : "category_id"
+    location__countries ||--o{ institution_master__institutions : "country_id"
+    institution_master__institutions ||--o{ institution_master__institutions : "parent_id"
+    institution_reference__varieties ||--o{ institution_master__institutions : "variety_id"
+    institution_master__employees ||--o{ institution_master__staffes : "employee_id"
+    institution_reference__position_types ||--o{ institution_master__staffes : "position_type_id"
+    institution_master__units ||--o{ institution_master__staffes : "unit_id"
+    literate__educations ||--o{ institution_master__units : "education_id"
+    institution_master__institutions ||--o{ institution_master__units : "institution_id"
+    institution_master__units ||--o{ institution_master__units : "parent_id"
+    institution_reference__unit_types ||--o{ institution_master__units : "unit_type_id"
+    %% Schema: literate
+    literate__categories ||--o{ literate__educations : "category_id"
+    literate__groups ||--o{ literate__educations : "group_id"
+    literate__levels ||--o{ literate__educations : "level_id"
+    literate__varieties ||--o{ literate__educations : "variety_id"
+    %% Schema: location
+    location__continents ||--o{ location__countries : "continent_id"
+    location__regions ||--o{ location__countries : "region_id"
+    location__countries ||--o{ location__provinces : "country_id"
+    location__provinces ||--o{ location__regencies : "province_id"
+    location__regency_types ||--o{ location__regencies : "regency_type_id"
+    location__regencies ||--o{ location__sub_districts : "regency_id"
+    location__sub_districts ||--o{ location__villages : "sub_district_id"
+    %% Schema: person_master
+    person_reference__blood_types ||--o{ person_master__biodatas : "blood_type_id"
+    person_reference__eye_colors ||--o{ person_master__biodatas : "eye_color_id"
+    person_reference__hair_colors ||--o{ person_master__biodatas : "hair_color_id"
+    person_reference__hair_types ||--o{ person_master__biodatas : "hair_type_id"
+    person_master__individuals ||--o| person_master__biodatas : "individual_id"
+    person_master__family_cards ||--o{ person_master__family_card_members : "family_card_id"
+    person_master__individuals ||--o{ person_master__family_card_members : "individual_id"
+    person_master__individuals ||--o{ person_master__family_card_members : "relative_id"
+    person_reference__relative_types ||--o{ person_master__family_card_members : "relative_type_id"
+    person_master__individuals ||--o{ person_master__family_cards : "individual_id"
+    person_master__individuals ||--o{ person_master__images : "individual_id"
+    person_reference__age_classifications ||--o{ person_master__individuals : "age_classification_id"
+    literate__educations ||--o{ person_master__individuals : "education_id"
+    person_reference__genders ||--o{ person_master__individuals : "gender_id"
+    person_reference__identification_types ||--o{ person_master__individuals : "identification_type_id"
+    person_reference__incomes ||--o{ person_master__individuals : "income_id"
+    person_reference__marital_statuses ||--o{ person_master__individuals : "marital_status_id"
+    person_reference__occupations ||--o{ person_master__individuals : "occupation_id"
+    person_reference__professions ||--o{ person_master__individuals : "profession_id"
+    person_reference__religions ||--o{ person_master__individuals : "religion_id"
