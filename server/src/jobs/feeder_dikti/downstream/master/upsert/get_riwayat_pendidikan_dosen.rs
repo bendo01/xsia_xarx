@@ -1,5 +1,3 @@
-use apalis::prelude::{Data, Monitor, WorkerBuilder, WorkerFactoryFn};
-use apalis_redis::RedisStorage;
 use chrono::Local;
 use sea_orm::{
     ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, DatabaseTransaction, EntityTrait,
@@ -35,29 +33,6 @@ pub struct WorkerArgs {
     pub records: Vec<RiwayatPendidikanDosen>,
 }
 
-pub async fn handle_job(
-    args: WorkerArgs,
-    db: Data<DatabaseConnection>,
-) -> Result<(), std::io::Error> {
-    Worker::perform(&db, args).await.map_err(|e| std::io::Error::other(e.to_string()))
-}
-
-pub async fn start_worker(
-    redis_url: String,
-    db: DatabaseConnection,
-) -> Result<Monitor, std::io::Error> {
-    let conn = apalis_redis::connect(redis_url)
-        .await
-        .map_err(|e| std::io::Error::other(e.to_string()))?;
-    let storage: RedisStorage<WorkerArgs> = RedisStorage::new(conn);
-
-    let worker = WorkerBuilder::new("xsia-xarx:feeder_dikti:downstream:master:upsert:get_riwayat_pendidikan_dosen")
-        .data(db)
-        .backend(storage)
-        .build_fn(handle_job);
-
-    Ok(Monitor::new().register(worker))
-}
 
 pub struct Worker;
 

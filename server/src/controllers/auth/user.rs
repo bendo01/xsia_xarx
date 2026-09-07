@@ -16,15 +16,14 @@ use crate::dtos::common::reference::MessageResponse;
 use crate::models::auth::user as entity_mod;
 use crate::models::auth::role as role_entity;
 use crate::config::jwt::{create_token, JwtConfig};
-use crate::jobs::email::EmailJob;
-use apalis_redis::RedisStorage;
+use crate::jobs::email::{self, EmailJob};
+use pgmq::PGMQueueExt;
 use argon2::{
     password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
     Argon2,
 };
 use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
-use apalis::prelude::Storage;
 use chrono::Duration;
 
 pub async fn fetch_user_roles(db: &DatabaseConnection, user_id: Uuid) -> Vec<crate::dtos::auth::role::RoleResponse> {
@@ -399,9 +398,9 @@ pub async fn register(
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
-    let mut storage = depot.get_typed::<RedisStorage<EmailJob>>().map_err(|_| {
-        StatusError::internal_server_error().brief("Redis storage missing")
-    })?.clone();
+    let queue = depot.get_typed::<PGMQueueExt>().map_err(|_| {
+        StatusError::internal_server_error().brief("Queue service missing")
+    })?;
 
     let payload: RegisterRequest = req.parse_json().await.map_err(|e| {
         StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
@@ -462,7 +461,7 @@ pub async fn register(
         body: format!("Please verify your email by clicking the following link:\n{}", verify_url),
     };
 
-    storage.push(job).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+    email::enqueue_email(queue, &job).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
     Ok(Json(MessageResponse {
         message: "Registration successful. Please check your email to verify your account.".to_string(),
@@ -664,9 +663,9 @@ pub async fn forgot_password(
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
-    let mut storage = depot.get_typed::<RedisStorage<EmailJob>>().map_err(|_| {
-        StatusError::internal_server_error().brief("Redis storage missing")
-    })?.clone();
+    let queue = depot.get_typed::<PGMQueueExt>().map_err(|_| {
+        StatusError::internal_server_error().brief("Queue service missing")
+    })?;
 
     let payload: ForgotPasswordRequest = req.parse_json().await.map_err(|e| {
         StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
@@ -699,7 +698,7 @@ pub async fn forgot_password(
             body: format!("You requested a password reset. Click the link to reset your password:\n{}", reset_url),
         };
 
-        storage.push(job).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        email::enqueue_email(queue, &job).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
     }
 
     // Always return success even if email not found to prevent user enumeration
@@ -882,9 +881,9 @@ pub async fn resend_verification_mail(
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
-    let mut storage = depot.get_typed::<RedisStorage<EmailJob>>().map_err(|_| {
-        StatusError::internal_server_error().brief("Redis storage missing")
-    })?.clone();
+    let queue = depot.get_typed::<PGMQueueExt>().map_err(|_| {
+        StatusError::internal_server_error().brief("Queue service missing")
+    })?;
 
     let payload: ResendVerificationRequest = req.parse_json().await.map_err(|e| {
         StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
@@ -921,7 +920,7 @@ pub async fn resend_verification_mail(
             body: format!("Please verify your email by clicking the following link:\n{}", verify_url),
         };
 
-        storage.push(job).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        email::enqueue_email(queue, &job).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
     }
 
     Ok(Json(MessageResponse {

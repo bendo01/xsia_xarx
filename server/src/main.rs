@@ -3,16 +3,16 @@ use salvo::oapi::{OpenApi, swagger_ui::SwaggerUi};
 use sea_orm::DatabaseConnection;
 use clap::{Parser, Subcommand};
 use xsia_xarx::{controllers, db};
-use xsia_xarx::config::redis::RedisConfig;
-use xsia_xarx::jobs::email::{EmailJob, start_email_worker};
-use apalis_redis::RedisStorage;
+use xsia_xarx::config::database::DatabaseConfig;
+use xsia_xarx::jobs::email::{start_email_worker, init_email_queue};
+use pgmq::PGMQueueExt;
 
 struct InjectDb(DatabaseConnection);
 
-struct InjectRedis(RedisStorage<EmailJob>);
+struct InjectPgmq(PGMQueueExt);
 
 #[async_trait]
-impl Handler for InjectRedis {
+impl Handler for InjectPgmq {
     async fn handle(
         &self,
         req: &mut Request,
@@ -20,7 +20,7 @@ impl Handler for InjectRedis {
         res: &mut Response,
         ctrl: &mut FlowCtrl,
     ) {
-        depot.insert_typed::<RedisStorage<EmailJob>>(self.0.clone());
+        depot.insert_typed::<PGMQueueExt>(self.0.clone());
         ctrl.call_next(req, depot, res).await;
     }
 }
@@ -90,16 +90,25 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let db = db::connect_db().await?;
     println!("Database connection successful");
 
-    let redis_config = RedisConfig::from_env();
-    let redis_url = redis_config.url;
-    let email_worker = start_email_worker(redis_url.clone()).await?;
-    let conn = apalis_redis::connect(redis_url).await.map_err(|e| std::io::Error::other(e.to_string()))?;
-    let redis_storage = apalis_redis::RedisStorage::new(conn);
-    
-    tokio::spawn(async move {
-        let _ = email_worker.run().await;
-    });
-    println!("Apalis email worker started");
+    let db_config = DatabaseConfig::from_env();
+    let queue = PGMQueueExt::new(db_config.url, 10)
+        .await
+        .map_err(|e| std::io::Error::other(format!("Failed to connect to PGMQ: {e}")))?;
+
+    // Initialize PGMQ extension / schema if needed
+    if let Err(e) = queue.init().await {
+        tracing::warn!("Extension pgmq init notice: {e}. Attempting embedded SQL fallback...");
+        if let Err(e_sql) = queue.install_sql_from_embedded().await {
+            tracing::warn!("Embedded SQL init notice: {e_sql}");
+        }
+    }
+
+    init_email_queue(&queue)
+        .await
+        .map_err(|e| std::io::Error::other(format!("Failed to initialize email queue: {e}")))?;
+
+    start_email_worker(queue.clone());
+    println!("PGMQ email worker started");
 
     let cors = salvo::cors::Cors::new()
         .allow_origin(salvo::cors::Any)
@@ -109,7 +118,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let api_router = Router::with_path("api/v1")
         .hoop(InjectDb(db))
-        .hoop(InjectRedis(redis_storage))
+        .hoop(InjectPgmq(queue))
         .push(controllers::person::router())
         .push(controllers::literate::router())
         .push(controllers::location::router())

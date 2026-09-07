@@ -44,7 +44,7 @@
 - 🏛️ **Institutional Architecture**: Multi-level institutional structure, faculties, study programs, campus buildings, and room allocation.
 - 📍 **Standardized Master Data**: Hierarchical location catalog (provinces, regencies, districts, villages, postal codes) and contact channels.
 - 🤖 **AI & Vector Embeddings**: `pgvector` vector store integration, Rig-core, Candle (Hugging Face), Burn, and Markdown text splitter for semantic search and retrieval.
-- ⚡ **Asynchronous Background Processing**: Queue-backed task execution via [Apalis](https://github.com/geoffraey/apalis) on Redis (e.g. SMTP email delivery, periodic workers).
+- ⚡ **Asynchronous Background Processing**: Queue-backed task execution via [PGMQ](https://github.com/pgmq/pgmq) on PostgreSQL (e.g. SMTP email delivery, periodic workers).
 - 📄 **Reporting & Utilities**: Headless Chrome PDF generation, `rust_xlsxwriter` Excel spreadsheets, QR code generation, Tera templates, and Fluent i18n localization.
 
 ---
@@ -70,7 +70,7 @@ xsia_xarx/
 │   │   ├── config/               # Environment & service configurations
 │   │   ├── controllers/          # Salvo HTTP route handlers & OpenAPI specs
 │   │   ├── dtos/                 # Request & response data transfer objects
-│   │   ├── jobs/                 # Apalis queue job workers (e.g. email)
+│   │   ├── jobs/                 # PGMQ queue job workers (e.g. email)
 │   │   ├── mailers/              # Transactional email composers
 │   │   ├── middleware/           # Auth guards & request context injectors
 │   │   ├── models/               # SeaORM entity models by domain
@@ -104,7 +104,7 @@ xsia_xarx/
 | **Language & Runtime** | [Rust](https://www.rust-lang.org/) (2024 Edition) | Multi-threaded async engine on [Tokio](https://tokio.rs/) v1.45 |
 | **Web Framework** | [Salvo](https://salvo.rs/) (v0.95) | HTTP/HTTPS server with OpenAPI & Swagger UI generation |
 | **Database & ORM** | [SeaORM](https://www.sea-ql.org/SeaORM/) (v2.0) | PostgreSQL, RBAC, Schema Sync, `pgvector` |
-| **Task Queue & Scheduler** | [Apalis](https://github.com/geoffraey/apalis) (v0.7) | Redis-backed background job queue & workers |
+| **Task Queue & Scheduler** | [PGMQ](https://github.com/pgmq/pgmq) | Native PostgreSQL-backed background job queue & workers |
 | **Security & Auth** | JWT, Argon2, Bcrypt | Token signing, verification, secure password hashing |
 | **AI / Machine Learning** | Rig-core, Candle, Burn, `text-splitter` | Vector search, embeddings, model inferencing |
 | **Reporting & Media** | Headless Chrome, `rust_xlsxwriter`, Lettre, QR Code | Dynamic PDF generation, Excel reports, SMTP email, QR codes |
