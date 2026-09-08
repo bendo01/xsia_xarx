@@ -57,6 +57,10 @@ export async function listStudents(queryParams?: {
     name?: string;
     code?: string;
     individual_id?: string;
+    unit_id?: string;
+    institution_id?: string;
+    academic_year_id?: string;
+    status_id?: string;
 }): Promise<{
     data: StudentMasterItem[];
     total: number;
@@ -71,6 +75,10 @@ export async function listStudents(queryParams?: {
         if (queryParams?.name) params.set('name', queryParams.name);
         if (queryParams?.code) params.set('code', queryParams.code);
         if (queryParams?.individual_id) params.set('individual_id', queryParams.individual_id);
+        if (queryParams?.unit_id) params.set('unit_id', queryParams.unit_id);
+        if (queryParams?.institution_id) params.set('institution_id', queryParams.institution_id);
+        if (queryParams?.academic_year_id) params.set('academic_year_id', queryParams.academic_year_id);
+        if (queryParams?.status_id) params.set('status_id', queryParams.status_id);
 
         const res = await fetch(`${getBaseUrl()}/academic/student/master/students?${params.toString()}`, {
             method: 'GET',
@@ -158,7 +166,35 @@ export async function academicStudentMasterStudentValidate(id: string): Promise<
 
 export async function listStudyUnits(): Promise<any[]> {
     try {
-        const res = await fetch(`${getBaseUrl()}/institution/master/units`, {
+        const res = await fetch(`${getBaseUrl()}/institution/master/units?page=1&page_size=200`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+        if (!res.ok) return [];
+        const json = await res.json();
+        return json.data || [];
+    } catch {
+        return [];
+    }
+}
+
+export async function listAcademicYears(): Promise<any[]> {
+    try {
+        const res = await fetch(`${getBaseUrl()}/academic/general/reference/academic-years?page=1&page_size=100`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+        if (!res.ok) return [];
+        const json = await res.json();
+        return json.data || [];
+    } catch {
+        return [];
+    }
+}
+
+export async function listStudentStatuses(): Promise<any[]> {
+    try {
+        const res = await fetch(`${getBaseUrl()}/academic/student/reference/statuses?page=1&page_size=100`, {
             method: 'GET',
             headers: getHeaders(),
         });

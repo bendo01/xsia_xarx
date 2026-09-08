@@ -171,11 +171,17 @@ pub async fn list_students(
     let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
 
     if let Some(ref name) = query.name {
-        select = select.filter(entity_mod::Column::Name.contains(name));
+        let trimmed = name.trim();
+        if !trimmed.is_empty() {
+            select = select.filter(entity_mod::Column::Name.contains(trimmed));
+        }
     }
 
-    if let Some(code) = query.code {
-        select = select.filter(entity_mod::Column::Code.eq(code));
+    if let Some(ref code) = query.code {
+        let trimmed = code.trim();
+        if !trimmed.is_empty() {
+            select = select.filter(entity_mod::Column::Code.contains(trimmed));
+        }
     }
 
     if let Some(individual_id) = query.individual_id {
@@ -184,6 +190,30 @@ pub async fn list_students(
 
     if let Some(unit_id) = query.unit_id {
         select = select.filter(entity_mod::Column::UnitId.eq(unit_id));
+    } else if let Some(institution_id) = query.institution_id {
+        let matching_unit_ids: Vec<Uuid> = crate::models::institution::master::units::Entity::find()
+            .filter(crate::models::institution::master::units::Column::InstitutionId.eq(institution_id))
+            .filter(crate::models::institution::master::units::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|u| u.id)
+            .collect();
+
+        if matching_unit_ids.is_empty() {
+            select = select.filter(entity_mod::Column::UnitId.eq(Uuid::nil()));
+        } else {
+            select = select.filter(entity_mod::Column::UnitId.is_in(matching_unit_ids));
+        }
+    }
+
+    if let Some(academic_year_id) = query.academic_year_id {
+        select = select.filter(entity_mod::Column::AcademicYearId.eq(academic_year_id));
+    }
+
+    if let Some(status_id) = query.status_id {
+        select = select.filter(entity_mod::Column::StatusId.eq(status_id));
     }
 
     let paginator = select

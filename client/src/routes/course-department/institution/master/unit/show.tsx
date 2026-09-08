@@ -14,6 +14,8 @@ import { getStorageItem } from '~/lib/storage';
 import { GetCurrentUser } from '~/controllers/auth/AuthUser';
 import type { InstitutionMasterUnit } from '~/models/institution/master/Unit';
 import type { InstitutionMasterStaff } from '~/models/institution/master/Staff';
+import StudentAcademicYearChart, { StudentStatusByYear } from '~/components/chart/student_academic_year_chart';
+import CourseCategoryPieChart, { CourseCategoryItem } from '~/components/chart/course_category_pie_chart';
 
 export default function CourseDepartmentUnitShowPage() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -30,11 +32,8 @@ export default function CourseDepartmentUnitShowPage() {
     // Supplementary reference data for relations
     const [employeesMap, setEmployeesMap] = createSignal<Record<string, any>>({});
     const [positionTypesMap, setPositionTypesMap] = createSignal<Record<string, any>>({});
-    
-    // UI state
-    const [activeTab, setActiveTab] = createSignal<'overview' | 'curriculums' | 'courses' | 'students' | 'staffes'>('overview');
-    const [courseSearch, setCourseSearch] = createSignal('');
-    const [studentSearch, setStudentSearch] = createSignal('');
+    const [varietiesMap, setVarietiesMap] = createSignal<Record<string, any>>({});
+    const [groupsMap, setGroupsMap] = createSignal<Record<string, any>>({});
 
     // Step 1: Resolve the Current User's Unit ID
     const resolveCurrentUserUnitId = async (): Promise<string> => {
@@ -124,7 +123,7 @@ export default function CourseDepartmentUnitShowPage() {
 
         setIsLoading(true);
         try {
-            // Fetch Unit Master + All 4 Required Entities in Parallel where unit_id = targetUnitId
+            // Fetch Unit Master + All Required Entities in Parallel where unit_id = targetUnitId
             const [
                 unitRes,
                 coursesRes,
@@ -132,15 +131,19 @@ export default function CourseDepartmentUnitShowPage() {
                 studentsRes,
                 staffesRes,
                 empRes,
-                posTypeRes
+                posTypeRes,
+                varietyRes,
+                groupRes
             ] = await Promise.all([
                 masterApiShow<any>('institution/master/units', targetUnitId),
-                masterApiIndex<any>('academic/course/master/courses', { unit_id: targetUnitId, page: 1, per_page: 200 }),
+                masterApiIndex<any>('academic/course/master/courses', { unit_id: targetUnitId, page: 1, per_page: 500 }),
                 masterApiIndex<any>('academic/course/master/curriculums', { unit_id: targetUnitId, page: 1, per_page: 100 }),
-                masterApiIndex<any>('academic/student/master/students', { unit_id: targetUnitId, page: 1, per_page: 200 }),
+                masterApiIndex<any>('academic/student/master/students', { unit_id: targetUnitId, page: 1, per_page: 500 }),
                 masterApiIndex<any>('institution/master/staffes', { unit_id: targetUnitId, page: 1, per_page: 100 }),
                 masterApiIndex<any>('institution/master/employees', { page: 1, per_page: 500 }).catch(() => ({ data: [] })),
-                masterApiIndex<any>('institution/reference/position-types', { page: 1, per_page: 500 }).catch(() => ({ data: [] }))
+                masterApiIndex<any>('institution/reference/position-types', { page: 1, per_page: 500 }).catch(() => ({ data: [] })),
+                masterApiIndex<any>('academic/course/reference/varieties', { page: 1, per_page: 200 }).catch(() => ({ data: [] })),
+                masterApiIndex<any>('academic/course/reference/groups', { page: 1, per_page: 200 }).catch(() => ({ data: [] }))
             ]);
 
             // Set Unit Record
@@ -172,6 +175,23 @@ export default function CourseDepartmentUnitShowPage() {
                 }
             }
             setPositionTypesMap(posMap);
+
+            // Map course varieties & groups for categorizing courses
+            const vMap: Record<string, any> = {};
+            if (varietyRes?.data && Array.isArray(varietyRes.data)) {
+                for (const v of varietyRes.data) {
+                    if (v.id) vMap[v.id] = v;
+                }
+            }
+            setVarietiesMap(vMap);
+
+            const gMap: Record<string, any> = {};
+            if (groupRes?.data && Array.isArray(groupRes.data)) {
+                for (const g of groupRes.data) {
+                    if (g.id) gMap[g.id] = g;
+                }
+            }
+            setGroupsMap(gMap);
 
         } catch (err) {
             console.error('Error fetching unit real data:', err);
@@ -240,24 +260,95 @@ export default function CourseDepartmentUnitShowPage() {
         return enrichedStaffes().filter(s => s !== kaprodi() && s !== sekprodi());
     });
 
-    // Filtered lists for interactive tables
-    const filteredCourses = createMemo(() => {
-        const query = courseSearch().toLowerCase().trim();
-        if (!query) return courses();
-        return courses().filter(c => 
-            (c.code || '').toLowerCase().includes(query) ||
-            (c.name || '').toLowerCase().includes(query)
-        );
+    // Aggregated Student Status by Academic Year for Line Chart
+    const studentYearlyTrend = createMemo<StudentStatusByYear[]>(() => {
+        const map = new Map<string, StudentStatusByYear>();
+
+        for (const s of students()) {
+            const rawYear = s.academic_year_name || (s.registered ? s.registered.substring(0, 4) : 'Belum Ditentukan');
+            const year = rawYear.trim() || 'Belum Ditentukan';
+
+            if (!map.has(year)) {
+                map.set(year, {
+                    yearName: year,
+                    total: 0,
+                    active: 0,
+                    leave: 0,
+                    graduated: 0,
+                    other: 0,
+                });
+            }
+            const item = map.get(year)!;
+            item.total += 1;
+
+            const status = (s.status_name || '').toLowerCase();
+            if (status.includes('aktif') || status.includes('active')) {
+                item.active += 1;
+            } else if (status.includes('cuti') || status.includes('leave')) {
+                item.leave += 1;
+            } else if (status.includes('lulus') || status.includes('graduat')) {
+                item.graduated += 1;
+            } else {
+                item.other += 1;
+            }
+        }
+
+        return Array.from(map.values()).sort((a, b) => a.yearName.localeCompare(b.yearName));
     });
 
-    const filteredStudents = createMemo(() => {
-        const query = studentSearch().toLowerCase().trim();
-        if (!query) return students();
-        return students().filter(s => 
-            (s.code || '').toLowerCase().includes(query) ||
-            (s.name || '').toLowerCase().includes(query) ||
-            (s.academic_year_name || '').toLowerCase().includes(query)
-        );
+    // Aggregated Course Distribution by Categories for Pie Chart
+    const courseCategoryDistribution = createMemo<CourseCategoryItem[]>(() => {
+        const vMap = varietiesMap();
+        const gMap = groupsMap();
+        const map = new Map<string, { count: number; credits: number }>();
+
+        for (const c of courses()) {
+            let catName = '';
+            if (c.variety_id && vMap[c.variety_id]?.name) {
+                catName = vMap[c.variety_id].name;
+            } else if (c.group_id && gMap[c.group_id]?.name) {
+                catName = gMap[c.group_id].name;
+            } else if (c.variety?.name) {
+                catName = c.variety.name;
+            } else if (c.group?.name) {
+                catName = c.group.name;
+            } else if (c.practice_credit > 0 && (!c.lecture_credit || c.lecture_credit === 0)) {
+                catName = 'Mata Kuliah Praktik';
+            } else if (c.lecture_credit > 0 && (!c.practice_credit || c.practice_credit === 0)) {
+                catName = 'Mata Kuliah Teori';
+            } else if (c.lecture_credit > 0 && c.practice_credit > 0) {
+                catName = 'Teori & Praktik';
+            } else {
+                catName = 'Mata Kuliah Umum';
+            }
+
+            const credits = Number(c.total_credit) || ((Number(c.lecture_credit) || 0) + (Number(c.practice_credit) || 0));
+            if (!map.has(catName)) {
+                map.set(catName, { count: 0, credits: 0 });
+            }
+            const item = map.get(catName)!;
+            item.count += 1;
+            item.credits += credits;
+        }
+
+        const colorPalette = [
+            '#0ea5e9', // Sky Blue
+            '#10b981', // Emerald
+            '#f59e0b', // Amber
+            '#8b5cf6', // Purple
+            '#ec4899', // Pink
+            '#06b6d4', // Cyan
+            '#f97316', // Orange
+            '#6366f1', // Indigo
+            '#64748b', // Slate
+        ];
+
+        return Array.from(map.entries()).map(([name, val], idx) => ({
+            name,
+            count: val.count,
+            credits: val.credits,
+            color: colorPalette[idx % colorPalette.length],
+        }));
     });
 
     // Unit identity helpers
@@ -353,12 +444,12 @@ export default function CourseDepartmentUnitShowPage() {
                     {/* 4 Summary Cards based on real data */}
                     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                         {/* 1. Kurikulum (academic_course_master.curriculums) */}
-                        <div 
-                            onClick={() => setActiveTab('curriculums')}
-                            class="p-5 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2 cursor-pointer hover:border-emerald-500 transition-all"
+                        <A 
+                            href="/course-department/academic/course/master/curriculum"
+                            class="p-5 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2 hover:border-emerald-500 transition-all block group"
                         >
                             <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
-                                <span class="text-xs font-mono font-semibold uppercase tracking-wider">Kurikulum</span>
+                                <span class="text-xs font-mono font-semibold uppercase tracking-wider group-hover:text-emerald-600 transition-colors">Kurikulum</span>
                                 <div class="size-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/>
@@ -374,15 +465,15 @@ export default function CourseDepartmentUnitShowPage() {
                             <div class="text-[11px] text-emerald-600 dark:text-emerald-400 font-mono truncate">
                                 {activeCurriculum()?.name || 'Kurikulum Aktif'}
                             </div>
-                        </div>
+                        </A>
 
                         {/* 2. Mata Kuliah (academic_course_master.courses) */}
-                        <div 
-                            onClick={() => setActiveTab('courses')}
-                            class="p-5 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2 cursor-pointer hover:border-teal-500 transition-all"
+                        <A 
+                            href="/course-department/academic/course/master/course"
+                            class="p-5 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2 hover:border-teal-500 transition-all block group"
                         >
                             <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
-                                <span class="text-xs font-mono font-semibold uppercase tracking-wider">Mata Kuliah</span>
+                                <span class="text-xs font-mono font-semibold uppercase tracking-wider group-hover:text-teal-600 transition-colors">Mata Kuliah</span>
                                 <div class="size-8 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold">
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10M6 14h6"/>
@@ -398,15 +489,15 @@ export default function CourseDepartmentUnitShowPage() {
                             <div class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
                                 Total SKS: {courses().reduce((acc, curr) => acc + (Number(curr.total_credit) || 0), 0)} SKS
                             </div>
-                        </div>
+                        </A>
 
                         {/* 3. Mahasiswa (academic_student_master.students) */}
-                        <div 
-                            onClick={() => setActiveTab('students')}
-                            class="p-5 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2 cursor-pointer hover:border-blue-500 transition-all"
+                        <A 
+                            href="/course-department/academic/student/master"
+                            class="p-5 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2 hover:border-blue-500 transition-all block group"
                         >
                             <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
-                                <span class="text-xs font-mono font-semibold uppercase tracking-wider">Mahasiswa</span>
+                                <span class="text-xs font-mono font-semibold uppercase tracking-wider group-hover:text-blue-600 transition-colors">Mahasiswa</span>
                                 <div class="size-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
@@ -422,12 +513,11 @@ export default function CourseDepartmentUnitShowPage() {
                             <div class="text-[11px] text-blue-600 dark:text-blue-400 font-mono">
                                 Status Aktif & Terdata
                             </div>
-                        </div>
+                        </A>
 
                         {/* 4. Staff (institution_master.staffes) */}
                         <div 
-                            onClick={() => setActiveTab('staffes')}
-                            class="p-5 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2 cursor-pointer hover:border-purple-500 transition-all"
+                            class="p-5 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2"
                         >
                             <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
                                 <span class="text-xs font-mono font-semibold uppercase tracking-wider">Staff & Pimpinan</span>
@@ -530,457 +620,38 @@ export default function CourseDepartmentUnitShowPage() {
                         </div>
                     </div>
 
-                    {/* Interactive Section Tabs */}
-                    <div class="flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-700 pb-2 overflow-x-auto">
-                        <button
-                            type="button"
-                            onClick={() => setActiveTab('overview')}
-                            class={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
-                                activeTab() === 'overview'
-                                    ? 'bg-teal-600 text-white shadow-xs'
-                                    : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
-                            }`}
-                        >
-                            Informasi Umum
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setActiveTab('curriculums')}
-                            class={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
-                                activeTab() === 'curriculums'
-                                    ? 'bg-teal-600 text-white shadow-xs'
-                                    : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
-                            }`}
-                        >
-                            Kurikulum ({curriculums().length})
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setActiveTab('courses')}
-                            class={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
-                                activeTab() === 'courses'
-                                    ? 'bg-teal-600 text-white shadow-xs'
-                                    : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
-                            }`}
-                        >
-                            Mata Kuliah ({courses().length})
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setActiveTab('students')}
-                            class={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
-                                activeTab() === 'students'
-                                    ? 'bg-teal-600 text-white shadow-xs'
-                                    : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
-                            }`}
-                        >
-                            Mahasiswa ({students().length})
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setActiveTab('staffes')}
-                            class={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
-                                activeTab() === 'staffes'
-                                    ? 'bg-teal-600 text-white shadow-xs'
-                                    : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
-                            }`}
-                        >
-                            Daftar Staff ({staffes().length})
-                        </button>
+                    {/* Charts Section: Scope Unit ID Real Server Data */}
+                    <div class="space-y-6 pt-2">
+                        {/* Section Header */}
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-200 dark:border-neutral-700 pb-3">
+                            <div>
+                                <h2 class="text-base font-bold text-neutral-900 dark:text-white flex items-center gap-2">
+                                    <span class="size-2.5 rounded-full bg-teal-500"></span>
+                                    Visualisasi & Analisis Data Program Studi
+                                </h2>
+                                <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                    Tren mahasiswa per tahun ajaran dan proporsi mata kuliah berbasis data real server untuk Unit ID {unitId()}.
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="px-2.5 py-1 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-mono text-[11px] font-semibold border border-teal-200 dark:border-teal-800">
+                                    Real Server Data
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Chart 1: Line Chart - Academic Year vs Total Student with Status */}
+                        <StudentAcademicYearChart
+                            data={studentYearlyTrend()}
+                            unitName={unitName()}
+                        />
+
+                        {/* Chart 2: Pie Chart - Course with Categories */}
+                        <CourseCategoryPieChart
+                            data={courseCategoryDistribution()}
+                            unitName={unitName()}
+                        />
                     </div>
-
-                    {/* Tab 1: Overview */}
-                    <Show when={activeTab() === 'overview'}>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {/* Profile Details Card */}
-                            <div class="p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-4">
-                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white flex items-center gap-2">
-                                    <span class="size-2 rounded-full bg-teal-500"></span>
-                                    Identitas & Profil Program Studi
-                                </h3>
-
-                                <div class="space-y-3 divide-y divide-neutral-100 dark:divide-neutral-700/50 text-xs">
-                                    <div class="pt-2 flex items-center justify-between">
-                                        <span class="text-neutral-500 dark:text-neutral-400 font-mono">Nama Program Studi</span>
-                                        <span class="font-bold text-neutral-900 dark:text-white">{unitName()}</span>
-                                    </div>
-                                    <div class="pt-2 flex items-center justify-between">
-                                        <span class="text-neutral-500 dark:text-neutral-400 font-mono">Kode Program Studi</span>
-                                        <span class="font-mono font-bold text-teal-600 dark:text-teal-400">{unitCode()}</span>
-                                    </div>
-                                    <div class="pt-2 flex items-center justify-between">
-                                        <span class="text-neutral-500 dark:text-neutral-400 font-mono">Jenjang Pendidikan</span>
-                                        <span class="font-bold">{educationName()}</span>
-                                    </div>
-                                    <div class="pt-2 flex items-center justify-between">
-                                        <span class="text-neutral-500 dark:text-neutral-400 font-mono">Fakultas / Parent Unit</span>
-                                        <span class="font-medium">{facultyName()}</span>
-                                    </div>
-                                    <div class="pt-2 flex items-center justify-between">
-                                        <span class="text-neutral-500 dark:text-neutral-400 font-mono">Status Operasional</span>
-                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
-                                            {unitData()?.is_active ? 'Aktif' : 'Aktif (Terdaftar)'}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Quick Management Links */}
-                            <div class="p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-4">
-                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white flex items-center gap-2">
-                                    <span class="size-2 rounded-full bg-emerald-500"></span>
-                                    Manajemen & Aksi Cepat Program Studi
-                                </h3>
-
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    <A
-                                        href="/course-department/academic/course/master/curriculum"
-                                        class="p-3.5 rounded-2xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-700 hover:border-emerald-500 transition-all group"
-                                    >
-                                        <div class="text-xs font-bold text-neutral-900 dark:text-white group-hover:text-emerald-600 flex items-center justify-between">
-                                            <span>Kurikulum ({curriculums().length})</span>
-                                            <span>→</span>
-                                        </div>
-                                        <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
-                                            Struktur kurikulum, SKS wajib & pilihan.
-                                        </p>
-                                    </A>
-
-                                    <A
-                                        href="/course-department/academic/course/master/course"
-                                        class="p-3.5 rounded-2xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-700 hover:border-teal-500 transition-all group"
-                                    >
-                                        <div class="text-xs font-bold text-neutral-900 dark:text-white group-hover:text-teal-600 flex items-center justify-between">
-                                            <span>Mata Kuliah ({courses().length})</span>
-                                            <span>→</span>
-                                        </div>
-                                        <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
-                                            Daftar mata kuliah dan pembagian SKS.
-                                        </p>
-                                    </A>
-
-                                    <A
-                                        href="/course-department/academic/student/master"
-                                        class="p-3.5 rounded-2xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-700 hover:border-blue-500 transition-all group"
-                                    >
-                                        <div class="text-xs font-bold text-neutral-900 dark:text-white group-hover:text-blue-600 flex items-center justify-between">
-                                            <span>Mahasiswa ({students().length})</span>
-                                            <span>→</span>
-                                        </div>
-                                        <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
-                                            Daftar mahasiswa terdaftar di prodi.
-                                        </p>
-                                    </A>
-
-                                    <A
-                                        href="/course-department/academic/student/final-assignment/transaction/submission"
-                                        class="p-3.5 rounded-2xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-700 hover:border-purple-500 transition-all group"
-                                    >
-                                        <div class="text-xs font-bold text-neutral-900 dark:text-white group-hover:text-purple-600 flex items-center justify-between">
-                                            <span>Tugas Akhir</span>
-                                            <span>→</span>
-                                        </div>
-                                        <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
-                                            Pengajuan judul skripsi dan pembimbing.
-                                        </p>
-                                    </A>
-                                </div>
-                            </div>
-                        </div>
-                    </Show>
-
-                    {/* Tab 2: Curriculums (academic_course_master.curriculums) */}
-                    <Show when={activeTab() === 'curriculums'}>
-                        <div class="p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-4">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                        Daftar Kurikulum Program Studi (academic_course_master.curriculums)
-                                    </h3>
-                                    <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                        Data kurikulum real server untuk Unit ID {unitId()}.
-                                    </p>
-                                </div>
-                                <A
-                                    href="/course-department/academic/course/master/curriculum/create"
-                                    class="px-3 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-500 transition-colors"
-                                >
-                                    + Tambah Kurikulum
-                                </A>
-                            </div>
-
-                            <Show when={curriculums().length > 0} fallback={
-                                <div class="py-12 text-center text-neutral-400 font-mono text-xs">
-                                    Belum ada kurikulum terdaftar untuk Unit ID ini.
-                                </div>
-                            }>
-                                <div class="overflow-x-auto">
-                                    <table class="w-full text-xs text-left">
-                                        <thead class="bg-neutral-100 dark:bg-neutral-900/50 text-neutral-500 font-mono uppercase text-[10px]">
-                                            <tr>
-                                                <th class="py-2.5 px-3 rounded-s-lg">Nama Kurikulum</th>
-                                                <th class="py-2.5 px-3 text-center">Total SKS</th>
-                                                <th class="py-2.5 px-3 text-center">SKS Wajib</th>
-                                                <th class="py-2.5 px-3 text-center">SKS Pilihan</th>
-                                                <th class="py-2.5 px-3 text-center">Status</th>
-                                                <th class="py-2.5 px-3 text-end rounded-e-lg">Aksi</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-neutral-100 dark:divide-neutral-700/50">
-                                            <For each={curriculums()}>
-                                                {(c) => (
-                                                    <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900/30 transition-colors">
-                                                        <td class="py-3 px-3 font-semibold text-neutral-900 dark:text-white">
-                                                            {c.name}
-                                                        </td>
-                                                        <td class="py-3 px-3 text-center font-mono font-bold text-emerald-600">
-                                                            {c.total_credit || 0} SKS
-                                                        </td>
-                                                        <td class="py-3 px-3 text-center font-mono">{c.mandatory_course_credit || 0} SKS</td>
-                                                        <td class="py-3 px-3 text-center font-mono">{c.optional_course_credit || 0} SKS</td>
-                                                        <td class="py-3 px-3 text-center">
-                                                            <span class={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                                                                c.is_active
-                                                                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
-                                                                    : 'bg-neutral-100 text-neutral-600 dark:bg-neutral-700 dark:text-neutral-300'
-                                                            }`}>
-                                                                {c.is_active ? 'Aktif' : 'Nonaktif'}
-                                                            </span>
-                                                        </td>
-                                                        <td class="py-3 px-3 text-end">
-                                                            <A
-                                                                href={`/course-department/academic/course/master/curriculum/show?id=${c.id}`}
-                                                                class="text-xs font-bold text-emerald-600 hover:underline"
-                                                            >
-                                                                Detail →
-                                                            </A>
-                                                        </td>
-                                                    </tr>
-                                                )}
-                                            </For>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </Show>
-                        </div>
-                    </Show>
-
-                    {/* Tab 3: Courses (academic_course_master.courses) */}
-                    <Show when={activeTab() === 'courses'}>
-                        <div class="p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-4">
-                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                                <div>
-                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                        Mata Kuliah Program Studi (academic_course_master.courses)
-                                    </h3>
-                                    <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                        Total {courses().length} mata kuliah terdaftar untuk Unit ID {unitId()}.
-                                    </p>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <input
-                                        type="text"
-                                        placeholder="Cari kode atau nama MK..."
-                                        value={courseSearch()}
-                                        onInput={(e) => setCourseSearch(e.currentTarget.value)}
-                                        class="px-3 py-1.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 text-xs text-neutral-800 dark:text-neutral-200 focus:outline-hidden focus:border-teal-500"
-                                    />
-                                    <A
-                                        href="/course-department/academic/course/master/course/create"
-                                        class="px-3 py-1.5 rounded-xl bg-teal-600 text-white text-xs font-bold hover:bg-teal-500 transition-colors shrink-0"
-                                    >
-                                        + Tambah MK
-                                    </A>
-                                </div>
-                            </div>
-
-                            <Show when={filteredCourses().length > 0} fallback={
-                                <div class="py-12 text-center text-neutral-400 font-mono text-xs">
-                                    {courseSearch() ? 'Tidak ada mata kuliah yang cocok dengan pencarian.' : 'Belum ada mata kuliah terdaftar untuk Unit ID ini.'}
-                                </div>
-                            }>
-                                <div class="overflow-x-auto">
-                                    <table class="w-full text-xs text-left">
-                                        <thead class="bg-neutral-100 dark:bg-neutral-900/50 text-neutral-500 font-mono uppercase text-[10px]">
-                                            <tr>
-                                                <th class="py-2.5 px-3 rounded-s-lg">Kode MK</th>
-                                                <th class="py-2.5 px-3">Nama Mata Kuliah</th>
-                                                <th class="py-2.5 px-3 text-center">Teori</th>
-                                                <th class="py-2.5 px-3 text-center">Praktik</th>
-                                                <th class="py-2.5 px-3 text-center">Total SKS</th>
-                                                <th class="py-2.5 px-3 text-end rounded-e-lg">Aksi</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-neutral-100 dark:divide-neutral-700/50">
-                                            <For each={filteredCourses()}>
-                                                {(c) => (
-                                                    <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900/30 transition-colors">
-                                                        <td class="py-3 px-3 font-mono font-bold text-teal-600 dark:text-teal-400">
-                                                            {c.code || '-'}
-                                                        </td>
-                                                        <td class="py-3 px-3 font-medium text-neutral-900 dark:text-white">
-                                                            {c.name || 'Mata Kuliah'}
-                                                        </td>
-                                                        <td class="py-3 px-3 text-center font-mono">{c.lecture_credit || 0}</td>
-                                                        <td class="py-3 px-3 text-center font-mono">{c.practice_credit || 0}</td>
-                                                        <td class="py-3 px-3 text-center font-mono font-bold text-teal-600 dark:text-teal-400">
-                                                            {c.total_credit || (c.lecture_credit || 0) + (c.practice_credit || 0)} SKS
-                                                        </td>
-                                                        <td class="py-3 px-3 text-end">
-                                                            <A
-                                                                href={`/course-department/academic/course/master/course/show?id=${c.id}`}
-                                                                class="text-xs font-bold text-teal-600 hover:underline"
-                                                            >
-                                                                Detail →
-                                                            </A>
-                                                        </td>
-                                                    </tr>
-                                                )}
-                                            </For>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </Show>
-                        </div>
-                    </Show>
-
-                    {/* Tab 4: Students (academic_student_master.students) */}
-                    <Show when={activeTab() === 'students'}>
-                        <div class="p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-4">
-                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                                <div>
-                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                        Mahasiswa Terdaftar (academic_student_master.students)
-                                    </h3>
-                                    <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                        Total {students().length} mahasiswa terdaftar untuk Unit ID {unitId()}.
-                                    </p>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <input
-                                        type="text"
-                                        placeholder="Cari NIM atau nama mahasiswa..."
-                                        value={studentSearch()}
-                                        onInput={(e) => setStudentSearch(e.currentTarget.value)}
-                                        class="px-3 py-1.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 text-xs text-neutral-800 dark:text-neutral-200 focus:outline-hidden focus:border-blue-500"
-                                    />
-                                    <A
-                                        href="/course-department/academic/student/master"
-                                        class="text-xs font-bold text-blue-600 hover:underline shrink-0"
-                                    >
-                                        Semua Mahasiswa →
-                                    </A>
-                                </div>
-                            </div>
-
-                            <Show when={filteredStudents().length > 0} fallback={
-                                <div class="py-12 text-center text-neutral-400 font-mono text-xs">
-                                    {studentSearch() ? 'Tidak ada mahasiswa yang cocok dengan pencarian.' : 'Belum ada data mahasiswa terdaftar untuk Unit ID ini.'}
-                                </div>
-                            }>
-                                <div class="overflow-x-auto">
-                                    <table class="w-full text-xs text-left">
-                                        <thead class="bg-neutral-100 dark:bg-neutral-900/50 text-neutral-500 font-mono uppercase text-[10px]">
-                                            <tr>
-                                                <th class="py-2.5 px-3 rounded-s-lg">NIM</th>
-                                                <th class="py-2.5 px-3">Nama Mahasiswa</th>
-                                                <th class="py-2.5 px-3">Tahun Angkatan</th>
-                                                <th class="py-2.5 px-3 text-center">Status</th>
-                                                <th class="py-2.5 px-3 text-end rounded-e-lg">Aksi</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-neutral-100 dark:divide-neutral-700/50">
-                                            <For each={filteredStudents()}>
-                                                {(s) => (
-                                                    <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900/30 transition-colors">
-                                                        <td class="py-3 px-3 font-mono font-bold text-blue-600 dark:text-blue-400">
-                                                            {s.code || '-'}
-                                                        </td>
-                                                        <td class="py-3 px-3 font-medium text-neutral-900 dark:text-white">
-                                                            {s.name || s.individual?.name || 'Mahasiswa'}
-                                                        </td>
-                                                        <td class="py-3 px-3 font-mono">
-                                                            {s.academic_year_name || (s.registered ? s.registered.substring(0, 4) : '-')}
-                                                        </td>
-                                                        <td class="py-3 px-3 text-center">
-                                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
-                                                                {s.status_name || 'Aktif'}
-                                                            </span>
-                                                        </td>
-                                                        <td class="py-3 px-3 text-end">
-                                                            <A
-                                                                href={`/course-department/academic/student/master/show?id=${s.id}`}
-                                                                class="text-xs font-bold text-blue-600 hover:underline"
-                                                            >
-                                                                Profil →
-                                                            </A>
-                                                        </td>
-                                                    </tr>
-                                                )}
-                                            </For>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </Show>
-                        </div>
-                    </Show>
-
-                    {/* Tab 5: Staffes (institution_master.staffes) */}
-                    <Show when={activeTab() === 'staffes'}>
-                        <div class="p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-4">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                        Daftar Staff & Pejabat (institution_master.staffes)
-                                    </h3>
-                                    <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                        Staff dan pengelola akademik terdaftar pada Unit ID {unitId()}.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <Show when={enrichedStaffes().length > 0} fallback={
-                                <div class="py-12 text-center text-neutral-400 font-mono text-xs">
-                                    Belum ada staff terdaftar untuk Unit ID ini.
-                                </div>
-                            }>
-                                <div class="overflow-x-auto">
-                                    <table class="w-full text-xs text-left">
-                                        <thead class="bg-neutral-100 dark:bg-neutral-900/50 text-neutral-500 font-mono uppercase text-[10px]">
-                                            <tr>
-                                                <th class="py-2.5 px-3 rounded-s-lg">Nama Pegawai</th>
-                                                <th class="py-2.5 px-3">Jabatan / Posisi</th>
-                                                <th class="py-2.5 px-3">NIP / Kode</th>
-                                                <th class="py-2.5 px-3">SK Pengangkatan</th>
-                                                <th class="py-2.5 px-3 text-center rounded-e-lg">Periode</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-neutral-100 dark:divide-neutral-700/50">
-                                            <For each={enrichedStaffes()}>
-                                                {(st) => (
-                                                    <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900/30 transition-colors">
-                                                        <td class="py-3 px-3 font-semibold text-neutral-900 dark:text-white">
-                                                            {st.employeeName}
-                                                        </td>
-                                                        <td class="py-3 px-3">
-                                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">
-                                                                {st.positionName}
-                                                            </span>
-                                                        </td>
-                                                        <td class="py-3 px-3 font-mono text-neutral-500">{st.employeeCode}</td>
-                                                        <td class="py-3 px-3 font-mono text-xs">{st.decree_number || '-'}</td>
-                                                        <td class="py-3 px-3 text-center font-mono text-neutral-400 text-[11px]">
-                                                            {st.start_date ? `${st.start_date} s/d ${st.end_date || 'sekarang'}` : 'Aktif'}
-                                                        </td>
-                                                    </tr>
-                                                )}
-                                            </For>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </Show>
-                        </div>
-                    </Show>
                 </Show>
             </main>
         </div>

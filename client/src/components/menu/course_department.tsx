@@ -19,6 +19,23 @@ export default function MenuCourseDepartment() {
                 </A>
             </li>
 
+            {/* Students Directory */}
+            <li>
+                <A 
+                    href="/course-department/academic/student/master" 
+                    activeClass="bg-teal-600/15 text-teal-600 dark:text-teal-400 font-semibold"
+                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                >
+                    <svg class="size-4 shrink-0 text-teal-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    <span>Student Directory</span>
+                </A>
+            </li>
+
             {/* Curriculum & Courses */}
             <li>
                 <details class="group/courses animated-details" open>
