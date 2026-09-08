@@ -1,4 +1,8 @@
 import { createSignal, createMemo, Show, For } from 'solid-js';
+import { defineChart } from '@tanstack/charts';
+import { pie, polar, radialArc } from '@tanstack/charts/polar';
+import { tooltip } from '@tanstack/charts/tooltip';
+import { Chart } from '@tanstack/charts/solid';
 
 export interface CourseCategoryItem {
     name: string;
@@ -47,80 +51,53 @@ export default function CourseCategoryPieChart(props: {
         });
     });
 
-    // SVG arc coordinates for pie / donut chart
-    const slices = createMemo(() => {
-        const items = enrichedCategories();
-        const total = totalCourses();
-        if (total === 0 || items.length === 0) return [];
-
-        const cx = 130;
-        const cy = 130;
-        const outerRadius = 110;
-        const innerRadius = chartMode() === 'donut' ? 62 : 0;
-
-        let accumulatedAngle = 0;
-
-        return items.map((item, index) => {
-            const sliceAngle = (item.count / total) * 2 * Math.PI;
-            const startAngle = accumulatedAngle;
-            const endAngle = accumulatedAngle + sliceAngle;
-            accumulatedAngle = endAngle;
-
-            // Handle 100% single slice full circle case
-            if (items.length === 1 || item.count === total) {
-                return {
-                    ...item,
-                    index,
-                    isFullCircle: true,
-                    cx,
-                    cy,
-                    outerRadius,
-                    innerRadius,
-                };
-            }
-
-            const isHovered = hoveredIndex() === index;
-            // Slight offset on hover
-            const hoverDist = isHovered ? 6 : 0;
-            const midAngle = (startAngle + endAngle) / 2;
-            const offsetX = hoverDist * Math.sin(midAngle);
-            const offsetY = -hoverDist * Math.cos(midAngle);
-
-            const x1 = cx + offsetX + outerRadius * Math.sin(startAngle);
-            const y1 = cy + offsetY - outerRadius * Math.cos(startAngle);
-            const x2 = cx + offsetX + outerRadius * Math.sin(endAngle);
-            const y2 = cy + offsetY - outerRadius * Math.cos(endAngle);
-
-            const largeArcFlag = sliceAngle > Math.PI ? 1 : 0;
-
-            let pathData = '';
-            if (innerRadius > 0) {
-                const x3 = cx + offsetX + innerRadius * Math.sin(endAngle);
-                const y3 = cy + offsetY - innerRadius * Math.cos(endAngle);
-                const x4 = cx + offsetX + innerRadius * Math.sin(startAngle);
-                const y4 = cy + offsetY - innerRadius * Math.cos(startAngle);
-
-                pathData = `M ${x1} ${y1} A ${outerRadius} ${outerRadius} 0 ${largeArcFlag} 1 ${x2} ${y2} L ${x3} ${y3} A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 0 ${x4} ${y4} Z`;
-            } else {
-                pathData = `M ${cx + offsetX} ${cy + offsetY} L ${x1} ${y1} A ${outerRadius} ${outerRadius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
-            }
-
-            return {
-                ...item,
-                index,
-                isFullCircle: false,
-                pathData,
-                midAngle,
-            };
-        });
-    });
-
     const activeItem = createMemo(() => {
         const idx = hoveredIndex();
         if (idx !== null && enrichedCategories()[idx]) {
             return enrichedCategories()[idx];
         }
         return null;
+    });
+
+    // TanStack Chart definition using polar and radialArc marks
+    const chartDefinition = createMemo(() => {
+        const items = enrichedCategories();
+        const total = totalCourses();
+        if (items.length === 0 || total === 0) return null;
+
+        const isDonut = chartMode() === 'donut';
+        const slices = pie(items, { value: (d) => d.count });
+
+        return defineChart({
+            marks: [
+                polar({
+                    inset: 8,
+                    radiusRatio: 0.88,
+                    marks: [
+                        radialArc(slices, {
+                            innerRadius: ({ radius }) => (isDonut ? radius * 0.58 : 0),
+                            cornerRadius: 4,
+                            padAngle: 0.02,
+                            color: 'name',
+                            key: 'name',
+                        }),
+                    ],
+                    scales: {
+                        angle: null,
+                        radius: null,
+                    },
+                }),
+            ],
+            scales: {
+                x: null,
+                y: null,
+            },
+            color: {
+                domain: items.map((d) => d.name),
+                range: items.map((d) => d.color),
+            },
+            tooltip,
+        });
     });
 
     return (
@@ -179,41 +156,19 @@ export default function CourseCategoryPieChart(props: {
                 }
             >
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-                    
-                    {/* SVG Pie / Donut Chart */}
+                    {/* TanStack Polar Pie / Donut Chart */}
                     <div class="lg:col-span-5 flex flex-col items-center justify-center relative">
                         <div class="relative size-64 flex items-center justify-center">
-                            <svg viewBox="0 0 260 260" class="size-full overflow-visible">
-                                <For each={slices()}>
-                                    {(slice) => (
-                                        <Show
-                                            when={!slice.isFullCircle}
-                                            fallback={
-                                                <circle
-                                                    cx={slice.cx}
-                                                    cy={slice.cy}
-                                                    r={slice.outerRadius}
-                                                    fill={slice.color}
-                                                    class="transition-transform duration-200 cursor-pointer"
-                                                    onMouseEnter={() => setHoveredIndex(slice.index)}
-                                                    onMouseLeave={() => setHoveredIndex(null)}
-                                                />
-                                            }
-                                        >
-                                            <path
-                                                d={slice.pathData}
-                                                fill={slice.color}
-                                                stroke="currentColor"
-                                                class="text-white dark:text-neutral-800 transition-all duration-200 cursor-pointer hover:opacity-95"
-                                                stroke-width="2"
-                                                stroke-linejoin="round"
-                                                onMouseEnter={() => setHoveredIndex(slice.index)}
-                                                onMouseLeave={() => setHoveredIndex(null)}
-                                            />
-                                        </Show>
-                                    )}
-                                </For>
-                            </svg>
+                            <Show when={chartDefinition()}>
+                                {(def) => (
+                                    <Chart
+                                        definition={def()}
+                                        ariaLabel="Distribusi Kategori Mata Kuliah"
+                                        height={256}
+                                        class="size-full"
+                                    />
+                                )}
+                            </Show>
 
                             {/* Center Donut Label */}
                             <Show when={chartMode() === 'donut'}>

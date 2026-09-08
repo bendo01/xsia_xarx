@@ -1,4 +1,4 @@
-import { createSignal, onMount, createEffect, Show, For, createMemo } from 'solid-js';
+import { createSignal, onMount, createEffect, Show, For, createMemo, ErrorBoundary } from 'solid-js';
 import { useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
@@ -8,6 +8,7 @@ import {
     userRolesSignal, 
     activeRoleSignal, 
     refreshAuthState,
+    getStoredUser,
     isStaffProgramStudi 
 } from '~/lib/authStore';
 import { getStorageItem } from '~/lib/storage';
@@ -17,10 +18,18 @@ import type { InstitutionMasterStaff } from '~/models/institution/master/Staff';
 import StudentAcademicYearChart, { StudentStatusByYear } from '~/components/chart/student_academic_year_chart';
 import CourseCategoryPieChart, { CourseCategoryItem } from '~/components/chart/course_category_pie_chart';
 
+// In-memory module-level cache for static reference tables across navigations
+let cachedVarieties: any[] | null = null;
+let cachedGroups: any[] | null = null;
+let cachedPositionTypes: any[] | null = null;
+let activeFetchId = '';
+
 export default function CourseDepartmentUnitShowPage() {
     const [searchParams, setSearchParams] = useSearchParams();
     const [isLoading, setIsLoading] = createSignal(true);
-    const [unitId, setUnitId] = createSignal<string>('');
+    // Initialize immediately from URL query if present
+    const initialQueryId = ((searchParams.id as string) || (searchParams.unit_id as string) || '').trim();
+    const [unitId, setUnitId] = createSignal<string>(initialQueryId);
     const [unitData, setUnitData] = createSignal<any | null>(null);
     
     // Real Data from server entities filtered by unit_id = current user unit_id
@@ -35,6 +44,39 @@ export default function CourseDepartmentUnitShowPage() {
     const [varietiesMap, setVarietiesMap] = createSignal<Record<string, any>>({});
     const [groupsMap, setGroupsMap] = createSignal<Record<string, any>>({});
 
+    // Helper to resolve unit_id from a role item
+    const resolveRoleUnitId = async (role: any): Promise<string | null> => {
+        if (!role || !role.roleable_id || role.roleable_id === '00000000-0000-0000-0000-000000000000') {
+            return null;
+        }
+        const rType = String(role.roleable_type || '');
+        const rName = String(role.name || '').toLowerCase();
+        
+        // Direct Unit role
+        if (rType === 'Unit' || rType.includes('Unit')) {
+            return role.roleable_id;
+        }
+        
+        // Staff / Kaprodi role pointing to institution_master.staffes
+        if (
+            rType.includes('Staff') || 
+            isStaffProgramStudi(role) || 
+            rName.includes('kaprodi') || 
+            rName.includes('prodi') || 
+            rName.includes('jurusan')
+        ) {
+            try {
+                const staffRes = await masterApiShow<InstitutionMasterStaff>('institution/master/staffes', role.roleable_id);
+                if (staffRes.data?.unit_id) {
+                    return staffRes.data.unit_id;
+                }
+            } catch {
+                // Continue checking other candidates
+            }
+        }
+        return null;
+    };
+
     // Step 1: Resolve the Current User's Unit ID
     const resolveCurrentUserUnitId = async (): Promise<string> => {
         // Priority 1: Direct query parameter if user navigated with ?id= or ?unit_id=
@@ -43,37 +85,41 @@ export default function CourseDepartmentUnitShowPage() {
             return queryId.trim();
         }
 
-        await refreshAuthState();
-        const roles = userRolesSignal();
+        // Priority 2: Stored unit_id on user or local storage
         const user = currentUserSignal();
-
-        // Priority 2: Stored unit_id on user or storage
         const storedUnitId = (user as any)?.unit_id || getStorageItem('unit_id');
         if (storedUnitId && storedUnitId !== '00000000-0000-0000-0000-000000000000') {
             return storedUnitId;
         }
 
-        // Priority 3: Active role or user roles with roleable_id pointing to Staff or Unit
-        for (const role of roles) {
-            if (role.roleable_id && role.roleable_id !== '00000000-0000-0000-0000-000000000000') {
-                if (role.roleable_type === 'Staff' || isStaffProgramStudi(role)) {
-                    try {
-                        const staffRes = await masterApiShow<InstitutionMasterStaff>('institution/master/staffes', role.roleable_id);
-                        if (staffRes.data?.unit_id) {
-                            return staffRes.data.unit_id;
-                        }
-                    } catch {
-                        // Continue checking
-                    }
-                }
-                if (role.roleable_type === 'Unit') {
-                    return role.roleable_id;
-                }
-            }
+        // Priority 3: Active role or roles already in memory
+        const activeRole = activeRoleSignal();
+        if (activeRole) {
+            const activeUnit = await resolveRoleUnitId(activeRole);
+            if (activeUnit) return activeUnit;
         }
 
-        // Priority 4: Look up individual -> employee -> staffes -> unit_id
-        let indId = user?.individual_id || getStorageItem('individual_id');
+        const storedRoles = getStoredUser()?.roles || [];
+        const currentRoles = userRolesSignal();
+        const combinedRoles = [...currentRoles, ...storedRoles];
+
+        for (const role of combinedRoles) {
+            const resolved = await resolveRoleUnitId(role);
+            if (resolved) return resolved;
+        }
+
+        // Priority 4: Refresh auth state if local checks did not find unit_id
+        await refreshAuthState();
+        const refreshedRoles = userRolesSignal();
+        const refreshedUser = currentUserSignal();
+
+        for (const role of refreshedRoles) {
+            const resolved = await resolveRoleUnitId(role);
+            if (resolved) return resolved;
+        }
+
+        // Priority 5: Look up individual -> employee -> staffes -> unit_id
+        let indId = refreshedUser?.individual_id || getStorageItem('individual_id');
         if (!indId || indId === '00000000-0000-0000-0000-000000000000') {
             try {
                 const userRes = await GetCurrentUser();
@@ -101,7 +147,7 @@ export default function CourseDepartmentUnitShowPage() {
             }
         }
 
-        // Priority 5: Fallback to the first Program Studi unit in database
+        // Priority 6: Fallback to the first Program Studi unit in database
         try {
             const unitsRes = await masterApiIndex<InstitutionMasterUnit>('institution/master/units', { page: 1, per_page: 20 });
             if (unitsRes.data && unitsRes.data.length > 0) {
@@ -121,29 +167,49 @@ export default function CourseDepartmentUnitShowPage() {
             return;
         }
 
+        // Prevent duplicate concurrent fetches for the same unit_id
+        if (activeFetchId === targetUnitId) {
+            return;
+        }
+        activeFetchId = targetUnitId;
         setIsLoading(true);
+
         try {
-            // Fetch Unit Master + All Required Entities in Parallel where unit_id = targetUnitId
+            // Concurrent promises for static references (utilizing module-level cache)
+            // Note: position-type is singular in server API routes
+            const refPromises = [
+                cachedPositionTypes
+                    ? Promise.resolve({ data: cachedPositionTypes })
+                    : masterApiIndex<any>('institution/reference/position-type', { page: 1, per_page: 50 })
+                          .then(r => { cachedPositionTypes = r.data || []; return r; })
+                          .catch(() => ({ data: [] })),
+                cachedVarieties
+                    ? Promise.resolve({ data: cachedVarieties })
+                    : masterApiIndex<any>('academic/course/reference/varieties', { page: 1, per_page: 50 })
+                          .then(r => { cachedVarieties = r.data || []; return r; })
+                          .catch(() => ({ data: [] })),
+                cachedGroups
+                    ? Promise.resolve({ data: cachedGroups })
+                    : masterApiIndex<any>('academic/course/reference/groups', { page: 1, per_page: 50 })
+                          .then(r => { cachedGroups = r.data || []; return r; })
+                          .catch(() => ({ data: [] }))
+            ];
+
+            // Fetch Unit Master + Core Prodi Entities in Parallel
             const [
                 unitRes,
                 coursesRes,
                 curriculumsRes,
                 studentsRes,
                 staffesRes,
-                empRes,
-                posTypeRes,
-                varietyRes,
-                groupRes
+                [posTypeRes, varietyRes, groupRes]
             ] = await Promise.all([
                 masterApiShow<any>('institution/master/units', targetUnitId),
-                masterApiIndex<any>('academic/course/master/courses', { unit_id: targetUnitId, page: 1, per_page: 500 }),
-                masterApiIndex<any>('academic/course/master/curriculums', { unit_id: targetUnitId, page: 1, per_page: 100 }),
-                masterApiIndex<any>('academic/student/master/students', { unit_id: targetUnitId, page: 1, per_page: 500 }),
-                masterApiIndex<any>('institution/master/staffes', { unit_id: targetUnitId, page: 1, per_page: 100 }),
-                masterApiIndex<any>('institution/master/employees', { page: 1, per_page: 500 }).catch(() => ({ data: [] })),
-                masterApiIndex<any>('institution/reference/position-types', { page: 1, per_page: 500 }).catch(() => ({ data: [] })),
-                masterApiIndex<any>('academic/course/reference/varieties', { page: 1, per_page: 200 }).catch(() => ({ data: [] })),
-                masterApiIndex<any>('academic/course/reference/groups', { page: 1, per_page: 200 }).catch(() => ({ data: [] }))
+                masterApiIndex<any>('academic/course/master/courses', { unit_id: targetUnitId, page: 1, per_page: 200 }),
+                masterApiIndex<any>('academic/course/master/curriculums', { unit_id: targetUnitId, page: 1, per_page: 50 }),
+                masterApiIndex<any>('academic/student/master/students', { unit_id: targetUnitId, page: 1, per_page: 200 }),
+                masterApiIndex<any>('institution/master/staffes', { unit_id: targetUnitId, page: 1, per_page: 50 }),
+                Promise.all(refPromises)
             ]);
 
             // Set Unit Record
@@ -154,20 +220,13 @@ export default function CourseDepartmentUnitShowPage() {
             }
 
             // Set Real Entity Data from server
+            const staffList = staffesRes?.data || [];
             setCourses(coursesRes?.data || []);
             setCurriculums(curriculumsRes?.data || []);
             setStudents(studentsRes?.data || []);
-            setStaffes(staffesRes?.data || []);
+            setStaffes(staffList);
 
-            // Map employees & position types for enriching staff display
-            const empMap: Record<string, any> = {};
-            if (empRes?.data && Array.isArray(empRes.data)) {
-                for (const emp of empRes.data) {
-                    if (emp.id) empMap[emp.id] = emp;
-                }
-            }
-            setEmployeesMap(empMap);
-
+            // Map position types
             const posMap: Record<string, any> = {};
             if (posTypeRes?.data && Array.isArray(posTypeRes.data)) {
                 for (const pt of posTypeRes.data) {
@@ -193,17 +252,41 @@ export default function CourseDepartmentUnitShowPage() {
             }
             setGroupsMap(gMap);
 
+            // Fetch only the specific employees for the staff assigned to this unit (1-3 targeted requests vs 500 records)
+            const empIds = Array.from(new Set(
+                staffList
+                    .map((st: any) => st.employee_id)
+                    .filter((id: any): id is string => Boolean(id) && id !== '00000000-0000-0000-0000-000000000000')
+            ));
+
+            if (empIds.length > 0) {
+                const empResults = await Promise.all(
+                    empIds.map(id => masterApiShow<any>('institution/master/employees', id).catch(() => null))
+                );
+                const empMap: Record<string, any> = {};
+                for (const res of empResults) {
+                    if (res?.data?.id) {
+                        empMap[res.data.id] = res.data;
+                    }
+                }
+                setEmployeesMap(empMap);
+            }
+
         } catch (err) {
             console.error('Error fetching unit real data:', err);
             toast.danger('Gagal memuat data Program Studi dari server.');
         } finally {
+            activeFetchId = '';
             setIsLoading(false);
         }
     };
 
     onMount(async () => {
-        const id = await resolveCurrentUserUnitId();
-        setUnitId(id);
+        let id = unitId();
+        if (!id) {
+            id = await resolveCurrentUserUnitId();
+            setUnitId(id);
+        }
         if (id) {
             await loadUnitData(id);
         } else {
@@ -212,7 +295,7 @@ export default function CourseDepartmentUnitShowPage() {
     });
 
     createEffect(() => {
-        const qId = (searchParams.id as string) || (searchParams.unit_id as string);
+        const qId = ((searchParams.id as string) || (searchParams.unit_id as string) || '').trim();
         if (qId && qId !== unitId()) {
             setUnitId(qId);
             loadUnitData(qId);
@@ -226,9 +309,9 @@ export default function CourseDepartmentUnitShowPage() {
         return staffes().map(st => {
             const employee = st.employee_id ? emps[st.employee_id] : null;
             const positionType = st.position_type_id ? pos[st.position_type_id] : null;
-            const positionName = positionType?.name || st.position_type?.name || st.name || 'Staff';
-            const employeeName = employee?.name || st.employee?.name || st.name || '-';
-            const employeeCode = employee?.code || st.employee?.code || st.code || '-';
+            const positionName = String(positionType?.name || st.position_type?.name || st.name || 'Staff');
+            const employeeName = String(employee?.name || st.employee?.name || st.name || '-');
+            const employeeCode = String(employee?.code || st.employee?.code || st.code || '-');
 
             return {
                 ...st,
@@ -244,20 +327,22 @@ export default function CourseDepartmentUnitShowPage() {
     // Categorized Leadership
     const kaprodi = createMemo(() => {
         return enrichedStaffes().find(s => {
-            const p = s.positionName.toLowerCase();
+            const p = (s.positionName || '').toLowerCase();
             return p.includes('kepala program studi') || p.includes('kaprodi') || p.includes('kajur');
         }) || null;
     });
 
     const sekprodi = createMemo(() => {
         return enrichedStaffes().find(s => {
-            const p = s.positionName.toLowerCase();
+            const p = (s.positionName || '').toLowerCase();
             return (p.includes('sekertaris') || p.includes('sekretaris')) && (p.includes('prodi') || p.includes('program studi') || p.includes('jurusan'));
         }) || null;
     });
 
     const otherStaffes = createMemo(() => {
-        return enrichedStaffes().filter(s => s !== kaprodi() && s !== sekprodi());
+        const k = kaprodi();
+        const s = sekprodi();
+        return enrichedStaffes().filter(item => item !== k && item !== s);
     });
 
     // Aggregated Student Status by Academic Year for Line Chart
@@ -367,7 +452,28 @@ export default function CourseDepartmentUnitShowPage() {
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-                {/* Hero Banner with Unit Details */}
+                <ErrorBoundary
+                    fallback={(err, reset) => (
+                        <div class="p-8 max-w-xl mx-auto my-12 bg-white dark:bg-neutral-850 rounded-3xl border border-red-200 dark:border-red-900/50 shadow-xl text-center space-y-4">
+                            <div class="size-12 mx-auto rounded-full bg-red-100 dark:bg-red-950/60 text-red-600 flex items-center justify-center font-bold">
+                                <svg class="size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-neutral-900 dark:text-white">Terjadi Kendala Memuat Data Program Studi</h3>
+                            <p class="text-xs text-neutral-500 dark:text-neutral-400 font-mono bg-neutral-100 dark:bg-neutral-900 p-3 rounded-xl break-all">
+                                {err?.message || String(err)}
+                            </p>
+                            <button
+                                onClick={() => reset()}
+                                class="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold shadow-md transition-colors"
+                            >
+                                Coba Muat Ulang
+                            </button>
+                        </div>
+                    )}
+                >
+                    {/* Hero Banner with Unit Details */}
                 <div class="bg-gradient-to-r from-teal-900 via-emerald-900 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-teal-500/20">
                     <div class="absolute -right-16 -top-16 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -653,6 +759,7 @@ export default function CourseDepartmentUnitShowPage() {
                         />
                     </div>
                 </Show>
+                </ErrorBoundary>
             </main>
         </div>
     );

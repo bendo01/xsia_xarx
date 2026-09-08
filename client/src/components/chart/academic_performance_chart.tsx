@@ -51,15 +51,17 @@ export default function AcademicPerformanceChart(props: { data: AcademicTrendPoi
                     strokeWidth: 2.5,
                 }),
             ],
-            x: {
-                scale: () => scalePoint<string>().padding(0.2),
-                axis: { label: 'Semester' },
-            },
-            y: {
-                scale: () => scaleLinear().domain([0, 4]),
-                nice: false,
-                grid: true,
-                axis: { label: 'GPA (0.0 - 4.0)' },
+            scales: {
+                x: {
+                    scale: () => scalePoint<string>().padding(0.2),
+                    axis: { label: 'Semester' },
+                },
+                y: {
+                    scale: scaleLinear().domain([0, 4]),
+                    nice: false,
+                    grid: true,
+                    axis: { label: 'GPA (0.0 - 4.0)' },
+                },
             },
             tooltip,
         });

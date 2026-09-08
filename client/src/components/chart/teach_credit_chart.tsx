@@ -39,15 +39,17 @@ export default function TeachCreditChart(props: { data: YearlyCreditTrend[] }) {
                     strokeWidth: 3,
                 }),
             ],
-            x: {
-                scale: () => scalePoint<string>().padding(0.25),
-                axis: { label: 'Tahun Akademik' },
-            },
-            y: {
-                scale: scaleLinear,
-                nice: true,
-                grid: true,
-                axis: { label: 'Total SKS' },
+            scales: {
+                x: {
+                    scale: () => scalePoint<string>().padding(0.25),
+                    axis: { label: 'Tahun Akademik' },
+                },
+                y: {
+                    scale: scaleLinear,
+                    nice: true,
+                    grid: true,
+                    axis: { label: 'Total SKS' },
+                },
             },
             tooltip,
         });
