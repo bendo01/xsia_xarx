@@ -205,3 +205,40 @@ export async function listStudentStatuses(): Promise<any[]> {
         return [];
     }
 }
+
+export interface DistinctAcademicYearItem {
+    id: string;
+    code?: number | string | null;
+    year?: number | null;
+    name: string;
+    feeder_name?: string | null;
+    is_active?: boolean | null;
+}
+
+export async function listStudentAcademicYears(params?: {
+    unit_id?: string;
+    institution_id?: string;
+}): Promise<DistinctAcademicYearItem[]> {
+    try {
+        const queryParams = new URLSearchParams();
+        if (params?.unit_id) queryParams.set('unit_id', params.unit_id);
+        if (params?.institution_id) queryParams.set('institution_id', params.institution_id);
+
+        const qs = queryParams.toString();
+        const url = `${getBaseUrl()}/academic/student/master/students/academic-years${qs ? `?${qs}` : ''}`;
+        const res = await fetch(url, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+
+        const json = await res.json();
+        return Array.isArray(json) ? json : (json.data || []);
+    } catch (err) {
+        console.warn('Error fetching distinct academic years for students:', err);
+        return [];
+    }
+}

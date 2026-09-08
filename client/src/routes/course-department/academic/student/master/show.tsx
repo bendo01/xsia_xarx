@@ -2,26 +2,20 @@ import { createSignal, onMount, createEffect, Show, For, createMemo, ErrorBounda
 import { useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
-import { 
-    getStudentById, 
-    StudentMasterItem 
+import {
+    getStudentById,
+    StudentMasterItem
 } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
-import { 
-    PersonMasterIndividualControllerShow 
+import {
+    PersonMasterIndividualControllerShow
 } from '~/controllers/person/master/PersonMasterIndividualController';
-import { 
-    listStudentActivities, 
-    StudentActivityItem 
+import {
+    listStudentActivities,
+    StudentActivityItem
 } from '~/controllers/academic/student/campaign/AcademicStudentCampaignActivityController';
 import type { PersonMasterIndividualDataObject } from '~/models/person/master/Individual';
 import AcademicPerformanceChart, { AcademicTrendPoint } from '~/components/chart/academic_performance_chart';
-
-// @tanstack/charts imports for direct student credit progression visualization
-import { defineChart, lineY, areaY } from '@tanstack/charts';
-import { scaleLinear } from '@tanstack/charts/scales/linear';
-import { scalePoint } from '@tanstack/charts/scales/point';
-import { tooltip } from '@tanstack/charts/tooltip';
-import { Chart } from '@tanstack/charts/solid';
+import StudentCreditChart from '~/components/chart/student_credit_chart';
 
 export default function CourseDepartmentStudentMasterShowPage() {
     const [searchParams] = useSearchParams();
@@ -78,7 +72,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
 
     const ind = () => individual()?.individual;
 
-    // Computed Academic Trend Data for @tanstack/charts
+    // Computed Academic Trend Data for ECharts
     const academicTrendData = createMemo<AcademicTrendPoint[]>(() => {
         const list = activities();
         if (list.length === 0) return [];
@@ -96,55 +90,6 @@ export default function CourseDepartmentStudentMasterShowPage() {
                 sks,
                 totalSks,
             };
-        });
-    });
-
-    // Credit Progression Chart Definition powered by @tanstack/charts
-    const creditChartDefinition = createMemo(() => {
-        const data = academicTrendData();
-        if (data.length === 0) return null;
-
-        const maxSks = Math.max(24, ...data.map(d => Math.max(d.sks, d.totalSks || 0)));
-
-        return defineChart({
-            marks: [
-                areaY(data, {
-                    id: 'sks-cum-area',
-                    x: 'semName',
-                    y: 'totalSks',
-                    fill: '#0d9488',
-                    fillOpacity: 0.12,
-                }),
-                lineY(data, {
-                    id: 'sks-cum-line',
-                    x: 'semName',
-                    y: 'totalSks',
-                    points: true,
-                    stroke: '#0d9488',
-                    strokeWidth: 2.5,
-                }),
-                lineY(data, {
-                    id: 'sks-sem-line',
-                    x: 'semName',
-                    y: 'sks',
-                    points: true,
-                    stroke: '#f59e0b',
-                    strokeWidth: 2.5,
-                }),
-            ],
-            scales: {
-                x: {
-                    scale: () => scalePoint<string>().padding(0.25),
-                    axis: { label: 'Semester' },
-                },
-                y: {
-                    scale: scaleLinear().domain([0, maxSks + 4]),
-                    nice: true,
-                    grid: true,
-                    axis: { label: 'Jumlah SKS' },
-                },
-            },
-            tooltip,
         });
     });
 
@@ -176,7 +121,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col font-sans transition-colors duration-200">
             <TopBar />
 
-            <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
                 <ErrorBoundary
                     fallback={(err, reset) => (
                         <div class="p-8 max-w-xl mx-auto my-12 bg-white dark:bg-neutral-800 rounded-3xl border border-red-200 dark:border-red-900/50 shadow-xl text-center space-y-4">
@@ -224,7 +169,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                     href={student()?.unit_id ? `/course-department/academic/student/master?unit_id=${student()!.unit_id}` : '/course-department/academic/student/master'}
                                     class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1.5"
                                 >
-                                    <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                                    <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg>
                                     <span>← Back to Student List</span>
                                 </A>
                             </div>
@@ -244,7 +189,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                 <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
                                     <span class="text-xs font-mono font-semibold uppercase tracking-wider">IPK Kumulatif</span>
                                     <div class="size-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
-                                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
                                     </div>
                                 </div>
                                 <div class="flex items-baseline gap-2">
@@ -262,7 +207,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                 <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
                                     <span class="text-xs font-mono font-semibold uppercase tracking-wider">IPS Terakhir</span>
                                     <div class="size-8 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold">
-                                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 9-5 5-4-4-3 3"/><path d="M3 3v18h18"/></svg>
+                                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 9-5 5-4-4-3 3" /><path d="M3 3v18h18" /></svg>
                                     </div>
                                 </div>
                                 <div class="flex items-baseline gap-2">
@@ -280,7 +225,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                 <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
                                     <span class="text-xs font-mono font-semibold uppercase tracking-wider">Total SKS Lulus</span>
                                     <div class="size-8 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold">
-                                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/></svg>
+                                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" /></svg>
                                     </div>
                                 </div>
                                 <div class="flex items-baseline gap-2">
@@ -298,7 +243,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                 <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
                                     <span class="text-xs font-mono font-semibold uppercase tracking-wider">Status & Semester</span>
                                     <div class="size-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
-                                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="m9 11 3 3L22 4" /></svg>
                                     </div>
                                 </div>
                                 <div class="flex items-baseline gap-2">
@@ -312,7 +257,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
                             </div>
                         </div>
 
-                        {/* Visualizations Section Powered by @tanstack/charts */}
+                        {/* Visualizations Section Powered by Apache ECharts */}
                         <div class="space-y-4">
                             <div class="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-700 pb-3">
                                 <div>
@@ -321,12 +266,12 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                         Visualisasi Akademik Mahasiswa
                                     </h2>
                                     <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                        Grafik perkembangan indeks prestasi (IPS & IPK) dan beban kredit SKS mahasiswa berbasis @tanstack/charts.
+                                        Grafik perkembangan indeks prestasi (IPS & IPK) dan beban kredit SKS mahasiswa berbasis Apache ECharts.
                                     </p>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <span class="px-2.5 py-1 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-mono text-[11px] font-semibold border border-teal-200 dark:border-teal-800">
-                                        @tanstack/charts v0.16
+                                        Apache ECharts v6
                                     </span>
                                 </div>
                             </div>
@@ -334,16 +279,16 @@ export default function CourseDepartmentStudentMasterShowPage() {
                             <Show when={academicTrendData().length > 0} fallback={
                                 <div class="p-8 rounded-3xl bg-white dark:bg-neutral-800 border border-dashed border-neutral-300 dark:border-neutral-700 text-center space-y-3">
                                     <div class="size-12 mx-auto rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center">
-                                        <svg class="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 9-5 5-4-4-3 3"/><path d="M3 3v18h18"/></svg>
+                                        <svg class="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 9-5 5-4-4-3 3" /><path d="M3 3v18h18" /></svg>
                                     </div>
                                     <h3 class="text-sm font-bold text-neutral-900 dark:text-white">Belum Ada Riwayat Nilai & Semester</h3>
                                     <p class="text-xs text-neutral-500 dark:text-neutral-400 max-w-md mx-auto">
-                                        Data aktivitas perkuliahan (KHS) mahasiswa dengan NIM <span class="font-mono font-bold text-teal-600 dark:text-teal-400">{student()?.code || '-'}</span> belum tercatat di sistem akademik. Grafik @tanstack/charts akan muncul otomatis setelah nilai semester diinput.
+                                        Data aktivitas perkuliahan (KHS) mahasiswa dengan NIM <span class="font-mono font-bold text-teal-600 dark:text-teal-400">{student()?.code || '-'}</span> belum tercatat di sistem akademik. Grafik ECharts akan muncul otomatis setelah nilai semester diinput.
                                     </p>
                                 </div>
                             }>
                                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                    {/* Chart 1: Academic Performance (IPS & IPK Trend) with @tanstack/charts */}
+                                    {/* Chart 1: Academic Performance (IPS & IPK Trend) with Apache ECharts */}
                                     <div class="p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
                                         <div class="flex items-center justify-between">
                                             <div>
@@ -369,7 +314,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                         <AcademicPerformanceChart data={academicTrendData()} />
                                     </div>
 
-                                    {/* Chart 2: Credit SKS Load Progression with @tanstack/charts */}
+                                    {/* Chart 2: Credit SKS Load Progression with Apache ECharts */}
                                     <div class="p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
                                         <div class="flex items-center justify-between">
                                             <div>
@@ -392,16 +337,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                             </div>
                                         </div>
 
-                                        <div class="w-full">
-                                            {creditChartDefinition() && (
-                                                <Chart
-                                                    definition={creditChartDefinition()!}
-                                                    ariaLabel="Semester Credit Progression"
-                                                    height={220}
-                                                    class="w-full"
-                                                />
-                                            )}
-                                        </div>
+                                        <StudentCreditChart data={academicTrendData()} />
                                     </div>
                                 </div>
                             </Show>

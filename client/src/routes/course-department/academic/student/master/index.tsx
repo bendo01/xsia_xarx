@@ -2,21 +2,22 @@ import { createSignal, onMount, createEffect, For, Show, createMemo } from 'soli
 import { A, useSearchParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
-import { 
-    currentUserSignal, 
-    userRolesSignal, 
-    refreshAuthState, 
-    isStaffProgramStudi 
+import {
+    currentUserSignal,
+    userRolesSignal,
+    refreshAuthState,
+    isStaffProgramStudi
 } from '~/lib/authStore';
 import { getStorageItem } from '~/lib/storage';
 import { GetCurrentUser } from '~/controllers/auth/AuthUser';
 import { masterApiShow } from '~/controllers/master/masterApiController';
-import { 
-    listStudents, 
-    listStudyUnits, 
-    listAcademicYears, 
-    listStudentStatuses, 
-    StudentMasterItem 
+import {
+    listStudents,
+    listStudyUnits,
+    listAcademicYears,
+    listStudentStatuses,
+    listStudentAcademicYears,
+    StudentMasterItem
 } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
 import type { InstitutionMasterStaff } from '~/models/institution/master/Staff';
 
@@ -27,6 +28,7 @@ export default function CourseDepartmentStudentMasterPage() {
     const [students, setStudents] = createSignal<StudentMasterItem[]>([]);
     const [units, setUnits] = createSignal<any[]>([]);
     const [academicYears, setAcademicYears] = createSignal<any[]>([]);
+    const [unitAcademicYears, setUnitAcademicYears] = createSignal<any[]>([]);
     const [statuses, setStatuses] = createSignal<any[]>([]);
     const [isLoading, setIsLoading] = createSignal(true);
     const [isResolvingUnit, setIsResolvingUnit] = createSignal(true);
@@ -144,11 +146,41 @@ export default function CourseDepartmentStudentMasterPage() {
             if (resolvedUnit) {
                 const matchingUnit = uList.find(u => u.id === resolvedUnit);
                 setActiveUnitData(matchingUnit || null);
+                await loadUnitAcademicYears(resolvedUnit);
             }
         } catch (err) {
             console.error('Error loading reference filters:', err);
         } finally {
             setIsResolvingUnit(false);
+        }
+    };
+
+    // Load academic years specific to students enrolled in the given unit_id or institution_id
+    const loadUnitAcademicYears = async (targetUnitId: string) => {
+        if (!targetUnitId) {
+            setUnitAcademicYears([]);
+            return;
+        }
+
+        try {
+            const isAll = targetUnitId === 'all';
+            const instId = (searchParams.institution_id as string) || (activeUnitData()?.institution_id as string) || undefined;
+
+            // Fetch distinct academic years scoped directly from backend
+            const distinctYears = await listStudentAcademicYears({
+                unit_id: !isAll ? targetUnitId : undefined,
+                institution_id: isAll ? instId : undefined,
+            });
+
+            setUnitAcademicYears(distinctYears);
+
+            // If the currently selected academic year is not among this unit's cohorts, reset it
+            if (selectedAcademicYearId() && !distinctYears.some(yr => yr.id === selectedAcademicYearId())) {
+                setSelectedAcademicYearId('');
+            }
+        } catch (err) {
+            console.error('Error loading academic years for unit:', err);
+            setUnitAcademicYears([]);
         }
     };
 
@@ -210,12 +242,14 @@ export default function CourseDepartmentStudentMasterPage() {
     });
 
     // Handle unit selection change
-    const handleUnitChange = (unitId: string) => {
+    const handleUnitChange = async (unitId: string) => {
         setSelectedUnitId(unitId);
         setSearchParams({ unit_id: unitId });
         const matchingUnit = units().find(u => u.id === unitId);
         setActiveUnitData(matchingUnit || null);
+        setSelectedAcademicYearId('');
         setPage(1);
+        await loadUnitAcademicYears(unitId);
     };
 
     // Handle debounced search input
@@ -279,70 +313,7 @@ export default function CourseDepartmentStudentMasterPage() {
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col font-sans transition-colors duration-200">
             <TopBar />
 
-            <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-                
-                {/* Header Banner */}
-                <div class="relative overflow-hidden bg-white dark:bg-neutral-800 rounded-3xl p-6 sm:p-8 border border-neutral-200/80 dark:border-neutral-700 shadow-sm">
-                    <div class="absolute -right-16 -bottom-16 size-64 bg-teal-500/5 dark:bg-teal-400/5 rounded-full blur-3xl pointer-events-none"></div>
-                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
-                        <div class="space-y-2 max-w-2xl">
-                            <div class="flex flex-wrap items-center gap-2">
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/70 text-teal-700 dark:text-teal-300 text-xs font-mono font-semibold border border-teal-200 dark:border-teal-800">
-                                    <span class="size-2 rounded-full bg-teal-500 animate-pulse"></span>
-                                    <span>Program Studi Portal</span>
-                                </span>
-                                <Show when={activeUnitData()}>
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 dark:bg-neutral-700/80 text-neutral-700 dark:text-neutral-300 text-xs font-mono font-medium">
-                                        Kode Unit: <strong>{activeUnitData()?.code || activeUnitData()?.alphabet_code || '-'}</strong>
-                                    </span>
-                                </Show>
-                            </div>
-
-                            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
-                                Student Directory
-                            </h1>
-                            <p class="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
-                                Manage and monitor enrolled students belonging to <strong class="text-neutral-800 dark:text-neutral-200">{activeUnitData()?.name || 'Department Study Program'}</strong>. Filter by academic cohorts, student numbers, admission paths, and study status.
-                            </p>
-                        </div>
-
-                        {/* Quick Study Program Switcher & Actions */}
-                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                            <div class="flex flex-col gap-1">
-                                <label class="text-[11px] font-mono font-bold text-neutral-500 uppercase tracking-wider">
-                                    Study Program (Unit)
-                                </label>
-                                <select
-                                    value={selectedUnitId()}
-                                    onChange={(e) => handleUnitChange(e.currentTarget.value)}
-                                    class="px-3 py-2 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xl text-xs font-semibold text-neutral-800 dark:text-neutral-200 focus:outline-hidden focus:border-teal-500 transition-colors shadow-2xs"
-                                >
-                                    <option value="all">
-                                        All Study Programs (Institution-wide)
-                                    </option>
-                                    <For each={units()}>
-                                        {(u) => (
-                                            <option value={u.id}>
-                                                {u.name} {u.code ? `(${u.code})` : ''}
-                                            </option>
-                                        )}
-                                    </For>
-                                </select>
-                            </div>
-
-                            <div class="flex items-end pt-4 sm:pt-0">
-                                <A
-                                    href={`/course-department/institution/master/unit/show?id=${selectedUnitId()}`}
-                                    class="w-full sm:w-auto px-4 py-2 bg-neutral-100 dark:bg-neutral-700/80 hover:bg-neutral-200 dark:hover:bg-neutral-600 text-neutral-700 dark:text-neutral-200 rounded-xl text-xs font-bold transition-colors inline-flex items-center justify-center gap-1.5 shadow-2xs"
-                                >
-                                    <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-                                    <span>Department Dashboard</span>
-                                </A>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
                 {/* Summary Metrics Banner */}
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="bg-white dark:bg-neutral-800 rounded-2xl p-4 border border-neutral-200/70 dark:border-neutral-700 shadow-2xs flex items-center justify-between">
@@ -353,7 +324,7 @@ export default function CourseDepartmentStudentMasterPage() {
                             </div>
                         </div>
                         <div class="size-10 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center border border-teal-200/50 dark:border-teal-800/40">
-                            <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                         </div>
                     </div>
 
@@ -365,7 +336,7 @@ export default function CourseDepartmentStudentMasterPage() {
                             </div>
                         </div>
                         <div class="size-10 rounded-xl bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center border border-cyan-200/50 dark:border-cyan-800/40">
-                            <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10M6 14h6"/></svg>
+                            <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" /><path d="M6 6h10M6 10h10M6 14h6" /></svg>
                         </div>
                     </div>
 
@@ -373,11 +344,11 @@ export default function CourseDepartmentStudentMasterPage() {
                         <div class="space-y-0.5">
                             <span class="text-[11px] font-mono font-medium text-neutral-400 uppercase tracking-wider">Academic Cohorts</span>
                             <div class="text-2xl font-black text-neutral-900 dark:text-white">
-                                {academicYears().length}
+                                {unitAcademicYears().length}
                             </div>
                         </div>
                         <div class="size-10 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center border border-purple-200/50 dark:border-purple-800/40">
-                            <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                            <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" /></svg>
                         </div>
                     </div>
 
@@ -389,7 +360,7 @@ export default function CourseDepartmentStudentMasterPage() {
                             </div>
                         </div>
                         <div class="size-10 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-200/50 dark:border-amber-800/40">
-                            <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                            <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" x2="8" y1="13" y2="13" /><line x1="16" x2="8" y1="17" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
                         </div>
                     </div>
                 </div>
@@ -398,7 +369,7 @@ export default function CourseDepartmentStudentMasterPage() {
                 <div class="bg-white dark:bg-neutral-800 rounded-3xl p-5 sm:p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
                     <div class="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-700 pb-3">
                         <div class="flex items-center gap-2">
-                            <svg class="size-4 text-teal-600 dark:text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                            <svg class="size-4 text-teal-600 dark:text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>
                             <h2 class="text-xs font-mono uppercase tracking-wider font-bold text-neutral-700 dark:text-neutral-200">
                                 Search & Dynamic Filters
                             </h2>
@@ -409,7 +380,7 @@ export default function CourseDepartmentStudentMasterPage() {
                                 onClick={handleResetFilters}
                                 class="text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline inline-flex items-center gap-1 cursor-pointer"
                             >
-                                <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                                <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
                                 <span>Reset All Filters</span>
                             </button>
                         </Show>
@@ -429,7 +400,7 @@ export default function CourseDepartmentStudentMasterPage() {
                                     onInput={(e) => handleNameInput(e.currentTarget.value)}
                                     class="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-hidden focus:border-teal-500 transition-colors"
                                 />
-                                <svg class="size-4 absolute left-3 top-2.5 text-neutral-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                                <svg class="size-4 absolute left-3 top-2.5 text-neutral-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
                             </div>
                         </div>
 
@@ -446,7 +417,7 @@ export default function CourseDepartmentStudentMasterPage() {
                                     onInput={(e) => handleCodeInput(e.currentTarget.value)}
                                     class="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-hidden focus:border-teal-500 transition-colors"
                                 />
-                                <svg class="size-4 absolute left-3 top-2.5 text-neutral-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 7h10M7 12h10M7 17h6"/></svg>
+                                <svg class="size-4 absolute left-3 top-2.5 text-neutral-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" /><path d="M7 7h10M7 12h10M7 17h6" /></svg>
                             </div>
                         </div>
 
@@ -464,8 +435,8 @@ export default function CourseDepartmentStudentMasterPage() {
                                 }}
                                 class="w-full px-3 py-2 text-xs rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-hidden focus:border-teal-500 transition-colors"
                             >
-                                <option value="">All Academic Years</option>
-                                <For each={academicYears()}>
+                                <option value="">All Academic Years ({unitAcademicYears().length})</option>
+                                <For each={unitAcademicYears()}>
                                     {(yr) => (
                                         <option value={yr.id}>
                                             {yr.name} {yr.code ? `(${yr.code})` : ''}
@@ -504,7 +475,7 @@ export default function CourseDepartmentStudentMasterPage() {
 
                 {/* Student Directory Table Card */}
                 <div class="bg-white dark:bg-neutral-800 rounded-3xl border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
-                    
+
                     {/* Table Header Bar */}
                     <div class="p-4 sm:p-5 border-b border-neutral-200 dark:border-neutral-700 flex flex-col sm:flex-row items-center justify-between gap-3">
                         <div class="flex items-center gap-2">
@@ -538,8 +509,8 @@ export default function CourseDepartmentStudentMasterPage() {
                     </div>
 
                     {/* Table or Loading State */}
-                    <Show 
-                        when={!isLoading() && !isResolvingUnit()} 
+                    <Show
+                        when={!isLoading() && !isResolvingUnit()}
                         fallback={
                             <div class="py-20 flex flex-col items-center justify-center gap-3 text-neutral-400">
                                 <div class="size-8 border-3 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
@@ -562,8 +533,8 @@ export default function CourseDepartmentStudentMasterPage() {
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-neutral-100 dark:divide-neutral-700/50">
-                                    <For 
-                                        each={students()} 
+                                    <For
+                                        each={students()}
                                         fallback={
                                             <tr>
                                                 <td colspan="8" class="py-16 text-center">
@@ -577,7 +548,7 @@ export default function CourseDepartmentStudentMasterPage() {
                                                             No student records found
                                                         </p>
                                                         <p class="text-xs text-neutral-400">
-                                                            {hasActiveFilters() 
+                                                            {hasActiveFilters()
                                                                 ? 'No students match the current search filters. Try clearing some filters or searching for different terms.'
                                                                 : `There are currently no admitted student records in ${activeUnitData()?.name || 'this department'}.`}
                                                         </p>
@@ -656,7 +627,7 @@ export default function CourseDepartmentStudentMasterPage() {
                                                         class="px-3 py-1.5 bg-neutral-100 hover:bg-teal-50 dark:bg-neutral-700 dark:hover:bg-teal-950/60 text-neutral-700 hover:text-teal-700 dark:text-neutral-200 dark:hover:text-teal-300 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1 shadow-2xs"
                                                     >
                                                         <span>Detail</span>
-                                                        <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                                                        <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg>
                                                     </A>
                                                 </td>
                                             </tr>
@@ -684,7 +655,7 @@ export default function CourseDepartmentStudentMasterPage() {
                                     disabled={page() <= 1}
                                     class="px-3 py-1.5 text-xs font-semibold rounded-xl border border-neutral-200 dark:border-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors inline-flex items-center gap-1 cursor-pointer"
                                 >
-                                    <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                                    <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg>
                                     <span>Previous</span>
                                 </button>
 
@@ -704,7 +675,7 @@ export default function CourseDepartmentStudentMasterPage() {
                                     class="px-3 py-1.5 text-xs font-semibold rounded-xl border border-neutral-200 dark:border-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors inline-flex items-center gap-1 cursor-pointer"
                                 >
                                     <span>Next</span>
-                                    <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                                    <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg>
                                 </button>
                             </div>
                         </div>

@@ -1,8 +1,6 @@
 import { createSignal, createMemo, Show, For } from 'solid-js';
-import { defineChart } from '@tanstack/charts';
-import { pie, polar, radialArc } from '@tanstack/charts/polar';
-import { tooltip } from '@tanstack/charts/tooltip';
-import { Chart } from '@tanstack/charts/solid';
+import * as echarts from 'echarts';
+import EChart from './echart_component';
 
 export interface CourseCategoryItem {
     name: string;
@@ -59,45 +57,83 @@ export default function CourseCategoryPieChart(props: {
         return null;
     });
 
-    // TanStack Chart definition using polar and radialArc marks
-    const chartDefinition = createMemo(() => {
+    // ECharts option reactive to mode and categories
+    const chartOption = createMemo<echarts.EChartsOption | null>(() => {
         const items = enrichedCategories();
         const total = totalCourses();
         if (items.length === 0 || total === 0) return null;
 
         const isDonut = chartMode() === 'donut';
-        const slices = pie(items, { value: (d) => d.count });
 
-        return defineChart({
-            marks: [
-                polar({
-                    inset: 8,
-                    radiusRatio: 0.88,
-                    marks: [
-                        radialArc(slices, {
-                            innerRadius: ({ radius }) => (isDonut ? radius * 0.58 : 0),
-                            cornerRadius: 4,
-                            padAngle: 0.02,
-                            color: 'name',
-                            key: 'name',
-                        }),
-                    ],
-                    scales: {
-                        angle: null,
-                        radius: null,
+        const pieData = items.map((item) => ({
+            name: item.name,
+            value: item.count,
+            itemStyle: {
+                color: item.color,
+            },
+            credits: item.credits,
+            percentage: item.percentage,
+        }));
+
+        return {
+            tooltip: {
+                trigger: 'item',
+                backgroundColor: 'rgba(23, 23, 23, 0.92)',
+                borderColor: 'rgba(64, 64, 64, 0.8)',
+                borderWidth: 1,
+                padding: [10, 14],
+                textStyle: {
+                    color: '#ffffff',
+                    fontSize: 12,
+                    fontFamily: 'monospace',
+                },
+                formatter: (params: any) => {
+                    const data = params.data || {};
+                    const marker = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background-color:${params.color};margin-right:8px;"></span>`;
+                    return `<div style="font-weight:bold;margin-bottom:6px;color:#5eead4;font-size:13px;">${marker}${params.name}</div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:2px;">
+                            <span style="color:#9ca3af;">Jumlah Mata Kuliah:</span>
+                            <span style="font-weight:bold;color:#ffffff;">${params.value} MK</span>
+                        </div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:2px;">
+                            <span style="color:#9ca3af;">Beban SKS:</span>
+                            <span style="font-weight:bold;color:#ffffff;">${data.credits || 0} SKS</span>
+                        </div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
+                            <span style="color:#9ca3af;">Proporsi:</span>
+                            <span style="font-weight:bold;color:#a78bfa;">${params.percent ? params.percent.toFixed(1) : (data.percentage?.toFixed(1) || 0)}%</span>
+                        </div>`;
+                },
+            },
+            series: [
+                {
+                    name: 'Kategori Mata Kuliah',
+                    type: 'pie',
+                    radius: isDonut ? ['56%', '84%'] : [0, '84%'],
+                    center: ['50%', '50%'],
+                    avoidLabelOverlap: false,
+                    padAngle: isDonut ? 3 : 1,
+                    itemStyle: {
+                        borderRadius: isDonut ? 6 : 4,
+                        borderColor: 'transparent',
+                        borderWidth: 0,
                     },
-                }),
+                    label: {
+                        show: false,
+                    },
+                    emphasis: {
+                        scale: true,
+                        scaleSize: 6,
+                        itemStyle: {
+                            shadowBlur: 12,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)',
+                        },
+                    },
+                    data: pieData,
+                },
             ],
-            scales: {
-                x: null,
-                y: null,
-            },
-            color: {
-                domain: items.map((d) => d.name),
-                range: items.map((d) => d.color),
-            },
-            tooltip,
-        });
+        };
     });
 
     return (
@@ -156,15 +192,16 @@ export default function CourseCategoryPieChart(props: {
                 }
             >
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-                    {/* TanStack Polar Pie / Donut Chart */}
+                    {/* ECharts Pie / Donut Chart */}
                     <div class="lg:col-span-5 flex flex-col items-center justify-center relative">
                         <div class="relative size-64 flex items-center justify-center">
-                            <Show when={chartDefinition()}>
-                                {(def) => (
-                                    <Chart
-                                        definition={def()}
+                            <Show when={chartOption()}>
+                                {(opt) => (
+                                    <EChart
+                                        option={opt()}
                                         ariaLabel="Distribusi Kategori Mata Kuliah"
                                         height={256}
+                                        width={256}
                                         class="size-full"
                                     />
                                 )}

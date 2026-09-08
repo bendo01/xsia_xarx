@@ -2589,6 +2589,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.student.master.students.list_students",
         },
         RouteDefinition {
+            url: "/api/v1/academic/student/master/students/academic-years",
+            method: "GET",
+            handler: "students::list_distinct_academic_years",
+            name: "academic.student.master.students.list_distinct_academic_years",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/student/master/students",
             method: "POST",
             handler: "students::create_student",

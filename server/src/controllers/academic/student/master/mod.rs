@@ -22,6 +22,10 @@ pub fn router() -> Router {
                 .get_named("academic.student.master.students.list_students", students::list_students)
                 .post_named("academic.student.master.students.create_student", students::create_student)
                 .push(
+                    Router::with_path("academic-years")
+                        .get_named("academic.student.master.students.list_distinct_academic_years", students::list_distinct_academic_years),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.student.master.students.get_student", students::get_student)
                         .put_named("academic.student.master.students.update_student", students::update_student)

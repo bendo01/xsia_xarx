@@ -1,9 +1,6 @@
 import { createSignal, createMemo, Show, For } from 'solid-js';
-import { defineChart, lineY, areaY } from '@tanstack/charts';
-import { scaleLinear } from '@tanstack/charts/scales/linear';
-import { scalePoint } from '@tanstack/charts/scales/point';
-import { tooltip } from '@tanstack/charts/tooltip';
-import { Chart } from '@tanstack/charts/solid';
+import * as echarts from 'echarts';
+import EChart from './echart_component';
 
 export interface StudentStatusByYear {
     yearName: string;
@@ -41,90 +38,154 @@ export default function StudentAcademicYearChart(props: {
         return (props.data || []).reduce((acc, d) => acc + d.graduated, 0);
     });
 
-    // TanStack Chart definition reactive to toggles and data
-    const chartDefinition = createMemo(() => {
+    // ECharts option reactive to toggles and data
+    const chartOption = createMemo<echarts.EChartsOption | null>(() => {
         const data = props.data;
         if (!data || data.length === 0) return null;
 
-        const marks = [];
+        const categories = data.map((d) => d.yearName);
+        const series: echarts.SeriesOption[] = [];
 
         if (showTotal()) {
-            marks.push(
-                areaY(data, {
-                    id: 'total-area',
-                    x: 'yearName',
-                    y: 'total',
-                    fill: '#6366f1',
-                    fillOpacity: 0.12,
-                }),
-                lineY(data, {
-                    id: 'total-line',
-                    x: 'yearName',
-                    y: 'total',
-                    points: true,
-                    stroke: '#6366f1',
-                    strokeWidth: 3,
-                })
-            );
+            series.push({
+                name: 'Total Mahasiswa',
+                type: 'line',
+                smooth: 0.35,
+                data: data.map((d) => d.total),
+                itemStyle: { color: '#6366f1' },
+                lineStyle: { width: 3, color: '#6366f1' },
+                symbol: 'circle',
+                symbolSize: 6,
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: 'rgba(99, 102, 241, 0.25)' },
+                        { offset: 1, color: 'rgba(99, 102, 241, 0.01)' },
+                    ]),
+                },
+            });
         }
 
         if (showActive()) {
-            marks.push(
-                lineY(data, {
-                    id: 'active-line',
-                    x: 'yearName',
-                    y: 'active',
-                    points: true,
-                    stroke: '#10b981',
-                    strokeWidth: 2.5,
-                })
-            );
+            series.push({
+                name: 'Status Aktif',
+                type: 'line',
+                smooth: 0.35,
+                data: data.map((d) => d.active),
+                itemStyle: { color: '#10b981' },
+                lineStyle: { width: 2.5, color: '#10b981' },
+                symbol: 'circle',
+                symbolSize: 6,
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: 'rgba(16, 185, 129, 0.20)' },
+                        { offset: 1, color: 'rgba(16, 185, 129, 0.01)' },
+                    ]),
+                },
+            });
         }
 
         if (showLeave()) {
-            marks.push(
-                lineY(data, {
-                    id: 'leave-line',
-                    x: 'yearName',
-                    y: 'leave',
-                    points: true,
-                    stroke: '#f59e0b',
-                    strokeWidth: 2,
-                })
-            );
+            series.push({
+                name: 'Status Cuti',
+                type: 'line',
+                smooth: 0.35,
+                data: data.map((d) => d.leave),
+                itemStyle: { color: '#f59e0b' },
+                lineStyle: { width: 2, color: '#f59e0b' },
+                symbol: 'circle',
+                symbolSize: 6,
+            });
         }
 
         if (showGraduated()) {
-            marks.push(
-                lineY(data, {
-                    id: 'graduated-line',
-                    x: 'yearName',
-                    y: 'graduated',
-                    points: true,
-                    stroke: '#0284c7',
-                    strokeWidth: 2,
-                })
-            );
+            series.push({
+                name: 'Status Lulus',
+                type: 'line',
+                smooth: 0.35,
+                data: data.map((d) => d.graduated),
+                itemStyle: { color: '#0284c7' },
+                lineStyle: { width: 2, color: '#0284c7' },
+                symbol: 'circle',
+                symbolSize: 6,
+            });
         }
 
-        if (marks.length === 0) return null;
+        if (series.length === 0) return null;
 
-        return defineChart({
-            marks,
-            scales: {
-                x: {
-                    scale: () => scalePoint<string>().padding(0.2),
-                    axis: { label: 'Tahun Akademik' },
+        return {
+            tooltip: {
+                trigger: 'axis',
+                backgroundColor: 'rgba(23, 23, 23, 0.92)',
+                borderColor: 'rgba(64, 64, 64, 0.8)',
+                borderWidth: 1,
+                padding: [10, 14],
+                textStyle: {
+                    color: '#ffffff',
+                    fontSize: 12,
+                    fontFamily: 'monospace',
                 },
-                y: {
-                    scale: scaleLinear(),
-                    nice: true,
-                    grid: true,
-                    axis: { label: 'Jumlah Mahasiswa' },
+                axisPointer: {
+                    type: 'line',
+                    lineStyle: {
+                        color: 'rgba(99, 102, 241, 0.4)',
+                        type: 'dashed',
+                    },
+                },
+                formatter: (params: any) => {
+                    if (!Array.isArray(params) || params.length === 0) return '';
+                    const title = params[0].axisValueLabel;
+                    let out = `<div style="font-weight:bold;margin-bottom:6px;color:#a5b4fc;font-size:13px;">Tahun Akademik: ${title}</div>`;
+                    for (const p of params) {
+                        const marker = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background-color:${p.color};margin-right:8px;"></span>`;
+                        out += `<div style="display:flex;align-items:center;justify-content:space-between;gap:20px;padding:2px 0;">
+                            <span style="color:#d1d5db;">${marker}${p.seriesName}</span>
+                            <span style="font-weight:bold;color:#ffffff;">${p.value} mhs</span>
+                        </div>`;
+                    }
+                    return out;
                 },
             },
-            tooltip,
-        });
+            grid: {
+                top: 28,
+                right: 20,
+                bottom: 24,
+                left: 36,
+                containLabel: true,
+            },
+            xAxis: {
+                type: 'category',
+                data: categories,
+                boundaryGap: false,
+                axisLine: {
+                    lineStyle: {
+                        color: 'rgba(156, 163, 175, 0.35)',
+                    },
+                },
+                axisTick: { show: false },
+                axisLabel: {
+                    color: '#9ca3af',
+                    fontSize: 11,
+                    fontFamily: 'monospace',
+                },
+            },
+            yAxis: {
+                type: 'value',
+                minInterval: 1,
+                axisLabel: {
+                    formatter: '{value}',
+                    color: '#9ca3af',
+                    fontSize: 11,
+                    fontFamily: 'monospace',
+                },
+                splitLine: {
+                    lineStyle: {
+                        type: 'dashed',
+                        color: 'rgba(156, 163, 175, 0.18)',
+                    },
+                },
+            },
+            series,
+        };
     });
 
     return (
@@ -217,16 +278,16 @@ export default function StudentAcademicYearChart(props: {
             >
                 <div class="w-full">
                     <Show
-                        when={chartDefinition()}
+                        when={chartOption()}
                         fallback={
                             <div class="py-12 text-center text-neutral-400 dark:text-neutral-500 font-mono text-xs">
                                 Pilih minimal satu seri data di atas untuk menampilkan grafik tren.
                             </div>
                         }
                     >
-                        {(def) => (
-                            <Chart
-                                definition={def()}
+                        {(opt) => (
+                            <EChart
+                                option={opt()}
                                 ariaLabel="Tren Jumlah Mahasiswa per Tahun Akademik"
                                 height={280}
                                 class="w-full"

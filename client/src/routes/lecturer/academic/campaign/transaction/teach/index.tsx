@@ -161,7 +161,7 @@ export default function LecturerTeachIndexPage() {
     const lecturerName = () => lecturerMaster()?.name || user()?.name || 'Lecturer';
     const lecturerNidn = () => lecturerMaster()?.code || lecturerMaster()?.nidn || '-';
 
-    // --- @tanstack/charts: Total Teaching Credits per Academic Year ---
+    // --- ECharts: Total Teaching Credits per Academic Year ---
     const yearlyCreditTrends = createMemo(() => {
         const map = new Map<string, {
             yearId: string;

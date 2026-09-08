@@ -3,14 +3,14 @@ use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
-    PaginatorTrait, QueryFilter, QueryOrder, Set,
+    PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, Set,
 };
 use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::academic::student::master::students::{
-    CreateStudentRequest, StudentQuery, StudentResponse, PaginatedStudentResponse,
-    UpdateStudentRequest,
+    CreateStudentRequest, DistinctAcademicYearQuery, DistinctAcademicYearResponse,
+    PaginatedStudentResponse, StudentQuery, StudentResponse, UpdateStudentRequest,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::student::master::students as entity_mod;
@@ -246,6 +246,80 @@ pub async fn list_students(
         page_size,
         total_pages,
     }))
+}
+
+#[endpoint(tags("Academic - Student - Master - Student"), status_codes(200, 500))]
+pub async fn list_distinct_academic_years(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<Vec<DistinctAcademicYearResponse>>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let query: DistinctAcademicYearQuery = req.parse_queries().unwrap_or_default();
+
+    let mut select = entity_mod::Entity::find()
+        .filter(entity_mod::Column::DeletedAt.is_null())
+        .filter(entity_mod::Column::AcademicYearId.ne(Uuid::nil()));
+
+    if let Some(unit_id) = query.unit_id {
+        select = select.filter(entity_mod::Column::UnitId.eq(unit_id));
+    } else if let Some(institution_id) = query.institution_id {
+        let matching_unit_ids: Vec<Uuid> = crate::models::institution::master::units::Entity::find()
+            .filter(crate::models::institution::master::units::Column::InstitutionId.eq(institution_id))
+            .filter(crate::models::institution::master::units::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|u| u.id)
+            .collect();
+
+        if matching_unit_ids.is_empty() {
+            return Ok(Json(vec![]));
+        }
+        select = select.filter(entity_mod::Column::UnitId.is_in(matching_unit_ids));
+    }
+
+    let year_ids: Vec<Uuid> = select
+        .select_only()
+        .column(entity_mod::Column::AcademicYearId)
+        .group_by(entity_mod::Column::AcademicYearId)
+        .into_tuple::<(Uuid,)>()
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .into_iter()
+        .map(|(id,)| id)
+        .collect();
+
+    if year_ids.is_empty() {
+        return Ok(Json(vec![]));
+    }
+
+    let items = crate::models::academic::general::reference::academic_years::Entity::find()
+        .filter(crate::models::academic::general::reference::academic_years::Column::Id.is_in(year_ids))
+        .filter(crate::models::academic::general::reference::academic_years::Column::DeletedAt.is_null())
+        .order_by_desc(crate::models::academic::general::reference::academic_years::Column::Code)
+        .order_by_desc(crate::models::academic::general::reference::academic_years::Column::Name)
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let response = items
+        .into_iter()
+        .map(|ay| DistinctAcademicYearResponse {
+            id: ay.id,
+            code: ay.code,
+            year: ay.year,
+            name: ay.name,
+            feeder_name: Some(ay.feeder_name),
+            is_active: ay.is_active,
+        })
+        .collect();
+
+    Ok(Json(response))
 }
 
 #[endpoint(tags("Academic - Student - Master - Student"), status_codes(200, 400, 404, 500))]

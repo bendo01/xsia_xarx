@@ -111,3 +111,19 @@ pub struct PaginatedStudentResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct DistinctAcademicYearQuery {
+    pub unit_id: Option<Uuid>,
+    pub institution_id: Option<Uuid>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct DistinctAcademicYearResponse {
+    pub id: Uuid,
+    pub code: i32,
+    pub year: i32,
+    pub name: String,
+    pub feeder_name: Option<String>,
+    pub is_active: Option<bool>,
+}
