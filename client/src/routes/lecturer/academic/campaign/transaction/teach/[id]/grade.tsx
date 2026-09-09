@@ -4,8 +4,8 @@ import TopBar from '~/components/navigation/TopBar';
 import {
     getTeachById,
     getCourseById,
-    listActivities,
-    listAcademicYears
+    getActivityById,
+    getAcademicYearById
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachController';
 import {
     listTeachEvaluations,
@@ -114,11 +114,9 @@ export default function LecturerTeachGradePage() {
             }
 
             if (teach?.activity_id) {
-                const activities = await listActivities();
-                const activity = activities.find(a => a.id === teach.activity_id);
+                const activity = await getActivityById(teach.activity_id);
                 if (activity?.academic_year_id) {
-                    const years = await listAcademicYears();
-                    const year = years.find(y => y.id === activity.academic_year_id);
+                    const year = await getAcademicYearById(activity.academic_year_id);
                     if (year) {
                         setAcademicYearName(year.name || (year.code ? String(year.code) : ''));
                     }
