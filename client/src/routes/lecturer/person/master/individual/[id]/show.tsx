@@ -45,15 +45,21 @@ export default function LecturerIndividualShowPage() {
         setIsLoading(true);
         try {
             await refreshAuthState();
-            let indId: string = params.id || (searchParams.id as string) || user()?.individual_id || getStorageItem('individual_id') || '';
-            if (!indId || indId === '00000000-0000-0000-0000-000000000000') {
+            let indId: string = params.id || (searchParams.id as string) || '';
+            if (!indId || indId === '[id]' || indId === ':id') {
+                indId = user()?.individual_id || getStorageItem('individual_id') || '';
+            }
+            if (!indId || indId === '00000000-0000-0000-0000-000000000000' || indId === '[id]' || indId === ':id') {
                 const userRes = await GetCurrentUser();
                 if (userRes && userRes.code === 200 && userRes.data?.individual_id) {
                     indId = userRes.data.individual_id;
                 }
             }
 
-            if (indId && indId !== '00000000-0000-0000-0000-000000000000') {
+            if (indId && indId !== '00000000-0000-0000-0000-000000000000' && indId !== '[id]' && indId !== ':id') {
+                if (typeof window !== 'undefined' && params.id === '[id]') {
+                    window.history.replaceState(null, '', `/lecturer/person/master/individual/${indId}/show${window.location.search || ''}`);
+                }
                 const [profileRes, masterLecturerRes] = await Promise.all([
                     PersonMasterIndividualControllerShow(indId),
                     getLecturerMasterByIndividual(indId),

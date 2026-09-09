@@ -272,7 +272,7 @@ export default function LecturerTeachIndexPage() {
                                 <span>Refresh Classes</span>
                             </button>
                             <A
-                                href="/lecturer/person/master/individual/show"
+                                href={user()?.individual_id || getStorageItem('individual_id') ? `/lecturer/person/master/individual/${user()?.individual_id || getStorageItem('individual_id')}/show` : '/lecturer/person/master/individual/[id]/show'}
                                 class="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl text-xs flex items-center gap-2 border border-white/20 transition-colors"
                             >
                                 <span>Faculty Profile →</span>

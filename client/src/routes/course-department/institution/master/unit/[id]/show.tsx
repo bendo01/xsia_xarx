@@ -29,8 +29,8 @@ export default function CourseDepartmentUnitShowPage() {
     const params = useParams();
     const [searchParams, setSearchParams] = useSearchParams();
     const [isLoading, setIsLoading] = createSignal(true);
-    // Initialize immediately from URL route param or query if present
-    const initialQueryId = ((params.id as string) || (searchParams.id as string) || (searchParams.unit_id as string) || '').trim();
+    const rawQueryId = ((params.id as string) || (searchParams.id as string) || (searchParams.unit_id as string) || '').trim();
+    const initialQueryId = rawQueryId === '[id]' || rawQueryId === ':id' ? '' : rawQueryId;
     const [unitId, setUnitId] = createSignal<string>(initialQueryId);
     const [unitData, setUnitData] = createSignal<any | null>(null);
     

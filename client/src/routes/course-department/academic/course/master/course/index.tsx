@@ -296,7 +296,7 @@ export default function MasterIndexPage() {
                 <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                            <a href="/course-department/institution/master/unit/show" class="hover:text-blue-600 transition-colors">Course Department</a>
+                            <a href={selectedUnitId() ? `/course-department/institution/master/unit/${selectedUnitId()}/show` : (getStorageItem('unit_id') ? `/course-department/institution/master/unit/${getStorageItem('unit_id')}/show` : '/course-department/institution/master/unit/[id]/show')} class="hover:text-blue-600 transition-colors">Course Department</a>
                             <span>/</span>
                             <span>Academic</span>
                             <span>/</span>

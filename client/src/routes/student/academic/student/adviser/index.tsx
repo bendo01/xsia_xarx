@@ -2,6 +2,8 @@ import { createSignal, onMount, For, Show } from 'solid-js';
 import { A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
+import { currentUserSignal } from '~/lib/authStore';
+import { getStorageItem } from '~/lib/storage';
 import { listCounsellors, listDecrees, CounsellorItem, DecreeItem } from '~/controllers/academic/student/adviser/AcademicStudentAdviserController';
 
 export default function StudentAdviserIndexPage() {
@@ -91,7 +93,7 @@ export default function StudentAdviserIndexPage() {
 
                         <div class="flex items-center gap-3">
                             <A
-                                href="/student/person/master/individual/show"
+                                href={currentUserSignal()?.individual_id || getStorageItem('individual_id') ? `/student/person/master/individual/${currentUserSignal()?.individual_id || getStorageItem('individual_id')}/show` : '/student/person/master/individual/[id]/show'}
                                 class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xl text-xs font-bold transition-colors"
                             >
                                 ← My Profile

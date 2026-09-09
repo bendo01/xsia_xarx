@@ -1,7 +1,14 @@
 import { A } from '@solidjs/router';
 import { t } from '../../i18n';
+import { currentUserSignal } from '../../lib/authStore';
+import { getStorageItem } from '../../lib/storage';
 
 export default function MenuLecturer() {
+    const profileHref = () => {
+        const indId = currentUserSignal()?.individual_id || getStorageItem('individual_id');
+        return indId ? `/lecturer/person/master/individual/${indId}/show` : '/lecturer/person/master/individual/[id]/show';
+    };
+
     return (
         <ul class="space-y-1">
             {/* Dashboard */}
@@ -22,7 +29,7 @@ export default function MenuLecturer() {
             {/* Lecturer Profile */}
             <li>
                 <A 
-                    href="/lecturer/person/master/individual/show" 
+                    href={profileHref()} 
                     activeClass="bg-blue-600/15 text-blue-600 dark:text-blue-400 font-semibold"
                     class="flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
                 >

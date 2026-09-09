@@ -97,12 +97,12 @@ export default function StudentDashboardProfilePage() {
             const user = currentUserSignal();
 
             // 1. Resolve individual ID from query param, reactive user signal, or storage
-            if (!targetIndId) {
+            if (!targetIndId || targetIndId === '[id]' || targetIndId === ':id') {
                 targetIndId = user?.individual_id || getStorageItem('individual_id') || '';
             }
 
             // If still missing or empty/default uuid, fetch current authenticated user from server
-            if (!targetIndId || targetIndId === '00000000-0000-0000-0000-000000000000') {
+            if (!targetIndId || targetIndId === '00000000-0000-0000-0000-000000000000' || targetIndId === '[id]' || targetIndId === ':id') {
                 const curUserRes = await GetCurrentUser();
                 if (curUserRes.code === 200 && curUserRes.data?.individual_id) {
                     targetIndId = curUserRes.data.individual_id;
@@ -110,7 +110,10 @@ export default function StudentDashboardProfilePage() {
                 }
             }
 
-            if (targetIndId && targetIndId !== '00000000-0000-0000-0000-000000000000') {
+            if (targetIndId && targetIndId !== '00000000-0000-0000-0000-000000000000' && targetIndId !== '[id]' && targetIndId !== ':id') {
+                if (typeof window !== 'undefined' && params.id === '[id]') {
+                    window.history.replaceState(null, '', `/student/person/master/individual/${targetIndId}/show${window.location.search || ''}`);
+                }
                 const res = await PersonMasterIndividualControllerShow(targetIndId);
                 if (!res.is_error && res.data) {
                     setIndividualData(res.data);

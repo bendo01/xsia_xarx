@@ -124,7 +124,7 @@ export default function StudentMasterIndexPage() {
 
                         <div class="flex items-center gap-3">
                             <A
-                                href="/student/person/master/individual/show"
+                                href={currentUserSignal()?.individual_id || getStorageItem('individual_id') ? `/student/person/master/individual/${currentUserSignal()?.individual_id || getStorageItem('individual_id')}/show` : '/student/person/master/individual/[id]/show'}
                                 class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xl text-xs font-bold transition-colors"
                             >
                                 ← My Profile

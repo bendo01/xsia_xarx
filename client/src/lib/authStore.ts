@@ -1,6 +1,7 @@
 import { createSignal } from 'solid-js';
+export { getStorageItem, setStorageItem, removeStorageItem } from './storage';
 import { getStorageItem, setStorageItem, removeStorageItem } from './storage';
-import { GetUserRoles, LogoutUser as apiLogoutUser } from '../controllers/auth/AuthUser';
+import { GetUserRoles, GetCurrentUser, LogoutUser as apiLogoutUser } from '../controllers/auth/AuthUser';
 import { getStudentById } from '../controllers/academic/student/master/AcademicStudentMasterStudentController';
 import { t } from '../i18n';
 
@@ -147,29 +148,40 @@ export function getRoleDisplayName(roleName: string): string {
     }
 }
 
-export function getDashboardPathForRole(roleName: string, roleItem?: UserRoleItem): string {
-    if (roleItem && isStaffProgramStudi(roleItem)) {
-        return '/course-department/institution/master/unit/show';
+export function getDashboardPathForRole(
+    roleName: string, 
+    roleItem?: UserRoleItem,
+    user?: StoredUser | null
+): string {
+    const targetUser = user || currentUserSignal() || getStoredUser();
+    const indId = targetUser?.individual_id || getStorageItem('individual_id');
+
+    if (roleItem && isStaffProgramStudi(roleItem, targetUser)) {
+        const uId = roleItem.roleable_id || getStorageItem('unit_id');
+        return uId ? `/course-department/institution/master/unit/${uId}/show` : '/course-department/institution/master/unit/[id]/show';
     }
     const norm = normalizeRoleName(roleName, roleItem);
     switch (norm) {
         case 'administrator':
             return '/administrator/person/master/individual';
-        case 'course_department':
-            return '/course-department/institution/master/unit/show';
+        case 'course_department': {
+            const uId = roleItem?.roleable_id || getStorageItem('unit_id');
+            return uId ? `/course-department/institution/master/unit/${uId}/show` : '/course-department/institution/master/unit/[id]/show';
+        }
         case 'student':
-            return '/student/person/master/individual/show';
+            return indId ? `/student/person/master/individual/${indId}/show` : '/student/person/master/individual/[id]/show';
         case 'lecturer':
-            return '/lecturer/person/master/individual/show';
+            return indId ? `/lecturer/person/master/individual/${indId}/show` : '/lecturer/person/master/individual/[id]/show';
         case 'candidate':
             return '/candidate/academic/candidate/master/candidate';
         case 'rectorat':
             return '/dashboard/rectorat';
         default:
-            if (isStaffProgramStudi(roleName)) {
-                return '/course-department/institution/master/unit/show';
+            if (isStaffProgramStudi(roleName, targetUser)) {
+                const uId = roleItem?.roleable_id || getStorageItem('unit_id');
+                return uId ? `/course-department/institution/master/unit/${uId}/show` : '/course-department/institution/master/unit/[id]/show';
             }
-            return '/student/person/master/individual/show';
+            return indId ? `/student/person/master/individual/${indId}/show` : '/student/person/master/individual/[id]/show';
     }
 }
 
@@ -367,6 +379,12 @@ export function setActiveRole(roleNameOrId: string, isSession: boolean = false):
 
 export async function processLoginSuccess(loginResponse: any, isSession: boolean = false): Promise<string> {
     const user = loginResponse.user || {};
+    if (!user.individual_id && loginResponse.data?.individual_id) {
+        user.individual_id = loginResponse.data.individual_id;
+    }
+    if (!user.individual_id && getStorageItem('individual_id')) {
+        user.individual_id = getStorageItem('individual_id');
+    }
     let roles: UserRoleItem[] = [];
 
     // 1. Check if roles were provided directly with user or loginResponse
@@ -450,7 +468,20 @@ export async function processLoginSuccess(loginResponse: any, isSession: boolean
     // 5. Update global reactive signals
     refreshAuthState();
 
-    return getDashboardPathForRole(activeRole, activeRoleItem);
+    if (activeRole === 'student' && !user.individual_id && !getStorageItem('individual_id')) {
+        try {
+            const curUserRes = await GetCurrentUser();
+            if (curUserRes.code === 200 && curUserRes.data?.individual_id) {
+                user.individual_id = curUserRes.data.individual_id;
+                setStorageItem('individual_id', user.individual_id, isSession);
+                refreshAuthState();
+            }
+        } catch {
+            // Ignore
+        }
+    }
+
+    return getDashboardPathForRole(activeRole, activeRoleItem, user);
 }
 
 export function logout(): void {
