@@ -16,6 +16,10 @@ pub struct StudentQuery {
     pub institution_id: Option<Uuid>,
     pub academic_year_id: Option<Uuid>,
     pub status_id: Option<Uuid>,
+    pub sort_by: Option<String>,
+    pub sort_dir: Option<String>,
+    pub order_by: Option<String>,
+    pub order_dir: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]

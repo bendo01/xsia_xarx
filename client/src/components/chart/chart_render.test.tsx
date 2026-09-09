@@ -7,6 +7,7 @@ import StudentCreditChart from './student_credit_chart';
 import TeachCreditChart from './teach_credit_chart';
 import CourseDepartmentUnitShowPage from '~/routes/course-department/institution/master/unit/show';
 import CourseDepartmentStudentMasterShowPage from '~/routes/course-department/academic/student/master/show';
+import LecturerIndividualShowPage from '~/routes/lecturer/person/master/individual/show';
 import { Router, Route } from '@solidjs/router';
 
 describe('Chart Components', () => {
@@ -129,6 +130,16 @@ describe('Chart Components', () => {
         const { container } = render(() => (
             <Router>
                 <Route path="/" component={CourseDepartmentStudentMasterShowPage} />
+            </Router>
+        ));
+        expect(container).toBeDefined();
+        expect(container.querySelector('main')).toBeDefined();
+    });
+
+    it('renders LecturerIndividualShowPage with ECharts without throwing uncaught error', async () => {
+        const { container } = render(() => (
+            <Router>
+                <Route path="/" component={LecturerIndividualShowPage} />
             </Router>
         ));
         expect(container).toBeDefined();

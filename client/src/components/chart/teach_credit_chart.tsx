@@ -153,14 +153,14 @@ export default function TeachCreditChart(props: { data: YearlyCreditTrend[] }) {
     });
 
     return (
-        <div class="w-full">
+        <div class="w-full min-w-0">
             <Show when={chartOption()}>
                 {(option) => (
                     <EChart
                         option={option()}
                         ariaLabel="Total Teaching Credits per Academic Year"
                         height={260}
-                        class="w-full"
+                        class="w-full min-w-0"
                     />
                 )}
             </Show>

@@ -289,7 +289,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
                             }>
                                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                     {/* Chart 1: Academic Performance (IPS & IPK Trend) with Apache ECharts */}
-                                    <div class="p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
+                                    <div class="min-w-0 p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
                                         <div class="flex items-center justify-between">
                                             <div>
                                                 <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
@@ -315,7 +315,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                     </div>
 
                                     {/* Chart 2: Credit SKS Load Progression with Apache ECharts */}
-                                    <div class="p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
+                                    <div class="min-w-0 p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
                                         <div class="flex items-center justify-between">
                                             <div>
                                                 <h3 class="text-sm font-bold text-neutral-900 dark:text-white">

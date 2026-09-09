@@ -1,4 +1,4 @@
-import { createSignal, onMount, Show, For } from 'solid-js';
+import { createSignal, onMount, Show, For, createMemo, lazy, Suspense } from 'solid-js';
 import { A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { currentUserSignal, refreshAuthState } from '~/lib/authStore';
@@ -16,12 +16,20 @@ import {
     getLecturerAcademicRanks,
     getLecturerAcademicGroups
 } from '~/controllers/academic/lecturer/AcademicLecturerTransactionController';
+import {
+    getLecturerAssignedTeaches,
+    LecturerAssignedTeachItem
+} from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachController';
+import type { YearlyCreditTrend } from '~/components/chart/teach_credit_chart';
+
+const TeachCreditChart = lazy(() => import('~/components/chart/teach_credit_chart'));
 
 export default function LecturerIndividualShowPage() {
     const user = () => currentUserSignal();
     const [isLoading, setIsLoading] = createSignal(true);
     const [individualData, setIndividualData] = createSignal<PersonMasterIndividualDataObject | null>(null);
     const [lecturerMaster, setLecturerMaster] = createSignal<AcademicLecturerMasterLecturer | null>(null);
+    const [assignedTeaches, setAssignedTeaches] = createSignal<LecturerAssignedTeachItem[]>([]);
     const [latestHomebase, setLatestHomebase] = createSignal<AcademicLecturerTransactionHomebase | null>(null);
     const [allHomebases, setAllHomebases] = createSignal<AcademicLecturerTransactionHomebase[]>([]);
     const [latestAcademicRank, setLatestAcademicRank] = createSignal<AcademicLecturerTransactionAcademicRank | null>(null);
@@ -57,10 +65,11 @@ export default function LecturerIndividualShowPage() {
 
                 if (resolvedLecturer?.id) {
                     const lecturerId = resolvedLecturer.id;
-                    const [hbRes, rankRes, groupRes] = await Promise.all([
+                    const [hbRes, rankRes, groupRes, teachesRes] = await Promise.all([
                         getLecturerHomebases(lecturerId),
                         getLecturerAcademicRanks(lecturerId),
                         getLecturerAcademicGroups(lecturerId),
+                        getLecturerAssignedTeaches(lecturerId).catch(() => []),
                     ]);
 
                     setLatestHomebase(hbRes.latestHomebase);
@@ -71,6 +80,9 @@ export default function LecturerIndividualShowPage() {
 
                     setLatestAcademicGroup(groupRes.latestAcademicGroup);
                     setAllAcademicGroups(groupRes.academicGroups);
+
+                    const lecturerTeaches = (teachesRes || []).filter(item => item.lecturer_id === lecturerId);
+                    setAssignedTeaches(lecturerTeaches);
                 }
             }
         } catch (err) {
@@ -82,6 +94,63 @@ export default function LecturerIndividualShowPage() {
 
     onMount(() => {
         fetchLecturerProfile();
+    });
+
+    // Distinct Academic Years extracted from assigned teaches
+    const distinctAcademicYears = createMemo(() => {
+        const yearMap = new Map<string, { id: string; name: string; code?: number | string | null }>();
+        for (const item of assignedTeaches()) {
+            const y = item.activity?.academic_year;
+            if (y?.id && !yearMap.has(y.id)) {
+                yearMap.set(y.id, {
+                    id: y.id,
+                    name: y.name || 'Tahun Akademik',
+                    code: y.code ?? null,
+                });
+            }
+        }
+        return Array.from(yearMap.values()).sort((a, b) => {
+            const codeA = Number(a.code) || 0;
+            const codeB = Number(b.code) || 0;
+            return codeA - codeB;
+        });
+    });
+
+    const yearlyCreditTrends = createMemo<YearlyCreditTrend[]>(() => {
+        const years = distinctAcademicYears();
+        const teaches = assignedTeaches();
+
+        return years.map((year) => {
+            const yearTeaches = teaches.filter((t) => t.activity?.academic_year_id === year.id);
+            let totalCredit = 0;
+            let totalPlanned = 0;
+            let totalRealized = 0;
+            const courses: { name: string; code?: string; credit: number; className?: string }[] = [];
+
+            for (const t of yearTeaches) {
+                const cred = Number(t.credit) || 0;
+                totalCredit += cred;
+                totalPlanned += Number(t.plan_meeting_count) || 0;
+                totalRealized += Number(t.realization_meeting_count) || 0;
+                courses.push({
+                    name: t.course_name || t.name || 'Mata Kuliah',
+                    code: t.course_code || undefined,
+                    credit: cred,
+                    className: t.class_name || undefined,
+                });
+            }
+
+            return {
+                yearId: year.id,
+                yearName: year.name,
+                yearCode: year.code ?? null,
+                totalCredit,
+                classCount: yearTeaches.length,
+                totalPlannedSessions: totalPlanned,
+                totalRealizedSessions: totalRealized,
+                courses,
+            };
+        });
     });
 
     const ind = () => individualData()?.individual;
@@ -311,6 +380,55 @@ export default function LecturerIndividualShowPage() {
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+
+                            {/* Teaching Credit Progression Visualization with Apache ECharts */}
+                            <div class="min-w-0 p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-4">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                    <div class="space-y-1">
+                                        <div class="flex items-center gap-2">
+                                            <div class="size-7 rounded-lg bg-indigo-100 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+                                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" />
+                                                </svg>
+                                            </div>
+                                            <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                                Teaching Credits Progression
+                                            </h3>
+                                        </div>
+                                        <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                            Tren akumulasi beban SKS perkuliahan yang diampu di setiap Tahun Akademik berbasis Apache ECharts.
+                                        </p>
+                                    </div>
+                                    <Show when={yearlyCreditTrends().length > 0}>
+                                        <div class="flex items-center gap-2">
+                                            <span class="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-mono text-[11px] font-semibold border border-indigo-200/80 dark:border-indigo-800/60">
+                                                {yearlyCreditTrends().length} Periode Akademik
+                                            </span>
+                                        </div>
+                                    </Show>
+                                </div>
+
+                                <Show
+                                    when={yearlyCreditTrends().length > 0}
+                                    fallback={
+                                        <div class="py-12 text-center text-neutral-400 font-mono text-xs flex flex-col items-center justify-center gap-2">
+                                            <svg class="size-8 text-neutral-300 dark:text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                <path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" />
+                                            </svg>
+                                            <span>Belum ada data penugasan perkuliahan dengan Tahun Akademik untuk ditampilkan di grafik.</span>
+                                        </div>
+                                    }
+                                >
+                                    <Suspense fallback={
+                                        <div class="py-12 text-center flex flex-col items-center justify-center gap-2">
+                                            <div class="size-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                                            <span class="text-xs font-mono text-neutral-400">Loading chart...</span>
+                                        </div>
+                                    }>
+                                        <TeachCreditChart data={yearlyCreditTrends()} />
+                                    </Suspense>
+                                </Show>
                             </div>
 
                             {/* Teaching Quick Link */}

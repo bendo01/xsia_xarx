@@ -43,6 +43,9 @@ export default function CourseDepartmentStudentMasterPage() {
     const [selectedAcademicYearId, setSelectedAcademicYearId] = createSignal<string>('');
     const [selectedStatusId, setSelectedStatusId] = createSignal<string>('');
 
+    // Sorting state (default: code ascending)
+    const [sortParam, setSortParam] = createSignal<string>((searchParams.sort as string) || 'code-asc');
+
     // Pagination states
     const [page, setPage] = createSignal(1);
     const [pageSize, setPageSize] = createSignal(10);
@@ -197,6 +200,7 @@ export default function CourseDepartmentStudentMasterPage() {
         setIsLoading(true);
         try {
             const isAllUnits = currentUnitId === 'all';
+            const [sortField, sortDir] = sortParam().split('-');
             const res = await listStudents({
                 page: page(),
                 page_size: pageSize(),
@@ -206,6 +210,8 @@ export default function CourseDepartmentStudentMasterPage() {
                 code: searchCode().trim() || undefined,
                 academic_year_id: selectedAcademicYearId() || undefined,
                 status_id: selectedStatusId() || undefined,
+                sort_by: sortField || 'code',
+                sort_dir: sortDir || 'asc',
             });
 
             setStudents(res.data || []);
@@ -235,11 +241,24 @@ export default function CourseDepartmentStudentMasterPage() {
         const ps = pageSize();
         const yId = selectedAcademicYearId();
         const stId = selectedStatusId();
+        const sp = sortParam();
 
         if (uId && !isResolvingUnit()) {
             fetchStudents();
         }
     });
+
+    // Handle column sort toggle
+    const handleSortToggle = (col: string) => {
+        const [currentCol, currentDir] = sortParam().split('-');
+        if (currentCol === col) {
+            setSortParam(`${col}-${currentDir === 'asc' ? 'desc' : 'asc'}`);
+        } else {
+            setSortParam(`${col}-asc`);
+        }
+        setPage(1);
+        fetchStudents();
+    };
 
     // Handle unit selection change
     const handleUnitChange = async (unitId: string) => {
@@ -277,6 +296,7 @@ export default function CourseDepartmentStudentMasterPage() {
         setSearchCode('');
         setSelectedAcademicYearId('');
         setSelectedStatusId('');
+        setSortParam('code-asc');
         setPage(1);
         fetchStudents();
     };
@@ -287,7 +307,8 @@ export default function CourseDepartmentStudentMasterPage() {
             searchName().trim() ||
             searchCode().trim() ||
             selectedAcademicYearId() ||
-            selectedStatusId()
+            selectedStatusId() ||
+            sortParam() !== 'code-asc'
         );
     });
 
@@ -488,23 +509,45 @@ export default function CourseDepartmentStudentMasterPage() {
                             </span>
                         </div>
 
-                        {/* Page Size Selector */}
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs text-neutral-400 font-mono">Rows per page:</span>
-                            <select
-                                value={pageSize()}
-                                onChange={(e) => {
-                                    setPageSize(Number(e.currentTarget.value));
-                                    setPage(1);
-                                    fetchStudents();
-                                }}
-                                class="px-2.5 py-1 text-xs rounded-lg bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 focus:outline-hidden focus:border-teal-500"
-                            >
-                                <option value={10}>10</option>
-                                <option value={25}>25</option>
-                                <option value={50}>50</option>
-                                <option value={100}>100</option>
-                            </select>
+                        {/* Sort Selector & Page Size Selector */}
+                        <div class="flex flex-wrap items-center gap-3">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-xs text-neutral-400 font-mono">Sort:</span>
+                                <select
+                                    value={sortParam()}
+                                    onChange={(e) => {
+                                        setSortParam(e.currentTarget.value);
+                                        setPage(1);
+                                        fetchStudents();
+                                    }}
+                                    class="px-2.5 py-1 text-xs rounded-lg bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 focus:outline-hidden focus:border-teal-500"
+                                >
+                                    <option value="code-asc">NIM / Code (Ascending)</option>
+                                    <option value="code-desc">NIM / Code (Descending)</option>
+                                    <option value="name-asc">Full Name (A-Z)</option>
+                                    <option value="name-desc">Full Name (Z-A)</option>
+                                    <option value="registered-desc">Registered (Newest)</option>
+                                    <option value="registered-asc">Registered (Oldest)</option>
+                                </select>
+                            </div>
+
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-xs text-neutral-400 font-mono">Rows per page:</span>
+                                <select
+                                    value={pageSize()}
+                                    onChange={(e) => {
+                                        setPageSize(Number(e.currentTarget.value));
+                                        setPage(1);
+                                        fetchStudents();
+                                    }}
+                                    class="px-2.5 py-1 text-xs rounded-lg bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 focus:outline-hidden focus:border-teal-500"
+                                >
+                                    <option value={10}>10</option>
+                                    <option value={25}>25</option>
+                                    <option value={50}>50</option>
+                                    <option value={100}>100</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -522,13 +565,85 @@ export default function CourseDepartmentStudentMasterPage() {
                             <table class="w-full text-xs text-start">
                                 <thead class="bg-neutral-50/80 dark:bg-neutral-900/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-neutral-200 dark:border-neutral-700">
                                     <tr>
-                                        <th class="py-3.5 px-4 text-start">NIM / Code</th>
-                                        <th class="py-3.5 px-4 text-start">Full Name</th>
+                                        <th class="py-3.5 px-4 text-start">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleSortToggle('code')}
+                                                class="group inline-flex items-center gap-1.5 font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors cursor-pointer"
+                                                title="Sort by NIM / Code"
+                                            >
+                                                <span>NIM / Code</span>
+                                                <Show
+                                                    when={sortParam().startsWith('code-')}
+                                                    fallback={
+                                                        <svg class="size-3 text-neutral-300 dark:text-neutral-600 group-hover:text-neutral-400 transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+                                                    }
+                                                >
+                                                    <Show
+                                                        when={sortParam() === 'code-asc'}
+                                                        fallback={
+                                                            <svg class="size-3 text-teal-600 dark:text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                                                        }
+                                                    >
+                                                        <svg class="size-3 text-teal-600 dark:text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                                                    </Show>
+                                                </Show>
+                                            </button>
+                                        </th>
+                                        <th class="py-3.5 px-4 text-start">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleSortToggle('name')}
+                                                class="group inline-flex items-center gap-1.5 font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors cursor-pointer"
+                                                title="Sort by Full Name"
+                                            >
+                                                <span>Full Name</span>
+                                                <Show
+                                                    when={sortParam().startsWith('name-')}
+                                                    fallback={
+                                                        <svg class="size-3 text-neutral-300 dark:text-neutral-600 group-hover:text-neutral-400 transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+                                                    }
+                                                >
+                                                    <Show
+                                                        when={sortParam() === 'name-asc'}
+                                                        fallback={
+                                                            <svg class="size-3 text-teal-600 dark:text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                                                        }
+                                                    >
+                                                        <svg class="size-3 text-teal-600 dark:text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                                                    </Show>
+                                                </Show>
+                                            </button>
+                                        </th>
                                         <th class="py-3.5 px-4 text-start">Study Program</th>
                                         <th class="py-3.5 px-4 text-start">Academic Year</th>
                                         <th class="py-3.5 px-4 text-start">Admission Path</th>
                                         <th class="py-3.5 px-4 text-center">Status</th>
-                                        <th class="py-3.5 px-4 text-center">Registered</th>
+                                        <th class="py-3.5 px-4 text-center">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleSortToggle('registered')}
+                                                class="group inline-flex items-center gap-1.5 font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors cursor-pointer"
+                                                title="Sort by Registered Date"
+                                            >
+                                                <span>Registered</span>
+                                                <Show
+                                                    when={sortParam().startsWith('registered-')}
+                                                    fallback={
+                                                        <svg class="size-3 text-neutral-300 dark:text-neutral-600 group-hover:text-neutral-400 transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+                                                    }
+                                                >
+                                                    <Show
+                                                        when={sortParam() === 'registered-asc'}
+                                                        fallback={
+                                                            <svg class="size-3 text-teal-600 dark:text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                                                        }
+                                                    >
+                                                        <svg class="size-3 text-teal-600 dark:text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                                                    </Show>
+                                                </Show>
+                                            </button>
+                                        </th>
                                         <th class="py-3.5 px-4 text-end">Action</th>
                                     </tr>
                                 </thead>

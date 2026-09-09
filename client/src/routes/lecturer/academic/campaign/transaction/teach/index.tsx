@@ -341,7 +341,7 @@ export default function LecturerTeachIndexPage() {
                 </div>
 
                 {/* Chart Total Credit per Academic Year */}
-                <div class="p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-5">
+                <div class="min-w-0 p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-5">
                     {/* Header */}
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div class="space-y-1">

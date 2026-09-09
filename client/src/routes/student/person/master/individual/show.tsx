@@ -23,6 +23,7 @@ import { AcademicCourseReferenceControllerVarietyIndex } from '~/controllers/aca
 import type { AcademicCourseReferenceVariety } from '~/models/academic/course/reference/Variety';
 import { openOrDownloadPdf } from '~/lib/pdfHelper';
 import type { AcademicTrendPoint } from '~/components/chart/academic_performance_chart';
+import StudentCreditChart from '~/components/chart/student_credit_chart';
 
 const AcademicPerformanceChart = lazy(() => import('~/components/chart/academic_performance_chart'));
 
@@ -430,6 +431,8 @@ export default function StudentDashboardProfilePage() {
             };
         });
     });
+
+    const academicTrendData = chartData;
 
     // --- Pie / Donut Chart Calculations (Course Varieties Cumulative Index Scope) ---
     const varietyPalette = [
@@ -924,7 +927,7 @@ export default function StudentDashboardProfilePage() {
                                     {/* ACADEMIC PERFORMANCE & COURSE VARIETY ANALYTICS CHARTS */}
                                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                         {/* Chart 1: Multiline Academic Progress Trend (IPK & IPS by Academic Year, Max 4.0) */}
-                                        <div class="p-5 rounded-3xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 flex flex-col justify-between space-y-4">
+                                        <div class="min-w-0 p-5 rounded-3xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 flex flex-col justify-between space-y-4">
                                             <div class="flex items-start justify-between gap-3">
                                                 <div>
                                                     <div class="flex items-center gap-2">
@@ -970,8 +973,34 @@ export default function StudentDashboardProfilePage() {
                                             </Show>
                                         </div>
 
-                                        {/* Chart 2: Courses Cumulative Index Scope by academic_course_reference.varieties (Pie / Donut) */}
-                                        <div class="p-5 rounded-3xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 flex flex-col justify-between space-y-4">
+                                        {/* Chart 2: Credit SKS Load Progression with Apache ECharts */}
+                                        <div class="min-w-0 p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                                        Progres Beban Kredit SKS
+                                                    </h3>
+                                                    <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                                        Akumulasi SKS lulus kumulatif dan SKS diambil per semester.
+                                                    </p>
+                                                </div>
+                                                <div class="flex items-center gap-3 text-xs font-mono">
+                                                    <div class="flex items-center gap-1.5">
+                                                        <span class="size-2.5 rounded-full bg-teal-600"></span>
+                                                        <span class="text-neutral-600 dark:text-neutral-300">SKS Kumulatif</span>
+                                                    </div>
+                                                    <div class="flex items-center gap-1.5">
+                                                        <span class="size-2.5 rounded-full bg-amber-500"></span>
+                                                        <span class="text-neutral-600 dark:text-neutral-300">SKS Semester</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <StudentCreditChart data={academicTrendData()} />
+                                        </div>
+
+                                        {/* Chart 3: Courses Cumulative Index Scope by academic_course_reference.varieties (Pie / Donut) */}
+                                        <div class="lg:col-span-2 min-w-0 p-6 rounded-3xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 flex flex-col justify-between space-y-4">
                                             <div class="flex items-start justify-between gap-3">
                                                 <div>
                                                     <div class="flex items-center gap-2">

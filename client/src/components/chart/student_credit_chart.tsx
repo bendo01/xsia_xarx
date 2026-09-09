@@ -109,14 +109,14 @@ export default function StudentCreditChart(props: { data: AcademicTrendPoint[] }
     });
 
     return (
-        <div class="w-full">
+        <div class="w-full min-w-0">
             <Show when={chartOption()}>
                 {(option) => (
                     <EChart
                         option={option()}
                         ariaLabel="Semester Credit Progression - Cumulative and Semester SKS"
                         height={220}
-                        class="w-full"
+                        class="w-full min-w-0"
                     />
                 )}
             </Show>

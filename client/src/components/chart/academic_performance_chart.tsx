@@ -124,14 +124,14 @@ export default function AcademicPerformanceChart(props: { data: AcademicTrendPoi
     });
 
     return (
-        <div class="w-full">
+        <div class="w-full min-w-0">
             <Show when={chartOption()}>
                 {(option) => (
                     <EChart
                         option={option()}
                         ariaLabel="Academic Performance Trend - IPS and IPK by Semester"
                         height={220}
-                        class="w-full"
+                        class="w-full min-w-0"
                     />
                 )}
             </Show>

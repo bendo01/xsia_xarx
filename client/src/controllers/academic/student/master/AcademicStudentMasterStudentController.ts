@@ -61,6 +61,10 @@ export async function listStudents(queryParams?: {
     institution_id?: string;
     academic_year_id?: string;
     status_id?: string;
+    sort_by?: string;
+    sort_dir?: string;
+    order_by?: string;
+    order_dir?: string;
 }): Promise<{
     data: StudentMasterItem[];
     total: number;
@@ -79,6 +83,10 @@ export async function listStudents(queryParams?: {
         if (queryParams?.institution_id) params.set('institution_id', queryParams.institution_id);
         if (queryParams?.academic_year_id) params.set('academic_year_id', queryParams.academic_year_id);
         if (queryParams?.status_id) params.set('status_id', queryParams.status_id);
+        if (queryParams?.sort_by) params.set('sort_by', queryParams.sort_by);
+        if (queryParams?.sort_dir) params.set('sort_dir', queryParams.sort_dir);
+        if (queryParams?.order_by) params.set('order_by', queryParams.order_by);
+        if (queryParams?.order_dir) params.set('order_dir', queryParams.order_dir);
 
         const res = await fetch(`${getBaseUrl()}/academic/student/master/students?${params.toString()}`, {
             method: 'GET',

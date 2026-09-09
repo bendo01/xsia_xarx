@@ -216,9 +216,50 @@ pub async fn list_students(
         select = select.filter(entity_mod::Column::StatusId.eq(status_id));
     }
 
-    let paginator = select
-        .order_by_asc(entity_mod::Column::Name)
-        .paginate(db, page_size);
+    let sort_by = query.sort_by.as_deref().or(query.order_by.as_deref()).unwrap_or("code");
+    let sort_dir = query.sort_dir.as_deref().or(query.order_dir.as_deref()).unwrap_or("asc");
+
+    let is_desc = sort_dir.eq_ignore_ascii_case("desc");
+
+    select = match sort_by {
+        "code" => {
+            if is_desc {
+                select.order_by_desc(entity_mod::Column::Code)
+            } else {
+                select.order_by_asc(entity_mod::Column::Code)
+            }
+        }
+        "name" => {
+            if is_desc {
+                select.order_by_desc(entity_mod::Column::Name)
+            } else {
+                select.order_by_asc(entity_mod::Column::Name)
+            }
+        }
+        "registered" => {
+            if is_desc {
+                select.order_by_desc(entity_mod::Column::Registered)
+            } else {
+                select.order_by_asc(entity_mod::Column::Registered)
+            }
+        }
+        "created_at" => {
+            if is_desc {
+                select.order_by_desc(entity_mod::Column::CreatedAt)
+            } else {
+                select.order_by_asc(entity_mod::Column::CreatedAt)
+            }
+        }
+        _ => {
+            if is_desc {
+                select.order_by_desc(entity_mod::Column::Code)
+            } else {
+                select.order_by_asc(entity_mod::Column::Code)
+            }
+        }
+    };
+
+    let paginator = select.paginate(db, page_size);
 
     let total = paginator.num_items().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
     let total_pages = (total as f64 / page_size as f64).ceil() as u64;
