@@ -14,6 +14,8 @@ import {
   isAuthenticated,
   setActiveRole,
   processLoginSuccess,
+  canAccessRoute,
+  getRequiredRoleForPath,
 } from "./authStore";
 import { setStorageItem } from "./storage";
 
@@ -236,6 +238,106 @@ describe("Auth Store & Role Engine (White-Box Unit Tests)", () => {
       expect(isAuthenticatedSignal()).toBe(false);
       expect(currentUserSignal()).toBeNull();
       expect(getStoredUser()).toBeNull();
+    });
+  });
+
+  describe("getRequiredRoleForPath & canAccessRoute", () => {
+    it("identifies required roles correctly for various URL paths", () => {
+      expect(getRequiredRoleForPath("/course-department/academic/student/master")).toBe("course_department");
+      expect(getRequiredRoleForPath("/course-department/institution/master/unit/show")).toBe("course_department");
+      expect(getRequiredRoleForPath("/student/person/master/individual/show")).toBe("student");
+      expect(getRequiredRoleForPath("/lecturer/academic/campaign/transaction/teach")).toBe("lecturer");
+      expect(getRequiredRoleForPath("/administrator/person/master/individual")).toBe("administrator");
+      expect(getRequiredRoleForPath("/candidate/academic/candidate/master/candidate")).toBe("candidate");
+      expect(getRequiredRoleForPath("/authentification/login")).toBeNull();
+      expect(getRequiredRoleForPath("/")).toBeNull();
+      expect(getRequiredRoleForPath("/404")).toBeNull();
+    });
+
+    it("allows unauthenticated visitors on public routes", () => {
+      const loginCheck = canAccessRoute("/authentification/login");
+      expect(loginCheck.allowed).toBe(true);
+
+      const rootCheck = canAccessRoute("/");
+      expect(rootCheck.allowed).toBe(true);
+    });
+
+    it("redirects unauthenticated visitors attempting to access protected routes to login", () => {
+      const check = canAccessRoute("/course-department/academic/student/master?unit_id=94a676ce-06e6-4fd5-88c2-3122533f9ccb");
+      expect(check.allowed).toBe(false);
+      expect(check.reason).toBe("unauthenticated");
+      expect(check.redirectTo).toContain("/authentification/login");
+      expect(check.redirectTo).toContain(encodeURIComponent("/course-department/academic/student/master?unit_id=94a676ce-06e6-4fd5-88c2-3122533f9ccb"));
+    });
+
+    it("PREVENTS student (e.g. Marsha) from accessing course-department pages and redirects to student dashboard", () => {
+      // Set up authenticated student user
+      setStorageItem("token", "student-valid-token");
+      setStorageItem("active_role", "student");
+      setStorageItem("current_role", "role-mhs-1");
+      setStorageItem("roles", JSON.stringify([
+        { id: "role-mhs-1", name: "Mahasiswa" }
+      ]));
+      refreshAuthState();
+
+      const result = canAccessRoute("/course-department/academic/student/master?unit_id=94a676ce-06e6-4fd5-88c2-3122533f9ccb");
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toBe("unauthorized");
+      expect(result.redirectTo).toBe("/student/person/master/individual/show");
+    });
+
+    it("PREVENTS student from accessing administrator pages", () => {
+      setStorageItem("token", "student-valid-token");
+      setStorageItem("active_role", "student");
+      setStorageItem("roles", JSON.stringify([
+        { id: "role-mhs-1", name: "Mahasiswa" }
+      ]));
+      refreshAuthState();
+
+      const result = canAccessRoute("/administrator/person/master/individual");
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toBe("unauthorized");
+      expect(result.redirectTo).toBe("/student/person/master/individual/show");
+    });
+
+    it("ALLOWS student to access student routes", () => {
+      setStorageItem("token", "student-valid-token");
+      setStorageItem("active_role", "student");
+      setStorageItem("roles", JSON.stringify([
+        { id: "role-mhs-1", name: "Mahasiswa" }
+      ]));
+      refreshAuthState();
+
+      const result = canAccessRoute("/student/person/master/individual/show");
+      expect(result.allowed).toBe(true);
+    });
+
+    it("ALLOWS administrator to access course-department routes as a bypass", () => {
+      setStorageItem("token", "admin-valid-token");
+      setStorageItem("active_role", "administrator");
+      setStorageItem("roles", JSON.stringify([
+        { id: "role-admin-1", name: "Administrator" }
+      ]));
+      refreshAuthState();
+
+      const result = canAccessRoute("/course-department/academic/student/master");
+      expect(result.allowed).toBe(true);
+    });
+
+    it("detects multi-role user and returns switchRole when visiting matching route", () => {
+      setStorageItem("token", "multi-valid-token");
+      setStorageItem("active_role", "lecturer");
+      setStorageItem("current_role", "role-dosen-1");
+      setStorageItem("roles", JSON.stringify([
+        { id: "role-dosen-1", name: "Dosen" },
+        { id: "role-prodi-1", name: "Kepala Program Studi" }
+      ]));
+      refreshAuthState();
+
+      const result = canAccessRoute("/course-department/academic/student/master");
+      expect(result.allowed).toBe(true);
+      expect(result.switchRole).toBeDefined();
+      expect(result.switchRole?.id).toBe("role-prodi-1");
     });
   });
 });

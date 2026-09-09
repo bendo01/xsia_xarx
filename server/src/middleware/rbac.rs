@@ -245,19 +245,29 @@ impl Handler for RbacGuard {
         });
 
         let allowed_by_role_capability = if is_student {
-            // Student role can access student routes and read academic / institution / building / location catalog
-            route_name.starts_with("academic.student.")
-                || (action == "read" && (
-                    route_name.starts_with("academic.")
-                    || route_name.starts_with("institution.")
-                    || route_name.starts_with("building.")
-                    || route_name.starts_with("location.")
-                    || route_name.starts_with("person.")
-                    || route_name.starts_with("common.")
-                ))
-                || route_name.starts_with("person.master.individual")
-                || route_name.starts_with("person.master.biodata")
-                || route_name.starts_with("auth.user")
+            // Administrative student roster management endpoints are restricted to department staff & admins
+            let is_admin_student_management = route_name == "academic.student.master.students.list_students"
+                || route_name == "academic.student.master.students.create_student"
+                || route_name == "academic.student.master.students.update_student"
+                || route_name == "academic.student.master.students.delete_student";
+
+            if is_admin_student_management {
+                false
+            } else {
+                // Student role can access personal student routes and read catalog data
+                route_name.starts_with("academic.student.")
+                    || (action == "read" && (
+                        route_name.starts_with("academic.")
+                        || route_name.starts_with("institution.")
+                        || route_name.starts_with("building.")
+                        || route_name.starts_with("location.")
+                        || route_name.starts_with("person.")
+                        || route_name.starts_with("common.")
+                    ))
+                    || route_name.starts_with("person.master.individual")
+                    || route_name.starts_with("person.master.biodata")
+                    || route_name.starts_with("auth.user")
+            }
         } else if is_lecturer {
             // Lecturer role can access lecturer routes and read catalog / student records
             route_name.starts_with("academic.lecturer.")

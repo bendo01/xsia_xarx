@@ -458,3 +458,76 @@ export function logout(): void {
     removeStorageItem('active_role');
     refreshAuthState();
 }
+
+export interface RouteAccessResult {
+    allowed: boolean;
+    redirectTo?: string;
+    switchRole?: UserRoleItem;
+    reason?: 'unauthenticated' | 'unauthorized' | 'role_mismatch';
+}
+
+export const ROLE_ROUTE_PREFIXES: { prefix: string; role: string }[] = [
+    { prefix: '/administrator', role: 'administrator' },
+    { prefix: '/course-department', role: 'course_department' },
+    { prefix: '/student', role: 'student' },
+    { prefix: '/lecturer', role: 'lecturer' },
+    { prefix: '/candidate', role: 'candidate' },
+];
+
+export function getRequiredRoleForPath(pathname: string): string | null {
+    const cleanPath = pathname.split('?')[0].split('#')[0];
+    const matched = ROLE_ROUTE_PREFIXES.find(item => cleanPath === item.prefix || cleanPath.startsWith(`${item.prefix}/`));
+    return matched ? matched.role : null;
+}
+
+export function canAccessRoute(pathname: string): RouteAccessResult {
+    const requiredRole = getRequiredRoleForPath(pathname);
+
+    // If path does not require any specific role (e.g. /, /authentification/*, /404), allow it
+    if (!requiredRole) {
+        return { allowed: true };
+    }
+
+    // If path requires a role but user is not authenticated
+    if (!isAuthenticated()) {
+        const cleanPath = pathname.split('#')[0];
+        const returnUrl = encodeURIComponent(cleanPath);
+        return {
+            allowed: false,
+            redirectTo: `/authentification/login?return_url=${returnUrl}`,
+            reason: 'unauthenticated',
+        };
+    }
+
+    const activeRole = getActiveRole();
+    const storedRoles = getStoredRoles();
+
+    // Administrator role has elevated bypass access across all areas
+    const isAdmin = activeRole === 'administrator' || storedRoles.some(r => normalizeRoleName(r.name, r) === 'administrator');
+    if (isAdmin) {
+        return { allowed: true };
+    }
+
+    // If active role matches the required role, access is granted
+    if (activeRole === requiredRole) {
+        return { allowed: true };
+    }
+
+    // Check if the user has this role assigned in their roles list (e.g., multi-role user)
+    const matchingRoleItem = storedRoles.find(r => normalizeRoleName(r.name, r) === requiredRole);
+    if (matchingRoleItem) {
+        return {
+            allowed: true,
+            switchRole: matchingRoleItem,
+        };
+    }
+
+    // User is authenticated but does not possess the required role (e.g. student visiting /course-department/...)
+    const safeDashboard = getDashboardPathForRole(activeRole);
+    return {
+        allowed: false,
+        redirectTo: safeDashboard,
+        reason: 'unauthorized',
+    };
+}
+
