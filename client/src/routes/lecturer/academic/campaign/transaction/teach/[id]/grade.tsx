@@ -903,7 +903,8 @@ export default function LecturerTeachGradePage() {
                                 </div>
                             }
                         >
-                            <div class="overflow-x-auto">
+                            {/* Desktop / Tablet Table View */}
+                            <div class="hidden md:block overflow-x-auto">
                                 <table class="w-full text-left text-xs">
                                     <thead class="bg-neutral-50 dark:bg-neutral-900/60 border-b border-neutral-200 dark:border-neutral-700 text-neutral-500 font-mono uppercase tracking-wider text-[11px]">
                                         <tr>
@@ -1034,6 +1035,130 @@ export default function LecturerTeachGradePage() {
                                         </For>
                                     </tbody>
                                 </table>
+                            </div>
+
+                            {/* Mobile Card View */}
+                            <div class="block md:hidden p-4 space-y-4">
+                                <For each={filteredStudents()}>
+                                    {(student, index) => {
+                                        const rawIndex = () => studentRows().findIndex(r => r.detail_activity_id === student.detail_activity_id);
+
+                                        return (
+                                            <div class={`p-4 rounded-2xl border transition-all ${
+                                                student.is_dirty 
+                                                    ? 'bg-amber-50/50 dark:bg-amber-950/20 border-amber-300 dark:border-amber-800 shadow-xs' 
+                                                    : 'bg-white dark:bg-neutral-800/80 border-neutral-200 dark:border-neutral-700 shadow-2xs'
+                                            } space-y-3.5`}>
+                                                {/* Header: Student Identity & Lock Status */}
+                                                <div class="flex items-start justify-between gap-2.5">
+                                                    <div class="flex items-start gap-2.5 min-w-0">
+                                                        <div class="size-7 rounded-lg bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 font-mono text-xs font-bold flex items-center justify-center shrink-0">
+                                                            {index() + 1}
+                                                        </div>
+                                                        <div class="space-y-0.5 min-w-0">
+                                                            <h4 class="font-bold text-sm text-neutral-900 dark:text-white leading-snug truncate">
+                                                                {student.student_name}
+                                                            </h4>
+                                                            <div class="flex items-center gap-1.5 text-xs font-mono text-neutral-500 dark:text-neutral-400">
+                                                                <span>{student.student_code}</span>
+                                                                <Show when={student.credit > 0}>
+                                                                    <span>•</span>
+                                                                    <span>{student.credit} SKS</span>
+                                                                </Show>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <span class={`px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0 ${
+                                                        student.is_lock
+                                                            ? 'bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300'
+                                                            : student.is_dirty
+                                                                ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700'
+                                                                : 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'
+                                                    }`}>
+                                                        {student.is_lock ? 'Locked' : student.is_dirty ? 'Unsaved' : 'Saved'}
+                                                    </span>
+                                                </div>
+
+                                                {/* Calculated Mark & Grade Summary Box */}
+                                                <div class="grid grid-cols-2 gap-2 p-3 rounded-xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60">
+                                                    <div class="space-y-0.5">
+                                                        <span class="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Nilai Akhir</span>
+                                                        <div class="font-mono font-black text-lg text-indigo-700 dark:text-indigo-300">
+                                                            {student.calculated_mark}
+                                                        </div>
+                                                    </div>
+                                                    <div class="space-y-0.5 text-right">
+                                                        <span class="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Grade</span>
+                                                        <div>
+                                                            <span class={`inline-block px-2.5 py-0.5 rounded-lg text-xs font-mono font-bold ${
+                                                                ['A', 'A-', 'B+'].includes(student.grade_letter || '')
+                                                                    ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'
+                                                                    : ['B', 'B-', 'C+'].includes(student.grade_letter || '')
+                                                                        ? 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300'
+                                                                        : ['C', 'D'].includes(student.grade_letter || '')
+                                                                            ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300'
+                                                                            : 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300'
+                                                            }`}>
+                                                                {student.grade_letter || '-'}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Dynamic Evaluation Component Inputs */}
+                                                <Show when={evaluations().length > 0}>
+                                                    <div class="space-y-2">
+                                                        <span class="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Komponen Penilaian</span>
+                                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                            <For each={evaluations()}>
+                                                                {(ev) => {
+                                                                    const score = () => student.component_scores[ev.id]?.mark ?? 0;
+
+                                                                    return (
+                                                                        <div class="flex items-center justify-between p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/70 dark:border-neutral-700/70">
+                                                                            <div class="pr-2 min-w-0">
+                                                                                <div class="text-xs font-semibold text-neutral-800 dark:text-neutral-200 truncate">{ev.name}</div>
+                                                                                <div class="text-[10px] text-indigo-600 dark:text-indigo-400 font-mono">({ev.evaluation_weight}%)</div>
+                                                                            </div>
+                                                                            <input
+                                                                                type="number"
+                                                                                min="0"
+                                                                                max="100"
+                                                                                step="0.1"
+                                                                                value={score()}
+                                                                                disabled={student.is_lock}
+                                                                                onInput={(e) => handleScoreChange(rawIndex(), ev.id, e.currentTarget.value)}
+                                                                                class={`w-20 px-2 py-1.5 text-center font-mono font-bold text-xs rounded-lg border transition-all ${
+                                                                                    student.is_lock
+                                                                                        ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 border-neutral-200 dark:border-neutral-700 cursor-not-allowed'
+                                                                                        : 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white border-neutral-300 dark:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500'
+                                                                                }`}
+                                                                            />
+                                                                        </div>
+                                                                    );
+                                                                }}
+                                                            </For>
+                                                        </div>
+                                                    </div>
+                                                </Show>
+
+                                                {/* Card Action: Save Button */}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => saveStudentRow(rawIndex())}
+                                                    disabled={student.is_lock || !student.is_dirty || student.is_saving}
+                                                    class="w-full py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-xs"
+                                                >
+                                                    <Show when={student.is_saving} fallback={<span>{student.is_dirty ? 'Simpan Perubahan' : 'Tersimpan'}</span>}>
+                                                        <div class="size-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                                        <span>Menyimpan...</span>
+                                                    </Show>
+                                                </button>
+                                            </div>
+                                        );
+                                    }}
+                                </For>
                             </div>
                         </Show>
                     </Show>
