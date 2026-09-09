@@ -974,29 +974,41 @@ export default function StudentDashboardProfilePage() {
                                         </div>
 
                                         {/* Chart 2: Credit SKS Load Progression with Apache ECharts */}
-                                        <div class="min-w-0 p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
-                                            <div class="flex items-center justify-between">
+                                        <div class="min-w-0 p-5 rounded-3xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 flex flex-col justify-between space-y-4">
+                                            <div class="flex items-start justify-between gap-3">
                                                 <div>
-                                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                                        Progres Beban Kredit SKS
-                                                    </h3>
-                                                    <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                                    <div class="flex items-center gap-2">
+                                                        <div class="size-7 rounded-lg bg-teal-100 dark:bg-teal-950/80 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold">
+                                                            <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+                                                        </div>
+                                                        <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                                            Progres Beban Kredit SKS
+                                                        </h3>
+                                                    </div>
+                                                    <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
                                                         Akumulasi SKS lulus kumulatif dan SKS diambil per semester.
                                                     </p>
                                                 </div>
-                                                <div class="flex items-center gap-3 text-xs font-mono">
+                                                <div class="flex items-center gap-3 text-[11px] font-mono shrink-0">
                                                     <div class="flex items-center gap-1.5">
                                                         <span class="size-2.5 rounded-full bg-teal-600"></span>
-                                                        <span class="text-neutral-600 dark:text-neutral-300">SKS Kumulatif</span>
+                                                        <span class="text-neutral-700 dark:text-neutral-300 font-semibold">SKS Kumulatif</span>
                                                     </div>
                                                     <div class="flex items-center gap-1.5">
                                                         <span class="size-2.5 rounded-full bg-amber-500"></span>
-                                                        <span class="text-neutral-600 dark:text-neutral-300">SKS Semester</span>
+                                                        <span class="text-neutral-700 dark:text-neutral-300 font-semibold">SKS Semester</span>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <StudentCreditChart data={academicTrendData()} />
+                                            <Show when={academicTrendData().length > 0} fallback={
+                                                <div class="py-16 text-center text-neutral-400 font-mono text-xs flex flex-col items-center justify-center gap-2">
+                                                    <svg class="size-8 text-neutral-300 dark:text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+                                                    <span>No academic credit records found to plot trends.</span>
+                                                </div>
+                                            }>
+                                                <StudentCreditChart data={academicTrendData()} />
+                                            </Show>
                                         </div>
 
                                         {/* Chart 3: Courses Cumulative Index Scope by academic_course_reference.varieties (Pie / Donut) */}

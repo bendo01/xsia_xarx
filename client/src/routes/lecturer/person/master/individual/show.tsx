@@ -96,61 +96,54 @@ export default function LecturerIndividualShowPage() {
         fetchLecturerProfile();
     });
 
-    // Distinct Academic Years extracted from assigned teaches
-    const distinctAcademicYears = createMemo(() => {
-        const yearMap = new Map<string, { id: string; name: string; code?: number | string | null }>();
-        for (const item of assignedTeaches()) {
-            const y = item.activity?.academic_year;
-            if (y?.id && !yearMap.has(y.id)) {
-                yearMap.set(y.id, {
-                    id: y.id,
-                    name: y.name || 'Tahun Akademik',
-                    code: y.code ?? null,
-                });
-            }
-        }
-        return Array.from(yearMap.values()).sort((a, b) => {
-            const codeA = Number(a.code) || 0;
-            const codeB = Number(b.code) || 0;
-            return codeA - codeB;
-        });
-    });
-
     const yearlyCreditTrends = createMemo<YearlyCreditTrend[]>(() => {
-        const years = distinctAcademicYears();
-        const teaches = assignedTeaches();
+        const map = new Map<string, YearlyCreditTrend>();
 
-        return years.map((year) => {
-            const yearTeaches = teaches.filter((t) => t.activity?.academic_year_id === year.id);
-            let totalCredit = 0;
-            let totalPlanned = 0;
-            let totalRealized = 0;
-            const courses: { name: string; code?: string; credit: number; className?: string }[] = [];
+        for (const item of assignedTeaches()) {
+            const yId = item.academic_year_id || 'unknown';
+            const yName = item.academic_year_name || (item.academic_year_code ? `Tahun ${item.academic_year_code}` : 'Tahun Akademik');
+            const yCode = item.academic_year_code;
+            const cr = Number(item.credit || item.course_total_credit) || 0;
 
-            for (const t of yearTeaches) {
-                const cred = Number(t.credit) || 0;
-                totalCredit += cred;
-                totalPlanned += Number(t.plan_meeting_count) || 0;
-                totalRealized += Number(t.realization_meeting_count) || 0;
-                courses.push({
-                    name: t.course_name || t.name || 'Mata Kuliah',
-                    code: t.course_code || undefined,
-                    credit: cred,
-                    className: t.class_name || undefined,
+            if (!map.has(yId)) {
+                map.set(yId, {
+                    yearId: yId,
+                    yearName: yName,
+                    yearCode: yCode ?? null,
+                    totalCredit: 0,
+                    classCount: 0,
+                    totalPlannedSessions: 0,
+                    totalRealizedSessions: 0,
+                    courses: [],
                 });
             }
 
-            return {
-                yearId: year.id,
-                yearName: year.name,
-                yearCode: year.code ?? null,
-                totalCredit,
-                classCount: yearTeaches.length,
-                totalPlannedSessions: totalPlanned,
-                totalRealizedSessions: totalRealized,
-                courses,
-            };
+            const entry = map.get(yId)!;
+            entry.totalCredit += cr;
+            entry.classCount += 1;
+            entry.totalPlannedSessions += (Number(item.planning) || 0);
+            entry.totalRealizedSessions += (Number(item.realization) || 0);
+            entry.courses.push({
+                name: item.course_name || item.teach_name || 'Mata Kuliah',
+                code: item.course_code || undefined,
+                credit: cr,
+                className: item.class_name || (item.class_alphabet_code ? `Kelas ${item.class_alphabet_code}` : undefined),
+            });
+        }
+
+        const list = Array.from(map.values()).filter(entry => entry.yearId !== 'unknown' || entry.totalCredit > 0);
+
+        // Sort chronologically (earliest to latest academic year) for standard left-to-right timeline trend
+        list.sort((a, b) => {
+            const codeA = Number(a.yearCode) || 0;
+            const codeB = Number(b.yearCode) || 0;
+            if (codeA !== 0 && codeB !== 0 && codeA !== codeB) {
+                return codeA - codeB;
+            }
+            return (a.yearName || '').localeCompare(b.yearName || '');
         });
+
+        return list;
     });
 
     const ind = () => individualData()?.individual;
