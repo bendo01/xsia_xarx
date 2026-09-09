@@ -507,6 +507,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.campaign.transaction.teaches.create_teache",
         },
         RouteDefinition {
+            url: "/api/v1/academic/campaign/transaction/teaches/lecturer/{id}",
+            method: "GET",
+            handler: "teaches::get_teaches_by_lecturer",
+            name: "academic.campaign.transaction.teaches.get_teaches_by_lecturer",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/campaign/transaction/teaches/{id}",
             method: "GET",
             handler: "teaches::get_teache",

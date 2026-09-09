@@ -10,7 +10,7 @@ use validator::Validate;
 
 use crate::dtos::academic::campaign::transaction::teaches::{
     CreateTeachRequest, TeachQuery, TeachResponse, PaginatedTeachResponse,
-    UpdateTeachRequest,
+    UpdateTeachRequest, LecturerAssignedTeachResponse,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::campaign::transaction::teaches as entity_mod;
@@ -41,6 +41,18 @@ pub async fn list_teaches(
     }
     if let Some(course_id) = query.course_id {
         select = select.filter(entity_mod::Column::CourseId.eq(course_id));
+    }
+    if let Some(lecturer_id) = query.lecturer_id {
+        let teach_ids: Vec<Uuid> = crate::models::academic::campaign::transaction::teach_lecturers::Entity::find()
+            .filter(crate::models::academic::campaign::transaction::teach_lecturers::Column::LecturerId.eq(lecturer_id))
+            .filter(crate::models::academic::campaign::transaction::teach_lecturers::Column::DeletedAt.is_null())
+            .select_only()
+            .column(crate::models::academic::campaign::transaction::teach_lecturers::Column::TeachId)
+            .into_tuple::<Uuid>()
+            .all(db)
+            .await
+            .unwrap_or_default();
+        select = select.filter(entity_mod::Column::Id.is_in(teach_ids));
     }
 
     let paginator = select
@@ -417,4 +429,224 @@ pub async fn delete_teache(
         Ok(Json(MessageResponse {
             message: "Teach deleted successfully".to_string(),
         }))
+}
+
+#[endpoint(tags("Academic - Campaign - Transaction - Teach"), status_codes(200, 400, 500))]
+pub async fn get_teaches_by_lecturer(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<Vec<LecturerAssignedTeachResponse>>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let id_str = req
+        .param::<String>("id")
+        .or_else(|| req.param::<String>("lecturer_id"))
+        .or_else(|| req.query::<String>("lecturer_id"))
+        .ok_or_else(|| StatusError::bad_request().brief("Missing parameter id or lecturer_id"))?;
+
+    let lecturer_id = Uuid::parse_str(&id_str)
+        .map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+
+    // Check if the passed ID is direct lecturer.id or individual_id
+    let resolved_lecturer_id = if let Some(lecturer) = crate::models::academic::lecturer::master::lecturers::Entity::find_by_id(lecturer_id)
+        .filter(crate::models::academic::lecturer::master::lecturers::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+    {
+        lecturer.id
+    } else if let Some(lecturer) = crate::models::academic::lecturer::master::lecturers::Entity::find()
+        .filter(crate::models::academic::lecturer::master::lecturers::Column::IndividualId.eq(lecturer_id))
+        .filter(crate::models::academic::lecturer::master::lecturers::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+    {
+        lecturer.id
+    } else {
+        lecturer_id
+    };
+
+    // 1. Fetch teach_lecturers for this lecturer
+    let teach_lecturers = crate::models::academic::campaign::transaction::teach_lecturers::Entity::find()
+        .filter(crate::models::academic::campaign::transaction::teach_lecturers::Column::LecturerId.eq(resolved_lecturer_id))
+        .filter(crate::models::academic::campaign::transaction::teach_lecturers::Column::DeletedAt.is_null())
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    if teach_lecturers.is_empty() {
+        return Ok(Json(vec![]));
+    }
+
+    let teach_ids: Vec<Uuid> = teach_lecturers.iter().map(|tl| tl.teach_id).collect();
+
+    // 2. Fetch teaches
+    let teaches = entity_mod::Entity::find()
+        .filter(entity_mod::Column::Id.is_in(teach_ids))
+        .filter(entity_mod::Column::DeletedAt.is_null())
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let teaches_map: HashMap<Uuid, entity_mod::Model> = teaches
+        .into_iter()
+        .map(|t| (t.id, t))
+        .collect();
+
+    // Collect related IDs
+    let course_ids: Vec<Uuid> = teaches_map.values().map(|t| t.course_id).collect();
+    let class_code_ids: Vec<Uuid> = teaches_map.values().map(|t| t.class_code_id).collect();
+    let activity_ids: Vec<Uuid> = teaches_map.values().filter_map(|t| t.activity_id).collect();
+
+    // 3. Fetch courses
+    let courses_map: HashMap<Uuid, crate::models::academic::course::master::courses::Model> = if course_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::academic::course::master::courses::Entity::find()
+            .filter(crate::models::academic::course::master::courses::Column::Id.is_in(course_ids))
+            .filter(crate::models::academic::course::master::courses::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|c| (c.id, c))
+            .collect()
+    };
+
+    // 4. Fetch class codes
+    let class_codes_map: HashMap<Uuid, crate::models::academic::campaign::transaction::class_codes::Model> = if class_code_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::academic::campaign::transaction::class_codes::Entity::find()
+            .filter(crate::models::academic::campaign::transaction::class_codes::Column::Id.is_in(class_code_ids))
+            .filter(crate::models::academic::campaign::transaction::class_codes::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|cc| (cc.id, cc))
+            .collect()
+    };
+
+    // 5. Fetch activities
+    let activities = if activity_ids.is_empty() {
+        Vec::new()
+    } else {
+        crate::models::academic::campaign::transaction::activities::Entity::find()
+            .filter(crate::models::academic::campaign::transaction::activities::Column::Id.is_in(activity_ids))
+            .filter(crate::models::academic::campaign::transaction::activities::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+    };
+
+    let academic_year_ids: Vec<Uuid> = activities.iter().map(|a| a.academic_year_id).collect();
+    let activities_map: HashMap<Uuid, crate::models::academic::campaign::transaction::activities::Model> = activities
+        .into_iter()
+        .map(|a| (a.id, a))
+        .collect();
+
+    // 6. Fetch academic years
+    let academic_years_map: HashMap<Uuid, crate::models::academic::general::reference::academic_years::Model> = if academic_year_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::academic::general::reference::academic_years::Entity::find()
+            .filter(crate::models::academic::general::reference::academic_years::Column::Id.is_in(academic_year_ids))
+            .filter(crate::models::academic::general::reference::academic_years::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|ay| (ay.id, ay))
+            .collect()
+    };
+
+    // 7. Assemble response items
+    let mut results = Vec::with_capacity(teach_lecturers.len());
+    for tl in teach_lecturers {
+        let teach = teaches_map.get(&tl.teach_id);
+        let course = teach.and_then(|t| courses_map.get(&t.course_id));
+        let class_code = teach.and_then(|t| class_codes_map.get(&t.class_code_id));
+        let activity = teach.and_then(|t| t.activity_id.and_then(|aid| activities_map.get(&aid)));
+        let academic_year = activity.and_then(|a| academic_years_map.get(&a.academic_year_id));
+
+        let credit = tl.credit
+            .map(|d| d.to_string().parse::<f64>().unwrap_or(0.0))
+            .filter(|&c| c > 0.0)
+            .or_else(|| course.map(|c| c.total_credit))
+            .unwrap_or(0.0);
+
+        let course_name = course
+            .map(|c| c.name.clone())
+            .or_else(|| teach.and_then(|t| t.name.as_ref().map(|n| format!("Mata Kuliah ({})", n))))
+            .unwrap_or_else(|| "Mata Kuliah".to_string());
+
+        let class_name = class_code
+            .map(|cc| cc.name.clone())
+            .or_else(|| class_code.and_then(|cc| cc.alphabet_code.as_ref().map(|ac| format!("Kelas {}", ac))))
+            .unwrap_or_else(|| "Kelas".to_string());
+
+        let class_capacity = class_code.and_then(|cc| cc.capacity).or_else(|| teach.and_then(|t| t.max_member));
+
+        let academic_year_name = academic_year
+            .map(|ay| ay.name.clone())
+            .or_else(|| academic_year.map(|ay| ay.code.to_string()));
+
+        results.push(LecturerAssignedTeachResponse {
+            teach_lecturer_id: tl.id,
+            teach_id: tl.teach_id,
+            lecturer_id: tl.lecturer_id,
+            planning: tl.planning,
+            realization: tl.realization,
+            credit,
+            is_lecturer_home_base: tl.is_lecturer_home_base,
+            role_name: tl.name,
+
+            teach_name: teach.and_then(|t| t.name.clone()),
+            description: teach.and_then(|t| t.description.clone()),
+            start_date: teach.and_then(|t| t.start_date),
+            end_date: teach.and_then(|t| t.end_date),
+            max_member: teach.and_then(|t| t.max_member),
+            activity_id: teach.and_then(|t| t.activity_id),
+            activity_name: activity.map(|a| a.name.clone()),
+            academic_year_id: activity.map(|a| a.academic_year_id),
+            academic_year_name,
+            academic_year_code: academic_year.map(|ay| ay.code),
+
+            course_id: teach.map(|t| t.course_id).unwrap_or_default(),
+            course_code: course.map(|c| c.code.clone()),
+            course_name: Some(course_name),
+            course_total_credit: course.map(|c| c.total_credit),
+            course_lecture_credit: course.map(|c| c.lecture_credit),
+            course_practice_credit: course.map(|c| c.practice_credit),
+
+            class_code_id: teach.map(|t| t.class_code_id).unwrap_or_default(),
+            class_name: Some(class_name),
+            class_alphabet_code: class_code.and_then(|cc| cc.alphabet_code.clone()),
+            class_capacity,
+        });
+    }
+
+    // Sort latest academic year first, then course name
+    results.sort_by(|a, b| {
+        let code_a = a.academic_year_code.unwrap_or(0);
+        let code_b = b.academic_year_code.unwrap_or(0);
+        if code_a != code_b {
+            return code_b.cmp(&code_a);
+        }
+        let year_a = a.academic_year_name.as_deref().unwrap_or("");
+        let year_b = b.academic_year_name.as_deref().unwrap_or("");
+        let year_cmp = year_b.cmp(year_a);
+        if year_cmp != std::cmp::Ordering::Equal {
+            return year_cmp;
+        }
+        let name_a = a.course_name.as_deref().unwrap_or("");
+        let name_b = b.course_name.as_deref().unwrap_or("");
+        name_a.cmp(name_b)
+    });
+
+    Ok(Json(results))
 }

@@ -118,6 +118,10 @@ pub fn router() -> Router {
                 .get_named("academic.campaign.transaction.teaches.list_teaches", teaches::list_teaches)
                 .post_named("academic.campaign.transaction.teaches.create_teache", teaches::create_teache)
                 .push(
+                    Router::with_path("lecturer/{id}")
+                        .get_named("academic.campaign.transaction.teaches.get_teaches_by_lecturer", teaches::get_teaches_by_lecturer),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.campaign.transaction.teaches.get_teache", teaches::get_teache)
                         .put_named("academic.campaign.transaction.teaches.update_teache", teaches::update_teache)

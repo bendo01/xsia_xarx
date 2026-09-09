@@ -13,6 +13,42 @@ pub struct TeachQuery {
     pub activity_id: Option<Uuid>,
     pub teach_decree_id: Option<Uuid>,
     pub course_id: Option<Uuid>,
+    pub lecturer_id: Option<Uuid>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct LecturerAssignedTeachResponse {
+    pub teach_lecturer_id: Uuid,
+    pub teach_id: Uuid,
+    pub lecturer_id: Uuid,
+    pub planning: i32,
+    pub realization: i32,
+    pub credit: f64,
+    pub is_lecturer_home_base: bool,
+    pub role_name: Option<String>,
+
+    pub teach_name: Option<String>,
+    pub description: Option<String>,
+    pub start_date: Option<NaiveDate>,
+    pub end_date: Option<NaiveDate>,
+    pub max_member: Option<i32>,
+    pub activity_id: Option<Uuid>,
+    pub activity_name: Option<String>,
+    pub academic_year_id: Option<Uuid>,
+    pub academic_year_name: Option<String>,
+    pub academic_year_code: Option<i32>,
+
+    pub course_id: Uuid,
+    pub course_code: Option<String>,
+    pub course_name: Option<String>,
+    pub course_total_credit: Option<f64>,
+    pub course_lecture_credit: Option<f64>,
+    pub course_practice_credit: Option<f64>,
+
+    pub class_code_id: Uuid,
+    pub class_name: Option<String>,
+    pub class_alphabet_code: Option<String>,
+    pub class_capacity: Option<i32>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
