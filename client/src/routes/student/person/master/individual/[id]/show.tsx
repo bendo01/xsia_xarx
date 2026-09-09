@@ -1,5 +1,5 @@
 import { createSignal, onMount, createEffect, Show, For, createMemo, lazy, Suspense } from 'solid-js';
-import { useSearchParams, A } from '@solidjs/router';
+import { useParams, useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import {
@@ -24,10 +24,12 @@ import type { AcademicCourseReferenceVariety } from '~/models/academic/course/re
 import { openOrDownloadPdf } from '~/lib/pdfHelper';
 import type { AcademicTrendPoint } from '~/components/chart/academic_performance_chart';
 import StudentCreditChart from '~/components/chart/student_credit_chart';
+import PopupBlockedAlert from '~/components/alert/PopupBlockedAlert';
 
 const AcademicPerformanceChart = lazy(() => import('~/components/chart/academic_performance_chart'));
 
 export default function StudentDashboardProfilePage() {
+    const params = useParams();
     const [searchParams, setSearchParams] = useSearchParams();
     const [isLoading, setIsLoading] = createSignal(true);
     const [isSubLoading, setIsSubLoading] = createSignal(false);
@@ -91,7 +93,7 @@ export default function StudentDashboardProfilePage() {
     const fetchStudentProfile = async () => {
         setIsLoading(true);
         try {
-            let targetIndId = (searchParams.id as string) || '';
+            let targetIndId = params.id || (searchParams.id as string) || '';
             const user = currentUserSignal();
 
             // 1. Resolve individual ID from query param, reactive user signal, or storage
@@ -220,13 +222,13 @@ export default function StudentDashboardProfilePage() {
     });
 
     createEffect(() => {
-        const idFromQuery = searchParams.id as string;
+        const idFromParamOrQuery = params.id || (searchParams.id as string);
         const codeFromQuery = searchParams.code as string;
         const studentIdFromQuery = searchParams.student_id as string;
         const currentStudentCode = activeStudentCodeSignal();
         const currentStudentId = activeStudentIdSignal();
 
-        if (idFromQuery && idFromQuery !== individualData()?.individual?.id) {
+        if (idFromParamOrQuery && idFromParamOrQuery !== individualData()?.individual?.id) {
             fetchStudentProfile();
             return;
         }
@@ -556,6 +558,9 @@ export default function StudentDashboardProfilePage() {
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+                {/* Pop-up blocker detection alert for PDF generation */}
+                <PopupBlockedAlert />
+
                 {/* Profile Header Hero Card */}
                 <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-blue-500/20">
                     <div class="absolute -right-16 -top-16 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>

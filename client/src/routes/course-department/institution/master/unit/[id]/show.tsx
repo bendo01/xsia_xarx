@@ -1,5 +1,5 @@
 import { createSignal, onMount, createEffect, Show, For, createMemo, ErrorBoundary } from 'solid-js';
-import { useSearchParams, A } from '@solidjs/router';
+import { useParams, useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { masterApiShow, masterApiIndex } from '~/controllers/master/masterApiController';
@@ -17,6 +17,7 @@ import type { InstitutionMasterUnit } from '~/models/institution/master/Unit';
 import type { InstitutionMasterStaff } from '~/models/institution/master/Staff';
 import StudentAcademicYearChart, { StudentStatusByYear } from '~/components/chart/student_academic_year_chart';
 import CourseCategoryPieChart, { CourseCategoryItem } from '~/components/chart/course_category_pie_chart';
+import PopupBlockedAlert from '~/components/alert/PopupBlockedAlert';
 
 // In-memory module-level cache for static reference tables across navigations
 let cachedVarieties: any[] | null = null;
@@ -25,10 +26,11 @@ let cachedPositionTypes: any[] | null = null;
 let activeFetchId = '';
 
 export default function CourseDepartmentUnitShowPage() {
+    const params = useParams();
     const [searchParams, setSearchParams] = useSearchParams();
     const [isLoading, setIsLoading] = createSignal(true);
-    // Initialize immediately from URL query if present
-    const initialQueryId = ((searchParams.id as string) || (searchParams.unit_id as string) || '').trim();
+    // Initialize immediately from URL route param or query if present
+    const initialQueryId = ((params.id as string) || (searchParams.id as string) || (searchParams.unit_id as string) || '').trim();
     const [unitId, setUnitId] = createSignal<string>(initialQueryId);
     const [unitData, setUnitData] = createSignal<any | null>(null);
     
@@ -79,8 +81,8 @@ export default function CourseDepartmentUnitShowPage() {
 
     // Step 1: Resolve the Current User's Unit ID
     const resolveCurrentUserUnitId = async (): Promise<string> => {
-        // Priority 1: Direct query parameter if user navigated with ?id= or ?unit_id=
-        const queryId = (searchParams.id as string) || (searchParams.unit_id as string);
+        // Priority 1: Direct route parameter or query parameter if navigated with :id, ?id= or ?unit_id=
+        const queryId = (params.id as string) || (searchParams.id as string) || (searchParams.unit_id as string);
         if (queryId && queryId.trim() !== '') {
             return queryId.trim();
         }
@@ -295,7 +297,7 @@ export default function CourseDepartmentUnitShowPage() {
     });
 
     createEffect(() => {
-        const qId = ((searchParams.id as string) || (searchParams.unit_id as string) || '').trim();
+        const qId = ((params.id as string) || (searchParams.id as string) || (searchParams.unit_id as string) || '').trim();
         if (qId && qId !== unitId()) {
             setUnitId(qId);
             loadUnitData(qId);
@@ -452,6 +454,9 @@ export default function CourseDepartmentUnitShowPage() {
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+                {/* Pop-up blocker detection alert for PDF generation */}
+                <PopupBlockedAlert />
+
                 <ErrorBoundary
                     fallback={(err, reset) => (
                         <div class="p-8 max-w-xl mx-auto my-12 bg-white dark:bg-neutral-850 rounded-3xl border border-red-200 dark:border-red-900/50 shadow-xl text-center space-y-4">

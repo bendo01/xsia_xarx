@@ -1,5 +1,5 @@
 import { createSignal, onMount, createEffect, Show } from 'solid-js';
-import { useSearchParams, A } from '@solidjs/router';
+import { useParams, useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { 
@@ -12,6 +12,7 @@ import {
 import type { PersonMasterIndividualDataObject } from '~/models/person/master/Individual';
 
 export default function StudentMasterShowPage() {
+    const params = useParams();
     const [searchParams] = useSearchParams();
     const [student, setStudent] = createSignal<StudentMasterItem | null>(null);
     const [individual, setIndividual] = createSignal<PersonMasterIndividualDataObject | null>(null);
@@ -20,7 +21,7 @@ export default function StudentMasterShowPage() {
     const fetchStudentDetail = async () => {
         setIsLoading(true);
         try {
-            const studentId = (searchParams.id as string) || '';
+            const studentId = params.id || (searchParams.id as string) || '';
             let stdRecord: StudentMasterItem | null = null;
 
             if (studentId) {
@@ -49,8 +50,8 @@ export default function StudentMasterShowPage() {
     });
 
     createEffect(() => {
-        const idFromQuery = searchParams.id as string;
-        if (idFromQuery) {
+        const id = params.id || (searchParams.id as string);
+        if (id) {
             fetchStudentDetail();
         }
     });

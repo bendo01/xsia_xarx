@@ -1,5 +1,5 @@
-import { createSignal, onMount, Show, For, createMemo, lazy, Suspense } from 'solid-js';
-import { A } from '@solidjs/router';
+import { createSignal, onMount, createEffect, Show, For, createMemo, lazy, Suspense } from 'solid-js';
+import { useParams, useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { currentUserSignal, refreshAuthState } from '~/lib/authStore';
 import { getStorageItem } from '~/lib/storage';
@@ -23,8 +23,11 @@ import {
 import type { YearlyCreditTrend } from '~/components/chart/teach_credit_chart';
 
 const TeachCreditChart = lazy(() => import('~/components/chart/teach_credit_chart'));
+import PopupBlockedAlert from '~/components/alert/PopupBlockedAlert';
 
 export default function LecturerIndividualShowPage() {
+    const params = useParams();
+    const [searchParams] = useSearchParams();
     const user = () => currentUserSignal();
     const [isLoading, setIsLoading] = createSignal(true);
     const [individualData, setIndividualData] = createSignal<PersonMasterIndividualDataObject | null>(null);
@@ -42,7 +45,7 @@ export default function LecturerIndividualShowPage() {
         setIsLoading(true);
         try {
             await refreshAuthState();
-            let indId = user()?.individual_id || getStorageItem('individual_id');
+            let indId: string = params.id || (searchParams.id as string) || user()?.individual_id || getStorageItem('individual_id') || '';
             if (!indId || indId === '00000000-0000-0000-0000-000000000000') {
                 const userRes = await GetCurrentUser();
                 if (userRes && userRes.code === 200 && userRes.data?.individual_id) {
@@ -94,6 +97,13 @@ export default function LecturerIndividualShowPage() {
 
     onMount(() => {
         fetchLecturerProfile();
+    });
+
+    createEffect(() => {
+        const id = params.id || (searchParams.id as string);
+        if (id) {
+            fetchLecturerProfile();
+        }
     });
 
     const yearlyCreditTrends = createMemo<YearlyCreditTrend[]>(() => {
@@ -194,6 +204,9 @@ export default function LecturerIndividualShowPage() {
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+                {/* Pop-up blocker detection alert for PDF generation */}
+                <PopupBlockedAlert />
+
                 {/* Profile Header Hero Card */}
                 <div class="bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-indigo-500/20">
                     <div class="absolute -right-16 -top-16 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>

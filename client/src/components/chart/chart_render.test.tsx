@@ -5,9 +5,9 @@ import CourseCategoryPieChart from './course_category_pie_chart';
 import AcademicPerformanceChart from './academic_performance_chart';
 import StudentCreditChart from './student_credit_chart';
 import TeachCreditChart from './teach_credit_chart';
-import CourseDepartmentUnitShowPage from '~/routes/course-department/institution/master/unit/show';
+import CourseDepartmentUnitShowPage from '~/routes/course-department/institution/master/unit/[id]/show';
 import CourseDepartmentStudentMasterShowPage from '~/routes/course-department/academic/student/master/show';
-import LecturerIndividualShowPage from '~/routes/lecturer/person/master/individual/show';
+import LecturerIndividualShowPage from '~/routes/lecturer/person/master/individual/[id]/show';
 import { Router, Route } from '@solidjs/router';
 
 describe('Chart Components', () => {

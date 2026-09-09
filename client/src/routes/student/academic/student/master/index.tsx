@@ -220,7 +220,7 @@ export default function StudentMasterIndexPage() {
                                                 </td>
                                                 <td class="py-3.5 px-4 text-end">
                                                     <A
-                                                        href={`/student/academic/student/master/show?id=${std.id}`}
+                                                        href={`/student/academic/student/master/student/${std.id}/show`}
                                                         class="px-3 py-1.5 bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 hover:bg-teal-100 dark:hover:bg-teal-900 rounded-lg text-xs font-bold transition-colors"
                                                     >
                                                         View Detail →

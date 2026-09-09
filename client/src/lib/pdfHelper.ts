@@ -30,6 +30,10 @@ export function openOrDownloadPdf(blob: Blob, filename: string, docTitle = 'Docu
         a.click();
         document.body.removeChild(a);
 
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('popup-blocked', { detail: { docTitle, filename } }));
+        }
+
         toast.info(`Pop-up browser diblokir. File ${docTitle} otomatis diunduh langsung.`);
     } else {
         try {
