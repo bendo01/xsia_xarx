@@ -63,6 +63,10 @@ pub fn router() -> Router {
                 .get_named("academic.campaign.transaction.grades.list_grades", grades::list_grades)
                 .post_named("academic.campaign.transaction.grades.create_grade", grades::create_grade)
                 .push(
+                    Router::with_path("unit/{unit_id}")
+                        .get_named("academic.campaign.transaction.grades.get_grades_by_unit", grades::get_grades_by_unit),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.campaign.transaction.grades.get_grade", grades::get_grade)
                         .put_named("academic.campaign.transaction.grades.update_grade", grades::update_grade)

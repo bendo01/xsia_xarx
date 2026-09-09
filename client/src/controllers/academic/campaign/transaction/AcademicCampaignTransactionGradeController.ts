@@ -74,3 +74,22 @@ export async function listGrades(queryParams?: {
         };
     }
 }
+
+export async function getGradesByUnit(unitId: string): Promise<GradeItem[]> {
+    if (!unitId || unitId === '00000000-0000-0000-0000-000000000000') return [];
+    try {
+        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/grades/unit/${unitId}`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+        if (!res.ok) {
+            console.warn(`Failed to fetch grades for unit ${unitId}: ${res.status}`);
+            return [];
+        }
+        const json = await res.json();
+        return Array.isArray(json) ? json : (json.data || []);
+    } catch (err) {
+        console.warn(`Error fetching grades for unit ${unitId}:`, err);
+        return [];
+    }
+}

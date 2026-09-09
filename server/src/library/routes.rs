@@ -357,6 +357,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.campaign.transaction.grades.create_grade",
         },
         RouteDefinition {
+            url: "/api/v1/academic/campaign/transaction/grades/unit/{unit_id}",
+            method: "GET",
+            handler: "grades::get_grades_by_unit",
+            name: "academic.campaign.transaction.grades.get_grades_by_unit",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/campaign/transaction/grades/{id}",
             method: "GET",
             handler: "grades::get_grade",

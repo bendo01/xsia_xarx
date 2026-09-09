@@ -27,6 +27,7 @@ import {
 } from '~/controllers/academic/student/campaign/AcademicStudentCampaignDetailActivityEvaluationComponentController';
 import {
     listGrades,
+    getGradesByUnit,
     GradeItem
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionGradeController';
 
@@ -130,10 +131,7 @@ export default function LecturerTeachGradePage() {
             let sortedGrades: GradeItem[] = [];
 
             if (courseUnitId) {
-                const gradesRes = await listGrades({ unit_id: courseUnitId, page_size: 100 });
-                if (gradesRes.data && gradesRes.data.length > 0) {
-                    sortedGrades = gradesRes.data.sort((a, b) => b.minimum - a.minimum);
-                }
+                sortedGrades = await getGradesByUnit(courseUnitId);
             }
 
             // Fallback to all grades if unit-specific scale not found

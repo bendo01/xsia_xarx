@@ -296,3 +296,54 @@ pub async fn delete_grade(
             message: "Grade deleted successfully".to_string(),
         }))
 }
+
+#[endpoint(tags("Academic - Campaign - Transaction - Grade"), status_codes(200, 400, 500))]
+pub async fn get_grades_by_unit(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<Vec<GradeResponse>>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let id_str = req
+        .param::<String>("unit_id")
+        .or_else(|| req.param::<String>("id"))
+        .or_else(|| req.query::<String>("unit_id"))
+        .ok_or_else(|| StatusError::bad_request().brief("Missing parameter unit_id"))?;
+
+    let unit_id = Uuid::parse_str(&id_str)
+        .map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+
+    let items = entity_mod::Entity::find()
+        .filter(entity_mod::Column::UnitId.eq(unit_id))
+        .filter(entity_mod::Column::EndDate.is_null())
+        .filter(entity_mod::Column::DeletedAt.is_null())
+        .order_by_desc(entity_mod::Column::Minimum)
+        .order_by_asc(entity_mod::Column::Name)
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let data = items.into_iter().map(|item| GradeResponse {
+        id: item.id,
+        code: item.code,
+        alphabet_code: item.alphabet_code,
+        name: item.name,
+        grade: item.grade,
+        minimum: item.minimum,
+        maximum: item.maximum,
+        start_date: item.start_date,
+        end_date: item.end_date,
+        unit_id: item.unit_id,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+        deleted_at: item.deleted_at,
+        sync_at: item.sync_at,
+        created_by: item.created_by,
+        updated_by: item.updated_by,
+        feeder_id: item.feeder_id,
+    }).collect();
+
+    Ok(Json(data))
+}
