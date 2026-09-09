@@ -739,7 +739,7 @@ export default function StudentDashboardProfilePage() {
                 {/* Quick Action Navigation Grid */}
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <A
-                        href="/student/academic/student/campaign/activity/enrollment"
+                        href="/student/academic/student/campaign/activity"
                         class="p-5 bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow-2xs hover:shadow-md hover:border-blue-500 dark:hover:border-blue-500 transition-all flex items-center justify-between group"
                     >
                         <div class="flex items-center gap-3.5">
@@ -1220,7 +1220,7 @@ export default function StudentDashboardProfilePage() {
                                                                                 <span>KHS</span>
                                                                             </button>
                                                                             <A
-                                                                                href={`/student/academic/student/campaign/activity/show?id=${act.id}`}
+                                                                                href={`/student/academic/student/campaign/activity/${act.id}/show`}
                                                                                 class="px-2.5 py-1 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-lg text-xs font-semibold"
                                                                             >
                                                                                 Details
@@ -1328,7 +1328,7 @@ export default function StudentDashboardProfilePage() {
                                                                     <span>KHS</span>
                                                                 </button>
                                                                 <A
-                                                                    href={`/student/academic/student/campaign/activity/show?id=${act.id}`}
+                                                                    href={`/student/academic/student/campaign/activity/${act.id}/show`}
                                                                     class="flex-1 py-1.5 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-xl text-xs font-semibold text-center transition-colors"
                                                                 >
                                                                     Details

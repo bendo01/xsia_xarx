@@ -1,5 +1,5 @@
 import { createSignal, onMount, createEffect, For, Show } from 'solid-js';
-import { useSearchParams, A } from '@solidjs/router';
+import { useParams, useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { 
@@ -23,6 +23,7 @@ import {
 } from '~/controllers/academic/student/campaign/AcademicStudentCampaignDetailActivityController';
 import { 
     listStudentActivities, 
+    getStudentActivityById,
     StudentActivityItem 
 } from '~/controllers/academic/student/campaign/AcademicStudentCampaignActivityController';
 import { 
@@ -37,6 +38,7 @@ import {
 import { getActiveStudentId } from '~/lib/authStore';
 
 export default function StudentCourseEnrollmentPage() {
+    const params = useParams();
     const [searchParams] = useSearchParams();
     const [availableTeaches, setAvailableTeaches] = createSignal<TeachItem[]>([]);
     const [enrolledCourses, setEnrolledCourses] = createSignal<DetailActivityItem[]>([]);
@@ -70,13 +72,20 @@ export default function StudentCourseEnrollmentPage() {
             setActiveStudentState(studentRecord);
 
             // 2. Determine active semester activity
-            const actList = await listStudentActivities({ page: 1, page_size: 20, student_id: targetStudentId || undefined });
-            let currentAct: StudentActivityItem | null = null;
-            if (searchParams.activity_id && actList.data) {
-                currentAct = actList.data.find(a => a.id === searchParams.activity_id) || null;
+            const rawActivityId = params.id || (Array.isArray(searchParams.activity_id) ? searchParams.activity_id[0] : searchParams.activity_id);
+            const studentActivityId = typeof rawActivityId === 'string' ? rawActivityId : undefined;
+            if (!studentActivityId) {
+                setActiveActivity(null);
+                setAvailableTeaches([]);
+                setEnrolledCourses([]);
+                setIsLoading(false);
+                return;
             }
-            if (!currentAct && actList.data) {
-                currentAct = actList.data.find(a => !a.is_lock) || actList.data[0] || null;
+
+            let currentAct: StudentActivityItem | null = await getStudentActivityById(studentActivityId);
+            if (!currentAct) {
+                const actList = await listStudentActivities({ page: 1, page_size: 50, student_id: targetStudentId || undefined });
+                currentAct = actList.data?.find(a => a.id === studentActivityId) || null;
             }
             setActiveActivity(currentAct);
 
@@ -326,6 +335,11 @@ export default function StudentCourseEnrollmentPage() {
     };
 
     const handleEnroll = async (teach: TeachItem) => {
+        if (activeActivity()?.is_lock) {
+            toast.warning('Cannot enroll courses because this academic activity is locked.');
+            return;
+        }
+
         const courseCredit = teach.credits ?? 0;
         if (totalCurrentSKS() + courseCredit > maxAllowedSKS) {
             toast.danger(`Cannot enroll. Exceeds maximum SKS allowance of ${maxAllowedSKS} SKS.`);
@@ -390,6 +404,11 @@ export default function StudentCourseEnrollmentPage() {
         const item = targetToDrop();
         if (!item) return;
 
+        if (activeActivity()?.is_lock) {
+            toast.warning('Cannot drop courses because this academic activity is locked.');
+            return;
+        }
+
         setDroppingDetailId(item.detailId);
         try {
             const res = await deleteDetailActivity(item.detailId);
@@ -429,23 +448,66 @@ export default function StudentCourseEnrollmentPage() {
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-                {/* Header Card with SKS Allowance Calculator */}
-                <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-950 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-blue-500/20">
-                    <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-                    <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                        <div class="space-y-2">
-                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-mono font-semibold">
-                                <span class="size-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                                <span>KRS Course Enrollment Gateway</span>
-                            </div>
-                            <h1 class="text-2xl sm:text-3xl font-black tracking-tight">
-                                Semester Course Enrollment (KRS)
-                            </h1>
-                            <p class="text-neutral-300 text-xs sm:text-sm max-w-xl">
-                                Select and enroll into class offerings from the academic catalog for {activeActivity()?.name || 'Academic Semester'}.
+                {/* Not Found State if Activity ID is missing/invalid */}
+                <Show when={!isLoading() && !activeActivity()}>
+                    <div class="bg-white dark:bg-neutral-800 rounded-3xl p-10 border border-neutral-200 dark:border-neutral-700 shadow-2xs text-center space-y-4 max-w-xl mx-auto my-12">
+                        <div class="size-14 mx-auto rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-2xl font-bold">
+                            ⚠️
+                        </div>
+                        <div class="space-y-1">
+                            <h2 class="text-base font-bold text-neutral-900 dark:text-white">Aktivitas Semester Tidak Ditemukan</h2>
+                            <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                Halaman KRS memerlukan ID aktivitas semester yang valid. Silakan pilih aktivitas semester dari daftar.
                             </p>
                         </div>
+                        <A
+                            href="/student/academic/student/campaign/activity"
+                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-colors shadow-xs"
+                        >
+                            ← Kembali ke Aktivitas Semester
+                        </A>
+                    </div>
+                </Show>
+
+                <Show when={activeActivity()}>
+                    {/* Locked Notice Alert */}
+                    <Show when={activeActivity()?.is_lock}>
+                        <div class="p-4 rounded-2xl bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-3 shadow-2xs">
+                            <span class="text-lg shrink-0">🔒</span>
+                            <div class="space-y-0.5">
+                                <h4 class="font-bold">Aktivitas Perkuliahan Telah Dikunci & Difinalisasi</h4>
+                                <p class="text-amber-800 dark:text-amber-300 text-[11px] leading-relaxed">
+                                    Pengisian dan perubahan KRS untuk aktivitas semester ini telah ditutup dan dikunci. Anda hanya dapat meninjau mata kuliah yang telah terdaftar.
+                                </p>
+                            </div>
+                        </div>
+                    </Show>
+
+                    {/* Header Card with SKS Allowance Calculator */}
+                    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-950 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-blue-500/20">
+                        <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-3">
+                                    <A
+                                        href="/student/academic/student/campaign/activity"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-semibold transition-colors"
+                                    >
+                                        ← Back to Activities
+                                    </A>
+                                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-mono font-semibold">
+                                        <span class="size-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                        <span>KRS Course Enrollment Gateway</span>
+                                    </div>
+                                </div>
+                                <h1 class="text-2xl sm:text-3xl font-black tracking-tight">
+                                    Semester Course Enrollment (KRS)
+                                </h1>
+                                <p class="text-neutral-300 text-xs sm:text-sm max-w-xl">
+                                    Select and enroll into class offerings from the academic catalog for {activeActivity()?.name || 'Academic Semester'}.
+                                </p>
+                            </div>
 
                         {/* Realtime SKS Meter */}
                         <div class="p-5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 min-w-[280px] space-y-3">
@@ -491,7 +553,7 @@ export default function StudentCourseEnrollmentPage() {
 
                         <div class="flex items-center gap-2">
                             <A
-                                href={`/student/academic/student/campaign/activity/show?id=${activeActivity()?.id || ''}`}
+                                href={`/student/academic/student/campaign/activity/${activeActivity()?.id || ''}/show`}
                                 class="px-4 py-2 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 hover:bg-indigo-100 rounded-xl text-xs font-bold transition-colors"
                             >
                                 View Study Plan (KRS Detail) →
@@ -529,22 +591,24 @@ export default function StudentCourseEnrollmentPage() {
                                         </p>
                                     </div>
 
-                                    <button
-                                        type="button"
-                                        onClick={() => openDropModal({
-                                            detailId: enr.id,
-                                            courseName: enr.course_name || 'Course',
-                                            courseCode: enr.course_code,
-                                            className: enr.class_name,
-                                            credit: enr.credit,
-                                            lecturerName: enr.lecturer_name,
-                                        })}
-                                        disabled={droppingDetailId() === enr.id}
-                                        class="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-lg text-xs font-bold transition-colors disabled:opacity-50 shrink-0"
-                                        title="Drop class"
-                                    >
-                                        ✕
-                                    </button>
+                                    <Show when={!activeActivity()?.is_lock}>
+                                        <button
+                                            type="button"
+                                            onClick={() => openDropModal({
+                                                detailId: enr.id,
+                                                courseName: enr.course_name || 'Course',
+                                                courseCode: enr.course_code,
+                                                className: enr.class_name,
+                                                credit: enr.credit,
+                                                lecturerName: enr.lecturer_name,
+                                            })}
+                                            disabled={droppingDetailId() === enr.id}
+                                            class="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-lg text-xs font-bold transition-colors disabled:opacity-50 shrink-0"
+                                            title="Drop class"
+                                        >
+                                            ✕
+                                        </button>
+                                    </Show>
                                 </div>
                             )}
                         </For>
@@ -674,9 +738,9 @@ export default function StudentCourseEnrollmentPage() {
                                                                         lecturerName: t.lecturer_name,
                                                                     });
                                                                 }}
-                                                                disabled={isDroppingThis()}
+                                                                disabled={isDroppingThis() || Boolean(activeActivity()?.is_lock)}
                                                                 class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-300 dark:hover:bg-red-900/60 border border-red-200 dark:border-red-800/60 rounded-lg text-xs font-bold transition-colors shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1"
-                                                                title="Unenroll from this class"
+                                                                title={activeActivity()?.is_lock ? "Cannot unenroll: activity is locked" : "Unenroll from this class"}
                                                             >
                                                                 {isDroppingThis() ? 'Dropping...' : '✕ Unenroll'}
                                                             </button>
@@ -689,10 +753,10 @@ export default function StudentCourseEnrollmentPage() {
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => handleEnroll(t)}
-                                                                    disabled={enrollingTeachId() === t.id || isFull() || remainingSKS() < (t.credits ?? 0)}
+                                                                    disabled={enrollingTeachId() === t.id || isFull() || remainingSKS() < (t.credits ?? 0) || Boolean(activeActivity()?.is_lock)}
                                                                     class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-colors shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed"
                                                                 >
-                                                                    {enrollingTeachId() === t.id ? 'Enrolling...' : isFull() ? 'Class Full' : '+ Enroll'}
+                                                                    {enrollingTeachId() === t.id ? 'Enrolling...' : activeActivity()?.is_lock ? 'Locked' : isFull() ? 'Class Full' : '+ Enroll'}
                                                                 </button>
                                                             </Show>
                                                         </Show>
@@ -756,9 +820,9 @@ export default function StudentCourseEnrollmentPage() {
                                                                 lecturerName: t.lecturer_name,
                                                             });
                                                         }}
-                                                        disabled={isDroppingThis()}
+                                                        disabled={isDroppingThis() || Boolean(activeActivity()?.is_lock)}
                                                         class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-300 dark:hover:bg-red-900/60 border border-red-200 dark:border-red-800/60 rounded-xl text-[10px] font-bold transition-colors shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
-                                                        title="Unenroll from this class"
+                                                        title={activeActivity()?.is_lock ? "Cannot unenroll: activity is locked" : "Unenroll from this class"}
                                                     >
                                                         {isDroppingThis() ? '...' : '✕ Unenroll'}
                                                     </button>
@@ -771,10 +835,10 @@ export default function StudentCourseEnrollmentPage() {
                                                         <button
                                                             type="button"
                                                             onClick={() => handleEnroll(t)}
-                                                            disabled={enrollingTeachId() === t.id || isFull() || remainingSKS() < (t.credits ?? 0)}
+                                                            disabled={enrollingTeachId() === t.id || isFull() || remainingSKS() < (t.credits ?? 0) || Boolean(activeActivity()?.is_lock)}
                                                             class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
                                                         >
-                                                            {enrollingTeachId() === t.id ? '...' : isFull() ? 'Full' : '+ Enroll'}
+                                                            {enrollingTeachId() === t.id ? '...' : activeActivity()?.is_lock ? 'Locked' : isFull() ? 'Full' : '+ Enroll'}
                                                         </button>
                                                     </Show>
                                                 </Show>
@@ -808,7 +872,8 @@ export default function StudentCourseEnrollmentPage() {
                         </div>
                     </Show>
                 </div>
-            </main>
+            </Show>
+        </main>
 
             {/* Confirmation Modal for Unenroll / Drop */}
             <Show when={targetToDrop()}>

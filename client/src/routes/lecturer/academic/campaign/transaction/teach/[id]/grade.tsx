@@ -702,52 +702,41 @@ export default function LecturerTeachGradePage() {
                         </div>
 
                         {/* Top Action Buttons */}
-                        <div class="flex items-center gap-2.5 shrink-0 flex-wrap">
-                            <button
-                                type="button"
-                                onClick={openAddComponentModal}
-                                disabled={isClassLocked()}
-                                class="px-4 py-2.5 rounded-xl border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-xs font-bold text-neutral-700 dark:text-neutral-200 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                <svg class="size-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                </svg>
-                                Kelola Komponen
-                            </button>
-
-                            <Show
-                                when={isClassLocked()}
-                                fallback={
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsLockModalOpen(true)}
-                                        disabled={isSavingAll() || studentRows().length === 0}
-                                        class="px-4 py-2.5 rounded-xl border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 dark:hover:bg-amber-900 text-xs font-bold text-amber-800 dark:text-amber-200 transition-colors inline-flex items-center gap-2 disabled:opacity-50"
-                                    >
-                                        🔒 Kunci Nilai Kelas
-                                    </button>
-                                }
-                            >
-                                <div
-                                    class="px-4 py-2.5 rounded-xl border border-amber-300/80 dark:border-amber-700/80 bg-amber-50/80 dark:bg-amber-950/50 text-xs font-bold text-amber-800 dark:text-amber-300 inline-flex items-center gap-2 cursor-not-allowed select-none"
-                                    title="Nilai telah dikunci dan difinalisasi. Dosen tidak dapat membuka kunci nilai."
+                        <Show when={!isClassLocked()}>
+                            <div class="flex items-center gap-2.5 shrink-0 flex-wrap">
+                                <button
+                                    type="button"
+                                    onClick={openAddComponentModal}
+                                    class="px-4 py-2.5 rounded-xl border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-xs font-bold text-neutral-700 dark:text-neutral-200 transition-colors inline-flex items-center gap-2"
                                 >
-                                    🔒 Nilai Terkunci (Final)
-                                </div>
-                            </Show>
+                                    <svg class="size-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                    Kelola Komponen
+                                </button>
 
-                            <button
-                                type="button"
-                                onClick={handleSaveAll}
-                                disabled={isSavingAll() || isClassLocked()}
-                                class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs shadow-md shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all inline-flex items-center gap-2"
-                            >
-                                <Show when={isSavingAll()} fallback={<span>💾 Simpan Semua Nilai</span>}>
-                                    <div class="size-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                    <span>Menyimpan...</span>
-                                </Show>
-                            </button>
-                        </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsLockModalOpen(true)}
+                                    disabled={isSavingAll() || studentRows().length === 0}
+                                    class="px-4 py-2.5 rounded-xl border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 dark:hover:bg-amber-900 text-xs font-bold text-amber-800 dark:text-amber-200 transition-colors inline-flex items-center gap-2 disabled:opacity-50"
+                                >
+                                    🔒 Kunci Nilai Kelas
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={handleSaveAll}
+                                    disabled={isSavingAll()}
+                                    class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs shadow-md shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all inline-flex items-center gap-2"
+                                >
+                                    <Show when={isSavingAll()} fallback={<span>💾 Simpan Semua Nilai</span>}>
+                                        <div class="size-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        <span>Menyimpan...</span>
+                                    </Show>
+                                </button>
+                            </div>
+                        </Show>
                     </div>
 
                     {/* Locked Notice Alert for Lecturer */}

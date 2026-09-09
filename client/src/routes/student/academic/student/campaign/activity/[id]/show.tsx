@@ -1,5 +1,5 @@
 import { createSignal, onMount, createEffect, For, Show } from 'solid-js';
-import { useSearchParams, A } from '@solidjs/router';
+import { useParams, useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { t } from '~/i18n';
@@ -22,16 +22,22 @@ import { listGrades } from '~/controllers/academic/campaign/transaction/Academic
 import { openOrDownloadPdf } from '~/lib/pdfHelper';
 
 export default function StudentCampaignActivityShowPage() {
+    const params = useParams();
     const [searchParams] = useSearchParams();
     const [activity, setActivity] = createSignal<StudentActivityItem | null>(null);
     const [detailCourses, setDetailCourses] = createSignal<DetailActivityItem[]>([]);
     const [isLoading, setIsLoading] = createSignal(true);
     const [isDropping, setIsDropping] = createSignal<string | null>(null);
 
+    const getActivityId = (): string => {
+        const queryId = Array.isArray(searchParams.id) ? searchParams.id[0] : searchParams.id;
+        return params.id || queryId || '';
+    };
+
     const fetchActivityDetail = async () => {
         setIsLoading(true);
         try {
-            const activityId = (searchParams.id as string) || '';
+            const activityId = getActivityId();
             if (!activityId) {
                 setActivity(null);
                 setDetailCourses([]);
@@ -114,8 +120,8 @@ export default function StudentCampaignActivityShowPage() {
     });
 
     createEffect(() => {
-        const idFromQuery = searchParams.id as string;
-        if (idFromQuery) {
+        const actId = getActivityId();
+        if (actId) {
             fetchActivityDetail();
         }
     });
@@ -370,7 +376,7 @@ export default function StudentCampaignActivityShowPage() {
                                 }
                             >
                                 <A
-                                    href={`/student/academic/student/campaign/activity/enrollment?activity_id=${activity()?.id || ''}`}
+                                    href={`/student/academic/student/campaign/activity/${activity()?.id || ''}/enrollment`}
                                     class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5"
                                 >
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>

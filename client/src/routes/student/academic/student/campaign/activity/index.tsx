@@ -28,7 +28,6 @@ export default function StudentCampaignActivityIndexPage() {
     const [activeStudent, setActiveStudentState] = createSignal<StudentMasterItem | null>(null);
     const [isLoading, setIsLoading] = createSignal(true);
     const [printingId, setPrintingId] = createSignal<string | null>(null);
-    const [searchQuery, setSearchQuery] = createSignal('');
     const [page, setPage] = createSignal(1);
     const [totalPages, setTotalPages] = createSignal(1);
 
@@ -154,7 +153,6 @@ export default function StudentCampaignActivityIndexPage() {
             const res = await listStudentActivities({
                 page: page(),
                 page_size: 10,
-                name: searchQuery() || undefined,
                 student_id: studentId || undefined,
             });
 
@@ -191,12 +189,6 @@ export default function StudentCampaignActivityIndexPage() {
             fetchActivities();
         }
     });
-
-    const handleSearch = (e: Event) => {
-        e.preventDefault();
-        setPage(1);
-        fetchActivities();
-    };
 
     const latestAct = () => activities()[0] || null;
     const currentIPK = () => (latestAct()?.grand_cumulative_index ?? latestAct()?.cumulative_index ?? 0).toFixed(2);
@@ -294,30 +286,6 @@ export default function StudentCampaignActivityIndexPage() {
                         </div>
                     </div>
                 </Show>
-
-                {/* Search & Actions Bar */}
-                <div class="bg-white dark:bg-neutral-800 rounded-2xl p-4 border border-neutral-200 dark:border-neutral-700 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
-                    <form onSubmit={handleSearch} class="relative w-full sm:w-80">
-                        <input
-                            type="text"
-                            placeholder="Search semester or academic campaign..."
-                            value={searchQuery()}
-                            onInput={(e) => setSearchQuery(e.currentTarget.value)}
-                            class="w-full pl-9 pr-4 py-2 text-xs rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-hidden focus:border-indigo-500"
-                        />
-                        <svg class="size-4 absolute left-3 top-2.5 text-neutral-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                    </form>
-
-                    <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <A
-                            href="/student/academic/student/campaign/activity/enrollment"
-                            class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5"
-                        >
-                            <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-                            <span>Enroll in KRS Classes</span>
-                        </A>
-                    </div>
-                </div>
 
                 {/* Semester Activities Table */}
                 <div class="bg-white dark:bg-neutral-800 rounded-3xl border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
@@ -421,14 +389,14 @@ export default function StudentCampaignActivityIndexPage() {
                                                             <span>KHS</span>
                                                         </button>
                                                         <A
-                                                            href={`/student/academic/student/campaign/activity/show?id=${act.id}`}
+                                                            href={`/student/academic/student/campaign/activity/${act.id}/show`}
                                                             class="px-3 py-1.5 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 rounded-lg text-xs font-bold transition-colors"
                                                         >
                                                             Details
                                                         </A>
                                                         <Show when={!act.is_lock}>
                                                             <A
-                                                                href={`/student/academic/student/campaign/activity/enrollment?activity_id=${act.id}`}
+                                                                href={`/student/academic/student/campaign/activity/${act.id}/enrollment`}
                                                                 class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-colors shadow-2xs"
                                                             >
                                                                 Enroll (KRS)
@@ -538,14 +506,14 @@ export default function StudentCampaignActivityIndexPage() {
                                                 <span>KHS</span>
                                             </button>
                                             <A
-                                                href={`/student/academic/student/campaign/activity/show?id=${act.id}`}
+                                                href={`/student/academic/student/campaign/activity/${act.id}/show`}
                                                 class="flex-1 py-2 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 rounded-xl text-xs font-bold text-center transition-colors"
                                             >
                                                 Details
                                             </A>
                                             <Show when={!act.is_lock}>
                                                 <A
-                                                    href={`/student/academic/student/campaign/activity/enrollment?activity_id=${act.id}`}
+                                                    href={`/student/academic/student/campaign/activity/${act.id}/enrollment`}
                                                     class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold text-center transition-colors shadow-2xs"
                                                 >
                                                     Enroll
