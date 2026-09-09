@@ -7,11 +7,13 @@ import {
     currentUserSignal, 
     userRolesSignal, 
     activeRoleSignal, 
+    currentRoleIdSignal,
+    getStoredRoles,
     refreshAuthState,
     getStoredUser,
     isStaffProgramStudi 
 } from '~/lib/authStore';
-import { getStorageItem } from '~/lib/storage';
+import { getStorageItem, setStorageItem } from '~/lib/storage';
 import { GetCurrentUser } from '~/controllers/auth/AuthUser';
 import type { InstitutionMasterUnit } from '~/models/institution/master/Unit';
 import type { InstitutionMasterStaff } from '~/models/institution/master/Staff';
@@ -48,7 +50,11 @@ export default function CourseDepartmentUnitShowPage() {
 
     // Helper to resolve unit_id from a role item
     const resolveRoleUnitId = async (role: any): Promise<string | null> => {
-        if (!role || !role.roleable_id || role.roleable_id === '00000000-0000-0000-0000-000000000000') {
+        if (!role) return null;
+        if (role.unit_id && role.unit_id !== '00000000-0000-0000-0000-000000000000') {
+            return role.unit_id;
+        }
+        if (!role.roleable_id || role.roleable_id === '00000000-0000-0000-0000-000000000000') {
             return null;
         }
         const rType = String(role.roleable_type || '');
@@ -81,47 +87,102 @@ export default function CourseDepartmentUnitShowPage() {
 
     // Step 1: Resolve the Current User's Unit ID
     const resolveCurrentUserUnitId = async (): Promise<string> => {
-        // Priority 1: Direct route parameter or query parameter if navigated with :id, ?id= or ?unit_id=
-        const queryId = (params.id as string) || (searchParams.id as string) || (searchParams.unit_id as string);
-        if (queryId && queryId.trim() !== '') {
-            return queryId.trim();
+        // Priority 1: Direct route parameter or query parameter if navigated with real ID
+        const rawParam = ((params.id as string) || (searchParams.id as string) || (searchParams.unit_id as string) || '').trim();
+        const queryId = (rawParam === '[id]' || rawParam === ':id') ? '' : rawParam;
+
+        if (queryId) {
+            // Check if queryId is a valid Unit ID
+            try {
+                const checkUnit = await masterApiShow<InstitutionMasterUnit>('institution/master/units', queryId);
+                if (checkUnit.data?.id) {
+                    setStorageItem('unit_id', checkUnit.data.id);
+                    return checkUnit.data.id;
+                }
+            } catch {
+                // Not a unit, check if queryId is a Staff ID
+            }
+
+            // Check if queryId is a Staff ID (e.g. from roleable_id)
+            try {
+                const checkStaff = await masterApiShow<InstitutionMasterStaff>('institution/master/staffes', queryId);
+                if (checkStaff.data?.unit_id) {
+                    const realUnitId = checkStaff.data.unit_id;
+                    setStorageItem('unit_id', realUnitId);
+                    if (typeof window !== 'undefined') {
+                        window.history.replaceState(null, '', `/course-department/institution/master/unit/${realUnitId}/show`);
+                    }
+                    return realUnitId;
+                }
+            } catch {
+                // Not a staff ID either
+            }
         }
 
         // Priority 2: Stored unit_id on user or local storage
         const user = currentUserSignal();
         const storedUnitId = (user as any)?.unit_id || getStorageItem('unit_id');
-        if (storedUnitId && storedUnitId !== '00000000-0000-0000-0000-000000000000') {
-            return storedUnitId;
+        if (
+            storedUnitId && 
+            storedUnitId !== '00000000-0000-0000-0000-000000000000' && 
+            storedUnitId !== '[id]' && 
+            storedUnitId !== ':id'
+        ) {
+            try {
+                const checkUnit = await masterApiShow<InstitutionMasterUnit>('institution/master/units', storedUnitId);
+                if (checkUnit.data?.id) {
+                    return checkUnit.data.id;
+                }
+            } catch {
+                // If storedUnitId was actually a staff ID
+                try {
+                    const checkStaff = await masterApiShow<InstitutionMasterStaff>('institution/master/staffes', storedUnitId);
+                    if (checkStaff.data?.unit_id) {
+                        setStorageItem('unit_id', checkStaff.data.unit_id);
+                        return checkStaff.data.unit_id;
+                    }
+                } catch {
+                    // Ignore
+                }
+            }
         }
 
         // Priority 3: Active role or roles already in memory
-        const activeRole = activeRoleSignal();
-        if (activeRole) {
-            const activeUnit = await resolveRoleUnitId(activeRole);
-            if (activeUnit) return activeUnit;
-        }
-
-        const storedRoles = getStoredUser()?.roles || [];
+        const currentRoleId = currentRoleIdSignal() || getStorageItem('current_role');
         const currentRoles = userRolesSignal();
+        const storedRoles = getStoredUser()?.roles || [];
         const combinedRoles = [...currentRoles, ...storedRoles];
+
+        const activeRoleItem = combinedRoles.find(r => r.id === currentRoleId);
+        if (activeRoleItem) {
+            const activeUnit = await resolveRoleUnitId(activeRoleItem);
+            if (activeUnit) {
+                setStorageItem('unit_id', activeUnit);
+                return activeUnit;
+            }
+        }
 
         for (const role of combinedRoles) {
             const resolved = await resolveRoleUnitId(role);
-            if (resolved) return resolved;
+            if (resolved) {
+                setStorageItem('unit_id', resolved);
+                return resolved;
+            }
         }
 
         // Priority 4: Refresh auth state if local checks did not find unit_id
         await refreshAuthState();
         const refreshedRoles = userRolesSignal();
-        const refreshedUser = currentUserSignal();
-
         for (const role of refreshedRoles) {
             const resolved = await resolveRoleUnitId(role);
-            if (resolved) return resolved;
+            if (resolved) {
+                setStorageItem('unit_id', resolved);
+                return resolved;
+            }
         }
 
         // Priority 5: Look up individual -> employee -> staffes -> unit_id
-        let indId = refreshedUser?.individual_id || getStorageItem('individual_id');
+        let indId = currentUserSignal()?.individual_id || getStorageItem('individual_id');
         if (!indId || indId === '00000000-0000-0000-0000-000000000000') {
             try {
                 const userRes = await GetCurrentUser();
@@ -135,12 +196,23 @@ export default function CourseDepartmentUnitShowPage() {
 
         if (indId && indId !== '00000000-0000-0000-0000-000000000000') {
             try {
-                const indRes = await masterApiShow<any>('person/master/individuals', indId);
+                // Fix: singular /person/master/individual/{id}
+                const indRes = await masterApiShow<any>('person/master/individual', indId);
                 if (indRes.data?.employees && Array.isArray(indRes.data.employees)) {
                     for (const emp of indRes.data.employees) {
-                        if (emp.staffes && Array.isArray(emp.staffes) && emp.staffes.length > 0) {
-                            const foundUnit = emp.staffes[0].unit_id;
-                            if (foundUnit) return foundUnit;
+                        if (emp.id) {
+                            const staffRes = await masterApiIndex<InstitutionMasterStaff>('institution/master/staffes', {
+                                employee_id: emp.id,
+                                page: 1,
+                                per_page: 10,
+                            });
+                            const staffList = staffRes.data || [];
+                            for (const st of staffList) {
+                                if (st.unit_id && st.unit_id !== '00000000-0000-0000-0000-000000000000') {
+                                    setStorageItem('unit_id', st.unit_id);
+                                    return st.unit_id;
+                                }
+                            }
                         }
                     }
                 }
@@ -153,7 +225,9 @@ export default function CourseDepartmentUnitShowPage() {
         try {
             const unitsRes = await masterApiIndex<InstitutionMasterUnit>('institution/master/units', { page: 1, per_page: 20 });
             if (unitsRes.data && unitsRes.data.length > 0) {
-                return unitsRes.data[0].id;
+                const fallbackId = unitsRes.data[0].id;
+                setStorageItem('unit_id', fallbackId);
+                return fallbackId;
             }
         } catch (e) {
             console.error('Failed to list units fallback:', e);
@@ -164,7 +238,12 @@ export default function CourseDepartmentUnitShowPage() {
 
     // Step 2: Fetch real server data for the resolved unit_id
     const loadUnitData = async (targetUnitId: string) => {
-        if (!targetUnitId) {
+        if (!targetUnitId || targetUnitId === '[id]' || targetUnitId === ':id') {
+            const resolved = await resolveCurrentUserUnitId();
+            if (resolved && resolved !== targetUnitId) {
+                setUnitId(resolved);
+                return loadUnitData(resolved);
+            }
             setIsLoading(false);
             return;
         }
@@ -177,6 +256,41 @@ export default function CourseDepartmentUnitShowPage() {
         setIsLoading(true);
 
         try {
+            // First check if targetUnitId is valid unit or needs staff resolution
+            let actualUnitId = targetUnitId;
+            let unitRes = await masterApiShow<any>('institution/master/units', targetUnitId);
+
+            if (!unitRes.data) {
+                // Check if targetUnitId was actually a staff ID
+                try {
+                    const staffRes = await masterApiShow<InstitutionMasterStaff>('institution/master/staffes', targetUnitId);
+                    if (staffRes.data?.unit_id) {
+                        actualUnitId = staffRes.data.unit_id;
+                        unitRes = await masterApiShow<any>('institution/master/units', actualUnitId);
+                    }
+                } catch {
+                    // Ignore
+                }
+            }
+
+            if (!unitRes.data) {
+                // Fallback to resolveCurrentUserUnitId
+                const fallbackUnitId = await resolveCurrentUserUnitId();
+                if (fallbackUnitId && fallbackUnitId !== targetUnitId) {
+                    activeFetchId = '';
+                    setUnitId(fallbackUnitId);
+                    return loadUnitData(fallbackUnitId);
+                }
+            }
+
+            if (actualUnitId !== targetUnitId) {
+                setUnitId(actualUnitId);
+                setStorageItem('unit_id', actualUnitId);
+                if (typeof window !== 'undefined') {
+                    window.history.replaceState(null, '', `/course-department/institution/master/unit/${actualUnitId}/show`);
+                }
+            }
+
             // Concurrent promises for static references (utilizing module-level cache)
             // Note: position-type is singular in server API routes
             const refPromises = [
@@ -199,24 +313,26 @@ export default function CourseDepartmentUnitShowPage() {
 
             // Fetch Unit Master + Core Prodi Entities in Parallel
             const [
-                unitRes,
                 coursesRes,
                 curriculumsRes,
                 studentsRes,
                 staffesRes,
                 [posTypeRes, varietyRes, groupRes]
             ] = await Promise.all([
-                masterApiShow<any>('institution/master/units', targetUnitId),
-                masterApiIndex<any>('academic/course/master/courses', { unit_id: targetUnitId, page: 1, per_page: 200 }),
-                masterApiIndex<any>('academic/course/master/curriculums', { unit_id: targetUnitId, page: 1, per_page: 50 }),
-                masterApiIndex<any>('academic/student/master/students', { unit_id: targetUnitId, page: 1, per_page: 200 }),
-                masterApiIndex<any>('institution/master/staffes', { unit_id: targetUnitId, page: 1, per_page: 50 }),
+                masterApiIndex<any>('academic/course/master/courses', { unit_id: actualUnitId, page: 1, per_page: 200 }),
+                masterApiIndex<any>('academic/course/master/curriculums', { unit_id: actualUnitId, page: 1, per_page: 50 }),
+                masterApiIndex<any>('academic/student/master/students', { unit_id: actualUnitId, page: 1, per_page: 200 }),
+                masterApiIndex<any>('institution/master/staffes', { unit_id: actualUnitId, page: 1, per_page: 50 }),
                 Promise.all(refPromises)
             ]);
 
             // Set Unit Record
             if (unitRes.data) {
                 setUnitData(unitRes.data);
+                setStorageItem('unit_id', actualUnitId);
+                if (typeof window !== 'undefined' && (window.location.pathname.includes('[id]') || window.location.pathname.includes(':id'))) {
+                    window.history.replaceState(null, '', `/course-department/institution/master/unit/${actualUnitId}/show`);
+                }
             } else {
                 toast.danger('Data Unit / Program Studi tidak ditemukan di server.');
             }
@@ -285,7 +401,7 @@ export default function CourseDepartmentUnitShowPage() {
 
     onMount(async () => {
         let id = unitId();
-        if (!id) {
+        if (!id || id === '[id]' || id === ':id') {
             id = await resolveCurrentUserUnitId();
             setUnitId(id);
         }
@@ -297,7 +413,8 @@ export default function CourseDepartmentUnitShowPage() {
     });
 
     createEffect(() => {
-        const qId = ((params.id as string) || (searchParams.id as string) || (searchParams.unit_id as string) || '').trim();
+        const raw = ((params.id as string) || (searchParams.id as string) || (searchParams.unit_id as string) || '').trim();
+        const qId = (raw === '[id]' || raw === ':id') ? '' : raw;
         if (qId && qId !== unitId()) {
             setUnitId(qId);
             loadUnitData(qId);

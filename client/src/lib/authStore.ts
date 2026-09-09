@@ -3,6 +3,7 @@ export { getStorageItem, setStorageItem, removeStorageItem } from './storage';
 import { getStorageItem, setStorageItem, removeStorageItem } from './storage';
 import { GetUserRoles, GetCurrentUser, LogoutUser as apiLogoutUser } from '../controllers/auth/AuthUser';
 import { getStudentById } from '../controllers/academic/student/master/AcademicStudentMasterStudentController';
+import { masterApiShow } from '../controllers/master/masterApiController';
 import { t } from '../i18n';
 
 export interface UserRoleItem {
@@ -15,6 +16,7 @@ export interface UserRoleItem {
     roleable_id?: string;
     roleable_type?: string;
     code?: string;
+    unit_id?: string;
 }
 
 export interface StoredUser {
@@ -156,8 +158,16 @@ export function getDashboardPathForRole(
     const targetUser = user || currentUserSignal() || getStoredUser();
     const indId = targetUser?.individual_id || getStorageItem('individual_id');
 
+    const resolveRoleItemUnitId = (item?: UserRoleItem): string => {
+        if (!item) return getStorageItem('unit_id') || '';
+        if (item.unit_id) return item.unit_id;
+        const isStaff = item.roleable_type?.includes('Staff') || isStaffProgramStudi(item);
+        if (!isStaff && item.roleable_id) return item.roleable_id;
+        return getStorageItem('unit_id') || '';
+    };
+
     if (roleItem && isStaffProgramStudi(roleItem, targetUser)) {
-        const uId = roleItem.roleable_id || getStorageItem('unit_id');
+        const uId = resolveRoleItemUnitId(roleItem);
         return uId ? `/course-department/institution/master/unit/${uId}/show` : '/course-department/institution/master/unit/[id]/show';
     }
     const norm = normalizeRoleName(roleName, roleItem);
@@ -165,7 +175,7 @@ export function getDashboardPathForRole(
         case 'administrator':
             return '/administrator/person/master/individual';
         case 'course_department': {
-            const uId = roleItem?.roleable_id || getStorageItem('unit_id');
+            const uId = resolveRoleItemUnitId(roleItem);
             return uId ? `/course-department/institution/master/unit/${uId}/show` : '/course-department/institution/master/unit/[id]/show';
         }
         case 'student':
@@ -178,7 +188,7 @@ export function getDashboardPathForRole(
             return '/dashboard/rectorat';
         default:
             if (isStaffProgramStudi(roleName, targetUser)) {
-                const uId = roleItem?.roleable_id || getStorageItem('unit_id');
+                const uId = resolveRoleItemUnitId(roleItem);
                 return uId ? `/course-department/institution/master/unit/${uId}/show` : '/course-department/institution/master/unit/[id]/show';
             }
             return indId ? `/student/person/master/individual/${indId}/show` : '/student/person/master/individual/[id]/show';
@@ -315,6 +325,24 @@ export async function enrichUserRolesWithStudentCodes(): Promise<UserRoleItem[]>
                 // Ignore
             }
         }
+        if (
+            (normalizeRoleName(r.name) === 'course_department' || isStaffProgramStudi(r) || r.roleable_type?.includes('Staff')) && 
+            r.roleable_id && 
+            !r.unit_id
+        ) {
+            try {
+                const staffRes = await masterApiShow<any>('institution/master/staffes', r.roleable_id);
+                if (staffRes.data?.unit_id) {
+                    changed = true;
+                    if (!getStorageItem('unit_id')) {
+                        setStorageItem('unit_id', staffRes.data.unit_id);
+                    }
+                    return { ...r, unit_id: staffRes.data.unit_id };
+                }
+            } catch {
+                // Ignore
+            }
+        }
         return r;
     }));
 
@@ -324,6 +352,9 @@ export async function enrichUserRolesWithStudentCodes(): Promise<UserRoleItem[]>
         const currentRole = updatedRoles.find(r => r.id === getStorageItem('current_role') || (getActiveStudentId() && r.roleable_id === getActiveStudentId()));
         if (currentRole?.code && !getActiveStudentCode()) {
             setActiveStudent(currentRole.roleable_id || getActiveStudentId(), currentRole.code);
+        }
+        if (currentRole?.unit_id) {
+            setStorageItem('unit_id', currentRole.unit_id);
         }
     }
     return updatedRoles;
@@ -374,6 +405,9 @@ export function setActiveRole(roleNameOrId: string, isSession: boolean = false):
 
     if (targetRole && normalized === 'student' && targetRole.roleable_id) {
         setActiveStudent(targetRole.roleable_id, targetRole.code, isSession);
+    }
+    if (targetRole?.unit_id) {
+        setStorageItem('unit_id', targetRole.unit_id, isSession);
     }
 }
 
@@ -478,6 +512,28 @@ export async function processLoginSuccess(loginResponse: any, isSession: boolean
             }
         } catch {
             // Ignore
+        }
+    }
+
+    if (
+        (activeRole === 'course_department' || isStaffProgramStudi(activeRoleItem)) &&
+        activeRoleItem?.roleable_id &&
+        (activeRoleItem.roleable_type?.includes('Staff') || !activeRoleItem.unit_id)
+    ) {
+        try {
+            const staffRes = await masterApiShow<any>('institution/master/staffes', activeRoleItem.roleable_id);
+            if (staffRes.data?.unit_id) {
+                activeRoleItem.unit_id = staffRes.data.unit_id;
+                setStorageItem('unit_id', staffRes.data.unit_id, isSession);
+                const roleIdx = roles.findIndex(r => r.id === activeRoleItem?.id);
+                if (roleIdx !== -1) {
+                    roles[roleIdx] = { ...roles[roleIdx], unit_id: staffRes.data.unit_id };
+                    setStorageItem('roles', JSON.stringify(roles), isSession);
+                    setUserRolesSignal(roles);
+                }
+            }
+        } catch (e) {
+            console.warn('Failed to resolve staff unit_id on login:', e);
         }
     }
 
