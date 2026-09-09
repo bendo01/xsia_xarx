@@ -1,5 +1,5 @@
 import { createSignal, createEffect, createMemo, onMount, For, Show } from 'solid-js';
-import { useSearchParams, A } from '@solidjs/router';
+import { useParams, useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import {
     getTeachById,
@@ -52,8 +52,9 @@ interface StudentGradeRow {
 }
 
 export default function LecturerTeachGradePage() {
+    const params = useParams();
     const [searchParams] = useSearchParams();
-    const teachId = () => (searchParams.id || searchParams.teach_id || '') as string;
+    const teachId = () => (params.id || searchParams.id || searchParams.teach_id || '') as string;
 
     const [isLoading, setIsLoading] = createSignal(true);
     const [isSavingAll, setIsSavingAll] = createSignal(false);
@@ -624,7 +625,7 @@ export default function LecturerTeachGradePage() {
                             Kembali ke Daftar Kelas
                         </A>
                         <A
-                            href={`/lecturer/academic/campaign/transaction/teach/show?id=${teachId()}`}
+                            href={`/lecturer/academic/campaign/transaction/teach/${teachId()}/attendance`}
                             class="px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-xs font-semibold transition-colors inline-flex items-center gap-1.5"
                         >
                             Presensi & Roster →

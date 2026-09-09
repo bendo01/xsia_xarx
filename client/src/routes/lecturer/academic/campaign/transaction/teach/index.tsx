@@ -572,13 +572,13 @@ export default function LecturerTeachIndexPage() {
                                                 {/* Card Actions */}
                                                 <div class="pt-2 border-t border-neutral-100 dark:border-neutral-700/60 flex items-center justify-between gap-2">
                                                     <A
-                                                        href={`/lecturer/academic/campaign/transaction/teach/show?id=${item.teach_id}`}
+                                                        href={`/lecturer/academic/campaign/transaction/teach/${item.teach_id}/attendance`}
                                                         class="flex-1 py-2 px-3 text-center bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/80 text-indigo-700 dark:text-indigo-300 font-semibold rounded-xl text-xs transition-colors"
                                                     >
                                                         Roster & Presensi
                                                     </A>
                                                     <A
-                                                        href={`/lecturer/academic/campaign/transaction/teach/grade?id=${item.teach_id}`}
+                                                        href={`/lecturer/academic/campaign/transaction/teach/${item.teach_id}/grade`}
                                                         class="py-2 px-3 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700/80 text-neutral-700 dark:text-neutral-200 font-semibold rounded-xl text-xs transition-colors shrink-0"
                                                         title="Nilai Mahasiswa"
                                                     >
@@ -662,13 +662,13 @@ export default function LecturerTeachIndexPage() {
                                                         <td class="px-6 py-4 text-right">
                                                             <div class="inline-flex items-center gap-2">
                                                                 <A
-                                                                    href={`/lecturer/academic/campaign/transaction/teach/show?id=${item.teach_id}`}
+                                                                    href={`/lecturer/academic/campaign/transaction/teach/${item.teach_id}/attendance`}
                                                                     class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 font-semibold rounded-lg text-xs transition-colors"
                                                                 >
                                                                     Presensi
                                                                 </A>
                                                                 <A
-                                                                    href={`/lecturer/academic/campaign/transaction/teach/grade?id=${item.teach_id}`}
+                                                                    href={`/lecturer/academic/campaign/transaction/teach/${item.teach_id}/grade`}
                                                                     class="px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 font-semibold rounded-lg text-xs transition-colors"
                                                                 >
                                                                     Nilai
