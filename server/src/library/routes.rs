@@ -963,6 +963,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.course.master.courses.create_course",
         },
         RouteDefinition {
+            url: "/api/v1/academic/course/master/courses/unit/{unit_id}",
+            method: "GET",
+            handler: "courses::get_courses_by_unit",
+            name: "academic.course.master.courses.get_courses_by_unit",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/course/master/courses/{id}",
             method: "GET",
             handler: "courses::get_course",
@@ -1021,6 +1027,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "curriculums::create_curriculum",
             name: "academic.course.master.curriculums.create_curriculum",
+        },
+        RouteDefinition {
+            url: "/api/v1/academic/course/master/curriculums/unit/{unit_id}",
+            method: "GET",
+            handler: "curriculums::get_curriculums_by_unit",
+            name: "academic.course.master.curriculums.get_curriculums_by_unit",
         },
         RouteDefinition {
             url: "/api/v1/academic/course/master/curriculums/{id}",

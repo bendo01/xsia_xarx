@@ -48,6 +48,10 @@ pub fn router() -> Router {
                 .get_named("academic.course.master.courses.list_courses", courses::list_courses)
                 .post_named("academic.course.master.courses.create_course", courses::create_course)
                 .push(
+                    Router::with_path("unit/{unit_id}")
+                        .get_named("academic.course.master.courses.get_courses_by_unit", courses::get_courses_by_unit),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.course.master.courses.get_course", courses::get_course)
                         .put_named("academic.course.master.courses.update_course", courses::update_course)
@@ -69,6 +73,10 @@ pub fn router() -> Router {
             Router::with_path("curriculums")
                 .get_named("academic.course.master.curriculums.list_curriculums", curriculums::list_curriculums)
                 .post_named("academic.course.master.curriculums.create_curriculum", curriculums::create_curriculum)
+                .push(
+                    Router::with_path("unit/{unit_id}")
+                        .get_named("academic.course.master.curriculums.get_curriculums_by_unit", curriculums::get_curriculums_by_unit),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("academic.course.master.curriculums.get_curriculum", curriculums::get_curriculum)

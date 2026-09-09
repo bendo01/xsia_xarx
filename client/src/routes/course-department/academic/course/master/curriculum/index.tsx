@@ -1,13 +1,32 @@
-import { createSignal, createEffect, For, Show } from 'solid-js';
+import { createSignal, createEffect, onMount, For, Show } from 'solid-js';
+import { useSearchParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
-import { masterApiIndex, masterApiDelete } from '~/controllers/master/masterApiController';
+import { masterApiIndex, masterApiDelete, masterApiShow } from '~/controllers/master/masterApiController';
+import {
+    currentUserSignal,
+    userRolesSignal,
+    activeRoleSignal,
+    refreshAuthState,
+    isStaffProgramStudi
+} from '~/lib/authStore';
+import { getStorageItem } from '~/lib/storage';
+import { GetCurrentUser } from '~/controllers/auth/AuthUser';
 
 export default function MasterIndexPage() {
     const apiPath = "academic/course/master/curriculums";
-    const basePath = "/academic/course/master/curriculum";
+    const basePath = "/course-department/academic/course/master/curriculum";
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    // Data states
     const [items, setItems] = createSignal<any[]>([]);
     const [isLoading, setIsLoading] = createSignal(true);
+    const [isResolvingUnit, setIsResolvingUnit] = createSignal(true);
+    const [units, setUnits] = createSignal<any[]>([]);
+    const [selectedUnitId, setSelectedUnitId] = createSignal<string>('');
+    const [activeUnitData, setActiveUnitData] = createSignal<any | null>(null);
+
+    // Filter & Pagination states
     const [currentPage, setCurrentPage] = createSignal(1);
     const [itemsPerPage, setItemsPerPage] = createSignal(10);
     const [searchQuery, setSearchQuery] = createSignal('');
@@ -19,7 +38,147 @@ export default function MasterIndexPage() {
     const [selectedItem, setSelectedItem] = createSignal<any | null>(null);
     const [isSubmitting, setIsSubmitting] = createSignal(false);
 
+    // Helper: Resolve role to unit_id
+    const resolveRoleUnitId = async (role: any): Promise<string | null> => {
+        if (!role || !role.roleable_id || role.roleable_id === '00000000-0000-0000-0000-000000000000') {
+            return null;
+        }
+        const rType = String(role.roleable_type || '');
+        const rName = String(role.name || '').toLowerCase();
+
+        if (rType === 'Unit' || rType.includes('Unit')) {
+            return role.roleable_id;
+        }
+
+        if (
+            rType.includes('Staff') ||
+            isStaffProgramStudi(role) ||
+            rName.includes('kaprodi') ||
+            rName.includes('prodi') ||
+            rName.includes('jurusan')
+        ) {
+            try {
+                const staffRes = await masterApiShow<any>('institution/master/staffes', role.roleable_id);
+                if (staffRes.data?.unit_id) {
+                    return staffRes.data.unit_id;
+                }
+            } catch {
+                // Continue
+            }
+        }
+        return null;
+    };
+
+    // Helper: Resolve department unit_id
+    const resolveDepartmentUnitId = async (unitsList: any[]): Promise<string> => {
+        // Priority 1: Query parameter in URL
+        const queryUnit = (searchParams.unit_id as string) || (searchParams.id as string);
+        if (queryUnit && queryUnit.trim() !== '') {
+            return queryUnit.trim();
+        }
+
+        // Priority 2: Stored unit_id on user or storage
+        const user = currentUserSignal();
+        const storedUnitId = (user as any)?.unit_id || getStorageItem('unit_id');
+        if (storedUnitId && storedUnitId !== '00000000-0000-0000-0000-000000000000') {
+            return storedUnitId;
+        }
+
+        // Priority 3: Active role or roles in memory
+        const activeRole = activeRoleSignal();
+        if (activeRole) {
+            const uId = await resolveRoleUnitId(activeRole);
+            if (uId) return uId;
+        }
+
+        const roles = userRolesSignal();
+        for (const role of roles) {
+            const uId = await resolveRoleUnitId(role);
+            if (uId) return uId;
+        }
+
+        // Priority 4: Refresh auth state
+        await refreshAuthState();
+        const refreshedRoles = userRolesSignal();
+        for (const role of refreshedRoles) {
+            const uId = await resolveRoleUnitId(role);
+            if (uId) return uId;
+        }
+
+        // Priority 5: Fallback to individual -> employee -> staffes -> unit_id
+        const refreshedUser = currentUserSignal();
+        let indId = refreshedUser?.individual_id || getStorageItem('individual_id');
+        if (!indId || indId === '00000000-0000-0000-0000-000000000000') {
+            try {
+                const userRes = await GetCurrentUser();
+                if (userRes?.code === 200 && userRes.data?.individual_id) {
+                    indId = userRes.data.individual_id;
+                }
+            } catch {
+                // Ignore
+            }
+        }
+
+        if (indId && indId !== '00000000-0000-0000-0000-000000000000') {
+            try {
+                const indRes = await masterApiShow<any>('person/master/individuals', indId);
+                if (indRes.data?.employees && Array.isArray(indRes.data.employees)) {
+                    for (const emp of indRes.data.employees) {
+                        if (emp.staffes && Array.isArray(emp.staffes) && emp.staffes.length > 0) {
+                            const foundUnit = emp.staffes[0].unit_id;
+                            if (foundUnit) return foundUnit;
+                        }
+                    }
+                }
+            } catch {
+                // Ignore
+            }
+        }
+
+        // Priority 6: Default fallback to first unit
+        if (unitsList && unitsList.length > 0) {
+            return unitsList[0].id;
+        }
+
+        return '';
+    };
+
+    const loadUnits = async () => {
+        try {
+            const unitsRes = await masterApiIndex<any>('institution/master/units', { page: 1, per_page: 100 });
+            const list = unitsRes?.data || [];
+            setUnits(list);
+
+            const resolvedUnitId = await resolveDepartmentUnitId(list);
+            setSelectedUnitId(resolvedUnitId);
+            if (resolvedUnitId) {
+                const found = list.find((u: any) => u.id === resolvedUnitId);
+                if (found) {
+                    setActiveUnitData(found);
+                } else {
+                    try {
+                        const uRes = await masterApiShow<any>('institution/master/units', resolvedUnitId);
+                        if (uRes.data) setActiveUnitData(uRes.data);
+                    } catch {}
+                }
+            }
+        } catch (e) {
+            console.error('Failed to load study units:', e);
+        } finally {
+            setIsResolvingUnit(false);
+        }
+    };
+
     const fetchData = async () => {
+        const uId = selectedUnitId();
+        if (!uId) {
+            setItems([]);
+            setTotalData(0);
+            setTotalPages(1);
+            setIsLoading(false);
+            return;
+        }
+
         setIsLoading(true);
         try {
             const [field, dir] = sortParam().split('-');
@@ -29,6 +188,7 @@ export default function MasterIndexPage() {
                 search: searchQuery(),
                 sort_by: field,
                 sort_dir: dir || 'asc',
+                unit_id: uId,
             });
 
             if (response && Array.isArray(response.data)) {
@@ -51,12 +211,20 @@ export default function MasterIndexPage() {
         }
     };
 
+    onMount(async () => {
+        await loadUnits();
+    });
+
     createEffect(() => {
+        const uId = selectedUnitId();
         currentPage();
         itemsPerPage();
         searchQuery();
         sortParam();
-        fetchData();
+
+        if (uId && !isResolvingUnit()) {
+            fetchData();
+        }
     });
 
     let searchTimeout: any;
@@ -67,6 +235,14 @@ export default function MasterIndexPage() {
             setSearchQuery(val);
             setCurrentPage(1);
         }, 300);
+    };
+
+    const handleUnitChange = (uId: string) => {
+        setSelectedUnitId(uId);
+        setSearchParams({ unit_id: uId });
+        const found = units().find((u: any) => u.id === uId);
+        setActiveUnitData(found || null);
+        setCurrentPage(1);
     };
 
     const openDeleteModal = (item: any) => {
@@ -120,7 +296,7 @@ export default function MasterIndexPage() {
                 <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                            <a href="/" class="hover:text-blue-600 transition-colors">Home</a>
+                            <a href="/course-department/institution/master/unit/show" class="hover:text-blue-600 transition-colors">Course Department</a>
                             <span>/</span>
                             <span>Academic</span>
                             <span>/</span>
@@ -131,16 +307,16 @@ export default function MasterIndexPage() {
                             <span class="font-medium text-neutral-900 dark:text-white">Curriculum</span>
                         </nav>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Curriculums Directory
+                            Department Curriculums Directory
                         </h1>
                         <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
-                            Manage institutional curriculum structures, degree blueprints, and academic roadmaps.
+                            Manage curriculum structures, degree blueprints, and academic roadmaps for your study program.
                         </p>
                     </div>
 
                     <div class="mt-4 sm:mt-0 flex items-center gap-2">
                         <a
-                            href={`${basePath}/create`}
+                            href={`${basePath}/create${selectedUnitId() ? `?unit_id=${selectedUnitId()}` : ''}`}
                             class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-none shadow-xs transition-colors cursor-pointer"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -151,6 +327,44 @@ export default function MasterIndexPage() {
                         </a>
                     </div>
                 </div>
+
+                {/* Department Info & Unit Selector Banner */}
+                <Show when={!isResolvingUnit()}>
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                        <div class="flex items-center gap-3">
+                            <div class="size-9 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold font-mono text-sm border border-blue-200 dark:border-blue-800">
+                                {activeUnitData()?.code || activeUnitData()?.kode || 'PS'}
+                            </div>
+                            <div>
+                                <div class="text-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-wider font-semibold">
+                                    Department / Program Studi
+                                </div>
+                                <div class="text-sm sm:text-base font-bold text-neutral-900 dark:text-white">
+                                    {activeUnitData()?.name || activeUnitData()?.nama || (selectedUnitId() ? `Unit ID: ${selectedUnitId()}` : 'No Unit Assigned')}
+                                </div>
+                            </div>
+                        </div>
+
+                        <Show when={units().length > 1}>
+                            <div class="w-full sm:w-auto flex items-center gap-2">
+                                <label class="text-xs text-neutral-500 dark:text-neutral-400 whitespace-nowrap font-medium">Department:</label>
+                                <select
+                                    class="p-2 text-xs text-neutral-900 border border-neutral-300 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white font-medium"
+                                    value={selectedUnitId()}
+                                    onChange={(e) => handleUnitChange((e.target as HTMLSelectElement).value)}
+                                >
+                                    <For each={units()}>
+                                        {(u) => (
+                                            <option value={u.id}>
+                                                {u.code ? `[${u.code}] ` : ''}{u.name}
+                                            </option>
+                                        )}
+                                    </For>
+                                </select>
+                            </div>
+                        </Show>
+                    </div>
+                </Show>
 
                 <div class="flex flex-col md:flex-row items-center gap-3">
                     <div class="w-full md:w-2/3">
@@ -164,7 +378,7 @@ export default function MasterIndexPage() {
                             <input
                                 type="text"
                                 class="block w-full p-2.5 pl-10 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
-                                placeholder="Search by name, code, or keyword..."
+                                placeholder="Search curriculums by name..."
                                 onInput={handleSearch}
                             />
                         </div>
@@ -181,8 +395,6 @@ export default function MasterIndexPage() {
                         >
                             <option value="name-asc">Name (A-Z)</option>
                             <option value="name-desc">Name (Z-A)</option>
-                            <option value="code-asc">Code (Ascending)</option>
-                            <option value="code-desc">Code (Descending)</option>
                         </select>
 
                         <select
@@ -203,7 +415,7 @@ export default function MasterIndexPage() {
                 <div class="border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-2xs overflow-hidden">
                     <div class="block md:hidden divide-y divide-neutral-200 dark:divide-neutral-700">
                         <Show
-                            when={!isLoading()}
+                            when={!isLoading() && !isResolvingUnit()}
                             fallback={
                                 <For each={Array.from({ length: 3 })}>
                                     {() => (
@@ -230,8 +442,8 @@ export default function MasterIndexPage() {
                                                 <line x1="12" y1="8" x2="12" y2="12" />
                                                 <line x1="12" y1="16" x2="12.01" y2="16" />
                                             </svg>
-                                            <span class="font-semibold text-sm text-neutral-700 dark:text-neutral-300">No records found</span>
-                                            <span class="text-xs text-neutral-500">No data matches your query on the server.</span>
+                                            <span class="font-semibold text-sm text-neutral-700 dark:text-neutral-300">No curriculums found</span>
+                                            <span class="text-xs text-neutral-500">No curriculum records found for this department.</span>
                                         </div>
                                     </div>
                                 }
@@ -242,14 +454,21 @@ export default function MasterIndexPage() {
                                             <div class="flex items-start justify-between gap-3">
                                                 <div class="flex-1 min-w-0">
                                                     <a
-                                                        href={`${basePath}/show?id=${item.id || item.uuid}`}
+                                                        href={`${basePath}/${item.id || item.uuid}/show?id=${item.id || item.uuid}`}
                                                         class="font-semibold text-sm text-blue-600 dark:text-blue-400 hover:underline block truncate"
                                                     >
                                                         {getItemTitle(item)}
                                                     </a>
                                                     <div class="flex items-center gap-1.5 mt-1">
                                                         <span class="px-1.5 py-0.5 text-xs font-mono font-medium bg-neutral-100 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-600">
-                                                            {getItemCode(item)}
+                                                            Total: {item.total_credit ?? '-'} SKS
+                                                        </span>
+                                                        <span class={`px-1.5 py-0.5 text-xs font-medium border ${
+                                                            item.is_active
+                                                                ? 'bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800'
+                                                                : 'bg-neutral-100 text-neutral-600 border-neutral-200 dark:bg-neutral-700 dark:text-neutral-400'
+                                                        }`}>
+                                                            {item.is_active ? 'Active' : 'Inactive'}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -257,7 +476,7 @@ export default function MasterIndexPage() {
 
                                             <div class="flex items-center justify-end gap-1.5 pt-2 border-t border-neutral-100 dark:border-neutral-700/60">
                                                 <a
-                                                    href={`${basePath}/show?id=${item.id || item.uuid}`}
+                                                    href={`${basePath}/${item.id || item.uuid}/show?id=${item.id || item.uuid}`}
                                                     class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                     title="View Details"
                                                 >
@@ -266,7 +485,7 @@ export default function MasterIndexPage() {
                                                     </svg>
                                                 </a>
                                                 <a
-                                                    href={`${basePath}/edit?id=${item.id || item.uuid}`}
+                                                    href={`${basePath}/${item.id || item.uuid}/edit?id=${item.id || item.uuid}`}
                                                     class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                     title="Edit Record"
                                                 >
@@ -299,15 +518,16 @@ export default function MasterIndexPage() {
                         <table class="w-full text-xs sm:text-sm text-left">
                             <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
                                 <tr>
-                                    <th class="px-4 py-3.5 w-36">Code / ID</th>
-                                    <th class="px-4 py-3.5">Name / Title</th>
-                                    <th class="px-4 py-3.5">Details</th>
+                                    <th class="px-4 py-3.5 w-36">ID</th>
+                                    <th class="px-4 py-3.5">Curriculum Name</th>
+                                    <th class="px-4 py-3.5">Credit Breakdown</th>
+                                    <th class="px-4 py-3.5">Status</th>
                                     <th class="px-4 py-3.5 text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
                                 <Show
-                                    when={!isLoading()}
+                                    when={!isLoading() && !isResolvingUnit()}
                                     fallback={
                                         <For each={Array.from({ length: 3 })}>
                                             {() => (
@@ -315,6 +535,7 @@ export default function MasterIndexPage() {
                                                     <td class="px-4 py-3"><div class="h-4 w-24 bg-neutral-200 dark:bg-neutral-700"></div></td>
                                                     <td class="px-4 py-3"><div class="h-4 w-48 bg-neutral-200 dark:bg-neutral-700"></div></td>
                                                     <td class="px-4 py-3"><div class="h-4 w-32 bg-neutral-200 dark:bg-neutral-700"></div></td>
+                                                    <td class="px-4 py-3"><div class="h-4 w-16 bg-neutral-200 dark:bg-neutral-700"></div></td>
                                                     <td class="px-4 py-3 text-right"><div class="h-6 w-16 bg-neutral-200 dark:bg-neutral-700 ml-auto"></div></td>
                                                 </tr>
                                             )}
@@ -325,15 +546,15 @@ export default function MasterIndexPage() {
                                         when={items().length > 0}
                                         fallback={
                                             <tr>
-                                                <td colspan="4" class="px-4 py-12 text-center text-neutral-500 dark:text-neutral-400">
+                                                <td colspan="5" class="px-4 py-12 text-center text-neutral-500 dark:text-neutral-400">
                                                     <div class="flex flex-col items-center justify-center gap-2">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="size-8 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                                             <circle cx="12" cy="12" r="10" />
                                                             <line x1="12" y1="8" x2="12" y2="12" />
                                                             <line x1="12" y1="16" x2="12.01" y2="16" />
                                                         </svg>
-                                                        <span class="font-semibold text-sm text-neutral-700 dark:text-neutral-300">No records found</span>
-                                                        <span class="text-xs text-neutral-500">No data matches your query on the server.</span>
+                                                        <span class="font-semibold text-sm text-neutral-700 dark:text-neutral-300">No curriculums found</span>
+                                                        <span class="text-xs text-neutral-500">No curriculum records found for this department.</span>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -349,7 +570,7 @@ export default function MasterIndexPage() {
                                                     </td>
                                                     <td class="px-4 py-3">
                                                         <a
-                                                            href={`${basePath}/show?id=${item.id || item.uuid}`}
+                                                            href={`${basePath}/${item.id || item.uuid}/show?id=${item.id || item.uuid}`}
                                                             class="font-semibold text-blue-600 dark:text-blue-400 hover:underline block"
                                                         >
                                                             {getItemTitle(item)}
@@ -358,15 +579,29 @@ export default function MasterIndexPage() {
                                                             {item.id || item.uuid}
                                                         </span>
                                                     </td>
-                                                    <td class="px-4 py-3 text-neutral-600 dark:text-neutral-300">
-                                                        <span class="text-xs">
-                                                            {item.description || item.keterangan || item.email || item.phone || item.url || '-'}
+                                                    <td class="px-4 py-3 text-neutral-700 dark:text-neutral-300">
+                                                        <span class="text-xs font-medium">
+                                                            Total: <span class="font-bold">{item.total_credit ?? '-'}</span> SKS
+                                                            <Show when={item.mandatory_course_credit !== undefined && item.mandatory_course_credit !== null}>
+                                                                <span class="text-neutral-400 ml-1">
+                                                                    (Mandatory: {item.mandatory_course_credit}, Optional: {item.optional_course_credit ?? 0})
+                                                                </span>
+                                                            </Show>
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-4 py-3">
+                                                        <span class={`inline-flex items-center px-2 py-0.5 text-xs font-medium border ${
+                                                            item.is_active
+                                                                ? 'bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800'
+                                                                : 'bg-neutral-100 text-neutral-600 border-neutral-200 dark:bg-neutral-700 dark:text-neutral-400'
+                                                        }`}>
+                                                            {item.is_active ? 'Active' : 'Inactive'}
                                                         </span>
                                                     </td>
                                                     <td class="px-4 py-3 text-right">
                                                         <div class="flex items-center justify-end gap-1.5">
                                                             <a
-                                                                href={`${basePath}/show?id=${item.id || item.uuid}`}
+                                                                href={`${basePath}/${item.id || item.uuid}/show?id=${item.id || item.uuid}`}
                                                                 class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                                 title="View Details"
                                                             >
@@ -375,7 +610,7 @@ export default function MasterIndexPage() {
                                                                 </svg>
                                                             </a>
                                                             <a
-                                                                href={`${basePath}/edit?id=${item.id || item.uuid}`}
+                                                                href={`${basePath}/${item.id || item.uuid}/edit?id=${item.id || item.uuid}`}
                                                                 class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                                 title="Edit Record"
                                                             >

@@ -29,7 +29,12 @@ pub async fn list_curriculums(
 
     let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
 
-    if let Some(ref name) = query.name {
+    if let Some(ref search) = query.search {
+        if !search.trim().is_empty() {
+            let s = search.trim();
+            select = select.filter(entity_mod::Column::Name.contains(s));
+        }
+    } else if let Some(ref name) = query.name {
         select = select.filter(entity_mod::Column::Name.contains(name));
     }
 
@@ -37,9 +42,17 @@ pub async fn list_curriculums(
         select = select.filter(entity_mod::Column::UnitId.eq(unit_id));
     }
 
-    let paginator = select
-        .order_by_asc(entity_mod::Column::Name)
-        .paginate(db, page_size);
+    let _sort_by = query.sort_by.as_deref().unwrap_or("name");
+    let sort_dir = query.sort_dir.as_deref().unwrap_or("asc");
+    let is_desc = sort_dir.eq_ignore_ascii_case("desc");
+
+    select = if is_desc {
+        select.order_by_desc(entity_mod::Column::Name)
+    } else {
+        select.order_by_asc(entity_mod::Column::Name)
+    };
+
+    let paginator = select.paginate(db, page_size);
 
     let total = paginator.num_items().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
     let total_pages = (total as f64 / page_size as f64).ceil() as u64;
@@ -298,4 +311,29 @@ pub async fn delete_curriculum(
         Ok(Json(MessageResponse {
             message: "Curriculum deleted successfully".to_string(),
         }))
+}
+
+#[endpoint(tags("Academic - Course - Master - Curriculum"), status_codes(200, 400, 500))]
+pub async fn get_curriculums_by_unit(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<Vec<CurriculumResponse>>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let id_str = req
+        .param::<String>("unit_id")
+        .or_else(|| req.param::<String>("id"))
+        .or_else(|| req.query::<String>("unit_id"))
+        .ok_or_else(|| StatusError::bad_request().brief("Missing parameter unit_id"))?;
+
+    let unit_id = Uuid::parse_str(&id_str)
+        .map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+
+    let data = crate::dtos::academic::course::master::curriculums::list_curriculums_by_unit(db, unit_id)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    Ok(Json(data))
 }
