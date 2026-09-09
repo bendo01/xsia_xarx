@@ -4,6 +4,12 @@ use uuid::Uuid;
 use validator::Validate;
 use chrono::{NaiveDate, NaiveDateTime};
 
+use crate::dtos::academic::campaign::transaction::teach_evaluations::TeachEvaluationResponse;
+use crate::dtos::academic::student::campaign::detail_activities::DetailActivityResponse;
+use crate::dtos::academic::student::campaign::detail_activity_evaluation_components::DetailActivityEvaluationComponentResponse;
+use crate::dtos::academic::course::master::course_evaluation_plannings::CourseEvaluationPlanningResponse;
+use crate::dtos::common::reference::ReferenceResponse;
+
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
 pub struct TeachQuery {
@@ -78,6 +84,16 @@ pub struct TeachResponse {
     pub max_member: Option<i32>,
     pub feeder_id: Option<Uuid>,
     pub enrolled_count: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub teach_evaluations: Option<Vec<TeachEvaluationResponse>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub detail_activities: Option<Vec<DetailActivityResponse>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub detail_activity_evaluation_components: Option<Vec<DetailActivityEvaluationComponentResponse>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub course_evaluation_plannings: Option<Vec<CourseEvaluationPlanningResponse>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub evaluation_types: Option<Vec<ReferenceResponse>>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]

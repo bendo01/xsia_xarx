@@ -146,6 +146,11 @@ async fn load_relations_for_detail_activities(
                 max_member: t.max_member,
                 feeder_id: t.feeder_id,
                 enrolled_count: None,
+                teach_evaluations: None,
+                detail_activities: None,
+                detail_activity_evaluation_components: None,
+                course_evaluation_plannings: None,
+                evaluation_types: None,
             }))
             .collect()
     };

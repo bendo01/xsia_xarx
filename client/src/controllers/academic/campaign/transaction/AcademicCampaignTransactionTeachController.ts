@@ -46,6 +46,12 @@ export interface TeachItem {
     schedule_time?: string;
     room_name?: string;
     enrolled_count?: number;
+    // Enriched relations
+    teach_evaluations?: any[];
+    detail_activities?: any[];
+    detail_activity_evaluation_components?: any[];
+    course_evaluation_plannings?: any[];
+    evaluation_types?: any[];
 }
 
 export async function listTeaches(queryParams?: {

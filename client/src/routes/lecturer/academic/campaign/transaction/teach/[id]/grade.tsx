@@ -140,44 +140,57 @@ export default function LecturerTeachGradePage() {
 
             setGradingScale(sortedGrades);
 
-            // 3. Fetch Teach Evaluations (academic_campaign_transaction.teach_evaluations)
-            let evalsRes = await listTeachEvaluations({ teach_id: id, page_size: 50 });
-            let evals = evalsRes.data || [];
+            // 3. Teach Evaluations (from teach or initialized if empty)
+            let evals: any[] = (teach?.teach_evaluations && teach.teach_evaluations.length > 0)
+                ? teach.teach_evaluations
+                : [];
 
-            // If no evaluations exist, initialize standard default components for the class
+            // If no evaluations exist, initialize from course_evaluation_plannings or standard default components
             if (evals.length === 0) {
-                const defaultComponents = [
-                    { name: 'Tugas', evaluation_weight: 20, thread: 1 },
-                    { name: 'Kuis', evaluation_weight: 10, thread: 2 },
-                    { name: 'Kehadiran & Partisipasi', evaluation_weight: 10, thread: 3 },
-                    { name: 'UTS', evaluation_weight: 30, thread: 4 },
-                    { name: 'UAS', evaluation_weight: 30, thread: 5 },
-                ];
-                for (const comp of defaultComponents) {
-                    await createTeachEvaluation({
-                        teach_id: id,
-                        name: comp.name,
-                        evaluation_weight: comp.evaluation_weight,
-                        thread: comp.thread,
-                    });
+                const plannings = teach?.course_evaluation_plannings || [];
+                if (plannings.length > 0) {
+                    for (let idx = 0; idx < plannings.length; idx++) {
+                        const p = plannings[idx];
+                        await createTeachEvaluation({
+                            teach_id: id,
+                            name: p.name,
+                            evaluation_weight: p.percentage || 0,
+                            thread: idx + 1,
+                            evaluation_type_id: p.evaluation_type_id,
+                        });
+                    }
+                } else {
+                    const defaultComponents = [
+                        { name: 'Tugas', evaluation_weight: 20, thread: 1 },
+                        { name: 'Kuis', evaluation_weight: 10, thread: 2 },
+                        { name: 'Kehadiran & Partisipasi', evaluation_weight: 10, thread: 3 },
+                        { name: 'UTS', evaluation_weight: 30, thread: 4 },
+                        { name: 'UAS', evaluation_weight: 30, thread: 5 },
+                    ];
+                    for (const comp of defaultComponents) {
+                        await createTeachEvaluation({
+                            teach_id: id,
+                            name: comp.name,
+                            evaluation_weight: comp.evaluation_weight,
+                            thread: comp.thread,
+                        });
+                    }
                 }
-                evalsRes = await listTeachEvaluations({ teach_id: id, page_size: 50 });
+                const evalsRes = await listTeachEvaluations({ teach_id: id, page_size: 50 });
                 evals = evalsRes.data || [];
             }
             setEvaluations(evals.sort((a, b) => (a.thread || 0) - (b.thread || 0)));
 
-            // 4. Fetch Enrolled Students Detail Activities (academic_student_campaign.detail_activities)
-            const detailActivitiesRes = await listDetailActivities({ teach_id: id, page_size: 300 });
-            const details = detailActivitiesRes.data || [];
+            // 4. Enrolled Students Detail Activities (from teach)
+            const details: any[] = (teach?.detail_activities && teach.detail_activities.length > 0)
+                ? teach.detail_activities
+                : (await listDetailActivities({ teach_id: id, page_size: 300 })).data || [];
 
-            // 5. Fetch all evaluation component marks for enrolled students
+            // 5. Evaluation component marks for enrolled students (from teach)
+            const allCompScores: any[] = teach?.detail_activity_evaluation_components || [];
             const rows: StudentGradeRow[] = [];
             for (const da of details) {
-                const compScoresRes = await listDetailActivityEvaluationComponents({
-                    detail_activity_id: da.id,
-                    page_size: 100,
-                });
-                const compScores = compScoresRes.data || [];
+                const compScores = allCompScores.filter(cs => cs.detail_activity_id === da.id);
 
                 const scoreMap: Record<string, { id?: string; mark: number; percentage: number }> = {};
                 for (const ev of evals) {
