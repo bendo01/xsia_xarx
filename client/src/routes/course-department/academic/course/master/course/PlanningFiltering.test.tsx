@@ -64,7 +64,7 @@ const mockEvalPlannings = [
     },
 ];
 
-describe('Course Planning course_id Parameter Filtering', () => {
+describe('Course Planning course_id Parameter Filtering & URL Cleanup', () => {
     beforeEach(() => {
         vi.stubGlobal('fetch', vi.fn(async (url: any, options: any) => {
             const urlStr = String(url);
@@ -109,8 +109,8 @@ describe('Course Planning course_id Parameter Filtering', () => {
         vi.unstubAllGlobals();
     });
 
-    it('course-learn-planning only shows records related to course_id parameter', async () => {
-        // Set URL before render
+    it('course-learn-planning cleans up redundant ?course_id= and only shows related records', async () => {
+        // Set URL with redundant ?course_id= parameter
         window.history.pushState(
             {},
             '',
@@ -135,10 +135,38 @@ describe('Course Planning course_id Parameter Filtering', () => {
 
         // Unrelated course item must NOT be displayed
         expect(screen.queryByText('Week 1: Akuntansi Keuangan')).toBeNull();
+
+        // Redundant ?course_id= parameter should have been stripped from the URL
+        expect(window.location.search).toBe('');
+        expect(window.location.pathname).toBe(`/course-department/academic/course/master/course/${targetCourseId}/course-learn-planning`);
     });
 
-    it('course-evaluation-planning only shows records related to course_id parameter', async () => {
-        // Set URL before render
+    it('course-learn-planning works cleanly from path parameter without any query param', async () => {
+        window.history.pushState(
+            {},
+            '',
+            `/course-department/academic/course/master/course/${targetCourseId}/course-learn-planning`
+        );
+
+        render(() => (
+            <Router>
+                <Route
+                    path="/course-department/academic/course/master/course/:id/course-learn-planning"
+                    component={CourseLearnPlanningIndexPage}
+                />
+                <Route path="*" component={CourseLearnPlanningIndexPage} />
+            </Router>
+        ));
+
+        await waitFor(() => {
+            expect(screen.getAllByText('Week 1: Algoritma Dasar').length).toBeGreaterThan(0);
+        });
+        expect(screen.queryByText('Week 1: Akuntansi Keuangan')).toBeNull();
+        expect(window.location.search).toBe('');
+    });
+
+    it('course-evaluation-planning cleans up redundant ?course_id= and only shows related records', async () => {
+        // Set URL with redundant ?course_id= parameter
         window.history.pushState(
             {},
             '',
@@ -163,5 +191,9 @@ describe('Course Planning course_id Parameter Filtering', () => {
 
         // Unrelated course item must NOT be displayed
         expect(screen.queryByText('Tugas Akuntansi')).toBeNull();
+
+        // Redundant ?course_id= parameter should have been stripped from the URL
+        expect(window.location.search).toBe('');
+        expect(window.location.pathname).toBe(`/course-department/academic/course/master/course/${targetCourseId}/course-evaluation-planning`);
     });
 });

@@ -443,7 +443,7 @@ export default function CourseMasterShowPage() {
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <a
-                                    href={`${basePath}/${selectedId()}/course-learn-planning?course_id=${selectedId()}`}
+                                    href={`${basePath}/${selectedId()}/course-learn-planning`}
                                     class="p-4 border border-neutral-200 dark:border-neutral-700 hover:border-blue-500 dark:hover:border-blue-500 bg-neutral-50 dark:bg-neutral-900/40 hover:bg-white dark:hover:bg-neutral-800 transition-all group"
                                 >
                                     <div class="flex items-start gap-3">
@@ -467,7 +467,7 @@ export default function CourseMasterShowPage() {
                                 </a>
 
                                 <a
-                                    href={`${basePath}/${selectedId()}/course-evaluation-planning?course_id=${selectedId()}`}
+                                    href={`${basePath}/${selectedId()}/course-evaluation-planning`}
                                     class="p-4 border border-neutral-200 dark:border-neutral-700 hover:border-purple-500 dark:hover:border-purple-500 bg-neutral-50 dark:bg-neutral-900/40 hover:bg-white dark:hover:bg-neutral-800 transition-all group"
                                 >
                                     <div class="flex items-start gap-3">

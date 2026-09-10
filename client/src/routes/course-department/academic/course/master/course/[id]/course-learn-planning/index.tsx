@@ -15,7 +15,48 @@ export default function MasterIndexPage() {
         if (pId && pId !== '[id]' && pId !== ':id') {
             return pId.trim();
         }
-        return ((searchParams.course_id as string) || (searchParams.id as string) || '').trim();
+        const fromSearch = ((searchParams.course_id as string) || (searchParams.id as string) || '').trim();
+        if (fromSearch && fromSearch !== '[id]' && fromSearch !== ':id') {
+            return fromSearch;
+        }
+        if (typeof window !== 'undefined') {
+            const parts = window.location.pathname.split('/').filter(Boolean);
+            const planningIdx = parts.indexOf('course-learn-planning');
+            if (planningIdx > 0 && parts[planningIdx - 1] && parts[planningIdx - 1] !== '[id]') {
+                return parts[planningIdx - 1];
+            }
+        }
+        return '';
+    };
+
+    const cleanRedundantCourseIdParam = (resolvedCourseId: string) => {
+        if (typeof window !== 'undefined') {
+            const url = new URL(window.location.href);
+            let changed = false;
+
+            if (url.searchParams.has('course_id')) {
+                url.searchParams.delete('course_id');
+                changed = true;
+            }
+            if (url.searchParams.has('courseId')) {
+                url.searchParams.delete('courseId');
+                changed = true;
+            }
+            if (url.searchParams.has('id')) {
+                url.searchParams.delete('id');
+                changed = true;
+            }
+
+            if ((params.id === '[id]' || params.id === ':id' || !params.id) && resolvedCourseId) {
+                url.pathname = `${courseMasterBasePath}/${resolvedCourseId}/course-learn-planning`;
+                changed = true;
+            }
+
+            if (changed) {
+                const cleanUrl = url.pathname + (url.search ? url.search : '') + url.hash;
+                window.history.replaceState(null, '', cleanUrl);
+            }
+        }
     };
 
     const courseDetailUrl = () => courseId() ? `${courseMasterBasePath}/${courseId()}/show` : courseMasterBasePath;
@@ -25,12 +66,12 @@ export default function MasterIndexPage() {
 
     const itemShowUrl = (item: any) => {
         const itemId = item.id || item.uuid;
-        return `${currentBasePath()}/${itemId}/show${courseId() ? `?course_id=${courseId()}` : ''}`;
+        return `${currentBasePath()}/${itemId}/show`;
     };
 
     const itemEditUrl = (item: any) => {
         const itemId = item.id || item.uuid;
-        return `${currentBasePath()}/${itemId}/edit${courseId() ? `?course_id=${courseId()}` : ''}`;
+        return `${currentBasePath()}/${itemId}/edit`;
     };
 
     const [course, setCourse] = createSignal<any | null>(null);
@@ -106,6 +147,7 @@ export default function MasterIndexPage() {
     createEffect(() => {
         const cId = courseId();
         if (cId) {
+            cleanRedundantCourseIdParam(cId);
             fetchCourse(cId);
         }
         currentPage();
@@ -210,7 +252,7 @@ export default function MasterIndexPage() {
                             <span>Back to Course</span>
                         </a>
                         <a
-                            href={`${currentBasePath()}/create${courseId() ? `?course_id=${courseId()}` : ''}`}
+                            href={`${currentBasePath()}/create`}
                             class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs shadow-xs transition-colors cursor-pointer"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

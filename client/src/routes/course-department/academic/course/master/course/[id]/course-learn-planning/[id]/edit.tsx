@@ -17,9 +17,9 @@ export default function MasterEditPage() {
         }
         if (typeof window !== 'undefined') {
             const parts = window.location.pathname.split('/').filter(Boolean);
-            const courseIdx = parts.indexOf('course');
-            if (courseIdx !== -1 && parts[courseIdx + 1] && parts[courseIdx + 1] !== '[id]') {
-                return parts[courseIdx + 1];
+            const planningIdx = parts.indexOf('course-learn-planning');
+            if (planningIdx > 0 && parts[planningIdx - 1] && parts[planningIdx - 1] !== '[id]') {
+                return parts[planningIdx - 1];
             }
         }
         return '';
@@ -85,9 +85,35 @@ export default function MasterEditPage() {
         }
     };
 
+    const cleanRedundantParams = () => {
+        if (typeof window !== 'undefined') {
+            const url = new URL(window.location.href);
+            let changed = false;
+
+            if (url.searchParams.has('course_id')) {
+                url.searchParams.delete('course_id');
+                changed = true;
+            }
+            if (url.searchParams.has('courseId')) {
+                url.searchParams.delete('courseId');
+                changed = true;
+            }
+            if (url.searchParams.has('id')) {
+                url.searchParams.delete('id');
+                changed = true;
+            }
+
+            if (changed) {
+                const cleanUrl = url.pathname + (url.search ? url.search : '') + url.hash;
+                window.history.replaceState(null, '', cleanUrl);
+            }
+        }
+    };
+
     onMount(() => {
         const id = resolveRecordId();
         setSelectedId(id);
+        cleanRedundantParams();
         fetchExisting(id);
     });
 

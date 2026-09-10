@@ -23,6 +23,31 @@ export default function MasterCreatePage() {
         ? `${courseMasterBasePath}/${courseId()}/course-learn-planning`
         : `/course-department/academic/course/master/course/[id]/course-learn-planning`;
 
+    const cleanRedundantParams = () => {
+        if (typeof window !== 'undefined') {
+            const url = new URL(window.location.href);
+            let changed = false;
+
+            if (url.searchParams.has('course_id')) {
+                url.searchParams.delete('course_id');
+                changed = true;
+            }
+            if (url.searchParams.has('courseId')) {
+                url.searchParams.delete('courseId');
+                changed = true;
+            }
+            if (url.searchParams.has('id')) {
+                url.searchParams.delete('id');
+                changed = true;
+            }
+
+            if (changed) {
+                const cleanUrl = url.pathname + (url.search ? url.search : '') + url.hash;
+                window.history.replaceState(null, '', cleanUrl);
+            }
+        }
+    };
+
     const [course, setCourse] = createSignal<any | null>(null);
     const [code, setCode] = createSignal('');
     const [name, setName] = createSignal('');
@@ -30,6 +55,7 @@ export default function MasterCreatePage() {
     const [isSubmitting, setIsSubmitting] = createSignal(false);
 
     onMount(async () => {
+        cleanRedundantParams();
         const cId = courseId();
         if (cId) {
             try {

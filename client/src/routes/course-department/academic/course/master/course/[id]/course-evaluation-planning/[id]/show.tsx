@@ -17,9 +17,9 @@ export default function MasterShowPage() {
         }
         if (typeof window !== 'undefined') {
             const parts = window.location.pathname.split('/').filter(Boolean);
-            const courseIdx = parts.indexOf('course');
-            if (courseIdx !== -1 && parts[courseIdx + 1] && parts[courseIdx + 1] !== '[id]') {
-                return parts[courseIdx + 1];
+            const planningIdx = parts.indexOf('course-evaluation-planning');
+            if (planningIdx > 0 && parts[planningIdx - 1] && parts[planningIdx - 1] !== '[id]') {
+                return parts[planningIdx - 1];
             }
         }
         return '';
@@ -48,7 +48,32 @@ export default function MasterShowPage() {
         ? `${courseMasterBasePath}/${courseId()}/course-evaluation-planning` 
         : `/course-department/academic/course/master/course/[id]/course-evaluation-planning`;
 
-    const editUrl = () => `${listUrl()}/${selectedId()}/edit${courseId() ? `?course_id=${courseId()}` : ''}`;
+    const editUrl = () => `${listUrl()}/${selectedId()}/edit`;
+
+    const cleanRedundantParams = () => {
+        if (typeof window !== 'undefined') {
+            const url = new URL(window.location.href);
+            let changed = false;
+
+            if (url.searchParams.has('course_id')) {
+                url.searchParams.delete('course_id');
+                changed = true;
+            }
+            if (url.searchParams.has('courseId')) {
+                url.searchParams.delete('courseId');
+                changed = true;
+            }
+            if (url.searchParams.has('id')) {
+                url.searchParams.delete('id');
+                changed = true;
+            }
+
+            if (changed) {
+                const cleanUrl = url.pathname + (url.search ? url.search : '') + url.hash;
+                window.history.replaceState(null, '', cleanUrl);
+            }
+        }
+    };
 
     const [isLoading, setIsLoading] = createSignal(true);
     const [record, setRecord] = createSignal<any | null>(null);
@@ -87,6 +112,7 @@ export default function MasterShowPage() {
     onMount(() => {
         const id = resolveRecordId();
         setSelectedId(id);
+        cleanRedundantParams();
         fetchDetail(id);
     });
 
