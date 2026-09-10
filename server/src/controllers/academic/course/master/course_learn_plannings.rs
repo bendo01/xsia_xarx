@@ -37,6 +37,10 @@ pub async fn list_course_learn_plannings(
         select = select.filter(entity_mod::Column::Code.eq(code));
     }
 
+    if let Some(course_id) = query.course_id {
+        select = select.filter(entity_mod::Column::CourseId.eq(course_id));
+    }
+
     let paginator = select
         .order_by_asc(entity_mod::Column::Name)
         .paginate(db, page_size);

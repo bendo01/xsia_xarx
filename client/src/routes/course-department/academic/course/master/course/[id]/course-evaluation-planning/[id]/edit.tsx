@@ -1,16 +1,60 @@
-import { createSignal, onMount, createEffect, Show } from 'solid-js';
-import { useSearchParams } from '@solidjs/router';
+import { createSignal, onMount, createEffect, Show, For } from 'solid-js';
+import { useParams, useSearchParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
-import { masterApiShow, masterApiUpdate } from '~/controllers/master/masterApiController';
+import { masterApiShow, masterApiUpdate, masterApiIndex } from '~/controllers/master/masterApiController';
 
 export default function MasterEditPage() {
     const apiPath = "academic/course/master/course-evaluation-plannings";
-    const basePath = "/academic/course/master/course-evaluation-planning";
+    const courseMasterBasePath = "/course-department/academic/course/master/course";
+    const params = useParams();
     const [searchParams] = useSearchParams();
-    const [selectedId, setSelectedId] = createSignal<string>((searchParams.id as string) || '');
+
+    const courseId = () => {
+        const fromSearch = ((searchParams.course_id as string) || (searchParams.courseId as string) || '').trim();
+        if (fromSearch && fromSearch !== '[id]' && fromSearch !== ':id') {
+            return fromSearch;
+        }
+        if (typeof window !== 'undefined') {
+            const parts = window.location.pathname.split('/').filter(Boolean);
+            const courseIdx = parts.indexOf('course');
+            if (courseIdx !== -1 && parts[courseIdx + 1] && parts[courseIdx + 1] !== '[id]') {
+                return parts[courseIdx + 1];
+            }
+        }
+        return '';
+    };
+
+    const resolveRecordId = () => {
+        const fromSearch = ((searchParams.id as string) || '').trim();
+        if (fromSearch && fromSearch !== '[id]' && fromSearch !== ':id') {
+            return fromSearch;
+        }
+        const pId = params.id;
+        if (pId && pId !== '[id]' && pId !== ':id') {
+            return pId.trim();
+        }
+        if (typeof window !== 'undefined') {
+            const parts = window.location.pathname.split('/').filter(Boolean);
+            const planningIdx = parts.indexOf('course-evaluation-planning');
+            if (planningIdx !== -1 && parts[planningIdx + 1] && parts[planningIdx + 1] !== 'edit' && parts[planningIdx + 1] !== 'show') {
+                return parts[planningIdx + 1];
+            }
+        }
+        return '';
+    };
+
+    const listUrl = () => courseId()
+        ? `${courseMasterBasePath}/${courseId()}/course-evaluation-planning`
+        : `/course-department/academic/course/master/course/[id]/course-evaluation-planning`;
+
+    const [selectedId, setSelectedId] = createSignal<string>(resolveRecordId());
+    const [existingCourseId, setExistingCourseId] = createSignal<string>('');
+    const [evaluationTypes, setEvaluationTypes] = createSignal<any[]>([]);
+    const [evaluationTypeId, setEvaluationTypeId] = createSignal('');
     const [code, setCode] = createSignal('');
     const [name, setName] = createSignal('');
+    const [percentage, setPercentage] = createSignal<number | ''>('');
     const [description, setDescription] = createSignal('');
     const [isLoading, setIsLoading] = createSignal(true);
     const [isSubmitting, setIsSubmitting] = createSignal(false);
@@ -24,9 +68,20 @@ export default function MasterEditPage() {
         try {
             const res = await masterApiShow(apiPath, id);
             if (res.data) {
-                setCode(res.data.code || res.data.kode || '');
+                const cId = courseId();
+                if (cId && res.data.course_id && String(res.data.course_id) !== String(cId)) {
+                    toast.danger('Record does not belong to the selected course.');
+                    setIsLoading(false);
+                    return;
+                }
+                setExistingCourseId(res.data.course_id ? String(res.data.course_id) : '');
+                setCode(String(res.data.code ?? res.data.kode ?? ''));
                 setName(res.data.name || res.data.nama || res.data.title || '');
-                setDescription(res.data.description || res.data.keterangan || '');
+                setPercentage(res.data.percentage != null ? res.data.percentage : '');
+                setDescription(res.data.decription_indonesian || res.data.description || res.data.keterangan || '');
+                if (res.data.evaluation_type_id) {
+                    setEvaluationTypeId(String(res.data.evaluation_type_id));
+                }
             } else {
                 toast.danger(res.error || 'Record not found.');
             }
@@ -37,13 +92,22 @@ export default function MasterEditPage() {
         }
     };
 
-    onMount(() => {
-        const id = (searchParams.id as string) || '';
+    onMount(async () => {
+        const id = resolveRecordId();
+        setSelectedId(id);
+        try {
+            const typesRes = await masterApiIndex<any>('academic/course/reference/evaluation-types', { per_page: 50 });
+            if (typesRes?.data && typesRes.data.length > 0) {
+                setEvaluationTypes(typesRes.data);
+            }
+        } catch {
+            // ignore
+        }
         fetchExisting(id);
     });
 
     createEffect(() => {
-        const id = searchParams.id as string;
+        const id = resolveRecordId();
         if (id && id !== selectedId()) {
             setSelectedId(id);
             fetchExisting(id);
@@ -55,18 +119,22 @@ export default function MasterEditPage() {
         const id = selectedId();
         if (!id) return;
 
+        const cId = courseId() || existingCourseId();
         setIsSubmitting(true);
         try {
             const res = await masterApiUpdate(apiPath, id, {
-                code: code(),
+                code: Number(code()) || 1,
                 name: name(),
-                description: description(),
+                percentage: Number(percentage()) || 0,
+                decription_indonesian: description() || name(),
+                course_id: cId || undefined,
+                evaluation_type_id: evaluationTypeId() || undefined,
             });
 
             if (res.success) {
                 toast.success(res.message || 'Record updated successfully!');
                 setTimeout(() => {
-                    window.location.href = basePath;
+                    window.location.href = listUrl();
                 }, 500);
             } else {
                 toast.danger(res.message || 'Failed to update record.');
@@ -90,11 +158,9 @@ export default function MasterEditPage() {
                             <span>/</span>
                             <span>Academic</span>
                             <span>/</span>
-                            <span>Course</span>
+                            <a href={courseMasterBasePath} class="hover:text-blue-600 transition-colors">Course</a>
                             <span>/</span>
-                            <span>Master</span>
-                            <span>/</span>
-                            <a href={basePath} class="hover:text-blue-600 transition-colors">Course Evaluation Planning</a>
+                            <a href={listUrl()} class="hover:text-blue-600 transition-colors">Evaluation Planning</a>
                             <span>/</span>
                             <span class="font-medium text-neutral-900 dark:text-white">Edit</span>
                         </nav>
@@ -105,18 +171,18 @@ export default function MasterEditPage() {
 
                     <div class="mt-4 sm:mt-0">
                         <a
-                            href={basePath}
+                            href={listUrl()}
                             class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-white dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/60 rounded-xs shadow-2xs transition-colors"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="m15 18-6-6 6-6"/>
+                                <path d="m15 18-6-6 6-6" />
                             </svg>
                             <span>Cancel</span>
                         </a>
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 max-w-3xl">
+                <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6">
                     <Show
                         when={!isLoading()}
                         fallback={
@@ -128,17 +194,17 @@ export default function MasterEditPage() {
                         }
                     >
                         <form onSubmit={handleSubmit} class="space-y-6">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                        Code <span class="text-red-500">*</span>
+                                        Code (Urutan) <span class="text-red-500">*</span>
                                     </label>
                                     <input
-                                        type="text"
+                                        type="number"
                                         required
                                         value={code()}
                                         onInput={(e) => setCode(e.currentTarget.value)}
-                                        placeholder="e.g. CODE-001"
+                                        placeholder="e.g. 1"
                                         class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                     />
                                 </div>
@@ -152,11 +218,48 @@ export default function MasterEditPage() {
                                         required
                                         value={name()}
                                         onInput={(e) => setName(e.currentTarget.value)}
-                                        placeholder="Enter name"
+                                        placeholder="e.g. Tugas 1 / UTS"
+                                        class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
+                                        Percentage (%)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        step="0.1"
+                                        min="0"
+                                        max="100"
+                                        value={percentage()}
+                                        onInput={(e) => setPercentage(e.currentTarget.value === '' ? '' : Number(e.currentTarget.value))}
+                                        placeholder="e.g. 20"
                                         class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                     />
                                 </div>
                             </div>
+
+                            <Show when={evaluationTypes().length > 0}>
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
+                                        Evaluation Type
+                                    </label>
+                                    <select
+                                        value={evaluationTypeId()}
+                                        onChange={(e) => setEvaluationTypeId(e.currentTarget.value)}
+                                        class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
+                                    >
+                                        <For each={evaluationTypes()}>
+                                            {(type) => (
+                                                <option value={type.id} selected={String(type.id) === String(evaluationTypeId())}>
+                                                    {type.name || type.nama || type.code || type.id}
+                                                </option>
+                                            )}
+                                        </For>
+                                    </select>
+                                </div>
+                            </Show>
 
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
@@ -173,7 +276,7 @@ export default function MasterEditPage() {
 
                             <div class="flex items-center justify-end gap-3 pt-4 border-t border-neutral-100 dark:border-neutral-700">
                                 <a
-                                    href={basePath}
+                                    href={listUrl()}
                                     class="px-4 py-2 text-xs font-mono font-medium border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                                 >
                                     Cancel

@@ -100,9 +100,32 @@ export default function CourseMasterShowPage() {
         }
     };
 
+    const cleanRedundantIdParam = (resolvedId: string) => {
+        if (typeof window !== 'undefined') {
+            const url = new URL(window.location.href);
+            let changed = false;
+
+            if (url.searchParams.has('id')) {
+                url.searchParams.delete('id');
+                changed = true;
+            }
+
+            if ((params.id === '[id]' || params.id === ':id' || !params.id) && resolvedId) {
+                url.pathname = `${basePath}/${resolvedId}/show`;
+                changed = true;
+            }
+
+            if (changed) {
+                const cleanUrl = url.pathname + (url.search ? url.search : '') + url.hash;
+                window.history.replaceState(null, '', cleanUrl);
+            }
+        }
+    };
+
     onMount(() => {
         const id = resolveId();
         setSelectedId(id);
+        cleanRedundantIdParam(id);
         fetchDetail(id);
     });
 
@@ -110,6 +133,7 @@ export default function CourseMasterShowPage() {
         const id = resolveId();
         if (id && id !== selectedId()) {
             setSelectedId(id);
+            cleanRedundantIdParam(id);
             fetchDetail(id);
         }
     });
@@ -196,7 +220,7 @@ export default function CourseMasterShowPage() {
 
                         <Show when={selectedId()}>
                             <a
-                                href={`${basePath}/${selectedId()}/edit?id=${selectedId()}`}
+                                href={`${basePath}/${selectedId()}/edit`}
                                 class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs shadow-xs transition-colors"
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

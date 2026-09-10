@@ -1,11 +1,39 @@
 import { createSignal, createEffect, For, Show } from 'solid-js';
+import { useParams, useSearchParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
-import { masterApiIndex, masterApiDelete } from '~/controllers/master/masterApiController';
+import { masterApiIndex, masterApiDelete, masterApiShow } from '~/controllers/master/masterApiController';
 
 export default function MasterIndexPage() {
     const apiPath = "academic/course/master/course-evaluation-plannings";
-    const basePath = "/academic/course/master/course-evaluation-planning";
+    const courseMasterBasePath = "/course-department/academic/course/master/course";
+    const params = useParams();
+    const [searchParams] = useSearchParams();
+
+    const courseId = () => {
+        const pId = params.id;
+        if (pId && pId !== '[id]' && pId !== ':id') {
+            return pId.trim();
+        }
+        return ((searchParams.course_id as string) || (searchParams.id as string) || '').trim();
+    };
+
+    const courseDetailUrl = () => courseId() ? `${courseMasterBasePath}/${courseId()}/show` : courseMasterBasePath;
+    const currentBasePath = () => courseId()
+        ? `${courseMasterBasePath}/${courseId()}/course-evaluation-planning`
+        : `/course-department/academic/course/master/course/[id]/course-evaluation-planning`;
+
+    const itemShowUrl = (item: any) => {
+        const itemId = item.id || item.uuid;
+        return `${currentBasePath()}/${itemId}/show${courseId() ? `?course_id=${courseId()}` : ''}`;
+    };
+
+    const itemEditUrl = (item: any) => {
+        const itemId = item.id || item.uuid;
+        return `${currentBasePath()}/${itemId}/edit${courseId() ? `?course_id=${courseId()}` : ''}`;
+    };
+
+    const [course, setCourse] = createSignal<any | null>(null);
     const [items, setItems] = createSignal<any[]>([]);
     const [isLoading, setIsLoading] = createSignal(true);
     const [currentPage, setCurrentPage] = createSignal(1);
@@ -19,7 +47,28 @@ export default function MasterIndexPage() {
     const [selectedItem, setSelectedItem] = createSignal<any | null>(null);
     const [isSubmitting, setIsSubmitting] = createSignal(false);
 
+    const fetchCourse = async (id: string) => {
+        if (!id) return;
+        try {
+            const res = await masterApiShow<any>('academic/course/master/courses', id);
+            if (res && res.data) {
+                setCourse(res.data);
+            }
+        } catch {
+            // ignore
+        }
+    };
+
     const fetchData = async () => {
+        const cId = courseId();
+        if (!cId) {
+            setItems([]);
+            setTotalData(0);
+            setTotalPages(1);
+            setIsLoading(false);
+            return;
+        }
+
         setIsLoading(true);
         try {
             const [field, dir] = sortParam().split('-');
@@ -29,11 +78,14 @@ export default function MasterIndexPage() {
                 search: searchQuery(),
                 sort_by: field,
                 sort_dir: dir || 'asc',
+                course_id: cId,
             });
 
             if (response && Array.isArray(response.data)) {
-                setItems(response.data);
-                setTotalData(response.total);
+                // Ensure only data related to course_id parameter is displayed
+                const filtered = response.data.filter((item: any) => !item.course_id || String(item.course_id) === String(cId));
+                setItems(filtered);
+                setTotalData(filtered.length !== response.data.length ? filtered.length : response.total);
                 setTotalPages(response.total_pages || 1);
             } else {
                 setItems([]);
@@ -52,6 +104,10 @@ export default function MasterIndexPage() {
     };
 
     createEffect(() => {
+        const cId = courseId();
+        if (cId) {
+            fetchCourse(cId);
+        }
         currentPage();
         itemsPerPage();
         searchQuery();
@@ -124,23 +180,37 @@ export default function MasterIndexPage() {
                             <span>/</span>
                             <span>Academic</span>
                             <span>/</span>
-                            <span>Course</span>
+                            <a href={courseMasterBasePath} class="hover:text-blue-600 transition-colors">Course</a>
                             <span>/</span>
-                            <span>Master</span>
+                            <a href={courseDetailUrl()} class="hover:text-blue-600 transition-colors">
+                                {course()?.code ? `${course()?.code}` : (courseId() || 'Course')}
+                            </a>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">Course Evaluation Planning</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">Evaluation Planning</span>
                         </nav>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Course Evaluation Plannings Directory
+                            Course Evaluation Plannings
+                            <Show when={course()?.code || course()?.name}>
+                                : <span class="text-blue-600 dark:text-blue-400">{course()?.code} {course()?.name ? `- ${course()?.name}` : ''}</span>
+                            </Show>
                         </h1>
                         <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
-                            Configure assessment weighting, evaluation matrices, and rubric planning.
+                            Configure assessment weighting, evaluation matrices, and rubric planning for this course.
                         </p>
                     </div>
 
                     <div class="mt-4 sm:mt-0 flex items-center gap-2">
                         <a
-                            href={`${basePath}/create`}
+                            href={courseDetailUrl()}
+                            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-white dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/60 rounded-xs shadow-2xs transition-colors"
+                        >
+                            <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m15 18-6-6 6-6"/>
+                            </svg>
+                            <span>Back to Course</span>
+                        </a>
+                        <a
+                            href={`${currentBasePath()}/create${courseId() ? `?course_id=${courseId()}` : ''}`}
                             class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs shadow-xs transition-colors cursor-pointer"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -242,7 +312,7 @@ export default function MasterIndexPage() {
                                             <div class="flex items-start justify-between gap-3">
                                                 <div class="flex-1 min-w-0">
                                                     <a
-                                                        href={`${basePath}/show?id=${item.id || item.uuid}`}
+                                                        href={itemShowUrl(item)}
                                                         class="font-semibold text-sm text-blue-600 dark:text-blue-400 hover:underline block truncate"
                                                     >
                                                         {getItemTitle(item)}
@@ -257,7 +327,7 @@ export default function MasterIndexPage() {
 
                                             <div class="flex items-center justify-end gap-1.5 pt-2 border-t border-neutral-100 dark:border-neutral-700/60">
                                                 <a
-                                                    href={`${basePath}/show?id=${item.id || item.uuid}`}
+                                                    href={itemShowUrl(item)}
                                                     class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                     title="View Details"
                                                 >
@@ -266,7 +336,7 @@ export default function MasterIndexPage() {
                                                     </svg>
                                                 </a>
                                                 <a
-                                                    href={`${basePath}/edit?id=${item.id || item.uuid}`}
+                                                    href={itemEditUrl(item)}
                                                     class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                     title="Edit Record"
                                                 >
@@ -349,7 +419,7 @@ export default function MasterIndexPage() {
                                                     </td>
                                                     <td class="px-4 py-3">
                                                         <a
-                                                            href={`${basePath}/show?id=${item.id || item.uuid}`}
+                                                            href={itemShowUrl(item)}
                                                             class="font-semibold text-blue-600 dark:text-blue-400 hover:underline block"
                                                         >
                                                             {getItemTitle(item)}
@@ -366,7 +436,7 @@ export default function MasterIndexPage() {
                                                     <td class="px-4 py-3 text-right">
                                                         <div class="flex items-center justify-end gap-1.5">
                                                             <a
-                                                                href={`${basePath}/show?id=${item.id || item.uuid}`}
+                                                                href={itemShowUrl(item)}
                                                                 class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                                 title="View Details"
                                                             >
@@ -375,7 +445,7 @@ export default function MasterIndexPage() {
                                                                 </svg>
                                                             </a>
                                                             <a
-                                                                href={`${basePath}/edit?id=${item.id || item.uuid}`}
+                                                                href={itemEditUrl(item)}
                                                                 class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                                 title="Edit Record"
                                                             >

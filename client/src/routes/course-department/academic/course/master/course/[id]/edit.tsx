@@ -157,9 +157,32 @@ export default function CourseMasterEditPage() {
         }
     };
 
+    const cleanRedundantIdParam = (resolvedId: string) => {
+        if (typeof window !== 'undefined') {
+            const url = new URL(window.location.href);
+            let changed = false;
+
+            if (url.searchParams.has('id')) {
+                url.searchParams.delete('id');
+                changed = true;
+            }
+
+            if ((params.id === '[id]' || params.id === ':id' || !params.id) && resolvedId) {
+                url.pathname = `${basePath}/${resolvedId}/edit`;
+                changed = true;
+            }
+
+            if (changed) {
+                const cleanUrl = url.pathname + (url.search ? url.search : '') + url.hash;
+                window.history.replaceState(null, '', cleanUrl);
+            }
+        }
+    };
+
     onMount(() => {
         const id = resolveId();
         setSelectedId(id);
+        cleanRedundantIdParam(id);
         loadData(id);
     });
 
@@ -167,6 +190,7 @@ export default function CourseMasterEditPage() {
         const id = resolveId();
         if (id && id !== selectedId()) {
             setSelectedId(id);
+            cleanRedundantIdParam(id);
             loadData(id);
         }
     });
@@ -236,7 +260,7 @@ export default function CourseMasterEditPage() {
             if (res.success) {
                 toast.success(res.message || 'Course updated successfully!');
                 setTimeout(() => {
-                    window.location.href = `${basePath}/${id}/show?id=${id}&unit_id=${uId}`;
+                    window.location.href = `${basePath}/${id}/show${uId ? `?unit_id=${uId}` : ''}`;
                 }, 500);
             } else {
                 setErrorMessage(res.message || 'Failed to update course record.');
@@ -253,7 +277,7 @@ export default function CourseMasterEditPage() {
     const backUrl = () => {
         const id = selectedId();
         if (id) {
-            return `${basePath}/${id}/show?id=${id}${unitId() ? `&unit_id=${unitId()}` : ''}`;
+            return `${basePath}/${id}/show${unitId() ? `?unit_id=${unitId()}` : ''}`;
         }
         return unitId() ? `${basePath}?unit_id=${unitId()}` : basePath;
     };

@@ -1,16 +1,58 @@
 import { createSignal, onMount, createEffect, Show, For } from 'solid-js';
-import { useSearchParams } from '@solidjs/router';
+import { useParams, useSearchParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { masterApiShow } from '~/controllers/master/masterApiController';
 
 export default function MasterShowPage() {
     const apiPath = "academic/course/master/course-learn-plannings";
-    const basePath = "/academic/course/master/course-learn-planning";
+    const courseMasterBasePath = "/course-department/academic/course/master/course";
+    const params = useParams();
     const [searchParams] = useSearchParams();
+
+    const courseId = () => {
+        const fromSearch = ((searchParams.course_id as string) || (searchParams.courseId as string) || '').trim();
+        if (fromSearch && fromSearch !== '[id]' && fromSearch !== ':id') {
+            return fromSearch;
+        }
+        if (typeof window !== 'undefined') {
+            const parts = window.location.pathname.split('/').filter(Boolean);
+            const courseIdx = parts.indexOf('course');
+            if (courseIdx !== -1 && parts[courseIdx + 1] && parts[courseIdx + 1] !== '[id]') {
+                return parts[courseIdx + 1];
+            }
+        }
+        return '';
+    };
+
+    const resolveRecordId = () => {
+        const fromSearch = ((searchParams.id as string) || '').trim();
+        if (fromSearch && fromSearch !== '[id]' && fromSearch !== ':id') {
+            return fromSearch;
+        }
+        const pId = params.id;
+        if (pId && pId !== '[id]' && pId !== ':id') {
+            return pId.trim();
+        }
+        if (typeof window !== 'undefined') {
+            const parts = window.location.pathname.split('/').filter(Boolean);
+            const planningIdx = parts.indexOf('course-learn-planning');
+            if (planningIdx !== -1 && parts[planningIdx + 1] && parts[planningIdx + 1] !== 'edit' && parts[planningIdx + 1] !== 'show') {
+                return parts[planningIdx + 1];
+            }
+        }
+        return '';
+    };
+
+    const listUrl = () => courseId() 
+        ? `${courseMasterBasePath}/${courseId()}/course-learn-planning` 
+        : `/course-department/academic/course/master/course/[id]/course-learn-planning`;
+
+    const editUrl = () => `${listUrl()}/${selectedId()}/edit${courseId() ? `?course_id=${courseId()}` : ''}`;
+
     const [isLoading, setIsLoading] = createSignal(true);
     const [record, setRecord] = createSignal<any | null>(null);
-    const [selectedId, setSelectedId] = createSignal<string>((searchParams.id as string) || '');
+    const [selectedId, setSelectedId] = createSignal<string>(resolveRecordId());
 
     const fetchDetail = async (id: string) => {
         if (!id) {
@@ -22,7 +64,13 @@ export default function MasterShowPage() {
         try {
             const res = await masterApiShow(apiPath, id);
             if (res.data) {
-                setRecord(res.data);
+                const cId = courseId();
+                if (cId && res.data.course_id && String(res.data.course_id) !== String(cId)) {
+                    setRecord(null);
+                    toast.danger('Record does not belong to the selected course.');
+                } else {
+                    setRecord(res.data);
+                }
             } else {
                 setRecord(null);
                 toast.danger(res.error || 'Record not found on server.');
@@ -37,12 +85,13 @@ export default function MasterShowPage() {
     };
 
     onMount(() => {
-        const id = (searchParams.id as string) || '';
+        const id = resolveRecordId();
+        setSelectedId(id);
         fetchDetail(id);
     });
 
     createEffect(() => {
-        const id = searchParams.id as string;
+        const id = resolveRecordId();
         if (id && id !== selectedId()) {
             setSelectedId(id);
             fetchDetail(id);
@@ -67,11 +116,9 @@ export default function MasterShowPage() {
                             <span>/</span>
                             <span>Academic</span>
                             <span>/</span>
-                            <span>Course</span>
+                            <a href={courseMasterBasePath} class="hover:text-blue-600 transition-colors">Course</a>
                             <span>/</span>
-                            <span>Master</span>
-                            <span>/</span>
-                            <a href={basePath} class="hover:text-blue-600 transition-colors">Course Learning Planning</a>
+                            <a href={listUrl()} class="hover:text-blue-600 transition-colors">RPS</a>
                             <span>/</span>
                             <span class="font-medium text-neutral-900 dark:text-white">Detail</span>
                         </nav>
@@ -82,7 +129,7 @@ export default function MasterShowPage() {
 
                     <div class="mt-4 sm:mt-0 flex items-center gap-2">
                         <a
-                            href={basePath}
+                            href={listUrl()}
                             class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-white dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/60 rounded-xs shadow-2xs transition-colors"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -92,7 +139,7 @@ export default function MasterShowPage() {
                         </a>
                         <Show when={selectedId()}>
                             <a
-                                href={`${basePath}/edit?id=${selectedId()}`}
+                                href={editUrl()}
                                 class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs shadow-xs transition-colors"
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

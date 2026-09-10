@@ -11,6 +11,7 @@ pub struct CourseEvaluationPlanningQuery {
     pub page_size: Option<u64>,
     pub name: Option<String>,
     pub code: Option<String>,
+    pub course_id: Option<Uuid>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]

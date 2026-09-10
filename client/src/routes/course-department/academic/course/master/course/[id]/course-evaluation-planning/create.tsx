@@ -1,30 +1,81 @@
-import { createSignal } from 'solid-js';
+import { createSignal, onMount, For, Show } from 'solid-js';
+import { useParams, useSearchParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
-import { masterApiCreate } from '~/controllers/master/masterApiController';
+import { masterApiCreate, masterApiShow, masterApiIndex } from '~/controllers/master/masterApiController';
 
 export default function MasterCreatePage() {
     const apiPath = "academic/course/master/course-evaluation-plannings";
-    const basePath = "/academic/course/master/course-evaluation-planning";
+    const courseMasterBasePath = "/course-department/academic/course/master/course";
+    const params = useParams();
+    const [searchParams] = useSearchParams();
+
+    const courseId = () => {
+        const pId = params.id;
+        if (pId && pId !== '[id]' && pId !== ':id') {
+            return pId.trim();
+        }
+        return ((searchParams.course_id as string) || (searchParams.id as string) || '').trim();
+    };
+
+    const courseDetailUrl = () => courseId() ? `${courseMasterBasePath}/${courseId()}/show` : courseMasterBasePath;
+    const listUrl = () => courseId()
+        ? `${courseMasterBasePath}/${courseId()}/course-evaluation-planning`
+        : `/course-department/academic/course/master/course/[id]/course-evaluation-planning`;
+
+    const [course, setCourse] = createSignal<any | null>(null);
+    const [evaluationTypes, setEvaluationTypes] = createSignal<any[]>([]);
+    const [evaluationTypeId, setEvaluationTypeId] = createSignal('');
     const [code, setCode] = createSignal('');
     const [name, setName] = createSignal('');
+    const [percentage, setPercentage] = createSignal<number | ''>('');
     const [description, setDescription] = createSignal('');
     const [isSubmitting, setIsSubmitting] = createSignal(false);
 
+    onMount(async () => {
+        const cId = courseId();
+        if (cId) {
+            try {
+                const res = await masterApiShow<any>('academic/course/master/courses', cId);
+                if (res?.data) setCourse(res.data);
+            } catch {
+                // ignore
+            }
+        }
+        try {
+            const typesRes = await masterApiIndex<any>('academic/course/reference/evaluation-types', { per_page: 50 });
+            if (typesRes?.data && typesRes.data.length > 0) {
+                setEvaluationTypes(typesRes.data);
+                setEvaluationTypeId(typesRes.data[0].id);
+            }
+        } catch {
+            // ignore
+        }
+    });
+
     const handleSubmit = async (e: Event) => {
         e.preventDefault();
+        const cId = courseId();
+        if (!cId) {
+            toast.danger('Course ID is missing. Cannot create planning without course association.');
+            return;
+        }
+
         setIsSubmitting(true);
         try {
             const res = await masterApiCreate(apiPath, {
-                code: code(),
+                code: Number(code()) || 1,
                 name: name(),
-                description: description(),
+                percentage: Number(percentage()) || 0,
+                decription_indonesian: description() || name(),
+                course_id: cId,
+                evaluation_type_id: evaluationTypeId() || undefined,
             });
 
             if (res.success) {
                 toast.success(res.message || 'Record created successfully!');
                 setTimeout(() => {
-                    window.location.href = basePath;
+                    window.location.href = listUrl();
                 }, 500);
             } else {
                 toast.danger(res.message || 'Failed to create record.');
@@ -48,45 +99,50 @@ export default function MasterCreatePage() {
                             <span>/</span>
                             <span>Academic</span>
                             <span>/</span>
-                            <span>Course</span>
+                            <a href={courseMasterBasePath} class="hover:text-blue-600 transition-colors">Course</a>
                             <span>/</span>
-                            <span>Master</span>
+                            <a href={courseDetailUrl()} class="hover:text-blue-600 transition-colors">
+                                {course()?.code ? `${course()?.code}` : (courseId() || 'Course')}
+                            </a>
                             <span>/</span>
-                            <a href={basePath} class="hover:text-blue-600 transition-colors">Course Evaluation Planning</a>
+                            <a href={listUrl()} class="hover:text-blue-600 transition-colors">Evaluation Planning</a>
                             <span>/</span>
                             <span class="font-medium text-neutral-900 dark:text-white">Create</span>
                         </nav>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
                             Add New Course Evaluation Planning
+                            <Show when={course()?.code || course()?.name}>
+                                : <span class="text-blue-600 dark:text-blue-400">{course()?.code} {course()?.name ? `- ${course()?.name}` : ''}</span>
+                            </Show>
                         </h1>
                     </div>
 
                     <div class="mt-4 sm:mt-0">
                         <a
-                            href={basePath}
+                            href={listUrl()}
                             class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-white dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/60 rounded-xs shadow-2xs transition-colors"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="m15 18-6-6 6-6"/>
+                                <path d="m15 18-6-6 6-6" />
                             </svg>
                             <span>Cancel</span>
                         </a>
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 max-w-3xl">
+                <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6">
                     <form onSubmit={handleSubmit} class="space-y-6">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                    Code <span class="text-red-500">*</span>
+                                    Code (Urutan) <span class="text-red-500">*</span>
                                 </label>
                                 <input
-                                    type="text"
+                                    type="number"
                                     required
                                     value={code()}
                                     onInput={(e) => setCode(e.currentTarget.value)}
-                                    placeholder="e.g. CODE-001"
+                                    placeholder="e.g. 1"
                                     class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                 />
                             </div>
@@ -100,11 +156,46 @@ export default function MasterCreatePage() {
                                     required
                                     value={name()}
                                     onInput={(e) => setName(e.currentTarget.value)}
-                                    placeholder="Enter name"
+                                    placeholder="e.g. Tugas 1 / UTS"
+                                    class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
+                                />
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
+                                    Percentage (%)
+                                </label>
+                                <input
+                                    type="number"
+                                    step="0.1"
+                                    min="0"
+                                    max="100"
+                                    value={percentage()}
+                                    onInput={(e) => setPercentage(e.currentTarget.value === '' ? '' : Number(e.currentTarget.value))}
+                                    placeholder="e.g. 20"
                                     class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                 />
                             </div>
                         </div>
+
+                        <Show when={evaluationTypes().length > 0}>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
+                                    Evaluation Type
+                                </label>
+                                <select
+                                    value={evaluationTypeId()}
+                                    onChange={(e) => setEvaluationTypeId(e.currentTarget.value)}
+                                    class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
+                                >
+                                    <For each={evaluationTypes()}>
+                                        {(type) => (
+                                            <option value={type.id}>{type.name || type.nama || type.code || type.id}</option>
+                                        )}
+                                    </For>
+                                </select>
+                            </div>
+                        </Show>
 
                         <div>
                             <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
@@ -121,7 +212,7 @@ export default function MasterCreatePage() {
 
                         <div class="flex items-center justify-end gap-3 pt-4 border-t border-neutral-100 dark:border-neutral-700">
                             <a
-                                href={basePath}
+                                href={listUrl()}
                                 class="px-4 py-2 text-xs font-mono font-medium border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                             >
                                 Cancel

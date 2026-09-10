@@ -189,17 +189,11 @@ describe('Course Department Course Master CRUD Operations', () => {
     });
 
     it('renders Course Show Page with details, credits breakdown, and RPS links', async () => {
+        window.history.pushState({}, '', '/course-department/academic/course/master/course/course-999/show');
+
         render(() => (
             <Router>
                 <Route path="/course-department/academic/course/master/course/:id/show" component={CourseMasterShowPage} />
-            </Router>
-        ));
-
-        // Trigger route navigation by pushing state
-        window.history.pushState({}, '', '/course-department/academic/course/master/course/course-999/show?id=course-999');
-
-        render(() => (
-            <Router>
                 <Route path="*" component={CourseMasterShowPage} />
             </Router>
         ));
@@ -209,8 +203,27 @@ describe('Course Department Course Master CRUD Operations', () => {
         });
     });
 
+    it('cleans up duplicate id query parameter when visiting show page with ?id=', async () => {
+        window.history.pushState({}, '', '/course-department/academic/course/master/course/019b886f-b540-7f14-b48e-850933244c86/show?id=019b886f-b540-7f14-b48e-850933244c86');
+
+        render(() => (
+            <Router>
+                <Route path="/course-department/academic/course/master/course/:id/show" component={CourseMasterShowPage} />
+                <Route path="*" component={CourseMasterShowPage} />
+            </Router>
+        ));
+
+        await waitFor(() => {
+            expect(screen.getByText('Course Details:')).toBeInTheDocument();
+        });
+
+        // The redundant ?id= parameter should have been stripped from the URL
+        expect(window.location.search).toBe('');
+        expect(window.location.pathname).toBe('/course-department/academic/course/master/course/019b886f-b540-7f14-b48e-850933244c86/show');
+    });
+
     it('renders Course Edit Page with pre-filled fields', async () => {
-        window.history.pushState({}, '', '/course-department/academic/course/master/course/course-999/edit?id=course-999');
+        window.history.pushState({}, '', '/course-department/academic/course/master/course/course-999/edit');
 
         render(() => (
             <Router>

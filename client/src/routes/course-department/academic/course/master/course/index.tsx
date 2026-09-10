@@ -484,7 +484,7 @@ export default function MasterIndexPage() {
                                             <div class="flex items-start justify-between gap-3">
                                                 <div class="flex-1 min-w-0">
                                                     <a
-                                                        href={`${basePath}/${item.id || item.uuid}/show?id=${item.id || item.uuid}`}
+                                                        href={`${basePath}/${item.id || item.uuid}/show`}
                                                         class="font-semibold text-sm text-blue-600 dark:text-blue-400 hover:underline block truncate"
                                                     >
                                                         {getItemTitle(item)}
@@ -518,7 +518,7 @@ export default function MasterIndexPage() {
                                                     </svg>
                                                 </a>
                                                 <a
-                                                    href={`${basePath}/${item.id || item.uuid}/show?id=${item.id || item.uuid}`}
+                                                    href={`${basePath}/${item.id || item.uuid}/show`}
                                                     class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                     title="View Details"
                                                 >
@@ -527,7 +527,7 @@ export default function MasterIndexPage() {
                                                     </svg>
                                                 </a>
                                                 <a
-                                                    href={`${basePath}/${item.id || item.uuid}/edit?id=${item.id || item.uuid}`}
+                                                    href={`${basePath}/${item.id || item.uuid}/edit`}
                                                     class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                     title="Edit Record"
                                                 >
@@ -614,7 +614,7 @@ export default function MasterIndexPage() {
                                                     */}
                                                     <td class="px-4 py-3">
                                                         <a
-                                                            href={`${basePath}/${item.id || item.uuid}/show?id=${item.id || item.uuid}`}
+                                                            href={`${basePath}/${item.id || item.uuid}/show`}
                                                             class="font-semibold text-blue-600 dark:text-blue-400 hover:underline block"
                                                         >
                                                             {getItemTitle(item)}
@@ -677,7 +677,7 @@ export default function MasterIndexPage() {
                                                                 </svg>
                                                             </a>
                                                             <a
-                                                                href={`${basePath}/${item.id || item.uuid}/show?id=${item.id || item.uuid}`}
+                                                                href={`${basePath}/${item.id || item.uuid}/show`}
                                                                 class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                                 title="View Details"
                                                             >
@@ -686,7 +686,7 @@ export default function MasterIndexPage() {
                                                                 </svg>
                                                             </a>
                                                             <a
-                                                                href={`${basePath}/${item.id || item.uuid}/edit?id=${item.id || item.uuid}`}
+                                                                href={`${basePath}/${item.id || item.uuid}/edit`}
                                                                 class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                                 title="Edit Record"
                                                             >
