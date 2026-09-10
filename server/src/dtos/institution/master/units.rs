@@ -119,3 +119,28 @@ pub struct PaginatedUnitResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+/// Aggregated dashboard response for the unit show page.
+/// Bundles unit details, related entities, and reference lookups into a single response
+/// so the client can load everything in one request instead of 5+ paginated calls.
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct UnitDashboardResponse {
+    /// The unit record with belongs-to relations (education, institution, parent, unit_type)
+    pub unit: UnitResponse,
+    /// All courses belonging to this unit (unpaginated)
+    pub courses: Vec<crate::dtos::academic::course::master::courses::CourseResponse>,
+    /// All curriculums belonging to this unit (unpaginated)
+    pub curriculums: Vec<crate::dtos::academic::course::master::curriculums::CurriculumResponse>,
+    /// All students belonging to this unit (unpaginated, with enriched status/academic_year names)
+    pub students: Vec<crate::dtos::academic::student::master::students::StudentResponse>,
+    /// All staff belonging to this unit (unpaginated)
+    pub staffes: Vec<crate::dtos::institution::master::staffes::StaffResponse>,
+    /// Employees map keyed by employee_id for enriching staff on the client
+    pub employees: Vec<crate::dtos::institution::master::employees::EmployeeResponse>,
+    /// All position types reference data (replaces paginated position-type call)
+    pub position_types: Vec<crate::dtos::common::reference::ReferenceResponse>,
+    /// All course variety reference data (replaces paginated varieties call)
+    pub course_varieties: Vec<crate::dtos::common::reference::ReferenceResponse>,
+    /// All course group reference data (replaces paginated groups call)
+    pub course_groups: Vec<crate::dtos::common::reference::ReferenceResponse>,
+}

@@ -9,7 +9,7 @@ use validator::Validate;
 
 use crate::dtos::institution::master::units::{
     CreateUnitRequest, UnitQuery, UnitResponse, PaginatedUnitResponse,
-    UpdateUnitRequest,
+    UpdateUnitRequest, UnitDashboardResponse,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::institution::master::units as entity_mod;
@@ -947,4 +947,420 @@ pub async fn delete_unit(
         Ok(Json(MessageResponse {
             message: "Unit deleted successfully".to_string(),
         }))
+}
+
+/// Dashboard endpoint: returns unit with all data needed by the show page in a single response.
+/// Replaces these separate client-side calls:
+///   - GET /institution/master/units/{id}
+///   - GET /institution/reference/position-type?page=1&page_size=50
+///   - GET /academic/course/reference/varieties?page=1&page_size=50
+///   - GET /academic/course/reference/groups?page=1&page_size=50
+///   - GET /academic/course/master/courses/unit/{id}
+///   - GET /academic/course/master/curriculums/unit/{id}
+///   - GET /academic/student/master/students/unit/{id}
+///   - GET /institution/master/staffes/unit/{id}
+///   - N × GET /institution/master/employees/{employee_id}
+#[endpoint(tags("Institution - Master - Unit"), status_codes(200, 400, 404, 500))]
+pub async fn get_unit_dashboard(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<UnitDashboardResponse>, StatusError> {
+    use std::collections::HashMap;
+    use chrono::Utc;
+
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let id_str = req.param::<String>("unit_id")
+        .or_else(|| req.param::<String>("id"))
+        .ok_or_else(|| StatusError::bad_request().brief("Missing parameter unit_id"))?;
+    let unit_id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+
+    // 1. Load unit with belongs-to relations (education, institution, parent, unit_type)
+    let unit_item = entity_mod::Entity::find_by_id(unit_id)
+        .filter(entity_mod::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .ok_or_else(|| StatusError::not_found().brief("Unit not found"))?;
+
+    // Load belongs-to relations for the unit
+    let unit_type = unit_item
+        .find_related(crate::models::institution::reference::unit_types::Entity)
+        .filter(crate::models::institution::reference::unit_types::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .map(|m| crate::dtos::common::reference::ReferenceResponse {
+            id: m.id,
+            code: m.code,
+            alphabet_code: m.alphabet_code,
+            name: m.name,
+            created_at: m.created_at.unwrap_or_default(),
+            updated_at: m.updated_at.unwrap_or_default(),
+            deleted_at: m.deleted_at.map(|dt| dt.naive_utc()),
+            sync_at: m.sync_at,
+            created_by: m.created_by,
+            updated_by: m.updated_by,
+        });
+
+    let institution = unit_item
+        .find_related(crate::models::institution::master::institutions::Entity)
+        .filter(crate::models::institution::master::institutions::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .map(|m| crate::dtos::institution::master::institutions::InstitutionResponse {
+            id: m.id,
+            code: m.code,
+            name: m.name,
+            alphabet_code: m.alphabet_code,
+            is_active: m.is_active,
+            variety_id: m.variety_id,
+            category_id: m.category_id,
+            country_id: m.country_id,
+            parent_id: m.parent_id,
+            feeder_id: m.feeder_id,
+            academic_year_id: m.academic_year_id,
+            created_at: m.created_at,
+            updated_at: m.updated_at,
+            deleted_at: m.deleted_at,
+            sync_at: m.sync_at,
+            created_by: m.created_by,
+            updated_by: m.updated_by,
+        });
+
+    let education = unit_item
+        .find_related(crate::models::literate::educations::Entity)
+        .filter(crate::models::literate::educations::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .map(|m| crate::dtos::literate::educations::EducationResponse {
+            id: m.id,
+            code: m.code,
+            alphabet_code: m.alphabet_code,
+            abbreviation: m.abbreviation,
+            name: m.name,
+            level_id: m.level_id,
+            group_id: m.group_id,
+            category_id: m.category_id,
+            variety_id: m.variety_id,
+            created_at: m.created_at,
+            updated_at: m.updated_at,
+            deleted_at: m.deleted_at,
+            sync_at: m.sync_at,
+            created_by: m.created_by,
+            updated_by: m.updated_by,
+        });
+
+    let parent = if let Some(pid) = unit_item.parent_id {
+        entity_mod::Entity::find_by_id(pid)
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .map(|m| Box::new(UnitResponse {
+                id: m.id,
+                code: m.code,
+                name: m.name,
+                is_active: m.is_active,
+                unit_type_id: m.unit_type_id,
+                institution_id: m.institution_id,
+                parent_id: m.parent_id,
+                education_id: m.education_id,
+                feeder_id: m.feeder_id,
+                lft: m.lft,
+                rght: m.rght,
+                created_at: m.created_at,
+                updated_at: m.updated_at,
+                sync_at: m.sync_at,
+                deleted_at: m.deleted_at,
+                created_by: m.created_by,
+                updated_by: m.updated_by,
+                ..Default::default()
+            }))
+    } else {
+        None
+    };
+
+    let unit_response = UnitResponse {
+        id: unit_item.id,
+        code: unit_item.code.clone(),
+        name: unit_item.name.clone(),
+        is_active: unit_item.is_active,
+        unit_type_id: unit_item.unit_type_id,
+        institution_id: unit_item.institution_id,
+        parent_id: unit_item.parent_id,
+        education_id: unit_item.education_id,
+        feeder_id: unit_item.feeder_id,
+        lft: unit_item.lft,
+        rght: unit_item.rght,
+        created_at: unit_item.created_at,
+        updated_at: unit_item.updated_at,
+        sync_at: unit_item.sync_at,
+        deleted_at: unit_item.deleted_at,
+        created_by: unit_item.created_by,
+        updated_by: unit_item.updated_by,
+        unit_type,
+        institution,
+        education,
+        parent,
+        ..Default::default()
+    };
+
+    // 2. Load all courses for this unit (no pagination)
+    let courses: Vec<crate::dtos::academic::course::master::courses::CourseResponse> =
+        crate::dtos::academic::course::master::courses::list_courses_by_unit(db, unit_id)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    // 3. Load all curriculums for this unit (no pagination)
+    let curriculums: Vec<crate::dtos::academic::course::master::curriculums::CurriculumResponse> =
+        unit_item
+            .find_related(crate::models::academic::course::master::curriculums::Entity)
+            .filter(crate::models::academic::course::master::curriculums::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|c| crate::dtos::academic::course::master::curriculums::CurriculumResponse {
+                id: c.id,
+                name: c.name,
+                unit_id: c.unit_id,
+                academic_year_id: c.academic_year_id,
+                curriculum_type_id: c.curriculum_type_id,
+                total_credit: c.total_credit,
+                mandatory_course_credit: c.mandatory_course_credit,
+                optional_course_credit: c.optional_course_credit,
+                feeder_id: c.feeder_id,
+                created_at: c.created_at,
+                updated_at: c.updated_at,
+                deleted_at: c.deleted_at,
+                sync_at: c.sync_at,
+                created_by: c.created_by,
+                updated_by: c.updated_by,
+                start_date: c.start_date,
+                end_date: c.end_date,
+                is_active: c.is_active,
+            })
+            .collect();
+
+    // 4. Load all students for this unit with enriched status/academic_year names
+    let student_models = unit_item
+        .find_related(crate::models::academic::student::master::students::Entity)
+        .filter(crate::models::academic::student::master::students::Column::DeletedAt.is_null())
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    // Collect unique IDs for batch lookups
+    let status_ids: Vec<Uuid> = student_models.iter()
+        .map(|s| s.status_id)
+        .filter(|id| *id != Uuid::nil())
+        .collect::<std::collections::HashSet<_>>()
+        .into_iter()
+        .collect();
+    let academic_year_ids: Vec<Uuid> = student_models.iter()
+        .map(|s| s.academic_year_id)
+        .filter(|id| *id != Uuid::nil())
+        .collect::<std::collections::HashSet<_>>()
+        .into_iter()
+        .collect();
+
+    // Batch resolve status names
+    let statuses_map: HashMap<Uuid, String> = if status_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::academic::student::reference::statuses::Entity::find()
+            .filter(crate::models::academic::student::reference::statuses::Column::Id.is_in(status_ids))
+            .filter(crate::models::academic::student::reference::statuses::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|s| (s.id, s.name))
+            .collect()
+    };
+
+    // Batch resolve academic year names
+    let academic_years_map: HashMap<Uuid, String> = if academic_year_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::academic::general::reference::academic_years::Entity::find()
+            .filter(crate::models::academic::general::reference::academic_years::Column::Id.is_in(academic_year_ids))
+            .filter(crate::models::academic::general::reference::academic_years::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|a| (a.id, a.name))
+            .collect()
+    };
+
+    let students: Vec<crate::dtos::academic::student::master::students::StudentResponse> = student_models
+        .into_iter()
+        .map(|s| crate::dtos::academic::student::master::students::StudentResponse {
+            id: s.id,
+            code: s.code,
+            name: s.name,
+            selection_type_id: s.selection_type_id,
+            registered: s.registered,
+            individual_id: s.individual_id,
+            status_id: s.status_id,
+            unit_id: s.unit_id,
+            academic_year_id: s.academic_year_id,
+            registration_id: s.registration_id,
+            nisn: s.nisn,
+            resign_status_id: s.resign_status_id,
+            concentration_id: s.concentration_id,
+            curriculum_id: s.curriculum_id,
+            class_code_id: s.class_code_id,
+            transfer_code: s.transfer_code,
+            transfer_unit_id: s.transfer_unit_id,
+            id_mahasiswa: s.id_mahasiswa,
+            id_registrasi_mahasiswa: s.id_registrasi_mahasiswa,
+            finance_fee: s.finance_fee,
+            finance_id: s.finance_id,
+            created_at: s.created_at,
+            updated_at: s.updated_at,
+            deleted_at: s.deleted_at,
+            sync_at: s.sync_at,
+            created_by: s.created_by,
+            updated_by: s.updated_by,
+            unit_name: unit_item.name.clone(),
+            unit_code: unit_item.code.clone(),
+            status_name: statuses_map.get(&s.status_id).cloned(),
+            academic_year_name: academic_years_map.get(&s.academic_year_id).cloned(),
+            curriculum_name: None,
+            selection_type_name: None,
+        })
+        .collect();
+
+    // 5. Load all staff for this unit (no pagination)
+    let staffes: Vec<crate::dtos::institution::master::staffes::StaffResponse> =
+        crate::dtos::institution::master::staffes::list_staffes_by_unit(db, unit_id)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    // 6. Batch-load employees referenced by staff records
+    let employee_ids: Vec<Uuid> = staffes.iter()
+        .map(|s| s.employee_id)
+        .filter(|id| *id != Uuid::nil())
+        .collect::<std::collections::HashSet<_>>()
+        .into_iter()
+        .collect();
+
+    let employees: Vec<crate::dtos::institution::master::employees::EmployeeResponse> = if employee_ids.is_empty() {
+        vec![]
+    } else {
+        crate::models::institution::master::employees::Entity::find()
+            .filter(crate::models::institution::master::employees::Column::Id.is_in(employee_ids))
+            .filter(crate::models::institution::master::employees::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|e| crate::dtos::institution::master::employees::EmployeeResponse {
+                id: e.id,
+                code: e.code,
+                name: e.name,
+                institution_id: e.institution_id,
+                individual_id: e.individual_id,
+                decree_number: e.decree_number,
+                decree_date: e.decree_date,
+                is_active: e.is_active,
+                created_at: e.created_at,
+                updated_at: e.updated_at,
+                deleted_at: e.deleted_at,
+                sync_at: e.sync_at,
+                created_by: e.created_by,
+                updated_by: e.updated_by,
+                ..Default::default()
+            })
+            .collect()
+    };
+
+    // 7. Load all reference tables (no pagination)
+    // Position types
+    let position_types: Vec<crate::dtos::common::reference::ReferenceResponse> =
+        crate::models::institution::reference::position_type::Entity::find()
+            .filter(crate::models::institution::reference::position_type::Column::DeletedAt.is_null())
+            .order_by_asc(crate::models::institution::reference::position_type::Column::Name)
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|item| crate::dtos::common::reference::ReferenceResponse {
+                id: item.id,
+                code: item.code,
+                alphabet_code: item.alphabet_code,
+                name: item.name,
+                created_at: item.created_at,
+                updated_at: item.updated_at,
+                deleted_at: item.deleted_at,
+                sync_at: item.sync_at,
+                created_by: item.created_by,
+                updated_by: item.updated_by,
+            })
+            .collect();
+
+    // Course varieties
+    let course_varieties: Vec<crate::dtos::common::reference::ReferenceResponse> =
+        crate::models::academic::course::reference::varieties::Entity::find()
+            .filter(crate::models::academic::course::reference::varieties::Column::DeletedAt.is_null())
+            .order_by_asc(crate::models::academic::course::reference::varieties::Column::Name)
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|item| crate::dtos::common::reference::ReferenceResponse {
+                id: item.id,
+                code: item.code.unwrap_or_default(),
+                alphabet_code: item.alphabet_code.unwrap_or_default(),
+                name: item.name,
+                created_at: item.created_at.unwrap_or_else(|| Utc::now().naive_utc()),
+                updated_at: item.updated_at.unwrap_or_else(|| Utc::now().naive_utc()),
+                deleted_at: item.deleted_at,
+                sync_at: item.sync_at,
+                created_by: item.created_by,
+                updated_by: item.updated_by,
+            })
+            .collect();
+
+    // Course groups
+    let course_groups: Vec<crate::dtos::common::reference::ReferenceResponse> =
+        crate::models::academic::course::reference::groups::Entity::find()
+            .filter(crate::models::academic::course::reference::groups::Column::DeletedAt.is_null())
+            .order_by_asc(crate::models::academic::course::reference::groups::Column::Name)
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|item| crate::dtos::common::reference::ReferenceResponse {
+                id: item.id,
+                code: item.code.unwrap_or_default(),
+                alphabet_code: item.alphabet_code.unwrap_or_default(),
+                name: item.name,
+                created_at: item.created_at.unwrap_or_else(|| Utc::now().naive_utc()),
+                updated_at: item.updated_at.unwrap_or_else(|| Utc::now().naive_utc()),
+                deleted_at: item.deleted_at,
+                sync_at: item.sync_at,
+                created_by: item.created_by,
+                updated_by: item.updated_by,
+            })
+            .collect();
+
+    Ok(Json(UnitDashboardResponse {
+        unit: unit_response,
+        courses,
+        curriculums,
+        students,
+        staffes,
+        employees,
+        position_types,
+        course_varieties,
+        course_groups,
+    }))
 }

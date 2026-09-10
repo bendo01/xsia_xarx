@@ -292,6 +292,60 @@ export default function CourseDepartmentUnitShowPage() {
                 }
             }
 
+            // Attempt to load all data via the new unified unpaginated dashboard endpoint in a single call
+            try {
+                const dashRes = await masterApiShow<any>(`institution/master/units/${actualUnitId}`, 'dashboard');
+                if (dashRes.data && dashRes.data.unit) {
+                    const dash = dashRes.data;
+                    setUnitData(dash.unit);
+                    setStorageItem('unit_id', actualUnitId);
+                    if (typeof window !== 'undefined' && (window.location.pathname.includes('[id]') || window.location.pathname.includes(':id'))) {
+                        window.history.replaceState(null, '', `/course-department/institution/master/unit/${actualUnitId}/show`);
+                    }
+
+                    setCourses(dash.courses || []);
+                    setCurriculums(dash.curriculums || []);
+                    setStudents(dash.students || []);
+                    setStaffes(dash.staffes || []);
+
+                    const posMap: Record<string, any> = {};
+                    if (Array.isArray(dash.position_types)) {
+                        for (const pt of dash.position_types) {
+                            if (pt.id) posMap[pt.id] = pt;
+                        }
+                    }
+                    setPositionTypesMap(posMap);
+
+                    const vMap: Record<string, any> = {};
+                    if (Array.isArray(dash.course_varieties)) {
+                        for (const v of dash.course_varieties) {
+                            if (v.id) vMap[v.id] = v;
+                        }
+                    }
+                    setVarietiesMap(vMap);
+
+                    const gMap: Record<string, any> = {};
+                    if (Array.isArray(dash.course_groups)) {
+                        for (const g of dash.course_groups) {
+                            if (g.id) gMap[g.id] = g;
+                        }
+                    }
+                    setGroupsMap(gMap);
+
+                    const empMap: Record<string, any> = {};
+                    if (Array.isArray(dash.employees)) {
+                        for (const emp of dash.employees) {
+                            if (emp.id) empMap[emp.id] = emp;
+                        }
+                    }
+                    setEmployeesMap(empMap);
+
+                    return;
+                }
+            } catch {
+                // If unified endpoint is unavailable, fall through to separate requests
+            }
+
             // Concurrent promises for static references (utilizing module-level cache)
             // Note: position-type is singular in server API routes
             const refPromises = [
