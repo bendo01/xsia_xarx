@@ -28,7 +28,7 @@ export default function MenuCourseDepartment() {
             {/* Students Directory */}
             <li>
                 <A 
-                    href="/course-department/academic/student/master" 
+                    href="/course-department/academic/student/master/student" 
                     activeClass="bg-teal-600/15 text-teal-600 dark:text-teal-400 font-semibold"
                     class="flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
                 >

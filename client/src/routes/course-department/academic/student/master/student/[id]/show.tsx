@@ -1,5 +1,5 @@
 import { createSignal, onMount, createEffect, Show, For, createMemo, ErrorBoundary } from 'solid-js';
-import { useSearchParams, A } from '@solidjs/router';
+import { useParams, useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { Loader, ErrorFallback } from '~/components/loader';
 import { toast } from '~/components/toast/Toaster';
@@ -19,16 +19,25 @@ import AcademicPerformanceChart, { AcademicTrendPoint } from '~/components/chart
 import StudentCreditChart from '~/components/chart/student_credit_chart';
 
 export default function CourseDepartmentStudentMasterShowPage() {
+    const params = useParams();
     const [searchParams] = useSearchParams();
     const [student, setStudent] = createSignal<StudentMasterItem | null>(null);
     const [individual, setIndividual] = createSignal<PersonMasterIndividualDataObject | null>(null);
     const [activities, setActivities] = createSignal<StudentActivityItem[]>([]);
     const [isLoading, setIsLoading] = createSignal(true);
 
+    const resolveStudentId = () => {
+        const pId = params.id;
+        if (pId && pId !== '[id]' && pId !== ':id') {
+            return pId.trim();
+        }
+        return ((searchParams.id as string) || (searchParams.student_id as string) || '').trim();
+    };
+
     const fetchStudentDetail = async () => {
         setIsLoading(true);
         try {
-            const studentId = ((searchParams.id as string) || (searchParams.student_id as string) || '').trim();
+            const studentId = resolveStudentId();
             let stdRecord: StudentMasterItem | null = null;
 
             if (studentId) {
@@ -65,8 +74,8 @@ export default function CourseDepartmentStudentMasterShowPage() {
     });
 
     createEffect(() => {
-        const idFromQuery = (searchParams.id as string) || (searchParams.student_id as string);
-        if (idFromQuery) {
+        const studentId = resolveStudentId();
+        if (studentId) {
             fetchStudentDetail();
         }
     });
@@ -156,7 +165,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
 
                             <div class="flex items-center gap-3">
                                 <A
-                                    href={student()?.unit_id ? `/course-department/academic/student/master?unit_id=${student()!.unit_id}` : '/course-department/academic/student/master'}
+                                    href="/course-department/academic/student/master/student"
                                     class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xs text-xs font-bold transition-colors inline-flex items-center gap-1.5"
                                 >
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg>

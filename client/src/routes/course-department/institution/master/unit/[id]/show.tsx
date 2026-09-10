@@ -637,7 +637,7 @@ export default function CourseDepartmentUnitShowPage() {
                             </A>
 
                             <A
-                                href="/course-department/academic/student/master"
+                                href="/course-department/academic/student/master/student"
                                 class="px-3.5 py-2 rounded-xs bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/20 flex items-center gap-1.5 transition-colors"
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -712,7 +712,7 @@ export default function CourseDepartmentUnitShowPage() {
 
                         {/* 3. Mahasiswa (academic_student_master.students) */}
                         <A 
-                            href="/course-department/academic/student/master"
+                            href="/course-department/academic/student/master/student"
                             class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2 hover:border-blue-500 transition-all block group"
                         >
                             <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">

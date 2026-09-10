@@ -1,6 +1,7 @@
 import { createSignal, onMount, createEffect, For, Show, createMemo } from 'solid-js';
 import { A, useSearchParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
+import { Loader } from '~/components/loader';
 import { toast } from '~/components/toast/Toaster';
 import {
     currentUserSignal,
@@ -20,6 +21,7 @@ import {
     StudentMasterItem
 } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
 import type { InstitutionMasterStaff } from '~/models/institution/master/Staff';
+import { getLoggedInStaffUnit, LoggedInStaffUnitResult } from '~/lib/staffHelper';
 
 export default function CourseDepartmentStudentMasterPage() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -33,9 +35,10 @@ export default function CourseDepartmentStudentMasterPage() {
     const [isLoading, setIsLoading] = createSignal(true);
     const [isResolvingUnit, setIsResolvingUnit] = createSignal(true);
 
-    // Selected department / unit
+    // Selected department / unit & staff data
     const [selectedUnitId, setSelectedUnitId] = createSignal<string>('');
     const [activeUnitData, setActiveUnitData] = createSignal<any | null>(null);
+    const [staffResult, setStaffResult] = createSignal<LoggedInStaffUnitResult | null>(null);
 
     // Filter states
     const [searchName, setSearchName] = createSignal<string>('');
@@ -55,38 +58,71 @@ export default function CourseDepartmentStudentMasterPage() {
     // Debounce timer for search inputs
     let searchDebounceTimer: any = null;
 
-    // Helper: resolve current user department unit_id
+    // Clean up redundant unit_id parameter from URL if present (already on staff data)
+    const cleanRedundantUnitIdParam = () => {
+        if (typeof window !== 'undefined') {
+            const url = new URL(window.location.href);
+            let changed = false;
+
+            if (url.searchParams.has('unit_id')) {
+                url.searchParams.delete('unit_id');
+                changed = true;
+            }
+            if (url.searchParams.has('unitId')) {
+                url.searchParams.delete('unitId');
+                changed = true;
+            }
+            if (url.searchParams.has('id')) {
+                url.searchParams.delete('id');
+                changed = true;
+            }
+
+            if (changed) {
+                const cleanUrl = url.pathname + (url.search ? url.search : '') + url.hash;
+                window.history.replaceState(null, '', cleanUrl);
+            }
+        }
+    };
+
+    // Helper: resolve current user department unit_id from logged-in staff profile
     const resolveDepartmentUnitId = async (unitsList: any[]): Promise<string> => {
-        // Priority 1: Query parameter in URL
-        const queryUnit = (searchParams.unit_id as string) || (searchParams.id as string);
-        if (queryUnit && queryUnit.trim() !== '') {
-            return queryUnit.trim();
+        const queryUnit = (searchParams.unit_id as string) || (searchParams.id as string) || '';
+
+        // Priority 1: Retrieve from logged-in staff profile / roles (parameter unit_id already on staff data)
+        const staffRes = await getLoggedInStaffUnit(queryUnit);
+        setStaffResult(staffRes);
+
+        if (staffRes.unitId) {
+            cleanRedundantUnitIdParam();
+            return staffRes.unitId;
         }
 
-        await refreshAuthState();
-        const roles = userRolesSignal();
-        const user = currentUserSignal();
-
         // Priority 2: Stored unit_id
+        await refreshAuthState();
+        const user = currentUserSignal();
         const storedUnitId = (user as any)?.unit_id || getStorageItem('unit_id');
         if (storedUnitId && storedUnitId !== '00000000-0000-0000-0000-000000000000') {
+            cleanRedundantUnitIdParam();
             return storedUnitId;
         }
 
         // Priority 3: Active role or user roles with roleable_id
+        const roles = userRolesSignal();
         for (const role of roles) {
             if (role.roleable_id && role.roleable_id !== '00000000-0000-0000-0000-000000000000') {
                 if (role.roleable_type === 'Staff' || isStaffProgramStudi(role)) {
                     try {
-                        const staffRes = await masterApiShow<InstitutionMasterStaff>('institution/master/staffes', role.roleable_id);
-                        if (staffRes.data?.unit_id) {
-                            return staffRes.data.unit_id;
+                        const sRes = await masterApiShow<InstitutionMasterStaff>('institution/master/staffes', role.roleable_id);
+                        if (sRes.data?.unit_id) {
+                            cleanRedundantUnitIdParam();
+                            return sRes.data.unit_id;
                         }
                     } catch {
                         // continue checking
                     }
                 }
                 if (role.roleable_type === 'Unit') {
+                    cleanRedundantUnitIdParam();
                     return role.roleable_id;
                 }
             }
@@ -112,7 +148,10 @@ export default function CourseDepartmentStudentMasterPage() {
                     for (const emp of indRes.data.employees) {
                         if (emp.staffes && Array.isArray(emp.staffes) && emp.staffes.length > 0) {
                             const foundUnit = emp.staffes[0].unit_id;
-                            if (foundUnit) return foundUnit;
+                            if (foundUnit) {
+                                cleanRedundantUnitIdParam();
+                                return foundUnit;
+                            }
                         }
                     }
                 }
@@ -121,7 +160,12 @@ export default function CourseDepartmentStudentMasterPage() {
             }
         }
 
-        // Priority 5: Default fallback to first unit
+        // Priority 5: Fallback to query parameter in URL (e.g. for admin override)
+        if (queryUnit && queryUnit.trim() !== '') {
+            return queryUnit.trim();
+        }
+
+        // Priority 6: Default fallback to first unit
         if (unitsList && unitsList.length > 0) {
             return unitsList[0].id;
         }
@@ -142,13 +186,20 @@ export default function CourseDepartmentStudentMasterPage() {
             setAcademicYears(yList);
             setStatuses(sList);
 
-            // Resolve initial department unit
+            // Resolve initial department unit from staff data
             const resolvedUnit = await resolveDepartmentUnitId(uList);
             setSelectedUnitId(resolvedUnit);
 
             if (resolvedUnit) {
-                const matchingUnit = uList.find(u => u.id === resolvedUnit);
-                setActiveUnitData(matchingUnit || null);
+                const matchingUnit = uList.find(u => u.id === resolvedUnit) || staffResult()?.unit;
+                if (matchingUnit) {
+                    setActiveUnitData(matchingUnit);
+                } else {
+                    try {
+                        const unitRes = await masterApiShow<any>('institution/master/units', resolvedUnit);
+                        if (unitRes.data) setActiveUnitData(unitRes.data);
+                    } catch { }
+                }
                 await loadUnitAcademicYears(resolvedUnit);
             }
         } catch (err) {
@@ -263,8 +314,8 @@ export default function CourseDepartmentStudentMasterPage() {
     // Handle unit selection change
     const handleUnitChange = async (unitId: string) => {
         setSelectedUnitId(unitId);
-        setSearchParams({ unit_id: unitId });
-        const matchingUnit = units().find(u => u.id === unitId);
+        cleanRedundantUnitIdParam();
+        const matchingUnit = units().find(u => u.id === unitId) || staffResult()?.unit;
         setActiveUnitData(matchingUnit || null);
         setSelectedAcademicYearId('');
         setPage(1);
@@ -352,8 +403,8 @@ export default function CourseDepartmentStudentMasterPage() {
                     <div class="bg-white dark:bg-neutral-800 rounded-xs p-4 border border-neutral-200/70 dark:border-neutral-700 shadow-2xs flex items-center justify-between">
                         <div class="space-y-0.5">
                             <span class="text-[11px] font-mono font-medium text-neutral-400 uppercase tracking-wider">Current Unit</span>
-                            <div class="text-sm font-bold text-neutral-800 dark:text-neutral-200 truncate max-w-[180px]" title={activeUnitData()?.name}>
-                                {activeUnitData()?.name || 'Program Studi'}
+                            <div class="text-sm font-bold text-neutral-800 dark:text-neutral-200 truncate max-w-[180px]" title={activeUnitData()?.name || activeUnitData()?.nama || staffResult()?.unit?.name}>
+                                {activeUnitData()?.name || activeUnitData()?.nama || staffResult()?.unit?.name || 'Program Studi'}
                             </div>
                         </div>
                         <div class="size-10 rounded-xs bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center border border-cyan-200/50 dark:border-cyan-800/40">
@@ -555,13 +606,113 @@ export default function CourseDepartmentStudentMasterPage() {
                     <Show
                         when={!isLoading() && !isResolvingUnit()}
                         fallback={
-                            <div class="py-20 flex flex-col items-center justify-center gap-3 text-neutral-400">
-                                <div class="size-8 border-3 border-teal-500 border-t-transparent rounded-xs animate-spin"></div>
-                                <p class="text-xs font-mono tracking-wider uppercase">Loading department students from server...</p>
-                            </div>
+                            <Loader
+                                message="Loading department students from server..."
+                                color="teal"
+                                size="lg"
+                                class="py-20"
+                            />
                         }
                     >
-                        <div class="overflow-x-auto">
+                        {/* Mobile Card Layout */}
+                        <div class="block md:hidden divide-y divide-neutral-200 dark:divide-neutral-700">
+                            <For
+                                each={students()}
+                                fallback={
+                                    <div class="p-8 text-center text-neutral-500 dark:text-neutral-400">
+                                        <div class="flex flex-col items-center justify-center gap-2 max-w-xs mx-auto">
+                                            <div class="size-12 rounded-xs bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center mb-1 text-neutral-400">
+                                                <svg class="size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                                                </svg>
+                                            </div>
+                                            <p class="text-sm font-bold text-neutral-700 dark:text-neutral-200">
+                                                No student records found
+                                            </p>
+                                            <p class="text-xs text-neutral-400">
+                                                {hasActiveFilters()
+                                                    ? 'No students match the current search filters.'
+                                                    : `There are currently no admitted student records in ${activeUnitData()?.name || 'this department'}.`}
+                                            </p>
+                                            <Show when={hasActiveFilters()}>
+                                                <button
+                                                    type="button"
+                                                    onClick={handleResetFilters}
+                                                    class="mt-2 px-3 py-1.5 bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 rounded-xs text-xs font-bold hover:bg-teal-100 transition-colors cursor-pointer"
+                                                >
+                                                    Clear Filters
+                                                </button>
+                                            </Show>
+                                        </div>
+                                    </div>
+                                }
+                            >
+                                {(std) => (
+                                    <div class="p-4 space-y-3 hover:bg-neutral-50/70 dark:hover:bg-neutral-700/20 transition-colors">
+                                        {/* Card Header: Avatar, Name, NIM & Status */}
+                                        <div class="flex items-start justify-between gap-3">
+                                            <div class="flex items-start gap-3 min-w-0">
+                                                <div class="size-9 rounded-xs bg-gradient-to-br from-teal-500 to-cyan-600 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-2xs mt-0.5">
+                                                    {(std.name || 'S').slice(0, 1).toUpperCase()}
+                                                </div>
+                                                <div class="min-w-0 space-y-1">
+                                                    <h3 class="font-bold text-sm text-neutral-900 dark:text-white leading-tight truncate">
+                                                        {std.name}
+                                                    </h3>
+                                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                                        <span class="px-2 py-0.5 rounded-xs bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-400 font-mono text-xs border border-teal-200/60 dark:border-teal-900/60 font-semibold">
+                                                            {std.code}
+                                                        </span>
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-xs text-[10px] font-mono font-medium bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60">
+                                                            {std.academic_year_name || '-'}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <span class={`inline-block px-2 py-0.5 rounded-xs text-[10px] font-bold shrink-0 ${getStatusBadgeClass(std.status_name)}`}>
+                                                {std.status_name || 'Active'}
+                                            </span>
+                                        </div>
+
+                                        {/* Metadata Rows */}
+                                        <div class="bg-neutral-50/80 dark:bg-neutral-900/40 rounded-xs p-2.5 space-y-1.5 border border-neutral-100 dark:border-neutral-700/60 text-xs">
+                                            <div class="flex items-center justify-between gap-2">
+                                                <span class="text-neutral-500 dark:text-neutral-400">Study Program:</span>
+                                                <span class="font-medium text-neutral-800 dark:text-neutral-200 truncate text-end">
+                                                    {std.unit_name || activeUnitData()?.name || '-'}
+                                                </span>
+                                            </div>
+                                            <div class="flex items-center justify-between gap-2">
+                                                <span class="text-neutral-500 dark:text-neutral-400">Admission Path:</span>
+                                                <span class="font-semibold text-neutral-700 dark:text-neutral-300 text-end">
+                                                    {std.selection_type_name || '-'}
+                                                </span>
+                                            </div>
+                                            <div class="flex items-center justify-between gap-2">
+                                                <span class="text-neutral-500 dark:text-neutral-400">Registered:</span>
+                                                <span class="font-mono text-neutral-600 dark:text-neutral-400 text-end">
+                                                    {std.registered || '-'}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* Card Action */}
+                                        <div class="flex items-center justify-end pt-1">
+                                            <A
+                                                href={`/course-department/academic/student/master/student/${std.id}/show`}
+                                                class="w-full sm:w-auto px-3.5 py-1.5 bg-neutral-100 hover:bg-teal-50 dark:bg-neutral-700 dark:hover:bg-teal-950/60 text-neutral-700 hover:text-teal-700 dark:text-neutral-200 dark:hover:text-teal-300 rounded-xs text-xs font-bold transition-colors inline-flex items-center justify-center gap-1.5 shadow-2xs"
+                                            >
+                                                <span>Detail</span>
+                                                <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+                                            </A>
+                                        </div>
+                                    </div>
+                                )}
+                            </For>
+                        </div>
+
+                        {/* Desktop Table Layout */}
+                        <div class="hidden md:block overflow-x-auto">
                             <table class="w-full text-xs text-start">
                                 <thead class="bg-neutral-50/80 dark:bg-neutral-900/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-neutral-200 dark:border-neutral-700">
                                     <tr>
@@ -738,7 +889,7 @@ export default function CourseDepartmentStudentMasterPage() {
                                                 {/* Actions */}
                                                 <td class="py-3 px-4 text-end">
                                                     <A
-                                                        href={`/course-department/academic/student/master/show?id=${std.id}`}
+                                                        href={`/course-department/academic/student/master/student/${std.id}/show`}
                                                         class="px-3 py-1.5 bg-neutral-100 hover:bg-teal-50 dark:bg-neutral-700 dark:hover:bg-teal-950/60 text-neutral-700 hover:text-teal-700 dark:text-neutral-200 dark:hover:text-teal-300 rounded-xs text-xs font-bold transition-colors inline-flex items-center gap-1 shadow-2xs"
                                                     >
                                                         <span>Detail</span>
