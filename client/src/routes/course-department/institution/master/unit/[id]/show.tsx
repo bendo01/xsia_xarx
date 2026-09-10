@@ -4,15 +4,15 @@ import TopBar from '~/components/navigation/TopBar';
 import { Loader, ErrorFallback } from '~/components/loader';
 import { toast } from '~/components/toast/Toaster';
 import { masterApiShow, masterApiIndex } from '~/controllers/master/masterApiController';
-import { 
-    currentUserSignal, 
-    userRolesSignal, 
-    activeRoleSignal, 
+import {
+    currentUserSignal,
+    userRolesSignal,
+    activeRoleSignal,
     currentRoleIdSignal,
     getStoredRoles,
     refreshAuthState,
     getStoredUser,
-    isStaffProgramStudi 
+    isStaffProgramStudi
 } from '~/lib/authStore';
 import { getStorageItem, setStorageItem } from '~/lib/storage';
 import { GetCurrentUser } from '~/controllers/auth/AuthUser';
@@ -36,13 +36,13 @@ export default function CourseDepartmentUnitShowPage() {
     const initialQueryId = rawQueryId === '[id]' || rawQueryId === ':id' ? '' : rawQueryId;
     const [unitId, setUnitId] = createSignal<string>(initialQueryId);
     const [unitData, setUnitData] = createSignal<any | null>(null);
-    
+
     // Real Data from server entities filtered by unit_id = current user unit_id
     const [curriculums, setCurriculums] = createSignal<any[]>([]);
     const [courses, setCourses] = createSignal<any[]>([]);
     const [students, setStudents] = createSignal<any[]>([]);
     const [staffes, setStaffes] = createSignal<any[]>([]);
-    
+
     // Supplementary reference data for relations
     const [employeesMap, setEmployeesMap] = createSignal<Record<string, any>>({});
     const [positionTypesMap, setPositionTypesMap] = createSignal<Record<string, any>>({});
@@ -60,18 +60,18 @@ export default function CourseDepartmentUnitShowPage() {
         }
         const rType = String(role.roleable_type || '');
         const rName = String(role.name || '').toLowerCase();
-        
+
         // Direct Unit role
         if (rType === 'Unit' || rType.includes('Unit')) {
             return role.roleable_id;
         }
-        
+
         // Staff / Kaprodi role pointing to institution_master.staffes
         if (
-            rType.includes('Staff') || 
-            isStaffProgramStudi(role) || 
-            rName.includes('kaprodi') || 
-            rName.includes('prodi') || 
+            rType.includes('Staff') ||
+            isStaffProgramStudi(role) ||
+            rName.includes('kaprodi') ||
+            rName.includes('prodi') ||
             rName.includes('jurusan')
         ) {
             try {
@@ -124,9 +124,9 @@ export default function CourseDepartmentUnitShowPage() {
         const user = currentUserSignal();
         const storedUnitId = (user as any)?.unit_id || getStorageItem('unit_id');
         if (
-            storedUnitId && 
-            storedUnitId !== '00000000-0000-0000-0000-000000000000' && 
-            storedUnitId !== '[id]' && 
+            storedUnitId &&
+            storedUnitId !== '00000000-0000-0000-0000-000000000000' &&
+            storedUnitId !== '[id]' &&
             storedUnitId !== ':id'
         ) {
             try {
@@ -298,18 +298,18 @@ export default function CourseDepartmentUnitShowPage() {
                 cachedPositionTypes
                     ? Promise.resolve({ data: cachedPositionTypes })
                     : masterApiIndex<any>('institution/reference/position-type', { page: 1, per_page: 50 })
-                          .then(r => { cachedPositionTypes = r.data || []; return r; })
-                          .catch(() => ({ data: [] })),
+                        .then(r => { cachedPositionTypes = r.data || []; return r; })
+                        .catch(() => ({ data: [] })),
                 cachedVarieties
                     ? Promise.resolve({ data: cachedVarieties })
                     : masterApiIndex<any>('academic/course/reference/varieties', { page: 1, per_page: 50 })
-                          .then(r => { cachedVarieties = r.data || []; return r; })
-                          .catch(() => ({ data: [] })),
+                        .then(r => { cachedVarieties = r.data || []; return r; })
+                        .catch(() => ({ data: [] })),
                 cachedGroups
                     ? Promise.resolve({ data: cachedGroups })
                     : masterApiIndex<any>('academic/course/reference/groups', { page: 1, per_page: 50 })
-                          .then(r => { cachedGroups = r.data || []; return r; })
-                          .catch(() => ({ data: [] }))
+                        .then(r => { cachedGroups = r.data || []; return r; })
+                        .catch(() => ({ data: [] }))
             ];
 
             // Fetch Unit Master + Core Prodi Entities in Parallel
@@ -586,292 +586,288 @@ export default function CourseDepartmentUnitShowPage() {
                     )}
                 >
                     {/* Hero Banner with Unit Details */}
-                <div class="bg-gradient-to-r from-teal-900 via-emerald-900 to-slate-900 rounded-xs p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-teal-500/20">
-                    <div class="absolute -right-16 -top-16 w-80 h-80 bg-teal-500/10 rounded-xs blur-3xl pointer-events-none"></div>
+                    <div class="bg-gradient-to-r from-teal-900 via-emerald-900 to-slate-900 rounded-xs p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-teal-500/20">
+                        <div class="absolute -right-16 -top-16 w-80 h-80 bg-teal-500/10 rounded-xs blur-3xl pointer-events-none"></div>
 
-                    <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                        <div class="space-y-3">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xs bg-teal-500/20 text-teal-200 text-xs font-mono font-semibold border border-teal-400/30">
-                                    <span class="size-2 rounded-xs bg-teal-400 animate-pulse"></span>
-                                    <span>Unit ID: {unitId() ? `${unitId().substring(0, 8)}...` : '-'}</span>
-                                </span>
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xs bg-emerald-500/20 text-emerald-200 text-xs font-mono font-semibold border border-emerald-400/30">
-                                    <span>Kode: {unitCode()}</span>
-                                </span>
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xs bg-blue-500/20 text-blue-200 text-xs font-semibold border border-blue-400/30">
-                                    <span>{educationName()}</span>
-                                </span>
+                        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xs bg-emerald-500/20 text-emerald-200 text-xs font-mono font-semibold border border-emerald-400/30">
+                                        <span>Kode: {unitCode()}</span>
+                                    </span>
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xs bg-blue-500/20 text-blue-200 text-xs font-semibold border border-blue-400/30">
+                                        <span>{educationName()}</span>
+                                    </span>
+                                </div>
+
+                                <div>
+                                    <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                                        {unitName()}
+                                    </h1>
+                                    <p class="text-xs sm:text-sm text-teal-100/80 max-w-2xl font-medium mt-1">
+                                        {facultyName()} • Portal Tata Kelola Kurikulum, Mata Kuliah, Mahasiswa, dan Staff Program Studi.
+                                    </p>
+                                </div>
                             </div>
 
-                            <div>
-                                <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                                    {unitName()}
-                                </h1>
-                                <p class="text-xs sm:text-sm text-teal-100/80 max-w-2xl font-medium mt-1">
-                                    {facultyName()} • Portal Tata Kelola Kurikulum, Mata Kuliah, Mahasiswa, dan Staff Program Studi.
-                                </p>
+                            {/* Direct Action Links */}
+                            <div class="flex items-center gap-2.5 flex-wrap">
+                                <A
+                                    href="/course-department/academic/course/master/curriculum"
+                                    class="px-3.5 py-2 rounded-xs bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md transition-colors"
+                                >
+                                    <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" />
+                                    </svg>
+                                    <span>Kurikulum</span>
+                                </A>
+
+                                <A
+                                    href="/course-department/academic/course/master/course"
+                                    class="px-3.5 py-2 rounded-xs bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md transition-colors"
+                                >
+                                    <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+                                    </svg>
+                                    <span>Mata Kuliah</span>
+                                </A>
+
+                                <A
+                                    href="/course-department/academic/student/master/student"
+                                    class="px-3.5 py-2 rounded-xs bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/20 flex items-center gap-1.5 transition-colors"
+                                >
+                                    <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
+                                    </svg>
+                                    <span>Mahasiswa</span>
+                                </A>
                             </div>
                         </div>
+                    </div>
 
-                        {/* Direct Action Links */}
-                        <div class="flex items-center gap-2.5 flex-wrap">
+                    {/* Loading State */}
+                    <Show when={isLoading()}>
+                        <Loader
+                            message={`Memuat data real server untuk Unit ID ${unitId()}...`}
+                            color="teal"
+                            size="lg"
+                        />
+                    </Show>
+
+                    {/* Main Content Body */}
+                    <Show when={!isLoading()}>
+                        {/* 4 Summary Cards based on real data */}
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                            {/* 1. Kurikulum (academic_course_master.curriculums) */}
                             <A
                                 href="/course-department/academic/course/master/curriculum"
-                                class="px-3.5 py-2 rounded-xs bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md transition-colors"
+                                class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2 hover:border-emerald-500 transition-all block group"
                             >
-                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/>
-                                </svg>
-                                <span>Kurikulum</span>
+                                <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
+                                    <span class="text-xs font-mono font-semibold uppercase tracking-wider group-hover:text-emerald-600 transition-colors">Kurikulum</span>
+                                    <div class="size-8 rounded-xs bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+                                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="flex items-baseline gap-2">
+                                    <span class="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white font-mono">
+                                        {curriculums().length}
+                                    </span>
+                                    <span class="text-xs text-neutral-400 font-medium">Kurikulum Prodi</span>
+                                </div>
+                                <div class="text-[11px] text-emerald-600 dark:text-emerald-400 font-mono truncate">
+                                    {activeCurriculum()?.name || 'Kurikulum Aktif'}
+                                </div>
                             </A>
 
+                            {/* 2. Mata Kuliah (academic_course_master.courses) */}
                             <A
                                 href="/course-department/academic/course/master/course"
-                                class="px-3.5 py-2 rounded-xs bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md transition-colors"
+                                class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2 hover:border-teal-500 transition-all block group"
                             >
-                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-                                </svg>
-                                <span>Mata Kuliah</span>
+                                <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
+                                    <span class="text-xs font-mono font-semibold uppercase tracking-wider group-hover:text-teal-600 transition-colors">Mata Kuliah</span>
+                                    <div class="size-8 rounded-xs bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold">
+                                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" /><path d="M6 6h10M6 10h10M6 14h6" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="flex items-baseline gap-2">
+                                    <span class="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white font-mono">
+                                        {courses().length}
+                                    </span>
+                                    <span class="text-xs text-neutral-400 font-medium">Mata Kuliah</span>
+                                </div>
+                                <div class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
+                                    Total SKS: {courses().reduce((acc, curr) => acc + (Number(curr.total_credit) || 0), 0)} SKS
+                                </div>
                             </A>
 
+                            {/* 3. Mahasiswa (academic_student_master.students) */}
                             <A
                                 href="/course-department/academic/student/master/student"
-                                class="px-3.5 py-2 rounded-xs bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/20 flex items-center gap-1.5 transition-colors"
+                                class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2 hover:border-blue-500 transition-all block group"
                             >
-                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-                                </svg>
-                                <span>Mahasiswa</span>
+                                <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
+                                    <span class="text-xs font-mono font-semibold uppercase tracking-wider group-hover:text-blue-600 transition-colors">Mahasiswa</span>
+                                    <div class="size-8 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="flex items-baseline gap-2">
+                                    <span class="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white font-mono">
+                                        {students().length}
+                                    </span>
+                                    <span class="text-xs text-neutral-400 font-medium">Mahasiswa Terdaftar</span>
+                                </div>
+                                <div class="text-[11px] text-blue-600 dark:text-blue-400 font-mono">
+                                    Status Aktif & Terdata
+                                </div>
                             </A>
-                        </div>
-                    </div>
-                </div>
 
-                {/* Loading State */}
-                <Show when={isLoading()}>
-                    <Loader
-                        message={`Memuat data real server untuk Unit ID ${unitId()}...`}
-                        color="teal"
-                        size="lg"
-                    />
-                </Show>
-
-                {/* Main Content Body */}
-                <Show when={!isLoading()}>
-                    {/* 4 Summary Cards based on real data */}
-                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        {/* 1. Kurikulum (academic_course_master.curriculums) */}
-                        <A 
-                            href="/course-department/academic/course/master/curriculum"
-                            class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2 hover:border-emerald-500 transition-all block group"
-                        >
-                            <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
-                                <span class="text-xs font-mono font-semibold uppercase tracking-wider group-hover:text-emerald-600 transition-colors">Kurikulum</span>
-                                <div class="size-8 rounded-xs bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
-                                    <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="flex items-baseline gap-2">
-                                <span class="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white font-mono">
-                                    {curriculums().length}
-                                </span>
-                                <span class="text-xs text-neutral-400 font-medium">Kurikulum Prodi</span>
-                            </div>
-                            <div class="text-[11px] text-emerald-600 dark:text-emerald-400 font-mono truncate">
-                                {activeCurriculum()?.name || 'Kurikulum Aktif'}
-                            </div>
-                        </A>
-
-                        {/* 2. Mata Kuliah (academic_course_master.courses) */}
-                        <A 
-                            href="/course-department/academic/course/master/course"
-                            class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2 hover:border-teal-500 transition-all block group"
-                        >
-                            <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
-                                <span class="text-xs font-mono font-semibold uppercase tracking-wider group-hover:text-teal-600 transition-colors">Mata Kuliah</span>
-                                <div class="size-8 rounded-xs bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold">
-                                    <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10M6 14h6"/>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="flex items-baseline gap-2">
-                                <span class="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white font-mono">
-                                    {courses().length}
-                                </span>
-                                <span class="text-xs text-neutral-400 font-medium">Mata Kuliah</span>
-                            </div>
-                            <div class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
-                                Total SKS: {courses().reduce((acc, curr) => acc + (Number(curr.total_credit) || 0), 0)} SKS
-                            </div>
-                        </A>
-
-                        {/* 3. Mahasiswa (academic_student_master.students) */}
-                        <A 
-                            href="/course-department/academic/student/master/student"
-                            class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2 hover:border-blue-500 transition-all block group"
-                        >
-                            <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
-                                <span class="text-xs font-mono font-semibold uppercase tracking-wider group-hover:text-blue-600 transition-colors">Mahasiswa</span>
-                                <div class="size-8 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
-                                    <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="flex items-baseline gap-2">
-                                <span class="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white font-mono">
-                                    {students().length}
-                                </span>
-                                <span class="text-xs text-neutral-400 font-medium">Mahasiswa Terdaftar</span>
-                            </div>
-                            <div class="text-[11px] text-blue-600 dark:text-blue-400 font-mono">
-                                Status Aktif & Terdata
-                            </div>
-                        </A>
-
-                        {/* 4. Staff (institution_master.staffes) */}
-                        <div 
-                            class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2"
-                        >
-                            <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
-                                <span class="text-xs font-mono font-semibold uppercase tracking-wider">Staff & Pimpinan</span>
-                                <div class="size-8 rounded-xs bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">
-                                    <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="flex items-baseline gap-2">
-                                <span class="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white font-mono">
-                                    {staffes().length}
-                                </span>
-                                <span class="text-xs text-neutral-400 font-medium">Staff Terdaftar</span>
-                            </div>
-                            <div class="text-[11px] text-purple-600 dark:text-purple-400 font-mono">
-                                Kaprodi, Sekprodi & Staff
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Program Studi Leadership Card */}
-                    <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-4">
-                        <div class="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-700 pb-3">
-                            <div class="flex items-center gap-2">
-                                <span class="size-2 rounded-xs bg-teal-500"></span>
-                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                    Pimpinan & Staff Program Studi (institution_master.staffes)
-                                </h3>
-                            </div>
-                            <span class="text-xs text-neutral-400 font-mono">
-                                Unit ID: {unitId()}
-                            </span>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            {/* Kepala Program Studi */}
-                            <div class="p-4 rounded-xs bg-teal-50/60 dark:bg-teal-950/30 border border-teal-200/80 dark:border-teal-800/60 space-y-2">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-[10px] font-mono uppercase font-bold tracking-wider text-teal-700 dark:text-teal-300">
-                                        Kepala Program Studi (Kaprodi)
-                                    </span>
-                                    <span class="px-2 py-0.5 rounded-xs bg-teal-200/60 dark:bg-teal-800/60 text-teal-800 dark:text-teal-200 text-[10px] font-bold">
-                                        Pimpinan
-                                    </span>
-                                </div>
-                                <div class="font-bold text-sm text-neutral-900 dark:text-white">
-                                    {kaprodi()?.employeeName || 'Belum Ditetapkan'}
-                                </div>
-                                <div class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
-                                    NIP/Kode: {kaprodi()?.employeeCode || '-'}
-                                </div>
-                                <Show when={kaprodi()?.decree_number}>
-                                    <div class="text-[10px] text-teal-600/80 dark:text-teal-400/80 font-mono truncate">
-                                        SK: {kaprodi()?.decree_number}
+                            {/* 4. Staff (institution_master.staffes) */}
+                            <div
+                                class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2"
+                            >
+                                <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
+                                    <span class="text-xs font-mono font-semibold uppercase tracking-wider">Staff & Pimpinan</span>
+                                    <div class="size-8 rounded-xs bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">
+                                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+                                        </svg>
                                     </div>
-                                </Show>
-                            </div>
-
-                            {/* Sekertaris Program Studi */}
-                            <div class="p-4 rounded-xs bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/60 space-y-2">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-[10px] font-mono uppercase font-bold tracking-wider text-emerald-700 dark:text-emerald-300">
-                                        Sekertaris Program Studi (Sekprodi)
+                                </div>
+                                <div class="flex items-baseline gap-2">
+                                    <span class="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white font-mono">
+                                        {staffes().length}
                                     </span>
-                                    <span class="px-2 py-0.5 rounded-xs bg-emerald-200/60 dark:bg-emerald-800/60 text-emerald-800 dark:text-emerald-200 text-[10px] font-bold">
-                                        Sekretaris
-                                    </span>
+                                    <span class="text-xs text-neutral-400 font-medium">Staff Terdaftar</span>
                                 </div>
-                                <div class="font-bold text-sm text-neutral-900 dark:text-white">
-                                    {sekprodi()?.employeeName || 'Belum Ditetapkan'}
-                                </div>
-                                <div class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
-                                    NIP/Kode: {sekprodi()?.employeeCode || '-'}
-                                </div>
-                                <Show when={sekprodi()?.decree_number}>
-                                    <div class="text-[10px] text-emerald-600/80 dark:text-emerald-400/80 font-mono truncate">
-                                        SK: {sekprodi()?.decree_number}
-                                    </div>
-                                </Show>
-                            </div>
-
-                            {/* Staff Program Studi */}
-                            <div class="p-4 rounded-xs bg-slate-50 dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-700 space-y-2">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-[10px] font-mono uppercase font-bold tracking-wider text-neutral-600 dark:text-neutral-400">
-                                        Staff Program Studi
-                                    </span>
-                                    <span class="px-2 py-0.5 rounded-xs bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 text-[10px] font-bold">
-                                        {otherStaffes().length} Staff
-                                    </span>
-                                </div>
-                                <div class="font-bold text-sm text-neutral-900 dark:text-white truncate">
-                                    {otherStaffes()[0]?.employeeName || 'Staff Tata Usaha'}
-                                </div>
-                                <div class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
-                                    {otherStaffes().length > 1 ? `+ ${otherStaffes().length - 1} staff lainnya` : 'Operasional Akademik'}
+                                <div class="text-[11px] text-purple-600 dark:text-purple-400 font-mono">
+                                    Kaprodi, Sekprodi & Staff
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Charts Section: Scope Unit ID Real Server Data */}
-                    <div class="space-y-6 pt-2">
-                        {/* Section Header */}
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-200 dark:border-neutral-700 pb-3">
-                            <div>
-                                <h2 class="text-base font-bold text-neutral-900 dark:text-white flex items-center gap-2">
-                                    <span class="size-2.5 rounded-xs bg-teal-500"></span>
-                                    Visualisasi & Analisis Data Program Studi
-                                </h2>
-                                <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                    Tren mahasiswa per tahun ajaran dan proporsi mata kuliah berbasis data real server untuk Unit ID {unitId()}.
-                                </p>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="px-2.5 py-1 rounded-xs bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-mono text-[11px] font-semibold border border-teal-200 dark:border-teal-800">
-                                    Real Server Data
+                        {/* Program Studi Leadership Card */}
+                        <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-4">
+                            <div class="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-700 pb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="size-2 rounded-xs bg-teal-500"></span>
+                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                        Pimpinan & Staff Program Studi (institution_master.staffes)
+                                    </h3>
+                                </div>
+                                <span class="text-xs text-neutral-400 font-mono">
+                                    Unit ID: {unitId()}
                                 </span>
                             </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                {/* Kepala Program Studi */}
+                                <div class="p-4 rounded-xs bg-teal-50/60 dark:bg-teal-950/30 border border-teal-200/80 dark:border-teal-800/60 space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-[10px] font-mono uppercase font-bold tracking-wider text-teal-700 dark:text-teal-300">
+                                            Kepala Program Studi (Kaprodi)
+                                        </span>
+                                        <span class="px-2 py-0.5 rounded-xs bg-teal-200/60 dark:bg-teal-800/60 text-teal-800 dark:text-teal-200 text-[10px] font-bold">
+                                            Pimpinan
+                                        </span>
+                                    </div>
+                                    <div class="font-bold text-sm text-neutral-900 dark:text-white">
+                                        {kaprodi()?.employeeName || 'Belum Ditetapkan'}
+                                    </div>
+                                    <div class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
+                                        NIP/Kode: {kaprodi()?.employeeCode || '-'}
+                                    </div>
+                                    <Show when={kaprodi()?.decree_number}>
+                                        <div class="text-[10px] text-teal-600/80 dark:text-teal-400/80 font-mono truncate">
+                                            SK: {kaprodi()?.decree_number}
+                                        </div>
+                                    </Show>
+                                </div>
+
+                                {/* Sekertaris Program Studi */}
+                                <div class="p-4 rounded-xs bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/60 space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-[10px] font-mono uppercase font-bold tracking-wider text-emerald-700 dark:text-emerald-300">
+                                            Sekertaris Program Studi (Sekprodi)
+                                        </span>
+                                        <span class="px-2 py-0.5 rounded-xs bg-emerald-200/60 dark:bg-emerald-800/60 text-emerald-800 dark:text-emerald-200 text-[10px] font-bold">
+                                            Sekretaris
+                                        </span>
+                                    </div>
+                                    <div class="font-bold text-sm text-neutral-900 dark:text-white">
+                                        {sekprodi()?.employeeName || 'Belum Ditetapkan'}
+                                    </div>
+                                    <div class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
+                                        NIP/Kode: {sekprodi()?.employeeCode || '-'}
+                                    </div>
+                                    <Show when={sekprodi()?.decree_number}>
+                                        <div class="text-[10px] text-emerald-600/80 dark:text-emerald-400/80 font-mono truncate">
+                                            SK: {sekprodi()?.decree_number}
+                                        </div>
+                                    </Show>
+                                </div>
+
+                                {/* Staff Program Studi */}
+                                <div class="p-4 rounded-xs bg-slate-50 dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-700 space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-[10px] font-mono uppercase font-bold tracking-wider text-neutral-600 dark:text-neutral-400">
+                                            Staff Program Studi
+                                        </span>
+                                        <span class="px-2 py-0.5 rounded-xs bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 text-[10px] font-bold">
+                                            {otherStaffes().length} Staff
+                                        </span>
+                                    </div>
+                                    <div class="font-bold text-sm text-neutral-900 dark:text-white truncate">
+                                        {otherStaffes()[0]?.employeeName || 'Staff Tata Usaha'}
+                                    </div>
+                                    <div class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
+                                        {otherStaffes().length > 1 ? `+ ${otherStaffes().length - 1} staff lainnya` : 'Operasional Akademik'}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        {/* Chart 1: Line Chart - Academic Year vs Total Student with Status */}
-                        <StudentAcademicYearChart
-                            data={studentYearlyTrend()}
-                            unitName={unitName()}
-                        />
+                        {/* Charts Section: Scope Unit ID Real Server Data */}
+                        <div class="space-y-6 pt-2">
+                            {/* Section Header */}
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-200 dark:border-neutral-700 pb-3">
+                                <div>
+                                    <h2 class="text-base font-bold text-neutral-900 dark:text-white flex items-center gap-2">
+                                        <span class="size-2.5 rounded-xs bg-teal-500"></span>
+                                        Visualisasi & Analisis Data Program Studi
+                                    </h2>
+                                    <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                        Tren mahasiswa per tahun ajaran dan proporsi mata kuliah berbasis data real server untuk Unit ID {unitId()}.
+                                    </p>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2.5 py-1 rounded-xs bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-mono text-[11px] font-semibold border border-teal-200 dark:border-teal-800">
+                                        Real Server Data
+                                    </span>
+                                </div>
+                            </div>
 
-                        {/* Chart 2: Pie Chart - Course with Categories */}
-                        <CourseCategoryPieChart
-                            data={courseCategoryDistribution()}
-                            unitName={unitName()}
-                        />
-                    </div>
-                </Show>
+                            {/* Chart 1: Line Chart - Academic Year vs Total Student with Status */}
+                            <StudentAcademicYearChart
+                                data={studentYearlyTrend()}
+                                unitName={unitName()}
+                            />
+
+                            {/* Chart 2: Pie Chart - Course with Categories */}
+                            <CourseCategoryPieChart
+                                data={courseCategoryDistribution()}
+                                unitName={unitName()}
+                            />
+                        </div>
+                    </Show>
                 </ErrorBoundary>
             </main>
         </div>
