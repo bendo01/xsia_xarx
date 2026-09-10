@@ -107,6 +107,7 @@ const mockPreloadedLecturer = {
 };
 
 describe('Lecturer Individual Show Page - Preloaded Relations', () => {
+    let individualSpy: any;
     let getLecturerByIdSpy: any;
     let getLecturerMasterByIndividualSpy: any;
     let getHomebasesSpy: any;
@@ -115,7 +116,7 @@ describe('Lecturer Individual Show Page - Preloaded Relations', () => {
     let getTeachesSpy: any;
 
     beforeEach(() => {
-        vi.spyOn(individualControllers, 'PersonMasterIndividualControllerShow').mockResolvedValue({
+        individualSpy = vi.spyOn(individualControllers, 'PersonMasterIndividualControllerShow').mockResolvedValue({
             is_error: false,
             data: {
                 individual: mockIndividual,
@@ -155,7 +156,12 @@ describe('Lecturer Individual Show Page - Preloaded Relations', () => {
             expect(screen.getByText('Guru Besar')).toBeTruthy();
         });
 
+        // Verify individual and lecturer details were fetched exactly once
+        expect(individualSpy).toHaveBeenCalledTimes(1);
+        expect(individualSpy).toHaveBeenCalledWith('ind-123');
+
         // Verify get_lecturer (GET /api/v1/academic/lecturer/master/lecturers/:id) was called
+        expect(getLecturerByIdSpy).toHaveBeenCalledTimes(1);
         expect(getLecturerByIdSpy).toHaveBeenCalledWith('lec-456');
 
         // Verify query by individual_id (?individual_id=...) was NOT called

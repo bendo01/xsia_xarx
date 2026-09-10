@@ -1,4 +1,4 @@
-import { createSignal, onMount, createEffect, Show, For, createMemo, lazy, Suspense } from 'solid-js';
+import { createSignal, createEffect, Show, For, createMemo, lazy, Suspense } from 'solid-js';
 import { useParams, useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { currentUserSignal, refreshAuthState } from '~/lib/authStore';
@@ -145,13 +145,12 @@ export default function LecturerIndividualShowPage() {
         }
     };
 
-    onMount(() => {
-        fetchLecturerProfile();
-    });
+    let lastLoadedId: string | null = null;
 
     createEffect(() => {
-        const id = params.id || (searchParams.id as string);
-        if (id) {
+        const id = params.id || (searchParams.id as string) || '';
+        if (id !== lastLoadedId) {
+            lastLoadedId = id;
             fetchLecturerProfile();
         }
     });
