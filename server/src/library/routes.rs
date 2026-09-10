@@ -1443,6 +1443,24 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.lecturer.master.lecturers.delete_lecturer",
         },
         RouteDefinition {
+            url: "/api/v1/academic/lecturer/master/lecturers/{id}/chart",
+            method: "GET",
+            handler: "lecturers::get_teach_credit_chart",
+            name: "academic.lecturer.master.lecturers.get_teach_credit_chart",
+        },
+        RouteDefinition {
+            url: "/api/v1/academic/lecturer/master/lecturers/{id}/teach-credit-chart",
+            method: "GET",
+            handler: "lecturers::get_teach_credit_chart",
+            name: "academic.lecturer.master.lecturers.get_teach_credit_chart_kebab",
+        },
+        RouteDefinition {
+            url: "/api/v1/academic/lecturer/master/lecturers/{id}/yearly-credit-trends",
+            method: "GET",
+            handler: "lecturers::get_yearly_credit_trends",
+            name: "academic.lecturer.master.lecturers.get_yearly_credit_trends",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/lecturer/reference/contracts",
             method: "GET",
             handler: "contracts::list_contracts",

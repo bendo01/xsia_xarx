@@ -10,7 +10,7 @@ use validator::Validate;
 
 use crate::dtos::academic::lecturer::master::lecturers::{
     CreateLecturerRequest, LecturerQuery, LecturerResponse, PaginatedLecturerResponse,
-    UpdateLecturerRequest,
+    UpdateLecturerRequest, YearlyCreditTrendCourse, YearlyCreditTrendResponse,
 };
 use crate::dtos::common::reference::{MessageResponse, ReferenceResponse};
 use crate::models::academic::lecturer::master::lecturers as entity_mod;
@@ -667,7 +667,9 @@ pub async fn load_lecturer_with_relations(
     let status_name = homebases.first().and_then(|h| h.status_name.clone()).or_else(|| status.as_ref().map(|s| s.name.clone()));
     let contract_name = homebases.first().and_then(|h| h.contract_name.clone()).or_else(|| contract.as_ref().map(|c| c.name.clone()));
 
-    Ok(LecturerResponse {
+        let yearly_credit_trends = build_yearly_credit_trends(&assigned_teaches);
+
+        Ok(LecturerResponse {
         id: item.id,
         code: item.code.clone(),
         name: item.name.clone(),
@@ -713,6 +715,7 @@ pub async fn load_lecturer_with_relations(
         group_name,
         status_name,
         contract_name,
+        yearly_credit_trends: Some(yearly_credit_trends),
     })
 }
 
@@ -1039,3 +1042,150 @@ pub async fn delete_lecturer(
             message: "Lecturer deleted successfully".to_string(),
         }))
 }
+
+/// Helper function to build YearlyCreditTrendResponse list from enriched assigned teaches
+pub fn build_yearly_credit_trends(
+    assigned_teaches: &[crate::dtos::academic::campaign::transaction::teaches::LecturerAssignedTeachResponse],
+) -> Vec<YearlyCreditTrendResponse> {
+    let mut map: HashMap<String, YearlyCreditTrendResponse> = HashMap::new();
+
+    for item in assigned_teaches {
+        let year_id = item
+            .academic_year_id
+            .map(|id| id.to_string())
+            .unwrap_or_else(|| "unknown".to_string());
+        let year_name = item.academic_year_name.clone().unwrap_or_else(|| {
+            item.academic_year_code
+                .map(|code| format!("Tahun {}", code))
+                .unwrap_or_else(|| "Tahun Akademik".to_string())
+        });
+        let year_code = item.academic_year_code;
+        let credit = if item.credit > 0.0 {
+            item.credit
+        } else {
+            item.course_total_credit.unwrap_or(0.0)
+        };
+
+        let course_name = item
+            .course_name
+            .clone()
+            .or_else(|| item.teach_name.clone())
+            .unwrap_or_else(|| "Mata Kuliah".to_string());
+
+        let class_name = item
+            .class_name
+            .clone()
+            .or_else(|| item.class_alphabet_code.as_ref().map(|ac| format!("Kelas {}", ac)));
+
+        let entry = map.entry(year_id.clone()).or_insert_with(|| YearlyCreditTrendResponse {
+            year_id,
+            year_name,
+            year_code,
+            total_credit: 0.0,
+            class_count: 0,
+            total_planned_sessions: 0,
+            total_realized_sessions: 0,
+            courses: Vec::new(),
+        });
+
+        entry.total_credit += credit;
+        entry.class_count += 1;
+        entry.total_planned_sessions += item.planning as i64;
+        entry.total_realized_sessions += item.realization as i64;
+        entry.courses.push(YearlyCreditTrendCourse {
+            name: course_name,
+            code: item.course_code.clone(),
+            credit,
+            class_name,
+        });
+    }
+
+    let mut list: Vec<YearlyCreditTrendResponse> = map
+        .into_values()
+        .filter(|entry| entry.year_id != "unknown" || entry.total_credit > 0.0)
+        .map(|mut entry| {
+            entry.total_credit = (entry.total_credit * 100.0).round() / 100.0;
+            entry
+        })
+        .collect();
+
+    // Sort chronologically (earliest to latest academic year) for standard left-to-right timeline trend
+    list.sort_by(|a, b| {
+        let code_a = a.year_code.unwrap_or(0);
+        let code_b = b.year_code.unwrap_or(0);
+        if code_a != 0 && code_b != 0 && code_a != code_b {
+            code_a.cmp(&code_b)
+        } else {
+            a.year_name.cmp(&b.year_name)
+        }
+    });
+
+    list
+}
+
+/// Helper function to load chart data for a lecturer based strictly on lecturer_id
+pub async fn load_lecturer_teach_credit_chart(
+    lecturer_id: Uuid,
+    db: &DatabaseConnection,
+) -> Result<Vec<YearlyCreditTrendResponse>, StatusError> {
+    let lecturer = entity_mod::Entity::find_by_id(lecturer_id)
+        .filter(entity_mod::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .ok_or_else(|| StatusError::not_found().brief("Lecturer not found"))?;
+
+    let lecturer_with_rel = load_lecturer_with_relations(&lecturer, db).await?;
+    let assigned_teaches = lecturer_with_rel.assigned_teaches.unwrap_or_default();
+    Ok(build_yearly_credit_trends(&assigned_teaches))
+}
+
+/// Helper function explicitly based on lecturer_id parameter
+pub async fn get_teach_credit_chart_by_lecturer_id(
+    lecturer_id: Uuid,
+    db: &DatabaseConnection,
+) -> Result<Vec<YearlyCreditTrendResponse>, StatusError> {
+    load_lecturer_teach_credit_chart(lecturer_id, db).await
+}
+
+#[endpoint(tags("Academic - Lecturer - Master - Lecturer"), status_codes(200, 400, 404, 500))]
+pub async fn get_teach_credit_chart(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<Vec<YearlyCreditTrendResponse>>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let lecturer_id_str = req
+        .param::<String>("lecturer_id")
+        .or_else(|| req.param::<String>("id"))
+        .or_else(|| req.query::<String>("lecturer_id"))
+        .ok_or_else(|| StatusError::bad_request().brief("Missing parameter lecturer_id"))?;
+    let lecturer_id = Uuid::parse_str(&lecturer_id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+
+    let chart_data = load_lecturer_teach_credit_chart(lecturer_id, db).await?;
+    Ok(Json(chart_data))
+}
+
+#[endpoint(tags("Academic - Lecturer - Master - Lecturer"), status_codes(200, 400, 404, 500))]
+pub async fn get_yearly_credit_trends(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<Vec<YearlyCreditTrendResponse>>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let lecturer_id_str = req
+        .param::<String>("lecturer_id")
+        .or_else(|| req.param::<String>("id"))
+        .or_else(|| req.query::<String>("lecturer_id"))
+        .ok_or_else(|| StatusError::bad_request().brief("Missing parameter lecturer_id"))?;
+    let lecturer_id = Uuid::parse_str(&lecturer_id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+
+    let chart_data = load_lecturer_teach_credit_chart(lecturer_id, db).await?;
+    Ok(Json(chart_data))
+}
+
+

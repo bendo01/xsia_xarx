@@ -82,6 +82,39 @@ pub struct LecturerResponse {
     pub status_name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub contract_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub yearly_credit_trends: Option<Vec<YearlyCreditTrendResponse>>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct YearlyCreditTrendCourse {
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub code: Option<String>,
+    pub credit: f64,
+    #[serde(skip_serializing_if = "Option::is_none", alias = "class_name")]
+    pub class_name: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct YearlyCreditTrendResponse {
+    #[serde(alias = "year_id")]
+    pub year_id: String,
+    #[serde(alias = "year_name")]
+    pub year_name: String,
+    #[serde(skip_serializing_if = "Option::is_none", alias = "year_code")]
+    pub year_code: Option<i32>,
+    #[serde(alias = "total_credit")]
+    pub total_credit: f64,
+    #[serde(alias = "class_count")]
+    pub class_count: i64,
+    #[serde(alias = "total_planned_sessions")]
+    pub total_planned_sessions: i64,
+    #[serde(alias = "total_realized_sessions")]
+    pub total_realized_sessions: i64,
+    pub courses: Vec<YearlyCreditTrendCourse>,
 }
 
 impl Default for LecturerResponse {
@@ -129,6 +162,7 @@ impl Default for LecturerResponse {
             group_name: None,
             status_name: None,
             contract_name: None,
+            yearly_credit_trends: None,
         }
     }
 }

@@ -50,5 +50,6 @@ export interface AcademicLecturerMasterLecturer {
     assigned_teaches?: any[];
     counsellors?: any[];
     advisers?: any[];
+    yearly_credit_trends?: import('~/components/chart/teach_credit_chart').YearlyCreditTrend[];
 }
 

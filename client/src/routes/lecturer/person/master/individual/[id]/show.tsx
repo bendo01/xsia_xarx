@@ -157,6 +157,12 @@ export default function LecturerIndividualShowPage() {
     });
 
     const yearlyCreditTrends = createMemo<YearlyCreditTrend[]>(() => {
+        // If backend already provided precomputed yearly_credit_trends, use them directly
+        const precomputed = lecturerMaster()?.yearly_credit_trends;
+        if (Array.isArray(precomputed) && precomputed.length > 0) {
+            return precomputed;
+        }
+
         const map = new Map<string, YearlyCreditTrend>();
 
         for (const item of assignedTeaches()) {
