@@ -53,7 +53,7 @@ export function Spinner(rawProps: SpinnerProps): JSX.Element {
       role={isHidden() ? undefined : "status"}
       aria-label={isHidden() ? undefined : props.label}
       aria-hidden={isHidden() ? "true" : undefined}
-      class={`inline-block border-t-transparent rounded-xs animate-spin shrink-0 ${sizeClasses[props.size] || sizeClasses.md} ${colorClasses[props.color] || props.color} ${props.class || ""}`}
+      class={`inline-block border-t-transparent rounded-full animate-spin shrink-0 ${sizeClasses[props.size] || sizeClasses.md} ${colorClasses[props.color] || props.color} ${props.class || ""}`}
     >
       {!isHidden() && <span class="sr-only">{props.label}</span>}
     </div>
