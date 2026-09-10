@@ -62,9 +62,9 @@ export default function CourseMasterCreatePage() {
     // Auto-calculate Total Credit whenever components change, unless manually modified
     createEffect(() => {
         const sum = (Number(lectureCredit()) || 0) +
-                    (Number(practiceCredit()) || 0) +
-                    (Number(fieldPracticeCredit()) || 0) +
-                    (Number(simulationCredit()) || 0);
+            (Number(practiceCredit()) || 0) +
+            (Number(fieldPracticeCredit()) || 0) +
+            (Number(simulationCredit()) || 0);
 
         if (!isManualTotalCredit()) {
             setTotalCredit(sum);
@@ -210,7 +210,7 @@ export default function CourseMasterCreatePage() {
         <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
             <TopBar />
 
-            <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 max-w-5xl">
+            <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Header & Breadcrumb */}
                 <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div>
@@ -241,7 +241,7 @@ export default function CourseMasterCreatePage() {
                             class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-white dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/60 rounded-xs shadow-2xs transition-colors"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="m15 18-6-6 6-6"/>
+                                <path d="m15 18-6-6 6-6" />
                             </svg>
                             <span>Cancel</span>
                         </a>
@@ -252,9 +252,9 @@ export default function CourseMasterCreatePage() {
                 <Show when={errorMessage()}>
                     <div class="p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-xs sm:text-sm flex items-start gap-2.5">
                         <svg class="size-4 shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"/>
-                            <line x1="12" y1="8" x2="12" y2="12"/>
-                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
                         </svg>
                         <span>{errorMessage()}</span>
                     </div>
@@ -333,8 +333,8 @@ export default function CourseMasterCreatePage() {
                                             <div class="flex items-center gap-2">
                                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono font-semibold bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
                                                     <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                                                        <circle cx="12" cy="7" r="4"/>
+                                                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                                        <circle cx="12" cy="7" r="4" />
                                                     </svg>
                                                     <span>Staff Department</span>
                                                 </span>

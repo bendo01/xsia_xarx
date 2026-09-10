@@ -52,7 +52,7 @@ export default function CourseMasterShowPage() {
                             .then(u => {
                                 if (u.data) setUnitName(u.data.name || u.data.nama || data.unit_id);
                             })
-                            .catch(() => {})
+                            .catch(() => { })
                     );
                 }
 
@@ -62,7 +62,7 @@ export default function CourseMasterShowPage() {
                             .then(v => {
                                 if (v.data) setVarietyName(v.data.name || data.variety_id);
                             })
-                            .catch(() => {})
+                            .catch(() => { })
                     );
                 }
 
@@ -72,7 +72,7 @@ export default function CourseMasterShowPage() {
                             .then(g => {
                                 if (g.data) setGroupName(g.data.name || data.group_id);
                             })
-                            .catch(() => {})
+                            .catch(() => { })
                     );
                 }
 
@@ -82,7 +82,7 @@ export default function CourseMasterShowPage() {
                             .then(c => {
                                 if (c.data) setCompetenceName(c.data.name || data.competence_id);
                             })
-                            .catch(() => {})
+                            .catch(() => { })
                     );
                 }
 
@@ -161,7 +161,7 @@ export default function CourseMasterShowPage() {
         <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
             <TopBar />
 
-            <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 max-w-5xl">
+            <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Header & Breadcrumb */}
                 <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div>
@@ -189,7 +189,7 @@ export default function CourseMasterShowPage() {
                             class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-white dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/60 rounded-xs shadow-2xs transition-colors"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="m15 18-6-6 6-6"/>
+                                <path d="m15 18-6-6 6-6" />
                             </svg>
                             <span>Back to List</span>
                         </a>
@@ -425,9 +425,9 @@ export default function CourseMasterShowPage() {
                                     <div class="flex items-start gap-3">
                                         <div class="size-8 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
                                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-                                                <path d="M6 6h10"/>
-                                                <path d="M6 10h10"/>
+                                                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+                                                <path d="M6 6h10" />
+                                                <path d="M6 10h10" />
                                             </svg>
                                         </div>
                                         <div class="flex-1 min-w-0">
@@ -449,9 +449,9 @@ export default function CourseMasterShowPage() {
                                     <div class="flex items-start gap-3">
                                         <div class="size-8 bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
                                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
-                                                <polyline points="14 2 14 8 20 8"/>
-                                                <path d="m9 15 2 2 4-4"/>
+                                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                                                <polyline points="14 2 14 8 20 8" />
+                                                <path d="m9 15 2 2 4-4" />
                                             </svg>
                                         </div>
                                         <div class="flex-1 min-w-0">
@@ -499,9 +499,9 @@ export default function CourseMasterShowPage() {
                 <div class="space-y-4">
                     <div class="flex items-center gap-3 text-red-600">
                         <svg class="size-6 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"/>
-                            <line x1="12" y1="8" x2="12" y2="12"/>
-                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
                         </svg>
                         <h3 class="text-lg font-bold font-mono">Confirm Course Deletion</h3>
                     </div>

@@ -187,7 +187,7 @@ export default function MasterIndexPage() {
                     try {
                         const uRes = await masterApiShow<any>('institution/master/units', resolvedUnitId);
                         if (uRes.data) setActiveUnitData(uRes.data);
-                    } catch {}
+                    } catch { }
                 }
             }
         } catch (e) {
@@ -512,9 +512,9 @@ export default function MasterIndexPage() {
                                                     title="Course Learning Plan (RPS)"
                                                 >
                                                     <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-                                                        <path d="M6 6h10"/>
-                                                        <path d="M6 10h10"/>
+                                                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+                                                        <path d="M6 6h10" />
+                                                        <path d="M6 10h10" />
                                                     </svg>
                                                 </a>
                                                 <a
@@ -560,8 +560,8 @@ export default function MasterIndexPage() {
                         <table class="w-full text-xs sm:text-sm text-left">
                             <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
                                 <tr>
-                                    <th class="px-4 py-3.5 w-36">Code / ID</th>
-                                    <th class="px-4 py-3.5">Name / Title</th>
+                                    {/*<th class="px-4 py-3.5 w-36">Code / ID</th> */}
+                                    <th class="px-4 py-3.5">Name / Code</th>
                                     <th class="px-4 py-3.5">Credits (SKS)</th>
                                     <th class="px-4 py-3.5">Details</th>
                                     <th class="px-4 py-3.5 text-right">Actions</th>
@@ -574,7 +574,7 @@ export default function MasterIndexPage() {
                                         <For each={Array.from({ length: 3 })}>
                                             {() => (
                                                 <tr class="animate-pulse">
-                                                    <td class="px-4 py-3"><div class="h-4 w-24 bg-neutral-200 dark:bg-neutral-700"></div></td>
+                                                    {/* <td class="px-4 py-3"><div class="h-4 w-24 bg-neutral-200 dark:bg-neutral-700"></div></td>*/}
                                                     <td class="px-4 py-3"><div class="h-4 w-48 bg-neutral-200 dark:bg-neutral-700"></div></td>
                                                     <td class="px-4 py-3"><div class="h-4 w-16 bg-neutral-200 dark:bg-neutral-700"></div></td>
                                                     <td class="px-4 py-3"><div class="h-4 w-32 bg-neutral-200 dark:bg-neutral-700"></div></td>
@@ -605,11 +605,13 @@ export default function MasterIndexPage() {
                                         <For each={items()}>
                                             {(item) => (
                                                 <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-700/50 transition-colors">
+                                                    {/*
                                                     <td class="px-4 py-3 font-mono font-medium text-neutral-900 dark:text-white">
                                                         <span class="px-2 py-0.5 text-xs bg-neutral-100 dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600">
                                                             {getItemCode(item)}
                                                         </span>
                                                     </td>
+                                                    */}
                                                     <td class="px-4 py-3">
                                                         <a
                                                             href={`${basePath}/${item.id || item.uuid}/show?id=${item.id || item.uuid}`}
@@ -618,7 +620,7 @@ export default function MasterIndexPage() {
                                                             {getItemTitle(item)}
                                                         </a>
                                                         <span class="text-xs text-neutral-500 dark:text-neutral-400 font-mono block truncate max-w-xs">
-                                                            {item.id || item.uuid}
+                                                            {getItemCode(item)}
                                                         </span>
                                                     </td>
                                                     <td class="px-4 py-3 text-neutral-700 dark:text-neutral-300 font-medium">
@@ -669,9 +671,9 @@ export default function MasterIndexPage() {
                                                                 title="Course Learning Plan (RPS)"
                                                             >
                                                                 <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-                                                                    <path d="M6 6h10"/>
-                                                                    <path d="M6 10h10"/>
+                                                                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+                                                                    <path d="M6 6h10" />
+                                                                    <path d="M6 10h10" />
                                                                 </svg>
                                                             </a>
                                                             <a
