@@ -221,7 +221,7 @@ impl Handler for RbacGuard {
                     is_student = true;
         }
 
-        let is_lecturer = user_roles.iter().any(|r| {
+        let mut is_lecturer = user_roles.iter().any(|r| {
             let name = r.name.to_lowercase();
             let roleable = r.roleable_type.as_deref().unwrap_or_default().to_lowercase();
             name.contains("lecturer")
@@ -231,6 +231,17 @@ impl Handler for RbacGuard {
                 || roleable == "lecturer"
                 || roleable == "dosen"
         });
+
+        // Also check if user is linked to a lecturer record via individual_id
+        if !is_lecturer
+            && !current_user.individual_id.is_nil()
+            && let Ok(Some(_)) = crate::models::academic::lecturer::master::lecturers::Entity::find()
+                .filter(crate::models::academic::lecturer::master::lecturers::Column::IndividualId.eq(current_user.individual_id))
+                .filter(crate::models::academic::lecturer::master::lecturers::Column::DeletedAt.is_null())
+                .one(&db)
+                .await {
+                    is_lecturer = true;
+        }
 
         let is_department = user_roles.iter().any(|r| {
             let name = r.name.to_lowercase();
@@ -269,8 +280,13 @@ impl Handler for RbacGuard {
                     || route_name.starts_with("auth.user")
             }
         } else if is_lecturer {
-            // Lecturer role can access lecturer routes and read catalog / student records
+            // Lecturer role can access lecturer routes, teaching & grading management, and read catalog / student records
             route_name.starts_with("academic.lecturer.")
+                || route_name.starts_with("academic.campaign.transaction.teach_evaluations.")
+                || route_name.starts_with("academic.campaign.transaction.teaches.")
+                || route_name.starts_with("academic.campaign.transaction.teach_lecturers.")
+                || route_name.starts_with("academic.student.campaign.detail_activities.")
+                || route_name.starts_with("academic.student.campaign.detail_activity_evaluation_components.")
                 || (action == "read" && (
                     route_name.starts_with("academic.")
                     || route_name.starts_with("institution.")
@@ -280,6 +296,7 @@ impl Handler for RbacGuard {
                     || route_name.starts_with("common.")
                 ))
                 || route_name.starts_with("person.master.individual")
+                || route_name.starts_with("person.master.biodata")
                 || route_name.starts_with("auth.user")
         } else if is_department {
             // Department role can access academic routes and read catalog / records

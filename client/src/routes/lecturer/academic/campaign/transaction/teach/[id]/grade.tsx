@@ -147,7 +147,7 @@ export default function LecturerTeachGradePage() {
 
             // If no evaluations exist, initialize from course_evaluation_plannings or standard default components
             if (evals.length === 0) {
-                const plannings = teach?.course_evaluation_plannings || [];
+                const plannings = course?.course_evaluation_plannings || teach?.course_evaluation_plannings || [];
                 if (plannings.length > 0) {
                     for (let idx = 0; idx < plannings.length; idx++) {
                         const p = plannings[idx];
