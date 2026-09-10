@@ -25,6 +25,7 @@ import type { YearlyCreditTrend } from '~/components/chart/teach_credit_chart';
 
 const TeachCreditChart = lazy(() => import('~/components/chart/teach_credit_chart'));
 import PopupBlockedAlert from '~/components/alert/PopupBlockedAlert';
+import { Loader } from '~/components/loader';
 
 export default function LecturerIndividualShowPage() {
     const params = useParams();
@@ -352,10 +353,12 @@ export default function LecturerIndividualShowPage() {
 
                 {/* Tab Content */}
                 <Show when={!isLoading()} fallback={
-                    <div class="py-20 text-center flex flex-col items-center justify-center gap-3">
-                        <div class="size-8 border-2 border-indigo-600 border-t-transparent rounded-xs animate-spin"></div>
-                        <span class="text-xs font-mono text-neutral-400">Loading lecturer profile...</span>
-                    </div>
+                    <Loader
+                        message="Loading lecturer profile..."
+                        color="indigo"
+                        size="lg"
+                        class="py-20"
+                    />
                 }>
                     {/* Tab 1: Overview */}
                     <Show when={activeTab() === 'overview'}>
@@ -476,10 +479,12 @@ export default function LecturerIndividualShowPage() {
                                     }
                                 >
                                     <Suspense fallback={
-                                        <div class="py-12 text-center flex flex-col items-center justify-center gap-2">
-                                            <div class="size-6 border-2 border-indigo-600 border-t-transparent rounded-xs animate-spin"></div>
-                                            <span class="text-xs font-mono text-neutral-400">Loading chart...</span>
-                                        </div>
+                                        <Loader
+                                            message="Loading chart..."
+                                            color="indigo"
+                                            size="md"
+                                            class="py-12"
+                                        />
                                     }>
                                         <TeachCreditChart data={yearlyCreditTrends()} />
                                     </Suspense>

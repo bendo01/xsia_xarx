@@ -11,11 +11,11 @@ describe("Loader Component Suite (White-Box Component Tests)", () => {
   });
 
   describe("Spinner Component", () => {
-    it("renders default spinner with role status and rounded-xs", () => {
+    it("renders default spinner with role status and rounded-full", () => {
       render(() => <Spinner />);
       const spinner = screen.getByRole("status");
       expect(spinner).toBeInTheDocument();
-      expect(spinner.className).toContain("rounded-xs");
+      expect(spinner.className).toContain("rounded-full");
       expect(spinner.className).toContain("animate-spin");
       expect(spinner.className).toContain("border-indigo-600");
     });
