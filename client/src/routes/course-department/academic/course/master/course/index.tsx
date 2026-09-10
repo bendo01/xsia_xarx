@@ -12,6 +12,7 @@ import {
 } from '~/lib/authStore';
 import { getStorageItem } from '~/lib/storage';
 import { GetCurrentUser } from '~/controllers/auth/AuthUser';
+import { getLoggedInStaffUnit } from '~/lib/staffHelper';
 
 export default function MasterIndexPage() {
     const apiPath = "academic/course/master/courses";
@@ -25,6 +26,8 @@ export default function MasterIndexPage() {
     const [units, setUnits] = createSignal<any[]>([]);
     const [selectedUnitId, setSelectedUnitId] = createSignal<string>('');
     const [activeUnitData, setActiveUnitData] = createSignal<any | null>(null);
+    const [varietiesMap, setVarietiesMap] = createSignal<Record<string, string>>({});
+    const [groupsMap, setGroupsMap] = createSignal<Record<string, string>>({});
 
     // Filter & Pagination states
     const [currentPage, setCurrentPage] = createSignal(1);
@@ -145,16 +148,41 @@ export default function MasterIndexPage() {
 
     const loadUnits = async () => {
         try {
-            const unitsRes = await masterApiIndex<any>('institution/master/units', { page: 1, per_page: 100 });
+            const [unitsRes, varietiesRes, groupsRes] = await Promise.all([
+                masterApiIndex<any>('institution/master/units', { page: 1, per_page: 100 }),
+                masterApiIndex<any>('academic/course/reference/varieties', { page: 1, per_page: 100 }).catch(() => ({ data: [] })),
+                masterApiIndex<any>('academic/course/reference/groups', { page: 1, per_page: 100 }).catch(() => ({ data: [] })),
+            ]);
+
+            const vMap: Record<string, string> = {};
+            (varietiesRes?.data || []).forEach((v: any) => {
+                if (v.id) vMap[v.id] = v.name || v.nama || v.code || '';
+            });
+            setVarietiesMap(vMap);
+
+            const gMap: Record<string, string> = {};
+            (groupsRes?.data || []).forEach((g: any) => {
+                if (g.id) gMap[g.id] = g.name || g.nama || g.code || '';
+            });
+            setGroupsMap(gMap);
+
             const list = unitsRes?.data || [];
             setUnits(list);
 
-            const resolvedUnitId = await resolveDepartmentUnitId(list);
+            const staffResult = await getLoggedInStaffUnit((searchParams.unit_id as string) || (searchParams.id as string) || '');
+            let resolvedUnitId = staffResult.unitId;
+
+            if (!resolvedUnitId) {
+                resolvedUnitId = await resolveDepartmentUnitId(list);
+            }
+
             setSelectedUnitId(resolvedUnitId);
             if (resolvedUnitId) {
                 const found = list.find((u: any) => u.id === resolvedUnitId);
                 if (found) {
                     setActiveUnitData(found);
+                } else if (staffResult.unit) {
+                    setActiveUnitData(staffResult.unit);
                 } else {
                     try {
                         const uRes = await masterApiShow<any>('institution/master/units', resolvedUnitId);
@@ -461,18 +489,34 @@ export default function MasterIndexPage() {
                                                     >
                                                         {getItemTitle(item)}
                                                     </a>
-                                                    <div class="flex items-center gap-1.5 mt-1">
+                                                    <div class="flex items-center gap-1.5 mt-1 flex-wrap">
                                                         <span class="px-1.5 py-0.5 text-xs font-mono font-medium bg-neutral-100 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-600">
                                                             {getItemCode(item)}
                                                         </span>
-                                                        <span class="text-xs text-neutral-500">
-                                                            Credit: {item.total_credit ?? '-'} SKS
+                                                        <span class="text-xs text-neutral-500 font-mono">
+                                                            {item.total_credit ?? '-'} SKS
                                                         </span>
+                                                        <Show when={item.variety_id && varietiesMap()[item.variety_id]}>
+                                                            <span class="px-1.5 py-0.5 text-[10px] font-mono bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                                                {varietiesMap()[item.variety_id]}
+                                                            </span>
+                                                        </Show>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div class="flex items-center justify-end gap-1.5 pt-2 border-t border-neutral-100 dark:border-neutral-700/60">
+                                                <a
+                                                    href={`${basePath}/${item.id || item.uuid}/course-learn-planning?course_id=${item.id || item.uuid}`}
+                                                    class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-blue-600 hover:border-blue-500 hover:bg-blue-50 dark:text-neutral-300 dark:hover:text-blue-400 dark:hover:border-blue-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
+                                                    title="Course Learning Plan (RPS)"
+                                                >
+                                                    <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+                                                        <path d="M6 6h10"/>
+                                                        <path d="M6 10h10"/>
+                                                    </svg>
+                                                </a>
                                                 <a
                                                     href={`${basePath}/${item.id || item.uuid}/show?id=${item.id || item.uuid}`}
                                                     class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
@@ -579,19 +623,57 @@ export default function MasterIndexPage() {
                                                     </td>
                                                     <td class="px-4 py-3 text-neutral-700 dark:text-neutral-300 font-medium">
                                                         <span class="inline-flex items-center gap-1 text-xs">
-                                                            <span class="font-bold">{item.total_credit ?? 0}</span> SKS
-                                                            <span class="text-neutral-400">
+                                                            <span class="font-bold font-mono">{item.total_credit ?? 0}</span> SKS
+                                                            <span class="text-neutral-400 font-mono text-[11px]">
                                                                 (T: {item.lecture_credit ?? 0} / P: {item.practice_credit ?? 0})
                                                             </span>
                                                         </span>
                                                     </td>
                                                     <td class="px-4 py-3 text-neutral-600 dark:text-neutral-300">
-                                                        <span class="text-xs">
-                                                            {item.description || item.keterangan || item.implementation_method || '-'}
-                                                        </span>
+                                                        <div class="space-y-1">
+                                                            <div class="flex items-center gap-1.5 flex-wrap">
+                                                                <Show when={item.variety_id && varietiesMap()[item.variety_id]}>
+                                                                    <span class="px-1.5 py-0.5 text-[10px] font-mono bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                                                        {varietiesMap()[item.variety_id]}
+                                                                    </span>
+                                                                </Show>
+                                                                <Show when={item.group_id && groupsMap()[item.group_id]}>
+                                                                    <span class="px-1.5 py-0.5 text-[10px] font-mono bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-600">
+                                                                        {groupsMap()[item.group_id]}
+                                                                    </span>
+                                                                </Show>
+                                                                <Show when={item.implementation_method}>
+                                                                    <span class="text-[11px] text-neutral-500">
+                                                                        {item.implementation_method}
+                                                                    </span>
+                                                                </Show>
+                                                            </div>
+                                                            <div class="flex items-center gap-2 text-[10px]">
+                                                                <Show when={item.has_syllabus}>
+                                                                    <span class="text-emerald-600 dark:text-emerald-400 font-medium">✓ RPS</span>
+                                                                </Show>
+                                                                <Show when={item.has_material}>
+                                                                    <span class="text-emerald-600 dark:text-emerald-400 font-medium">✓ SAP</span>
+                                                                </Show>
+                                                                <Show when={item.has_practice}>
+                                                                    <span class="text-blue-600 dark:text-blue-400 font-medium">✓ Praktikum</span>
+                                                                </Show>
+                                                            </div>
+                                                        </div>
                                                     </td>
                                                     <td class="px-4 py-3 text-right">
                                                         <div class="flex items-center justify-end gap-1.5">
+                                                            <a
+                                                                href={`${basePath}/${item.id || item.uuid}/course-learn-planning?course_id=${item.id || item.uuid}`}
+                                                                class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-blue-600 hover:border-blue-500 hover:bg-blue-50 dark:text-neutral-300 dark:hover:text-blue-400 dark:hover:border-blue-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
+                                                                title="Course Learning Plan (RPS)"
+                                                            >
+                                                                <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+                                                                    <path d="M6 6h10"/>
+                                                                    <path d="M6 10h10"/>
+                                                                </svg>
+                                                            </a>
                                                             <a
                                                                 href={`${basePath}/${item.id || item.uuid}/show?id=${item.id || item.uuid}`}
                                                                 class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
