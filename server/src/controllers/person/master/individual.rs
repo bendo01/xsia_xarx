@@ -462,6 +462,7 @@ pub async fn get_individual(
             sync_at: e.sync_at,
             created_by: e.created_by,
             updated_by: e.updated_by,
+            ..Default::default()
         })
         .collect::<Vec<_>>();
 

@@ -360,6 +360,7 @@ pub async fn get_institution(
             deleted_at: u.deleted_at,
             created_by: u.created_by,
             updated_by: u.updated_by,
+            ..Default::default()
         })
         .collect();
 
@@ -385,6 +386,7 @@ pub async fn get_institution(
             sync_at: e.sync_at,
             created_by: e.created_by,
             updated_by: e.updated_by,
+            ..Default::default()
         })
         .collect();
 

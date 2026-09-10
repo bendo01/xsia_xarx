@@ -117,7 +117,9 @@ pub async fn get_staffe(
             updated_by: item.updated_by,
 
     }))
-}#[endpoint(tags("Institution - Master - Staff"), status_codes(200, 400, 500))]
+}
+
+#[endpoint(tags("Institution - Master - Staff"), status_codes(200, 400, 500))]
 pub async fn create_staffe(
         req: &mut Request,
         depot: &mut Depot,

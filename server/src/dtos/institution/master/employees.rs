@@ -11,9 +11,11 @@ pub struct EmployeeQuery {
     pub page_size: Option<u64>,
     pub name: Option<String>,
     pub code: Option<String>,
+    pub individual_id: Option<Uuid>,
+    pub with_relations: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
 pub struct EmployeeResponse {
     pub id: Uuid,
     pub code: String,
@@ -29,6 +31,16 @@ pub struct EmployeeResponse {
     pub sync_at: Option<NaiveDateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+
+    // Belongs to relations
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub individual: Option<Box<crate::dtos::person::master::individual::IndividualResponse>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub institution: Option<crate::dtos::institution::master::institutions::InstitutionResponse>,
+
+    // Has many relations
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub staffes: Option<Vec<crate::dtos::institution::master::staffes::StaffResponse>>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]

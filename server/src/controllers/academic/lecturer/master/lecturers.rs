@@ -260,6 +260,7 @@ pub async fn load_lecturer_with_relations(
                 deleted_at: u.deleted_at,
                 created_by: u.created_by,
                 updated_by: u.updated_by,
+                ..Default::default()
             });
 
             let status_dto = status_model.map(|s| ReferenceResponse {
