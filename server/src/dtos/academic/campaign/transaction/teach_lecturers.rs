@@ -34,6 +34,33 @@ pub struct TeachLecturerResponse {
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
     pub feeder_id: Option<Uuid>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub teach: Option<crate::dtos::academic::campaign::transaction::teaches::TeachResponse>,
+}
+
+impl Default for TeachLecturerResponse {
+    fn default() -> Self {
+        Self {
+            id: Uuid::nil(),
+            name: None,
+            code: None,
+            planning: 0,
+            realization: 0,
+            credit: None,
+            is_lecturer_home_base: false,
+            lecturer_id: Uuid::nil(),
+            teach_id: Uuid::nil(),
+            created_at: None,
+            updated_at: None,
+            deleted_at: None,
+            sync_at: None,
+            created_by: None,
+            updated_by: None,
+            feeder_id: None,
+            teach: None,
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]

@@ -55,7 +55,7 @@ pub async fn list_homebases(
             sync_at: item.sync_at,
             created_by: item.created_by,
             updated_by: item.updated_by,
-
+            ..Default::default()
     }).collect();
 
     Ok(Json(PaginatedHomebaseResponse {
@@ -99,7 +99,7 @@ pub async fn get_homebase(
             sync_at: item.sync_at,
             created_by: item.created_by,
             updated_by: item.updated_by,
-
+            ..Default::default()
     }))
 }#[endpoint(tags("Academic - Lecturer - Transaction - Homebase"), status_codes(200, 400, 500))]
 pub async fn create_homebase(
@@ -149,7 +149,7 @@ pub async fn create_homebase(
             sync_at: item.sync_at,
             created_by: item.created_by,
             updated_by: item.updated_by,
-
+            ..Default::default()
         }))
 }
 
@@ -213,7 +213,7 @@ pub async fn update_homebase(
             sync_at: item.sync_at,
             created_by: item.created_by,
             updated_by: item.updated_by,
-
+            ..Default::default()
         }))
 }
 #[endpoint(tags("Academic - Lecturer - Transaction - Homebase"), status_codes(200, 400, 404, 500))]

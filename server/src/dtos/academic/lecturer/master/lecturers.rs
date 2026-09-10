@@ -40,6 +40,97 @@ pub struct LecturerResponse {
     pub sync_at: Option<NaiveDateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+
+    // Belongs to relations
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub individual: Option<Box<crate::dtos::person::master::individual::IndividualResponse>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub institution: Option<crate::dtos::institution::master::institutions::InstitutionResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status: Option<crate::dtos::common::reference::ReferenceResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub contract: Option<crate::dtos::common::reference::ReferenceResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub rank: Option<crate::dtos::common::reference::ReferenceResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub group: Option<crate::dtos::common::reference::ReferenceResponse>,
+
+    // Has many relations
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub homebases: Option<Vec<crate::dtos::academic::lecturer::transaction::homebases::HomebaseResponse>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub academic_ranks: Option<Vec<crate::dtos::academic::lecturer::transaction::academic_ranks::AcademicRankResponse>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub academic_groups: Option<Vec<crate::dtos::academic::lecturer::transaction::academic_groups::AcademicGroupResponse>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub teach_lecturers: Option<Vec<crate::dtos::academic::campaign::transaction::teach_lecturers::TeachLecturerResponse>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub counsellors: Option<Vec<crate::dtos::academic::student::adviser::counsellors::CounsellorResponse>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub advisers: Option<Vec<crate::dtos::academic::student::final_assignment::transaction::advisers::AdviserResponse>>,
+
+    // Enriched fields for lecturer profile
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub assigned_teaches: Option<Vec<crate::dtos::academic::campaign::transaction::teaches::LecturerAssignedTeachResponse>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub unit_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub rank_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub group_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub contract_name: Option<String>,
+}
+
+impl Default for LecturerResponse {
+    fn default() -> Self {
+        Self {
+            id: Uuid::nil(),
+            code: String::new(),
+            name: None,
+            individual_id: Uuid::nil(),
+            institution_id: None,
+            alternative_code: None,
+            accessor_number: None,
+            identification_number: None,
+            status_id: None,
+            contract_id: None,
+            rank_id: None,
+            start_date: None,
+            end_date: None,
+            front_title: None,
+            last_title: None,
+            id_dosen: None,
+            group_id: None,
+            nuptk: None,
+            created_at: None,
+            updated_at: None,
+            deleted_at: None,
+            sync_at: None,
+            created_by: None,
+            updated_by: None,
+            individual: None,
+            institution: None,
+            status: None,
+            contract: None,
+            rank: None,
+            group: None,
+            homebases: None,
+            academic_ranks: None,
+            academic_groups: None,
+            teach_lecturers: None,
+            counsellors: None,
+            advisers: None,
+            assigned_teaches: None,
+            unit_name: None,
+            rank_name: None,
+            group_name: None,
+            status_name: None,
+            contract_name: None,
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]

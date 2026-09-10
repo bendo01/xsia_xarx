@@ -56,7 +56,7 @@ pub async fn list_academic_ranks(
             updated_by: item.updated_by,
             start_date: item.start_date,
             end_date: item.end_date,
-
+            ..Default::default()
     }).collect();
 
     Ok(Json(PaginatedAcademicRankResponse {
@@ -101,7 +101,7 @@ pub async fn get_academic_rank(
             updated_by: item.updated_by,
             start_date: item.start_date,
             end_date: item.end_date,
-
+            ..Default::default()
     }))
 }#[endpoint(tags("Academic - Lecturer - Transaction - AcademicRank"), status_codes(200, 400, 500))]
 pub async fn create_academic_rank(
@@ -153,7 +153,7 @@ pub async fn create_academic_rank(
             updated_by: item.updated_by,
             start_date: item.start_date,
             end_date: item.end_date,
-
+            ..Default::default()
         }))
 }
 
@@ -221,7 +221,7 @@ pub async fn update_academic_rank(
             updated_by: item.updated_by,
             start_date: item.start_date,
             end_date: item.end_date,
-
+            ..Default::default()
         }))
 }
 #[endpoint(tags("Academic - Lecturer - Transaction - AcademicRank"), status_codes(200, 400, 404, 500))]

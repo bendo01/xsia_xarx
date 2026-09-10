@@ -97,6 +97,21 @@ async function ensureReferencesLoaded() {
 }
 
 /**
+ * Fetch lecturer by ID from academic_lecturer_master.lecturers using get_lecturer endpoint (GET /api/v1/academic/lecturer/master/lecturers/:id)
+ * which eagerly loads all belongs_to and has_many relations in one request.
+ */
+export async function getLecturerById(lecturerId: string): Promise<AcademicLecturerMasterLecturer | null> {
+    if (!lecturerId || lecturerId === '00000000-0000-0000-0000-000000000000') return null;
+    try {
+        const res = await masterApiShow<AcademicLecturerMasterLecturer>('academic/lecturer/master/lecturers', lecturerId);
+        return res?.data || null;
+    } catch (err) {
+        console.error('Error fetching lecturer by ID:', err);
+        return null;
+    }
+}
+
+/**
  * Fetch lecturer master from academic_lecturer_master.lecturers
  */
 export async function getLecturerMasterByIndividual(individualId: string): Promise<AcademicLecturerMasterLecturer | null> {

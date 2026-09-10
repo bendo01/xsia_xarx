@@ -26,6 +26,44 @@ pub struct HomebaseResponse {
     pub sync_at: Option<NaiveDateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub unit_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub contract_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub unit: Option<crate::dtos::institution::master::units::UnitResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status: Option<crate::dtos::common::reference::ReferenceResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub contract: Option<crate::dtos::common::reference::ReferenceResponse>,
+}
+
+impl Default for HomebaseResponse {
+    fn default() -> Self {
+        Self {
+            id: Uuid::nil(),
+            lecturer_id: Uuid::nil(),
+            unit_id: Uuid::nil(),
+            institution_id: Uuid::nil(),
+            status_id: Uuid::nil(),
+            contract_id: Uuid::nil(),
+            created_at: None,
+            updated_at: None,
+            deleted_at: None,
+            sync_at: None,
+            created_by: None,
+            updated_by: None,
+            unit_name: None,
+            status_name: None,
+            contract_name: None,
+            unit: None,
+            status: None,
+            contract: None,
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]

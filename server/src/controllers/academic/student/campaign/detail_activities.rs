@@ -241,6 +241,7 @@ async fn load_relations_for_detail_activities(
                 created_by: item.created_by,
                 updated_by: item.updated_by,
                 feeder_id: item.feeder_id,
+                ..Default::default()
             });
         }
         map

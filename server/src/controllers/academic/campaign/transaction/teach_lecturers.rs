@@ -65,7 +65,7 @@ pub async fn list_teach_lecturers(
             created_by: item.created_by,
             updated_by: item.updated_by,
             feeder_id: item.feeder_id,
-
+            ..Default::default()
     }).collect();
 
     Ok(Json(PaginatedTeachLecturerResponse {
@@ -113,7 +113,7 @@ pub async fn get_teach_lecturer(
             created_by: item.created_by,
             updated_by: item.updated_by,
             feeder_id: item.feeder_id,
-
+            ..Default::default()
     }))
 }#[endpoint(tags("Academic - Campaign - Transaction - TeachLecturer"), status_codes(200, 400, 500))]
 pub async fn create_teach_lecturer(
@@ -170,7 +170,7 @@ pub async fn create_teach_lecturer(
             created_by: item.created_by,
             updated_by: item.updated_by,
             feeder_id: item.feeder_id,
-
+            ..Default::default()
         }))
 }
 
@@ -247,7 +247,7 @@ pub async fn update_teach_lecturer(
             created_by: item.created_by,
             updated_by: item.updated_by,
             feeder_id: item.feeder_id,
-
+            ..Default::default()
         }))
 }
 #[endpoint(tags("Academic - Campaign - Transaction - TeachLecturer"), status_codes(200, 400, 404, 500))]

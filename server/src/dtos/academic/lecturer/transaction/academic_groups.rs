@@ -27,6 +27,33 @@ pub struct AcademicGroupResponse {
     pub updated_by: Option<Uuid>,
     pub start_date: Option<NaiveDate>,
     pub end_date: Option<NaiveDate>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub group_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub group: Option<crate::dtos::common::reference::ReferenceResponse>,
+}
+
+impl Default for AcademicGroupResponse {
+    fn default() -> Self {
+        Self {
+            id: Uuid::nil(),
+            decree_number: None,
+            decree_date: None,
+            lecturer_id: Uuid::nil(),
+            group_id: Uuid::nil(),
+            created_at: None,
+            updated_at: None,
+            deleted_at: None,
+            sync_at: None,
+            created_by: None,
+            updated_by: None,
+            start_date: None,
+            end_date: None,
+            group_name: None,
+            group: None,
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]

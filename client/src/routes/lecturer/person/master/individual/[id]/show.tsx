@@ -9,9 +9,10 @@ import type { AcademicLecturerMasterLecturer } from '~/models/academic/lecturer/
 import type { AcademicLecturerTransactionHomebase } from '~/models/academic/lecturer/transaction/Homebase';
 import type { AcademicLecturerTransactionAcademicRank } from '~/models/academic/lecturer/transaction/AcademicRank';
 import type { AcademicLecturerTransactionAcademicGroup } from '~/models/academic/lecturer/transaction/AcademicGroup';
+import { masterApiShow } from '~/controllers/master/masterApiController';
 import { PersonMasterIndividualControllerShow } from '~/controllers/person/master/PersonMasterIndividualController';
 import {
-    getLecturerMasterByIndividual,
+    getLecturerById,
     getLecturerHomebases,
     getLecturerAcademicRanks,
     getLecturerAcademicGroups
@@ -60,38 +61,80 @@ export default function LecturerIndividualShowPage() {
                 if (typeof window !== 'undefined' && params.id === '[id]') {
                     window.history.replaceState(null, '', `/lecturer/person/master/individual/${indId}/show${window.location.search || ''}`);
                 }
-                const [profileRes, masterLecturerRes] = await Promise.all([
-                    PersonMasterIndividualControllerShow(indId),
-                    getLecturerMasterByIndividual(indId),
-                ]);
+                const profileRes = await PersonMasterIndividualControllerShow(indId);
 
                 if (profileRes && !profileRes.is_error && profileRes.data) {
                     setIndividualData(profileRes.data);
                 }
 
-                const resolvedLecturer = masterLecturerRes || profileRes.data?.lecturer || null;
+                // Resolve lecturer ID from individual profile
+                const lecturerId = profileRes?.data?.lecturer?.id;
+                let resolvedLecturer: AcademicLecturerMasterLecturer | null = null;
+
+                if (lecturerId) {
+                    // Call get_lecturer (GET /api/v1/academic/lecturer/master/lecturers/:id)
+                    // which eagerly loads all belongs_to and has_many relations
+                    resolvedLecturer = await getLecturerById(lecturerId);
+                } else if (indId) {
+                    // Fallback in case indId is already the lecturer ID
+                    resolvedLecturer = await getLecturerById(indId);
+                }
+
                 setLecturerMaster(resolvedLecturer);
 
                 if (resolvedLecturer?.id) {
-                    const lecturerId = resolvedLecturer.id;
-                    const [hbRes, rankRes, groupRes, teachesRes] = await Promise.all([
-                        getLecturerHomebases(lecturerId),
-                        getLecturerAcademicRanks(lecturerId),
-                        getLecturerAcademicGroups(lecturerId),
-                        getLecturerAssignedTeaches(lecturerId).catch(() => []),
-                    ]);
+                    const activeLecturerId = resolvedLecturer.id;
 
-                    setLatestHomebase(hbRes.latestHomebase);
-                    setAllHomebases(hbRes.homebases);
+                    // If relations are preloaded directly from get_lecturer endpoint,
+                    // populate state directly without making multiple separate network requests
+                    if (resolvedLecturer.homebases || resolvedLecturer.academic_ranks || resolvedLecturer.assigned_teaches) {
+                        const hbs = (resolvedLecturer.homebases || []).slice().sort((a, b) => {
+                            const timeA = new Date(a.updated_at || a.created_at || 0).getTime();
+                            const timeB = new Date(b.updated_at || b.created_at || 0).getTime();
+                            return timeB - timeA;
+                        });
+                        setAllHomebases(hbs);
+                        setLatestHomebase(hbs[0] || null);
 
-                    setLatestAcademicRank(rankRes.latestAcademicRank);
-                    setAllAcademicRanks(rankRes.academicRanks);
+                        const ranks = (resolvedLecturer.academic_ranks || []).slice().sort((a, b) => {
+                            const timeA = new Date(a.start_date || a.decree_date || a.created_at || 0).getTime();
+                            const timeB = new Date(b.start_date || b.decree_date || b.created_at || 0).getTime();
+                            return timeB - timeA;
+                        });
+                        setAllAcademicRanks(ranks);
+                        setLatestAcademicRank(ranks[0] || null);
 
-                    setLatestAcademicGroup(groupRes.latestAcademicGroup);
-                    setAllAcademicGroups(groupRes.academicGroups);
+                        const groups = (resolvedLecturer.academic_groups || []).slice().sort((a, b) => {
+                            const timeA = new Date(a.start_date || a.decree_date || a.created_at || 0).getTime();
+                            const timeB = new Date(b.start_date || b.decree_date || b.created_at || 0).getTime();
+                            return timeB - timeA;
+                        });
+                        setAllAcademicGroups(groups);
+                        setLatestAcademicGroup(groups[0] || null);
 
-                    const lecturerTeaches = (teachesRes || []).filter(item => item.lecturer_id === lecturerId);
-                    setAssignedTeaches(lecturerTeaches);
+                        const lecturerTeaches = (resolvedLecturer.assigned_teaches || []) as unknown as LecturerAssignedTeachItem[];
+                        setAssignedTeaches(lecturerTeaches);
+                    } else {
+                        // Fallback in case relations are not present
+                        const [hbRes, rankRes, groupRes, teachesRes] = await Promise.all([
+                            getLecturerHomebases(activeLecturerId),
+                            getLecturerAcademicRanks(activeLecturerId),
+                            getLecturerAcademicGroups(activeLecturerId),
+                            getLecturerAssignedTeaches(activeLecturerId).catch(() => []),
+                        ]);
+
+                        setLatestHomebase(hbRes.latestHomebase);
+                        setAllHomebases(hbRes.homebases);
+
+                        setLatestAcademicRank(rankRes.latestAcademicRank);
+                        setAllAcademicRanks(rankRes.academicRanks);
+
+                        setLatestAcademicGroup(groupRes.latestAcademicGroup);
+                        setAllAcademicGroups(groupRes.academicGroups);
+
+                        const lecturerTeaches = (teachesRes || []).filter(item => item.lecturer_id === activeLecturerId);
+                        setAssignedTeaches(lecturerTeaches);
+                    }
                 }
             }
         } catch (err) {

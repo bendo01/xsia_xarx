@@ -1,3 +1,7 @@
+import type { AcademicLecturerTransactionHomebase } from '../transaction/Homebase';
+import type { AcademicLecturerTransactionAcademicRank } from '../transaction/AcademicRank';
+import type { AcademicLecturerTransactionAcademicGroup } from '../transaction/AcademicGroup';
+
 export interface AcademicLecturerMasterLecturer {
     id: string;
     code: string; // NIDN or Lecturer Code
@@ -29,5 +33,22 @@ export interface AcademicLecturerMasterLecturer {
     rank_name?: string | null;
     group_name?: string | null;
     status_name?: string | null;
+    contract_name?: string | null;
     nidn?: string | null;
+    // Preloaded Relations (Belongs To)
+    individual?: any | null;
+    institution?: any | null;
+    status?: any | null;
+    contract?: any | null;
+    rank?: any | null;
+    group?: any | null;
+    // Preloaded Relations (Has Many)
+    homebases?: AcademicLecturerTransactionHomebase[];
+    academic_ranks?: AcademicLecturerTransactionAcademicRank[];
+    academic_groups?: AcademicLecturerTransactionAcademicGroup[];
+    teach_lecturers?: any[];
+    assigned_teaches?: any[];
+    counsellors?: any[];
+    advisers?: any[];
 }
+

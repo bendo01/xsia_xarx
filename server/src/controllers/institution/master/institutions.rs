@@ -420,6 +420,7 @@ pub async fn get_institution(
             sync_at: l.sync_at,
             created_by: l.created_by,
             updated_by: l.updated_by,
+            ..Default::default()
         })
         .collect();
 
