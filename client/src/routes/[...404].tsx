@@ -76,8 +76,8 @@ export default function NotFound() {
       <main class="flex-1 flex flex-col items-center justify-center relative overflow-hidden px-4 py-12 sm:py-16">
         {/* Ambient background decoration */}
         <div class="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-          <div class="absolute -top-40 -left-40 size-96 rounded-full bg-gradient-to-br from-blue-500/10 to-indigo-500/0 dark:from-blue-500/15 blur-3xl" />
-          <div class="absolute -bottom-40 -right-40 size-96 rounded-full bg-gradient-to-tl from-amber-500/10 to-purple-500/0 dark:from-amber-500/15 blur-3xl" />
+          <div class="absolute -top-40 -left-40 size-96 rounded-xs bg-gradient-to-br from-blue-500/10 to-indigo-500/0 dark:from-blue-500/15 blur-3xl" />
+          <div class="absolute -bottom-40 -right-40 size-96 rounded-xs bg-gradient-to-tl from-amber-500/10 to-purple-500/0 dark:from-amber-500/15 blur-3xl" />
           <div class="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#262626_1px,transparent_1px)] [background-size:16px_16px] opacity-60" />
         </div>
 
@@ -85,8 +85,8 @@ export default function NotFound() {
           {/* Status Badge */}
           <div class="inline-flex items-center gap-2 px-3 py-1 bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-xs font-semibold text-neutral-700 dark:text-neutral-300 tracking-wide uppercase shadow-2xs mb-6">
             <span class="relative flex size-2">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-              <span class="relative inline-flex rounded-full size-2 bg-red-500" />
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-xs bg-red-400 opacity-75" />
+              <span class="relative inline-flex rounded-xs size-2 bg-red-500" />
             </span>
             <span>{t('errors.notFound.status')}</span>
           </div>

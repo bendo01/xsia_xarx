@@ -107,11 +107,11 @@ export default function StudentMasterIndexPage() {
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
                 {/* Header Card */}
-                <div class="bg-white dark:bg-neutral-800 rounded-3xl p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div class="space-y-1">
-                            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 text-xs font-mono font-semibold border border-teal-200 dark:border-teal-800/80">
-                                <span class="size-1.5 rounded-full bg-teal-500"></span>
+                            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-xs bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 text-xs font-mono font-semibold border border-teal-200 dark:border-teal-800/80">
+                                <span class="size-1.5 rounded-xs bg-teal-500"></span>
                                 <span>Academic Student Master</span>
                             </div>
                             <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900 dark:text-white">
@@ -125,7 +125,7 @@ export default function StudentMasterIndexPage() {
                         <div class="flex items-center gap-3">
                             <A
                                 href={currentUserSignal()?.individual_id || getStorageItem('individual_id') ? `/student/person/master/individual/${currentUserSignal()?.individual_id || getStorageItem('individual_id')}/show` : '/student/person/master/individual/[id]/show'}
-                                class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xl text-xs font-bold transition-colors"
+                                class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xs text-xs font-bold transition-colors"
                             >
                                 ← My Profile
                             </A>
@@ -134,14 +134,14 @@ export default function StudentMasterIndexPage() {
                 </div>
 
                 {/* Filter & Search Bar */}
-                <div class="bg-white dark:bg-neutral-800 rounded-2xl p-4 border border-neutral-200 dark:border-neutral-700 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="bg-white dark:bg-neutral-800 rounded-xs p-4 border border-neutral-200 dark:border-neutral-700 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
                     <form onSubmit={handleSearchSubmit} class="relative w-full sm:w-80">
                         <input
                             type="text"
                             placeholder="Search by student NIM or name..."
                             value={searchQuery()}
                             onInput={(e) => setSearchQuery(e.currentTarget.value)}
-                            class="w-full pl-9 pr-4 py-2 text-xs rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-hidden focus:border-teal-500"
+                            class="w-full pl-9 pr-4 py-2 text-xs rounded-xs bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-hidden focus:border-teal-500"
                         />
                         <svg class="size-4 absolute left-3 top-2.5 text-neutral-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                     </form>
@@ -154,10 +154,10 @@ export default function StudentMasterIndexPage() {
                 </div>
 
                 {/* Student Master Table */}
-                <div class="bg-white dark:bg-neutral-800 rounded-3xl border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
+                <div class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
                     <Show when={!isLoading()} fallback={
                         <div class="py-16 flex flex-col items-center justify-center gap-3 text-neutral-400">
-                            <div class="size-8 border-3 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
+                            <div class="size-8 border-3 border-teal-500 border-t-transparent rounded-xs animate-spin"></div>
                             <p class="text-xs font-mono">Loading admitted students from server...</p>
                         </div>
                     }>
@@ -206,7 +206,7 @@ export default function StudentMasterIndexPage() {
                                                     {std.unit_name || 'Informatics Engineering'}
                                                 </td>
                                                 <td class="py-3.5 px-4">
-                                                    <span class="inline-block px-2 py-0.5 rounded text-[10px] font-semibold bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300">
+                                                    <span class="inline-block px-2 py-0.5 rounded-xs text-[10px] font-semibold bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300">
                                                         {std.selection_type_name || 'SNBP'}
                                                     </span>
                                                 </td>
@@ -214,14 +214,14 @@ export default function StudentMasterIndexPage() {
                                                     {std.registered}
                                                 </td>
                                                 <td class="py-3.5 px-4 text-center">
-                                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                                                    <span class="px-2.5 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                                                         Active
                                                     </span>
                                                 </td>
                                                 <td class="py-3.5 px-4 text-end">
                                                     <A
                                                         href={`/student/academic/student/master/student/${std.id}/show`}
-                                                        class="px-3 py-1.5 bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 hover:bg-teal-100 dark:hover:bg-teal-900 rounded-lg text-xs font-bold transition-colors"
+                                                        class="px-3 py-1.5 bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 hover:bg-teal-100 dark:hover:bg-teal-900 rounded-xs text-xs font-bold transition-colors"
                                                     >
                                                         View Detail →
                                                     </A>
@@ -248,7 +248,7 @@ export default function StudentMasterIndexPage() {
                                         }
                                     }}
                                     disabled={page() <= 1}
-                                    class="px-3 py-1 text-xs rounded-lg border border-neutral-200 dark:border-neutral-700 disabled:opacity-40 hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                                    class="px-3 py-1 text-xs rounded-xs border border-neutral-200 dark:border-neutral-700 disabled:opacity-40 hover:bg-neutral-100 dark:hover:bg-neutral-700"
                                 >
                                     Previous
                                 </button>
@@ -261,7 +261,7 @@ export default function StudentMasterIndexPage() {
                                         }
                                     }}
                                     disabled={page() >= totalPages()}
-                                    class="px-3 py-1 text-xs rounded-lg border border-neutral-200 dark:border-neutral-700 disabled:opacity-40 hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                                    class="px-3 py-1 text-xs rounded-xs border border-neutral-200 dark:border-neutral-700 disabled:opacity-40 hover:bg-neutral-100 dark:hover:bg-neutral-700"
                                 >
                                     Next
                                 </button>

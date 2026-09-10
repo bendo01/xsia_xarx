@@ -345,7 +345,7 @@ export default function MasterIndexPage() {
                     <div class="mt-4 sm:mt-0 flex items-center gap-2">
                         <a
                             href={`${basePath}/create${selectedUnitId() ? `?unit_id=${selectedUnitId()}` : ''}`}
-                            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-none shadow-xs transition-colors cursor-pointer"
+                            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs shadow-xs transition-colors cursor-pointer"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M5 12h14" />
@@ -405,7 +405,7 @@ export default function MasterIndexPage() {
                             </div>
                             <input
                                 type="text"
-                                class="block w-full p-2.5 pl-10 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                                class="block w-full p-2.5 pl-10 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                                 placeholder="Search courses by name or code..."
                                 onInput={handleSearch}
                             />
@@ -414,7 +414,7 @@ export default function MasterIndexPage() {
 
                     <div class="w-full md:w-1/3 flex gap-2">
                         <select
-                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                             value={sortParam()}
                             onChange={(e) => {
                                 setSortParam((e.target as HTMLSelectElement).value);
@@ -428,7 +428,7 @@ export default function MasterIndexPage() {
                         </select>
 
                         <select
-                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                             value={itemsPerPage()}
                             onChange={(e) => {
                                 setItemsPerPage(Number((e.target as HTMLSelectElement).value));
@@ -749,7 +749,7 @@ export default function MasterIndexPage() {
 
             <dialog
                 ref={deleteDialogRef}
-                class="fixed inset-0 m-auto p-0 rounded-none bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-2xl text-neutral-900 dark:text-neutral-100 max-w-md w-full"
+                class="fixed inset-0 m-auto p-0 rounded-xs bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-2xl text-neutral-900 dark:text-neutral-100 max-w-md w-full"
                 onClick={(e) => {
                     if (e.target === e.currentTarget) closeDeleteModal();
                 }}
@@ -770,7 +770,7 @@ export default function MasterIndexPage() {
                         <button
                             type="button"
                             onClick={closeDeleteModal}
-                            class="px-4 py-2 text-xs font-medium text-neutral-700 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-600 rounded-none transition-colors cursor-pointer"
+                            class="px-4 py-2 text-xs font-medium text-neutral-700 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-600 rounded-xs transition-colors cursor-pointer"
                         >
                             Cancel
                         </button>
@@ -778,7 +778,7 @@ export default function MasterIndexPage() {
                             type="button"
                             onClick={handleDeleteSubmit}
                             disabled={isSubmitting()}
-                            class="px-4 py-2 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-none shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
+                            class="px-4 py-2 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-xs shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
                         >
                             {isSubmitting() ? 'Deleting...' : 'Confirm Delete'}
                         </button>

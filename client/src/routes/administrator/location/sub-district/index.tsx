@@ -452,7 +452,7 @@ export default function LocationSubDistrictPage() {
                     <button
                         type="button"
                         onClick={openCreateModal}
-                        class="inline-flex items-center gap-x-2 px-3.5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-hidden focus:ring-2 focus:ring-blue-500 rounded-none shadow-xs transition-colors cursor-pointer"
+                        class="inline-flex items-center gap-x-2 px-3.5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-hidden focus:ring-2 focus:ring-blue-500 rounded-xs shadow-xs transition-colors cursor-pointer"
                         id="btn-add-location-sub-district"
                     >
                         <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -478,7 +478,7 @@ export default function LocationSubDistrictPage() {
                         </div>
                         <input
                             type="text"
-                            class="block w-full p-2.5 pl-10 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:placeholder-neutral-400 dark:text-white transition-colors"
+                            class="block w-full p-2.5 pl-10 text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:placeholder-neutral-400 dark:text-white transition-colors"
                             placeholder="Search by sub-district / kecamatan name (e.g. Coblong, Sumur Bandung)..."
                             onInput={handleSearch}
                             id="input-search-location-sub-district"
@@ -492,7 +492,7 @@ export default function LocationSubDistrictPage() {
                             Sort By
                         </label>
                         <select
-                            class="block w-full p-2 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                            class="block w-full p-2 text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                             value={sortParam()}
                             onChange={(e) => setSortParam((e.target as HTMLSelectElement).value)}
                             id="select-sort-location-sub-district"
@@ -508,7 +508,7 @@ export default function LocationSubDistrictPage() {
                             Per Page
                         </label>
                         <select
-                            class="block w-full p-2 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                            class="block w-full p-2 text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                             value={itemsPerPage()}
                             onChange={handleItemsPerPageChange}
                             id="select-per-page-location-sub-district"
@@ -764,7 +764,7 @@ export default function LocationSubDistrictPage() {
             {/* 1. CREATE MODAL */}
             <dialog
                 ref={createDialogRef}
-                class="fixed inset-0 m-auto p-0 rounded-none bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-2xl text-neutral-900 dark:text-neutral-100 max-w-lg w-full max-h-[90vh] overflow-y-auto"
+                class="fixed inset-0 m-auto p-0 rounded-xs bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-2xl text-neutral-900 dark:text-neutral-100 max-w-lg w-full max-h-[90vh] overflow-y-auto"
                 onClick={(e) => {
                     if (e.target === e.currentTarget) closeCreateModal();
                 }}
@@ -798,7 +798,7 @@ export default function LocationSubDistrictPage() {
                             </label>
                             <input
                                 type="text"
-                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
+                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
                                     formErrors().code ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
                                 }`}
                                 placeholder="e.g. 327301"
@@ -816,7 +816,7 @@ export default function LocationSubDistrictPage() {
                             </label>
                             <input
                                 type="text"
-                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
+                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
                                     formErrors().name ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
                                 }`}
                                 placeholder="e.g. Coblong"
@@ -833,7 +833,7 @@ export default function LocationSubDistrictPage() {
                                 Regency / Kabupaten / Kota <span class="text-red-500">*</span>
                             </label>
                             <select
-                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
+                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
                                     formErrors().regency_id ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
                                 }`}
                                 value={formData().regency_id}
@@ -870,7 +870,7 @@ export default function LocationSubDistrictPage() {
                                 </label>
                                 <input
                                     type="text"
-                                    class="block w-full p-2.5 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                                    class="block w-full p-2.5 text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                                     placeholder="e.g. 010101"
                                     value={formData().dikti_code ?? ''}
                                     onInput={(e) => setFormData({ ...formData(), dikti_code: e.currentTarget.value })}
@@ -883,7 +883,7 @@ export default function LocationSubDistrictPage() {
                                 </label>
                                 <input
                                     type="text"
-                                    class="block w-full p-2.5 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                                    class="block w-full p-2.5 text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                                     placeholder="e.g. coblong"
                                     value={formData().slug ?? ''}
                                     onInput={(e) => setFormData({ ...formData(), slug: e.currentTarget.value })}
@@ -895,14 +895,14 @@ export default function LocationSubDistrictPage() {
                             <button
                                 type="button"
                                 onClick={closeCreateModal}
-                                class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-none transition-colors cursor-pointer"
+                                class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xs transition-colors cursor-pointer"
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
                                 disabled={isSubmitting()}
-                                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-none transition-colors cursor-pointer"
+                                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-xs transition-colors cursor-pointer"
                             >
                                 {isSubmitting() ? 'Creating...' : 'Save Sub-District'}
                             </button>
@@ -914,7 +914,7 @@ export default function LocationSubDistrictPage() {
             {/* 2. EDIT MODAL */}
             <dialog
                 ref={editDialogRef}
-                class="fixed inset-0 m-auto p-0 rounded-none bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-2xl text-neutral-900 dark:text-neutral-100 max-w-lg w-full max-h-[90vh] overflow-y-auto"
+                class="fixed inset-0 m-auto p-0 rounded-xs bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-2xl text-neutral-900 dark:text-neutral-100 max-w-lg w-full max-h-[90vh] overflow-y-auto"
                 onClick={(e) => {
                     if (e.target === e.currentTarget) closeEditModal();
                 }}
@@ -948,7 +948,7 @@ export default function LocationSubDistrictPage() {
                             </label>
                             <input
                                 type="text"
-                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
+                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
                                     formErrors().code ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
                                 }`}
                                 placeholder="e.g. 327301"
@@ -966,7 +966,7 @@ export default function LocationSubDistrictPage() {
                             </label>
                             <input
                                 type="text"
-                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
+                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
                                     formErrors().name ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
                                 }`}
                                 placeholder="e.g. Coblong"
@@ -983,7 +983,7 @@ export default function LocationSubDistrictPage() {
                                 Regency / Kabupaten / Kota <span class="text-red-500">*</span>
                             </label>
                             <select
-                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
+                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
                                     formErrors().regency_id ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
                                 }`}
                                 value={formData().regency_id}
@@ -1020,7 +1020,7 @@ export default function LocationSubDistrictPage() {
                                 </label>
                                 <input
                                     type="text"
-                                    class="block w-full p-2.5 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                                    class="block w-full p-2.5 text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                                     placeholder="e.g. 010101"
                                     value={formData().dikti_code ?? ''}
                                     onInput={(e) => setFormData({ ...formData(), dikti_code: e.currentTarget.value })}
@@ -1033,7 +1033,7 @@ export default function LocationSubDistrictPage() {
                                 </label>
                                 <input
                                     type="text"
-                                    class="block w-full p-2.5 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                                    class="block w-full p-2.5 text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                                     placeholder="e.g. coblong"
                                     value={formData().slug ?? ''}
                                     onInput={(e) => setFormData({ ...formData(), slug: e.currentTarget.value })}
@@ -1045,14 +1045,14 @@ export default function LocationSubDistrictPage() {
                             <button
                                 type="button"
                                 onClick={closeEditModal}
-                                class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-none transition-colors cursor-pointer"
+                                class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xs transition-colors cursor-pointer"
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
                                 disabled={isSubmitting()}
-                                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-none transition-colors cursor-pointer"
+                                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-xs transition-colors cursor-pointer"
                             >
                                 {isSubmitting() ? 'Updating...' : 'Update Sub-District'}
                             </button>
@@ -1064,14 +1064,14 @@ export default function LocationSubDistrictPage() {
             {/* 3. DELETE CONFIRMATION MODAL */}
             <dialog
                 ref={deleteDialogRef}
-                class="fixed inset-0 m-auto p-0 rounded-none bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-2xl text-neutral-900 dark:text-neutral-100 max-w-md w-full"
+                class="fixed inset-0 m-auto p-0 rounded-xs bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-2xl text-neutral-900 dark:text-neutral-100 max-w-md w-full"
                 onClick={(e) => {
                     if (e.target === e.currentTarget) closeDeleteModal();
                 }}
             >
                 <div class="p-6 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
                     <div class="flex items-center gap-3 mb-4">
-                        <div class="size-10 rounded-full bg-red-100 dark:bg-red-950 flex items-center justify-center text-red-600 dark:text-red-400 shrink-0">
+                        <div class="size-10 rounded-xs bg-red-100 dark:bg-red-950 flex items-center justify-center text-red-600 dark:text-red-400 shrink-0">
                             <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
@@ -1086,7 +1086,7 @@ export default function LocationSubDistrictPage() {
                         </div>
                     </div>
 
-                    <p class="text-sm text-neutral-600 dark:text-neutral-300 bg-neutral-50 dark:bg-neutral-800/60 p-3 rounded-none border border-neutral-200 dark:border-neutral-700 mb-4 font-mono text-xs">
+                    <p class="text-sm text-neutral-600 dark:text-neutral-300 bg-neutral-50 dark:bg-neutral-800/60 p-3 rounded-xs border border-neutral-200 dark:border-neutral-700 mb-4 font-mono text-xs">
                         {selectedItem()?.name} ({selectedItem()?.code || ''})
                     </p>
 
@@ -1094,7 +1094,7 @@ export default function LocationSubDistrictPage() {
                         <button
                             type="button"
                             onClick={closeDeleteModal}
-                            class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-none transition-colors cursor-pointer"
+                            class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xs transition-colors cursor-pointer"
                         >
                             Cancel
                         </button>
@@ -1102,7 +1102,7 @@ export default function LocationSubDistrictPage() {
                             type="button"
                             onClick={handleDeleteSubmit}
                             disabled={isSubmitting()}
-                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 rounded-none transition-colors cursor-pointer"
+                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 rounded-xs transition-colors cursor-pointer"
                         >
                             {isSubmitting() ? 'Deleting...' : 'Delete'}
                         </button>

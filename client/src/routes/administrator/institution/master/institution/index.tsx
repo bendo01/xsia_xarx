@@ -14,7 +14,7 @@ import {
 export default function InstitutionMasterInstitutionIndexPage() {
     let multiSelectRefCategory: HTMLSelectElement | undefined;
     let multiSelectRefVariety: HTMLSelectElement | undefined;
-    const inputClass = "block w-full p-3 text-sm text-neutral-900 border border-neutral-300 rounded-none bg-neutral-50 focus:outline-none focus:rounded-none focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors";
+    const inputClass = "block w-full p-3 text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-neutral-50 focus:outline-none focus:rounded-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors";
 
     const [items, setItems] = createSignal<InstitutionMasterInstitutionDataObject[]>([]);
     const [isLoading, setIsLoading] = createSignal(true);
@@ -211,7 +211,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
                     <div class="mt-4 sm:mt-0 flex items-center gap-2">
                         <a
                             href="/institution/master/institution/create"
-                            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-none shadow-xs transition-colors cursor-pointer"
+                            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs shadow-xs transition-colors cursor-pointer"
                             id="btn-add-institution"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -235,7 +235,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
                             </div>
                             <input
                                 type="text"
-                                class="block w-full p-2.5 pl-10 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                                class="block w-full p-2.5 pl-10 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                                 placeholder="Search by institution name or code..."
                                 onInput={handleSearch}
                                 id="input-search-institution"
@@ -245,7 +245,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
 
                     <div class="w-full md:w-1/3 flex gap-2">
                         <select
-                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                             value={sortParam()}
                             onChange={(e) => {
                                 setSortParam((e.target as HTMLSelectElement).value);
@@ -259,7 +259,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
                         </select>
 
                         <select
-                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                             value={itemsPerPage()}
                             onChange={(e) => {
                                 setItemsPerPage(Number((e.target as HTMLSelectElement).value));
@@ -606,7 +606,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
             >
                 <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-xl p-6 space-y-4">
                     <div class="flex items-center gap-3 text-red-600 dark:text-red-400">
-                        <div class="size-10 rounded-full bg-red-100 dark:bg-red-950/50 flex items-center justify-center shrink-0">
+                        <div class="size-10 rounded-xs bg-red-100 dark:bg-red-950/50 flex items-center justify-center shrink-0">
                             <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>

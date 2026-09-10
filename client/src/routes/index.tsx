@@ -18,7 +18,7 @@ export default function Home() {
     return (
         <div class="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-neutral-900">
             <div class="flex items-center gap-2 text-sm text-neutral-500 font-mono">
-                <span class="size-2 rounded-full bg-blue-500 animate-ping"></span>
+                <span class="size-2 rounded-xs bg-blue-500 animate-ping"></span>
                 <span>{t('common.loading')} XSIA XARX...</span>
             </div>
         </div>

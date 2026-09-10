@@ -80,7 +80,7 @@ export default function TopBar() {
                     {/* Brand / Logo */}
                     <div class="flex items-center gap-3">
                         <A class="flex items-center gap-2 text-lg font-bold tracking-tight text-neutral-900 dark:text-white focus:outline-hidden" href={isAuthenticatedSignal() ? getDashboardPathForRole(activeRoleSignal()) : "/"} aria-label="Brand">
-                            <div class="size-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-sm font-black text-sm">
+                            <div class="size-8 rounded-xs bg-blue-600 flex items-center justify-center text-white shadow-sm font-black text-sm">
                                 X
                             </div>
                             <div class="flex flex-col">
@@ -91,8 +91,8 @@ export default function TopBar() {
 
                         {/* Active Role Tag (if authenticated) */}
                         <Show when={isAuthenticatedSignal()}>
-                            <div class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800/80">
-                                <span class="size-1.5 rounded-full bg-blue-500"></span>
+                            <div class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xs text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800/80">
+                                <span class="size-1.5 rounded-xs bg-blue-500"></span>
                                 <span>{activeRoleDisplay()}</span>
                                 <Show when={activeRoleSignal() === 'student' && activeStudentCodeSignal()}>
                                     <span class="text-blue-500 dark:text-blue-400 font-mono">({activeStudentCodeSignal()})</span>
@@ -108,7 +108,7 @@ export default function TopBar() {
                             onClick={toggleLocale}
                             type="button"
                             data-testid="topbar-language-button"
-                            class="relative h-9 px-2.5 flex justify-center items-center gap-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 focus:outline-hidden transition-colors text-xs font-semibold"
+                            class="relative h-9 px-2.5 flex justify-center items-center gap-1.5 rounded-xs bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 focus:outline-hidden transition-colors text-xs font-semibold"
                             aria-label={t('nav.selectLanguage')}
                             title={t('nav.selectLanguage')}
                         >
@@ -120,7 +120,7 @@ export default function TopBar() {
                         <button
                             onClick={toggleDarkMode}
                             type="button"
-                            class="relative size-9 flex justify-center items-center rounded-lg bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 focus:outline-hidden transition-colors"
+                            class="relative size-9 flex justify-center items-center rounded-xs bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 focus:outline-hidden transition-colors"
                             aria-label={t('nav.toggleDarkMode')}
                             title={t('nav.toggleDarkMode')}
                         >
@@ -132,22 +132,22 @@ export default function TopBar() {
                         <button
                             popovertarget="events-popover"
                             type="button"
-                            class="relative size-9 flex justify-center items-center rounded-lg bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 focus:outline-hidden transition-colors"
+                            class="relative size-9 flex justify-center items-center rounded-xs bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 focus:outline-hidden transition-colors"
                             aria-label={t('nav.systemActivity')}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="shrink-0 size-4">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
                             </svg>
                         </button>
-                        <div id="events-popover" popover="auto" class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-xl rounded-xl p-4 w-72 m-0 text-neutral-800 dark:text-neutral-100 top-[3.5rem] right-4 inset-auto">
+                        <div id="events-popover" popover="auto" class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-xl rounded-xs p-4 w-72 m-0 text-neutral-800 dark:text-neutral-100 top-[3.5rem] right-4 inset-auto">
                             <h3 class="font-semibold text-xs uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-mono mb-2">{t('nav.systemActivity')}</h3>
                             <ul class="text-xs text-neutral-600 dark:text-neutral-300 space-y-2">
-                                <li class="p-2 bg-neutral-50 dark:bg-neutral-800 rounded-lg flex items-center gap-2">
-                                    <span class="size-2 rounded-full bg-emerald-500"></span>
+                                <li class="p-2 bg-neutral-50 dark:bg-neutral-800 rounded-xs flex items-center gap-2">
+                                    <span class="size-2 rounded-xs bg-emerald-500"></span>
                                     <span>{t('nav.realtimeGatewayActive')}</span>
                                 </li>
-                                <li class="p-2 bg-neutral-50 dark:bg-neutral-800 rounded-lg flex items-center gap-2">
-                                    <span class="size-2 rounded-full bg-blue-500"></span>
+                                <li class="p-2 bg-neutral-50 dark:bg-neutral-800 rounded-xs flex items-center gap-2">
+                                    <span class="size-2 rounded-xs bg-blue-500"></span>
                                     <span>{t('nav.academicSessionSynced')}</span>
                                 </li>
                             </ul>
@@ -158,7 +158,7 @@ export default function TopBar() {
                             popovertarget="sidebar-popover"
                             popovertargetaction="toggle"
                             type="button"
-                            class="relative size-9 flex justify-center items-center rounded-lg bg-blue-600 text-white hover:bg-blue-700 focus:outline-hidden transition-colors shadow-xs"
+                            class="relative size-9 flex justify-center items-center rounded-xs bg-blue-600 text-white hover:bg-blue-700 focus:outline-hidden transition-colors shadow-xs"
                             aria-label={t('nav.toggleMenu')}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="shrink-0 size-4">
@@ -179,7 +179,7 @@ export default function TopBar() {
                     {/* Header */}
                     <div class="flex justify-between items-center pb-4 mb-4 border-b border-neutral-200 dark:border-neutral-800 shrink-0">
                         <div class="flex items-center gap-2.5">
-                            <div class="size-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs">
+                            <div class="size-8 rounded-xs bg-blue-600 text-white flex items-center justify-center font-bold text-xs">
                                 X
                             </div>
                             <div>
@@ -192,7 +192,7 @@ export default function TopBar() {
                         <button
                             popovertarget="sidebar-popover"
                             popovertargetaction="hide"
-                            class="p-1.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
+                            class="p-1.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-xs transition-colors"
                             aria-label={t('nav.closeSidebar')}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
@@ -200,7 +200,7 @@ export default function TopBar() {
                     </div>
 
                     {/* Navigation Body */}
-                    <nav class="flex-1 overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-neutral-300 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-700">
+                    <nav class="flex-1 overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-xs [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-neutral-300 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-700">
                         <DynamicMenu />
                     </nav>
 
@@ -210,13 +210,13 @@ export default function TopBar() {
                             <div class="flex flex-col gap-2">
                                 <A
                                     href="/authentification/login"
-                                    class="w-full py-2.5 px-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg text-center transition-colors shadow-xs"
+                                    class="w-full py-2.5 px-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xs text-center transition-colors shadow-xs"
                                 >
                                     {t('nav.signInJwt')}
                                 </A>
                                 <A
                                     href="/authentification/login_with_session"
-                                    class="w-full py-2 px-3 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-xs font-medium rounded-lg text-center transition-colors"
+                                    class="w-full py-2 px-3 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-xs font-medium rounded-xs text-center transition-colors"
                                 >
                                     {t('nav.sessionLogin')}
                                 </A>
@@ -227,12 +227,12 @@ export default function TopBar() {
                                     command="toggle-popover"
                                     commandfor="account-dropdown"
                                     type="button"
-                                    class="w-full inline-flex shrink-0 items-center gap-x-3 p-2 text-start text-xs font-medium text-neutral-800 dark:text-neutral-200 rounded-xl bg-neutral-50 dark:bg-neutral-800/80 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 focus:outline-hidden transition-colors"
+                                    class="w-full inline-flex shrink-0 items-center gap-x-3 p-2 text-start text-xs font-medium text-neutral-800 dark:text-neutral-200 rounded-xs bg-neutral-50 dark:bg-neutral-800/80 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 focus:outline-hidden transition-colors"
                                     aria-haspopup="menu"
                                     aria-expanded="false"
                                     aria-label={t('nav.accountDetails')}
                                 >
-                                    <div class="size-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center font-bold text-xs uppercase shadow-xs">
+                                    <div class="size-8 rounded-xs bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center font-bold text-xs uppercase shadow-xs">
                                         {userName().charAt(0) || 'U'}
                                     </div>
                                     <div class="flex flex-col flex-1 min-w-0">
@@ -246,19 +246,19 @@ export default function TopBar() {
                                 <div
                                     id="account-dropdown"
                                     popover="auto"
-                                    class="fixed top-auto left-auto bottom-20 right-7 m-0 w-[22rem] z-30 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-2xl shadow-2xl p-3"
+                                    class="fixed top-auto left-auto bottom-20 right-7 m-0 w-[22rem] z-30 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xs shadow-2xl p-3"
                                     role="menu"
                                 >
                                     {/* User Info Header */}
-                                    <div class="p-2 mb-2 bg-neutral-50 dark:bg-neutral-900/60 rounded-xl border border-neutral-200/60 dark:border-neutral-700/60">
+                                    <div class="p-2 mb-2 bg-neutral-50 dark:bg-neutral-900/60 rounded-xs border border-neutral-200/60 dark:border-neutral-700/60">
                                         <p class="font-bold text-sm text-neutral-900 dark:text-white truncate">{userName()}</p>
                                         <p class="text-xs text-neutral-500 dark:text-neutral-400 truncate mb-1">{userEmail()}</p>
                                         <div class="flex items-center gap-1.5 flex-wrap">
-                                            <span class="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
+                                            <span class="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-xs bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
                                                 {t('nav.currentRole', { role: activeRoleDisplay() })}
                                             </span>
                                             <Show when={activeRoleSignal() === 'student' && activeStudentCodeSignal()}>
-                                                <span class="inline-block text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                                                <span class="inline-block text-[10px] font-mono font-bold px-2 py-0.5 rounded-xs bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                                                     NIM: {activeStudentCodeSignal()}
                                                 </span>
                                             </Show>
@@ -290,7 +290,7 @@ export default function TopBar() {
                                                             <button
                                                                 type="button"
                                                                 onClick={() => handleRoleSwitch(r)}
-                                                                class={`w-full flex items-center justify-between py-1.5 px-2.5 rounded-lg text-xs font-medium transition-colors ${isSelected()
+                                                                class={`w-full flex items-center justify-between py-1.5 px-2.5 rounded-xs text-xs font-medium transition-colors ${isSelected()
                                                                         ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/70 dark:text-blue-300 font-semibold'
                                                                         : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700'
                                                                     }`}
@@ -298,7 +298,7 @@ export default function TopBar() {
                                                                 <div class="flex items-center gap-2 min-w-0">
                                                                     <span class="truncate">{getRoleDisplayName(r.name)}</span>
                                                                     <Show when={isStudent() && studentCode()}>
-                                                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700">
+                                                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-xs text-[10px] font-mono font-bold bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700">
                                                                             {studentCode()}
                                                                         </span>
                                                                     </Show>
@@ -320,7 +320,7 @@ export default function TopBar() {
                                     <div class="space-y-1">
                                         <A
                                             href={getDashboardPathForRole(activeRoleSignal())}
-                                            class="flex items-center gap-x-2.5 py-2 px-2.5 rounded-lg text-xs font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
+                                            class="flex items-center gap-x-2.5 py-2 px-2.5 rounded-xs text-xs font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                                         >
                                             <svg class="size-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                 <rect width="7" height="9" x="3" y="3" rx="1" />
@@ -333,7 +333,7 @@ export default function TopBar() {
 
                                         <A
                                             href="/dashboard/user"
-                                            class="flex items-center gap-x-2.5 py-2 px-2.5 rounded-lg text-xs font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
+                                            class="flex items-center gap-x-2.5 py-2 px-2.5 rounded-xs text-xs font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                                         >
                                             <svg class="size-4 text-indigo-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                 <circle cx="12" cy="7" r="4" />
@@ -345,7 +345,7 @@ export default function TopBar() {
                                         <button
                                             type="button"
                                             onClick={handleSignOut}
-                                            class="w-full flex items-center gap-x-2.5 py-2 px-2.5 rounded-lg text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors text-start"
+                                            class="w-full flex items-center gap-x-2.5 py-2 px-2.5 rounded-xs text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors text-start"
                                         >
                                             <svg class="size-4 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />

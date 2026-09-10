@@ -1,6 +1,7 @@
 import { createSignal, onMount, createEffect, Show, For, createMemo, ErrorBoundary } from 'solid-js';
 import { useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
+import { Loader, ErrorFallback } from '~/components/loader';
 import { toast } from '~/components/toast/Toaster';
 import {
     getStudentById,
@@ -124,35 +125,24 @@ export default function CourseDepartmentStudentMasterShowPage() {
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
                 <ErrorBoundary
                     fallback={(err, reset) => (
-                        <div class="p-8 max-w-xl mx-auto my-12 bg-white dark:bg-neutral-800 rounded-3xl border border-red-200 dark:border-red-900/50 shadow-xl text-center space-y-4">
-                            <div class="size-12 mx-auto rounded-full bg-red-100 dark:bg-red-950/60 text-red-600 flex items-center justify-center font-bold">
-                                <svg class="size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
-                            </div>
-                            <h3 class="text-lg font-bold text-neutral-900 dark:text-white">Terjadi Kendala Memuat Detail Mahasiswa</h3>
-                            <p class="text-xs text-neutral-500 dark:text-neutral-400 font-mono bg-neutral-100 dark:bg-neutral-900 p-3 rounded-xl break-all">
-                                {err?.message || String(err)}
-                            </p>
-                            <button
-                                onClick={() => reset()}
-                                class="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold shadow-md transition-colors"
-                            >
-                                Coba Muat Ulang
-                            </button>
-                        </div>
+                        <ErrorFallback
+                            error={err}
+                            reset={reset}
+                            title="Terjadi Kendala Memuat Detail Mahasiswa"
+                            accentColor="teal"
+                        />
                     )}
                 >
                     {/* Header Banner */}
-                    <div class="bg-white dark:bg-neutral-800 rounded-3xl p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                    <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                             <div class="flex items-center gap-5">
-                                <div class="size-16 sm:size-20 rounded-2xl bg-gradient-to-tr from-teal-500 to-cyan-600 text-white font-black text-2xl flex items-center justify-center shadow-md">
+                                <div class="size-16 sm:size-20 rounded-xs bg-gradient-to-tr from-teal-500 to-cyan-600 text-white font-black text-2xl flex items-center justify-center shadow-md">
                                     {(student()?.name || 'S').charAt(0).toUpperCase()}
                                 </div>
                                 <div class="space-y-1">
-                                    <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 text-xs font-mono font-semibold border border-teal-200 dark:border-teal-800/80">
-                                        <span class="size-1.5 rounded-full bg-teal-500"></span>
+                                    <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-xs bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 text-xs font-mono font-semibold border border-teal-200 dark:border-teal-800/80">
+                                        <span class="size-1.5 rounded-xs bg-teal-500"></span>
                                         <span>NIM: {student()?.code || '-'}</span>
                                     </div>
                                     <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900 dark:text-white">
@@ -167,7 +157,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
                             <div class="flex items-center gap-3">
                                 <A
                                     href={student()?.unit_id ? `/course-department/academic/student/master?unit_id=${student()!.unit_id}` : '/course-department/academic/student/master'}
-                                    class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1.5"
+                                    class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xs text-xs font-bold transition-colors inline-flex items-center gap-1.5"
                                 >
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg>
                                     <span>← Back to Student List</span>
@@ -178,17 +168,19 @@ export default function CourseDepartmentStudentMasterShowPage() {
 
                     {/* Details Section */}
                     <Show when={!isLoading()} fallback={
-                        <div class="py-20 flex flex-col items-center justify-center gap-3 text-neutral-400">
-                            <div class="size-8 border-3 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
-                            <p class="text-xs font-mono">Loading student detail from server...</p>
-                        </div>
+                        <Loader
+                            message="Loading student detail from server..."
+                            color="teal"
+                            size="lg"
+                            class="py-20"
+                        />
                     }>
                         {/* 4 Academic Summary Stat Cards */}
                         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                            <div class="p-5 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2">
+                            <div class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2">
                                 <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
                                     <span class="text-xs font-mono font-semibold uppercase tracking-wider">IPK Kumulatif</span>
-                                    <div class="size-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+                                    <div class="size-8 rounded-xs bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
                                     </div>
                                 </div>
@@ -203,10 +195,10 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                 </div>
                             </div>
 
-                            <div class="p-5 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2">
+                            <div class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2">
                                 <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
                                     <span class="text-xs font-mono font-semibold uppercase tracking-wider">IPS Terakhir</span>
-                                    <div class="size-8 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold">
+                                    <div class="size-8 rounded-xs bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 9-5 5-4-4-3 3" /><path d="M3 3v18h18" /></svg>
                                     </div>
                                 </div>
@@ -221,10 +213,10 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                 </div>
                             </div>
 
-                            <div class="p-5 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2">
+                            <div class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2">
                                 <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
                                     <span class="text-xs font-mono font-semibold uppercase tracking-wider">Total SKS Lulus</span>
-                                    <div class="size-8 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold">
+                                    <div class="size-8 rounded-xs bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" /></svg>
                                     </div>
                                 </div>
@@ -239,10 +231,10 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                 </div>
                             </div>
 
-                            <div class="p-5 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2">
+                            <div class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2">
                                 <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
                                     <span class="text-xs font-mono font-semibold uppercase tracking-wider">Status & Semester</span>
-                                    <div class="size-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+                                    <div class="size-8 rounded-xs bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="m9 11 3 3L22 4" /></svg>
                                     </div>
                                 </div>
@@ -262,7 +254,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
                             <div class="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-700 pb-3">
                                 <div>
                                     <h2 class="text-base font-bold text-neutral-900 dark:text-white flex items-center gap-2">
-                                        <span class="size-2.5 rounded-full bg-teal-500"></span>
+                                        <span class="size-2.5 rounded-xs bg-teal-500"></span>
                                         Visualisasi Akademik Mahasiswa
                                     </h2>
                                     <p class="text-xs text-neutral-500 dark:text-neutral-400">
@@ -270,15 +262,15 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                     </p>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <span class="px-2.5 py-1 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-mono text-[11px] font-semibold border border-teal-200 dark:border-teal-800">
+                                    <span class="px-2.5 py-1 rounded-xs bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-mono text-[11px] font-semibold border border-teal-200 dark:border-teal-800">
                                         Apache ECharts v6
                                     </span>
                                 </div>
                             </div>
 
                             <Show when={academicTrendData().length > 0} fallback={
-                                <div class="p-8 rounded-3xl bg-white dark:bg-neutral-800 border border-dashed border-neutral-300 dark:border-neutral-700 text-center space-y-3">
-                                    <div class="size-12 mx-auto rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center">
+                                <div class="p-8 rounded-xs bg-white dark:bg-neutral-800 border border-dashed border-neutral-300 dark:border-neutral-700 text-center space-y-3">
+                                    <div class="size-12 mx-auto rounded-xs bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center">
                                         <svg class="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 9-5 5-4-4-3 3" /><path d="M3 3v18h18" /></svg>
                                     </div>
                                     <h3 class="text-sm font-bold text-neutral-900 dark:text-white">Belum Ada Riwayat Nilai & Semester</h3>
@@ -289,7 +281,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
                             }>
                                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                     {/* Chart 1: Academic Performance (IPS & IPK Trend) with Apache ECharts */}
-                                    <div class="min-w-0 p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
+                                    <div class="min-w-0 p-6 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
                                         <div class="flex items-center justify-between">
                                             <div>
                                                 <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
@@ -301,11 +293,11 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                             </div>
                                             <div class="flex items-center gap-3 text-xs font-mono">
                                                 <div class="flex items-center gap-1.5">
-                                                    <span class="size-2.5 rounded-full bg-indigo-500"></span>
+                                                    <span class="size-2.5 rounded-xs bg-indigo-500"></span>
                                                     <span class="text-neutral-600 dark:text-neutral-300">IPK</span>
                                                 </div>
                                                 <div class="flex items-center gap-1.5">
-                                                    <span class="size-2.5 rounded-full bg-sky-500"></span>
+                                                    <span class="size-2.5 rounded-xs bg-sky-500"></span>
                                                     <span class="text-neutral-600 dark:text-neutral-300">IPS</span>
                                                 </div>
                                             </div>
@@ -315,7 +307,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                     </div>
 
                                     {/* Chart 2: Credit SKS Load Progression with Apache ECharts */}
-                                    <div class="min-w-0 p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
+                                    <div class="min-w-0 p-6 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
                                         <div class="flex items-center justify-between">
                                             <div>
                                                 <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
@@ -327,11 +319,11 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                             </div>
                                             <div class="flex items-center gap-3 text-xs font-mono">
                                                 <div class="flex items-center gap-1.5">
-                                                    <span class="size-2.5 rounded-full bg-teal-600"></span>
+                                                    <span class="size-2.5 rounded-xs bg-teal-600"></span>
                                                     <span class="text-neutral-600 dark:text-neutral-300">SKS Kumulatif</span>
                                                 </div>
                                                 <div class="flex items-center gap-1.5">
-                                                    <span class="size-2.5 rounded-full bg-amber-500"></span>
+                                                    <span class="size-2.5 rounded-xs bg-amber-500"></span>
                                                     <span class="text-neutral-600 dark:text-neutral-300">SKS Semester</span>
                                                 </div>
                                             </div>
@@ -345,7 +337,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
 
                         {/* Semester Breakdown Table (KHS) */}
                         <Show when={activities().length > 0}>
-                            <div class="bg-white dark:bg-neutral-800 rounded-3xl border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
+                            <div class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
                                 <div class="p-5 border-b border-neutral-200 dark:border-neutral-700 flex items-center justify-between">
                                     <div>
                                         <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
@@ -394,7 +386,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                                             {Number(act.grand_cumulative_index || act.cumulative_index || 0).toFixed(2)}
                                                         </td>
                                                         <td class="px-5 py-3 text-center">
-                                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                                                            <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                                                                 {act.status_name || 'Selesai'}
                                                             </span>
                                                         </td>
@@ -410,10 +402,10 @@ export default function CourseDepartmentStudentMasterShowPage() {
                         {/* Existing Cards: Academic Information & Biodata */}
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
                             {/* Admission Card */}
-                            <div class="bg-white dark:bg-neutral-800 rounded-3xl p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
+                            <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
                                 <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
                                     <h3 class="text-sm font-bold text-neutral-900 dark:text-white">Academic & Enrolment Information</h3>
-                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                                    <span class="px-2.5 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                                         {student()?.status_name || 'Active'}
                                     </span>
                                 </div>
@@ -451,7 +443,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
                             </div>
 
                             {/* Personal & Demographics Card */}
-                            <div class="bg-white dark:bg-neutral-800 rounded-3xl p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
+                            <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
                                 <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
                                     <h3 class="text-sm font-bold text-neutral-900 dark:text-white">Individual Biodata & Identity</h3>
                                     <span class="text-xs text-neutral-400 font-mono">Student Registry</span>

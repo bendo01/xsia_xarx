@@ -1,6 +1,7 @@
 import { createSignal, onMount, createEffect, Show, For, createMemo, ErrorBoundary } from 'solid-js';
 import { useParams, useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
+import { Loader, ErrorFallback } from '~/components/loader';
 import { toast } from '~/components/toast/Toaster';
 import { masterApiShow, masterApiIndex } from '~/controllers/master/masterApiController';
 import { 
@@ -576,40 +577,29 @@ export default function CourseDepartmentUnitShowPage() {
 
                 <ErrorBoundary
                     fallback={(err, reset) => (
-                        <div class="p-8 max-w-xl mx-auto my-12 bg-white dark:bg-neutral-850 rounded-3xl border border-red-200 dark:border-red-900/50 shadow-xl text-center space-y-4">
-                            <div class="size-12 mx-auto rounded-full bg-red-100 dark:bg-red-950/60 text-red-600 flex items-center justify-center font-bold">
-                                <svg class="size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
-                            </div>
-                            <h3 class="text-lg font-bold text-neutral-900 dark:text-white">Terjadi Kendala Memuat Data Program Studi</h3>
-                            <p class="text-xs text-neutral-500 dark:text-neutral-400 font-mono bg-neutral-100 dark:bg-neutral-900 p-3 rounded-xl break-all">
-                                {err?.message || String(err)}
-                            </p>
-                            <button
-                                onClick={() => reset()}
-                                class="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold shadow-md transition-colors"
-                            >
-                                Coba Muat Ulang
-                            </button>
-                        </div>
+                        <ErrorFallback
+                            error={err}
+                            reset={reset}
+                            title="Terjadi Kendala Memuat Data Program Studi"
+                            accentColor="teal"
+                        />
                     )}
                 >
                     {/* Hero Banner with Unit Details */}
-                <div class="bg-gradient-to-r from-teal-900 via-emerald-900 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-teal-500/20">
-                    <div class="absolute -right-16 -top-16 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="bg-gradient-to-r from-teal-900 via-emerald-900 to-slate-900 rounded-xs p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-teal-500/20">
+                    <div class="absolute -right-16 -top-16 w-80 h-80 bg-teal-500/10 rounded-xs blur-3xl pointer-events-none"></div>
 
                     <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div class="space-y-3">
                             <div class="flex items-center gap-2 flex-wrap">
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-500/20 text-teal-200 text-xs font-mono font-semibold border border-teal-400/30">
-                                    <span class="size-2 rounded-full bg-teal-400 animate-pulse"></span>
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xs bg-teal-500/20 text-teal-200 text-xs font-mono font-semibold border border-teal-400/30">
+                                    <span class="size-2 rounded-xs bg-teal-400 animate-pulse"></span>
                                     <span>Unit ID: {unitId() ? `${unitId().substring(0, 8)}...` : '-'}</span>
                                 </span>
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-200 text-xs font-mono font-semibold border border-emerald-400/30">
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xs bg-emerald-500/20 text-emerald-200 text-xs font-mono font-semibold border border-emerald-400/30">
                                     <span>Kode: {unitCode()}</span>
                                 </span>
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 text-blue-200 text-xs font-semibold border border-blue-400/30">
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xs bg-blue-500/20 text-blue-200 text-xs font-semibold border border-blue-400/30">
                                     <span>{educationName()}</span>
                                 </span>
                             </div>
@@ -628,7 +618,7 @@ export default function CourseDepartmentUnitShowPage() {
                         <div class="flex items-center gap-2.5 flex-wrap">
                             <A
                                 href="/course-department/academic/course/master/curriculum"
-                                class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md transition-colors"
+                                class="px-3.5 py-2 rounded-xs bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md transition-colors"
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/>
@@ -638,7 +628,7 @@ export default function CourseDepartmentUnitShowPage() {
 
                             <A
                                 href="/course-department/academic/course/master/course"
-                                class="px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md transition-colors"
+                                class="px-3.5 py-2 rounded-xs bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md transition-colors"
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
@@ -648,7 +638,7 @@ export default function CourseDepartmentUnitShowPage() {
 
                             <A
                                 href="/course-department/academic/student/master"
-                                class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/20 flex items-center gap-1.5 transition-colors"
+                                class="px-3.5 py-2 rounded-xs bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/20 flex items-center gap-1.5 transition-colors"
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
@@ -661,10 +651,11 @@ export default function CourseDepartmentUnitShowPage() {
 
                 {/* Loading State */}
                 <Show when={isLoading()}>
-                    <div class="py-24 text-center flex flex-col items-center justify-center gap-3">
-                        <div class="size-8 border-2 border-teal-600 border-t-transparent rounded-full animate-spin"></div>
-                        <span class="text-xs font-mono text-neutral-400">Memuat data real server untuk Unit ID {unitId()}...</span>
-                    </div>
+                    <Loader
+                        message={`Memuat data real server untuk Unit ID ${unitId()}...`}
+                        color="teal"
+                        size="lg"
+                    />
                 </Show>
 
                 {/* Main Content Body */}
@@ -674,11 +665,11 @@ export default function CourseDepartmentUnitShowPage() {
                         {/* 1. Kurikulum (academic_course_master.curriculums) */}
                         <A 
                             href="/course-department/academic/course/master/curriculum"
-                            class="p-5 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2 hover:border-emerald-500 transition-all block group"
+                            class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2 hover:border-emerald-500 transition-all block group"
                         >
                             <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
                                 <span class="text-xs font-mono font-semibold uppercase tracking-wider group-hover:text-emerald-600 transition-colors">Kurikulum</span>
-                                <div class="size-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+                                <div class="size-8 rounded-xs bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/>
                                     </svg>
@@ -698,11 +689,11 @@ export default function CourseDepartmentUnitShowPage() {
                         {/* 2. Mata Kuliah (academic_course_master.courses) */}
                         <A 
                             href="/course-department/academic/course/master/course"
-                            class="p-5 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2 hover:border-teal-500 transition-all block group"
+                            class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2 hover:border-teal-500 transition-all block group"
                         >
                             <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
                                 <span class="text-xs font-mono font-semibold uppercase tracking-wider group-hover:text-teal-600 transition-colors">Mata Kuliah</span>
-                                <div class="size-8 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold">
+                                <div class="size-8 rounded-xs bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold">
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10M6 14h6"/>
                                     </svg>
@@ -722,11 +713,11 @@ export default function CourseDepartmentUnitShowPage() {
                         {/* 3. Mahasiswa (academic_student_master.students) */}
                         <A 
                             href="/course-department/academic/student/master"
-                            class="p-5 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2 hover:border-blue-500 transition-all block group"
+                            class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2 hover:border-blue-500 transition-all block group"
                         >
                             <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
                                 <span class="text-xs font-mono font-semibold uppercase tracking-wider group-hover:text-blue-600 transition-colors">Mahasiswa</span>
-                                <div class="size-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                                <div class="size-8 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                                     </svg>
@@ -745,11 +736,11 @@ export default function CourseDepartmentUnitShowPage() {
 
                         {/* 4. Staff (institution_master.staffes) */}
                         <div 
-                            class="p-5 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2"
+                            class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2"
                         >
                             <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
                                 <span class="text-xs font-mono font-semibold uppercase tracking-wider">Staff & Pimpinan</span>
-                                <div class="size-8 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">
+                                <div class="size-8 rounded-xs bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                                     </svg>
@@ -768,10 +759,10 @@ export default function CourseDepartmentUnitShowPage() {
                     </div>
 
                     {/* Program Studi Leadership Card */}
-                    <div class="bg-white dark:bg-neutral-800 rounded-3xl p-6 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-4">
+                    <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-4">
                         <div class="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-700 pb-3">
                             <div class="flex items-center gap-2">
-                                <span class="size-2 rounded-full bg-teal-500"></span>
+                                <span class="size-2 rounded-xs bg-teal-500"></span>
                                 <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
                                     Pimpinan & Staff Program Studi (institution_master.staffes)
                                 </h3>
@@ -783,12 +774,12 @@ export default function CourseDepartmentUnitShowPage() {
 
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             {/* Kepala Program Studi */}
-                            <div class="p-4 rounded-2xl bg-teal-50/60 dark:bg-teal-950/30 border border-teal-200/80 dark:border-teal-800/60 space-y-2">
+                            <div class="p-4 rounded-xs bg-teal-50/60 dark:bg-teal-950/30 border border-teal-200/80 dark:border-teal-800/60 space-y-2">
                                 <div class="flex items-center justify-between">
                                     <span class="text-[10px] font-mono uppercase font-bold tracking-wider text-teal-700 dark:text-teal-300">
                                         Kepala Program Studi (Kaprodi)
                                     </span>
-                                    <span class="px-2 py-0.5 rounded-md bg-teal-200/60 dark:bg-teal-800/60 text-teal-800 dark:text-teal-200 text-[10px] font-bold">
+                                    <span class="px-2 py-0.5 rounded-xs bg-teal-200/60 dark:bg-teal-800/60 text-teal-800 dark:text-teal-200 text-[10px] font-bold">
                                         Pimpinan
                                     </span>
                                 </div>
@@ -806,12 +797,12 @@ export default function CourseDepartmentUnitShowPage() {
                             </div>
 
                             {/* Sekertaris Program Studi */}
-                            <div class="p-4 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/60 space-y-2">
+                            <div class="p-4 rounded-xs bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/60 space-y-2">
                                 <div class="flex items-center justify-between">
                                     <span class="text-[10px] font-mono uppercase font-bold tracking-wider text-emerald-700 dark:text-emerald-300">
                                         Sekertaris Program Studi (Sekprodi)
                                     </span>
-                                    <span class="px-2 py-0.5 rounded-md bg-emerald-200/60 dark:bg-emerald-800/60 text-emerald-800 dark:text-emerald-200 text-[10px] font-bold">
+                                    <span class="px-2 py-0.5 rounded-xs bg-emerald-200/60 dark:bg-emerald-800/60 text-emerald-800 dark:text-emerald-200 text-[10px] font-bold">
                                         Sekretaris
                                     </span>
                                 </div>
@@ -829,12 +820,12 @@ export default function CourseDepartmentUnitShowPage() {
                             </div>
 
                             {/* Staff Program Studi */}
-                            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-700 space-y-2">
+                            <div class="p-4 rounded-xs bg-slate-50 dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-700 space-y-2">
                                 <div class="flex items-center justify-between">
                                     <span class="text-[10px] font-mono uppercase font-bold tracking-wider text-neutral-600 dark:text-neutral-400">
                                         Staff Program Studi
                                     </span>
-                                    <span class="px-2 py-0.5 rounded-md bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 text-[10px] font-bold">
+                                    <span class="px-2 py-0.5 rounded-xs bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 text-[10px] font-bold">
                                         {otherStaffes().length} Staff
                                     </span>
                                 </div>
@@ -854,7 +845,7 @@ export default function CourseDepartmentUnitShowPage() {
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-200 dark:border-neutral-700 pb-3">
                             <div>
                                 <h2 class="text-base font-bold text-neutral-900 dark:text-white flex items-center gap-2">
-                                    <span class="size-2.5 rounded-full bg-teal-500"></span>
+                                    <span class="size-2.5 rounded-xs bg-teal-500"></span>
                                     Visualisasi & Analisis Data Program Studi
                                 </h2>
                                 <p class="text-xs text-neutral-500 dark:text-neutral-400">
@@ -862,7 +853,7 @@ export default function CourseDepartmentUnitShowPage() {
                                 </p>
                             </div>
                             <div class="flex items-center gap-2">
-                                <span class="px-2.5 py-1 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-mono text-[11px] font-semibold border border-teal-200 dark:border-teal-800">
+                                <span class="px-2.5 py-1 rounded-xs bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-mono text-[11px] font-semibold border border-teal-200 dark:border-teal-800">
                                     Real Server Data
                                 </span>
                             </div>

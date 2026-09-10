@@ -378,7 +378,7 @@ export default function PersonMasterIndividualEditPage() {
                                             <span>•</span>
                                             <span>{formData().birth_place || 'Birth place'}, {formData().birth_date || 'YYYY-MM-DD'}</span>
                                             <Show when={calculateAge() !== null}>
-                                                <span class="px-1.5 py-0.2 text-[10px] bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 font-bold rounded-none">
+                                                <span class="px-1.5 py-0.2 text-[10px] bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 font-bold rounded-xs">
                                                     {calculateAge()} yrs
                                                 </span>
                                             </Show>
@@ -427,7 +427,7 @@ export default function PersonMasterIndividualEditPage() {
                                         <input
                                             type="text"
                                             class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().code ? 'border-red-500 focus:ring-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500'
-                                                } text-neutral-900 dark:text-white rounded-none transition-colors`}
+                                                } text-neutral-900 dark:text-white rounded-xs transition-colors`}
                                             value={formData().code}
                                             onInput={(e) => updateField('code', (e.target as HTMLInputElement).value)}
                                             required
@@ -446,7 +446,7 @@ export default function PersonMasterIndividualEditPage() {
                                             Identification Type <span class="text-red-500">*</span>
                                         </label>
                                         <select
-                                            class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-none focus:ring-blue-500 focus:border-blue-500"
+                                            class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
                                             value={formData().identification_type_id}
                                             onChange={(e) => updateField('identification_type_id', (e.target as HTMLSelectElement).value)}
                                         >
@@ -464,7 +464,7 @@ export default function PersonMasterIndividualEditPage() {
                                         <input
                                             type="text"
                                             class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().name ? 'border-red-500 focus:ring-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500'
-                                                } text-neutral-900 dark:text-white rounded-none transition-colors`}
+                                                } text-neutral-900 dark:text-white rounded-xs transition-colors`}
                                             value={formData().name}
                                             onInput={(e) => updateField('name', (e.target as HTMLInputElement).value)}
                                             required
@@ -481,7 +481,7 @@ export default function PersonMasterIndividualEditPage() {
                                         </label>
                                         <input
                                             type="text"
-                                            class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-none focus:ring-blue-500 focus:border-blue-500"
+                                            class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
                                             placeholder="e.g. Dr., Prof., Ir., Drs."
                                             value={formData().front_title || ''}
                                             onInput={(e) => updateField('front_title', (e.target as HTMLInputElement).value)}
@@ -495,7 +495,7 @@ export default function PersonMasterIndividualEditPage() {
                                         </label>
                                         <input
                                             type="text"
-                                            class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-none focus:ring-blue-500 focus:border-blue-500"
+                                            class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
                                             placeholder="e.g. S.Kom., M.T., Ph.D."
                                             value={formData().last_title || ''}
                                             onInput={(e) => updateField('last_title', (e.target as HTMLInputElement).value)}
@@ -525,7 +525,7 @@ export default function PersonMasterIndividualEditPage() {
                                         <input
                                             type="text"
                                             class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().birth_place ? 'border-red-500 focus:ring-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500'
-                                                } text-neutral-900 dark:text-white rounded-none transition-colors`}
+                                                } text-neutral-900 dark:text-white rounded-xs transition-colors`}
                                             value={formData().birth_place}
                                             onInput={(e) => updateField('birth_place', (e.target as HTMLInputElement).value)}
                                             required
@@ -543,7 +543,7 @@ export default function PersonMasterIndividualEditPage() {
                                         <input
                                             type="date"
                                             class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().birth_date ? 'border-red-500 focus:ring-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500'
-                                                } text-neutral-900 dark:text-white rounded-none transition-colors`}
+                                                } text-neutral-900 dark:text-white rounded-xs transition-colors`}
                                             value={formData().birth_date}
                                             onInput={(e) => updateField('birth_date', (e.target as HTMLInputElement).value)}
                                             required
@@ -560,7 +560,7 @@ export default function PersonMasterIndividualEditPage() {
                                         </label>
                                         <select
                                             class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().gender_id ? 'border-red-500' : 'border-neutral-300 dark:border-neutral-700'
-                                                } text-neutral-900 dark:text-white rounded-none focus:ring-blue-500 focus:border-blue-500`}
+                                                } text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500`}
                                             value={formData().gender_id}
                                             onChange={(e) => updateField('gender_id', (e.target as HTMLSelectElement).value)}
                                             required
@@ -582,7 +582,7 @@ export default function PersonMasterIndividualEditPage() {
                                         </label>
                                         <select
                                             class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().religion_id ? 'border-red-500' : 'border-neutral-300 dark:border-neutral-700'
-                                                } text-neutral-900 dark:text-white rounded-none focus:ring-blue-500 focus:border-blue-500`}
+                                                } text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500`}
                                             value={formData().religion_id}
                                             onChange={(e) => updateField('religion_id', (e.target as HTMLSelectElement).value)}
                                             required
@@ -603,7 +603,7 @@ export default function PersonMasterIndividualEditPage() {
                                             Marital Status
                                         </label>
                                         <select
-                                            class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-none focus:ring-blue-500 focus:border-blue-500"
+                                            class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
                                             value={formData().marital_status_id}
                                             onChange={(e) => updateField('marital_status_id', (e.target as HTMLSelectElement).value)}
                                         >
@@ -620,7 +620,7 @@ export default function PersonMasterIndividualEditPage() {
                                             Age Classification
                                         </label>
                                         <select
-                                            class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-none focus:ring-blue-500 focus:border-blue-500"
+                                            class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
                                             value={formData().age_classification_id || ''}
                                             onChange={(e) => updateField('age_classification_id', (e.target as HTMLSelectElement).value || null)}
                                         >
@@ -652,7 +652,7 @@ export default function PersonMasterIndividualEditPage() {
                                             Occupation
                                         </label>
                                         <select
-                                            class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-none focus:ring-blue-500 focus:border-blue-500"
+                                            class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
                                             value={formData().occupation_id || ''}
                                             onChange={(e) => updateField('occupation_id', (e.target as HTMLSelectElement).value || null)}
                                         >
@@ -669,7 +669,7 @@ export default function PersonMasterIndividualEditPage() {
                                             Profession
                                         </label>
                                         <select
-                                            class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-none focus:ring-blue-500 focus:border-blue-500"
+                                            class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
                                             value={formData().profession_id}
                                             onChange={(e) => updateField('profession_id', (e.target as HTMLSelectElement).value)}
                                         >
@@ -686,7 +686,7 @@ export default function PersonMasterIndividualEditPage() {
                                             Income Bracket
                                         </label>
                                         <select
-                                            class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-none focus:ring-blue-500 focus:border-blue-500"
+                                            class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
                                             value={formData().income_id}
                                             onChange={(e) => updateField('income_id', (e.target as HTMLSelectElement).value)}
                                         >
@@ -703,7 +703,7 @@ export default function PersonMasterIndividualEditPage() {
                                             Highest Education Level
                                         </label>
                                         <select
-                                            class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-none focus:ring-blue-500 focus:border-blue-500"
+                                            class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
                                             value={formData().education_id || ''}
                                             onChange={(e) => updateField('education_id', (e.target as HTMLSelectElement).value || null)}
                                         >
@@ -732,7 +732,7 @@ export default function PersonMasterIndividualEditPage() {
                                     <label class="relative flex items-start gap-3 p-3.5 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-750 transition-colors cursor-pointer">
                                         <input
                                             type="checkbox"
-                                            class="size-4 mt-0.5 text-blue-600 border-neutral-300 rounded-none focus:ring-blue-500"
+                                            class="size-4 mt-0.5 text-blue-600 border-neutral-300 rounded-xs focus:ring-blue-500"
                                             checked={formData().is_special_need}
                                             onChange={(e) => updateField('is_special_need', (e.target as HTMLInputElement).checked)}
                                         />
@@ -748,7 +748,7 @@ export default function PersonMasterIndividualEditPage() {
                                     <label class="relative flex items-start gap-3 p-3.5 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-750 transition-colors cursor-pointer">
                                         <input
                                             type="checkbox"
-                                            class="size-4 mt-0.5 text-blue-600 border-neutral-300 rounded-none focus:ring-blue-500"
+                                            class="size-4 mt-0.5 text-blue-600 border-neutral-300 rounded-xs focus:ring-blue-500"
                                             checked={formData().is_social_protection_card_recipient}
                                             onChange={(e) => updateField('is_social_protection_card_recipient', (e.target as HTMLInputElement).checked)}
                                         />
@@ -764,7 +764,7 @@ export default function PersonMasterIndividualEditPage() {
                                     <label class="relative flex items-start gap-3 p-3.5 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-750 transition-colors cursor-pointer">
                                         <input
                                             type="checkbox"
-                                            class="size-4 mt-0.5 text-red-600 border-neutral-300 rounded-none focus:ring-red-500"
+                                            class="size-4 mt-0.5 text-red-600 border-neutral-300 rounded-xs focus:ring-red-500"
                                             checked={formData().is_deceased}
                                             onChange={(e) => updateField('is_deceased', (e.target as HTMLInputElement).checked)}
                                         />
@@ -789,7 +789,7 @@ export default function PersonMasterIndividualEditPage() {
                                 <button
                                     type="submit"
                                     disabled={isSubmitting()}
-                                    class="inline-flex items-center gap-2 px-6 py-2.5 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-none shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
+                                    class="inline-flex items-center gap-2 px-6 py-2.5 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
                                     id="btn-update-individual"
                                 >
                                     <Show

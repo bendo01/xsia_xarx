@@ -64,15 +64,15 @@ export default function StudentMasterShowPage() {
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
                 {/* Header Card */}
-                <div class="bg-white dark:bg-neutral-800 rounded-3xl p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div class="flex items-center gap-5">
-                            <div class="size-16 sm:size-20 rounded-2xl bg-gradient-to-tr from-teal-500 to-emerald-500 text-white font-black text-2xl flex items-center justify-center shadow-md">
+                            <div class="size-16 sm:size-20 rounded-xs bg-gradient-to-tr from-teal-500 to-emerald-500 text-white font-black text-2xl flex items-center justify-center shadow-md">
                                 {(student()?.name || 'S').charAt(0)}
                             </div>
                             <div class="space-y-1">
-                                <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 text-xs font-mono font-semibold border border-teal-200 dark:border-teal-800/80">
-                                    <span class="size-1.5 rounded-full bg-teal-500"></span>
+                                <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-xs bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 text-xs font-mono font-semibold border border-teal-200 dark:border-teal-800/80">
+                                    <span class="size-1.5 rounded-xs bg-teal-500"></span>
                                     <span>NIM: {student()?.code || '-'}</span>
                                 </div>
                                 <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900 dark:text-white">
@@ -87,13 +87,13 @@ export default function StudentMasterShowPage() {
                         <div class="flex items-center gap-3">
                             <A
                                 href="/student/academic/student/master"
-                                class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xl text-xs font-bold transition-colors"
+                                class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xs text-xs font-bold transition-colors"
                             >
                                 ← Student Directory
                             </A>
                             <A
                                 href="/student/academic/student/campaign/activity"
-                                class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors"
+                                class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xs text-xs font-bold shadow-xs transition-colors"
                             >
                                 View Academic Records →
                             </A>
@@ -104,16 +104,16 @@ export default function StudentMasterShowPage() {
                 {/* Details Section */}
                 <Show when={!isLoading()} fallback={
                     <div class="py-16 flex flex-col items-center justify-center gap-3 text-neutral-400">
-                        <div class="size-8 border-3 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
+                        <div class="size-8 border-3 border-teal-500 border-t-transparent rounded-xs animate-spin"></div>
                         <p class="text-xs font-mono">Loading student detail from server...</p>
                     </div>
                 }>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
                         {/* Admission Card */}
-                        <div class="bg-white dark:bg-neutral-800 rounded-3xl p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
+                        <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
                             <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
                                 <h3 class="text-sm font-bold text-neutral-900 dark:text-white">Academic Admission Information</h3>
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                                <span class="px-2.5 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                                     {student()?.status_name || 'Admitted & Registered'}
                                 </span>
                             </div>
@@ -147,7 +147,7 @@ export default function StudentMasterShowPage() {
                         </div>
 
                         {/* Personal & Demographics Card */}
-                        <div class="bg-white dark:bg-neutral-800 rounded-3xl p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
+                        <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
                             <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
                                 <h3 class="text-sm font-bold text-neutral-900 dark:text-white">Individual Biodata & Identity</h3>
                                 <span class="text-xs text-neutral-400 font-mono">Civil Registry</span>

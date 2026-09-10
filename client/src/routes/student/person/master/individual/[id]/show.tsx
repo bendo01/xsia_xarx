@@ -565,33 +565,33 @@ export default function StudentDashboardProfilePage() {
                 <PopupBlockedAlert />
 
                 {/* Profile Header Hero Card */}
-                <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-blue-500/20">
-                    <div class="absolute -right-16 -top-16 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 rounded-xs p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-blue-500/20">
+                    <div class="absolute -right-16 -top-16 w-80 h-80 bg-blue-500/10 rounded-xs blur-3xl pointer-events-none"></div>
 
                     <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         {/* Avatar & Main Info */}
                         <div class="flex flex-col sm:flex-row items-center sm:items-start gap-5">
                             <div class="relative">
-                                <div class="size-24 sm:size-28 rounded-2xl bg-gradient-to-tr from-blue-500 to-indigo-500 p-1 shadow-lg">
-                                    <div class="w-full h-full rounded-xl bg-neutral-800 flex items-center justify-center text-white text-3xl font-black uppercase">
+                                <div class="size-24 sm:size-28 rounded-xs bg-gradient-to-tr from-blue-500 to-indigo-500 p-1 shadow-lg">
+                                    <div class="w-full h-full rounded-xs bg-neutral-800 flex items-center justify-center text-white text-3xl font-black uppercase">
                                         {(fullName() || 'S').charAt(0)}
                                     </div>
                                 </div>
-                                <span class="absolute -bottom-2 -right-2 px-2.5 py-0.5 rounded-full bg-emerald-500 text-[10px] font-bold tracking-wider uppercase text-white shadow-xs border-2 border-neutral-900">
+                                <span class="absolute -bottom-2 -right-2 px-2.5 py-0.5 rounded-xs bg-emerald-500 text-[10px] font-bold tracking-wider uppercase text-white shadow-xs border-2 border-neutral-900">
                                     {studentRecord()?.status_name || 'Active Student'}
                                 </span>
                             </div>
 
                             <div class="space-y-2 text-center sm:text-start">
                                 <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-mono font-bold">
-                                        <span class="size-2 rounded-full bg-blue-400 animate-pulse"></span>
+                                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-xs bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-mono font-bold">
+                                        <span class="size-2 rounded-xs bg-blue-400 animate-pulse"></span>
                                         <span>NIM: {studentRecord()?.code || ind()?.code || '-'}</span>
                                     </div>
 
                                     {/* Multiple student identities badge */}
                                     <Show when={availableStudents().length > 1}>
-                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[11px] font-medium">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xs bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[11px] font-medium">
                                             <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
                                             </svg>
@@ -609,17 +609,17 @@ export default function StudentDashboardProfilePage() {
 
                         {/* Quick Stats Badges */}
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                            <div class="p-3.5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-center">
+                            <div class="p-3.5 bg-white/10 backdrop-blur-md rounded-xs border border-white/15 text-center">
                                 <span class="block text-[11px] text-blue-200 font-mono uppercase tracking-wider">Cumulative GPA (IPK)</span>
                                 <span class="text-xl sm:text-2xl font-black text-white">{gpa()}</span>
                                 <span class="block text-[10px] text-blue-300/80 font-mono mt-0.5">IPS: {semesterGpa()}</span>
                             </div>
-                            <div class="p-3.5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-center">
+                            <div class="p-3.5 bg-white/10 backdrop-blur-md rounded-xs border border-white/15 text-center">
                                 <span class="block text-[11px] text-blue-200 font-mono uppercase tracking-wider">Total Credits (SKS)</span>
                                 <span class="text-xl sm:text-2xl font-black text-white">{totalCredits()} <span class="text-xs font-normal text-white/70">SKS</span></span>
                                 <span class="block text-[10px] text-blue-300/80 font-mono mt-0.5">Sem: {semesterCredits()} SKS</span>
                             </div>
-                            <div class="p-3.5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-center col-span-2 sm:col-span-1 flex flex-col justify-center">
+                            <div class="p-3.5 bg-white/10 backdrop-blur-md rounded-xs border border-white/15 text-center col-span-2 sm:col-span-1 flex flex-col justify-center">
                                 <span class="block text-[11px] text-blue-200 font-mono uppercase tracking-wider">Academic Status</span>
                                 <span class="text-sm sm:text-base font-bold text-emerald-300">{studentRecord()?.status_name || 'Active'}</span>
                                 <span class="block text-[10px] text-neutral-300 font-mono mt-0.5 truncate">{studentRecord()?.academic_year_name || 'Reguler'}</span>
@@ -630,10 +630,10 @@ export default function StudentDashboardProfilePage() {
 
                 {/* Multiple Student Identity Switcher Card (when user has multiple student records e.g. NIM 111301760 & 141302134) */}
                 <Show when={availableStudents().length > 1}>
-                    <div class="bg-white dark:bg-neutral-800 rounded-3xl p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
+                    <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-neutral-200 dark:border-neutral-700">
                             <div class="flex items-center gap-3">
-                                <div class="size-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                                <div class="size-10 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
                                     <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
                                     </svg>
@@ -641,7 +641,7 @@ export default function StudentDashboardProfilePage() {
                                 <div>
                                     <h2 class="text-sm font-bold text-neutral-900 dark:text-white flex items-center gap-2">
                                         <span>Pilih Identitas Akademik Mahasiswa</span>
-                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
+                                        <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
                                             {availableStudents().length} Identitas
                                         </span>
                                     </h2>
@@ -666,14 +666,14 @@ export default function StudentDashboardProfilePage() {
                                             tabIndex="0"
                                             onClick={() => handleSelectStudent(std)}
                                             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleSelectStudent(std); }}
-                                            class={`p-5 rounded-2xl border transition-all text-start cursor-pointer relative overflow-hidden flex flex-col justify-between ${isCurrent()
+                                            class={`p-5 rounded-xs border transition-all text-start cursor-pointer relative overflow-hidden flex flex-col justify-between ${isCurrent()
                                                     ? 'bg-blue-50/80 dark:bg-blue-950/40 border-2 border-blue-600 dark:border-blue-500 shadow-md ring-2 ring-blue-500/20'
                                                     : 'bg-white dark:bg-neutral-800/80 border-neutral-200 dark:border-neutral-700 hover:border-blue-300 dark:hover:border-neutral-600 hover:shadow-xs'
                                                 }`}
                                         >
                                             {/* Selection Ribbon indicator */}
                                             <Show when={isCurrent()}>
-                                                <div class="absolute top-0 right-0 px-3 py-1 bg-blue-600 text-white text-[10px] font-bold rounded-bl-xl tracking-wider uppercase flex items-center gap-1 shadow-xs">
+                                                <div class="absolute top-0 right-0 px-3 py-1 bg-blue-600 text-white text-[10px] font-bold rounded-xs tracking-wider uppercase flex items-center gap-1 shadow-xs">
                                                     <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                                                         <polyline points="20 6 9 17 4 12" />
                                                     </svg>
@@ -683,7 +683,7 @@ export default function StudentDashboardProfilePage() {
 
                                             <div class="space-y-2.5">
                                                 <div class="flex items-center gap-3">
-                                                    <div class={`size-11 rounded-xl flex items-center justify-center font-bold text-sm ${isCurrent()
+                                                    <div class={`size-11 rounded-xs flex items-center justify-center font-bold text-sm ${isCurrent()
                                                             ? 'bg-blue-600 text-white shadow-sm'
                                                             : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300'
                                                         }`}>
@@ -696,7 +696,7 @@ export default function StudentDashboardProfilePage() {
                                                             <span class="text-xs font-mono font-bold text-neutral-900 dark:text-white">
                                                                 NIM: {std.code}
                                                             </span>
-                                                            <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                                                            <span class="px-2 py-0.5 rounded-xs text-[10px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                                                                 {std.status_name || 'Terdaftar'}
                                                             </span>
                                                         </div>
@@ -723,12 +723,12 @@ export default function StudentDashboardProfilePage() {
                                                     <button
                                                         type="button"
                                                         onClick={(e) => { e.stopPropagation(); handleSelectStudent(std); }}
-                                                        class="w-full py-2 px-3 bg-neutral-100 dark:bg-neutral-700 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 rounded-xl text-xs font-bold transition-colors text-center"
+                                                        class="w-full py-2 px-3 bg-neutral-100 dark:bg-neutral-700 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 rounded-xs text-xs font-bold transition-colors text-center"
                                                     >
                                                         Gunakan Identitas NIM {std.code} →
                                                     </button>
                                                 }>
-                                                    <div class="w-full py-2 px-3 bg-blue-600 text-white rounded-xl text-xs font-bold text-center flex items-center justify-center gap-1.5 shadow-xs">
+                                                    <div class="w-full py-2 px-3 bg-blue-600 text-white rounded-xs text-xs font-bold text-center flex items-center justify-center gap-1.5 shadow-xs">
                                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                                             <polyline points="20 6 9 17 4 12" />
                                                         </svg>
@@ -748,10 +748,10 @@ export default function StudentDashboardProfilePage() {
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <A
                         href="/student/academic/student/campaign/activity"
-                        class="p-5 bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow-2xs hover:shadow-md hover:border-blue-500 dark:hover:border-blue-500 transition-all flex items-center justify-between group"
+                        class="p-5 bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs hover:shadow-md hover:border-blue-500 dark:hover:border-blue-500 transition-all flex items-center justify-between group"
                     >
                         <div class="flex items-center gap-3.5">
-                            <div class="size-11 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+                            <div class="size-11 rounded-xs bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
                                 <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>
                             </div>
                             <div>
@@ -764,10 +764,10 @@ export default function StudentDashboardProfilePage() {
 
                     <A
                         href="/student/academic/student/campaign/activity"
-                        class="p-5 bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow-2xs hover:shadow-md hover:border-indigo-500 dark:hover:border-indigo-500 transition-all flex items-center justify-between group"
+                        class="p-5 bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs hover:shadow-md hover:border-indigo-500 dark:hover:border-indigo-500 transition-all flex items-center justify-between group"
                     >
                         <div class="flex items-center gap-3.5">
-                            <div class="size-11 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+                            <div class="size-11 rounded-xs bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
                                 <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" /><path d="M6 6h10M6 10h10M6 14h6" /></svg>
                             </div>
                             <div>
@@ -780,10 +780,10 @@ export default function StudentDashboardProfilePage() {
 
                     <A
                         href="/student/academic/student/adviser"
-                        class="p-5 bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow-2xs hover:shadow-md hover:border-amber-500 dark:hover:border-amber-500 transition-all flex items-center justify-between group"
+                        class="p-5 bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs hover:shadow-md hover:border-amber-500 dark:hover:border-amber-500 transition-all flex items-center justify-between group"
                     >
                         <div class="flex items-center gap-3.5">
-                            <div class="size-11 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
+                            <div class="size-11 rounded-xs bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
                                 <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                             </div>
                             <div>
@@ -796,10 +796,10 @@ export default function StudentDashboardProfilePage() {
 
                     <A
                         href="/student/academic/student/master"
-                        class="p-5 bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow-2xs hover:shadow-md hover:border-teal-500 dark:hover:border-teal-500 transition-all flex items-center justify-between group"
+                        class="p-5 bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs hover:shadow-md hover:border-teal-500 dark:hover:border-teal-500 transition-all flex items-center justify-between group"
                     >
                         <div class="flex items-center gap-3.5">
-                            <div class="size-11 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold">
+                            <div class="size-11 rounded-xs bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold">
                                 <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" /></svg>
                             </div>
                             <div>
@@ -812,7 +812,7 @@ export default function StudentDashboardProfilePage() {
                 </div>
 
                 {/* Tabbed Profile Content */}
-                <div class="bg-white dark:bg-neutral-800 rounded-3xl border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
+                <div class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
                     {/* Navigation Tabs */}
                     <div class="flex border-b border-neutral-200 dark:border-neutral-700 px-6 pt-4 gap-4 overflow-x-auto">
                         <button
@@ -865,7 +865,7 @@ export default function StudentDashboardProfilePage() {
                     <div class="p-6 sm:p-8">
                         <Show when={!isLoading()} fallback={
                             <div class="py-12 flex flex-col items-center justify-center gap-3 text-neutral-400">
-                                <div class="size-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                                <div class="size-8 border-3 border-blue-500 border-t-transparent rounded-xs animate-spin"></div>
                                 <p class="text-xs font-mono">Loading student profile details from server...</p>
                             </div>
                         }>
@@ -874,12 +874,12 @@ export default function StudentDashboardProfilePage() {
                                 <div class="space-y-6">
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         {/* Academic Status Card */}
-                                        <div class="p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 space-y-3">
+                                        <div class="p-5 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 space-y-3">
                                             <div class="flex items-center justify-between">
                                                 <h3 class="text-xs font-bold font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
                                                     Enrollment Summary
                                                 </h3>
-                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-mono">
+                                                <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-mono">
                                                     NIM: {studentRecord()?.code || '-'}
                                                 </span>
                                             </div>
@@ -904,7 +904,7 @@ export default function StudentDashboardProfilePage() {
                                         </div>
 
                                         {/* Identity Summary Card */}
-                                        <div class="p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 space-y-3">
+                                        <div class="p-5 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 space-y-3">
                                             <h3 class="text-xs font-bold font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
                                                 Identity & Citizenship
                                             </h3>
@@ -935,11 +935,11 @@ export default function StudentDashboardProfilePage() {
                                     {/* ACADEMIC PERFORMANCE & COURSE VARIETY ANALYTICS CHARTS */}
                                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                         {/* Chart 1: Multiline Academic Progress Trend (IPK & IPS by Academic Year, Max 4.0) */}
-                                        <div class="min-w-0 p-5 rounded-3xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 flex flex-col justify-between space-y-4">
+                                        <div class="min-w-0 p-5 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 flex flex-col justify-between space-y-4">
                                             <div class="flex items-start justify-between gap-3">
                                                 <div>
                                                     <div class="flex items-center gap-2">
-                                                        <div class="size-7 rounded-lg bg-indigo-100 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+                                                        <div class="size-7 rounded-xs bg-indigo-100 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
                                                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
                                                         </div>
                                                         <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
@@ -954,11 +954,11 @@ export default function StudentDashboardProfilePage() {
                                                 {/* Legend */}
                                                 <div class="flex items-center gap-3 text-[11px] font-mono shrink-0">
                                                     <div class="flex items-center gap-1.5">
-                                                        <span class="size-2.5 rounded-full bg-indigo-600"></span>
+                                                        <span class="size-2.5 rounded-xs bg-indigo-600"></span>
                                                         <span class="text-neutral-700 dark:text-neutral-300 font-semibold">IPK</span>
                                                     </div>
                                                     <div class="flex items-center gap-1.5">
-                                                        <span class="size-2.5 rounded-full bg-sky-500"></span>
+                                                        <span class="size-2.5 rounded-xs bg-sky-500"></span>
                                                         <span class="text-neutral-700 dark:text-neutral-300 font-semibold">IPS</span>
                                                     </div>
                                                 </div>
@@ -972,7 +972,7 @@ export default function StudentDashboardProfilePage() {
                                             }>
                                                 <Suspense fallback={
                                                     <div class="py-16 text-center flex flex-col items-center justify-center gap-2">
-                                                        <div class="size-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                                                        <div class="size-6 border-2 border-indigo-600 border-t-transparent rounded-xs animate-spin"></div>
                                                         <span class="text-xs font-mono text-neutral-400">Loading chart...</span>
                                                     </div>
                                                 }>
@@ -982,11 +982,11 @@ export default function StudentDashboardProfilePage() {
                                         </div>
 
                                         {/* Chart 2: Credit SKS Load Progression with Apache ECharts */}
-                                        <div class="min-w-0 p-5 rounded-3xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 flex flex-col justify-between space-y-4">
+                                        <div class="min-w-0 p-5 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 flex flex-col justify-between space-y-4">
                                             <div class="flex items-start justify-between gap-3">
                                                 <div>
                                                     <div class="flex items-center gap-2">
-                                                        <div class="size-7 rounded-lg bg-teal-100 dark:bg-teal-950/80 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold">
+                                                        <div class="size-7 rounded-xs bg-teal-100 dark:bg-teal-950/80 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold">
                                                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
                                                         </div>
                                                         <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
@@ -999,11 +999,11 @@ export default function StudentDashboardProfilePage() {
                                                 </div>
                                                 <div class="flex items-center gap-3 text-[11px] font-mono shrink-0">
                                                     <div class="flex items-center gap-1.5">
-                                                        <span class="size-2.5 rounded-full bg-teal-600"></span>
+                                                        <span class="size-2.5 rounded-xs bg-teal-600"></span>
                                                         <span class="text-neutral-700 dark:text-neutral-300 font-semibold">SKS Kumulatif</span>
                                                     </div>
                                                     <div class="flex items-center gap-1.5">
-                                                        <span class="size-2.5 rounded-full bg-amber-500"></span>
+                                                        <span class="size-2.5 rounded-xs bg-amber-500"></span>
                                                         <span class="text-neutral-700 dark:text-neutral-300 font-semibold">SKS Semester</span>
                                                     </div>
                                                 </div>
@@ -1020,11 +1020,11 @@ export default function StudentDashboardProfilePage() {
                                         </div>
 
                                         {/* Chart 3: Courses Cumulative Index Scope by academic_course_reference.varieties (Pie / Donut) */}
-                                        <div class="lg:col-span-2 min-w-0 p-6 rounded-3xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 flex flex-col justify-between space-y-4">
+                                        <div class="lg:col-span-2 min-w-0 p-6 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 flex flex-col justify-between space-y-4">
                                             <div class="flex items-start justify-between gap-3">
                                                 <div>
                                                     <div class="flex items-center gap-2">
-                                                        <div class="size-7 rounded-lg bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+                                                        <div class="size-7 rounded-xs bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
                                                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
                                                         </div>
                                                         <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
@@ -1036,7 +1036,7 @@ export default function StudentDashboardProfilePage() {
                                                     </p>
                                                 </div>
 
-                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 font-mono">
+                                                <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 font-mono">
                                                     {varietyScopeData().length} Varieties
                                                 </span>
                                             </div>
@@ -1103,7 +1103,7 @@ export default function StudentDashboardProfilePage() {
                                                                     <div
                                                                         onPointerEnter={() => setHoveredVarietyIdx(idx())}
                                                                         onPointerLeave={() => setHoveredVarietyIdx(null)}
-                                                                        class={`p-2 rounded-xl border transition-all cursor-pointer ${
+                                                                        class={`p-2 rounded-xs border transition-all cursor-pointer ${
                                                                             isHovered()
                                                                                 ? 'bg-neutral-100 dark:bg-neutral-800 border-neutral-300 dark:border-neutral-600 shadow-2xs'
                                                                                 : 'bg-white dark:bg-neutral-800/60 border-neutral-200/60 dark:border-neutral-700/60'
@@ -1112,7 +1112,7 @@ export default function StudentDashboardProfilePage() {
                                                                         <div class="flex items-center justify-between gap-2">
                                                                             <div class="flex items-center gap-2 min-w-0">
                                                                                 <span
-                                                                                    class="size-2.5 rounded-full shrink-0"
+                                                                                    class="size-2.5 rounded-xs shrink-0"
                                                                                     style={{ "background-color": slice.color }}
                                                                                 ></span>
                                                                                 <span class="font-bold text-neutral-800 dark:text-neutral-200 truncate">
@@ -1145,7 +1145,7 @@ export default function StudentDashboardProfilePage() {
                                                     Recent Academic Semesters
                                                 </h3>
                                                 <Show when={isSubLoading()}>
-                                                    <div class="size-3.5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                                                    <div class="size-3.5 border-2 border-blue-500 border-t-transparent rounded-xs animate-spin"></div>
                                                 </Show>
                                             </div>
                                             <A href="/student/academic/student/campaign/activity" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
@@ -1158,13 +1158,13 @@ export default function StudentDashboardProfilePage() {
                                             <table class="w-full text-xs text-start">
                                                 <thead class="bg-neutral-100 dark:bg-neutral-900/50 text-neutral-500 font-mono uppercase text-[10px]">
                                                     <tr>
-                                                        <th class="py-2.5 px-3 text-start rounded-s-lg">Semester / Campaign</th>
+                                                        <th class="py-2.5 px-3 text-start rounded-xs">Semester / Campaign</th>
                                                         <th class="py-2.5 px-3 text-center">Semester SKS</th>
                                                         <th class="py-2.5 px-3 text-center">Total SKS</th>
                                                         <th class="py-2.5 px-3 text-center">Semester IPS</th>
                                                         <th class="py-2.5 px-3 text-center">Cumulative IPK</th>
                                                         <th class="py-2.5 px-3 text-center">Lock Status</th>
-                                                        <th class="py-2.5 px-3 text-end rounded-e-lg">Action</th>
+                                                        <th class="py-2.5 px-3 text-end rounded-xs">Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="divide-y divide-neutral-100 dark:divide-neutral-700/50">
@@ -1190,7 +1190,7 @@ export default function StudentDashboardProfilePage() {
                                                                         {Number(getActIpk(act)).toFixed(2)}
                                                                     </td>
                                                                     <td class="py-3 px-3 text-center">
-                                                                        <span class={`inline-flex px-2 py-0.5 text-[10px] font-bold rounded-full ${act.is_lock
+                                                                        <span class={`inline-flex px-2 py-0.5 text-[10px] font-bold rounded-xs ${act.is_lock
                                                                                 ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
                                                                                 : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
                                                                             }`}>
@@ -1204,12 +1204,12 @@ export default function StudentDashboardProfilePage() {
                                                                                 onClick={() => handlePrintKRS(act)}
                                                                                 disabled={printingId() === `krs-${act.id}`}
                                                                                 title="Print / Download KRS (Study Plan Card)"
-                                                                                class="px-2 py-1 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-lg text-[11px] font-semibold inline-flex items-center gap-1 transition-colors disabled:opacity-50"
+                                                                                class="px-2 py-1 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-xs text-[11px] font-semibold inline-flex items-center gap-1 transition-colors disabled:opacity-50"
                                                                             >
                                                                                 <Show when={printingId() === `krs-${act.id}`} fallback={
                                                                                     <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><path d="M6 14h12v8H6z" /></svg>
                                                                                 }>
-                                                                                    <div class="size-3 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                                                                    <div class="size-3 border-2 border-current border-t-transparent rounded-xs animate-spin"></div>
                                                                                 </Show>
                                                                                 <span>KRS</span>
                                                                             </button>
@@ -1218,18 +1218,18 @@ export default function StudentDashboardProfilePage() {
                                                                                 onClick={() => handlePrintKHS(act)}
                                                                                 disabled={printingId() === `khs-${act.id}`}
                                                                                 title="Print / Download KHS (Study Result Card)"
-                                                                                class="px-2 py-1 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-lg text-[11px] font-semibold inline-flex items-center gap-1 transition-colors disabled:opacity-50"
+                                                                                class="px-2 py-1 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-xs text-[11px] font-semibold inline-flex items-center gap-1 transition-colors disabled:opacity-50"
                                                                             >
                                                                                 <Show when={printingId() === `khs-${act.id}`} fallback={
                                                                                     <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><path d="M6 14h12v8H6z" /></svg>
                                                                                 }>
-                                                                                    <div class="size-3 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                                                                    <div class="size-3 border-2 border-current border-t-transparent rounded-xs animate-spin"></div>
                                                                                 </Show>
                                                                                 <span>KHS</span>
                                                                             </button>
                                                                             <A
                                                                                 href={`/student/academic/student/campaign/activity/${act.id}/show`}
-                                                                                class="px-2.5 py-1 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-lg text-xs font-semibold"
+                                                                                class="px-2.5 py-1 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-xs text-xs font-semibold"
                                                                             >
                                                                                 Details
                                                                             </A>
@@ -1246,17 +1246,17 @@ export default function StudentDashboardProfilePage() {
                                         {/* Mobile Card View (below md) */}
                                         <div class="block md:hidden space-y-3">
                                             <Show when={recentActivities().length > 0} fallback={
-                                                <div class="p-6 text-center text-neutral-400 font-mono text-xs rounded-2xl bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200/80 dark:border-neutral-700/80">
+                                                <div class="p-6 text-center text-neutral-400 font-mono text-xs rounded-xs bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200/80 dark:border-neutral-700/80">
                                                     No semester academic activities recorded for NIM {studentRecord()?.code || '-'}.
                                                 </div>
                                             }>
                                                 <For each={recentActivities()}>
                                                     {(act) => (
-                                                        <div class="p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 space-y-3 hover:border-neutral-300 dark:hover:border-neutral-600 transition-colors">
+                                                        <div class="p-4 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 space-y-3 hover:border-neutral-300 dark:hover:border-neutral-600 transition-colors">
                                                             {/* Card Header: Icon, Semester Title, ID, and Lock Badge */}
                                                             <div class="flex items-start justify-between gap-2">
                                                                 <div class="flex items-start gap-2.5">
-                                                                    <div class="size-8 rounded-lg bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold flex items-center justify-center shrink-0 mt-0.5">
+                                                                    <div class="size-8 rounded-xs bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold flex items-center justify-center shrink-0 mt-0.5">
                                                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" /></svg>
                                                                     </div>
                                                                     <div>
@@ -1268,36 +1268,36 @@ export default function StudentDashboardProfilePage() {
                                                                         </span>
                                                                     </div>
                                                                 </div>
-                                                                <span class={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-bold rounded-full shrink-0 ${act.is_lock
+                                                                <span class={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-bold rounded-xs shrink-0 ${act.is_lock
                                                                         ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
                                                                         : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
                                                                     }`}>
-                                                                    <span class={`size-1.5 rounded-full ${act.is_lock ? 'bg-amber-500' : 'bg-emerald-500'}`}></span>
+                                                                    <span class={`size-1.5 rounded-xs ${act.is_lock ? 'bg-amber-500' : 'bg-emerald-500'}`}></span>
                                                                     {act.is_lock ? 'Locked' : 'Unlocked'}
                                                                 </span>
                                                             </div>
 
                                                             {/* Metric Grid: Semester SKS, Total SKS, IPS, IPK */}
                                                             <div class="grid grid-cols-4 gap-2 pt-2 border-t border-neutral-200/60 dark:border-neutral-800 text-center">
-                                                                <div class="p-2 rounded-xl bg-white dark:bg-neutral-800/80 border border-neutral-200/60 dark:border-neutral-700/60">
+                                                                <div class="p-2 rounded-xs bg-white dark:bg-neutral-800/80 border border-neutral-200/60 dark:border-neutral-700/60">
                                                                     <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">Sem. SKS</span>
                                                                     <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
                                                                         {getActSemesterSks(act)}
                                                                     </span>
                                                                 </div>
-                                                                <div class="p-2 rounded-xl bg-white dark:bg-neutral-800/80 border border-neutral-200/60 dark:border-neutral-700/60">
+                                                                <div class="p-2 rounded-xs bg-white dark:bg-neutral-800/80 border border-neutral-200/60 dark:border-neutral-700/60">
                                                                     <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">Total SKS</span>
                                                                     <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
                                                                         {getActTotalSks(act)}
                                                                     </span>
                                                                 </div>
-                                                                <div class="p-2 rounded-xl bg-white dark:bg-neutral-800/80 border border-neutral-200/60 dark:border-neutral-700/60">
+                                                                <div class="p-2 rounded-xs bg-white dark:bg-neutral-800/80 border border-neutral-200/60 dark:border-neutral-700/60">
                                                                     <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">IPS</span>
                                                                     <span class="font-mono font-bold text-xs text-blue-600 dark:text-blue-400">
                                                                         {Number(getActIps(act)).toFixed(2)}
                                                                     </span>
                                                                 </div>
-                                                                <div class="p-2 rounded-xl bg-white dark:bg-neutral-800/80 border border-neutral-200/60 dark:border-neutral-700/60">
+                                                                <div class="p-2 rounded-xs bg-white dark:bg-neutral-800/80 border border-neutral-200/60 dark:border-neutral-700/60">
                                                                     <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">IPK</span>
                                                                     <span class="font-mono font-bold text-xs text-indigo-600 dark:text-indigo-400">
                                                                         {Number(getActIpk(act)).toFixed(2)}
@@ -1312,12 +1312,12 @@ export default function StudentDashboardProfilePage() {
                                                                     onClick={() => handlePrintKRS(act)}
                                                                     disabled={printingId() === `krs-${act.id}`}
                                                                     title="Print / Download KRS (Study Plan Card)"
-                                                                    class="flex-1 py-1.5 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-xl text-xs font-semibold inline-flex items-center justify-center gap-1 transition-colors disabled:opacity-50"
+                                                                    class="flex-1 py-1.5 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-xs text-xs font-semibold inline-flex items-center justify-center gap-1 transition-colors disabled:opacity-50"
                                                                 >
                                                                     <Show when={printingId() === `krs-${act.id}`} fallback={
                                                                         <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><path d="M6 14h12v8H6z" /></svg>
                                                                     }>
-                                                                        <div class="size-3 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                                                        <div class="size-3 border-2 border-current border-t-transparent rounded-xs animate-spin"></div>
                                                                     </Show>
                                                                     <span>KRS</span>
                                                                 </button>
@@ -1326,18 +1326,18 @@ export default function StudentDashboardProfilePage() {
                                                                     onClick={() => handlePrintKHS(act)}
                                                                     disabled={printingId() === `khs-${act.id}`}
                                                                     title="Print / Download KHS (Study Result Card)"
-                                                                    class="flex-1 py-1.5 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-lg text-xs font-semibold inline-flex items-center justify-center gap-1 transition-colors disabled:opacity-50"
+                                                                    class="flex-1 py-1.5 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-xs text-xs font-semibold inline-flex items-center justify-center gap-1 transition-colors disabled:opacity-50"
                                                                 >
                                                                     <Show when={printingId() === `khs-${act.id}`} fallback={
                                                                         <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><path d="M6 14h12v8H6z" /></svg>
                                                                     }>
-                                                                        <div class="size-3 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                                                        <div class="size-3 border-2 border-current border-t-transparent rounded-xs animate-spin"></div>
                                                                     </Show>
                                                                     <span>KHS</span>
                                                                 </button>
                                                                 <A
                                                                     href={`/student/academic/student/campaign/activity/${act.id}/show`}
-                                                                    class="flex-1 py-1.5 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-xl text-xs font-semibold text-center transition-colors"
+                                                                    class="flex-1 py-1.5 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-xs text-xs font-semibold text-center transition-colors"
                                                                 >
                                                                     Details
                                                                 </A>
@@ -1354,7 +1354,7 @@ export default function StudentDashboardProfilePage() {
                             {/* TAB 2: BIODATA & ADDRESS */}
                             <Show when={activeTab() === 'biodata'}>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-                                    <div class="space-y-4 p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80">
+                                    <div class="space-y-4 p-5 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80">
                                         <h3 class="text-xs font-bold font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
                                             Personal Details
                                         </h3>
@@ -1382,7 +1382,7 @@ export default function StudentDashboardProfilePage() {
                                         </div>
                                     </div>
 
-                                    <div class="space-y-4 p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80">
+                                    <div class="space-y-4 p-5 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80">
                                         <h3 class="text-xs font-bold font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
                                             Permanent Address & Residency
                                         </h3>
@@ -1419,7 +1419,7 @@ export default function StudentDashboardProfilePage() {
                                                 Assigned Academic Advisers & Counsellors
                                             </h3>
                                             <Show when={isSubLoading()}>
-                                                <div class="size-3.5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                                                <div class="size-3.5 border-2 border-blue-500 border-t-transparent rounded-xs animate-spin"></div>
                                             </Show>
                                         </div>
                                         <A href="/student/academic/student/adviser" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
@@ -1428,15 +1428,15 @@ export default function StudentDashboardProfilePage() {
                                     </div>
 
                                     <Show when={advisers().length > 0} fallback={
-                                        <div class="p-8 text-center text-neutral-400 font-mono bg-neutral-50 dark:bg-neutral-900/60 rounded-2xl border border-neutral-200/80 dark:border-neutral-700/80">
+                                        <div class="p-8 text-center text-neutral-400 font-mono bg-neutral-50 dark:bg-neutral-900/60 rounded-xs border border-neutral-200/80 dark:border-neutral-700/80">
                                             No academic advisers assigned yet for NIM {studentRecord()?.code || '-'}.
                                         </div>
                                     }>
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <For each={advisers()}>
                                                 {(adv, idx) => (
-                                                    <div class="p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 flex items-start gap-4">
-                                                        <div class="size-10 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold flex items-center justify-center shrink-0">
+                                                    <div class="p-4 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 flex items-start gap-4">
+                                                        <div class="size-10 rounded-xs bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold flex items-center justify-center shrink-0">
                                                             {idx() + 1}
                                                         </div>
                                                         <div class="flex-1 min-w-0">
@@ -1446,7 +1446,7 @@ export default function StudentDashboardProfilePage() {
                                                             <p class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
                                                                 NIDN: {adv.lecturer_nidn || '-'}
                                                             </p>
-                                                            <span class="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300">
+                                                            <span class="inline-block mt-2 px-2 py-0.5 rounded-xs text-[10px] font-semibold bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300">
                                                                 {adv.role_type || 'Academic Advisor (PA)'}
                                                             </span>
                                                         </div>

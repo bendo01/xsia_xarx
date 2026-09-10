@@ -196,11 +196,11 @@ export default function Login() {
             {/* Background Gradients */}
             <div class="absolute inset-0 w-full h-full pointer-events-none z-0">
                 {/* Top Left Deep Blue */}
-                <div class="absolute -top-[20%] -left-[10%] w-[70%] h-[70%] bg-[#0f3460] rounded-full mix-blend-screen filter blur-[100px] opacity-80"></div>
+                <div class="absolute -top-[20%] -left-[10%] w-[70%] h-[70%] bg-[#0f3460] rounded-xs mix-blend-screen filter blur-[100px] opacity-80"></div>
                 {/* Bottom Left Deep Red */}
-                <div class="absolute -bottom-[20%] -left-[10%] w-[60%] h-[60%] bg-[#e94560] rounded-full mix-blend-multiply filter blur-[120px] opacity-90"></div>
+                <div class="absolute -bottom-[20%] -left-[10%] w-[60%] h-[60%] bg-[#e94560] rounded-xs mix-blend-multiply filter blur-[120px] opacity-90"></div>
                 {/* Bottom Right Bright Orange */}
-                <div class="absolute -bottom-[20%] -right-[10%] w-[70%] h-[70%] bg-[#f9a826] rounded-full mix-blend-screen filter blur-[120px] opacity-70"></div>
+                <div class="absolute -bottom-[20%] -right-[10%] w-[70%] h-[70%] bg-[#f9a826] rounded-xs mix-blend-screen filter blur-[120px] opacity-70"></div>
 
                 {/* Custom SVG Wave for deep ambience */}
                 <svg class="absolute bottom-0 w-full h-[80%] opacity-40 mix-blend-overlay" preserveAspectRatio="none" viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg">
@@ -211,11 +211,11 @@ export default function Login() {
                 <canvas ref={canvasRef} class="absolute inset-0 w-full h-full opacity-60 mix-blend-screen"></canvas>
 
                 {/* Small floating glowing stars */}
-                <div class="absolute top-[25%] left-[20%] w-1 h-1 bg-white rounded-full opacity-60 shadow-[0_0_10px_rgba(255,255,255,0.8)]"></div>
-                <div class="absolute top-[65%] left-[10%] w-1.5 h-1.5 bg-white rounded-full opacity-40 shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
-                <div class="absolute top-[35%] right-[15%] w-1 h-1 bg-white rounded-full opacity-50 shadow-[0_0_10px_rgba(255,255,255,0.8)]"></div>
-                <div class="absolute bottom-[25%] right-[30%] w-2 h-2 bg-white rounded-full opacity-30 shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
-                <div class="absolute top-[15%] right-[40%] w-1 h-1 bg-white rounded-full opacity-30 shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+                <div class="absolute top-[25%] left-[20%] w-1 h-1 bg-white rounded-xs opacity-60 shadow-[0_0_10px_rgba(255,255,255,0.8)]"></div>
+                <div class="absolute top-[65%] left-[10%] w-1.5 h-1.5 bg-white rounded-xs opacity-40 shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+                <div class="absolute top-[35%] right-[15%] w-1 h-1 bg-white rounded-xs opacity-50 shadow-[0_0_10px_rgba(255,255,255,0.8)]"></div>
+                <div class="absolute bottom-[25%] right-[30%] w-2 h-2 bg-white rounded-xs opacity-30 shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+                <div class="absolute top-[15%] right-[40%] w-1 h-1 bg-white rounded-xs opacity-30 shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
             </div>
 
             {/* Language Switcher on Login page */}
@@ -223,7 +223,7 @@ export default function Login() {
                 <button
                     onClick={toggleLocale}
                     type="button"
-                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs font-semibold backdrop-blur-md transition-all shadow-lg"
+                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-xs bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs font-semibold backdrop-blur-md transition-all shadow-lg"
                     aria-label={t('nav.selectLanguage')}
                     title={t('nav.selectLanguage')}
                 >
@@ -233,10 +233,10 @@ export default function Login() {
             </div>
 
             {/* Glassmorphism Card */}
-            <div class="relative z-10 w-full max-w-lg p-8 sm:p-10 bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] rounded-[2rem] flex flex-col items-center">
+            <div class="relative z-10 w-full max-w-lg p-8 sm:p-10 bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] rounded-xs flex flex-col items-center">
 
                 {/* Logo */}
-                <div class="w-[90px] h-[90px] rounded-full bg-[#1A1A1D]/80 border-[3px] border-[#3A76F0] flex items-center justify-center mb-5 shadow-[0_0_30px_rgba(58,118,240,0.45)] relative overflow-hidden transition-transform duration-300 hover:scale-105">
+                <div class="w-[90px] h-[90px] rounded-xs bg-[#1A1A1D]/80 border-[3px] border-[#3A76F0] flex items-center justify-center mb-5 shadow-[0_0_30px_rgba(58,118,240,0.45)] relative overflow-hidden transition-transform duration-300 hover:scale-105">
                     <svg width="42" height="42" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M3.5 16.5L3.5 8.5L8.5 13.5L8.5 21.5L3.5 16.5Z" fill="white" />
                         <path d="M9.5 12.5L9.5 4.5L14.5 9.5L14.5 17.5L9.5 12.5Z" fill="white" />
@@ -258,7 +258,7 @@ export default function Login() {
 
                 {/* Error Alert Box */}
                 <Show when={errorMessage()}>
-                    <div class="w-full mb-5 p-3.5 bg-red-500/15 border border-red-500/30 rounded-xl flex items-center gap-3 text-red-200 text-xs font-medium animate-fadeIn">
+                    <div class="w-full mb-5 p-3.5 bg-red-500/15 border border-red-500/30 rounded-xs flex items-center gap-3 text-red-200 text-xs font-medium animate-fadeIn">
                         <svg class="shrink-0 size-4 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10" />
                             <line x1="12" y1="8" x2="12" y2="12" />
@@ -313,7 +313,7 @@ export default function Login() {
                                             field().handleChange(e.currentTarget.value);
                                             if (errorMessage()) setErrorMessage(null);
                                         }}
-                                        class="w-full bg-[#1c1a1f]/50 border border-white/10 text-white placeholder-white/30 pl-11 pr-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 focus:bg-[#1c1a1f]/75 transition-all text-sm shadow-inner"
+                                        class="w-full bg-[#1c1a1f]/50 border border-white/10 text-white placeholder-white/30 pl-11 pr-4 py-3 rounded-xs focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 focus:bg-[#1c1a1f]/75 transition-all text-sm shadow-inner"
                                     />
                                 </div>
                             </div>
@@ -347,7 +347,7 @@ export default function Login() {
                                             field().handleChange(e.currentTarget.value);
                                             if (errorMessage()) setErrorMessage(null);
                                         }}
-                                        class="w-full bg-[#1c1a1f]/50 border border-white/10 text-white placeholder-white/30 pl-11 pr-11 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 focus:bg-[#1c1a1f]/75 transition-all text-sm shadow-inner"
+                                        class="w-full bg-[#1c1a1f]/50 border border-white/10 text-white placeholder-white/30 pl-11 pr-11 py-3 rounded-xs focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 focus:bg-[#1c1a1f]/75 transition-all text-sm shadow-inner"
                                     />
                                     <button
                                         type="button"
@@ -381,7 +381,7 @@ export default function Login() {
                                 type="checkbox"
                                 checked={rememberMe()}
                                 onChange={(e) => setRememberMe(e.currentTarget.checked)}
-                                class="rounded border-white/20 bg-white/10 text-blue-500 focus:ring-0 focus:ring-offset-0 cursor-pointer size-3.5"
+                                class="rounded-xs border-white/20 bg-white/10 text-blue-500 focus:ring-0 focus:ring-offset-0 cursor-pointer size-3.5"
                             />
                             <span>{t('auth.login.rememberMe')}</span>
                         </label>
@@ -393,7 +393,7 @@ export default function Login() {
                             <button
                                 type="submit"
                                 disabled={!canSubmit() || isLoading()}
-                                class="w-full mt-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 px-4 rounded-xl border border-white/10 transition-all duration-300 shadow-[0_4px_20px_rgba(58,118,240,0.35)] hover:shadow-[0_6px_25px_rgba(58,118,240,0.5)] active:scale-[0.99] text-xs tracking-[0.12em] uppercase disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                class="w-full mt-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 px-4 rounded-xs border border-white/10 transition-all duration-300 shadow-[0_4px_20px_rgba(58,118,240,0.35)] hover:shadow-[0_6px_25px_rgba(58,118,240,0.5)] active:scale-[0.99] text-xs tracking-[0.12em] uppercase disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 <Show when={isLoading()} fallback={
                                     <>

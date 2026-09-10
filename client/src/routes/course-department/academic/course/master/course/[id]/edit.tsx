@@ -290,7 +290,7 @@ export default function CourseMasterEditPage() {
                     <div class="mt-4 sm:mt-0 flex items-center gap-2">
                         <a
                             href={backUrl()}
-                            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-white dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/60 rounded-none shadow-2xs transition-colors"
+                            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-white dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/60 rounded-xs shadow-2xs transition-colors"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6"/>
@@ -572,7 +572,7 @@ export default function CourseMasterEditPage() {
                                         id="manualTotalCheckEdit"
                                         checked={isManualTotalCredit()}
                                         onChange={(e) => setIsManualTotalCredit(e.currentTarget.checked)}
-                                        class="rounded-none border-neutral-300 text-blue-600 focus:ring-blue-500"
+                                        class="rounded-xs border-neutral-300 text-blue-600 focus:ring-blue-500"
                                     />
                                     <label for="manualTotalCheckEdit" class="text-neutral-600 dark:text-neutral-400 cursor-pointer">
                                         Manually override total SKS
@@ -619,7 +619,7 @@ export default function CourseMasterEditPage() {
                                                 type="checkbox"
                                                 checked={hasSyllabus()}
                                                 onChange={(e) => setHasSyllabus(e.currentTarget.checked)}
-                                                class="rounded-none border-neutral-300 text-blue-600 focus:ring-blue-500"
+                                                class="rounded-xs border-neutral-300 text-blue-600 focus:ring-blue-500"
                                             />
                                             <span>Syllabus Available (Memiliki RPS / Silabus)</span>
                                         </label>
@@ -629,7 +629,7 @@ export default function CourseMasterEditPage() {
                                                 type="checkbox"
                                                 checked={hasMaterial()}
                                                 onChange={(e) => setHasMaterial(e.currentTarget.checked)}
-                                                class="rounded-none border-neutral-300 text-blue-600 focus:ring-blue-500"
+                                                class="rounded-xs border-neutral-300 text-blue-600 focus:ring-blue-500"
                                             />
                                             <span>Learning Material / SAP (Memiliki Bahan Ajar)</span>
                                         </label>
@@ -639,7 +639,7 @@ export default function CourseMasterEditPage() {
                                                 type="checkbox"
                                                 checked={hasPractice()}
                                                 onChange={(e) => setHasPractice(e.currentTarget.checked)}
-                                                class="rounded-none border-neutral-300 text-blue-600 focus:ring-blue-500"
+                                                class="rounded-xs border-neutral-300 text-blue-600 focus:ring-blue-500"
                                             />
                                             <span>Has Practical Sessions (Ada Praktikum)</span>
                                         </label>
@@ -649,7 +649,7 @@ export default function CourseMasterEditPage() {
                                                 type="checkbox"
                                                 checked={hasDictation()}
                                                 onChange={(e) => setHasDictation(e.currentTarget.checked)}
-                                                class="rounded-none border-neutral-300 text-blue-600 focus:ring-blue-500"
+                                                class="rounded-xs border-neutral-300 text-blue-600 focus:ring-blue-500"
                                             />
                                             <span>Has Dictation / Module (Memiliki Diktat Kuliah)</span>
                                         </label>
@@ -659,7 +659,7 @@ export default function CourseMasterEditPage() {
                                                 type="checkbox"
                                                 checked={hasUnit()}
                                                 onChange={(e) => setHasUnit(e.currentTarget.checked)}
-                                                class="rounded-none border-neutral-300 text-blue-600 focus:ring-blue-500"
+                                                class="rounded-xs border-neutral-300 text-blue-600 focus:ring-blue-500"
                                             />
                                             <span>Unit Specific Course (Memiliki Unit Pengampu)</span>
                                         </label>

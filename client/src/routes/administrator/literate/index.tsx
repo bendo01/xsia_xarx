@@ -117,11 +117,11 @@ export default function LiterateHubPage() {
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-                <div class="bg-white dark:bg-neutral-800 rounded-2xl p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
-                            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold mb-2 border border-blue-200 dark:border-blue-800/80">
-                                <span class="size-1.5 rounded-full bg-blue-500"></span>
+                            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold mb-2 border border-blue-200 dark:border-blue-800/80">
+                                <span class="size-1.5 rounded-xs bg-blue-500"></span>
                                 <span>Literate Module</span>
                             </div>
                             <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
@@ -139,14 +139,14 @@ export default function LiterateHubPage() {
                         {(mod) => (
                             <A
                                 href={mod.href}
-                                class="group bg-white dark:bg-neutral-800 rounded-2xl p-6 border border-neutral-200 dark:border-neutral-700 hover:border-blue-500 dark:hover:border-blue-500 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between"
+                                class="group bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200 dark:border-neutral-700 hover:border-blue-500 dark:hover:border-blue-500 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between"
                             >
                                 <div>
                                     <div class="flex items-center justify-between mb-4">
-                                        <div class="p-3 bg-neutral-50 dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-700 group-hover:scale-105 transition-transform">
+                                        <div class="p-3 bg-neutral-50 dark:bg-neutral-900 rounded-xs border border-neutral-200 dark:border-neutral-700 group-hover:scale-105 transition-transform">
                                             {mod.icon}
                                         </div>
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-neutral-100 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-xs text-xs font-mono font-semibold bg-neutral-100 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200">
                                             {isLoading() ? '...' : `${mod.count} records`}
                                         </span>
                                     </div>

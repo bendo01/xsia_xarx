@@ -148,14 +148,14 @@ export default function InstitutionMasterInstitutionShowPage() {
 
                 <Show when={isLoading()}>
                     <div class="p-12 text-center bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-3">
-                        <div class="animate-spin size-8 border-3 border-blue-600 border-t-transparent rounded-full mx-auto"></div>
+                        <div class="animate-spin size-8 border-3 border-blue-600 border-t-transparent rounded-xs mx-auto"></div>
                         <p class="text-xs sm:text-sm text-neutral-500">Loading institution profile details and related data...</p>
                     </div>
                 </Show>
 
                 <Show when={!isLoading() && !institutionData()}>
                     <div class="p-12 text-center bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
-                        <div class="size-12 rounded-full bg-red-100 dark:bg-red-950/50 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto">
+                        <div class="size-12 rounded-xs bg-red-100 dark:bg-red-950/50 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto">
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <circle cx="12" cy="12" r="10" />
                                 <line x1="12" y1="8" x2="12" y2="12" />
@@ -343,7 +343,7 @@ export default function InstitutionMasterInstitutionShowPage() {
                                         class={`px-4 py-3 text-xs sm:text-sm font-medium border-b-2 transition-colors cursor-pointer flex items-center gap-2 shrink-0 ${activeTab() === 'units' ? 'border-blue-600 text-blue-600 dark:text-blue-400 font-semibold' : 'border-transparent text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'}`}
                                     >
                                         <span>Units & Divisions</span>
-                                        <span class={`px-1.5 py-0.2 text-[10px] rounded-full font-mono ${activeTab() === 'units' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'}`}>
+                                        <span class={`px-1.5 py-0.2 text-[10px] rounded-xs font-mono ${activeTab() === 'units' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'}`}>
                                             {institutionData()?.units?.length || 0}
                                         </span>
                                     </button>
@@ -354,7 +354,7 @@ export default function InstitutionMasterInstitutionShowPage() {
                                         class={`px-4 py-3 text-xs sm:text-sm font-medium border-b-2 transition-colors cursor-pointer flex items-center gap-2 shrink-0 ${activeTab() === 'employees' ? 'border-blue-600 text-blue-600 dark:text-blue-400 font-semibold' : 'border-transparent text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'}`}
                                     >
                                         <span>Employees</span>
-                                        <span class={`px-1.5 py-0.2 text-[10px] rounded-full font-mono ${activeTab() === 'employees' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'}`}>
+                                        <span class={`px-1.5 py-0.2 text-[10px] rounded-xs font-mono ${activeTab() === 'employees' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'}`}>
                                             {institutionData()?.employees?.length || 0}
                                         </span>
                                     </button>
@@ -365,7 +365,7 @@ export default function InstitutionMasterInstitutionShowPage() {
                                         class={`px-4 py-3 text-xs sm:text-sm font-medium border-b-2 transition-colors cursor-pointer flex items-center gap-2 shrink-0 ${activeTab() === 'lecturers' ? 'border-blue-600 text-blue-600 dark:text-blue-400 font-semibold' : 'border-transparent text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'}`}
                                     >
                                         <span>Faculty / Lecturers</span>
-                                        <span class={`px-1.5 py-0.2 text-[10px] rounded-full font-mono ${activeTab() === 'lecturers' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'}`}>
+                                        <span class={`px-1.5 py-0.2 text-[10px] rounded-xs font-mono ${activeTab() === 'lecturers' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'}`}>
                                             {institutionData()?.lecturers?.length || 0}
                                         </span>
                                     </button>
@@ -376,7 +376,7 @@ export default function InstitutionMasterInstitutionShowPage() {
                                         class={`px-4 py-3 text-xs sm:text-sm font-medium border-b-2 transition-colors cursor-pointer flex items-center gap-2 shrink-0 ${activeTab() === 'candidates' ? 'border-blue-600 text-blue-600 dark:text-blue-400 font-semibold' : 'border-transparent text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'}`}
                                     >
                                         <span>Registered Candidates</span>
-                                        <span class={`px-1.5 py-0.2 text-[10px] rounded-full font-mono ${activeTab() === 'candidates' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'}`}>
+                                        <span class={`px-1.5 py-0.2 text-[10px] rounded-xs font-mono ${activeTab() === 'candidates' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'}`}>
                                             {institutionData()?.candidates?.length || 0}
                                         </span>
                                     </button>

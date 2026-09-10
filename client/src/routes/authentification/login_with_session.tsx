@@ -164,11 +164,11 @@ export default function LoginWithSession() {
             {/* Ambient Background Gradient Spheres */}
             <div class="absolute inset-0 w-full h-full pointer-events-none z-0">
                 {/* Emerald/Cyan Glow Top Left */}
-                <div class="absolute -top-[15%] -left-[10%] w-[65%] h-[65%] bg-[#0d9488]/30 rounded-full mix-blend-screen filter blur-[120px] opacity-70"></div>
+                <div class="absolute -top-[15%] -left-[10%] w-[65%] h-[65%] bg-[#0d9488]/30 rounded-xs mix-blend-screen filter blur-[120px] opacity-70"></div>
                 {/* Deep Indigo Bottom Left */}
-                <div class="absolute -bottom-[20%] -left-[10%] w-[60%] h-[60%] bg-[#3b82f6]/25 rounded-full mix-blend-screen filter blur-[120px] opacity-60"></div>
+                <div class="absolute -bottom-[20%] -left-[10%] w-[60%] h-[60%] bg-[#3b82f6]/25 rounded-xs mix-blend-screen filter blur-[120px] opacity-60"></div>
                 {/* Emerald/Teal Glow Bottom Right */}
-                <div class="absolute -bottom-[15%] -right-[10%] w-[65%] h-[65%] bg-[#10b981]/25 rounded-full mix-blend-screen filter blur-[120px] opacity-60"></div>
+                <div class="absolute -bottom-[15%] -right-[10%] w-[65%] h-[65%] bg-[#10b981]/25 rounded-xs mix-blend-screen filter blur-[120px] opacity-60"></div>
 
                 {/* Particle Network Canvas */}
                 <canvas ref={canvasRef} class="absolute inset-0 w-full h-full opacity-70"></canvas>
@@ -179,7 +179,7 @@ export default function LoginWithSession() {
                 <button
                     onClick={toggleLocale}
                     type="button"
-                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs font-semibold backdrop-blur-md transition-all shadow-lg"
+                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-xs bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs font-semibold backdrop-blur-md transition-all shadow-lg"
                     aria-label={t('nav.selectLanguage')}
                     title={t('nav.selectLanguage')}
                 >
@@ -189,16 +189,16 @@ export default function LoginWithSession() {
             </div>
 
             {/* Glassmorphic Session Card */}
-            <div class="relative z-10 w-full max-w-lg p-8 sm:p-10 bg-slate-900/60 backdrop-blur-2xl border border-emerald-500/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] rounded-[2rem] flex flex-col items-center">
+            <div class="relative z-10 w-full max-w-lg p-8 sm:p-10 bg-slate-900/60 backdrop-blur-2xl border border-emerald-500/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] rounded-xs flex flex-col items-center">
 
                 {/* Security Badge Pill */}
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold tracking-wide mb-5 animate-pulse">
-                    <span class="size-2 rounded-full bg-emerald-400"></span>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-xs bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold tracking-wide mb-5 animate-pulse">
+                    <span class="size-2 rounded-xs bg-emerald-400"></span>
                     <span>{t('auth.session.ephemeralBadge')}</span>
                 </div>
 
                 {/* Logo with Emerald Glow */}
-                <div class="w-[85px] h-[85px] rounded-full bg-[#111827]/90 border-[3px] border-emerald-500/80 flex items-center justify-center mb-4 shadow-[0_0_30px_rgba(16,185,129,0.35)] relative overflow-hidden transition-transform duration-300 hover:scale-105">
+                <div class="w-[85px] h-[85px] rounded-xs bg-[#111827]/90 border-[3px] border-emerald-500/80 flex items-center justify-center mb-4 shadow-[0_0_30px_rgba(16,185,129,0.35)] relative overflow-hidden transition-transform duration-300 hover:scale-105">
                     <svg class="size-10 text-emerald-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -214,7 +214,7 @@ export default function LoginWithSession() {
                 </p>
 
                 {/* Info Notice Box */}
-                <div class="w-full mb-6 p-3 bg-emerald-950/40 border border-emerald-500/20 rounded-xl flex items-start gap-2.5 text-emerald-200/90 text-xs leading-relaxed">
+                <div class="w-full mb-6 p-3 bg-emerald-950/40 border border-emerald-500/20 rounded-xs flex items-start gap-2.5 text-emerald-200/90 text-xs leading-relaxed">
                     <svg class="shrink-0 size-4 text-emerald-400 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"/>
                         <line x1="12" y1="16" x2="12" y2="12"/>
@@ -227,7 +227,7 @@ export default function LoginWithSession() {
 
                 {/* Error Alert Box */}
                 <Show when={errorMessage()}>
-                    <div class="w-full mb-5 p-3.5 bg-red-500/15 border border-red-500/30 rounded-xl flex items-center gap-3 text-red-200 text-xs font-medium animate-fadeIn">
+                    <div class="w-full mb-5 p-3.5 bg-red-500/15 border border-red-500/30 rounded-xs flex items-center gap-3 text-red-200 text-xs font-medium animate-fadeIn">
                         <svg class="shrink-0 size-4 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10" />
                             <line x1="12" y1="8" x2="12" y2="12" />
@@ -282,7 +282,7 @@ export default function LoginWithSession() {
                                             field().handleChange(e.currentTarget.value);
                                             if (errorMessage()) setErrorMessage(null);
                                         }}
-                                        class="w-full bg-[#111827]/70 border border-emerald-500/20 text-white placeholder-white/30 pl-11 pr-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400/50 transition-all text-sm shadow-inner"
+                                        class="w-full bg-[#111827]/70 border border-emerald-500/20 text-white placeholder-white/30 pl-11 pr-4 py-3 rounded-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400/50 transition-all text-sm shadow-inner"
                                     />
                                 </div>
                             </div>
@@ -314,7 +314,7 @@ export default function LoginWithSession() {
                                             field().handleChange(e.currentTarget.value);
                                             if (errorMessage()) setErrorMessage(null);
                                         }}
-                                        class="w-full bg-[#111827]/70 border border-emerald-500/20 text-white placeholder-white/30 pl-11 pr-11 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400/50 transition-all text-sm shadow-inner"
+                                        class="w-full bg-[#111827]/70 border border-emerald-500/20 text-white placeholder-white/30 pl-11 pr-11 py-3 rounded-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400/50 transition-all text-sm shadow-inner"
                                     />
                                     <button
                                         type="button"
@@ -347,7 +347,7 @@ export default function LoginWithSession() {
                             <button
                                 type="submit"
                                 disabled={!canSubmit() || isLoading()}
-                                class="w-full mt-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-3.5 px-4 rounded-xl border border-emerald-400/20 transition-all duration-300 shadow-[0_4px_20px_rgba(16,185,129,0.3)] hover:shadow-[0_6px_25px_rgba(16,185,129,0.45)] active:scale-[0.99] text-xs tracking-[0.12em] uppercase disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                class="w-full mt-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-3.5 px-4 rounded-xs border border-emerald-400/20 transition-all duration-300 shadow-[0_4px_20px_rgba(16,185,129,0.3)] hover:shadow-[0_6px_25px_rgba(16,185,129,0.45)] active:scale-[0.99] text-xs tracking-[0.12em] uppercase disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 <Show when={isLoading()} fallback={
                                     <>

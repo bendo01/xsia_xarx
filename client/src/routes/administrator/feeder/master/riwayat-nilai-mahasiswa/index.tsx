@@ -112,7 +112,7 @@ export default function FeederMasterIndexPage() {
                             </div>
                             <input
                                 type="text"
-                                class="block w-full p-2.5 pl-10 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                                class="block w-full p-2.5 pl-10 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                                 placeholder="Search records..."
                                 onInput={handleSearch}
                             />
@@ -121,7 +121,7 @@ export default function FeederMasterIndexPage() {
 
                     <div class="w-full md:w-1/3 flex gap-2">
                         <select
-                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                             value={sortParam()}
                             onChange={(e) => {
                                 setSortParam((e.target as HTMLSelectElement).value);
@@ -133,7 +133,7 @@ export default function FeederMasterIndexPage() {
                         </select>
 
                         <select
-                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-none bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                             value={itemsPerPage()}
                             onChange={(e) => {
                                 setItemsPerPage(Number((e.target as HTMLSelectElement).value));

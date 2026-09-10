@@ -198,7 +198,7 @@ export default function PersonMasterIndividualShowPage() {
                         {/* Back Button */}
                         <a
                             href="/person/master/individual"
-                            class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium bg-white hover:bg-neutral-50 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 rounded-none shadow-2xs transition-colors cursor-pointer"
+                            class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium bg-white hover:bg-neutral-50 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 rounded-xs shadow-2xs transition-colors cursor-pointer"
                             id="btn-back-to-list"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -211,7 +211,7 @@ export default function PersonMasterIndividualShowPage() {
                         <button
                             type="button"
                             onClick={printPage}
-                            class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium bg-white hover:bg-neutral-50 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 rounded-none shadow-2xs transition-colors cursor-pointer"
+                            class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium bg-white hover:bg-neutral-50 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 rounded-xs shadow-2xs transition-colors cursor-pointer"
                             id="btn-print-profile"
                             title="Print profile sheet"
                         >
@@ -226,7 +226,7 @@ export default function PersonMasterIndividualShowPage() {
                         {/* Edit Button */}
                         <a
                             href={`/person/master/individual/edit?id=${individualData()?.individual.id || ''}`}
-                            class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-none shadow-2xs transition-colors cursor-pointer"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs shadow-2xs transition-colors cursor-pointer"
                             id="btn-edit-individual"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -299,7 +299,7 @@ export default function PersonMasterIndividualShowPage() {
                                     <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-1.5">
                                         {/* Status & Role Tags */}
                                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                                            <span class="size-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                            <span class="size-1.5 rounded-xs bg-emerald-500 animate-pulse"></span>
                                             Active Record
                                         </span>
 
@@ -494,7 +494,7 @@ export default function PersonMasterIndividualShowPage() {
                             </svg>
                             <span class="hidden sm:inline">3. Family Card</span>
                             <Show when={(individualData()?.family_card_members || []).length > 0}>
-                                <span class="hidden sm:inline-block px-1.5 py-0.2 text-[10px] rounded-full bg-neutral-200 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 font-bold">
+                                <span class="hidden sm:inline-block px-1.5 py-0.2 text-[10px] rounded-xs bg-neutral-200 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 font-bold">
                                     {(individualData()?.family_card_members || []).length}
                                 </span>
                             </Show>
@@ -516,7 +516,7 @@ export default function PersonMasterIndividualShowPage() {
                             </svg>
                             <span class="hidden sm:inline">4. Academic & Staff Roles</span>
                             <Show when={totalRolesCount() > 0}>
-                                <span class="hidden sm:inline-block px-1.5 py-0.2 text-[10px] rounded-full bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300 font-bold">
+                                <span class="hidden sm:inline-block px-1.5 py-0.2 text-[10px] rounded-xs bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300 font-bold">
                                     {totalRolesCount()}
                                 </span>
                             </Show>
@@ -1238,7 +1238,7 @@ export default function PersonMasterIndividualShowPage() {
             {/* ========================================================= */}
             <dialog
                 ref={photoDialogRef}
-                class="fixed inset-0 m-auto p-0 rounded-none bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-2xl text-neutral-900 dark:text-neutral-100 max-w-md w-full"
+                class="fixed inset-0 m-auto p-0 rounded-xs bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-2xl text-neutral-900 dark:text-neutral-100 max-w-md w-full"
                 onClick={(e) => {
                     if (e.target === e.currentTarget) closePhotoModal();
                 }}
@@ -1303,14 +1303,14 @@ export default function PersonMasterIndividualShowPage() {
                             <button
                                 type="button"
                                 onClick={() => fileInputRef.click()}
-                                class="px-4 py-2 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-none shadow-xs transition-colors cursor-pointer"
+                                class="px-4 py-2 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs shadow-xs transition-colors cursor-pointer"
                             >
                                 Upload Photo
                             </button>
                             <button
                                 type="button"
                                 onClick={closePhotoModal}
-                                class="px-4 py-2 text-xs font-medium text-neutral-700 dark:text-neutral-200 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 rounded-none border border-neutral-300 dark:border-neutral-600 transition-colors cursor-pointer"
+                                class="px-4 py-2 text-xs font-medium text-neutral-700 dark:text-neutral-200 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 rounded-xs border border-neutral-300 dark:border-neutral-600 transition-colors cursor-pointer"
                             >
                                 Close
                             </button>

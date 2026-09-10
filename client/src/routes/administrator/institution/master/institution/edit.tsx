@@ -215,7 +215,7 @@ export default function InstitutionMasterInstitutionEditPage() {
 
                 <Show when={isLoading()}>
                     <div class="p-8 text-center bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 space-y-2">
-                        <div class="animate-spin size-6 border-2 border-blue-600 border-t-transparent rounded-full mx-auto"></div>
+                        <div class="animate-spin size-6 border-2 border-blue-600 border-t-transparent rounded-xs mx-auto"></div>
                         <p class="text-xs text-neutral-500">Loading institution details...</p>
                     </div>
                 </Show>
@@ -245,7 +245,7 @@ export default function InstitutionMasterInstitutionEditPage() {
                                     </label>
                                     <input
                                         type="text"
-                                        class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().name ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500 focus:border-blue-500'} text-neutral-900 dark:text-white rounded-none`}
+                                        class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().name ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500 focus:border-blue-500'} text-neutral-900 dark:text-white rounded-xs`}
                                         value={formData().name}
                                         onInput={(e) => updateField('name', (e.target as HTMLInputElement).value)}
                                         required
@@ -262,7 +262,7 @@ export default function InstitutionMasterInstitutionEditPage() {
                                     </label>
                                     <input
                                         type="text"
-                                        class={`block w-full p-2.5 text-xs sm:text-sm font-mono bg-white dark:bg-neutral-900 border ${errors().code ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500 focus:border-blue-500'} text-neutral-900 dark:text-white rounded-none`}
+                                        class={`block w-full p-2.5 text-xs sm:text-sm font-mono bg-white dark:bg-neutral-900 border ${errors().code ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500 focus:border-blue-500'} text-neutral-900 dark:text-white rounded-xs`}
                                         value={formData().code}
                                         onInput={(e) => updateField('code', (e.target as HTMLInputElement).value)}
                                         required
@@ -279,7 +279,7 @@ export default function InstitutionMasterInstitutionEditPage() {
                                     </label>
                                     <input
                                         type="text"
-                                        class="block w-full p-2.5 text-xs sm:text-sm font-mono bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-none focus:ring-blue-500 focus:border-blue-500"
+                                        class="block w-full p-2.5 text-xs sm:text-sm font-mono bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
                                         value={formData().alphabet_code}
                                         onInput={(e) => updateField('alphabet_code', (e.target as HTMLInputElement).value)}
                                     />
@@ -290,7 +290,7 @@ export default function InstitutionMasterInstitutionEditPage() {
                                     <label class="relative flex items-center gap-3 p-3.5 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-750 transition-colors cursor-pointer">
                                         <input
                                             type="checkbox"
-                                            class="size-4 text-blue-600 border-neutral-300 rounded-none focus:ring-blue-500"
+                                            class="size-4 text-blue-600 border-neutral-300 rounded-xs focus:ring-blue-500"
                                             checked={formData().is_active}
                                             onChange={(e) => updateField('is_active', (e.target as HTMLInputElement).checked)}
                                         />
@@ -324,7 +324,7 @@ export default function InstitutionMasterInstitutionEditPage() {
                                         Variety <span class="text-red-500">*</span>
                                     </label>
                                     <select
-                                        class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().variety_id ? 'border-red-500' : 'border-neutral-300 dark:border-neutral-700'} text-neutral-900 dark:text-white rounded-none focus:ring-blue-500 focus:border-blue-500`}
+                                        class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().variety_id ? 'border-red-500' : 'border-neutral-300 dark:border-neutral-700'} text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500`}
                                         value={formData().variety_id}
                                         onChange={(e) => updateField('variety_id', (e.target as HTMLSelectElement).value)}
                                         required
@@ -345,7 +345,7 @@ export default function InstitutionMasterInstitutionEditPage() {
                                         Category <span class="text-red-500">*</span>
                                     </label>
                                     <select
-                                        class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().category_id ? 'border-red-500' : 'border-neutral-300 dark:border-neutral-700'} text-neutral-900 dark:text-white rounded-none focus:ring-blue-500 focus:border-blue-500`}
+                                        class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().category_id ? 'border-red-500' : 'border-neutral-300 dark:border-neutral-700'} text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500`}
                                         value={formData().category_id}
                                         onChange={(e) => updateField('category_id', (e.target as HTMLSelectElement).value)}
                                         required
@@ -366,7 +366,7 @@ export default function InstitutionMasterInstitutionEditPage() {
                                         Country <span class="text-red-500">*</span>
                                     </label>
                                     <select
-                                        class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().country_id ? 'border-red-500' : 'border-neutral-300 dark:border-neutral-700'} text-neutral-900 dark:text-white rounded-none focus:ring-blue-500 focus:border-blue-500`}
+                                        class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().country_id ? 'border-red-500' : 'border-neutral-300 dark:border-neutral-700'} text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500`}
                                         value={formData().country_id}
                                         onChange={(e) => updateField('country_id', (e.target as HTMLSelectElement).value)}
                                         required
@@ -387,7 +387,7 @@ export default function InstitutionMasterInstitutionEditPage() {
                                         Parent Institution (Optional)
                                     </label>
                                     <select
-                                        class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-none focus:ring-blue-500 focus:border-blue-500"
+                                        class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
                                         value={formData().parent_id}
                                         onChange={(e) => updateField('parent_id', (e.target as HTMLSelectElement).value)}
                                     >
@@ -404,7 +404,7 @@ export default function InstitutionMasterInstitutionEditPage() {
                                         Academic Year (Optional)
                                     </label>
                                     <select
-                                        class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-none focus:ring-blue-500 focus:border-blue-500"
+                                        class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
                                         value={formData().academic_year_id}
                                         onChange={(e) => updateField('academic_year_id', (e.target as HTMLSelectElement).value)}
                                     >
@@ -422,7 +422,7 @@ export default function InstitutionMasterInstitutionEditPage() {
                                     </label>
                                     <input
                                         type="text"
-                                        class="block w-full p-2.5 text-xs sm:text-sm font-mono bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-none focus:ring-blue-500 focus:border-blue-500"
+                                        class="block w-full p-2.5 text-xs sm:text-sm font-mono bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
                                         value={formData().feeder_id}
                                         onInput={(e) => updateField('feeder_id', (e.target as HTMLInputElement).value)}
                                     />

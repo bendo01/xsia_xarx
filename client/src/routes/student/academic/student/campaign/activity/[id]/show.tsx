@@ -253,7 +253,7 @@ export default function StudentCampaignActivityShowPage() {
                 <For each={c.lecturers}>
                     {(lecturer: any) => (
                         <span class="inline-flex items-center gap-1.5 leading-snug">
-                            <span class="size-1 rounded-full bg-neutral-400 dark:bg-neutral-500 shrink-0"></span>
+                            <span class="size-1 rounded-xs bg-neutral-400 dark:bg-neutral-500 shrink-0"></span>
                             {typeof lecturer === 'string' ? (
                                 <span>{lecturer}</span>
                             ) : (() => {
@@ -308,11 +308,11 @@ export default function StudentCampaignActivityShowPage() {
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
                 {/* Header Card */}
-                <div class="bg-white dark:bg-neutral-800 rounded-3xl p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div class="space-y-1">
-                            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-xs font-mono font-semibold border border-indigo-200 dark:border-indigo-800/80">
-                                <span class="size-1.5 rounded-full bg-indigo-500"></span>
+                            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-xs bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-xs font-mono font-semibold border border-indigo-200 dark:border-indigo-800/80">
+                                <span class="size-1.5 rounded-xs bg-indigo-500"></span>
                                 <span>Academic Student Activity Detail</span>
                             </div>
                             <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900 dark:text-white">
@@ -327,7 +327,7 @@ export default function StudentCampaignActivityShowPage() {
                         <div class="flex flex-wrap items-center gap-3">
                             <A
                                 href="/student/academic/student/campaign/activity"
-                                class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xl text-xs font-bold transition-colors"
+                                class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xs text-xs font-bold transition-colors"
                             >
                                 ← Back to Activities
                             </A>
@@ -335,12 +335,12 @@ export default function StudentCampaignActivityShowPage() {
                                 type="button"
                                 onClick={handlePrintKRS}
                                 disabled={isPrintingKRS()}
-                                class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xs text-xs font-bold transition-colors flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                                 title="Print Study Plan Card (KRS)"
                             >
                                 <Show
                                     when={!isPrintingKRS()}
-                                    fallback={<div class="size-4 border-2 border-neutral-400 border-t-transparent rounded-full animate-spin"></div>}
+                                    fallback={<div class="size-4 border-2 border-neutral-400 border-t-transparent rounded-xs animate-spin"></div>}
                                 >
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect width="12" height="8" x="6" y="14" /></svg>
                                 </Show>
@@ -350,12 +350,12 @@ export default function StudentCampaignActivityShowPage() {
                                 type="button"
                                 onClick={handlePrintKHS}
                                 disabled={isPrintingKHS()}
-                                class="px-4 py-2.5 bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/80 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="px-4 py-2.5 bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/80 rounded-xs text-xs font-bold transition-colors flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                                 title="Print Study Result Card (KHS)"
                             >
                                 <Show
                                     when={!isPrintingKHS()}
-                                    fallback={<div class="size-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin"></div>}
+                                    fallback={<div class="size-4 border-2 border-indigo-400 border-t-transparent rounded-xs animate-spin"></div>}
                                 >
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
                                 </Show>
@@ -367,7 +367,7 @@ export default function StudentCampaignActivityShowPage() {
                                     <button
                                         type="button"
                                         disabled
-                                        class="px-5 py-2.5 bg-neutral-200 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-500 rounded-xl text-xs font-bold transition-colors cursor-not-allowed flex items-center gap-1.5 opacity-60"
+                                        class="px-5 py-2.5 bg-neutral-200 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-500 rounded-xs text-xs font-bold transition-colors cursor-not-allowed flex items-center gap-1.5 opacity-60"
                                         title="Academic activity is locked"
                                     >
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>
@@ -377,7 +377,7 @@ export default function StudentCampaignActivityShowPage() {
                             >
                                 <A
                                     href={`/student/academic/student/campaign/activity/${activity()?.id || ''}/enrollment`}
-                                    class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5"
+                                    class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xs text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5"
                                 >
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>
                                     <span>Add / Enroll Courses</span>
@@ -388,19 +388,19 @@ export default function StudentCampaignActivityShowPage() {
 
                     {/* Summary KPI Badges */}
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t border-neutral-100 dark:border-neutral-700/50">
-                        <div class="p-3.5 rounded-2xl bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
+                        <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
                             <span class="text-[10px] text-neutral-400 font-mono uppercase block">Enrolled Courses</span>
                             <span class="text-xl font-black text-neutral-900 dark:text-white">{detailCourses().length} Classes</span>
                         </div>
-                        <div class="p-3.5 rounded-2xl bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
+                        <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
                             <span class="text-[10px] text-neutral-400 font-mono uppercase block">Semester SKS Taken</span>
                             <span class="text-xl font-black text-blue-600 dark:text-blue-400">{totalEnrolledSKS()} SKS</span>
                         </div>
-                        <div class="p-3.5 rounded-2xl bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
+                        <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
                             <span class="text-[10px] text-neutral-400 font-mono uppercase block">Semester GPA (IPS)</span>
                             <span class="text-xl font-black text-indigo-600 dark:text-indigo-400">{calculatedIPS()}</span>
                         </div>
-                        <div class="p-3.5 rounded-2xl bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
+                        <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
                             <span class="text-[10px] text-neutral-400 font-mono uppercase block">Cumulative GPA (IPK)</span>
                             <span class="text-xl font-black text-emerald-600 dark:text-emerald-400">{calculatedIPK()}</span>
                         </div>
@@ -408,7 +408,7 @@ export default function StudentCampaignActivityShowPage() {
                 </div>
 
                 {/* Enrolled Courses Table */}
-                <div class="bg-white dark:bg-neutral-800 rounded-3xl border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
+                <div class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
                     <div class="p-4 sm:p-5 border-b border-neutral-200 dark:border-neutral-700 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <h2 class="text-sm font-bold text-neutral-900 dark:text-white">
                             Enrolled Courses List (Rencana & Hasil Studi)
@@ -420,7 +420,7 @@ export default function StudentCampaignActivityShowPage() {
 
                     <Show when={!isLoading()} fallback={
                         <div class="py-16 flex flex-col items-center justify-center gap-3 text-neutral-400">
-                            <div class="size-8 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                            <div class="size-8 border-3 border-indigo-500 border-t-transparent rounded-xs animate-spin"></div>
                             <p class="text-xs font-mono">{t('academic.loadingCourses')}</p>
                         </div>
                     }>
@@ -467,7 +467,7 @@ export default function StudentCampaignActivityShowPage() {
                                                     {c.mark != null ? c.mark.toFixed(1) : '-'}
                                                 </td>
                                                 <td class="py-3.5 px-4 text-center">
-                                                    <span class={`inline-block px-2 py-0.5 rounded-md font-bold text-xs ${getGradeBadgeClass(c.grade_letter || c.grade?.alphabet_code || c.grade?.name)}`}>
+                                                    <span class={`inline-block px-2 py-0.5 rounded-xs font-bold text-xs ${getGradeBadgeClass(c.grade_letter || c.grade?.alphabet_code || c.grade?.name)}`}>
                                                         {c.grade_letter || c.grade?.alphabet_code || c.grade?.name || '-'}
                                                     </span>
                                                 </td>
@@ -478,14 +478,14 @@ export default function StudentCampaignActivityShowPage() {
                                                     <Show
                                                         when={c.is_lock}
                                                         fallback={
-                                                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold text-red-800 dark:text-red-300" title="Unlocked">
+                                                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-xs text-[10px] font-bold text-red-800 dark:text-red-300" title="Unlocked">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                                                 </svg>
                                                             </span>
                                                         }
                                                     >
-                                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold text-emerald-800 dark:text-emerald-300" title="Locked">
+                                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-xs text-[10px] font-bold text-emerald-800 dark:text-emerald-300" title="Locked">
                                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
                                                             </svg>
@@ -511,13 +511,13 @@ export default function StudentCampaignActivityShowPage() {
                                         {/* Header Row: Index + Course Code + SKS Badge + Lock Status */}
                                         <div class="flex items-center justify-between gap-2">
                                             <div class="flex items-center gap-2 flex-wrap">
-                                                <span class="px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-700 font-mono text-neutral-500 dark:text-neutral-400 text-[10px] font-bold">
+                                                <span class="px-2 py-0.5 rounded-xs bg-neutral-100 dark:bg-neutral-700 font-mono text-neutral-500 dark:text-neutral-400 text-[10px] font-bold">
                                                     #{idx() + 1}
                                                 </span>
                                                 <span class="font-mono font-bold text-xs text-blue-600 dark:text-blue-400">
                                                     {c.course_code || '-'}
                                                 </span>
-                                                <span class="px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 font-mono text-[10px] font-bold">
+                                                <span class="px-2 py-0.5 rounded-xs bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 font-mono text-[10px] font-bold">
                                                     {c.credit ?? 0} {t('academic.sks')}
                                                 </span>
                                             </div>
@@ -525,14 +525,14 @@ export default function StudentCampaignActivityShowPage() {
                                             <Show
                                                 when={c.is_lock}
                                                 fallback={
-                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/80">
-                                                        <span class="size-1.5 rounded-full bg-amber-500"></span>
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-xs text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/80">
+                                                        <span class="size-1.5 rounded-xs bg-amber-500"></span>
                                                         <span>Unlocked</span>
                                                     </span>
                                                 }
                                             >
-                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80">
-                                                    <span class="size-1.5 rounded-full bg-emerald-500"></span>
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80">
+                                                    <span class="size-1.5 rounded-xs bg-emerald-500"></span>
                                                     <span>Locked</span>
                                                 </span>
                                             </Show>
@@ -555,21 +555,21 @@ export default function StudentCampaignActivityShowPage() {
 
                                         {/* Academic Performance KPI Grid */}
                                         <div class="grid grid-cols-3 gap-2 pt-2 mt-0.5 border-t border-neutral-100 dark:border-neutral-700/40 text-center">
-                                            <div class="p-2 rounded-xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                            <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
                                                 <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('academic.mark')}</span>
                                                 <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
                                                     {c.mark != null ? c.mark.toFixed(1) : '-'}
                                                 </span>
                                             </div>
 
-                                            <div class="p-2 rounded-xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                            <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
                                                 <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('academic.grade')}</span>
-                                                <span class={`inline-block px-2 py-0.5 rounded font-bold text-xs ${getGradeBadgeClass(c.grade_letter || c.grade?.alphabet_code || c.grade?.name)}`}>
+                                                <span class={`inline-block px-2 py-0.5 rounded-xs font-bold text-xs ${getGradeBadgeClass(c.grade_letter || c.grade?.alphabet_code || c.grade?.name)}`}>
                                                     {c.grade_letter || c.grade?.alphabet_code || c.grade?.name || '-'}
                                                 </span>
                                             </div>
 
-                                            <div class="p-2 rounded-xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                            <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
                                                 <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('academic.point')}</span>
                                                 <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
                                                     {c.grade_point != null ? c.grade_point.toFixed(2) : (c.grade?.grade != null ? c.grade.grade.toFixed(2) : '-')}

@@ -1,6 +1,7 @@
 import { createSignal, createEffect, createMemo, onMount, For, Show } from 'solid-js';
 import { useParams, useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
+import Loader from '~/components/loader';
 import {
     getTeachById,
     getCourseById,
@@ -626,7 +627,7 @@ export default function LecturerTeachGradePage() {
                     <div class="flex items-center gap-2">
                         <A
                             href="/lecturer/academic/campaign/transaction/teach"
-                            class="px-3 py-1.5 rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-xs font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors inline-flex items-center gap-1.5"
+                            class="px-3 py-1.5 rounded-xs border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-xs font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors inline-flex items-center gap-1.5"
                         >
                             <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -635,7 +636,7 @@ export default function LecturerTeachGradePage() {
                         </A>
                         <A
                             href={`/lecturer/academic/campaign/transaction/teach/${teachId()}/attendance`}
-                            class="px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-xs font-semibold transition-colors inline-flex items-center gap-1.5"
+                            class="px-3 py-1.5 rounded-xs bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-xs font-semibold transition-colors inline-flex items-center gap-1.5"
                         >
                             Presensi & Roster →
                         </A>
@@ -645,7 +646,7 @@ export default function LecturerTeachGradePage() {
                 {/* Notification Alert Banner */}
                 <Show when={actionMessage()}>
                     {(msg) => (
-                        <div class={`p-4 rounded-2xl border flex items-center justify-between text-xs font-medium animate-fadeIn ${msg().type === 'success'
+                        <div class={`p-4 rounded-xs border flex items-center justify-between text-xs font-medium animate-fadeIn ${msg().type === 'success'
                                 ? 'bg-emerald-50 dark:bg-emerald-950/50 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200'
                                 : 'bg-rose-50 dark:bg-rose-950/50 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200'
                             }`}>
@@ -656,7 +657,7 @@ export default function LecturerTeachGradePage() {
                             <button
                                 type="button"
                                 onClick={() => setActionMessage(null)}
-                                class="p-1 hover:bg-black/5 dark:hover:bg-white/10 rounded-lg text-xs"
+                                class="p-1 hover:bg-black/5 dark:hover:bg-white/10 rounded-xs text-xs"
                             >
                                 ✕
                             </button>
@@ -665,27 +666,27 @@ export default function LecturerTeachGradePage() {
                 </Show>
 
                 {/* Class Overview Hero Card */}
-                <div class="rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 p-6 sm:p-8 shadow-2xs space-y-6">
+                <div class="rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 p-6 sm:p-8 shadow-2xs space-y-6">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div class="space-y-2">
                             <div class="flex items-center gap-2 flex-wrap">
-                                <span class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                                <span class="px-2.5 py-1 rounded-xs text-xs font-mono font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
                                     {courseData()?.code ? `${courseData().code} • ${courseData().name}` : (teachData()?.name || 'PENILAIAN KELAS')}
                                 </span>
                                 <Show when={courseData()?.total_credit}>
-                                    <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-mono">
+                                    <span class="px-2.5 py-1 rounded-xs text-xs font-bold bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-mono">
                                         {courseData().total_credit} SKS
                                     </span>
                                 </Show>
                                 <Show when={academicYearName()}>
-                                    <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-mono">
+                                    <span class="px-2.5 py-1 rounded-xs text-xs font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-mono">
                                         {academicYearName()}
                                     </span>
                                 </Show>
-                                <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 font-mono">
+                                <span class="px-2.5 py-1 rounded-xs text-xs font-bold bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 font-mono">
                                     {studentRows().length} Mahasiswa
                                 </span>
-                                <span class={`px-2.5 py-1 rounded-lg text-xs font-bold ${isClassLocked()
+                                <span class={`px-2.5 py-1 rounded-xs text-xs font-bold ${isClassLocked()
                                         ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
                                         : 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
                                     }`}>
@@ -707,7 +708,7 @@ export default function LecturerTeachGradePage() {
                                 <button
                                     type="button"
                                     onClick={openAddComponentModal}
-                                    class="px-4 py-2.5 rounded-xl border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-xs font-bold text-neutral-700 dark:text-neutral-200 transition-colors inline-flex items-center gap-2"
+                                    class="px-4 py-2.5 rounded-xs border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-xs font-bold text-neutral-700 dark:text-neutral-200 transition-colors inline-flex items-center gap-2"
                                 >
                                     <svg class="size-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -719,7 +720,7 @@ export default function LecturerTeachGradePage() {
                                     type="button"
                                     onClick={() => setIsLockModalOpen(true)}
                                     disabled={isSavingAll() || studentRows().length === 0}
-                                    class="px-4 py-2.5 rounded-xl border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 dark:hover:bg-amber-900 text-xs font-bold text-amber-800 dark:text-amber-200 transition-colors inline-flex items-center gap-2 disabled:opacity-50"
+                                    class="px-4 py-2.5 rounded-xs border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 dark:hover:bg-amber-900 text-xs font-bold text-amber-800 dark:text-amber-200 transition-colors inline-flex items-center gap-2 disabled:opacity-50"
                                 >
                                     🔒 Kunci Nilai Kelas
                                 </button>
@@ -728,10 +729,10 @@ export default function LecturerTeachGradePage() {
                                     type="button"
                                     onClick={handleSaveAll}
                                     disabled={isSavingAll()}
-                                    class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs shadow-md shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all inline-flex items-center gap-2"
+                                    class="px-5 py-2.5 rounded-xs bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs shadow-md shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all inline-flex items-center gap-2"
                                 >
                                     <Show when={isSavingAll()} fallback={<span>💾 Simpan Semua Nilai</span>}>
-                                        <div class="size-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        <div class="size-3.5 border-2 border-white border-t-transparent rounded-xs animate-spin"></div>
                                         <span>Menyimpan...</span>
                                     </Show>
                                 </button>
@@ -741,7 +742,7 @@ export default function LecturerTeachGradePage() {
 
                     {/* Locked Notice Alert for Lecturer */}
                     <Show when={isClassLocked()}>
-                        <div class="p-4 rounded-2xl bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-3 shadow-2xs">
+                        <div class="p-4 rounded-xs bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-3 shadow-2xs">
                             <span class="text-lg shrink-0">🔒</span>
                             <div class="space-y-0.5">
                                 <h4 class="font-bold">Nilai Perkuliahan Telah Dikunci & Difinalisasi</h4>
@@ -754,25 +755,25 @@ export default function LecturerTeachGradePage() {
 
                     {/* Class Stats Row */}
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-neutral-100 dark:border-neutral-700/60">
-                        <div class="p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60">
+                        <div class="p-4 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60">
                             <span class="text-[11px] font-medium text-neutral-500 dark:text-neutral-400 block">Rata-Rata Kelas</span>
                             <span class="text-xl font-bold font-mono text-indigo-600 dark:text-indigo-400 mt-0.5 block">
                                 {classStats().avg}
                             </span>
                         </div>
-                        <div class="p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60">
+                        <div class="p-4 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60">
                             <span class="text-[11px] font-medium text-neutral-500 dark:text-neutral-400 block">Nilai Tertinggi</span>
                             <span class="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-0.5 block">
                                 {classStats().highest}
                             </span>
                         </div>
-                        <div class="p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60">
+                        <div class="p-4 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60">
                             <span class="text-[11px] font-medium text-neutral-500 dark:text-neutral-400 block">Mahasiswa Dinilai</span>
                             <span class="text-xl font-bold font-mono text-purple-600 dark:text-purple-400 mt-0.5 block">
                                 {classStats().gradedCount} / {studentRows().length}
                             </span>
                         </div>
-                        <div class="p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60">
+                        <div class="p-4 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60">
                             <span class="text-[11px] font-medium text-neutral-500 dark:text-neutral-400 block">Total Bobot Evaluasi</span>
                             <div class="flex items-center gap-1.5 mt-0.5">
                                 <span class={`text-xl font-bold font-mono ${isWeightValid() ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
@@ -788,14 +789,14 @@ export default function LecturerTeachGradePage() {
                 </div>
 
                 {/* Evaluation Components Badges Bar */}
-                <div class="p-4 rounded-2xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-3">
+                <div class="p-4 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-3">
                     <div class="flex items-center justify-between gap-4 flex-wrap">
                         <div class="flex items-center gap-2">
                             <span class="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
                                 Komponen Evaluasi Perkuliahan:
                             </span>
                             <Show when={!isWeightValid()}>
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300">
+                                <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300">
                                     Total bobot {totalEvaluationWeight()}% (Harus 100%)
                                 </span>
                             </Show>
@@ -812,11 +813,11 @@ export default function LecturerTeachGradePage() {
                     <div class="flex items-center gap-2.5 flex-wrap">
                         <For each={evaluations()}>
                             {(ev) => (
-                                <div class="px-3 py-1.5 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 flex items-center gap-2 group text-xs">
+                                <div class="px-3 py-1.5 rounded-xs bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 flex items-center gap-2 group text-xs">
                                     <span class="font-semibold text-neutral-800 dark:text-neutral-200">
                                         {ev.name}
                                     </span>
-                                    <span class="px-1.5 py-0.5 rounded-md font-mono font-bold text-[10px] bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">
+                                    <span class="px-1.5 py-0.5 rounded-xs font-mono font-bold text-[10px] bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">
                                         {ev.evaluation_weight}%
                                     </span>
                                     <button
@@ -849,7 +850,7 @@ export default function LecturerTeachGradePage() {
                             placeholder="Cari mahasiswa berdasarkan nama, NIM, atau Grade..."
                             value={searchQuery()}
                             onInput={(e) => setSearchQuery(e.currentTarget.value)}
-                            class="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 rounded-2xl text-xs text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 shadow-2xs"
+                            class="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 rounded-xs text-xs text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 shadow-2xs"
                         />
                         <svg class="size-4 absolute left-3 top-3 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -873,21 +874,22 @@ export default function LecturerTeachGradePage() {
                 </div>
 
                 {/* Main Grading Table Roster */}
-                <div class="rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 overflow-hidden shadow-2xs">
+                <div class="rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 overflow-hidden shadow-2xs">
                     <Show
                         when={!isLoading()}
                         fallback={
-                            <div class="py-24 text-center flex flex-col items-center justify-center gap-3">
-                                <div class="size-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-                                <span class="text-xs font-mono text-neutral-400">Memuat form penilaian mahasiswa...</span>
-                            </div>
+                            <Loader
+                                message="Memuat form penilaian mahasiswa..."
+                                color="indigo"
+                                size="lg"
+                            />
                         }
                     >
                         <Show
                             when={filteredStudents().length > 0}
                             fallback={
                                 <div class="p-16 text-center space-y-3">
-                                    <div class="size-14 mx-auto rounded-2xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-2xl">
+                                    <div class="size-14 mx-auto rounded-xs bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-2xl">
                                         👥
                                     </div>
                                     <h3 class="text-base font-bold text-neutral-900 dark:text-white">
@@ -973,7 +975,7 @@ export default function LecturerTeachGradePage() {
                                                                             value={score()}
                                                                             disabled={student.is_lock}
                                                                             onInput={(e) => handleScoreChange(rawIndex(), ev.id, e.currentTarget.value)}
-                                                                            class={`w-20 px-2.5 py-1.5 text-center font-mono font-bold text-xs rounded-xl border transition-all ${student.is_lock
+                                                                            class={`w-20 px-2.5 py-1.5 text-center font-mono font-bold text-xs rounded-xs border transition-all ${student.is_lock
                                                                                     ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 border-neutral-200 dark:border-neutral-700 cursor-not-allowed'
                                                                                     : 'bg-neutral-50 dark:bg-neutral-900 text-neutral-900 dark:text-white border-neutral-200 dark:border-neutral-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500'
                                                                                 }`}
@@ -990,7 +992,7 @@ export default function LecturerTeachGradePage() {
 
                                                         {/* Letter Grade */}
                                                         <td class="px-4 py-3.5 text-center bg-purple-50/30 dark:bg-purple-950/10">
-                                                            <span class={`inline-block px-2.5 py-1 rounded-lg text-xs font-mono font-bold ${['A', 'A-', 'B+'].includes(student.grade_letter || '')
+                                                            <span class={`inline-block px-2.5 py-1 rounded-xs text-xs font-mono font-bold ${['A', 'A-', 'B+'].includes(student.grade_letter || '')
                                                                     ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'
                                                                     : ['B', 'B-', 'C+'].includes(student.grade_letter || '')
                                                                         ? 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300'
@@ -1004,7 +1006,7 @@ export default function LecturerTeachGradePage() {
 
                                                         {/* Lock / Draft Status */}
                                                         <td class="px-4 py-3.5 text-center">
-                                                            <span class={`px-2 py-0.5 rounded-full text-[10px] font-bold ${student.is_lock
+                                                            <span class={`px-2 py-0.5 rounded-xs text-[10px] font-bold ${student.is_lock
                                                                     ? 'bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300'
                                                                     : student.is_dirty
                                                                         ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300'
@@ -1020,10 +1022,10 @@ export default function LecturerTeachGradePage() {
                                                                 type="button"
                                                                 onClick={() => saveStudentRow(rawIndex())}
                                                                 disabled={student.is_lock || !student.is_dirty || student.is_saving}
-                                                                class="px-2.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 font-semibold text-xs transition-colors disabled:opacity-30 disabled:cursor-not-allowed inline-flex items-center gap-1"
+                                                                class="px-2.5 py-1.5 rounded-xs bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 font-semibold text-xs transition-colors disabled:opacity-30 disabled:cursor-not-allowed inline-flex items-center gap-1"
                                                             >
                                                                 <Show when={student.is_saving} fallback={<span>Simpan</span>}>
-                                                                    <div class="size-3 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                                                                    <div class="size-3 border-2 border-indigo-600 border-t-transparent rounded-xs animate-spin"></div>
                                                                 </Show>
                                                             </button>
                                                         </td>
@@ -1042,7 +1044,7 @@ export default function LecturerTeachGradePage() {
                                         const rawIndex = () => studentRows().findIndex(r => r.detail_activity_id === student.detail_activity_id);
 
                                         return (
-                                            <div class={`p-4 rounded-2xl border transition-all ${
+                                            <div class={`p-4 rounded-xs border transition-all ${
                                                 student.is_dirty 
                                                     ? 'bg-amber-50/50 dark:bg-amber-950/20 border-amber-300 dark:border-amber-800 shadow-xs' 
                                                     : 'bg-white dark:bg-neutral-800/80 border-neutral-200 dark:border-neutral-700 shadow-2xs'
@@ -1050,7 +1052,7 @@ export default function LecturerTeachGradePage() {
                                                 {/* Header: Student Identity & Lock Status */}
                                                 <div class="flex items-start justify-between gap-2.5">
                                                     <div class="flex items-start gap-2.5 min-w-0">
-                                                        <div class="size-7 rounded-lg bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 font-mono text-xs font-bold flex items-center justify-center shrink-0">
+                                                        <div class="size-7 rounded-xs bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 font-mono text-xs font-bold flex items-center justify-center shrink-0">
                                                             {index() + 1}
                                                         </div>
                                                         <div class="space-y-0.5 min-w-0">
@@ -1067,7 +1069,7 @@ export default function LecturerTeachGradePage() {
                                                         </div>
                                                     </div>
 
-                                                    <span class={`px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0 ${
+                                                    <span class={`px-2 py-0.5 rounded-xs text-[10px] font-bold shrink-0 ${
                                                         student.is_lock
                                                             ? 'bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300'
                                                             : student.is_dirty
@@ -1079,7 +1081,7 @@ export default function LecturerTeachGradePage() {
                                                 </div>
 
                                                 {/* Calculated Mark & Grade Summary Box */}
-                                                <div class="grid grid-cols-2 gap-2 p-3 rounded-xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60">
+                                                <div class="grid grid-cols-2 gap-2 p-3 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60">
                                                     <div class="space-y-0.5">
                                                         <span class="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Nilai Akhir</span>
                                                         <div class="font-mono font-black text-lg text-indigo-700 dark:text-indigo-300">
@@ -1089,7 +1091,7 @@ export default function LecturerTeachGradePage() {
                                                     <div class="space-y-0.5 text-right">
                                                         <span class="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Grade</span>
                                                         <div>
-                                                            <span class={`inline-block px-2.5 py-0.5 rounded-lg text-xs font-mono font-bold ${
+                                                            <span class={`inline-block px-2.5 py-0.5 rounded-xs text-xs font-mono font-bold ${
                                                                 ['A', 'A-', 'B+'].includes(student.grade_letter || '')
                                                                     ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'
                                                                     : ['B', 'B-', 'C+'].includes(student.grade_letter || '')
@@ -1114,7 +1116,7 @@ export default function LecturerTeachGradePage() {
                                                                     const score = () => student.component_scores[ev.id]?.mark ?? 0;
 
                                                                     return (
-                                                                        <div class="flex items-center justify-between p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/70 dark:border-neutral-700/70">
+                                                                        <div class="flex items-center justify-between p-2.5 rounded-xs bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/70 dark:border-neutral-700/70">
                                                                             <div class="pr-2 min-w-0">
                                                                                 <div class="text-xs font-semibold text-neutral-800 dark:text-neutral-200 truncate">{ev.name}</div>
                                                                                 <div class="text-[10px] text-indigo-600 dark:text-indigo-400 font-mono">({ev.evaluation_weight}%)</div>
@@ -1127,7 +1129,7 @@ export default function LecturerTeachGradePage() {
                                                                                 value={score()}
                                                                                 disabled={student.is_lock}
                                                                                 onInput={(e) => handleScoreChange(rawIndex(), ev.id, e.currentTarget.value)}
-                                                                                class={`w-20 px-2 py-1.5 text-center font-mono font-bold text-xs rounded-lg border transition-all ${
+                                                                                class={`w-20 px-2 py-1.5 text-center font-mono font-bold text-xs rounded-xs border transition-all ${
                                                                                     student.is_lock
                                                                                         ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 border-neutral-200 dark:border-neutral-700 cursor-not-allowed'
                                                                                         : 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white border-neutral-300 dark:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500'
@@ -1146,10 +1148,10 @@ export default function LecturerTeachGradePage() {
                                                     type="button"
                                                     onClick={() => saveStudentRow(rawIndex())}
                                                     disabled={student.is_lock || !student.is_dirty || student.is_saving}
-                                                    class="w-full py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-xs"
+                                                    class="w-full py-2.5 px-3 rounded-xs bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-xs"
                                                 >
                                                     <Show when={student.is_saving} fallback={<span>{student.is_dirty ? 'Simpan Perubahan' : 'Tersimpan'}</span>}>
-                                                        <div class="size-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                                        <div class="size-3.5 border-2 border-white border-t-transparent rounded-xs animate-spin"></div>
                                                         <span>Menyimpan...</span>
                                                     </Show>
                                                 </button>
@@ -1163,7 +1165,7 @@ export default function LecturerTeachGradePage() {
                 </div>
 
                 {/* Grading Scale Reference Breakdown Modal / Card */}
-                <div class="p-6 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-4">
+                <div class="p-6 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-4">
                     <div class="flex items-center justify-between gap-2 flex-wrap">
                         <div class="space-y-0.5">
                             <h3 class="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
@@ -1174,7 +1176,7 @@ export default function LecturerTeachGradePage() {
                             </p>
                         </div>
                         <Show when={courseData()?.unit_id}>
-                            <span class="px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300">
+                            <span class="px-2.5 py-1 rounded-xs text-[10px] font-mono font-bold bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300">
                                 Unit ID: {courseData()?.unit_id}
                             </span>
                         </Show>
@@ -1183,7 +1185,7 @@ export default function LecturerTeachGradePage() {
                     <Show
                         when={gradingScale().length > 0}
                         fallback={
-                            <div class="p-6 rounded-2xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60 text-center text-xs text-neutral-500">
+                            <div class="p-6 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60 text-center text-xs text-neutral-500">
                                 Belum ada skala penilaian yang dikonfigurasi untuk unit program studi ini.
                             </div>
                         }
@@ -1191,7 +1193,7 @@ export default function LecturerTeachGradePage() {
                         <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2.5">
                             <For each={gradingScale()}>
                                 {(g) => (
-                                    <div class="p-3.5 rounded-2xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60 text-center space-y-1 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors">
+                                    <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60 text-center space-y-1 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors">
                                         <span class="text-base font-black font-mono text-indigo-600 dark:text-indigo-400 block">
                                             {g.alphabet_code || g.name}
                                         </span>
@@ -1212,7 +1214,7 @@ export default function LecturerTeachGradePage() {
             {/* Modal: Kelola Komponen Penilaian (Teach Evaluations) */}
             <Show when={isComponentModalOpen()}>
                 <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fadeIn">
-                    <div class="w-full max-w-md bg-white dark:bg-neutral-800 rounded-3xl p-6 border border-neutral-200 dark:border-neutral-700 shadow-xl space-y-5">
+                    <div class="w-full max-w-md bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200 dark:border-neutral-700 shadow-xl space-y-5">
                         <div class="flex items-center justify-between">
                             <h3 class="text-lg font-bold text-neutral-900 dark:text-white">
                                 {editingComponent() ? 'Edit Komponen Penilaian' : 'Tambah Komponen Penilaian'}
@@ -1220,7 +1222,7 @@ export default function LecturerTeachGradePage() {
                             <button
                                 type="button"
                                 onClick={() => setIsComponentModalOpen(false)}
-                                class="p-1 rounded-lg text-neutral-400 hover:text-neutral-600 dark:hover:text-white"
+                                class="p-1 rounded-xs text-neutral-400 hover:text-neutral-600 dark:hover:text-white"
                             >
                                 ✕
                             </button>
@@ -1237,7 +1239,7 @@ export default function LecturerTeachGradePage() {
                                     placeholder="Contoh: Tugas Mandiri"
                                     value={newCompName()}
                                     onInput={(e) => setNewCompName(e.currentTarget.value)}
-                                    class="w-full px-3.5 py-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xl text-xs text-neutral-900 dark:text-white focus:outline-none focus:border-indigo-500"
+                                    class="w-full px-3.5 py-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xs text-xs text-neutral-900 dark:text-white focus:outline-none focus:border-indigo-500"
                                 />
                             </div>
 
@@ -1252,7 +1254,7 @@ export default function LecturerTeachGradePage() {
                                     required
                                     value={newCompWeight()}
                                     onInput={(e) => setNewCompWeight(Number(e.currentTarget.value))}
-                                    class="w-full px-3.5 py-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xl text-xs text-neutral-900 dark:text-white focus:outline-none focus:border-indigo-500 font-mono"
+                                    class="w-full px-3.5 py-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xs text-xs text-neutral-900 dark:text-white focus:outline-none focus:border-indigo-500 font-mono"
                                 />
                                 <span class="text-[11px] text-neutral-400">
                                     Total akumulasi seluruh komponen harus mencapai 100%.
@@ -1263,14 +1265,14 @@ export default function LecturerTeachGradePage() {
                                 <button
                                     type="button"
                                     onClick={() => setIsComponentModalOpen(false)}
-                                    class="px-4 py-2 rounded-xl border border-neutral-300 dark:border-neutral-700 text-xs font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
+                                    class="px-4 py-2 rounded-xs border border-neutral-300 dark:border-neutral-700 text-xs font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                                 >
                                     Batal
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={isSubmittingComp() || !newCompName().trim()}
-                                    class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-sm disabled:opacity-50 transition-colors"
+                                    class="px-5 py-2 rounded-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-sm disabled:opacity-50 transition-colors"
                                 >
                                     {isSubmittingComp() ? 'Menyimpan...' : 'Simpan Komponen'}
                                 </button>
@@ -1283,15 +1285,15 @@ export default function LecturerTeachGradePage() {
             {/* Modal: Konfirmasi Kunci Nilai */}
             <Show when={isLockModalOpen()}>
                 <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fadeIn">
-                    <div class="w-full max-w-md bg-white dark:bg-neutral-800 rounded-3xl p-6 sm:p-7 border border-neutral-200 dark:border-neutral-700 shadow-xl space-y-5 text-center">
-                        <div class="size-14 mx-auto rounded-2xl bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400 flex items-center justify-center text-2xl">
+                    <div class="w-full max-w-md bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-7 border border-neutral-200 dark:border-neutral-700 shadow-xl space-y-5 text-center">
+                        <div class="size-14 mx-auto rounded-xs bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400 flex items-center justify-center text-2xl">
                             🔒
                         </div>
                         <div class="space-y-2">
                             <h3 class="text-lg font-bold text-neutral-900 dark:text-white">
                                 Kunci & Finalisasi Nilai Kelas?
                             </h3>
-                            <div class="text-xs text-neutral-600 dark:text-neutral-300 leading-relaxed text-left bg-amber-50 dark:bg-amber-950/50 p-4 rounded-2xl border border-amber-200 dark:border-amber-800 space-y-1.5">
+                            <div class="text-xs text-neutral-600 dark:text-neutral-300 leading-relaxed text-left bg-amber-50 dark:bg-amber-950/50 p-4 rounded-xs border border-amber-200 dark:border-amber-800 space-y-1.5">
                                 <p class="font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
                                     <span>⚠️</span> PERHATIAN PENTING:
                                 </p>
@@ -1307,14 +1309,14 @@ export default function LecturerTeachGradePage() {
                             <button
                                 type="button"
                                 onClick={() => setIsLockModalOpen(false)}
-                                class="flex-1 py-2.5 rounded-xl border border-neutral-300 dark:border-neutral-700 text-xs font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
+                                class="flex-1 py-2.5 rounded-xs border border-neutral-300 dark:border-neutral-700 text-xs font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                             >
                                 Batal
                             </button>
                             <button
                                 type="button"
                                 onClick={handleLockGrades}
-                                class="flex-1 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shadow-sm transition-colors"
+                                class="flex-1 py-2.5 rounded-xs bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shadow-sm transition-colors"
                             >
                                 Ya, Kunci Nilai
                             </button>
