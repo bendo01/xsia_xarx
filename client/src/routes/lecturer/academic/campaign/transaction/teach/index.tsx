@@ -4,7 +4,6 @@ import TopBar from '~/components/navigation/TopBar';
 import { currentUserSignal, refreshAuthState, getStoredRoles, normalizeRoleName } from '~/lib/authStore';
 import { getStorageItem } from '~/lib/storage';
 import { GetCurrentUser } from '~/controllers/auth/AuthUser';
-import { getLecturerMasterByIndividual } from '~/controllers/academic/lecturer/AcademicLecturerTransactionController';
 import { PersonMasterIndividualControllerShow } from '~/controllers/person/master/PersonMasterIndividualController';
 import { masterApiShow } from '~/controllers/master/masterApiController';
 import { 
@@ -50,12 +49,8 @@ export default function LecturerTeachIndexPage() {
             let resolvedLecturer: AcademicLecturerMasterLecturer | null = null;
 
             if (indId && indId !== '00000000-0000-0000-0000-000000000000') {
-                const [profileRes, masterLecturerRes] = await Promise.all([
-                    PersonMasterIndividualControllerShow(indId),
-                    getLecturerMasterByIndividual(indId),
-                ]);
-
-                resolvedLecturer = masterLecturerRes || profileRes.data?.lecturer || null;
+                const profileRes = await PersonMasterIndividualControllerShow(indId);
+                resolvedLecturer = profileRes.data?.lecturer || null;
             }
 
             // 3. Fallback to direct role lecturer_id if master not found by individual_id
