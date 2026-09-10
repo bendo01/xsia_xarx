@@ -591,3 +591,28 @@ pub async fn delete_student(
             message: "Student deleted successfully".to_string(),
         }))
 }
+
+#[endpoint(tags("Academic - Student - Master - Student"), status_codes(200, 400, 500))]
+pub async fn get_students_by_unit(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<Vec<StudentResponse>>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let id_str = req
+        .param::<String>("unit_id")
+        .or_else(|| req.param::<String>("id"))
+        .or_else(|| req.query::<String>("unit_id"))
+        .ok_or_else(|| StatusError::bad_request().brief("Missing parameter unit_id"))?;
+
+    let unit_id = Uuid::parse_str(&id_str)
+        .map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+
+    let data = crate::dtos::academic::student::master::students::list_students_by_unit(db, unit_id)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    Ok(Json(data))
+}

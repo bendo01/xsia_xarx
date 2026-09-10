@@ -2643,6 +2643,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.student.master.students.create_student",
         },
         RouteDefinition {
+            url: "/api/v1/academic/student/master/students/unit/{unit_id}",
+            method: "GET",
+            handler: "students::get_students_by_unit",
+            name: "academic.student.master.students.get_students_by_unit",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/student/master/students/{id}",
             method: "GET",
             handler: "students::get_student",
@@ -6583,6 +6589,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             method: "POST",
             handler: "staffes::create_staffe",
             name: "institution.master.staffes.create_staffe",
+        },
+        RouteDefinition {
+            url: "/api/v1/institution/master/staffes/unit/{unit_id}",
+            method: "GET",
+            handler: "staffes::get_staffes_by_unit",
+            name: "institution.master.staffes.get_staffes_by_unit",
         },
         RouteDefinition {
             url: "/api/v1/institution/master/staffes/{id}",

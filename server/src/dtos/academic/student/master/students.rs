@@ -1,9 +1,130 @@
+use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use salvo::oapi::ToSchema;
 use uuid::Uuid;
 use validator::Validate;
 use chrono::{NaiveDate, NaiveDateTime};
 
+use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QueryOrder};
+
+pub async fn list_students_by_unit(
+    db: &DatabaseConnection,
+    unit_id: Uuid,
+) -> Result<Vec<StudentResponse>, sea_orm::DbErr> {
+    let items = crate::models::academic::student::master::students::Entity::find()
+        .filter(crate::models::academic::student::master::students::Column::UnitId.eq(unit_id))
+        .filter(crate::models::academic::student::master::students::Column::DeletedAt.is_null())
+        .order_by_asc(crate::models::academic::student::master::students::Column::Code)
+        .all(db)
+        .await?;
+
+    // Collect relation IDs
+    let status_ids: Vec<Uuid> = items.iter().map(|i| i.status_id).filter(|id| *id != Uuid::nil()).collect();
+    let academic_year_ids: Vec<Uuid> = items.iter().map(|i| i.academic_year_id).filter(|id| *id != Uuid::nil()).collect();
+    let curriculum_ids: Vec<Uuid> = items.iter().map(|i| i.curriculum_id).filter(|id| *id != Uuid::nil()).collect();
+    let selection_type_ids: Vec<Uuid> = items.iter().map(|i| i.selection_type_id).filter(|id| *id != Uuid::nil()).collect();
+
+    // Batch load unit info
+    let unit_info = crate::models::institution::master::units::Entity::find_by_id(unit_id)
+        .filter(crate::models::institution::master::units::Column::DeletedAt.is_null())
+        .one(db)
+        .await?;
+    let unit_name = unit_info.as_ref().and_then(|u| u.name.clone());
+    let unit_code = unit_info.as_ref().and_then(|u| u.code.clone());
+
+    let statuses_map: HashMap<Uuid, String> = if status_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::academic::student::reference::statuses::Entity::find()
+            .filter(crate::models::academic::student::reference::statuses::Column::Id.is_in(status_ids))
+            .filter(crate::models::academic::student::reference::statuses::Column::DeletedAt.is_null())
+            .all(db)
+            .await?
+            .into_iter()
+            .map(|s| (s.id, s.name))
+            .collect()
+    };
+
+    let academic_years_map: HashMap<Uuid, String> = if academic_year_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::academic::general::reference::academic_years::Entity::find()
+            .filter(crate::models::academic::general::reference::academic_years::Column::Id.is_in(academic_year_ids))
+            .filter(crate::models::academic::general::reference::academic_years::Column::DeletedAt.is_null())
+            .all(db)
+            .await?
+            .into_iter()
+            .map(|a| (a.id, a.name))
+            .collect()
+    };
+
+    let curriculums_map: HashMap<Uuid, String> = if curriculum_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::academic::course::master::curriculums::Entity::find()
+            .filter(crate::models::academic::course::master::curriculums::Column::Id.is_in(curriculum_ids))
+            .filter(crate::models::academic::course::master::curriculums::Column::DeletedAt.is_null())
+            .all(db)
+            .await?
+            .into_iter()
+            .map(|c| (c.id, c.name))
+            .collect()
+    };
+
+    let selection_types_map: HashMap<Uuid, String> = if selection_type_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::academic::student::reference::selection_types::Entity::find()
+            .filter(crate::models::academic::student::reference::selection_types::Column::Id.is_in(selection_type_ids))
+            .filter(crate::models::academic::student::reference::selection_types::Column::DeletedAt.is_null())
+            .all(db)
+            .await?
+            .into_iter()
+            .map(|st| (st.id, st.name))
+            .collect()
+    };
+
+    let data = items
+        .into_iter()
+        .map(|item| StudentResponse {
+            id: item.id,
+            code: item.code,
+            name: item.name,
+            selection_type_id: item.selection_type_id,
+            registered: item.registered,
+            individual_id: item.individual_id,
+            status_id: item.status_id,
+            unit_id: item.unit_id,
+            academic_year_id: item.academic_year_id,
+            registration_id: item.registration_id,
+            nisn: item.nisn,
+            resign_status_id: item.resign_status_id,
+            concentration_id: item.concentration_id,
+            curriculum_id: item.curriculum_id,
+            class_code_id: item.class_code_id,
+            transfer_code: item.transfer_code,
+            transfer_unit_id: item.transfer_unit_id,
+            id_mahasiswa: item.id_mahasiswa,
+            id_registrasi_mahasiswa: item.id_registrasi_mahasiswa,
+            finance_fee: item.finance_fee,
+            finance_id: item.finance_id,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+            deleted_at: item.deleted_at,
+            sync_at: item.sync_at,
+            created_by: item.created_by,
+            updated_by: item.updated_by,
+            unit_name: unit_name.clone(),
+            unit_code: unit_code.clone(),
+            status_name: statuses_map.get(&item.status_id).cloned(),
+            academic_year_name: academic_years_map.get(&item.academic_year_id).cloned(),
+            curriculum_name: curriculums_map.get(&item.curriculum_id).cloned(),
+            selection_type_name: selection_types_map.get(&item.selection_type_id).cloned(),
+        })
+        .collect();
+
+    Ok(data)
+}
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
 pub struct StudentQuery {

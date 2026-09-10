@@ -4,7 +4,43 @@ use uuid::Uuid;
 use validator::Validate;
 use chrono::{NaiveDate, NaiveDateTime};
 
+use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QueryOrder};
 
+pub async fn list_staffes_by_unit(
+    db: &DatabaseConnection,
+    unit_id: Uuid,
+) -> Result<Vec<StaffResponse>, sea_orm::DbErr> {
+    let items = crate::models::institution::master::staffes::Entity::find()
+        .filter(crate::models::institution::master::staffes::Column::UnitId.eq(unit_id))
+        .filter(crate::models::institution::master::staffes::Column::DeletedAt.is_null())
+        .order_by_asc(crate::models::institution::master::staffes::Column::Name)
+        .all(db)
+        .await?;
+
+    let data = items
+        .into_iter()
+        .map(|item| StaffResponse {
+            id: item.id,
+            code: item.code,
+            name: item.name,
+            decree_number: item.decree_number,
+            decree_date: item.decree_date,
+            start_date: item.start_date,
+            end_date: item.end_date,
+            employee_id: item.employee_id,
+            unit_id: item.unit_id,
+            position_type_id: item.position_type_id,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+            deleted_at: item.deleted_at,
+            sync_at: item.sync_at,
+            created_by: item.created_by,
+            updated_by: item.updated_by,
+        })
+        .collect();
+
+    Ok(data)
+}
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
 pub struct StaffQuery {
     pub page: Option<u64>,

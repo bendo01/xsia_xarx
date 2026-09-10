@@ -320,10 +320,10 @@ export default function CourseDepartmentUnitShowPage() {
                 staffesRes,
                 [posTypeRes, varietyRes, groupRes]
             ] = await Promise.all([
-                masterApiIndex<any>('academic/course/master/courses', { unit_id: actualUnitId, page: 1, per_page: 200 }),
-                masterApiIndex<any>('academic/course/master/curriculums', { unit_id: actualUnitId, page: 1, per_page: 50 }),
-                masterApiIndex<any>('academic/student/master/students', { unit_id: actualUnitId, page: 1, per_page: 200 }),
-                masterApiIndex<any>('institution/master/staffes', { unit_id: actualUnitId, page: 1, per_page: 50 }),
+                masterApiIndex<any>(`academic/course/master/courses/unit/${actualUnitId}`),
+                masterApiIndex<any>(`academic/course/master/curriculums/unit/${actualUnitId}`),
+                masterApiIndex<any>(`academic/student/master/students/unit/${actualUnitId}`),
+                masterApiIndex<any>(`institution/master/staffes/unit/${actualUnitId}`),
                 Promise.all(refPromises)
             ]);
 

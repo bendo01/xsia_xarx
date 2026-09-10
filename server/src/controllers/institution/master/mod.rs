@@ -35,6 +35,10 @@ pub fn router() -> Router {
                 .get_named("institution.master.staffes.list_staffes", staffes::list_staffes)
                 .post_named("institution.master.staffes.create_staffe", staffes::create_staffe)
                 .push(
+                    Router::with_path("unit/{unit_id}")
+                        .get_named("institution.master.staffes.get_staffes_by_unit", staffes::get_staffes_by_unit),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("institution.master.staffes.get_staffe", staffes::get_staffe)
                         .put_named("institution.master.staffes.update_staffe", staffes::update_staffe)
