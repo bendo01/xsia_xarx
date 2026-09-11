@@ -3,13 +3,11 @@ import { useParams, useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { Loader, ErrorFallback } from '~/components/loader';
 import { toast } from '~/components/toast/Toaster';
-import { masterApiShow, masterApiIndex } from '~/controllers/master/masterApiController';
+import { masterApiShow, masterApiIndex, getBaseApiUrl, getAuthHeaders } from '~/controllers/master/masterApiController';
 import {
     currentUserSignal,
     userRolesSignal,
-    activeRoleSignal,
     currentRoleIdSignal,
-    getStoredRoles,
     refreshAuthState,
     getStoredUser,
     isStaffProgramStudi
@@ -18,38 +16,38 @@ import { getStorageItem, setStorageItem } from '~/lib/storage';
 import { GetCurrentUser } from '~/controllers/auth/AuthUser';
 import type { InstitutionMasterUnit } from '~/models/institution/master/Unit';
 import type { InstitutionMasterStaff } from '~/models/institution/master/Staff';
-import StudentAcademicYearChart, { StudentStatusByYear } from '~/components/chart/student_academic_year_chart';
-import CourseCategoryPieChart, { CourseCategoryItem } from '~/components/chart/course_category_pie_chart';
+import EChart from '~/components/chart/echart_component';
 import PopupBlockedAlert from '~/components/alert/PopupBlockedAlert';
 
 // In-memory module-level cache for static reference tables across navigations
-let cachedVarieties: any[] | null = null;
-let cachedGroups: any[] | null = null;
 let cachedPositionTypes: any[] | null = null;
 let activeFetchId = '';
 
 export default function CourseDepartmentUnitShowPage() {
     const params = useParams();
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
     const [isLoading, setIsLoading] = createSignal(true);
     const rawQueryId = ((params.id as string) || (searchParams.id as string) || (searchParams.unit_id as string) || '').trim();
     const initialQueryId = rawQueryId === '[id]' || rawQueryId === ':id' ? '' : rawQueryId;
     const [unitId, setUnitId] = createSignal<string>(initialQueryId);
     const [unitData, setUnitData] = createSignal<any | null>(null);
 
-    // Real Data from server entities filtered by unit_id = current user unit_id
-    const [curriculums, setCurriculums] = createSignal<any[]>([]);
-    const [courses, setCourses] = createSignal<any[]>([]);
-    const [students, setStudents] = createSignal<any[]>([]);
+    // Real Data from server get_unit_dashboard
     const [staffes, setStaffes] = createSignal<any[]>([]);
+    const [totalCurriculum, setTotalCurriculum] = createSignal<number>(0);
+    const [matakuliah, setMatakuliah] = createSignal<{ total_matakuliah: number; total_credit: number }>({
+        total_matakuliah: 0,
+        total_credit: 0
+    });
 
-    // Supplementary reference data for relations
-    const [employeesMap, setEmployeesMap] = createSignal<Record<string, any>>({});
+    // 4 ECharts Option Datasets from get_unit_dashboard
+    const [studentAcademicYearChart, setStudentAcademicYearChart] = createSignal<any | null>(null);
+    const [registeredStudentAcademicYearChart, setRegisteredStudentAcademicYearChart] = createSignal<any | null>(null);
+    const [courseCategoryDistribution, setCourseCategoryDistribution] = createSignal<any | null>(null);
+    const [studentSubDistrictDistribution, setStudentSubDistrictDistribution] = createSignal<any | null>(null);
+
+    // Reference map for staff position types
     const [positionTypesMap, setPositionTypesMap] = createSignal<Record<string, any>>({});
-    const [varietiesMap, setVarietiesMap] = createSignal<Record<string, any>>({});
-    const [groupsMap, setGroupsMap] = createSignal<Record<string, any>>({});
-    const [serverStudentTrends, setServerStudentTrends] = createSignal<StudentStatusByYear[] | null>(null);
-    const [serverCourseCategories, setServerCourseCategories] = createSignal<CourseCategoryItem[] | null>(null);
 
     // Helper to resolve unit_id from a role item
     const resolveRoleUnitId = async (role: any): Promise<string | null> => {
@@ -199,7 +197,6 @@ export default function CourseDepartmentUnitShowPage() {
 
         if (indId && indId !== '00000000-0000-0000-0000-000000000000') {
             try {
-                // Fix: singular /person/master/individual/{id}
                 const indRes = await masterApiShow<any>('person/master/individual', indId);
                 if (indRes.data?.employees && Array.isArray(indRes.data.employees)) {
                     for (const emp of indRes.data.employees) {
@@ -239,7 +236,7 @@ export default function CourseDepartmentUnitShowPage() {
         return '';
     };
 
-    // Step 2: Fetch real server data for the resolved unit_id
+    // Step 2: Fetch real server data using the unified get_unit_dashboard endpoint
     const loadUnitData = async (targetUnitId: string) => {
         if (!targetUnitId || targetUnitId === '[id]' || targetUnitId === ':id') {
             const resolved = await resolveCurrentUserUnitId();
@@ -259,205 +256,93 @@ export default function CourseDepartmentUnitShowPage() {
         setIsLoading(true);
 
         try {
-            // First check if targetUnitId is valid unit or needs staff resolution
             let actualUnitId = targetUnitId;
-            let unitRes = await masterApiShow<any>('institution/master/units', targetUnitId);
 
-            if (!unitRes.data) {
-                // Check if targetUnitId was actually a staff ID
+            // Attempt to fetch dashboard from /institution/master/units/{unit_id}/dashboard
+            let dashRes: Response | null = await fetch(
+                `${getBaseApiUrl()}/institution/master/units/${encodeURIComponent(actualUnitId)}/dashboard`,
+                {
+                    method: 'GET',
+                    headers: getAuthHeaders(),
+                }
+            );
+
+            // If not successful, check if targetUnitId was actually a staff ID
+            if (!dashRes.ok) {
                 try {
                     const staffRes = await masterApiShow<InstitutionMasterStaff>('institution/master/staffes', targetUnitId);
                     if (staffRes.data?.unit_id) {
                         actualUnitId = staffRes.data.unit_id;
-                        unitRes = await masterApiShow<any>('institution/master/units', actualUnitId);
+                        dashRes = await fetch(
+                            `${getBaseApiUrl()}/institution/master/units/${encodeURIComponent(actualUnitId)}/dashboard`,
+                            {
+                                method: 'GET',
+                                headers: getAuthHeaders(),
+                            }
+                        );
                     }
                 } catch {
                     // Ignore
                 }
             }
 
-            if (!unitRes.data) {
-                // Fallback to resolveCurrentUserUnitId
+            // Fallback resolution if still not found
+            if (!dashRes || !dashRes.ok) {
                 const fallbackUnitId = await resolveCurrentUserUnitId();
                 if (fallbackUnitId && fallbackUnitId !== targetUnitId) {
                     activeFetchId = '';
                     setUnitId(fallbackUnitId);
                     return loadUnitData(fallbackUnitId);
                 }
+                throw new Error(`HTTP error ${dashRes ? dashRes.status : 'unknown'}`);
             }
 
-            if (actualUnitId !== targetUnitId) {
+            const dashJson = await dashRes.json();
+            const dashboard = dashJson.data ?? dashJson;
+
+            if (dashboard && dashboard.id) {
+                actualUnitId = dashboard.id;
                 setUnitId(actualUnitId);
                 setStorageItem('unit_id', actualUnitId);
-                if (typeof window !== 'undefined') {
+
+                if (
+                    typeof window !== 'undefined' &&
+                    (window.location.pathname.includes('[id]') ||
+                        window.location.pathname.includes(':id') ||
+                        !window.location.pathname.includes(actualUnitId))
+                ) {
                     window.history.replaceState(null, '', `/course-department/institution/master/unit/${actualUnitId}/show`);
                 }
-            }
 
-            // Attempt to load all data via the new unified unpaginated dashboard endpoint in a single call
-            try {
-                const dashRes = await masterApiShow<any>(`institution/master/units/${actualUnitId}`, 'dashboard');
-                if (dashRes.data && dashRes.data.unit) {
-                    const dash = dashRes.data;
-                    setUnitData(dash.unit);
-                    setStorageItem('unit_id', actualUnitId);
-                    if (typeof window !== 'undefined' && (window.location.pathname.includes('[id]') || window.location.pathname.includes(':id'))) {
-                        window.history.replaceState(null, '', `/course-department/institution/master/unit/${actualUnitId}/show`);
+                // Set unit model details and embedded relations
+                setUnitData(dashboard);
+                setStaffes(dashboard.staffes || []);
+                setTotalCurriculum(Number(dashboard.total_curriculum) || 0);
+                setMatakuliah(dashboard.matakuliah || { total_matakuliah: 0, total_credit: 0 });
+                setStudentAcademicYearChart(dashboard.student_academic_year_chart || null);
+                setRegisteredStudentAcademicYearChart(dashboard.registered_student_academic_year_chart || null);
+                setCourseCategoryDistribution(dashboard.course_category_distribution || null);
+                setStudentSubDistrictDistribution(dashboard.student_sub_district_distribution || null);
+
+                // Fetch position types reference for staff titles (cached across navigations)
+                if (!cachedPositionTypes) {
+                    try {
+                        const posRes = await masterApiIndex<any>('institution/reference/position-type', { page: 1, per_page: 50 });
+                        cachedPositionTypes = posRes.data || [];
+                    } catch {
+                        cachedPositionTypes = [];
                     }
-
-                    setCourses(dash.courses || []);
-                    setCurriculums(dash.curriculums || []);
-                    setStudents(dash.students || []);
-                    setStaffes(dash.staffes || []);
-
-                    const posMap: Record<string, any> = {};
-                    if (Array.isArray(dash.position_types)) {
-                        for (const pt of dash.position_types) {
-                            if (pt.id) posMap[pt.id] = pt;
-                        }
-                    }
-                    setPositionTypesMap(posMap);
-
-                    const vMap: Record<string, any> = {};
-                    if (Array.isArray(dash.course_varieties)) {
-                        for (const v of dash.course_varieties) {
-                            if (v.id) vMap[v.id] = v;
-                        }
-                    }
-                    setVarietiesMap(vMap);
-
-                    const gMap: Record<string, any> = {};
-                    if (Array.isArray(dash.course_groups)) {
-                        for (const g of dash.course_groups) {
-                            if (g.id) gMap[g.id] = g;
-                        }
-                    }
-                    setGroupsMap(gMap);
-
-                    const empMap: Record<string, any> = {};
-                    if (Array.isArray(dash.employees)) {
-                        for (const emp of dash.employees) {
-                            if (emp.id) empMap[emp.id] = emp;
-                        }
-                    }
-                    setEmployeesMap(empMap);
-
-                    const sTrend = dash.studentYearlyTrend?.data || dash.student_yearly_trend?.data || dash.studentYearlyTrend?.trends || dash.student_yearly_trend?.trends;
-                    if (Array.isArray(sTrend) && sTrend.length > 0) {
-                        setServerStudentTrends(sTrend);
-                    }
-                    const cDist = dash.courseCategoryDistribution?.data || dash.course_category_distribution?.data || dash.courseCategoryDistribution?.categories || dash.course_category_distribution?.categories;
-                    if (Array.isArray(cDist) && cDist.length > 0) {
-                        setServerCourseCategories(cDist);
-                    }
-
-                    return;
                 }
-            } catch {
-                // If unified endpoint is unavailable, fall through to separate requests
-            }
-
-            // Concurrent promises for static references (utilizing module-level cache)
-            // Note: position-type is singular in server API routes
-            const refPromises = [
-                cachedPositionTypes
-                    ? Promise.resolve({ data: cachedPositionTypes })
-                    : masterApiIndex<any>('institution/reference/position-type', { page: 1, per_page: 50 })
-                        .then(r => { cachedPositionTypes = r.data || []; return r; })
-                        .catch(() => ({ data: [] })),
-                cachedVarieties
-                    ? Promise.resolve({ data: cachedVarieties })
-                    : masterApiIndex<any>('academic/course/reference/varieties', { page: 1, per_page: 50 })
-                        .then(r => { cachedVarieties = r.data || []; return r; })
-                        .catch(() => ({ data: [] })),
-                cachedGroups
-                    ? Promise.resolve({ data: cachedGroups })
-                    : masterApiIndex<any>('academic/course/reference/groups', { page: 1, per_page: 50 })
-                        .then(r => { cachedGroups = r.data || []; return r; })
-                        .catch(() => ({ data: [] }))
-            ];
-
-            // Fetch Unit Master + Core Prodi Entities in Parallel
-            const [
-                coursesRes,
-                curriculumsRes,
-                studentsRes,
-                staffesRes,
-                [posTypeRes, varietyRes, groupRes]
-            ] = await Promise.all([
-                masterApiIndex<any>(`academic/course/master/courses/unit/${actualUnitId}`),
-                masterApiIndex<any>(`academic/course/master/curriculums/unit/${actualUnitId}`),
-                masterApiIndex<any>(`academic/student/master/students/unit/${actualUnitId}`),
-                masterApiIndex<any>(`institution/master/staffes/unit/${actualUnitId}`),
-                Promise.all(refPromises)
-            ]);
-
-            // Set Unit Record
-            if (unitRes.data) {
-                setUnitData(unitRes.data);
-                setStorageItem('unit_id', actualUnitId);
-                if (typeof window !== 'undefined' && (window.location.pathname.includes('[id]') || window.location.pathname.includes(':id'))) {
-                    window.history.replaceState(null, '', `/course-department/institution/master/unit/${actualUnitId}/show`);
+                const posMap: Record<string, any> = {};
+                for (const pt of (cachedPositionTypes || [])) {
+                    if (pt.id) posMap[pt.id] = pt;
                 }
+                setPositionTypesMap(posMap);
             } else {
                 toast.danger('Data Unit / Program Studi tidak ditemukan di server.');
             }
-
-            // Set Real Entity Data from server
-            const staffList = staffesRes?.data || [];
-            setCourses(coursesRes?.data || []);
-            setCurriculums(curriculumsRes?.data || []);
-            setStudents(studentsRes?.data || []);
-            setStaffes(staffList);
-
-            // Map position types
-            const posMap: Record<string, any> = {};
-            if (posTypeRes?.data && Array.isArray(posTypeRes.data)) {
-                for (const pt of posTypeRes.data) {
-                    if (pt.id) posMap[pt.id] = pt;
-                }
-            }
-            setPositionTypesMap(posMap);
-
-            // Map course varieties & groups for categorizing courses
-            const vMap: Record<string, any> = {};
-            if (varietyRes?.data && Array.isArray(varietyRes.data)) {
-                for (const v of varietyRes.data) {
-                    if (v.id) vMap[v.id] = v;
-                }
-            }
-            setVarietiesMap(vMap);
-
-            const gMap: Record<string, any> = {};
-            if (groupRes?.data && Array.isArray(groupRes.data)) {
-                for (const g of groupRes.data) {
-                    if (g.id) gMap[g.id] = g;
-                }
-            }
-            setGroupsMap(gMap);
-
-            // Fetch only the specific employees for the staff assigned to this unit (1-3 targeted requests vs 500 records)
-            const empIds = Array.from(new Set(
-                staffList
-                    .map((st: any) => st.employee_id)
-                    .filter((id: any): id is string => Boolean(id) && id !== '00000000-0000-0000-0000-000000000000')
-            ));
-
-            if (empIds.length > 0) {
-                const empResults = await Promise.all(
-                    empIds.map(id => masterApiShow<any>('institution/master/employees', id).catch(() => null))
-                );
-                const empMap: Record<string, any> = {};
-                for (const res of empResults) {
-                    if (res?.data?.id) {
-                        empMap[res.data.id] = res.data;
-                    }
-                }
-                setEmployeesMap(empMap);
-            }
-
         } catch (err) {
-            console.error('Error fetching unit real data:', err);
+            console.error('Error fetching unit dashboard real data:', err);
             toast.danger('Gagal memuat data Program Studi dari server.');
         } finally {
             activeFetchId = '';
@@ -489,14 +374,12 @@ export default function CourseDepartmentUnitShowPage() {
 
     // Enriched Staff Records with Employee Name and Position Type Title
     const enrichedStaffes = createMemo(() => {
-        const emps = employeesMap();
         const pos = positionTypesMap();
         return staffes().map(st => {
-            const employee = st.employee_id ? emps[st.employee_id] : null;
             const positionType = st.position_type_id ? pos[st.position_type_id] : null;
-            const positionName = String(positionType?.name || st.position_type?.name || st.name || 'Staff');
-            const employeeName = String(employee?.name || st.employee?.name || st.name || '-');
-            const employeeCode = String(employee?.code || st.employee?.code || st.code || '-');
+            const positionName = String(positionType?.name || st.position_type?.name || 'Staff');
+            const employeeName = String(st.name || '-');
+            const employeeCode = String(st.code || '-');
 
             return {
                 ...st,
@@ -504,7 +387,6 @@ export default function CourseDepartmentUnitShowPage() {
                 employeeCode,
                 positionName,
                 positionType,
-                employee
             };
         });
     });
@@ -530,101 +412,323 @@ export default function CourseDepartmentUnitShowPage() {
         return enrichedStaffes().filter(item => item !== k && item !== s);
     });
 
-    // Aggregated Student Status by Academic Year for Line Chart
-    const studentYearlyTrend = createMemo<StudentStatusByYear[]>(() => {
-        const pre = serverStudentTrends();
-        if (pre && pre.length > 0) return pre;
-
-        const map = new Map<string, StudentStatusByYear>();
-
-        for (const s of students()) {
-            const rawYear = s.academic_year_name || (s.registered ? s.registered.substring(0, 4) : 'Belum Ditentukan');
-            const year = rawYear.trim() || 'Belum Ditentukan';
-
-            if (!map.has(year)) {
-                map.set(year, {
-                    yearName: year,
-                    total: 0,
-                    active: 0,
-                    leave: 0,
-                    graduated: 0,
-                    other: 0,
-                });
+    // Total and active student metrics derived from real server dashboard charts
+    const totalStudents = createMemo(() => {
+        const regChart = registeredStudentAcademicYearChart();
+        if (regChart?.series && regChart.series.length > 0) {
+            let total = 0;
+            for (const s of regChart.series) {
+                if (Array.isArray(s.data)) {
+                    for (const d of s.data) {
+                        total += Number(d) || 0;
+                    }
+                }
             }
-            const item = map.get(year)!;
-            item.total += 1;
-
-            const status = (s.status_name || '').toLowerCase();
-            if (status.includes('aktif') || status.includes('active')) {
-                item.active += 1;
-            } else if (status.includes('cuti') || status.includes('leave')) {
-                item.leave += 1;
-            } else if (status.includes('lulus') || status.includes('graduat')) {
-                item.graduated += 1;
-            } else {
-                item.other += 1;
-            }
+            if (total > 0) return total;
         }
 
-        return Array.from(map.values()).sort((a, b) => a.yearName.localeCompare(b.yearName));
+        const distChart = studentSubDistrictDistribution();
+        if (distChart?.dataset?.source && distChart.dataset.source.length > 1) {
+            let total = 0;
+            for (let i = 1; i < distChart.dataset.source.length; i++) {
+                total += Number(distChart.dataset.source[i][0]) || 0;
+            }
+            if (total > 0) return Math.round(total);
+        }
+
+        const stChart = studentAcademicYearChart();
+        if (stChart?.series && stChart.series.length > 0) {
+            let total = 0;
+            for (const s of stChart.series) {
+                if (Array.isArray(s.data)) {
+                    for (const d of s.data) {
+                        total += Number(d) || 0;
+                    }
+                }
+            }
+            return total;
+        }
+        return 0;
     });
 
-    // Aggregated Course Distribution by Categories for Pie Chart
-    const courseCategoryDistribution = createMemo<CourseCategoryItem[]>(() => {
-        const pre = serverCourseCategories();
-        if (pre && pre.length > 0) return pre;
+    const totalActiveStudents = createMemo(() => {
+        const stChart = studentAcademicYearChart();
+        if (!stChart?.series) return 0;
+        const activeSeries = stChart.series.find((s: any) =>
+            (s.name || '').toLowerCase().includes('aktif') && !(s.name || '').toLowerCase().includes('non')
+        );
+        if (!activeSeries || !Array.isArray(activeSeries.data)) return 0;
+        return activeSeries.data.reduce((acc: number, curr: number) => acc + (Number(curr) || 0), 0);
+    });
 
-        const vMap = varietiesMap();
-        const gMap = groupsMap();
-        const map = new Map<string, { count: number; credits: number }>();
+    // 1. ECharts Option: Student Academic Year Status Line Chart
+    const studentAcademicYearOption = createMemo(() => {
+        const raw = studentAcademicYearChart();
+        if (!raw || !raw.series || raw.series.length === 0) return null;
 
-        for (const c of courses()) {
-            let catName = '';
-            if (c.variety_id && vMap[c.variety_id]?.name) {
-                catName = vMap[c.variety_id].name;
-            } else if (c.group_id && gMap[c.group_id]?.name) {
-                catName = gMap[c.group_id].name;
-            } else if (c.variety?.name) {
-                catName = c.variety.name;
-            } else if (c.group?.name) {
-                catName = c.group.name;
-            } else if (c.practice_credit > 0 && (!c.lecture_credit || c.lecture_credit === 0)) {
-                catName = 'Mata Kuliah Praktik';
-            } else if (c.lecture_credit > 0 && (!c.practice_credit || c.practice_credit === 0)) {
-                catName = 'Mata Kuliah Teori';
-            } else if (c.lecture_credit > 0 && c.practice_credit > 0) {
-                catName = 'Teori & Praktik';
-            } else {
-                catName = 'Mata Kuliah Umum';
-            }
+        const colors: Record<string, string> = {
+            'Aktif': '#10b981',
+            'Cuti': '#f59e0b',
+            'Lulus': '#3b82f6',
+            'Putus Studi': '#ef4444',
+            'Keluar': '#f97316',
+            'Non-Aktif': '#64748b',
+            'Sedang Double Degree': '#8b5cf6',
+            'Kampus Merdeka': '#06b6d4',
+            'Tidak Diketahui': '#94a3b8',
+        };
 
-            const credits = Number(c.total_credit) || ((Number(c.lecture_credit) || 0) + (Number(c.practice_credit) || 0));
-            if (!map.has(catName)) {
-                map.set(catName, { count: 0, credits: 0 });
-            }
-            const item = map.get(catName)!;
-            item.count += 1;
-            item.credits += credits;
-        }
+        return {
+            tooltip: {
+                trigger: 'axis',
+                ...raw.tooltip,
+            },
+            legend: {
+                top: '0%',
+                left: 'center',
+                type: 'scroll',
+                textStyle: { color: '#64748b' },
+                ...raw.legend,
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '8%',
+                top: '16%',
+                containLabel: true,
+                ...raw.grid,
+            },
+            xAxis: {
+                ...raw.xAxis,
+                axisLabel: {
+                    rotate: 30,
+                    fontSize: 11,
+                    color: '#64748b',
+                },
+            },
+            yAxis: {
+                ...raw.yAxis,
+                axisLabel: {
+                    fontSize: 11,
+                    color: '#64748b',
+                },
+                splitLine: {
+                    lineStyle: {
+                        color: 'rgba(148, 163, 184, 0.15)',
+                    },
+                },
+            },
+            series: raw.series.map((s: any) => ({
+                ...s,
+                smooth: 0.3,
+                lineStyle: {
+                    width: 2.5,
+                    color: colors[s.name] || undefined,
+                },
+                itemStyle: {
+                    color: colors[s.name] || undefined,
+                },
+                symbol: 'circle',
+                symbolSize: 6,
+            })),
+        };
+    });
 
-        const colorPalette = [
-            '#0ea5e9', // Sky Blue
-            '#10b981', // Emerald
-            '#f59e0b', // Amber
-            '#8b5cf6', // Purple
-            '#ec4899', // Pink
-            '#06b6d4', // Cyan
-            '#f97316', // Orange
-            '#6366f1', // Indigo
-            '#64748b', // Slate
+    // 2. ECharts Option: Registered Student Gender Line Chart
+    const registeredStudentGenderOption = createMemo(() => {
+        const raw = registeredStudentAcademicYearChart();
+        if (!raw || !raw.series || raw.series.length === 0) return null;
+
+        const genderColors: Record<string, string> = {
+            'Laki-Laki': '#0284c7',
+            'Perempuan': '#ec4899',
+        };
+
+        return {
+            tooltip: {
+                trigger: 'axis',
+                ...raw.tooltip,
+            },
+            legend: {
+                top: '0%',
+                left: 'center',
+                textStyle: { color: '#64748b' },
+                ...raw.legend,
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '8%',
+                top: '16%',
+                containLabel: true,
+                ...raw.grid,
+            },
+            xAxis: {
+                ...raw.xAxis,
+                axisLabel: {
+                    rotate: 30,
+                    fontSize: 11,
+                    color: '#64748b',
+                },
+            },
+            yAxis: {
+                ...raw.yAxis,
+                axisLabel: {
+                    fontSize: 11,
+                    color: '#64748b',
+                },
+                splitLine: {
+                    lineStyle: {
+                        color: 'rgba(148, 163, 184, 0.15)',
+                    },
+                },
+            },
+            series: raw.series.map((s: any) => {
+                const color = genderColors[s.name] || (String(s.name).toLowerCase().includes('laki') ? '#0284c7' : '#ec4899');
+                return {
+                    ...s,
+                    smooth: 0.35,
+                    lineStyle: {
+                        width: 3,
+                        color,
+                    },
+                    itemStyle: {
+                        color,
+                    },
+                    symbol: 'circle',
+                    symbolSize: 7,
+                };
+            }),
+        };
+    });
+
+    // 3. ECharts Option: Course Category Donut/Pie Chart
+    const courseCategoryOption = createMemo(() => {
+        const raw = courseCategoryDistribution();
+        if (!raw || !raw.series || raw.series.length === 0) return null;
+
+        const palette = [
+            '#0d9488', // teal
+            '#0284c7', // sky
+            '#8b5cf6', // purple
+            '#f59e0b', // amber
+            '#ec4899', // pink
+            '#10b981', // emerald
+            '#f97316', // orange
+            '#6366f1', // indigo
+            '#64748b', // slate
         ];
 
-        return Array.from(map.entries()).map(([name, val], idx) => ({
-            name,
-            count: val.count,
-            credits: val.credits,
-            color: colorPalette[idx % colorPalette.length],
-        }));
+        return {
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b}: {c} Mata Kuliah ({d}%)',
+                ...raw.tooltip,
+            },
+            legend: {
+                top: '5%',
+                left: 'center',
+                type: 'scroll',
+                textStyle: { color: '#64748b' },
+                ...raw.legend,
+            },
+            color: palette,
+            series: raw.series.map((s: any) => ({
+                ...s,
+                radius: ['42%', '70%'],
+                center: ['50%', '58%'],
+                itemStyle: {
+                    borderRadius: 8,
+                    borderColor: '#ffffff',
+                    borderWidth: 2,
+                    ...s.itemStyle,
+                },
+                emphasis: {
+                    label: {
+                        show: true,
+                        fontSize: 18,
+                        fontWeight: 'bold',
+                    },
+                },
+            })),
+        };
+    });
+
+    // 4. ECharts Option: Student Sub-District Distribution Bar Chart
+    const subDistrictOption = createMemo(() => {
+        const raw = studentSubDistrictDistribution();
+        if (!raw || !raw.dataset?.source || raw.dataset.source.length <= 1) return null;
+
+        return {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow',
+                },
+                formatter: (params: any) => {
+                    const item = Array.isArray(params) ? params[0] : params;
+                    const val = item.value;
+                    const count = Array.isArray(val) ? val[0] : val;
+                    const name = Array.isArray(val) ? val[1] : item.name;
+                    return `<b>${name}</b>: ${count} Mahasiswa`;
+                },
+            },
+            grid: {
+                left: '3%',
+                right: '8%',
+                bottom: '5%',
+                top: '8%',
+                containLabel: true,
+                ...raw.grid,
+            },
+            dataset: {
+                dimensions: ['amount', 'product'],
+                source: raw.dataset.source,
+            },
+            xAxis: {
+                type: 'value',
+                name: 'Mahasiswa',
+                nameLocation: 'end',
+                axisLabel: {
+                    fontSize: 11,
+                    color: '#64748b',
+                },
+                splitLine: {
+                    lineStyle: {
+                        color: 'rgba(148, 163, 184, 0.15)',
+                    },
+                },
+            },
+            yAxis: {
+                type: 'category',
+                inverse: true, // Display highest at top
+                axisLabel: {
+                    interval: 0,
+                    fontSize: 11,
+                    color: '#64748b',
+                },
+            },
+            series: [
+                {
+                    type: 'bar',
+                    encode: {
+                        x: 'amount',
+                        y: 'product',
+                    },
+                    itemStyle: {
+                        color: '#0d9488',
+                        borderRadius: [0, 4, 4, 0],
+                    },
+                    label: {
+                        show: true,
+                        position: 'right',
+                        formatter: '{@[0]}',
+                        fontSize: 11,
+                        color: '#64748b',
+                    },
+                },
+            ],
+        };
     });
 
     // Unit identity helpers
@@ -632,11 +736,6 @@ export default function CourseDepartmentUnitShowPage() {
     const unitCode = () => unitData()?.code || unitData()?.alphabet_code || '-';
     const educationName = () => unitData()?.education?.name || unitData()?.education_name || 'Strata-1 (S1)';
     const facultyName = () => unitData()?.institution?.name || unitData()?.parent?.name || 'Fakultas / Institusi';
-
-    // Active curriculum summary
-    const activeCurriculum = createMemo(() => {
-        return curriculums().find(c => c.is_active) || curriculums()[0] || null;
-    });
 
     return (
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
@@ -719,7 +818,7 @@ export default function CourseDepartmentUnitShowPage() {
                     {/* Loading State */}
                     <Show when={isLoading()}>
                         <Loader
-                            message={`Memuat data real server untuk Unit ID ${unitId()}...`}
+                            message={`Memuat data dashboard terpadu untuk Unit ID ${unitId()}...`}
                             color="teal"
                             size="lg"
                         />
@@ -727,9 +826,9 @@ export default function CourseDepartmentUnitShowPage() {
 
                     {/* Main Content Body */}
                     <Show when={!isLoading()}>
-                        {/* 4 Summary Cards based on real data */}
+                        {/* 4 Summary Cards based on real dashboard server data */}
                         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                            {/* 1. Kurikulum (academic_course_master.curriculums) */}
+                            {/* 1. Kurikulum (dashboard.total_curriculum) */}
                             <A
                                 href="/course-department/academic/course/master/curriculum"
                                 class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2 hover:border-emerald-500 transition-all block group"
@@ -744,16 +843,16 @@ export default function CourseDepartmentUnitShowPage() {
                                 </div>
                                 <div class="flex items-baseline gap-2">
                                     <span class="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white font-mono">
-                                        {curriculums().length}
+                                        {totalCurriculum()}
                                     </span>
                                     <span class="text-xs text-neutral-400 font-medium">Kurikulum Prodi</span>
                                 </div>
                                 <div class="text-[11px] text-emerald-600 dark:text-emerald-400 font-mono truncate">
-                                    {activeCurriculum()?.name || 'Kurikulum Aktif'}
+                                    Kurikulum Aktif & Terdata
                                 </div>
                             </A>
 
-                            {/* 2. Mata Kuliah (academic_course_master.courses) */}
+                            {/* 2. Mata Kuliah (dashboard.matakuliah: total_matakuliah & total_credit) */}
                             <A
                                 href="/course-department/academic/course/master/course"
                                 class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2 hover:border-teal-500 transition-all block group"
@@ -768,16 +867,16 @@ export default function CourseDepartmentUnitShowPage() {
                                 </div>
                                 <div class="flex items-baseline gap-2">
                                     <span class="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white font-mono">
-                                        {courses().length}
+                                        {matakuliah().total_matakuliah}
                                     </span>
                                     <span class="text-xs text-neutral-400 font-medium">Mata Kuliah</span>
                                 </div>
                                 <div class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
-                                    Total SKS: {courses().reduce((acc, curr) => acc + (Number(curr.total_credit) || 0), 0)} SKS
+                                    Total SKS: {matakuliah().total_credit} SKS
                                 </div>
                             </A>
 
-                            {/* 3. Mahasiswa (academic_student_master.students) */}
+                            {/* 3. Mahasiswa (dashboard.student_academic_year_chart & registered_student_academic_year_chart) */}
                             <A
                                 href="/course-department/academic/student/master/student"
                                 class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2 hover:border-blue-500 transition-all block group"
@@ -792,19 +891,17 @@ export default function CourseDepartmentUnitShowPage() {
                                 </div>
                                 <div class="flex items-baseline gap-2">
                                     <span class="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white font-mono">
-                                        {students().length}
+                                        {totalStudents()}
                                     </span>
                                     <span class="text-xs text-neutral-400 font-medium">Mahasiswa Terdaftar</span>
                                 </div>
                                 <div class="text-[11px] text-blue-600 dark:text-blue-400 font-mono">
-                                    Status Aktif & Terdata
+                                    {totalActiveStudents()} Mahasiswa Aktif
                                 </div>
                             </A>
 
-                            {/* 4. Staff (institution_master.staffes) */}
-                            <div
-                                class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2"
-                            >
+                            {/* 4. Staff & Pimpinan (dashboard.staffes) */}
+                            <div class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2">
                                 <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
                                     <span class="text-xs font-mono font-semibold uppercase tracking-wider">Staff & Pimpinan</span>
                                     <div class="size-8 rounded-xs bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">
@@ -906,7 +1003,7 @@ export default function CourseDepartmentUnitShowPage() {
                             </div>
                         </div>
 
-                        {/* Charts Section: Scope Unit ID Real Server Data */}
+                        {/* Visualisasi & Analisis Data Dashboard Terpadu */}
                         <div class="space-y-6 pt-2">
                             {/* Section Header */}
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-200 dark:border-neutral-700 pb-3">
@@ -916,27 +1013,137 @@ export default function CourseDepartmentUnitShowPage() {
                                         Visualisasi & Analisis Data Program Studi
                                     </h2>
                                     <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                        Tren mahasiswa per tahun ajaran dan proporsi mata kuliah berbasis data real server untuk Unit ID {unitId()}.
+                                        Statistik akademik, tren mahasiswa, distribusi mata kuliah, dan sebaran demografi asal mahasiswa untuk Unit ID {unitId()}.
                                     </p>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <span class="px-2.5 py-1 rounded-xs bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-mono text-[11px] font-semibold border border-teal-200 dark:border-teal-800">
-                                        Real Server Data
+                                        Real Server Dashboard
                                     </span>
                                 </div>
                             </div>
 
-                            {/* Chart 1: Line Chart - Academic Year vs Total Student with Status */}
-                            <StudentAcademicYearChart
-                                data={studentYearlyTrend()}
-                                unitName={unitName()}
-                            />
+                            {/* Row 1: Two Academic Year Line Charts */}
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                {/* Chart 1: Student Status Trend by Academic Year */}
+                                <div class="bg-white dark:bg-neutral-800 rounded-xs p-5 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-3">
+                                    <div class="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-700/60 pb-2.5">
+                                        <div>
+                                            <h3 class="text-sm font-bold text-neutral-900 dark:text-white flex items-center gap-2">
+                                                <span class="size-2 rounded-full bg-emerald-500"></span>
+                                                Tren Status Mahasiswa per Tahun Ajaran
+                                            </h3>
+                                            <p class="text-[11px] text-neutral-400">
+                                                Statistik status mahasiswa (Aktif, Cuti, Lulus, Putus Studi, dsb.)
+                                            </p>
+                                        </div>
+                                        <span class="text-[10px] font-mono px-2 py-0.5 rounded-xs bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 font-semibold">
+                                            Status Trend
+                                        </span>
+                                    </div>
 
-                            {/* Chart 2: Pie Chart - Course with Categories */}
-                            <CourseCategoryPieChart
-                                data={courseCategoryDistribution()}
-                                unitName={unitName()}
-                            />
+                                    <Show
+                                        when={studentAcademicYearOption()}
+                                        fallback={
+                                            <div class="h-80 flex items-center justify-center text-neutral-400 text-xs font-mono">
+                                                Data tren mahasiswa belum tersedia
+                                            </div>
+                                        }
+                                    >
+                                        <EChart option={studentAcademicYearOption()!} height={360} />
+                                    </Show>
+                                </div>
+
+                                {/* Chart 2: Registered Student Gender Trend by Academic Year */}
+                                <div class="bg-white dark:bg-neutral-800 rounded-xs p-5 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-3">
+                                    <div class="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-700/60 pb-2.5">
+                                        <div>
+                                            <h3 class="text-sm font-bold text-neutral-900 dark:text-white flex items-center gap-2">
+                                                <span class="size-2 rounded-full bg-sky-500"></span>
+                                                Tren Mahasiswa Berdasarkan Gender
+                                            </h3>
+                                            <p class="text-[11px] text-neutral-400">
+                                                Proporsi mahasiswa Laki-Laki & Perempuan per tahun ajaran
+                                            </p>
+                                        </div>
+                                        <span class="text-[10px] font-mono px-2 py-0.5 rounded-xs bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 font-semibold">
+                                            Gender Trend
+                                        </span>
+                                    </div>
+
+                                    <Show
+                                        when={registeredStudentGenderOption()}
+                                        fallback={
+                                            <div class="h-80 flex items-center justify-center text-neutral-400 text-xs font-mono">
+                                                Data gender mahasiswa belum tersedia
+                                            </div>
+                                        }
+                                    >
+                                        <EChart option={registeredStudentGenderOption()!} height={360} />
+                                    </Show>
+                                </div>
+                            </div>
+
+                            {/* Row 2: Course Category Donut Chart & Sub-District Bar Chart */}
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                {/* Chart 3: Course Category Distribution (Donut Chart) */}
+                                <div class="bg-white dark:bg-neutral-800 rounded-xs p-5 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-3">
+                                    <div class="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-700/60 pb-2.5">
+                                        <div>
+                                            <h3 class="text-sm font-bold text-neutral-900 dark:text-white flex items-center gap-2">
+                                                <span class="size-2 rounded-full bg-teal-500"></span>
+                                                Distribusi Kategori Mata Kuliah
+                                            </h3>
+                                            <p class="text-[11px] text-neutral-400">
+                                                Proporsi klasifikasi dan jenis mata kuliah dalam program studi
+                                            </p>
+                                        </div>
+                                        <span class="text-[10px] font-mono px-2 py-0.5 rounded-xs bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 font-semibold">
+                                            {matakuliah().total_matakuliah} Mata Kuliah
+                                        </span>
+                                    </div>
+
+                                    <Show
+                                        when={courseCategoryOption()}
+                                        fallback={
+                                            <div class="h-80 flex items-center justify-center text-neutral-400 text-xs font-mono">
+                                                Data kategori mata kuliah belum tersedia
+                                            </div>
+                                        }
+                                    >
+                                        <EChart option={courseCategoryOption()!} height={360} />
+                                    </Show>
+                                </div>
+
+                                {/* Chart 4: Student Sub-District Distribution (Horizontal Bar Chart) */}
+                                <div class="bg-white dark:bg-neutral-800 rounded-xs p-5 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-3">
+                                    <div class="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-700/60 pb-2.5">
+                                        <div>
+                                            <h3 class="text-sm font-bold text-neutral-900 dark:text-white flex items-center gap-2">
+                                                <span class="size-2 rounded-full bg-amber-500"></span>
+                                                Sebaran Asal Mahasiswa (Kecamatan)
+                                            </h3>
+                                            <p class="text-[11px] text-neutral-400">
+                                                Distribusi wilayah asal mahasiswa berdasarkan kode kecamatan
+                                            </p>
+                                        </div>
+                                        <span class="text-[10px] font-mono px-2 py-0.5 rounded-xs bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 font-semibold">
+                                            Demografi
+                                        </span>
+                                    </div>
+
+                                    <Show
+                                        when={subDistrictOption()}
+                                        fallback={
+                                            <div class="h-80 flex items-center justify-center text-neutral-400 text-xs font-mono">
+                                                Data sebaran asal mahasiswa belum tersedia
+                                            </div>
+                                        }
+                                    >
+                                        <EChart option={subDistrictOption()!} height={360} />
+                                    </Show>
+                                </div>
+                            </div>
                         </div>
                     </Show>
                 </ErrorBoundary>

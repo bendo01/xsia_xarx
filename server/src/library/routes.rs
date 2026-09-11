@@ -6633,30 +6633,6 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "institution.master.units.get_unit_dashboard",
         },
         RouteDefinition {
-            url: "/api/v1/institution/master/units/{unit_id}/student-academic-year-chart",
-            method: "GET",
-            handler: "units::get_student_academic_year_chart",
-            name: "institution.master.units.get_student_academic_year_chart",
-        },
-        RouteDefinition {
-            url: "/api/v1/institution/master/units/{unit_id}/student-yearly-trends",
-            method: "GET",
-            handler: "units::get_student_yearly_trends",
-            name: "institution.master.units.get_student_yearly_trends",
-        },
-        RouteDefinition {
-            url: "/api/v1/institution/master/units/{unit_id}/course-category-pie-chart",
-            method: "GET",
-            handler: "units::get_course_category_pie_chart",
-            name: "institution.master.units.get_course_category_pie_chart",
-        },
-        RouteDefinition {
-            url: "/api/v1/institution/master/units/{unit_id}/course-category-distribution",
-            method: "GET",
-            handler: "units::get_course_category_distribution",
-            name: "institution.master.units.get_course_category_distribution",
-        },
-        RouteDefinition {
             url: "/api/v1/institution/master/units/{id}",
             method: "GET",
             handler: "units::get_unit",

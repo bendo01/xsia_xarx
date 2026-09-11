@@ -1,0 +1,533 @@
+{
+    "id": "94a676ce-06e6-4fd5-88c2-3122533f9ccb",
+    "code": "13211",
+    "name": "Gizi",
+    "is_active": true,
+    "unit_type_id": "019759fd-36e8-4f43-80ed-4f687a48145d",
+    "institution_id": "ed7e8c02-451b-4548-aa81-26b8d0b7fdec",
+    "parent_id": "5c486d63-6f8e-4744-ac3a-c8ee30191d4d",
+    "education_id": "87c22c15-6d37-4268-8c40-68b13c47cc95",
+    "feeder_id": "ae68acd2-262a-438e-9159-6c0ebc6c425a",
+    "lft": 0,
+    "rght": 0,
+    "created_at": "2020-11-08T00:40:13",
+    "updated_at": "2020-11-08T00:40:13",
+    "sync_at": null,
+    "deleted_at": null,
+    "created_by": "a9ca7a04-654b-4c54-9605-fdeb95af35f7",
+    "updated_by": "a9ca7a04-654b-4c54-9605-fdeb95af35f7",
+    "unit_type": {
+        "id": "019759fd-36e8-4f43-80ed-4f687a48145d",
+        "code": 5,
+        "alphabet_code": "PRODI",
+        "name": "Program Studi Perguruan Tinggi",
+        "created_at": "2018-05-25T20:41:25",
+        "updated_at": "2018-05-25T20:41:29",
+        "deleted_at": null,
+        "sync_at": null,
+        "created_by": "f348889b-a6c3-4df9-914a-8d026969f941",
+        "updated_by": "00000000-0000-0000-0000-000000000000"
+    },
+    "institution": {
+        "id": "ed7e8c02-451b-4548-aa81-26b8d0b7fdec",
+        "code": "092010",
+        "name": "Institut Teknologi dan Kesehatan Tri Tunas Nasional",
+        "alphabet_code": "ITEKES TTN",
+        "is_active": true,
+        "variety_id": "a9e74fc1-013f-40eb-b8a0-39ca0f7c6ba2",
+        "category_id": "4f855e21-f4e9-4420-8e89-7ca96f433a7b",
+        "country_id": "cc9ec5bc-7ab9-4326-a0cd-7760b5dae1f4",
+        "parent_id": "00000000-0000-0000-0000-000000000000",
+        "feeder_id": "7ad1d6e8-bc3f-40fe-9f43-76b66a9d433c",
+        "academic_year_id": "8591fbfd-d173-4bfc-9d0f-896a24d2cd77",
+        "created_at": "2020-10-27T18:59:31",
+        "updated_at": "2020-10-27T18:59:31",
+        "deleted_at": null,
+        "sync_at": null,
+        "created_by": "a9ca7a04-654b-4c54-9605-fdeb95af35f7",
+        "updated_by": "00000000-0000-0000-0000-000000000000"
+    },
+    "education": {
+        "id": "87c22c15-6d37-4268-8c40-68b13c47cc95",
+        "code": 3,
+        "alphabet_code": "C",
+        "abbreviation": "S1",
+        "name": "Strata 1",
+        "level_id": "829415b7-6305-4c22-a490-bf076372a47f",
+        "group_id": "44e13437-30d2-4180-b4ca-1bd7f82a2ba1",
+        "category_id": "667bee23-2e4e-46cb-b5c9-57a53d799d02",
+        "variety_id": "092bcf61-13e7-4d91-9112-cc8d0104e98d",
+        "created_at": "2016-09-07T04:54:31",
+        "updated_at": "2016-09-07T04:54:31",
+        "deleted_at": null,
+        "sync_at": null,
+        "created_by": "00000000-0000-0000-0000-000000000000",
+        "updated_by": "00000000-0000-0000-0000-000000000000"
+    },
+    "parent": {
+        "id": "5c486d63-6f8e-4744-ac3a-c8ee30191d4d",
+        "code": "REKTORAT",
+        "name": "Rektorat Tritunas",
+        "is_active": true,
+        "unit_type_id": "349d435e-0272-4230-bbd1-5729aca8e356",
+        "institution_id": "ed7e8c02-451b-4548-aa81-26b8d0b7fdec",
+        "parent_id": "f7427853-ecac-4cd6-b53b-af66af378baa",
+        "education_id": "00000000-0000-0000-0000-000000000000",
+        "feeder_id": "00000000-0000-0000-0000-000000000000",
+        "lft": 0,
+        "rght": 0,
+        "created_at": "2020-11-08T00:23:40",
+        "updated_at": "2020-11-08T00:23:40",
+        "sync_at": null,
+        "deleted_at": null,
+        "created_by": "a9ca7a04-654b-4c54-9605-fdeb95af35f7",
+        "updated_by": "a9ca7a04-654b-4c54-9605-fdeb95af35f7"
+    },
+    "staffes": [
+        {
+            "id": "22dec310-fca9-4e18-8ce9-2e7224e2471c",
+            "code": "0930059001",
+            "name": "Rini Jusriani",
+            "decree_number": "040/A/YSHN/VIII/2021",
+            "decree_date": "2021-08-03",
+            "start_date": "2021-08-03",
+            "end_date": "2026-01-15",
+            "employee_id": "cc567e49-6cd2-4d82-88c9-4d5d0d4fa7d0",
+            "unit_id": "94a676ce-06e6-4fd5-88c2-3122533f9ccb",
+            "position_type_id": "b3ad82b8-520b-4b77-8cca-b487bf77a91c",
+            "created_at": "2024-02-10T19:38:28",
+            "updated_at": "2024-02-10T19:38:28",
+            "deleted_at": null,
+            "sync_at": null,
+            "created_by": "a9ca7a04-654b-4c54-9605-fdeb95af35f7",
+            "updated_by": "00000000-0000-0000-0000-000000000000"
+        },
+        {
+            "id": "b59eac98-0b27-43eb-b1ce-7024b5cd7557",
+            "code": "20 2 10 00000",
+            "name": "Ma'rifat Istiqa Mukty., S.KM., M.Kes",
+            "decree_number": "080/A/RKT/ITEKES-TTN/II/2025",
+            "decree_date": "2025-02-27",
+            "start_date": "2025-02-27",
+            "end_date": null,
+            "employee_id": "6e68e9f0-19a9-41b0-9d9e-4521a403e6ef",
+            "unit_id": "94a676ce-06e6-4fd5-88c2-3122533f9ccb",
+            "position_type_id": "b3ad82b8-520b-4b77-8cca-b487bf77a91c",
+            "created_at": "2026-01-15T13:30:39",
+            "updated_at": "2026-01-15T13:30:39",
+            "deleted_at": null,
+            "sync_at": null,
+            "created_by": "00000000-0000-0000-0000-000000000000",
+            "updated_by": "00000000-0000-0000-0000-000000000000"
+        }
+    ],
+    "total_curriculum": 2,
+    "matakuliah": {
+        "total_matakuliah": 116,
+        "total_credit": 286
+    },
+    "student_academic_year_chart": {
+        "tooltip": {
+            "trigger": "axis"
+        },
+        "legend": {
+            "data": [
+                "Aktif",
+                "Cuti",
+                "Putus Studi",
+                "Sedang Double Degree",
+                "Keluar",
+                "Non-Aktif",
+                "Tidak Diketahui",
+                "Lulus",
+                "Kampus Merdeka"
+            ] // data from academic_student_reference.statuses
+        },
+        "grid": {
+            "left": "3%",
+            "right": "4%",
+            "bottom": "3%",
+            "containLabel": true
+        },
+        "xAxis": {
+            "type": "category",
+            "boundaryGap": false,
+            "data": [
+                "20201",
+                "20202",
+                "20211",
+                "20212",
+                "20221",
+                "20222",
+                "20231",
+                "20232",
+                "20241",
+                "20242",
+                "20251",
+                "20252",
+                "20261"
+            ] // it get from distinch academic_student_master.students.academic_year_id -> academic_year feeder_name sort by feeder name ASC for last 10 years
+        },
+        "yAxis": {
+            "type": "value"
+        },
+        "series": [
+            {
+                "name": "Aktif",
+                "type": "line",
+                "data": [
+                    120,
+                    132,
+                    101,
+                    134,
+                    90,
+                    230,
+                    210,
+                    0,
+                    10,
+                    100,
+                    50,
+                    0,
+                    0
+                ]
+            },
+            {
+                "name": "Cuti",
+                "type": "line",
+                "data": [
+                    220,
+                    182,
+                    191,
+                    234,
+                    290,
+                    330,
+                    310,
+                    0,
+                    10,
+                    100,
+                    50,
+                    0,
+                    0
+                ]
+            },
+            {
+                "name": "Putus Studi",
+                "type": "line",
+                "data": [
+                    150,
+                    232,
+                    201,
+                    154,
+                    190,
+                    330,
+                    410,
+                    0,
+                    10,
+                    100,
+                    50,
+                    0,
+                    0
+                ]
+            },
+            {
+                "name": "Sedang Double Degree",
+                "type": "line",
+                "data": [
+                    320,
+                    332,
+                    301,
+                    334,
+                    390,
+                    330,
+                    320,
+                    0,
+                    10,
+                    100,
+                    50,
+                    0,
+                    0
+                ]
+            },
+            {
+                "name": "Keluar",
+                "type": "line",
+                "data": [
+                    150,
+                    232,
+                    201,
+                    154,
+                    190,
+                    330,
+                    410,
+                    0,
+                    10,
+                    100,
+                    50,
+                    0,
+                    0
+                ]
+            },
+            {
+                "name": "Non-Aktif",
+                "type": "line",
+                "data": [
+                    150,
+                    232,
+                    201,
+                    154,
+                    190,
+                    330,
+                    410,
+                    0,
+                    10,
+                    100,
+                    50,
+                    0,
+                    0
+                ]
+            },
+            {
+                "name": "Tidak Diketahui",
+                "type": "line",
+                "data": [
+                    150,
+                    232,
+                    201,
+                    154,
+                    190,
+                    330,
+                    410,
+                    0,
+                    10,
+                    100,
+                    50,
+                    0,
+                    0
+                ]
+            },
+            {
+                "name": "Lulus",
+                "type": "line",
+                "data": [
+                    150,
+                    232,
+                    201,
+                    154,
+                    190,
+                    330,
+                    410,
+                    0,
+                    10,
+                    100,
+                    50,
+                    0,
+                    0
+                ]
+            },
+            {
+                "name": "Kampus Merdeka",
+                "type": "line",
+                "data": [
+                    820,
+                    932,
+                    901,
+                    934,
+                    1290,
+                    1330,
+                    1320,
+                    0,
+                    10,
+                    100,
+                    50,
+                    0,
+                    0
+                ]
+            }
+        ]
+    },
+    "registered_student_academic_year_chart": {
+        "tooltip": {
+            "trigger": "axis"
+        },
+        "legend": {
+            "data": [
+                "Laki-Laki",
+                "Perempuan"
+            ] // person_reference.genders
+        },
+        "grid": {
+            "left": "3%",
+            "right": "4%",
+            "bottom": "3%",
+            "containLabel": true
+        },
+        "xAxis": {
+            "type": "category",
+            "boundaryGap": false,
+            "data": [
+                "20201",
+                "20202",
+                "20211",
+                "20212",
+                "20221",
+                "20222",
+                "20231",
+                "20232",
+                "20241",
+                "20242",
+                "20251",
+                "20252",
+                "20261"
+            ] // it get from distinch academic_student_master.students.academic_year_id -> academic_year feeder_name sort by feeder name ASC for last 10 years
+        },
+        "yAxis": {
+            "type": "value"
+        },
+        // data get from  academic_student_master.students.individual_id -> person_master.individuals.id, person_master.individuals.gender_id -> person_reference.genders.id
+        "series": [
+            {
+                "name": "Laki-Laki",
+                "type": "line",
+                "data": [
+                    120,
+                    132,
+                    101,
+                    134,
+                    90,
+                    230,
+                    210,
+                    0,
+                    10,
+                    100,
+                    50,
+                    0,
+                    0
+                ]
+            },
+            {
+                "name": "Perempuan",
+                "type": "line",
+                "data": [
+                    220,
+                    182,
+                    191,
+                    234,
+                    290,
+                    330,
+                    310,
+                    0,
+                    10,
+                    100,
+                    50,
+                    0,
+                    0
+                ]
+            }
+        ]
+    },
+    "course_category_distribution": {
+        "tooltip": {
+            "trigger": "item"
+        },
+        "legend": {
+            "top": "5%",
+            "left": "center"
+        },
+        "series": [
+            {
+                "name": "Course Type",
+                "type": "pie",
+                "radius": [
+                    "40%",
+                    "70%"
+                ],
+                "avoidLabelOverlap": false,
+                "itemStyle": {
+                    "borderRadius": 10,
+                    "borderColor": "#fff",
+                    "borderWidth": 2
+                },
+                "label": {
+                    "show": false,
+                    "position": "center"
+                },
+                "emphasis": {
+                    "label": {
+                        "show": true,
+                        "fontSize": 40,
+                        "fontWeight": "bold"
+                    }
+                },
+                "labelLine": {
+                    "show": false
+                },
+                "data": [
+                    {
+                        "value": 1048,
+                        "name": "Wajib"
+                    },
+                    {
+                        "value": 735,
+                        "name": "Matakuliah Teori"
+                    },
+                    {
+                        "value": 580,
+                        "name": "2020-Tugas Akhir/Skripsi/Thesis/Desertasi"
+                    }
+                ]
+            }
+        ]
+    },
+    "student_sub_district_distribution": {
+        // data is attain from academic.academic_student_master.students -> individual_id -> person.individuals.code (first six digit code) -> location.sub_districts.code 
+        // count student based on sub district code and the name
+        "dataset": {
+            "source": [
+                [
+                    "total",
+                    "sub district"
+                ],
+                [
+                    89.3,
+                    "Sungai Loban"
+                ],
+                [
+                    57.1,
+                    "Dimembe"
+                ],
+                [
+                    74.4,
+                    "Pomalaa"
+                ],
+                [
+                    50.1,
+                    "Rappocini"
+                ],
+                [
+                    89.7,
+                    "Tamalanrea"
+                ]
+            ]
+        },
+        "grid": {
+            "containLabel": true
+        },
+        "xAxis": {
+            "name": "sub district"
+        },
+        "yAxis": {
+            "type": "category"
+        },
+        "series": [
+            {
+                "type": "bar",
+                "encode": {
+                    // Map the "amount" column to X axis.
+                    "x": "amount",
+                    // Map the "product" column to Y axis
+                    "y": "product"
+                }
+            }
+        ]
+    }
+}
