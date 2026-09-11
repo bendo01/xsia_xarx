@@ -17,6 +17,7 @@ import { GetCurrentUser } from '~/controllers/auth/AuthUser';
 import type { InstitutionMasterUnit } from '~/models/institution/master/Unit';
 import type { InstitutionMasterStaff } from '~/models/institution/master/Staff';
 import EChart from '~/components/chart/echart_component';
+import type { EChartsOption } from 'echarts';
 import PopupBlockedAlert from '~/components/alert/PopupBlockedAlert';
 
 // In-memory module-level cache for static reference tables across navigations
@@ -655,7 +656,7 @@ export default function CourseDepartmentUnitShowPage() {
     });
 
     // 4. ECharts Option: Student Sub-District Distribution Bar Chart
-    const subDistrictOption = createMemo(() => {
+    const subDistrictOption = createMemo<EChartsOption | null>(() => {
         const raw = studentSubDistrictDistribution();
         if (!raw || !raw.dataset?.source || raw.dataset.source.length <= 1) return null;
 
