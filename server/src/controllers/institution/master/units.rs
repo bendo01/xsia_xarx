@@ -10,6 +10,8 @@ use validator::Validate;
 use crate::dtos::institution::master::units::{
     CreateUnitRequest, UnitQuery, UnitResponse, PaginatedUnitResponse,
     UpdateUnitRequest, UnitDashboardResponse,
+    StudentStatusByYearResponse, UnitStudentAcademicYearChartResponse,
+    CourseCategoryItemResponse, UnitCourseCategoryDistributionResponse,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::institution::master::units as entity_mod;
@@ -1352,6 +1354,32 @@ pub async fn get_unit_dashboard(
             })
             .collect();
 
+    // Optional precomputed chart statistics
+    let student_yearly_trend = Some(build_student_academic_year_chart(
+        unit_id,
+        unit_item.name.clone().unwrap_or_else(|| "Program Studi".to_string()),
+        unit_item.code.clone(),
+        &students,
+    ));
+
+    let varieties_name_map: HashMap<Uuid, String> = course_varieties
+        .iter()
+        .map(|v| (v.id, v.name.clone()))
+        .collect();
+    let groups_name_map: HashMap<Uuid, String> = course_groups
+        .iter()
+        .map(|g| (g.id, g.name.clone()))
+        .collect();
+
+    let course_category_distribution = Some(build_course_category_distribution(
+        unit_id,
+        unit_item.name.clone().unwrap_or_else(|| "Program Studi".to_string()),
+        unit_item.code.clone(),
+        &courses,
+        &varieties_name_map,
+        &groups_name_map,
+    ));
+
     Ok(Json(UnitDashboardResponse {
         unit: unit_response,
         courses,
@@ -1362,5 +1390,368 @@ pub async fn get_unit_dashboard(
         position_types,
         course_varieties,
         course_groups,
+        student_yearly_trend,
+        course_category_distribution,
     }))
+}
+
+/// Helper to aggregate students into academic year status cohorts.
+/// Meets the needs of StudentAcademicYearChart in show.tsx:L913-L916.
+pub fn build_student_academic_year_chart(
+    unit_id: Uuid,
+    unit_name: String,
+    unit_code: Option<String>,
+    students: &[crate::dtos::academic::student::master::students::StudentResponse],
+) -> UnitStudentAcademicYearChartResponse {
+    use std::collections::BTreeMap;
+
+    let mut map: BTreeMap<String, StudentStatusByYearResponse> = BTreeMap::new();
+    let mut total_students: i64 = 0;
+    let mut total_active: i64 = 0;
+    let mut total_leave: i64 = 0;
+    let mut total_graduated: i64 = 0;
+    let mut total_other: i64 = 0;
+
+    for s in students {
+        let raw_year = if let Some(ay_name) = &s.academic_year_name {
+            let trimmed = ay_name.trim();
+            if !trimmed.is_empty() {
+                trimmed.to_string()
+            } else {
+                s.registered.format("%Y").to_string()
+            }
+        } else {
+            s.registered.format("%Y").to_string()
+        };
+        let year_name = if raw_year.is_empty() {
+            "Belum Ditentukan".to_string()
+        } else {
+            raw_year
+        };
+
+        let entry = map.entry(year_name.clone()).or_insert_with(|| StudentStatusByYearResponse {
+            year_name,
+            total: 0,
+            active: 0,
+            leave: 0,
+            graduated: 0,
+            other: 0,
+        });
+
+        let status = s.status_name.as_deref().unwrap_or("").to_lowercase();
+        if status.contains("aktif") || status.contains("active") {
+            entry.active += 1;
+            total_active += 1;
+        } else if status.contains("cuti") || status.contains("leave") {
+            entry.leave += 1;
+            total_leave += 1;
+        } else if status.contains("lulus") || status.contains("graduat") {
+            entry.graduated += 1;
+            total_graduated += 1;
+        } else {
+            entry.other += 1;
+            total_other += 1;
+        }
+        entry.total += 1;
+        total_students += 1;
+    }
+
+    let mut data: Vec<StudentStatusByYearResponse> = map.into_values().collect();
+    data.sort_by(|a, b| a.year_name.cmp(&b.year_name));
+    let trends = data.clone();
+
+    UnitStudentAcademicYearChartResponse {
+        unit_id,
+        unit_name,
+        unit_code,
+        total_students,
+        total_active,
+        total_leave,
+        total_graduated,
+        total_other,
+        data,
+        trends,
+    }
+}
+
+/// Helper function to load and calculate student academic year status trend based on parameter unit_id.
+/// Descriptive response matching StudentAcademicYearChart data requirements (show.tsx:L913-L916).
+pub async fn get_student_academic_year_chart_by_unit_id(
+    unit_id: Uuid,
+    db: &DatabaseConnection,
+) -> Result<UnitStudentAcademicYearChartResponse, StatusError> {
+    let unit_item = entity_mod::Entity::find_by_id(unit_id)
+        .filter(entity_mod::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .ok_or_else(|| StatusError::not_found().brief("Unit not found"))?;
+
+    let unit_name = unit_item.name.clone().unwrap_or_else(|| "Program Studi".to_string());
+    let unit_code = unit_item.code.clone();
+
+    let students = crate::dtos::academic::student::master::students::list_students_by_unit(db, unit_id)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    Ok(build_student_academic_year_chart(unit_id, unit_name, unit_code, &students))
+}
+
+/// Alias helper function to load student academic year trend chart based on parameter unit_id
+pub async fn load_unit_student_academic_year_chart(
+    unit_id: Uuid,
+    db: &DatabaseConnection,
+) -> Result<UnitStudentAcademicYearChartResponse, StatusError> {
+    get_student_academic_year_chart_by_unit_id(unit_id, db).await
+}
+
+/// Salvo endpoint to get student academic year chart based on parameter unit_id.
+/// Meets all data needs for StudentAcademicYearChart in show.tsx:L913-L916.
+#[endpoint(tags("Institution - Master - Unit"), status_codes(200, 400, 404, 500))]
+pub async fn get_student_academic_year_chart(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<UnitStudentAcademicYearChartResponse>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let id_str = req
+        .param::<String>("unit_id")
+        .or_else(|| req.param::<String>("id"))
+        .or_else(|| req.query::<String>("unit_id"))
+        .ok_or_else(|| StatusError::bad_request().brief("Missing parameter unit_id"))?;
+    let unit_id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+
+    let chart_data = get_student_academic_year_chart_by_unit_id(unit_id, db).await?;
+    Ok(Json(chart_data))
+}
+
+/// Endpoint alias: get_student_yearly_trends
+#[endpoint(tags("Institution - Master - Unit"), status_codes(200, 400, 404, 500))]
+pub async fn get_student_yearly_trends(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<UnitStudentAcademicYearChartResponse>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let id_str = req
+        .param::<String>("unit_id")
+        .or_else(|| req.param::<String>("id"))
+        .or_else(|| req.query::<String>("unit_id"))
+        .ok_or_else(|| StatusError::bad_request().brief("Missing parameter unit_id"))?;
+    let unit_id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+
+    let chart_data = get_student_academic_year_chart_by_unit_id(unit_id, db).await?;
+    Ok(Json(chart_data))
+}
+
+/// Helper to aggregate courses into category distribution slices with colors and credits.
+/// Meets the needs of CourseCategoryPieChart in show.tsx:L919-L922.
+pub fn build_course_category_distribution(
+    unit_id: Uuid,
+    unit_name: String,
+    unit_code: Option<String>,
+    courses: &[crate::dtos::academic::course::master::courses::CourseResponse],
+    varieties_map: &std::collections::HashMap<Uuid, String>,
+    groups_map: &std::collections::HashMap<Uuid, String>,
+) -> UnitCourseCategoryDistributionResponse {
+    use std::collections::HashMap;
+
+    let mut map: HashMap<String, (i64, f64)> = HashMap::new();
+    let mut total_courses: i64 = 0;
+    let mut total_credits: f64 = 0.0;
+
+    for c in courses {
+        let cat_name = if c.variety_id != Uuid::nil() {
+            varieties_map.get(&c.variety_id).cloned().unwrap_or_default()
+        } else {
+            String::new()
+        };
+
+        let cat_name = if !cat_name.is_empty() {
+            cat_name
+        } else if let Some(gid) = c.group_id {
+            groups_map.get(&gid).cloned().unwrap_or_default()
+        } else {
+            String::new()
+        };
+
+        let cat_name = if !cat_name.is_empty() {
+            cat_name
+        } else if c.practice_credit > 0.0 && c.lecture_credit <= 0.0 {
+            "Mata Kuliah Praktik".to_string()
+        } else if c.lecture_credit > 0.0 && c.practice_credit <= 0.0 {
+            "Mata Kuliah Teori".to_string()
+        } else if c.lecture_credit > 0.0 && c.practice_credit > 0.0 {
+            "Teori & Praktik".to_string()
+        } else {
+            "Mata Kuliah Umum".to_string()
+        };
+
+        let credits = if c.total_credit > 0.0 {
+            c.total_credit
+        } else {
+            c.lecture_credit + c.practice_credit
+        };
+
+        let entry = map.entry(cat_name).or_insert((0, 0.0));
+        entry.0 += 1;
+        entry.1 += credits;
+        total_courses += 1;
+        total_credits += credits;
+    }
+
+    const COLOR_PALETTE: &[&str] = &[
+        "#0ea5e9", // Sky Blue
+        "#10b981", // Emerald
+        "#f59e0b", // Amber
+        "#8b5cf6", // Purple
+        "#ec4899", // Pink
+        "#06b6d4", // Cyan
+        "#f97316", // Orange
+        "#6366f1", // Indigo
+        "#64748b", // Slate
+    ];
+
+    let mut data: Vec<CourseCategoryItemResponse> = map
+        .into_iter()
+        .enumerate()
+        .map(|(idx, (name, (count, credits)))| {
+            let percentage = if total_courses > 0 {
+                ((count as f64 / total_courses as f64) * 10000.0).round() / 100.0
+            } else {
+                0.0
+            };
+            let rounded_credits = (credits * 100.0).round() / 100.0;
+            let color = COLOR_PALETTE[idx % COLOR_PALETTE.len()].to_string();
+
+            CourseCategoryItemResponse {
+                name,
+                count,
+                credits: rounded_credits,
+                color: Some(color),
+                percentage,
+            }
+        })
+        .collect();
+
+    data.sort_by(|a, b| b.count.cmp(&a.count).then_with(|| a.name.cmp(&b.name)));
+    let categories = data.clone();
+    let total_credits = (total_credits * 100.0).round() / 100.0;
+
+    UnitCourseCategoryDistributionResponse {
+        unit_id,
+        unit_name,
+        unit_code,
+        total_courses,
+        total_credits,
+        data,
+        categories,
+    }
+}
+
+/// Helper function to load and calculate course category distribution based on parameter unit_id.
+/// Descriptive response matching CourseCategoryPieChart data requirements (show.tsx:L919-L922).
+pub async fn get_course_category_distribution_by_unit_id(
+    unit_id: Uuid,
+    db: &DatabaseConnection,
+) -> Result<UnitCourseCategoryDistributionResponse, StatusError> {
+    use std::collections::HashMap;
+
+    let unit_item = entity_mod::Entity::find_by_id(unit_id)
+        .filter(entity_mod::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .ok_or_else(|| StatusError::not_found().brief("Unit not found"))?;
+
+    let unit_name = unit_item.name.clone().unwrap_or_else(|| "Program Studi".to_string());
+    let unit_code = unit_item.code.clone();
+
+    let courses = crate::dtos::academic::course::master::courses::list_courses_by_unit(db, unit_id)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let varieties_map: HashMap<Uuid, String> =
+        crate::models::academic::course::reference::varieties::Entity::find()
+            .filter(crate::models::academic::course::reference::varieties::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|v| (v.id, v.name))
+            .collect();
+
+    let groups_map: HashMap<Uuid, String> =
+        crate::models::academic::course::reference::groups::Entity::find()
+            .filter(crate::models::academic::course::reference::groups::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|g| (g.id, g.name))
+            .collect();
+
+    Ok(build_course_category_distribution(
+        unit_id,
+        unit_name,
+        unit_code,
+        &courses,
+        &varieties_map,
+        &groups_map,
+    ))
+}
+
+/// Alias helper function to load course category distribution based on parameter unit_id
+pub async fn load_unit_course_category_distribution(
+    unit_id: Uuid,
+    db: &DatabaseConnection,
+) -> Result<UnitCourseCategoryDistributionResponse, StatusError> {
+    get_course_category_distribution_by_unit_id(unit_id, db).await
+}
+
+/// Salvo endpoint to get course category distribution pie chart based on parameter unit_id.
+/// Meets all data needs for CourseCategoryPieChart in show.tsx:L919-L922.
+#[endpoint(tags("Institution - Master - Unit"), status_codes(200, 400, 404, 500))]
+pub async fn get_course_category_distribution(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<UnitCourseCategoryDistributionResponse>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let id_str = req
+        .param::<String>("unit_id")
+        .or_else(|| req.param::<String>("id"))
+        .or_else(|| req.query::<String>("unit_id"))
+        .ok_or_else(|| StatusError::bad_request().brief("Missing parameter unit_id"))?;
+    let unit_id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+
+    let chart_data = get_course_category_distribution_by_unit_id(unit_id, db).await?;
+    Ok(Json(chart_data))
+}
+
+/// Endpoint alias: get_course_category_pie_chart
+#[endpoint(tags("Institution - Master - Unit"), status_codes(200, 400, 404, 500))]
+pub async fn get_course_category_pie_chart(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<UnitCourseCategoryDistributionResponse>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let id_str = req
+        .param::<String>("unit_id")
+        .or_else(|| req.param::<String>("id"))
+        .or_else(|| req.query::<String>("unit_id"))
+        .ok_or_else(|| StatusError::bad_request().brief("Missing parameter unit_id"))?;
+    let unit_id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+
+    let chart_data = get_course_category_distribution_by_unit_id(unit_id, db).await?;
+    Ok(Json(chart_data))
 }

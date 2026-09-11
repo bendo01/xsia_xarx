@@ -48,6 +48,8 @@ export default function CourseDepartmentUnitShowPage() {
     const [positionTypesMap, setPositionTypesMap] = createSignal<Record<string, any>>({});
     const [varietiesMap, setVarietiesMap] = createSignal<Record<string, any>>({});
     const [groupsMap, setGroupsMap] = createSignal<Record<string, any>>({});
+    const [serverStudentTrends, setServerStudentTrends] = createSignal<StudentStatusByYear[] | null>(null);
+    const [serverCourseCategories, setServerCourseCategories] = createSignal<CourseCategoryItem[] | null>(null);
 
     // Helper to resolve unit_id from a role item
     const resolveRoleUnitId = async (role: any): Promise<string | null> => {
@@ -340,6 +342,15 @@ export default function CourseDepartmentUnitShowPage() {
                     }
                     setEmployeesMap(empMap);
 
+                    const sTrend = dash.studentYearlyTrend?.data || dash.student_yearly_trend?.data || dash.studentYearlyTrend?.trends || dash.student_yearly_trend?.trends;
+                    if (Array.isArray(sTrend) && sTrend.length > 0) {
+                        setServerStudentTrends(sTrend);
+                    }
+                    const cDist = dash.courseCategoryDistribution?.data || dash.course_category_distribution?.data || dash.courseCategoryDistribution?.categories || dash.course_category_distribution?.categories;
+                    if (Array.isArray(cDist) && cDist.length > 0) {
+                        setServerCourseCategories(cDist);
+                    }
+
                     return;
                 }
             } catch {
@@ -521,6 +532,9 @@ export default function CourseDepartmentUnitShowPage() {
 
     // Aggregated Student Status by Academic Year for Line Chart
     const studentYearlyTrend = createMemo<StudentStatusByYear[]>(() => {
+        const pre = serverStudentTrends();
+        if (pre && pre.length > 0) return pre;
+
         const map = new Map<string, StudentStatusByYear>();
 
         for (const s of students()) {
@@ -557,6 +571,9 @@ export default function CourseDepartmentUnitShowPage() {
 
     // Aggregated Course Distribution by Categories for Pie Chart
     const courseCategoryDistribution = createMemo<CourseCategoryItem[]>(() => {
+        const pre = serverCourseCategories();
+        if (pre && pre.length > 0) return pre;
+
         const vMap = varietiesMap();
         const gMap = groupsMap();
         const map = new Map<string, { count: number; credits: number }>();

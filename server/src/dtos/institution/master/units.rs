@@ -143,4 +143,87 @@ pub struct UnitDashboardResponse {
     pub course_varieties: Vec<crate::dtos::common::reference::ReferenceResponse>,
     /// All course group reference data (replaces paginated groups call)
     pub course_groups: Vec<crate::dtos::common::reference::ReferenceResponse>,
+    /// Optional precomputed student academic year trend chart data
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub student_yearly_trend: Option<UnitStudentAcademicYearChartResponse>,
+    /// Optional precomputed course category distribution pie chart data
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub course_category_distribution: Option<UnitCourseCategoryDistributionResponse>,
+}
+
+/// Detailed cohort item for student academic year status trend chart.
+/// Maps directly to the StudentStatusByYear interface expected by StudentAcademicYearChart.
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct StudentStatusByYearResponse {
+    #[serde(alias = "year_name")]
+    pub year_name: String,
+    pub total: i64,
+    pub active: i64,
+    pub leave: i64,
+    pub graduated: i64,
+    pub other: i64,
+}
+
+/// Descriptive response for student academic year status trend chart based on unit_id.
+/// Meets all data needs for StudentAcademicYearChart in show.tsx:L913-L916,
+/// providing unit metadata, high-level summary counts, and the detailed data array.
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct UnitStudentAcademicYearChartResponse {
+    #[serde(alias = "unit_id")]
+    pub unit_id: Uuid,
+    #[serde(alias = "unit_name")]
+    pub unit_name: String,
+    #[serde(skip_serializing_if = "Option::is_none", alias = "unit_code")]
+    pub unit_code: Option<String>,
+    #[serde(alias = "total_students")]
+    pub total_students: i64,
+    #[serde(alias = "total_active")]
+    pub total_active: i64,
+    #[serde(alias = "total_leave")]
+    pub total_leave: i64,
+    #[serde(alias = "total_graduated")]
+    pub total_graduated: i64,
+    #[serde(alias = "total_other")]
+    pub total_other: i64,
+    /// Detailed cohorts by academic year for data={studentYearlyTrend()}
+    pub data: Vec<StudentStatusByYearResponse>,
+    /// Alias field for consumers accessing .trends
+    pub trends: Vec<StudentStatusByYearResponse>,
+}
+
+/// Item representing a course category slice in the distribution pie/donut chart.
+/// Maps directly to CourseCategoryItem expected by CourseCategoryPieChart.
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct CourseCategoryItemResponse {
+    pub name: String,
+    pub count: i64,
+    pub credits: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub color: Option<String>,
+    pub percentage: f64,
+}
+
+/// Descriptive response for course category distribution pie chart based on unit_id.
+/// Meets all data needs for CourseCategoryPieChart in show.tsx:L919-L922,
+/// providing unit metadata, total course count, total SKS credits, and category slice breakdown.
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct UnitCourseCategoryDistributionResponse {
+    #[serde(alias = "unit_id")]
+    pub unit_id: Uuid,
+    #[serde(alias = "unit_name")]
+    pub unit_name: String,
+    #[serde(skip_serializing_if = "Option::is_none", alias = "unit_code")]
+    pub unit_code: Option<String>,
+    #[serde(alias = "total_courses")]
+    pub total_courses: i64,
+    #[serde(alias = "total_credits")]
+    pub total_credits: f64,
+    /// Detailed course categories distribution for data={courseCategoryDistribution()}
+    pub data: Vec<CourseCategoryItemResponse>,
+    /// Alias field for consumers accessing .categories
+    pub categories: Vec<CourseCategoryItemResponse>,
 }

@@ -54,6 +54,22 @@ pub fn router() -> Router {
                         .get_named("institution.master.units.get_unit_dashboard", units::get_unit_dashboard),
                 )
                 .push(
+                    Router::with_path("{unit_id}/student-academic-year-chart")
+                        .get_named("institution.master.units.get_student_academic_year_chart", units::get_student_academic_year_chart),
+                )
+                .push(
+                    Router::with_path("{unit_id}/student-yearly-trends")
+                        .get_named("institution.master.units.get_student_yearly_trends", units::get_student_yearly_trends),
+                )
+                .push(
+                    Router::with_path("{unit_id}/course-category-pie-chart")
+                        .get_named("institution.master.units.get_course_category_pie_chart", units::get_course_category_pie_chart),
+                )
+                .push(
+                    Router::with_path("{unit_id}/course-category-distribution")
+                        .get_named("institution.master.units.get_course_category_distribution", units::get_course_category_distribution),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("institution.master.units.get_unit", units::get_unit)
                         .put_named("institution.master.units.update_unit", units::update_unit)
