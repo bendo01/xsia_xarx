@@ -11,11 +11,11 @@ use crate::dtos::institution::master::units::{
     CreateUnitRequest, UnitQuery, UnitResponse, PaginatedUnitResponse,
     UpdateUnitRequest, UnitDashboardResponse,
     UnitDashboardMatakuliah, UnitDashboardAcademicYearChart,
-    UnitDashboardCourseCategoryDistribution, UnitDashboardStudentSubDistrictDistribution,
+    UnitDashboardCourseCategoryDistribution, UnitDashboardStudentRegencyDistribution,
     ChartTooltip, ChartLegend, ChartGrid, ChartXAxisCategory, ChartYAxisValue,
     ChartLineSeriesItem, PieLegend, PieItemStyle, PieLabel, PieEmphasis,
-    PieLabelLine, PieDataItem, PieSeriesItem, SubDistrictDataset,
-    SubDistrictGrid, SubDistrictXAxis, SubDistrictYAxis, BarEncode, BarSeriesItem,
+    PieLabelLine, PieDataItem, PieSeriesItem, RegencyDataset,
+    RegencyGrid, RegencyXAxis, RegencyYAxis, BarEncode, BarSeriesItem,
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::institution::master::units as entity_mod;
@@ -1450,75 +1450,77 @@ pub async fn get_unit_dashboard(
         series: gender_series,
     };
 
-    // 11. Student Sub-District Distribution
-    // Data is attained from academic_student_master.students -> individual_id -> person.individuals.code (first 6 digits) -> location.sub_districts.code
+    // 11. Student Regency Distribution
+    // Data is attained from academic_student_master.students -> individual_id -> person.individuals.code (first 4 digits) -> location.regencies.code
     let mut prefixes: HashSet<String> = HashSet::new();
     for ind in individuals_map.values() {
         let clean: String = ind.code.chars().filter(|c| c.is_ascii_alphanumeric()).collect();
-        if clean.len() >= 6 {
-            prefixes.insert(clean[..6].to_string());
+        if clean.len() >= 4 {
+            prefixes.insert(clean[..4].to_string());
         }
     }
 
     let mut search_codes = Vec::new();
     for p in &prefixes {
         search_codes.push(p.clone());
-        if p.len() == 6 {
-            search_codes.push(format!("{}.{}.{}", &p[0..2], &p[2..4], &p[4..6]));
+        if p.len() == 4 {
+            search_codes.push(format!("{}.{}", &p[0..2], &p[2..4]));
         }
     }
 
-    let sub_districts = if search_codes.is_empty() {
+    let regencies = if search_codes.is_empty() {
         vec![]
     } else {
-        crate::models::location::sub_districts::Entity::find()
-            .filter(crate::models::location::sub_districts::Column::Code.is_in(search_codes))
-            .filter(crate::models::location::sub_districts::Column::DeletedAt.is_null())
+        crate::models::location::regencies::Entity::find()
+            .filter(crate::models::location::regencies::Column::Code.is_in(search_codes))
+            .filter(crate::models::location::regencies::Column::DeletedAt.is_null())
             .all(db)
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
     };
 
-    let mut sub_district_map: HashMap<String, String> = HashMap::new();
-    for sd in sub_districts {
-        let norm = sd.code.replace(".", "");
-        sub_district_map.insert(norm, sd.name);
+    let mut regency_map: HashMap<String, String> = HashMap::new();
+    for reg in regencies {
+        if let (Some(code), Some(name)) = (reg.code, reg.name) {
+            let norm = code.replace(".", "");
+            regency_map.insert(norm, name);
+        }
     }
 
-    let mut count_by_district: HashMap<String, i64> = HashMap::new();
+    let mut count_by_regency: HashMap<String, i64> = HashMap::new();
     for s in &students {
         if let Some(ind) = individuals_map.get(&s.individual_id) {
             let clean: String = ind.code.chars().filter(|c| c.is_ascii_alphanumeric()).collect();
-            if clean.len() >= 6 {
-                let prefix = &clean[..6];
-                if let Some(name) = sub_district_map.get(prefix) {
-                    *count_by_district.entry(name.clone()).or_insert(0) += 1;
+            if clean.len() >= 4 {
+                let prefix = &clean[..4];
+                if let Some(name) = regency_map.get(prefix) {
+                    *count_by_regency.entry(name.clone()).or_insert(0) += 1;
                 }
             }
         }
     }
 
-    let mut district_counts: Vec<(String, i64)> = count_by_district.into_iter().collect();
-    district_counts.sort_by(|a, b| b.1.cmp(&a.1).then_with(|| a.0.cmp(&b.0)));
+    let mut regency_counts: Vec<(String, i64)> = count_by_regency.into_iter().collect();
+    regency_counts.sort_by(|a, b| b.1.cmp(&a.1).then_with(|| a.0.cmp(&b.0)));
 
     let mut dataset_source: Vec<Vec<serde_json::Value>> = vec![
-        vec![serde_json::json!("total"), serde_json::json!("sub district")],
+        vec![serde_json::json!("total"), serde_json::json!("regency")],
     ];
-    for (name, count) in district_counts {
+    for (name, count) in regency_counts {
         dataset_source.push(vec![serde_json::json!(count), serde_json::json!(name)]);
     }
 
-    let student_sub_district_distribution = UnitDashboardStudentSubDistrictDistribution {
-        dataset: SubDistrictDataset {
+    let student_regency_distribution = UnitDashboardStudentRegencyDistribution {
+        dataset: RegencyDataset {
             source: dataset_source,
         },
-        grid: SubDistrictGrid {
+        grid: RegencyGrid {
             contain_label: true,
         },
-        x_axis: SubDistrictXAxis {
-            name: "sub district".to_string(),
+        x_axis: RegencyXAxis {
+            name: "regency".to_string(),
         },
-        y_axis: SubDistrictYAxis {
+        y_axis: RegencyYAxis {
             axis_type: "category".to_string(),
         },
         series: vec![BarSeriesItem {
@@ -1560,6 +1562,6 @@ pub async fn get_unit_dashboard(
         student_academic_year_chart,
         registered_student_academic_year_chart,
         course_category_distribution,
-        student_sub_district_distribution,
+        student_regency_distribution,
     }))
 }

@@ -45,7 +45,7 @@ export default function CourseDepartmentUnitShowPage() {
     const [studentAcademicYearChart, setStudentAcademicYearChart] = createSignal<any | null>(null);
     const [registeredStudentAcademicYearChart, setRegisteredStudentAcademicYearChart] = createSignal<any | null>(null);
     const [courseCategoryDistribution, setCourseCategoryDistribution] = createSignal<any | null>(null);
-    const [studentSubDistrictDistribution, setStudentSubDistrictDistribution] = createSignal<any | null>(null);
+    const [studentRegencyDistribution, setStudentRegencyDistribution] = createSignal<any | null>(null);
 
     // Reference map for staff position types
     const [positionTypesMap, setPositionTypesMap] = createSignal<Record<string, any>>({});
@@ -323,7 +323,7 @@ export default function CourseDepartmentUnitShowPage() {
                 setStudentAcademicYearChart(dashboard.student_academic_year_chart || null);
                 setRegisteredStudentAcademicYearChart(dashboard.registered_student_academic_year_chart || null);
                 setCourseCategoryDistribution(dashboard.course_category_distribution || null);
-                setStudentSubDistrictDistribution(dashboard.student_sub_district_distribution || null);
+                setStudentRegencyDistribution(dashboard.student_regency_distribution || dashboard.student_sub_district_distribution || null);
 
                 // Fetch position types reference for staff titles (cached across navigations)
                 if (!cachedPositionTypes) {
@@ -428,7 +428,7 @@ export default function CourseDepartmentUnitShowPage() {
             if (total > 0) return total;
         }
 
-        const distChart = studentSubDistrictDistribution();
+        const distChart = studentRegencyDistribution();
         if (distChart?.dataset?.source && distChart.dataset.source.length > 1) {
             let total = 0;
             for (let i = 1; i < distChart.dataset.source.length; i++) {
@@ -655,9 +655,9 @@ export default function CourseDepartmentUnitShowPage() {
         };
     });
 
-    // 4. ECharts Option: Student Sub-District Distribution Bar Chart
-    const subDistrictOption = createMemo<EChartsOption | null>(() => {
-        const raw = studentSubDistrictDistribution();
+    // 4. ECharts Option: Student Regency Distribution Bar Chart
+    const regencyOption = createMemo<EChartsOption | null>(() => {
+        const raw = studentRegencyDistribution();
         if (!raw || !raw.dataset?.source || raw.dataset.source.length <= 1) return null;
 
         return {
@@ -1122,10 +1122,10 @@ export default function CourseDepartmentUnitShowPage() {
                                         <div>
                                             <h3 class="text-sm font-bold text-neutral-900 dark:text-white flex items-center gap-2">
                                                 <span class="size-2 rounded-full bg-amber-500"></span>
-                                                Sebaran Asal Mahasiswa (Kecamatan)
+                                                Sebaran Asal Mahasiswa (Kabupaten/Kota)
                                             </h3>
                                             <p class="text-[11px] text-neutral-400">
-                                                Distribusi wilayah asal mahasiswa berdasarkan kode kecamatan
+                                                Distribusi wilayah asal mahasiswa berdasarkan kode kabupaten/kota
                                             </p>
                                         </div>
                                         <span class="text-[10px] font-mono px-2 py-0.5 rounded-xs bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 font-semibold">
@@ -1134,14 +1134,14 @@ export default function CourseDepartmentUnitShowPage() {
                                     </div>
 
                                     <Show
-                                        when={subDistrictOption()}
+                                        when={regencyOption()}
                                         fallback={
                                             <div class="h-80 flex items-center justify-center text-neutral-400 text-xs font-mono">
                                                 Data sebaran asal mahasiswa belum tersedia
                                             </div>
                                         }
                                     >
-                                        <EChart option={subDistrictOption()!} height={360} />
+                                        <EChart option={regencyOption()!} height={360} />
                                     </Show>
                                 </div>
                             </div>

@@ -251,23 +251,23 @@ pub struct UnitDashboardCourseCategoryDistribution {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct SubDistrictDataset {
+pub struct RegencyDataset {
     pub source: Vec<Vec<serde_json::Value>>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct SubDistrictGrid {
+pub struct RegencyGrid {
     #[serde(rename = "containLabel")]
     pub contain_label: bool,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct SubDistrictXAxis {
+pub struct RegencyXAxis {
     pub name: String,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct SubDistrictYAxis {
+pub struct RegencyYAxis {
     #[serde(rename = "type")]
     pub axis_type: String,
 }
@@ -286,15 +286,22 @@ pub struct BarSeriesItem {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct UnitDashboardStudentSubDistrictDistribution {
-    pub dataset: SubDistrictDataset,
-    pub grid: SubDistrictGrid,
+pub struct UnitDashboardStudentRegencyDistribution {
+    pub dataset: RegencyDataset,
+    pub grid: RegencyGrid,
     #[serde(rename = "xAxis")]
-    pub x_axis: SubDistrictXAxis,
+    pub x_axis: RegencyXAxis,
     #[serde(rename = "yAxis")]
-    pub y_axis: SubDistrictYAxis,
+    pub y_axis: RegencyYAxis,
     pub series: Vec<BarSeriesItem>,
 }
+
+// Backward compatibility type aliases
+pub type SubDistrictDataset = RegencyDataset;
+pub type SubDistrictGrid = RegencyGrid;
+pub type SubDistrictXAxis = RegencyXAxis;
+pub type SubDistrictYAxis = RegencyYAxis;
+pub type UnitDashboardStudentSubDistrictDistribution = UnitDashboardStudentRegencyDistribution;
 
 /// Aggregated dashboard response for the unit show page.
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
@@ -328,7 +335,8 @@ pub struct UnitDashboardResponse {
     pub student_academic_year_chart: UnitDashboardAcademicYearChart,
     pub registered_student_academic_year_chart: UnitDashboardAcademicYearChart,
     pub course_category_distribution: UnitDashboardCourseCategoryDistribution,
-    pub student_sub_district_distribution: UnitDashboardStudentSubDistrictDistribution,
+    #[serde(alias = "student_sub_district_distribution")]
+    pub student_regency_distribution: UnitDashboardStudentRegencyDistribution,
 }
 
 /// Detailed cohort item for student academic year status trend chart.
