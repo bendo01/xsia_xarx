@@ -9,7 +9,7 @@ import type { AcademicLecturerMasterLecturer } from '~/models/academic/lecturer/
 import type { AcademicLecturerTransactionHomebase } from '~/models/academic/lecturer/transaction/Homebase';
 import type { AcademicLecturerTransactionAcademicRank } from '~/models/academic/lecturer/transaction/AcademicRank';
 import type { AcademicLecturerTransactionAcademicGroup } from '~/models/academic/lecturer/transaction/AcademicGroup';
-import { masterApiShow } from '~/controllers/master/masterApiController';
+import { masterApiShow, getBaseApiUrl, getAuthHeaders } from '~/controllers/master/masterApiController';
 import { PersonMasterIndividualControllerShow } from '~/controllers/person/master/PersonMasterIndividualController';
 import {
     getLecturerById,
@@ -141,9 +141,11 @@ export default function LecturerIndividualShowPage() {
 
                     // Fetch teach-lecture-chart
                     try {
-                        const chartRes = await masterApiShow<any>('academic/lecturer/master/lecturers', `${activeLecturerId}/teach-lecture-chart`);
-                        if (chartRes?.data) {
-                            setTeachLectureChart(chartRes.data);
+                        const url = `${getBaseApiUrl()}/academic/lecturer/master/lecturers/${encodeURIComponent(activeLecturerId)}/teach-lecture-chart`;
+                        const response = await fetch(url, { headers: getAuthHeaders() });
+                        if (response.ok) {
+                            const resJson = await response.json();
+                            setTeachLectureChart(resJson.data ?? resJson);
                         }
                     } catch (e) {
                         console.error('Error fetching teach-lecture-chart:', e);
@@ -507,8 +509,8 @@ export default function LecturerIndividualShowPage() {
                                             <EChart
                                                 option={teachLectureChart()}
                                                 ariaLabel="Total Teaching Credits per Academic Year"
-                                                height={260}
-                                                class="w-full min-w-0"
+                                                height={360}
+                                                class="w-full"
                                             />
                                         </div>
                                     </Suspense>

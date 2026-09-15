@@ -436,230 +436,6 @@ pub async fn load_lecturer_with_relations(
         })
         .collect();
 
-    // 10. Has many: teach_lecturers
-    let raw_teach_lecturers = item
-        .find_related(crate::models::academic::campaign::transaction::teach_lecturers::Entity)
-        .filter(crate::models::academic::campaign::transaction::teach_lecturers::Column::DeletedAt.is_null())
-        .all(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
-
-    let teach_lecturers: Vec<crate::dtos::academic::campaign::transaction::teach_lecturers::TeachLecturerResponse> = raw_teach_lecturers
-        .iter()
-        .map(|tl| crate::dtos::academic::campaign::transaction::teach_lecturers::TeachLecturerResponse {
-            id: tl.id,
-            name: tl.name.clone(),
-            code: None,
-            planning: tl.planning,
-            realization: tl.realization,
-            credit: tl.credit,
-            is_lecturer_home_base: tl.is_lecturer_home_base,
-            lecturer_id: tl.lecturer_id,
-            teach_id: tl.teach_id,
-            created_at: tl.created_at,
-            updated_at: tl.updated_at,
-            deleted_at: tl.deleted_at,
-            sync_at: tl.sync_at,
-            created_by: tl.created_by,
-            updated_by: tl.updated_by,
-            feeder_id: tl.feeder_id,
-            teach: None,
-        })
-        .collect();
-
-    // 11. Has many: counsellors
-    let counsellors: Vec<crate::dtos::academic::student::adviser::counsellors::CounsellorResponse> = item
-        .find_related(crate::models::academic::student::adviser::counsellors::Entity)
-        .filter(crate::models::academic::student::adviser::counsellors::Column::DeletedAt.is_null())
-        .all(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .into_iter()
-        .map(|c| crate::dtos::academic::student::adviser::counsellors::CounsellorResponse {
-            id: c.id,
-            decree_id: c.decree_id,
-            student_id: c.student_id,
-            lecturer_id: c.lecturer_id,
-            created_at: c.created_at,
-            updated_at: c.updated_at,
-            deleted_at: c.deleted_at,
-            sync_at: c.sync_at,
-            created_by: c.created_by,
-            updated_by: c.updated_by,
-        })
-        .collect();
-
-    // 12. Has many: advisers
-    let advisers: Vec<crate::dtos::academic::student::final_assignment::transaction::advisers::AdviserResponse> = item
-        .find_related(crate::models::academic::student::final_assignment::transaction::advisers::Entity)
-        .filter(crate::models::academic::student::final_assignment::transaction::advisers::Column::DeletedAt.is_null())
-        .all(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .into_iter()
-        .map(|a| crate::dtos::academic::student::final_assignment::transaction::advisers::AdviserResponse {
-            id: a.id,
-            thread: a.thread,
-            lecturer_id: a.lecturer_id,
-            detail_activity_id: a.detail_activity_id,
-            submission_id: a.submission_id,
-            adviser_category_id: a.adviser_category_id,
-            created_at: a.created_at,
-            updated_at: a.updated_at,
-            deleted_at: a.deleted_at,
-            sync_at: a.sync_at,
-            created_by: a.created_by,
-            updated_by: a.updated_by,
-        })
-        .collect();
-
-    // 13. Enriched assigned_teaches (with course, class, academic year)
-    let assigned_teaches = if raw_teach_lecturers.is_empty() {
-        Vec::new()
-    } else {
-        let teach_ids: Vec<Uuid> = raw_teach_lecturers.iter().map(|tl| tl.teach_id).collect();
-        let teaches = crate::models::academic::campaign::transaction::teaches::Entity::find()
-            .filter(crate::models::academic::campaign::transaction::teaches::Column::Id.is_in(teach_ids))
-            .filter(crate::models::academic::campaign::transaction::teaches::Column::DeletedAt.is_null())
-            .all(db)
-            .await
-            .unwrap_or_default();
-
-        let teaches_map: HashMap<Uuid, crate::models::academic::campaign::transaction::teaches::Model> = teaches
-            .into_iter()
-            .map(|t| (t.id, t))
-            .collect();
-
-        let course_ids: Vec<Uuid> = teaches_map.values().map(|t| t.course_id).collect();
-        let class_code_ids: Vec<Uuid> = teaches_map.values().map(|t| t.class_code_id).collect();
-        let activity_ids: Vec<Uuid> = teaches_map.values().filter_map(|t| t.activity_id).collect();
-
-        let courses_map: HashMap<Uuid, crate::models::academic::course::master::courses::Model> = if course_ids.is_empty() {
-            HashMap::new()
-        } else {
-            crate::models::academic::course::master::courses::Entity::find()
-                .filter(crate::models::academic::course::master::courses::Column::Id.is_in(course_ids))
-                .filter(crate::models::academic::course::master::courses::Column::DeletedAt.is_null())
-                .all(db)
-                .await
-                .unwrap_or_default()
-                .into_iter()
-                .map(|c| (c.id, c))
-                .collect()
-        };
-
-        let class_codes_map: HashMap<Uuid, crate::models::academic::campaign::transaction::class_codes::Model> = if class_code_ids.is_empty() {
-            HashMap::new()
-        } else {
-            crate::models::academic::campaign::transaction::class_codes::Entity::find()
-                .filter(crate::models::academic::campaign::transaction::class_codes::Column::Id.is_in(class_code_ids))
-                .filter(crate::models::academic::campaign::transaction::class_codes::Column::DeletedAt.is_null())
-                .all(db)
-                .await
-                .unwrap_or_default()
-                .into_iter()
-                .map(|cc| (cc.id, cc))
-                .collect()
-        };
-
-        let activities = if activity_ids.is_empty() {
-            Vec::new()
-        } else {
-            crate::models::academic::campaign::transaction::activities::Entity::find()
-                .filter(crate::models::academic::campaign::transaction::activities::Column::Id.is_in(activity_ids))
-                .filter(crate::models::academic::campaign::transaction::activities::Column::DeletedAt.is_null())
-                .all(db)
-                .await
-                .unwrap_or_default()
-        };
-
-        let academic_year_ids: Vec<Uuid> = activities.iter().map(|a| a.academic_year_id).collect();
-        let activities_map: HashMap<Uuid, crate::models::academic::campaign::transaction::activities::Model> = activities
-            .into_iter()
-            .map(|a| (a.id, a))
-            .collect();
-
-        let academic_years_map: HashMap<Uuid, crate::models::academic::general::reference::academic_years::Model> = if academic_year_ids.is_empty() {
-            HashMap::new()
-        } else {
-            crate::models::academic::general::reference::academic_years::Entity::find()
-                .filter(crate::models::academic::general::reference::academic_years::Column::Id.is_in(academic_year_ids))
-                .filter(crate::models::academic::general::reference::academic_years::Column::DeletedAt.is_null())
-                .all(db)
-                .await
-                .unwrap_or_default()
-                .into_iter()
-                .map(|ay| (ay.id, ay))
-                .collect()
-        };
-
-        let mut list = Vec::with_capacity(raw_teach_lecturers.len());
-        for tl in &raw_teach_lecturers {
-            let teach = teaches_map.get(&tl.teach_id);
-            let course = teach.and_then(|t| courses_map.get(&t.course_id));
-            let class_code = teach.and_then(|t| class_codes_map.get(&t.class_code_id));
-            let activity = teach.and_then(|t| t.activity_id.and_then(|aid| activities_map.get(&aid)));
-            let academic_year = activity.and_then(|a| academic_years_map.get(&a.academic_year_id));
-
-            let credit = tl.credit
-                .map(|d| d.to_string().parse::<f64>().unwrap_or(0.0))
-                .filter(|&c| c > 0.0)
-                .or_else(|| course.map(|c| c.total_credit))
-                .unwrap_or(0.0);
-
-            let course_name = course
-                .map(|c| c.name.clone())
-                .or_else(|| teach.and_then(|t| t.name.as_ref().map(|n| format!("Mata Kuliah ({})", n))))
-                .unwrap_or_else(|| "Mata Kuliah".to_string());
-
-            let class_name = class_code
-                .map(|cc| cc.name.clone())
-                .or_else(|| class_code.and_then(|cc| cc.alphabet_code.as_ref().map(|ac| format!("Kelas {}", ac))))
-                .unwrap_or_else(|| "Kelas".to_string());
-
-            let class_capacity = class_code.and_then(|cc| cc.capacity).or_else(|| teach.and_then(|t| t.max_member));
-
-            let academic_year_name = academic_year
-                .map(|ay| ay.name.clone())
-                .or_else(|| academic_year.map(|ay| ay.code.to_string()));
-
-            list.push(crate::dtos::academic::campaign::transaction::teaches::LecturerAssignedTeachResponse {
-                teach_lecturer_id: tl.id,
-                teach_id: tl.teach_id,
-                lecturer_id: tl.lecturer_id,
-                planning: tl.planning,
-                realization: tl.realization,
-                credit,
-                is_lecturer_home_base: tl.is_lecturer_home_base,
-                role_name: tl.name.clone(),
-
-                teach_name: teach.and_then(|t| t.name.clone()),
-                description: teach.and_then(|t| t.description.clone()),
-                start_date: teach.and_then(|t| t.start_date),
-                end_date: teach.and_then(|t| t.end_date),
-                max_member: teach.and_then(|t| t.max_member),
-                activity_id: teach.and_then(|t| t.activity_id),
-                activity_name: activity.map(|a| a.name.clone()),
-                academic_year_id: activity.map(|a| a.academic_year_id),
-                academic_year_name,
-                academic_year_code: academic_year.map(|ay| ay.code),
-
-                course_id: teach.map(|t| t.course_id).unwrap_or_default(),
-                course_code: course.map(|c| c.code.clone()),
-                course_name: Some(course_name),
-                course_total_credit: course.map(|c| c.total_credit),
-                course_lecture_credit: course.map(|c| c.lecture_credit),
-                course_practice_credit: course.map(|c| c.practice_credit),
-
-                class_code_id: teach.map(|t| t.class_code_id).unwrap_or_default(),
-                class_name: Some(class_name),
-                class_alphabet_code: class_code.and_then(|cc| cc.alphabet_code.clone()),
-                class_capacity,
-            });
-        }
-        list
-    };
-
     // Quick helper names
     let unit_name = homebases.first().and_then(|h| h.unit_name.clone());
     let rank_name = academic_ranks.first().and_then(|r| r.rank_name.clone()).or_else(|| rank.as_ref().map(|r| r.name.clone()));
@@ -667,7 +443,7 @@ pub async fn load_lecturer_with_relations(
     let status_name = homebases.first().and_then(|h| h.status_name.clone()).or_else(|| status.as_ref().map(|s| s.name.clone()));
     let contract_name = homebases.first().and_then(|h| h.contract_name.clone()).or_else(|| contract.as_ref().map(|c| c.name.clone()));
 
-        let yearly_credit_trends = build_yearly_credit_trends(&assigned_teaches);
+
 
         Ok(LecturerResponse {
         id: item.id,
@@ -705,17 +481,17 @@ pub async fn load_lecturer_with_relations(
         homebases: Some(homebases),
         academic_ranks: Some(academic_ranks),
         academic_groups: Some(academic_groups),
-        teach_lecturers: Some(teach_lecturers),
-        counsellors: Some(counsellors),
-        advisers: Some(advisers),
+        teach_lecturers: None,
+        counsellors: None,
+        advisers: None,
 
-        assigned_teaches: Some(assigned_teaches),
+        assigned_teaches: None,
         unit_name,
         rank_name,
         group_name,
         status_name,
         contract_name,
-        yearly_credit_trends: Some(yearly_credit_trends),
+        yearly_credit_trends: None,
     })
 }
 
@@ -1221,7 +997,7 @@ pub async fn get_teach_lecture_chart(
         ORDER BY ay.feeder_name ASC
     "#;
     
-    let query_res = db.query_all(&Statement::from_sql_and_values(
+    let query_res = db.query_all_raw(Statement::from_sql_and_values(
         DbBackend::Postgres,
         query,
         vec![lecturer_id.into()],
@@ -1248,9 +1024,14 @@ pub async fn get_teach_lecture_chart(
         "yAxis": {
             "type": "value"
         },
+        "tooltip": {
+            "trigger": "axis"
+        },
         "series": [
             {
-                "data": series_data
+                "type": "line",
+                "smooth": true,
+                "data": series_data,
             }
         ]
     });
