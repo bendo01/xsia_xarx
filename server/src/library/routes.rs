@@ -1455,6 +1455,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "academic.lecturer.master.lecturers.get_teach_credit_chart_kebab",
         },
         RouteDefinition {
+            url: "/api/v1/academic/lecturer/master/lecturers/{id}/teach-lecture-chart",
+            method: "GET",
+            handler: "lecturers::get_teach_lecture_chart",
+            name: "academic.lecturer.master.lecturers.get_teach_lecture_chart",
+        },
+        RouteDefinition {
             url: "/api/v1/academic/lecturer/master/lecturers/{id}/yearly-credit-trends",
             method: "GET",
             handler: "lecturers::get_yearly_credit_trends",

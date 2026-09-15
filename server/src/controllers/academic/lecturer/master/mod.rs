@@ -23,6 +23,10 @@ pub fn router() -> Router {
                                 .get_named("academic.lecturer.master.lecturers.get_teach_credit_chart_kebab", lecturers::get_teach_credit_chart),
                         )
                         .push(
+                            Router::with_path("teach-lecture-chart")
+                                .get_named("academic.lecturer.master.lecturers.get_teach_lecture_chart", lecturers::get_teach_lecture_chart),
+                        )
+                        .push(
                             Router::with_path("yearly-credit-trends")
                                 .get_named("academic.lecturer.master.lecturers.get_yearly_credit_trends", lecturers::get_yearly_credit_trends),
                         ),

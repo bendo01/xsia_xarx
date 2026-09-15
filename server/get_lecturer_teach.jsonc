@@ -1,0 +1,19 @@
+{
+   "tooltip": {
+    "trigger": "'axis'"
+  },
+  xAxis: {
+    type: 'category',
+    data: ['20201', '20202', '20211', '20212', '20221', '20222', '20231']
+  },
+  yAxis: {
+    type: 'value'
+  },
+  series: [
+    {
+      data: [820, 932, 901, 934, 1290, 1330, 1320],
+      type: 'line',
+      smooth: true
+    }
+  ]
+};

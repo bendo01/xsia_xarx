@@ -24,6 +24,7 @@ import {
 import type { YearlyCreditTrend } from '~/components/chart/teach_credit_chart';
 
 const TeachCreditChart = lazy(() => import('~/components/chart/teach_credit_chart'));
+import EChart from '~/components/chart/echart_component';
 import PopupBlockedAlert from '~/components/alert/PopupBlockedAlert';
 import { Loader } from '~/components/loader';
 
@@ -42,6 +43,7 @@ export default function LecturerIndividualShowPage() {
     const [latestAcademicGroup, setLatestAcademicGroup] = createSignal<AcademicLecturerTransactionAcademicGroup | null>(null);
     const [allAcademicGroups, setAllAcademicGroups] = createSignal<AcademicLecturerTransactionAcademicGroup[]>([]);
     const [activeTab, setActiveTab] = createSignal<'overview' | 'biodata' | 'academic'>('overview');
+    const [teachLectureChart, setTeachLectureChart] = createSignal<any>(null);
 
     const fetchLecturerProfile = async () => {
         setIsLoading(true);
@@ -135,6 +137,16 @@ export default function LecturerIndividualShowPage() {
 
                         const lecturerTeaches = (teachesRes || []).filter(item => item.lecturer_id === activeLecturerId);
                         setAssignedTeaches(lecturerTeaches);
+                    }
+
+                    // Fetch teach-lecture-chart
+                    try {
+                        const chartRes = await masterApiShow<any>('academic/lecturer/master/lecturers', `${activeLecturerId}/teach-lecture-chart`);
+                        if (chartRes?.data) {
+                            setTeachLectureChart(chartRes.data);
+                        }
+                    } catch (e) {
+                        console.error('Error fetching teach-lecture-chart:', e);
                     }
                 }
             }
@@ -473,7 +485,7 @@ export default function LecturerIndividualShowPage() {
                                 </div>
 
                                 <Show
-                                    when={yearlyCreditTrends().length > 0}
+                                    when={teachLectureChart()}
                                     fallback={
                                         <div class="py-12 text-center text-neutral-400 font-mono text-xs flex flex-col items-center justify-center gap-2">
                                             <svg class="size-8 text-neutral-300 dark:text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -491,7 +503,14 @@ export default function LecturerIndividualShowPage() {
                                             class="py-12"
                                         />
                                     }>
-                                        <TeachCreditChart data={yearlyCreditTrends()} />
+                                        <div class="w-full min-w-0">
+                                            <EChart
+                                                option={teachLectureChart()}
+                                                ariaLabel="Total Teaching Credits per Academic Year"
+                                                height={260}
+                                                class="w-full min-w-0"
+                                            />
+                                        </div>
                                     </Suspense>
                                 </Show>
                             </div>

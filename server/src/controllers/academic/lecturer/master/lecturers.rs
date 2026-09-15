@@ -1188,4 +1188,72 @@ pub async fn get_yearly_credit_trends(
     Ok(Json(chart_data))
 }
 
+#[endpoint(tags("Academic - Lecturer - Master - Lecturer"), status_codes(200, 400, 404, 500))]
+pub async fn get_teach_lecture_chart(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<serde_json::Value>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
 
+    let lecturer_id_str = req
+        .param::<String>("id")
+        .or_else(|| req.query::<String>("lecturer_id"))
+        .ok_or_else(|| StatusError::bad_request().brief("Missing parameter lecturer_id"))?;
+    let lecturer_id = Uuid::parse_str(&lecturer_id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+
+    use sea_orm::{ConnectionTrait, Statement, DbBackend};
+    
+    let query = r#"
+        SELECT 
+            ay.feeder_name as label, 
+            COUNT(tl.id) as count
+        FROM academic_campaign_transaction.teach_lecturers tl
+        JOIN academic_campaign_transaction.teaches t ON tl.teach_id = t.id
+        JOIN academic_campaign_transaction.activities a ON t.activity_id = a.id
+        JOIN academic_general_reference.academic_years ay ON a.academic_year_id = ay.id
+        WHERE tl.lecturer_id = $1 
+          AND tl.deleted_at IS NULL 
+          AND t.deleted_at IS NULL 
+          AND a.deleted_at IS NULL
+        GROUP BY ay.feeder_name
+        ORDER BY ay.feeder_name ASC
+    "#;
+    
+    let query_res = db.query_all(&Statement::from_sql_and_values(
+        DbBackend::Postgres,
+        query,
+        vec![lecturer_id.into()],
+    )).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+    
+    let mut x_axis_data = Vec::new();
+    let mut series_data = Vec::new();
+    
+    for row in query_res {
+        let label: String = row.try_get("", "label").unwrap_or_default();
+        let count: i64 = row.try_get("", "count").unwrap_or(0);
+        
+        if !label.is_empty() {
+            x_axis_data.push(label);
+            series_data.push(count);
+        }
+    }
+    
+    let chart_data = serde_json::json!({
+        "xAxis": {
+            "type": "category",
+            "data": x_axis_data
+        },
+        "yAxis": {
+            "type": "value"
+        },
+        "series": [
+            {
+                "data": series_data
+            }
+        ]
+    });
+    
+    Ok(Json(chart_data))
+}
