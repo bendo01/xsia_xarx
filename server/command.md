@@ -87,3 +87,14 @@ sea-orm-cli migrate generate -d ./migration/src/feeder/akumulasi schema_feeder_a
 sea-orm-cli migrate generate -d ./migration/src/feeder/akumulasi schema_feeder_akumulasi_table_jumlah_data
 ```
 
+# OpenWaSender
+```rust
+let sender = OpenWaSender::new(openwa_config);
+sender.send_message("628123456789", "Hello from xsia_xarx!").await?;
+
+sender.register_webhook(
+    "https://api.xsia.app/webhook/openwa", 
+    vec!["message.received", "session.status"], 
+    "your-hmac-secret"
+).await?;
+```

@@ -3,3 +3,4 @@ pub mod email;
 pub mod redis;
 pub mod jwt;
 pub mod feeder;
+pub mod openwa;
