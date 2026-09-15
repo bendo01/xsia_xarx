@@ -5,13 +5,12 @@ import { A } from '@solidjs/router';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0.1:5800/api/v1").replace(/\/+$/, "");
 
-export default function AccountAcquisitionRequest() {
+export default function ForgotPasswordRequest() {
     let canvasRef: HTMLCanvasElement | undefined;
     const [isLoading, setIsLoading] = createSignal(false);
     const [errorMessage, setErrorMessage] = createSignal<string | null>(null);
     const [successWaLink, setSuccessWaLink] = createSignal<string | null>(null);
     const [successMessage, setSuccessMessage] = createSignal<string | null>(null);
-    const [showPassword, setShowPassword] = createSignal(false);
 
     const form = createForm(() => ({
         defaultValues: {
@@ -19,10 +18,9 @@ export default function AccountAcquisitionRequest() {
             student_code: '',
             email: '',
             phone_number: '',
-            password: '',
         },
         onSubmit: async ({ value }) => {
-            if (!value.nik || !value.student_code || !value.email || !value.phone_number || !value.password) {
+            if (!value.nik || !value.student_code || !value.email || !value.phone_number) {
                 setErrorMessage("Semua kolom harus diisi");
                 return;
             }
@@ -32,14 +30,7 @@ export default function AccountAcquisitionRequest() {
             setSuccessWaLink(null);
 
             try {
-                const institution_id = import.meta.env.VITE_CURRENT_INSTITUTION_ID || import.meta.env.CURRENT_INSTITUTION_ID;
-                if (!institution_id) {
-                    setErrorMessage("Institution ID not configured in .env");
-                    setIsLoading(false);
-                    return;
-                }
-
-                const response = await fetch(`${getBaseUrl()}/account_acquisition`, {
+                const response = await fetch(`${getBaseUrl()}/forgot_password`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -50,8 +41,6 @@ export default function AccountAcquisitionRequest() {
                         student_code: value.student_code,
                         email: value.email,
                         phone_number: value.phone_number,
-                        password: value.password,
-                        institution_id: institution_id,
                     }),
                 });
 
@@ -68,8 +57,8 @@ export default function AccountAcquisitionRequest() {
                     setErrorMessage(errorMsg);
                     toast.danger(errorMsg);
                 } else {
-                    toast.success(data?.message || "Akun berhasil dibuat");
-                    setSuccessMessage(data?.message || "Akun berhasil dibuat");
+                    toast.success(data?.message || "Tautan reset kata sandi telah dikirim");
+                    setSuccessMessage(data?.message || "Tautan reset kata sandi telah dikirim ke email Anda.");
                     setSuccessWaLink(data?.wa_link || null);
                     if (data?.wa_link) {
                         window.open(data.wa_link, "_blank");
@@ -190,10 +179,10 @@ export default function AccountAcquisitionRequest() {
             <div class="relative z-10 w-full max-w-lg p-8 sm:p-10 bg-slate-900/60 backdrop-blur-2xl border border-emerald-500/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] rounded-xs flex flex-col items-center">
                 
                 <h1 class="text-[26px] sm:text-[30px] font-bold text-white tracking-wide mb-1 font-sans">
-                    Dapatkan Akun
+                    Lupa Kata Sandi
                 </h1>
                 <p class="text-white/60 text-xs font-semibold tracking-wider uppercase mb-6 font-mono text-center">
-                    Isi detail Anda untuk memperoleh akun
+                    Isi detail Anda untuk memulihkan akun
                 </p>
 
                 <Show when={errorMessage()}>
@@ -318,48 +307,6 @@ export default function AccountAcquisitionRequest() {
                         )}
                     </form.Field>
 
-                    <form.Field name="password">
-                        {(field) => (
-                            <div class="space-y-1">
-                                <label class="block text-xs font-medium text-white/80 px-1">Kata Sandi</label>
-                                <div class="relative flex items-center">
-                                    <input
-                                        type={showPassword() ? "text" : "password"}
-                                        placeholder="Kata Sandi Minimal 6 Karakter"
-                                        required
-                                        minlength={6}
-                                        value={field().state.value}
-                                        onBlur={field().handleBlur}
-                                        onInput={(e) => {
-                                            field().handleChange(e.currentTarget.value);
-                                            if (errorMessage()) setErrorMessage(null);
-                                        }}
-                                        class="w-full bg-[#111827]/70 border border-emerald-500/20 text-white placeholder-white/30 pl-4 pr-11 py-3 rounded-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400/50 transition-all text-sm shadow-inner"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPassword(!showPassword())}
-                                        class="absolute right-3.5 text-white/40 hover:text-white/90 transition-colors p-1"
-                                    >
-                                        <Show when={showPassword()} fallback={
-                                            <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-                                                <circle cx="12" cy="12" r="3" />
-                                            </svg>
-                                        }>
-                                            <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="m9.88 9.88 4.24 4.24" />
-                                                <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
-                                                <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
-                                                <line x1="2" x2="22" y1="2" y2="22" />
-                                            </svg>
-                                        </Show>
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                    </form.Field>
-
                     <form.Subscribe selector={(state) => state.canSubmit}>
                         {(canSubmit) => (
                             <button
@@ -369,7 +316,7 @@ export default function AccountAcquisitionRequest() {
                             >
                                 <Show when={isLoading()} fallback={
                                     <>
-                                        <span>Dapatkan Akun</span>
+                                        <span>Kirim Permintaan Reset</span>
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M5 12h14" />
                                             <path d="m12 5 7 7-7 7" />

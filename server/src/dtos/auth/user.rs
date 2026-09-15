@@ -121,6 +121,15 @@ pub struct SessionLoginResponse {
 pub struct ForgotPasswordRequest {
     #[validate(email)]
     pub email: String,
+    pub nik: String,
+    pub student_code: String,
+    pub phone_number: String,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct ForgotPasswordResponse {
+    pub wa_link: String,
+    pub message: String,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
@@ -134,4 +143,22 @@ pub struct ResetPasswordRequest {
 pub struct ResendVerificationRequest {
     #[validate(email)]
     pub email: String,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
+pub struct AccountAcquisitionRequest {
+    pub nik: String,
+    pub student_code: String,
+    #[validate(email)]
+    pub email: String,
+    pub phone_number: String,
+    #[validate(length(min = 6))]
+    pub password: String,
+    pub institution_id: Uuid,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct AccountAcquisitionResponse {
+    pub wa_link: String,
+    pub message: String,
 }
