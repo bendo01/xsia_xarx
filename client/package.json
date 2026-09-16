@@ -6,6 +6,7 @@
     "build": "vite build",
     "start": "node .output/server/index.mjs",
     "preview": "vite preview",
+    "lint": "oxlint",
     "test": "vitest run && playwright test",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
@@ -33,12 +34,14 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
+    "@shadcn/lint": "^0.1.0",
     "@solidjs/testing-library": "^0.8.10",
     "@tailwindcss/vite": "^4.3.3",
     "@testing-library/jest-dom": "^7.0.1",
     "@types/node": "^26.5.1",
     "@types/toastify-js": "^1.12.4",
     "jsdom": "^30.0.1",
+    "oxlint": "^1.83.0",
     "tailwindcss": "^4.3.3",
     "vite-plugin-solid": "^2.11.14",
     "vitest": "^4.1.11"

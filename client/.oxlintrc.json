@@ -1,0 +1,10 @@
+{
+  "jsPlugins": [
+    "@shadcn/lint"
+  ],
+  "settings": {
+    "shadcn": {
+      "ui": "~/components"
+    }
+  }
+}
