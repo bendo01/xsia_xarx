@@ -209,8 +209,8 @@ export default function MasterShowPage() {
                                             <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">Status</span>
                                             <span class="font-mono block">
                                                 <span class={`px-1.5 py-0.5 text-xs font-medium border ${record().is_active
-                                                        ? 'bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800'
-                                                        : 'bg-neutral-100 text-neutral-600 border-neutral-200 dark:bg-neutral-700 dark:text-neutral-400'
+                                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800'
+                                                    : 'bg-neutral-100 text-neutral-600 border-neutral-200 dark:bg-neutral-700 dark:text-neutral-400'
                                                     }`}>
                                                     {record().is_active ? 'Active' : 'Inactive'}
                                                 </span>
@@ -228,6 +228,7 @@ export default function MasterShowPage() {
                                             <table class="w-full text-sm text-left">
                                                 <thead class="bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 font-mono text-xs uppercase">
                                                     <tr>
+                                                        <th class="px-4 py-3 border-b border-neutral-200 dark:border-neutral-700">Sequence</th>
                                                         <th class="px-4 py-3 border-b border-neutral-200 dark:border-neutral-700">Code</th>
                                                         <th class="px-4 py-3 border-b border-neutral-200 dark:border-neutral-700">Name</th>
                                                         <th class="px-4 py-3 border-b border-neutral-200 dark:border-neutral-700">Credit</th>
@@ -240,15 +241,16 @@ export default function MasterShowPage() {
                                                         {(detail: any) => (
                                                             <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-800/50">
                                                                 <td class="px-4 py-3 font-mono">{detail.code || '-'}</td>
+                                                                <td class="px-4 py-3 font-mono">{detail.course?.code || '-'}</td>
                                                                 <td class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">{detail.name || '-'}</td>
                                                                 <td class="px-4 py-3">{detail.credit || '-'}</td>
                                                                 <td class="px-4 py-3">
-                                                                    <span class={`px-2 py-1 text-xs font-medium rounded ${detail.is_convertable_to_mbkm ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400'}`}>
+                                                                    <span class={`px-2 py-1 text-xs font-medium rounded ${detail.is_convertable_to_mbkm ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
                                                                         {detail.is_convertable_to_mbkm ? 'Yes' : 'No'}
                                                                     </span>
                                                                 </td>
                                                                 <td class="px-4 py-3">
-                                                                    <span class={`px-2 py-1 text-xs font-medium rounded ${detail.is_convertable_to_prior_learning_recognition ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400'}`}>
+                                                                    <span class={`px-2 py-1 text-xs font-medium rounded ${detail.is_convertable_to_prior_learning_recognition ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
                                                                         {detail.is_convertable_to_prior_learning_recognition ? 'Yes' : 'No'}
                                                                     </span>
                                                                 </td>
@@ -267,6 +269,7 @@ export default function MasterShowPage() {
                                                         <div class="flex justify-between items-start">
                                                             <div>
                                                                 <div class="font-mono text-xs text-neutral-500 dark:text-neutral-400 mb-1">{detail.code || '-'}</div>
+                                                                <div class="font-mono text-xs text-neutral-500 dark:text-neutral-400 mb-1">{detail.course?.code || '-'}</div>
                                                                 <div class="font-bold text-neutral-900 dark:text-white">{detail.name || '-'}</div>
                                                             </div>
                                                             <div class="bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 text-xs font-bold rounded">
@@ -276,13 +279,13 @@ export default function MasterShowPage() {
                                                         <div class="grid grid-cols-2 gap-2 text-xs pt-3 border-t border-neutral-100 dark:border-neutral-800">
                                                             <div>
                                                                 <span class="text-neutral-500 dark:text-neutral-400 block mb-1">MBKM</span>
-                                                                <span class={`inline-block px-2 py-1 font-medium rounded ${detail.is_convertable_to_mbkm ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400'}`}>
+                                                                <span class={`inline-block px-2 py-1 font-medium rounded ${detail.is_convertable_to_mbkm ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
                                                                     {detail.is_convertable_to_mbkm ? 'Yes' : 'No'}
                                                                 </span>
                                                             </div>
                                                             <div>
                                                                 <span class="text-neutral-500 dark:text-neutral-400 block mb-1">RPL</span>
-                                                                <span class={`inline-block px-2 py-1 font-medium rounded ${detail.is_convertable_to_prior_learning_recognition ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400'}`}>
+                                                                <span class={`inline-block px-2 py-1 font-medium rounded ${detail.is_convertable_to_prior_learning_recognition ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
                                                                     {detail.is_convertable_to_prior_learning_recognition ? 'Yes' : 'No'}
                                                                 </span>
                                                             </div>

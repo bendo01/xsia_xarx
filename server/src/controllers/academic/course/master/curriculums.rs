@@ -117,9 +117,122 @@ pub async fn get_curriculum(
     let unit = item.find_related(crate::models::institution::master::units::Entity).into_json().one(db).await.unwrap_or_default();
     let academic_year = item.find_related(crate::models::academic::general::reference::academic_years::Entity).into_json().one(db).await.unwrap_or_default();
     let curriculum_type = item.find_related(crate::models::academic::course::reference::curriculum_types::Entity).into_json().one(db).await.unwrap_or_default();
-    let curriculum_details = item.find_related(crate::models::academic::course::master::curriculum_details::Entity).into_json().all(db).await.unwrap_or_default();
-    let recognitions = item.find_related(crate::models::academic::prior_learning_recognition::transaction::recognitions::Entity).into_json().all(db).await.unwrap_or_default();
-    let students = item.find_related(crate::models::academic::student::master::students::Entity).into_json().all(db).await.unwrap_or_default();
+    
+    let mut curriculum_details = item.find_related(crate::models::academic::course::master::curriculum_details::Entity).into_json().all(db).await.unwrap_or_default();
+
+    let mut course_ids = Vec::new();
+    for detail in &curriculum_details {
+        if let Some(id_val) = detail.get("course_id") {
+            if let Some(id_str) = id_val.as_str() {
+                if let Ok(id) = uuid::Uuid::parse_str(id_str) {
+                    course_ids.push(id);
+                }
+            }
+        }
+    }
+    course_ids.sort();
+    course_ids.dedup();
+
+    let courses_json = if !course_ids.is_empty() {
+        crate::models::academic::course::master::courses::Entity::find()
+            .filter(crate::models::academic::course::master::courses::Column::Id.is_in(course_ids))
+            .into_json()
+            .all(db)
+            .await
+            .unwrap_or_default()
+    } else {
+        Vec::new()
+    };
+
+    let mut group_ids = Vec::new();
+    let mut variety_ids = Vec::new();
+    let mut unit_ids = Vec::new();
+    let mut competence_ids = Vec::new();
+
+    for course in &courses_json {
+        if let Some(id_str) = course.get("group_id").and_then(|v| v.as_str()) {
+            if let Ok(id) = uuid::Uuid::parse_str(id_str) { group_ids.push(id); }
+        }
+        if let Some(id_str) = course.get("variety_id").and_then(|v| v.as_str()) {
+            if let Ok(id) = uuid::Uuid::parse_str(id_str) { variety_ids.push(id); }
+        }
+        if let Some(id_str) = course.get("unit_id").and_then(|v| v.as_str()) {
+            if let Ok(id) = uuid::Uuid::parse_str(id_str) { unit_ids.push(id); }
+        }
+        if let Some(id_str) = course.get("competence_id").and_then(|v| v.as_str()) {
+            if let Ok(id) = uuid::Uuid::parse_str(id_str) { competence_ids.push(id); }
+        }
+    }
+    
+    group_ids.sort(); group_ids.dedup();
+    variety_ids.sort(); variety_ids.dedup();
+    unit_ids.sort(); unit_ids.dedup();
+    competence_ids.sort(); competence_ids.dedup();
+
+    let groups = if !group_ids.is_empty() {
+        crate::models::academic::course::reference::groups::Entity::find()
+            .filter(crate::models::academic::course::reference::groups::Column::Id.is_in(group_ids))
+            .into_json().all(db).await.unwrap_or_default()
+    } else { Vec::new() };
+
+    let varieties = if !variety_ids.is_empty() {
+        crate::models::academic::course::reference::varieties::Entity::find()
+            .filter(crate::models::academic::course::reference::varieties::Column::Id.is_in(variety_ids))
+            .into_json().all(db).await.unwrap_or_default()
+    } else { Vec::new() };
+
+    let units = if !unit_ids.is_empty() {
+        crate::models::institution::master::units::Entity::find()
+            .filter(crate::models::institution::master::units::Column::Id.is_in(unit_ids))
+            .into_json().all(db).await.unwrap_or_default()
+    } else { Vec::new() };
+
+    let competences = if !competence_ids.is_empty() {
+        crate::models::academic::course::reference::competences::Entity::find()
+            .filter(crate::models::academic::course::reference::competences::Column::Id.is_in(competence_ids))
+            .into_json().all(db).await.unwrap_or_default()
+    } else { Vec::new() };
+
+    fn to_map(vec: Vec<serde_json::Value>) -> std::collections::HashMap<String, serde_json::Value> {
+        let mut map = std::collections::HashMap::new();
+        for v in vec {
+            if let Some(id) = v.get("id").and_then(|i| i.as_str()) {
+                map.insert(id.to_string(), v);
+            }
+        }
+        map
+    }
+
+    let groups_map = to_map(groups);
+    let varieties_map = to_map(varieties);
+    let units_map = to_map(units);
+    let competences_map = to_map(competences);
+
+    let mut courses_map = std::collections::HashMap::new();
+    for mut course in courses_json {
+        let group_id = course.get("group_id").and_then(|v| v.as_str()).unwrap_or_default().to_string();
+        course.as_object_mut().unwrap().insert("group".to_string(), groups_map.get(&group_id).cloned().unwrap_or(serde_json::Value::Null));
+
+        let variety_id = course.get("variety_id").and_then(|v| v.as_str()).unwrap_or_default().to_string();
+        course.as_object_mut().unwrap().insert("variety".to_string(), varieties_map.get(&variety_id).cloned().unwrap_or(serde_json::Value::Null));
+
+        let unit_id = course.get("unit_id").and_then(|v| v.as_str()).unwrap_or_default().to_string();
+        course.as_object_mut().unwrap().insert("unit".to_string(), units_map.get(&unit_id).cloned().unwrap_or(serde_json::Value::Null));
+
+        let competence_id = course.get("competence_id").and_then(|v| v.as_str()).unwrap_or_default().to_string();
+        course.as_object_mut().unwrap().insert("competence".to_string(), competences_map.get(&competence_id).cloned().unwrap_or(serde_json::Value::Null));
+
+        if let Some(id) = course.get("id").and_then(|i| i.as_str()) {
+            courses_map.insert(id.to_string(), course);
+        }
+    }
+
+    for detail in &mut curriculum_details {
+        let course_id = detail.get("course_id").and_then(|v| v.as_str()).unwrap_or_default().to_string();
+        if let Some(obj) = detail.as_object_mut() {
+            obj.insert("course".to_string(), courses_map.get(&course_id).cloned().unwrap_or(serde_json::Value::Null));
+        }
+    }
 
     Ok(Json(CurriculumResponse {
             id: item.id,
@@ -144,8 +257,8 @@ pub async fn get_curriculum(
             academic_year,
             curriculum_type,
             curriculum_details: Some(serde_json::json!(curriculum_details)),
-            recognitions: Some(serde_json::json!(recognitions)),
-            students: Some(serde_json::json!(students)),
+            recognitions: None,
+            students: None,
     }))
 }
 

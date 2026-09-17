@@ -6,7 +6,7 @@ import { masterApiShow, masterApiUpdate } from '~/controllers/master/masterApiCo
 
 export default function MasterEditPage() {
     const apiPath = "academic/course/master/curriculums";
-    const basePath = "/academic/course/master/curriculum";
+    const basePath = "/course-department/academic/course/master/curriculum";
     const [searchParams] = useSearchParams();
     const [selectedId, setSelectedId] = createSignal<string>((searchParams.id as string) || '');
     const [code, setCode] = createSignal('');
@@ -109,14 +109,14 @@ export default function MasterEditPage() {
                             class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-white dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/60 rounded-xs shadow-2xs transition-colors"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="m15 18-6-6 6-6"/>
+                                <path d="m15 18-6-6 6-6" />
                             </svg>
                             <span>Cancel</span>
                         </a>
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 max-w-3xl">
+                <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6">
                     <Show
                         when={!isLoading()}
                         fallback={
