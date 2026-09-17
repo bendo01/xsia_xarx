@@ -2,7 +2,7 @@ use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
-    PaginatorTrait, QueryFilter, QueryOrder, Set,
+    ModelTrait, PaginatorTrait, QueryFilter, QueryOrder, Set,
 };
 use uuid::Uuid;
 use validator::Validate;
@@ -78,7 +78,12 @@ pub async fn list_curriculums(
             start_date: item.start_date,
             end_date: item.end_date,
             is_active: item.is_active,
-
+            unit: None,
+            academic_year: None,
+            curriculum_type: None,
+            curriculum_details: None,
+            recognitions: None,
+            students: None,
     }).collect();
 
     Ok(Json(PaginatedCurriculumResponse {
@@ -109,6 +114,13 @@ pub async fn get_curriculum(
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
         .ok_or_else(|| StatusError::not_found().brief("Curriculum not found"))?;
 
+    let unit = item.find_related(crate::models::institution::master::units::Entity).into_json().one(db).await.unwrap_or_default();
+    let academic_year = item.find_related(crate::models::academic::general::reference::academic_years::Entity).into_json().one(db).await.unwrap_or_default();
+    let curriculum_type = item.find_related(crate::models::academic::course::reference::curriculum_types::Entity).into_json().one(db).await.unwrap_or_default();
+    let curriculum_details = item.find_related(crate::models::academic::course::master::curriculum_details::Entity).into_json().all(db).await.unwrap_or_default();
+    let recognitions = item.find_related(crate::models::academic::prior_learning_recognition::transaction::recognitions::Entity).into_json().all(db).await.unwrap_or_default();
+    let students = item.find_related(crate::models::academic::student::master::students::Entity).into_json().all(db).await.unwrap_or_default();
+
     Ok(Json(CurriculumResponse {
             id: item.id,
             name: item.name.clone(),
@@ -128,9 +140,16 @@ pub async fn get_curriculum(
             start_date: item.start_date,
             end_date: item.end_date,
             is_active: item.is_active,
-
+            unit,
+            academic_year,
+            curriculum_type,
+            curriculum_details: Some(serde_json::json!(curriculum_details)),
+            recognitions: Some(serde_json::json!(recognitions)),
+            students: Some(serde_json::json!(students)),
     }))
-}#[endpoint(tags("Academic - Course - Master - Curriculum"), status_codes(200, 400, 500))]
+}
+
+#[endpoint(tags("Academic - Course - Master - Curriculum"), status_codes(200, 400, 500))]
 pub async fn create_curriculum(
         req: &mut Request,
         depot: &mut Depot,
@@ -190,7 +209,12 @@ pub async fn create_curriculum(
             start_date: item.start_date,
             end_date: item.end_date,
             is_active: item.is_active,
-
+            unit: None,
+            academic_year: None,
+            curriculum_type: None,
+            curriculum_details: None,
+            recognitions: None,
+            students: None,
         }))
 }
 
@@ -278,7 +302,12 @@ pub async fn update_curriculum(
             start_date: item.start_date,
             end_date: item.end_date,
             is_active: item.is_active,
-
+            unit: None,
+            academic_year: None,
+            curriculum_type: None,
+            curriculum_details: None,
+            recognitions: None,
+            students: None,
         }))
 }
 #[endpoint(tags("Academic - Course - Master - Curriculum"), status_codes(200, 400, 404, 500))]

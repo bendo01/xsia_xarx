@@ -224,6 +224,12 @@ pub async fn load_unit_with_relations(
             start_date: c.start_date,
             end_date: c.end_date,
             is_active: c.is_active,
+            unit: None,
+            academic_year: None,
+            curriculum_type: None,
+            curriculum_details: None,
+            recognitions: None,
+            students: None,
         })
         .collect();
 

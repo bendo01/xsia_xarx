@@ -50,6 +50,12 @@ pub async fn list_curriculums_by_unit(
             start_date: item.start_date,
             end_date: item.end_date,
             is_active: item.is_active,
+            unit: None,
+            academic_year: None,
+            curriculum_type: None,
+            curriculum_details: None,
+            recognitions: None,
+            students: None,
         })
         .collect();
 
@@ -76,6 +82,18 @@ pub struct CurriculumResponse {
     pub start_date: Option<NaiveDate>,
     pub end_date: Option<NaiveDate>,
     pub is_active: bool,
+    #[salvo(schema(value_type = Object))]
+    pub unit: Option<serde_json::Value>,
+    #[salvo(schema(value_type = Object))]
+    pub academic_year: Option<serde_json::Value>,
+    #[salvo(schema(value_type = Object))]
+    pub curriculum_type: Option<serde_json::Value>,
+    #[salvo(schema(value_type = Object))]
+    pub curriculum_details: Option<serde_json::Value>,
+    #[salvo(schema(value_type = Object))]
+    pub recognitions: Option<serde_json::Value>,
+    #[salvo(schema(value_type = Object))]
+    pub students: Option<serde_json::Value>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
