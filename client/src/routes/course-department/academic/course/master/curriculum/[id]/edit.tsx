@@ -1,16 +1,26 @@
 import { createSignal, onMount, createEffect, Show, For } from 'solid-js';
 import { getBaseApiUrl, getAuthHeaders } from '~/controllers/master/masterApiController';
 import { userRolesSignal, currentRoleIdSignal, isStaffProgramStudi } from '~/lib/authStore';
-import { useSearchParams } from '@solidjs/router';
+import { useParams, useSearchParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { masterApiShow, masterApiUpdate } from '~/controllers/master/masterApiController';
 
 export default function MasterEditPage() {
     const apiPath = "academic/course/master/curriculums";
-    const basePath = "/course-department/course-department/academic/course/master/curriculum";
+    const basePath = "/course-department/academic/course/master/curriculum";
+    const params = useParams();
     const [searchParams] = useSearchParams();
-    const [selectedId, setSelectedId] = createSignal<string>((searchParams.id as string) || '');
+
+    const resolveId = () => {
+        const pId = params.id;
+        if (pId && pId !== '[id]' && pId !== ':id') {
+            return pId.trim();
+        }
+        return ((searchParams.id as string) || '').trim();
+    };
+
+    const [selectedId, setSelectedId] = createSignal<string>(resolveId());
     const [code, setCode] = createSignal('');
     const [name, setName] = createSignal('');
     const [description, setDescription] = createSignal('');
@@ -48,7 +58,7 @@ export default function MasterEditPage() {
     };
 
     onMount(async () => {
-        const id = (searchParams.id as string) || '';
+        const id = resolveId();
         fetchExisting(id);
 
         try {
@@ -95,7 +105,7 @@ export default function MasterEditPage() {
     });
 
     createEffect(() => {
-        const id = searchParams.id as string;
+        const id = resolveId();
         if (id && id !== selectedId()) {
             setSelectedId(id);
             fetchExisting(id);
