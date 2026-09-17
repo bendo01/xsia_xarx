@@ -134,6 +134,12 @@ pub struct ChartTooltip {
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
 pub struct ChartLegend {
     pub data: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub top: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub bottom: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub left: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
@@ -168,7 +174,9 @@ pub struct ChartLineSeriesItem {
     pub name: String,
     #[serde(rename = "type")]
     pub series_type: String,
-    pub data: Vec<i64>,
+    pub data: Vec<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub smooth: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
@@ -287,6 +295,8 @@ pub struct BarSeriesItem {
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
 pub struct UnitDashboardStudentRegencyDistribution {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tooltip: Option<ChartTooltip>,
     pub dataset: RegencyDataset,
     pub grid: RegencyGrid,
     #[serde(rename = "xAxis")]
@@ -301,6 +311,7 @@ pub type SubDistrictDataset = RegencyDataset;
 pub type SubDistrictGrid = RegencyGrid;
 pub type SubDistrictXAxis = RegencyXAxis;
 pub type SubDistrictYAxis = RegencyYAxis;
+pub type UnitDashboardPieChart = UnitDashboardCourseCategoryDistribution;
 pub type UnitDashboardStudentSubDistrictDistribution = UnitDashboardStudentRegencyDistribution;
 
 /// Aggregated dashboard response for the unit show page.
@@ -337,6 +348,10 @@ pub struct UnitDashboardResponse {
     pub course_category_distribution: UnitDashboardCourseCategoryDistribution,
     #[serde(alias = "student_sub_district_distribution")]
     pub student_regency_distribution: UnitDashboardStudentRegencyDistribution,
+    pub student_religion_distribution: UnitDashboardAcademicYearChart,
+    pub average_gpa_trend: UnitDashboardAcademicYearChart,
+    pub lecturer_academic_group_distribution: UnitDashboardPieChart,
+    pub lecturer_academic_rank_distribution: UnitDashboardPieChart,
 }
 
 /// Detailed cohort item for student academic year status trend chart.

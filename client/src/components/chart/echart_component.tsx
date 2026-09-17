@@ -16,6 +16,7 @@ export default function EChart(props: EChartProps) {
     let intersectionObserver: IntersectionObserver | null = null;
     let rafId: number | null = null;
     let mountTimer: ReturnType<typeof setTimeout> | null = null;
+    let themeObserver: MutationObserver | null = null;
 
     const scheduleResize = () => {
         if (rafId !== null) {
@@ -44,29 +45,50 @@ export default function EChart(props: EChartProps) {
         const hasClientWidth = containerRef.clientWidth > 0;
         const hasClientHeight = containerRef.clientHeight > 0;
 
-        const initOpts: echarts.InitOptions = {
-            renderer: 'svg',
+        const initChart = () => {
+            if (!containerRef) return;
+            if (chartInstance) {
+                chartInstance.dispose();
+            }
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const initOpts: echarts.EChartsInitOpts = {
+                renderer: 'svg',
+            };
+
+            // If explicit numeric width/height was passed via props, respect it
+            if (typeof props.width === 'number') {
+                initOpts.width = props.width;
+            } else if (!hasClientWidth) {
+                // Fallback for headless/JSDOM environments or initially unmounted layouts
+                initOpts.width = parseInt(String(props.width), 10) || 600;
+            }
+
+            if (typeof props.height === 'number') {
+                initOpts.height = props.height;
+            } else if (!hasClientHeight) {
+                initOpts.height = parseInt(String(props.height), 10) || 240;
+            }
+
+            // Initialize ECharts with SVG renderer for crisp vector rendering and JSDOM test compatibility
+            chartInstance = echarts.init(containerRef, isDark ? 'dark' : null, initOpts);
+
+            if (props.option && Object.keys(props.option).length > 0) {
+                chartInstance.setOption(props.option, true);
+            }
         };
 
-        // If explicit numeric width/height was passed via props, respect it
-        if (typeof props.width === 'number') {
-            initOpts.width = props.width;
-        } else if (!hasClientWidth) {
-            // Fallback for headless/JSDOM environments or initially unmounted layouts
-            initOpts.width = parseInt(String(props.width), 10) || 600;
-        }
+        initChart();
 
-        if (typeof props.height === 'number') {
-            initOpts.height = props.height;
-        } else if (!hasClientHeight) {
-            initOpts.height = parseInt(String(props.height), 10) || 240;
-        }
-
-        // Initialize ECharts with SVG renderer for crisp vector rendering and JSDOM test compatibility
-        chartInstance = echarts.init(containerRef, null, initOpts);
-
-        if (props.option && Object.keys(props.option).length > 0) {
-            chartInstance.setOption(props.option, true);
+        if (typeof MutationObserver !== 'undefined') {
+            themeObserver = new MutationObserver((mutations) => {
+                for (const mutation of mutations) {
+                    if (mutation.attributeName === 'class') {
+                        initChart();
+                    }
+                }
+            });
+            themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
         }
 
         // 1. Observe container box resizing (grid column changes, flex reflow, window resizing)
@@ -121,6 +143,10 @@ export default function EChart(props: EChartProps) {
             if (intersectionObserver) {
                 intersectionObserver.disconnect();
                 intersectionObserver = null;
+            }
+            if (themeObserver) {
+                themeObserver.disconnect();
+                themeObserver = null;
             }
             window.removeEventListener('resize', handleWindowResize);
             window.removeEventListener('orientationchange', handleWindowResize);

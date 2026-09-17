@@ -95,15 +95,6 @@ export default function UnitDashboardPage() {
                             Overview and details of the selected organizational unit.
                         </p>
                     </div>
-
-                    <div class="mt-4 md:mt-0">
-                        <a href={`/course-department/academic/course/master/course?unit_id=${selectedId()}`} class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-900">
-                            View Courses
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-                                <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
-                            </svg>
-                        </a>
-                    </div>
                 </div>
 
                 <Show
@@ -174,6 +165,26 @@ export default function UnitDashboardPage() {
                                             </div>
                                             <div class="grid grid-cols-2 gap-4">
                                                 <div>
+                                                    <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">Institution</dt>
+                                                    <dd class="text-sm font-medium text-neutral-900 dark:text-neutral-200">{item().institution?.name || '-'}</dd>
+                                                </div>
+                                                <div>
+                                                    <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">Unit Type</dt>
+                                                    <dd class="text-sm font-medium text-neutral-900 dark:text-neutral-200">{item().unit_type?.name || '-'}</dd>
+                                                </div>
+                                            </div>
+                                            <div class="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">Education Level</dt>
+                                                    <dd class="text-sm font-medium text-neutral-900 dark:text-neutral-200">{item().education?.name || '-'}</dd>
+                                                </div>
+                                                <div>
+                                                    <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">Parent Unit</dt>
+                                                    <dd class="text-sm font-medium text-neutral-900 dark:text-neutral-200">{item().parent?.name || '-'}</dd>
+                                                </div>
+                                            </div>
+                                            <div class="grid grid-cols-2 gap-4">
+                                                <div>
                                                     <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">Created At</dt>
                                                     <dd class="text-sm font-medium text-neutral-900 dark:text-neutral-200">{item().created_at ? new Date(item().created_at).toLocaleDateString() : '-'}</dd>
                                                 </div>
@@ -207,35 +218,6 @@ export default function UnitDashboardPage() {
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow">
-                                        <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 flex items-center gap-2 border-b border-neutral-100 dark:border-neutral-700 pb-2">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-emerald-500">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
-                                            </svg>
-                                            Quick Actions
-                                        </h3>
-                                        <div class="flex flex-col gap-3 mt-4">
-                                            <a href={`/course-department/academic/course/master/course?unit_id=${item().id}`} class="group flex items-center justify-between p-3 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/50 transition-colors">
-                                                <div class="flex items-center gap-3">
-                                                    <div class="bg-blue-100 dark:bg-blue-900/40 p-2 rounded-md text-blue-600 dark:text-blue-400">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-                                                        </svg>
-                                                    </div>
-                                                    <div>
-                                                        <div class="text-sm font-semibold text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Manage Courses</div>
-                                                        <div class="text-xs text-neutral-500 dark:text-neutral-400">View and manage syllabus</div>
-                                                    </div>
-                                                </div>
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-neutral-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                                    <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
-                                                </svg>
-                                            </a>
-
-                                            {/* Could add other actions here related to unit */}
-                                        </div>
-                                    </div>
                                 </div>
 
                                 {/* Charts Grid */}
@@ -246,10 +228,10 @@ export default function UnitDashboardPage() {
                                                 Student Trend by Academic Year
                                             </h3>
                                             <div class="h-80 w-full relative">
-                                                <EChart 
-                                                    option={item().student_academic_year_chart as any} 
-                                                    height="100%" 
-                                                    width="100%" 
+                                                <EChart
+                                                    option={item().student_academic_year_chart as any}
+                                                    height="100%"
+                                                    width="100%"
                                                 />
                                             </div>
                                         </div>
@@ -261,10 +243,99 @@ export default function UnitDashboardPage() {
                                                 Course Category Distribution
                                             </h3>
                                             <div class="h-80 w-full relative">
-                                                <EChart 
-                                                    option={item().course_category_distribution as any} 
-                                                    height="100%" 
-                                                    width="100%" 
+                                                <EChart
+                                                    option={item().course_category_distribution as any}
+                                                    height="100%"
+                                                    width="100%"
+                                                />
+                                            </div>
+                                        </div>
+                                    </Show>
+
+                                    <Show when={item().registered_student_academic_year_chart}>
+                                        <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow lg:col-span-2">
+                                            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
+                                                Registered Student by Gender Trend
+                                            </h3>
+                                            <div class="h-80 w-full relative">
+                                                <EChart
+                                                    option={item().registered_student_academic_year_chart as any}
+                                                    height="100%"
+                                                    width="100%"
+                                                />
+                                            </div>
+                                        </div>
+                                    </Show>
+
+                                    <Show when={item().student_regency_distribution || item().student_sub_district_distribution}>
+                                        <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow lg:col-span-2">
+                                            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
+                                                Student Distribution by Region
+                                            </h3>
+                                            <div class="h-[400px] w-full relative">
+                                                <EChart
+                                                    option={(item().student_regency_distribution || item().student_sub_district_distribution) as any}
+                                                    height="100%"
+                                                    width="100%"
+                                                />
+                                            </div>
+                                        </div>
+                                    </Show>
+                                    <Show when={item().student_religion_distribution}>
+                                        <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow lg:col-span-2">
+                                            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
+                                                Student Distribution by Religion
+                                            </h3>
+                                            <div class="h-80 w-full relative">
+                                                <EChart
+                                                    option={item().student_religion_distribution as any}
+                                                    height="100%"
+                                                    width="100%"
+                                                />
+                                            </div>
+                                        </div>
+                                    </Show>
+
+                                    <Show when={item().average_gpa_trend}>
+                                        <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow lg:col-span-2">
+                                            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
+                                                Average GPA (IPK) Trend
+                                            </h3>
+                                            <div class="h-80 w-full relative">
+                                                <EChart
+                                                    option={item().average_gpa_trend as any}
+                                                    height="100%"
+                                                    width="100%"
+                                                />
+                                            </div>
+                                        </div>
+                                    </Show>
+
+                                    <Show when={item().lecturer_academic_group_distribution}>
+                                        <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow">
+                                            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
+                                                Lecturer Academic Group
+                                            </h3>
+                                            <div class="h-80 w-full relative">
+                                                <EChart
+                                                    option={item().lecturer_academic_group_distribution as any}
+                                                    height="100%"
+                                                    width="100%"
+                                                />
+                                            </div>
+                                        </div>
+                                    </Show>
+
+                                    <Show when={item().lecturer_academic_rank_distribution}>
+                                        <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow">
+                                            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
+                                                Lecturer Academic Rank (Homebase)
+                                            </h3>
+                                            <div class="h-80 w-full relative">
+                                                <EChart
+                                                    option={item().lecturer_academic_rank_distribution as any}
+                                                    height="100%"
+                                                    width="100%"
                                                 />
                                             </div>
                                         </div>

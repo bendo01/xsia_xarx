@@ -12,6 +12,7 @@ use crate::dtos::institution::master::units::{
     UpdateUnitRequest, UnitDashboardResponse,
     UnitDashboardMatakuliah, UnitDashboardAcademicYearChart,
     UnitDashboardCourseCategoryDistribution, UnitDashboardStudentRegencyDistribution,
+    UnitDashboardPieChart,
     ChartTooltip, ChartLegend, ChartGrid, ChartXAxisCategory, ChartYAxisValue,
     ChartLineSeriesItem, PieLegend, PieItemStyle, PieLabel, PieEmphasis,
     PieLabelLine, PieDataItem, PieSeriesItem, RegencyDataset,
@@ -1115,6 +1116,7 @@ pub async fn get_unit_dashboard(
     };
 
     let staffes: Vec<crate::dtos::institution::master::staffes::StaffResponse> = staff_models
+        .clone()
         .into_iter()
         .map(|s| {
             let emp = employees_map.get(&s.employee_id);
@@ -1333,13 +1335,14 @@ pub async fn get_unit_dashboard(
             let count = students
                 .iter()
                 .filter(|s| s.academic_year_id == ay.id && s.status_id == st.id)
-                .count() as i64;
+                .count() as f64;
             counts.push(count);
         }
         student_status_series.push(ChartLineSeriesItem {
             name: st.name.clone(),
             series_type: "line".to_string(),
             data: counts,
+            smooth: Some(true),
         });
     }
 
@@ -1349,11 +1352,14 @@ pub async fn get_unit_dashboard(
         },
         legend: ChartLegend {
             data: status_legend_data,
+            top: None,
+            bottom: Some("0".to_string()),
+            left: None,
         },
         grid: ChartGrid {
             left: Some("3%".to_string()),
             right: Some("4%".to_string()),
-            bottom: Some("3%".to_string()),
+            bottom: Some("12%".to_string()),
             contain_label: true,
         },
         x_axis: ChartXAxisCategory {
@@ -1416,13 +1422,14 @@ pub async fn get_unit_dashboard(
                         false
                     }
                 })
-                .count() as i64;
+                .count() as f64;
             counts.push(count);
         }
         gender_series.push(ChartLineSeriesItem {
             name: g.name.clone(),
             series_type: "line".to_string(),
             data: counts,
+            smooth: Some(true),
         });
     }
 
@@ -1432,17 +1439,20 @@ pub async fn get_unit_dashboard(
         },
         legend: ChartLegend {
             data: gender_legend_data,
+            top: None,
+            bottom: Some("0".to_string()),
+            left: None,
         },
         grid: ChartGrid {
             left: Some("3%".to_string()),
             right: Some("4%".to_string()),
-            bottom: Some("3%".to_string()),
+            bottom: Some("12%".to_string()),
             contain_label: true,
         },
         x_axis: ChartXAxisCategory {
             axis_type: "category".to_string(),
             boundary_gap: false,
-            data: x_axis_data,
+            data: x_axis_data.clone(),
         },
         y_axis: ChartYAxisValue {
             axis_type: "value".to_string(),
@@ -1511,6 +1521,9 @@ pub async fn get_unit_dashboard(
     }
 
     let student_regency_distribution = UnitDashboardStudentRegencyDistribution {
+        tooltip: Some(ChartTooltip {
+            trigger: "axis".to_string(),
+        }),
         dataset: RegencyDataset {
             source: dataset_source,
         },
@@ -1529,6 +1542,268 @@ pub async fn get_unit_dashboard(
                 x: "amount".to_string(),
                 y: "product".to_string(),
             },
+        }],
+    };
+
+    // 12. Student Religion Distribution
+    let religions = crate::models::person::reference::religion::Entity::find()
+        .filter(crate::models::person::reference::religion::Column::DeletedAt.is_null())
+        .order_by_asc(crate::models::person::reference::religion::Column::Code)
+        .all(db)
+        .await
+        .unwrap_or_default();
+        
+    let religion_legend_data: Vec<String> = religions.iter().map(|r| r.name.clone()).collect();
+    let mut religion_series: Vec<ChartLineSeriesItem> = Vec::new();
+    
+    for r in &religions {
+        let mut counts = Vec::new();
+        for ay in &academic_years {
+            let count = students
+                .iter()
+                .filter(|s| {
+                    if s.academic_year_id == ay.id {
+                        if let Some(ind) = individuals_map.get(&s.individual_id) {
+                            ind.religion_id == r.id
+                        } else {
+                            false
+                        }
+                    } else {
+                        false
+                    }
+                })
+                .count() as f64;
+            counts.push(count);
+        }
+        religion_series.push(ChartLineSeriesItem {
+            name: r.name.clone(),
+            series_type: "line".to_string(),
+            data: counts,
+            smooth: Some(true),
+        });
+    }
+    
+    let student_religion_distribution = UnitDashboardAcademicYearChart {
+        tooltip: ChartTooltip { trigger: "axis".to_string() },
+        legend: ChartLegend {
+            data: religion_legend_data,
+            top: None,
+            bottom: Some("0".to_string()),
+            left: None,
+        },
+        grid: ChartGrid {
+            left: Some("3%".to_string()),
+            right: Some("4%".to_string()),
+            bottom: Some("12%".to_string()),
+            contain_label: true,
+        },
+        x_axis: ChartXAxisCategory {
+            axis_type: "category".to_string(),
+            boundary_gap: false,
+            data: x_axis_data.clone(),
+        },
+        y_axis: ChartYAxisValue {
+            axis_type: "value".to_string(),
+        },
+        series: religion_series,
+    };
+
+    // 13. Average GPA (IPK) Trend
+    let student_ids: Vec<Uuid> = students.iter().map(|s| s.id).collect();
+    
+    let student_activities = crate::models::academic::student::campaign::student_activities::Entity::find()
+        .filter(crate::models::academic::student::campaign::student_activities::Column::StudentId.is_in(student_ids.clone()))
+        .filter(crate::models::academic::student::campaign::student_activities::Column::DeletedAt.is_null())
+        .all(db)
+        .await
+        .unwrap_or_default();
+        
+    let unit_activity_ids: Vec<Uuid> = student_activities.iter().map(|a| a.unit_activity_id).collect();
+    
+    let campaign_activities = crate::models::academic::campaign::transaction::activities::Entity::find()
+        .filter(crate::models::academic::campaign::transaction::activities::Column::Id.is_in(unit_activity_ids))
+        .filter(crate::models::academic::campaign::transaction::activities::Column::DeletedAt.is_null())
+        .all(db)
+        .await
+        .unwrap_or_default();
+        
+    let mut activity_to_ay: HashMap<Uuid, Uuid> = HashMap::new();
+    for a in campaign_activities {
+        activity_to_ay.insert(a.id, a.academic_year_id);
+    }
+    
+    let mut gpa_series_data = Vec::new();
+    for ay in &academic_years {
+        let mut total_gpa = 0.0;
+        let mut gpa_count = 0;
+        
+        for sa in &student_activities {
+            if let Some(sa_ay) = activity_to_ay.get(&sa.unit_activity_id) {
+                if *sa_ay == ay.id && sa.grand_cumulative_index > 0.0 {
+                    total_gpa += sa.grand_cumulative_index;
+                    gpa_count += 1;
+                }
+            }
+        }
+        
+        let avg_gpa = if gpa_count > 0 { total_gpa / gpa_count as f64 } else { 0.0 };
+        let avg_gpa_rounded = format!("{:.2}", avg_gpa).parse::<f64>().unwrap_or(0.0);
+        gpa_series_data.push(avg_gpa_rounded);
+    }
+    
+    let average_gpa_trend = UnitDashboardAcademicYearChart {
+        tooltip: ChartTooltip { trigger: "axis".to_string() },
+        legend: ChartLegend {
+            data: vec!["Average GPA (IPK)".to_string()],
+            top: None,
+            bottom: Some("0".to_string()),
+            left: None,
+        },
+        grid: ChartGrid {
+            left: Some("3%".to_string()),
+            right: Some("4%".to_string()),
+            bottom: Some("12%".to_string()),
+            contain_label: true,
+        },
+        x_axis: ChartXAxisCategory {
+            axis_type: "category".to_string(),
+            boundary_gap: false,
+            data: x_axis_data.clone(),
+        },
+        y_axis: ChartYAxisValue {
+            axis_type: "value".to_string(),
+        },
+        series: vec![ChartLineSeriesItem {
+            name: "Average GPA (IPK)".to_string(),
+            series_type: "line".to_string(),
+            data: gpa_series_data,
+            smooth: Some(true),
+        }],
+    };
+
+    // 14. Lecturer Academic Group & Rank Distributions
+    let employee_ids: Vec<Uuid> = staff_models.iter().map(|s| s.employee_id).collect();
+    
+    let employees = crate::models::institution::master::employees::Entity::find()
+        .filter(crate::models::institution::master::employees::Column::Id.is_in(employee_ids))
+        .filter(crate::models::institution::master::employees::Column::DeletedAt.is_null())
+        .all(db)
+        .await
+        .unwrap_or_default();
+        
+    let staff_individual_ids: Vec<Uuid> = employees.iter().map(|e| e.individual_id).collect();
+    
+    let lecturers = crate::models::academic::lecturer::master::lecturers::Entity::find()
+        .filter(crate::models::academic::lecturer::master::lecturers::Column::IndividualId.is_in(staff_individual_ids))
+        .filter(crate::models::academic::lecturer::master::lecturers::Column::DeletedAt.is_null())
+        .all(db)
+        .await
+        .unwrap_or_default();
+        
+    let lecturer_ids: Vec<Uuid> = lecturers.iter().map(|l| l.id).collect();
+
+    let lecturer_academic_groups = crate::models::academic::lecturer::transaction::academic_groups::Entity::find()
+        .filter(crate::models::academic::lecturer::transaction::academic_groups::Column::LecturerId.is_in(lecturer_ids.clone()))
+        .filter(crate::models::academic::lecturer::transaction::academic_groups::Column::DeletedAt.is_null())
+        .all(db)
+        .await
+        .unwrap_or_default();
+        
+    let group_ids: Vec<Uuid> = lecturer_academic_groups.iter().map(|ag| ag.group_id).collect();
+    let groups = crate::models::academic::lecturer::reference::groups::Entity::find()
+        .filter(crate::models::academic::lecturer::reference::groups::Column::Id.is_in(group_ids))
+        .filter(crate::models::academic::lecturer::reference::groups::Column::DeletedAt.is_null())
+        .all(db)
+        .await
+        .unwrap_or_default();
+        
+    let mut group_map: HashMap<Uuid, String> = HashMap::new();
+    for g in groups {
+        group_map.insert(g.id, g.name);
+    }
+    
+    let mut group_counts: HashMap<String, i64> = HashMap::new();
+    for ag in lecturer_academic_groups {
+        if let Some(name) = group_map.get(&ag.group_id) {
+            *group_counts.entry(name.clone()).or_insert(0) += 1;
+        }
+    }
+    
+    let mut group_pie_data: Vec<PieDataItem> = Vec::new();
+    for (name, count) in group_counts {
+        group_pie_data.push(PieDataItem { name, value: count });
+    }
+    
+    let lecturer_academic_group_distribution = UnitDashboardPieChart {
+        tooltip: ChartTooltip { trigger: "item".to_string() },
+        legend: PieLegend { top: "5%".to_string(), left: "center".to_string() },
+        series: vec![PieSeriesItem {
+            name: "Academic Group".to_string(),
+            series_type: "pie".to_string(),
+            radius: vec!["40%".to_string(), "70%".to_string()],
+            avoid_label_overlap: false,
+            item_style: PieItemStyle { border_radius: 10, border_color: "#fff".to_string(), border_width: 2 },
+            label: PieLabel { show: false, position: None, font_size: None, font_weight: None },
+            emphasis: PieEmphasis { label: PieLabel { show: true, font_size: Some(20), font_weight: Some("bold".to_string()), position: Some("center".to_string()) } },
+            label_line: PieLabelLine { show: false },
+            data: group_pie_data,
+        }],
+    };
+
+    let homebases = crate::models::academic::lecturer::transaction::homebases::Entity::find()
+        .filter(crate::models::academic::lecturer::transaction::homebases::Column::UnitId.eq(unit_item.id))
+        .filter(crate::models::academic::lecturer::transaction::homebases::Column::DeletedAt.is_null())
+        .all(db)
+        .await
+        .unwrap_or_default();
+        
+    let homebase_lecturer_ids: Vec<Uuid> = homebases.iter().map(|h| h.lecturer_id).collect();
+    
+    let academic_ranks = crate::models::academic::lecturer::transaction::academic_ranks::Entity::find()
+        .filter(crate::models::academic::lecturer::transaction::academic_ranks::Column::LecturerId.is_in(homebase_lecturer_ids))
+        .filter(crate::models::academic::lecturer::transaction::academic_ranks::Column::DeletedAt.is_null())
+        .all(db)
+        .await
+        .unwrap_or_default();
+        
+    let rank_ids: Vec<Uuid> = academic_ranks.iter().map(|ar| ar.rank_id).collect();
+    let ranks = crate::models::academic::lecturer::reference::ranks::Entity::find()
+        .filter(crate::models::academic::lecturer::reference::ranks::Column::Id.is_in(rank_ids))
+        .filter(crate::models::academic::lecturer::reference::ranks::Column::DeletedAt.is_null())
+        .all(db)
+        .await
+        .unwrap_or_default();
+        
+    let mut rank_map: HashMap<Uuid, String> = HashMap::new();
+    for r in ranks {
+        rank_map.insert(r.id, r.name);
+    }
+    
+    let mut rank_counts: HashMap<String, i64> = HashMap::new();
+    for ar in academic_ranks {
+        if let Some(name) = rank_map.get(&ar.rank_id) {
+            *rank_counts.entry(name.clone()).or_insert(0) += 1;
+        }
+    }
+    
+    let mut rank_pie_data: Vec<PieDataItem> = Vec::new();
+    for (name, count) in rank_counts {
+        rank_pie_data.push(PieDataItem { name, value: count });
+    }
+    
+    let lecturer_academic_rank_distribution = UnitDashboardPieChart {
+        tooltip: ChartTooltip { trigger: "item".to_string() },
+        legend: PieLegend { top: "5%".to_string(), left: "center".to_string() },
+        series: vec![PieSeriesItem {
+            name: "Academic Rank".to_string(),
+            series_type: "pie".to_string(),
+            radius: vec!["40%".to_string(), "70%".to_string()],
+            avoid_label_overlap: false,
+            item_style: PieItemStyle { border_radius: 10, border_color: "#fff".to_string(), border_width: 2 },
+            label: PieLabel { show: false, position: None, font_size: None, font_weight: None },
+            emphasis: PieEmphasis { label: PieLabel { show: true, font_size: Some(20), font_weight: Some("bold".to_string()), position: Some("center".to_string()) } },
+            label_line: PieLabelLine { show: false },
+            data: rank_pie_data,
         }],
     };
 
@@ -1563,5 +1838,9 @@ pub async fn get_unit_dashboard(
         registered_student_academic_year_chart,
         course_category_distribution,
         student_regency_distribution,
+        student_religion_distribution,
+        average_gpa_trend,
+        lecturer_academic_group_distribution,
+        lecturer_academic_rank_distribution,
     }))
 }
