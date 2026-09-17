@@ -168,7 +168,7 @@ export function getDashboardPathForRole(
 
     if (roleItem && isStaffProgramStudi(roleItem, targetUser)) {
         const uId = resolveRoleItemUnitId(roleItem);
-        return uId ? `/course-department/institution/master/unit/${uId}/show` : '/course-department/institution/master/unit/[id]/show';
+        return uId ? `/course-department/institution/master/unit/${uId}` : '/course-department/institution/master/unit/[id]';
     }
     const norm = normalizeRoleName(roleName, roleItem);
     switch (norm) {
@@ -176,7 +176,7 @@ export function getDashboardPathForRole(
             return '/administrator/person/master/individual';
         case 'course_department': {
             const uId = resolveRoleItemUnitId(roleItem);
-            return uId ? `/course-department/institution/master/unit/${uId}/show` : '/course-department/institution/master/unit/[id]/show';
+            return uId ? `/course-department/institution/master/unit/${uId}` : '/course-department/institution/master/unit/[id]';
         }
         case 'student':
             return indId ? `/student/person/master/individual/${indId}/show` : '/student/person/master/individual/[id]/show';
@@ -189,7 +189,7 @@ export function getDashboardPathForRole(
         default:
             if (isStaffProgramStudi(roleName, targetUser)) {
                 const uId = resolveRoleItemUnitId(roleItem);
-                return uId ? `/course-department/institution/master/unit/${uId}/show` : '/course-department/institution/master/unit/[id]/show';
+                return uId ? `/course-department/institution/master/unit/${uId}` : '/course-department/institution/master/unit/[id]';
             }
             return indId ? `/student/person/master/individual/${indId}/show` : '/student/person/master/individual/[id]/show';
     }

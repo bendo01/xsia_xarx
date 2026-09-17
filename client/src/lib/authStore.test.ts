@@ -89,7 +89,7 @@ describe("Auth Store & Role Engine (White-Box Unit Tests)", () => {
   describe("getDashboardPathForRole", () => {
     it("maps roles to their respective primary dashboard route", () => {
       expect(getDashboardPathForRole("administrator")).toBe("/administrator/person/master/individual");
-      expect(getDashboardPathForRole("course_department")).toBe("/course-department/institution/master/unit/[id]/show");
+      expect(getDashboardPathForRole("course_department")).toBe("/course-department/institution/master/unit/[id]");
       expect(getDashboardPathForRole("student")).toBe("/student/person/master/individual/[id]/show");
       expect(getDashboardPathForRole("lecturer")).toBe("/lecturer/person/master/individual/[id]/show");
       expect(getDashboardPathForRole("candidate")).toBe("/candidate/academic/candidate/master/candidate");
@@ -102,19 +102,19 @@ describe("Auth Store & Role Engine (White-Box Unit Tests)", () => {
       expect(getDashboardPathForRole("lecturer", undefined, { individual_id: "lecturer-ind-123" }))
         .toBe("/lecturer/person/master/individual/lecturer-ind-123/show");
       expect(getDashboardPathForRole("course_department", { id: "1", name: "prodi", roleable_id: "unit-123" }))
-        .toBe("/course-department/institution/master/unit/unit-123/show");
+        .toBe("/course-department/institution/master/unit/unit-123");
     });
 
     it("redirects staff with position type Kepala/Sekertaris/Staff Program Studi to unit show page", () => {
-      expect(getDashboardPathForRole("Kepala Program Studi")).toBe("/course-department/institution/master/unit/[id]/show");
-      expect(getDashboardPathForRole("Sekertaris Program Studi")).toBe("/course-department/institution/master/unit/[id]/show");
-      expect(getDashboardPathForRole("Sekretaris Program Studi")).toBe("/course-department/institution/master/unit/[id]/show");
-      expect(getDashboardPathForRole("Staff Program Studi")).toBe("/course-department/institution/master/unit/[id]/show");
+      expect(getDashboardPathForRole("Kepala Program Studi")).toBe("/course-department/institution/master/unit/[id]");
+      expect(getDashboardPathForRole("Sekertaris Program Studi")).toBe("/course-department/institution/master/unit/[id]");
+      expect(getDashboardPathForRole("Sekretaris Program Studi")).toBe("/course-department/institution/master/unit/[id]");
+      expect(getDashboardPathForRole("Staff Program Studi")).toBe("/course-department/institution/master/unit/[id]");
 
       // When passed as role item with position_type or position_type_name
-      expect(getDashboardPathForRole("staff", { id: "1", name: "Staff", position_type_name: "Kepala Program Studi" })).toBe("/course-department/institution/master/unit/[id]/show");
-      expect(getDashboardPathForRole("staff", { id: "2", name: "Staff", position_type: { name: "Sekertaris Program Studi" } })).toBe("/course-department/institution/master/unit/[id]/show");
-      expect(getDashboardPathForRole("staff", { id: "3", name: "Staff", position_type: { name: "Staff Program Studi" } })).toBe("/course-department/institution/master/unit/[id]/show");
+      expect(getDashboardPathForRole("staff", { id: "1", name: "Staff", position_type_name: "Kepala Program Studi" })).toBe("/course-department/institution/master/unit/[id]");
+      expect(getDashboardPathForRole("staff", { id: "2", name: "Staff", position_type: { name: "Sekertaris Program Studi" } })).toBe("/course-department/institution/master/unit/[id]");
+      expect(getDashboardPathForRole("staff", { id: "3", name: "Staff", position_type: { name: "Staff Program Studi" } })).toBe("/course-department/institution/master/unit/[id]");
 
       // Staff / Kaprodi roleable_type is Staff (roleable_id is a staff ID, NOT unit ID)
       const kaprodiRoleWithStaffId = {
@@ -124,16 +124,16 @@ describe("Auth Store & Role Engine (White-Box Unit Tests)", () => {
         roleable_type: "App\\Models\\Institution\\Master\\Staff",
       };
       // Without resolved unit_id, it should not use staff ID as unit route param
-      expect(getDashboardPathForRole("Kaprodi", kaprodiRoleWithStaffId)).toBe("/course-department/institution/master/unit/[id]/show");
+      expect(getDashboardPathForRole("Kaprodi", kaprodiRoleWithStaffId)).toBe("/course-department/institution/master/unit/[id]");
 
       // With resolved unit_id on roleItem
       expect(getDashboardPathForRole("Kaprodi", { ...kaprodiRoleWithStaffId, unit_id: "94a676ce-06e6-4fd5-88c2-3122533f9ccb" }))
-        .toBe("/course-department/institution/master/unit/94a676ce-06e6-4fd5-88c2-3122533f9ccb/show");
+        .toBe("/course-department/institution/master/unit/94a676ce-06e6-4fd5-88c2-3122533f9ccb");
 
       // With unit_id stored in storage
       setStorageItem("unit_id", "94a676ce-06e6-4fd5-88c2-3122533f9ccb");
       expect(getDashboardPathForRole("Kaprodi", kaprodiRoleWithStaffId))
-        .toBe("/course-department/institution/master/unit/94a676ce-06e6-4fd5-88c2-3122533f9ccb/show");
+        .toBe("/course-department/institution/master/unit/94a676ce-06e6-4fd5-88c2-3122533f9ccb");
     });
   });
 
