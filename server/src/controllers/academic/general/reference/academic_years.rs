@@ -1,4 +1,4 @@
-use chrono::Utc;
+use chrono::{Datelike, Utc};
 use salvo::prelude::*;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
@@ -100,7 +100,9 @@ pub async fn get_academic_year(
             updated_by: item.updated_by,
 
     }))
-}#[endpoint(tags("Academic - General - Reference - AcademicYear"), status_codes(200, 400, 500))]
+}
+
+#[endpoint(tags("Academic - General - Reference - AcademicYear"), status_codes(200, 400, 500))]
 pub async fn create_academic_year(
         req: &mut Request,
         depot: &mut Depot,
@@ -262,8 +264,14 @@ pub async fn options_academic_years(
         }
     }
 
+    if let Some(last_n_years) = payload.option_last_year {
+        let current_year = Utc::now().year();
+        let min_year = current_year - last_n_years;
+        select = select.filter(entity_mod::Column::Year.gte(min_year));
+    }
+
     let items = select
-        .order_by_asc(entity_mod::Column::Name)
+        .order_by_desc(entity_mod::Column::Code)
         .all(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;

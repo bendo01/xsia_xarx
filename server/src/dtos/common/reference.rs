@@ -69,4 +69,5 @@ pub struct OptionItem {
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
 pub struct OptionRequest {
     pub search: Option<String>,
+    pub option_last_year: Option<i32>,
 }

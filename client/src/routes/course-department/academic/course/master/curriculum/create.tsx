@@ -1,15 +1,66 @@
-import { createSignal } from 'solid-js';
+import { createSignal, onMount, For } from 'solid-js';
+import { getBaseApiUrl, getAuthHeaders, masterApiShow } from '~/controllers/master/masterApiController';
+import { isStaffProgramStudi, userRolesSignal, currentRoleIdSignal } from '~/lib/authStore';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { masterApiCreate } from '~/controllers/master/masterApiController';
 
 export default function MasterCreatePage() {
     const apiPath = "academic/course/master/curriculums";
-    const basePath = "/academic/course/master/curriculum";
+    const basePath = "/course-department/academic/course/master/curriculum";
     const [code, setCode] = createSignal('');
     const [name, setName] = createSignal('');
     const [description, setDescription] = createSignal('');
     const [isSubmitting, setIsSubmitting] = createSignal(false);
+    const [academicYears, setAcademicYears] = createSignal<any[]>([]);
+    const [curriculumTypes, setCurriculumTypes] = createSignal<any[]>([]);
+    const [academicYearId, setAcademicYearId] = createSignal('');
+    const [curriculumTypeId, setCurriculumTypeId] = createSignal('');
+    const [unitId, setUnitId] = createSignal('');
+
+    onMount(async () => {
+        try {
+            const h = getAuthHeaders();
+            const ayRes = await fetch(`${getBaseApiUrl()}/academic/general/reference/academic-years/options`, {
+                method: 'POST',
+                headers: h,
+                body: JSON.stringify({ option_last_year: 10 })
+            });
+            if (ayRes.ok) {
+                const ayData = await ayRes.json();
+                setAcademicYears(Array.isArray(ayData) ? ayData : []);
+            }
+
+            const ctRes = await fetch(`${getBaseApiUrl()}/academic/course/reference/curriculum-types/options`, {
+                method: 'POST',
+                headers: h,
+                body: JSON.stringify({})
+            });
+            if (ctRes.ok) {
+                const ctData = await ctRes.json();
+                setCurriculumTypes(Array.isArray(ctData) ? ctData : []);
+            }
+
+            const role = userRolesSignal().find(r => r.id === currentRoleIdSignal());
+            if (role && role.roleable_id && role.roleable_id !== '00000000-0000-0000-0000-000000000000') {
+                const rType = String(role.roleable_type || '');
+                const rName = String(role.name || '').toLowerCase();
+
+                if (rType === 'Unit' || rType.includes('Unit')) {
+                    setUnitId(role.roleable_id);
+                } else if (rType.includes('Staff') || isStaffProgramStudi(role) || rName.includes('kaprodi') || rName.includes('prodi') || rName.includes('jurusan')) {
+                    try {
+                        const staffRes = await masterApiShow<any>('institution/master/staffes', role.roleable_id);
+                        if (staffRes.data?.unit_id) {
+                            setUnitId(staffRes.data.unit_id);
+                        }
+                    } catch { }
+                }
+            }
+        } catch (e) {
+            console.error('Failed to load options', e);
+        }
+    });
 
     const handleSubmit = async (e: Event) => {
         e.preventDefault();
@@ -19,6 +70,9 @@ export default function MasterCreatePage() {
                 code: code(),
                 name: name(),
                 description: description(),
+                academic_year_id: academicYearId() || null,
+                curriculum_type_id: curriculumTypeId() || null,
+                unit_id: unitId() || null,
             });
 
             if (res.success) {
@@ -67,30 +121,51 @@ export default function MasterCreatePage() {
                             class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-white dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/60 rounded-xs shadow-2xs transition-colors"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="m15 18-6-6 6-6"/>
+                                <path d="m15 18-6-6 6-6" />
                             </svg>
                             <span>Cancel</span>
                         </a>
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 max-w-3xl">
+                <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6">
                     <form onSubmit={handleSubmit} class="space-y-6">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                    Code <span class="text-red-500">*</span>
+                                    Academic Year <span class="text-red-500">*</span>
                                 </label>
-                                <input
-                                    type="text"
+                                <select
                                     required
-                                    value={code()}
-                                    onInput={(e) => setCode(e.currentTarget.value)}
-                                    placeholder="e.g. CODE-001"
+                                    value={academicYearId()}
+                                    onChange={(e) => setAcademicYearId(e.currentTarget.value)}
                                     class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
-                                />
+                                >
+                                    <option value="" disabled>Select Academic Year</option>
+                                    <For each={academicYears()}>
+                                        {(opt) => <option value={opt.id}>{opt.name}</option>}
+                                    </For>
+                                </select>
                             </div>
 
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
+                                    Curriculum Type <span class="text-red-500">*</span>
+                                </label>
+                                <select
+                                    required
+                                    value={curriculumTypeId()}
+                                    onChange={(e) => setCurriculumTypeId(e.currentTarget.value)}
+                                    class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
+                                >
+                                    <option value="" disabled>Select Curriculum Type</option>
+                                    <For each={curriculumTypes()}>
+                                        {(opt) => <option value={opt.id}>{opt.name}</option>}
+                                    </For>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-1 gap-6">
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
                                     Name / Title <span class="text-red-500">*</span>

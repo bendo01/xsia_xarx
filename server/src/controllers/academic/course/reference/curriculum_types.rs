@@ -262,7 +262,7 @@ pub async fn options_curriculum_types(
     }
 
     let items = select
-        .order_by_asc(entity_mod::Column::Name)
+        .order_by_desc(entity_mod::Column::Code)
         .all(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;

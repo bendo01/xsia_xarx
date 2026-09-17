@@ -187,13 +187,17 @@ impl Handler for RbacGuard {
         }
 
         // 4. Determine action based on HTTP Method
-        let action = match *req.method() {
+        let mut action = match *req.method() {
             Method::GET => "read",
             Method::POST => "create",
             Method::PUT | Method::PATCH => "update",
             Method::DELETE => "delete",
             _ => "other",
         };
+
+        if route_name.contains(".options_") {
+            action = "read";
+        }
 
         let action_permission = format!("{}.{}", route_name, action);
         let wildcard_permission = format!("{}.*", route_name);
