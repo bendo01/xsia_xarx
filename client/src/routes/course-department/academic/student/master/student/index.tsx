@@ -699,7 +699,7 @@ export default function CourseDepartmentStudentMasterPage() {
                                         {/* Card Action */}
                                         <div class="flex items-center justify-end pt-1">
                                             <A
-                                                href={`/course-department/academic/student/master/student/${std.id}/show`}
+                                                href={`/course-department/academic/student/master/student/${std.id}`}
                                                 class="w-full sm:w-auto px-3.5 py-1.5 bg-neutral-100 hover:bg-teal-50 dark:bg-neutral-700 dark:hover:bg-teal-950/60 text-neutral-700 hover:text-teal-700 dark:text-neutral-200 dark:hover:text-teal-300 rounded-xs text-xs font-bold transition-colors inline-flex items-center justify-center gap-1.5 shadow-2xs"
                                             >
                                                 <span>Detail</span>
@@ -727,16 +727,16 @@ export default function CourseDepartmentStudentMasterPage() {
                                                 <Show
                                                     when={sortParam().startsWith('code-')}
                                                     fallback={
-                                                        <svg class="size-3 text-neutral-300 dark:text-neutral-600 group-hover:text-neutral-400 transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+                                                        <svg class="size-3 text-neutral-300 dark:text-neutral-600 group-hover:text-neutral-400 transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5" /><path d="m7 9 5-5 5 5" /></svg>
                                                     }
                                                 >
                                                     <Show
                                                         when={sortParam() === 'code-asc'}
                                                         fallback={
-                                                            <svg class="size-3 text-teal-600 dark:text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                                                            <svg class="size-3 text-teal-600 dark:text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
                                                         }
                                                     >
-                                                        <svg class="size-3 text-teal-600 dark:text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                                                        <svg class="size-3 text-teal-600 dark:text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6" /></svg>
                                                     </Show>
                                                 </Show>
                                             </button>
@@ -752,16 +752,16 @@ export default function CourseDepartmentStudentMasterPage() {
                                                 <Show
                                                     when={sortParam().startsWith('name-')}
                                                     fallback={
-                                                        <svg class="size-3 text-neutral-300 dark:text-neutral-600 group-hover:text-neutral-400 transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+                                                        <svg class="size-3 text-neutral-300 dark:text-neutral-600 group-hover:text-neutral-400 transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5" /><path d="m7 9 5-5 5 5" /></svg>
                                                     }
                                                 >
                                                     <Show
                                                         when={sortParam() === 'name-asc'}
                                                         fallback={
-                                                            <svg class="size-3 text-teal-600 dark:text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                                                            <svg class="size-3 text-teal-600 dark:text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
                                                         }
                                                     >
-                                                        <svg class="size-3 text-teal-600 dark:text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                                                        <svg class="size-3 text-teal-600 dark:text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6" /></svg>
                                                     </Show>
                                                 </Show>
                                             </button>
@@ -781,16 +781,16 @@ export default function CourseDepartmentStudentMasterPage() {
                                                 <Show
                                                     when={sortParam().startsWith('registered-')}
                                                     fallback={
-                                                        <svg class="size-3 text-neutral-300 dark:text-neutral-600 group-hover:text-neutral-400 transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+                                                        <svg class="size-3 text-neutral-300 dark:text-neutral-600 group-hover:text-neutral-400 transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5" /><path d="m7 9 5-5 5 5" /></svg>
                                                     }
                                                 >
                                                     <Show
                                                         when={sortParam() === 'registered-asc'}
                                                         fallback={
-                                                            <svg class="size-3 text-teal-600 dark:text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                                                            <svg class="size-3 text-teal-600 dark:text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
                                                         }
                                                     >
-                                                        <svg class="size-3 text-teal-600 dark:text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                                                        <svg class="size-3 text-teal-600 dark:text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6" /></svg>
                                                     </Show>
                                                 </Show>
                                             </button>
@@ -889,7 +889,7 @@ export default function CourseDepartmentStudentMasterPage() {
                                                 {/* Actions */}
                                                 <td class="py-3 px-4 text-end">
                                                     <A
-                                                        href={`/course-department/academic/student/master/student/${std.id}/show`}
+                                                        href={`/course-department/academic/student/master/student/${std.id}`}
                                                         class="px-3 py-1.5 bg-neutral-100 hover:bg-teal-50 dark:bg-neutral-700 dark:hover:bg-teal-950/60 text-neutral-700 hover:text-teal-700 dark:text-neutral-200 dark:hover:text-teal-300 rounded-xs text-xs font-bold transition-colors inline-flex items-center gap-1 shadow-2xs"
                                                     >
                                                         <span>Detail</span>
