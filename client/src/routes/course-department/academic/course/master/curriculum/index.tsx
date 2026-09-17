@@ -70,7 +70,7 @@ export default function MasterIndexPage() {
     };
 
     // Helper: Resolve department unit_id
-    const resolveDepartmentUnitId = async (unitsList: any[]): Promise<string> => {
+    const resolveDepartmentUnitId = async (): Promise<string> => {
         // Priority 1: Query parameter in URL
         const queryUnit = (searchParams.unit_id as string) || (searchParams.id as string);
         if (queryUnit && queryUnit.trim() !== '') {
@@ -135,32 +135,21 @@ export default function MasterIndexPage() {
             }
         }
 
-        // Priority 6: Default fallback to first unit
-        if (unitsList && unitsList.length > 0) {
-            return unitsList[0].id;
-        }
-
         return '';
     };
 
     const loadUnits = async () => {
         try {
-            const unitsRes = await masterApiIndex<any>('institution/master/units', { page: 1, per_page: 100 });
-            const list = unitsRes?.data || [];
-            setUnits(list);
-
-            const resolvedUnitId = await resolveDepartmentUnitId(list);
+            const resolvedUnitId = await resolveDepartmentUnitId();
             setSelectedUnitId(resolvedUnitId);
             if (resolvedUnitId) {
-                const found = list.find((u: any) => u.id === resolvedUnitId);
-                if (found) {
-                    setActiveUnitData(found);
-                } else {
-                    try {
-                        const uRes = await masterApiShow<any>('institution/master/units', resolvedUnitId);
-                        if (uRes.data) setActiveUnitData(uRes.data);
-                    } catch {}
-                }
+                try {
+                    const uRes = await masterApiShow<any>('institution/master/units', resolvedUnitId);
+                    if (uRes.data) {
+                        setActiveUnitData(uRes.data);
+                        setUnits([uRes.data]);
+                    }
+                } catch {}
             }
         } catch (e) {
             console.error('Failed to load study units:', e);
@@ -454,7 +443,7 @@ export default function MasterIndexPage() {
                                             <div class="flex items-start justify-between gap-3">
                                                 <div class="flex-1 min-w-0">
                                                     <a
-                                                        href={`${basePath}/${item.id || item.uuid}?id=${item.id || item.uuid}`}
+                                                        href={`${basePath}/${item.id || item.uuid}`}
                                                         class="font-semibold text-sm text-blue-600 dark:text-blue-400 hover:underline block truncate"
                                                     >
                                                         {getItemTitle(item)}
@@ -476,7 +465,7 @@ export default function MasterIndexPage() {
 
                                             <div class="flex items-center justify-end gap-1.5 pt-2 border-t border-neutral-100 dark:border-neutral-700/60">
                                                 <a
-                                                    href={`${basePath}/${item.id || item.uuid}?id=${item.id || item.uuid}`}
+                                                    href={`${basePath}/${item.id || item.uuid}`}
                                                     class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                     title="View Details"
                                                 >
@@ -485,7 +474,7 @@ export default function MasterIndexPage() {
                                                     </svg>
                                                 </a>
                                                 <a
-                                                    href={`${basePath}/${item.id || item.uuid}/edit?id=${item.id || item.uuid}`}
+                                                    href={`${basePath}/${item.id || item.uuid}/edit`}
                                                     class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                     title="Edit Record"
                                                 >
@@ -601,7 +590,7 @@ export default function MasterIndexPage() {
                                                     <td class="px-4 py-3 text-right">
                                                         <div class="flex items-center justify-end gap-1.5">
                                                             <a
-                                                                href={`${basePath}/${item.id || item.uuid}?id=${item.id || item.uuid}`}
+                                                                href={`${basePath}/${item.id || item.uuid}`}
                                                                 class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                                 title="View Details"
                                                             >
@@ -610,7 +599,7 @@ export default function MasterIndexPage() {
                                                                 </svg>
                                                             </a>
                                                             <a
-                                                                href={`${basePath}/${item.id || item.uuid}/edit?id=${item.id || item.uuid}`}
+                                                                href={`${basePath}/${item.id || item.uuid}/edit`}
                                                                 class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                                 title="Edit Record"
                                                             >

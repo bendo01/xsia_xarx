@@ -21,9 +21,32 @@ use crate::dtos::institution::master::units::{
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::institution::master::units as entity_mod;
 
+
+#[derive(Default)]
+pub struct LoadUnitRelationsOptions {
+    pub load_courses: bool,
+    pub load_curriculums: bool,
+    pub load_students: bool,
+    pub load_rooms: bool,
+    pub load_activities: bool,
+    pub load_class_codes: bool,
+    pub load_grades: bool,
+    pub load_concentrations: bool,
+    pub load_homebases: bool,
+    pub load_recognitions: bool,
+    pub load_decrees: bool,
+    pub load_student_activities: bool,
+    pub load_final_assignment_decrees: bool,
+    pub load_candidate_unit: bool,
+    pub load_candidate_unit_choices: bool,
+    pub load_registration_types: bool,
+    pub load_bundles: bool,
+}
+
 pub async fn load_unit_with_relations(
     item: &entity_mod::Model,
     db: &DatabaseConnection,
+    options: LoadUnitRelationsOptions,
 ) -> Result<UnitResponse, StatusError> {
     // 1. Belongs to: unit_type
     let unit_type = item
@@ -157,497 +180,582 @@ pub async fn load_unit_with_relations(
         .collect();
 
     // Has many: courses
-    let courses = item
-        .find_related(crate::models::academic::course::master::courses::Entity)
-        .filter(crate::models::academic::course::master::courses::Column::DeletedAt.is_null())
-        .all(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .into_iter()
-        .map(|c| crate::dtos::academic::course::master::courses::CourseResponse {
-            id: c.id,
-            code: c.code,
-            name: c.name,
-            implementation_method: c.implementation_method,
-            total_credit: c.total_credit,
-            lecture_credit: c.lecture_credit,
-            practice_credit: c.practice_credit,
-            field_practice_credit: c.field_practice_credit,
-            simulation_credit: c.simulation_credit,
-            has_unit: c.has_unit,
-            has_syllabus: c.has_syllabus,
-            has_material: c.has_material,
-            has_practice: c.has_practice,
-            has_dictation: c.has_dictation,
-            group_id: c.group_id,
-            variety_id: c.variety_id,
-            unit_id: c.unit_id,
-            competence_id: c.competence_id,
-            feeder_course_group_id: c.feeder_course_group_id,
-            feeder_course_type_id: c.feeder_course_type_id,
-            feeder_course_id: c.feeder_course_id,
-            start_date: c.start_date,
-            end_date: c.end_date,
-            created_at: c.created_at,
-            updated_at: c.updated_at,
-            deleted_at: c.deleted_at,
-            sync_at: c.sync_at,
-            created_by: c.created_by,
-            updated_by: c.updated_by,
-        })
-        .collect();
+    let courses = if options.load_courses {
+        Some(item
+            .find_related(crate::models::academic::course::master::courses::Entity)
+                    .filter(crate::models::academic::course::master::courses::Column::DeletedAt.is_null())
+                    .all(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                    .into_iter()
+                    .map(|c| crate::dtos::academic::course::master::courses::CourseResponse {
+                        id: c.id,
+                        code: c.code,
+                        name: c.name,
+                        implementation_method: c.implementation_method,
+                        total_credit: c.total_credit,
+                        lecture_credit: c.lecture_credit,
+                        practice_credit: c.practice_credit,
+                        field_practice_credit: c.field_practice_credit,
+                        simulation_credit: c.simulation_credit,
+                        has_unit: c.has_unit,
+                        has_syllabus: c.has_syllabus,
+                        has_material: c.has_material,
+                        has_practice: c.has_practice,
+                        has_dictation: c.has_dictation,
+                        group_id: c.group_id,
+                        variety_id: c.variety_id,
+                        unit_id: c.unit_id,
+                        competence_id: c.competence_id,
+                        feeder_course_group_id: c.feeder_course_group_id,
+                        feeder_course_type_id: c.feeder_course_type_id,
+                        feeder_course_id: c.feeder_course_id,
+                        start_date: c.start_date,
+                        end_date: c.end_date,
+                        created_at: c.created_at,
+                        updated_at: c.updated_at,
+                        deleted_at: c.deleted_at,
+                        sync_at: c.sync_at,
+                        created_by: c.created_by,
+                        updated_by: c.updated_by,
+                    })
+                    .collect())
+    } else {
+        None
+    };
+
 
     // Has many: curriculums
-    let curriculums = item
-        .find_related(crate::models::academic::course::master::curriculums::Entity)
-        .filter(crate::models::academic::course::master::curriculums::Column::DeletedAt.is_null())
-        .all(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .into_iter()
-        .map(|c| crate::dtos::academic::course::master::curriculums::CurriculumResponse {
-            id: c.id,
-            name: c.name,
-            unit_id: c.unit_id,
-            academic_year_id: c.academic_year_id,
-            curriculum_type_id: c.curriculum_type_id,
-            total_credit: c.total_credit,
-            mandatory_course_credit: c.mandatory_course_credit,
-            optional_course_credit: c.optional_course_credit,
-            feeder_id: c.feeder_id,
-            created_at: c.created_at,
-            updated_at: c.updated_at,
-            deleted_at: c.deleted_at,
-            sync_at: c.sync_at,
-            created_by: c.created_by,
-            updated_by: c.updated_by,
-            start_date: c.start_date,
-            end_date: c.end_date,
-            is_active: c.is_active,
-            unit: None,
-            academic_year: None,
-            curriculum_type: None,
-            curriculum_details: None,
-            recognitions: None,
-            students: None,
-        })
-        .collect();
+    let curriculums = if options.load_curriculums {
+        Some(item
+            .find_related(crate::models::academic::course::master::curriculums::Entity)
+                    .filter(crate::models::academic::course::master::curriculums::Column::DeletedAt.is_null())
+                    .all(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                    .into_iter()
+                    .map(|c| crate::dtos::academic::course::master::curriculums::CurriculumResponse {
+                        id: c.id,
+                        name: c.name,
+                        unit_id: c.unit_id,
+                        academic_year_id: c.academic_year_id,
+                        curriculum_type_id: c.curriculum_type_id,
+                        total_credit: c.total_credit,
+                        mandatory_course_credit: c.mandatory_course_credit,
+                        optional_course_credit: c.optional_course_credit,
+                        feeder_id: c.feeder_id,
+                        created_at: c.created_at,
+                        updated_at: c.updated_at,
+                        deleted_at: c.deleted_at,
+                        sync_at: c.sync_at,
+                        created_by: c.created_by,
+                        updated_by: c.updated_by,
+                        start_date: c.start_date,
+                        end_date: c.end_date,
+                        is_active: c.is_active,
+                        unit: None,
+                        academic_year: None,
+                        curriculum_type: None,
+                        curriculum_details: None,
+                        recognitions: None,
+                        students: None,
+                    })
+                    .collect())
+    } else {
+        None
+    };
+
 
     // Has many: students
-    let students = item
-        .find_related(crate::models::academic::student::master::students::Entity)
-        .filter(crate::models::academic::student::master::students::Column::DeletedAt.is_null())
-        .all(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .into_iter()
-        .map(|s| crate::dtos::academic::student::master::students::StudentResponse {
-            id: s.id,
-            code: s.code,
-            name: s.name,
-            selection_type_id: s.selection_type_id,
-            registered: s.registered,
-            individual_id: s.individual_id,
-            status_id: s.status_id,
-            unit_id: s.unit_id,
-            academic_year_id: s.academic_year_id,
-            registration_id: s.registration_id,
-            nisn: s.nisn,
-            resign_status_id: s.resign_status_id,
-            concentration_id: s.concentration_id,
-            curriculum_id: s.curriculum_id,
-            class_code_id: s.class_code_id,
-            transfer_code: s.transfer_code,
-            transfer_unit_id: s.transfer_unit_id,
-            id_mahasiswa: s.id_mahasiswa,
-            id_registrasi_mahasiswa: s.id_registrasi_mahasiswa,
-            finance_fee: s.finance_fee,
-            finance_id: s.finance_id,
-            created_at: s.created_at,
-            updated_at: s.updated_at,
-            deleted_at: s.deleted_at,
-            sync_at: s.sync_at,
-            created_by: s.created_by,
-            updated_by: s.updated_by,
-            unit_name: None,
-            unit_code: None,
-            status_name: None,
-            academic_year_name: None,
-            curriculum_name: None,
-            selection_type_name: None,
-        })
-        .collect();
+    let students = if options.load_students {
+        Some(item
+            .find_related(crate::models::academic::student::master::students::Entity)
+                    .filter(crate::models::academic::student::master::students::Column::DeletedAt.is_null())
+                    .all(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                    .into_iter()
+                    .map(|s| crate::dtos::academic::student::master::students::StudentResponse {
+                        id: s.id,
+                        code: s.code,
+                        name: s.name,
+                        selection_type_id: s.selection_type_id,
+                        registered: s.registered,
+                        individual_id: s.individual_id,
+                        status_id: s.status_id,
+                        unit_id: s.unit_id,
+                        academic_year_id: s.academic_year_id,
+                        registration_id: s.registration_id,
+                        nisn: s.nisn,
+                        resign_status_id: s.resign_status_id,
+                        concentration_id: s.concentration_id,
+                        curriculum_id: s.curriculum_id,
+                        class_code_id: s.class_code_id,
+                        transfer_code: s.transfer_code,
+                        transfer_unit_id: s.transfer_unit_id,
+                        id_mahasiswa: s.id_mahasiswa,
+                        id_registrasi_mahasiswa: s.id_registrasi_mahasiswa,
+                        finance_fee: s.finance_fee,
+                        finance_id: s.finance_id,
+                        created_at: s.created_at,
+                        updated_at: s.updated_at,
+                        deleted_at: s.deleted_at,
+                        sync_at: s.sync_at,
+                        created_by: s.created_by,
+                        updated_by: s.updated_by,
+                        unit_name: None,
+                        unit_code: None,
+                        status_name: None,
+                        academic_year_name: None,
+                        curriculum_name: None,
+                        selection_type_name: None,
+                    })
+                    .collect())
+    } else {
+        None
+    };
+
 
     // Has many: rooms
-    let rooms = item
-        .find_related(crate::models::building::master::rooms::Entity)
-        .filter(crate::models::building::master::rooms::Column::DeletedAt.is_null())
-        .all(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .into_iter()
-        .map(|r| crate::dtos::building::master::rooms::RoomResponse {
-            id: r.id,
-            alphabet_code: r.alphabet_code,
-            name: r.name,
-            long: r.long,
-            wide: r.wide,
-            high: r.high,
-            room_type_id: r.room_type_id,
-            unit_id: r.unit_id,
-            building_id: r.building_id,
-            condition_id: r.condition_id,
-            created_at: r.created_at,
-            updated_at: r.updated_at,
-            deleted_at: r.deleted_at,
-            sync_at: r.sync_at,
-            created_by: r.created_by,
-            updated_by: r.updated_by,
-        })
-        .collect();
+    let rooms = if options.load_rooms {
+        Some(item
+            .find_related(crate::models::building::master::rooms::Entity)
+                    .filter(crate::models::building::master::rooms::Column::DeletedAt.is_null())
+                    .all(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                    .into_iter()
+                    .map(|r| crate::dtos::building::master::rooms::RoomResponse {
+                        id: r.id,
+                        alphabet_code: r.alphabet_code,
+                        name: r.name,
+                        long: r.long,
+                        wide: r.wide,
+                        high: r.high,
+                        room_type_id: r.room_type_id,
+                        unit_id: r.unit_id,
+                        building_id: r.building_id,
+                        condition_id: r.condition_id,
+                        created_at: r.created_at,
+                        updated_at: r.updated_at,
+                        deleted_at: r.deleted_at,
+                        sync_at: r.sync_at,
+                        created_by: r.created_by,
+                        updated_by: r.updated_by,
+                    })
+                    .collect())
+    } else {
+        None
+    };
+
 
     // Has many: activities
-    let activities = item
-        .find_related(crate::models::academic::campaign::transaction::activities::Entity)
-        .filter(crate::models::academic::campaign::transaction::activities::Column::DeletedAt.is_null())
-        .all(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .into_iter()
-        .map(|a| crate::dtos::academic::campaign::transaction::activities::ActivityResponse {
-            id: a.id,
-            name: a.name,
-            week_quantity: a.week_quantity,
-            student_target: a.student_target,
-            candidate_number: a.candidate_number,
-            candidate_pass: a.candidate_pass,
-            became_student: a.became_student,
-            transfer_student: a.transfer_student,
-            total_class_member: a.total_class_member,
-            start_date: a.start_date,
-            end_date: a.end_date,
-            start_transaction: a.start_transaction,
-            end_transaction: a.end_transaction,
-            unit_id: a.unit_id,
-            academic_year_id: a.academic_year_id,
-            is_active: a.is_active,
-            feeder_id: a.feeder_id,
-            created_at: a.created_at,
-            updated_at: a.updated_at,
-            deleted_at: a.deleted_at,
-            sync_at: a.sync_at,
-            created_by: a.created_by,
-            updated_by: a.updated_by,
-        })
-        .collect();
+    let activities = if options.load_activities {
+        Some(item
+            .find_related(crate::models::academic::campaign::transaction::activities::Entity)
+                    .filter(crate::models::academic::campaign::transaction::activities::Column::DeletedAt.is_null())
+                    .all(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                    .into_iter()
+                    .map(|a| crate::dtos::academic::campaign::transaction::activities::ActivityResponse {
+                        id: a.id,
+                        name: a.name,
+                        week_quantity: a.week_quantity,
+                        student_target: a.student_target,
+                        candidate_number: a.candidate_number,
+                        candidate_pass: a.candidate_pass,
+                        became_student: a.became_student,
+                        transfer_student: a.transfer_student,
+                        total_class_member: a.total_class_member,
+                        start_date: a.start_date,
+                        end_date: a.end_date,
+                        start_transaction: a.start_transaction,
+                        end_transaction: a.end_transaction,
+                        unit_id: a.unit_id,
+                        academic_year_id: a.academic_year_id,
+                        is_active: a.is_active,
+                        feeder_id: a.feeder_id,
+                        created_at: a.created_at,
+                        updated_at: a.updated_at,
+                        deleted_at: a.deleted_at,
+                        sync_at: a.sync_at,
+                        created_by: a.created_by,
+                        updated_by: a.updated_by,
+                    })
+                    .collect())
+    } else {
+        None
+    };
+
 
     // Has many: class_codes
-    let class_codes = item
-        .find_related(crate::models::academic::campaign::transaction::class_codes::Entity)
-        .filter(crate::models::academic::campaign::transaction::class_codes::Column::DeletedAt.is_null())
-        .all(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .into_iter()
-        .map(|c| crate::dtos::academic::campaign::transaction::class_codes::ClassCodeResponse {
-            id: c.id,
-            code: c.code,
-            alphabet_code: c.alphabet_code,
-            name: c.name,
-            activity_id: c.activity_id,
-            start_effective_date: c.start_effective_date,
-            end_effective_date: c.end_effective_date,
-            created_at: c.created_at,
-            updated_at: c.updated_at,
-            deleted_at: c.deleted_at,
-            sync_at: c.sync_at,
-            created_by: c.created_by,
-            updated_by: c.updated_by,
-            unit_id: c.unit_id,
-            capacity: c.capacity,
-        })
-        .collect();
+    let class_codes = if options.load_class_codes {
+        Some(item
+            .find_related(crate::models::academic::campaign::transaction::class_codes::Entity)
+                    .filter(crate::models::academic::campaign::transaction::class_codes::Column::DeletedAt.is_null())
+                    .all(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                    .into_iter()
+                    .map(|c| crate::dtos::academic::campaign::transaction::class_codes::ClassCodeResponse {
+                        id: c.id,
+                        code: c.code,
+                        alphabet_code: c.alphabet_code,
+                        name: c.name,
+                        activity_id: c.activity_id,
+                        start_effective_date: c.start_effective_date,
+                        end_effective_date: c.end_effective_date,
+                        created_at: c.created_at,
+                        updated_at: c.updated_at,
+                        deleted_at: c.deleted_at,
+                        sync_at: c.sync_at,
+                        created_by: c.created_by,
+                        updated_by: c.updated_by,
+                        unit_id: c.unit_id,
+                        capacity: c.capacity,
+                    })
+                    .collect())
+    } else {
+        None
+    };
+
 
     // Has many: grades
-    let grades = item
-        .find_related(crate::models::academic::campaign::transaction::grades::Entity)
-        .filter(crate::models::academic::campaign::transaction::grades::Column::DeletedAt.is_null())
-        .all(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .into_iter()
-        .map(|g| crate::dtos::academic::campaign::transaction::grades::GradeResponse {
-            id: g.id,
-            code: g.code,
-            alphabet_code: g.alphabet_code,
-            name: g.name,
-            grade: g.grade,
-            minimum: g.minimum,
-            maximum: g.maximum,
-            start_date: g.start_date,
-            end_date: g.end_date,
-            unit_id: g.unit_id,
-            created_at: g.created_at,
-            updated_at: g.updated_at,
-            deleted_at: g.deleted_at,
-            sync_at: g.sync_at,
-            created_by: g.created_by,
-            updated_by: g.updated_by,
-            feeder_id: g.feeder_id,
-        })
-        .collect();
+    let grades = if options.load_grades {
+        Some(item
+            .find_related(crate::models::academic::campaign::transaction::grades::Entity)
+                    .filter(crate::models::academic::campaign::transaction::grades::Column::DeletedAt.is_null())
+                    .all(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                    .into_iter()
+                    .map(|g| crate::dtos::academic::campaign::transaction::grades::GradeResponse {
+                        id: g.id,
+                        code: g.code,
+                        alphabet_code: g.alphabet_code,
+                        name: g.name,
+                        grade: g.grade,
+                        minimum: g.minimum,
+                        maximum: g.maximum,
+                        start_date: g.start_date,
+                        end_date: g.end_date,
+                        unit_id: g.unit_id,
+                        created_at: g.created_at,
+                        updated_at: g.updated_at,
+                        deleted_at: g.deleted_at,
+                        sync_at: g.sync_at,
+                        created_by: g.created_by,
+                        updated_by: g.updated_by,
+                        feeder_id: g.feeder_id,
+                    })
+                    .collect())
+    } else {
+        None
+    };
+
 
     // Has many: concentrations
-    let concentrations = item
-        .find_related(crate::models::academic::course::master::concentrations::Entity)
-        .filter(crate::models::academic::course::master::concentrations::Column::DeletedAt.is_null())
-        .all(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .into_iter()
-        .map(|c| crate::dtos::academic::course::master::concentrations::ConcentrationResponse {
-            id: c.id,
-            code: c.code,
-            name: c.name,
-            unit_id: c.unit_id,
-            created_at: c.created_at,
-            updated_at: c.updated_at,
-            deleted_at: c.deleted_at,
-            sync_at: c.sync_at,
-            created_by: c.created_by,
-            updated_by: c.updated_by,
-        })
-        .collect();
+    let concentrations = if options.load_concentrations {
+        Some(item
+            .find_related(crate::models::academic::course::master::concentrations::Entity)
+                    .filter(crate::models::academic::course::master::concentrations::Column::DeletedAt.is_null())
+                    .all(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                    .into_iter()
+                    .map(|c| crate::dtos::academic::course::master::concentrations::ConcentrationResponse {
+                        id: c.id,
+                        code: c.code,
+                        name: c.name,
+                        unit_id: c.unit_id,
+                        created_at: c.created_at,
+                        updated_at: c.updated_at,
+                        deleted_at: c.deleted_at,
+                        sync_at: c.sync_at,
+                        created_by: c.created_by,
+                        updated_by: c.updated_by,
+                    })
+                    .collect())
+    } else {
+        None
+    };
+
 
     // Has many: homebases
-    let homebases = item
-        .find_related(crate::models::academic::lecturer::transaction::homebases::Entity)
-        .filter(crate::models::academic::lecturer::transaction::homebases::Column::DeletedAt.is_null())
-        .all(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .into_iter()
-        .map(|h| crate::dtos::academic::lecturer::transaction::homebases::HomebaseResponse {
-            id: h.id,
-            lecturer_id: h.lecturer_id,
-            unit_id: h.unit_id,
-            institution_id: h.institution_id,
-            status_id: h.status_id,
-            contract_id: h.contract_id,
-            created_at: h.created_at,
-            updated_at: h.updated_at,
-            deleted_at: h.deleted_at,
-            sync_at: h.sync_at,
-            created_by: h.created_by,
-            updated_by: h.updated_by,
-            unit_name: None,
-            status_name: None,
-            contract_name: None,
-            unit: None,
-            status: None,
-            contract: None,
-        })
-        .collect();
+    let homebases = if options.load_homebases {
+        Some(item
+            .find_related(crate::models::academic::lecturer::transaction::homebases::Entity)
+                    .filter(crate::models::academic::lecturer::transaction::homebases::Column::DeletedAt.is_null())
+                    .all(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                    .into_iter()
+                    .map(|h| crate::dtos::academic::lecturer::transaction::homebases::HomebaseResponse {
+                        id: h.id,
+                        lecturer_id: h.lecturer_id,
+                        unit_id: h.unit_id,
+                        institution_id: h.institution_id,
+                        status_id: h.status_id,
+                        contract_id: h.contract_id,
+                        created_at: h.created_at,
+                        updated_at: h.updated_at,
+                        deleted_at: h.deleted_at,
+                        sync_at: h.sync_at,
+                        created_by: h.created_by,
+                        updated_by: h.updated_by,
+                        unit_name: None,
+                        status_name: None,
+                        contract_name: None,
+                        unit: None,
+                        status: None,
+                        contract: None,
+                    })
+                    .collect())
+    } else {
+        None
+    };
+
 
     // Has many: recognitions
-    let recognitions = item
-        .find_related(crate::models::academic::prior_learning_recognition::transaction::recognitions::Entity)
-        .filter(crate::models::academic::prior_learning_recognition::transaction::recognitions::Column::DeletedAt.is_null())
-        .all(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .into_iter()
-        .map(|r| crate::dtos::academic::prior_learning_recognition::transaction::recognitions::RecognitionResponse {
-            id: r.id,
-            name: r.name,
-            candidate_id: r.candidate_id,
-            created_at: r.created_at,
-            updated_at: r.updated_at,
-            deleted_at: r.deleted_at,
-            sync_at: r.sync_at,
-            created_by: r.created_by,
-            updated_by: r.updated_by,
-            curriculum_id: r.curriculum_id,
-            unit_id: r.unit_id,
-        })
-        .collect();
+    let recognitions = if options.load_recognitions {
+        Some(item
+            .find_related(crate::models::academic::prior_learning_recognition::transaction::recognitions::Entity)
+                    .filter(crate::models::academic::prior_learning_recognition::transaction::recognitions::Column::DeletedAt.is_null())
+                    .all(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                    .into_iter()
+                    .map(|r| crate::dtos::academic::prior_learning_recognition::transaction::recognitions::RecognitionResponse {
+                        id: r.id,
+                        name: r.name,
+                        candidate_id: r.candidate_id,
+                        created_at: r.created_at,
+                        updated_at: r.updated_at,
+                        deleted_at: r.deleted_at,
+                        sync_at: r.sync_at,
+                        created_by: r.created_by,
+                        updated_by: r.updated_by,
+                        curriculum_id: r.curriculum_id,
+                        unit_id: r.unit_id,
+                    })
+                    .collect())
+    } else {
+        None
+    };
+
 
     // Has many: decrees
-    let decrees = item
-        .find_related(crate::models::academic::student::adviser::decrees::Entity)
-        .filter(crate::models::academic::student::adviser::decrees::Column::DeletedAt.is_null())
-        .all(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .into_iter()
-        .map(|d| crate::dtos::academic::student::adviser::decrees::DecreeResponse {
-            id: d.id,
-            decree_date: d.decree_date,
-            decree_number: d.decree_number,
-            unit_id: d.unit_id,
-            staff_id: d.staff_id,
-            created_at: d.created_at,
-            updated_at: d.updated_at,
-            deleted_at: d.deleted_at,
-            sync_at: d.sync_at,
-            created_by: d.created_by,
-            updated_by: d.updated_by,
-        })
-        .collect();
+    let decrees = if options.load_decrees {
+        Some(item
+            .find_related(crate::models::academic::student::adviser::decrees::Entity)
+                    .filter(crate::models::academic::student::adviser::decrees::Column::DeletedAt.is_null())
+                    .all(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                    .into_iter()
+                    .map(|d| crate::dtos::academic::student::adviser::decrees::DecreeResponse {
+                        id: d.id,
+                        decree_date: d.decree_date,
+                        decree_number: d.decree_number,
+                        unit_id: d.unit_id,
+                        staff_id: d.staff_id,
+                        created_at: d.created_at,
+                        updated_at: d.updated_at,
+                        deleted_at: d.deleted_at,
+                        sync_at: d.sync_at,
+                        created_by: d.created_by,
+                        updated_by: d.updated_by,
+                    })
+                    .collect())
+    } else {
+        None
+    };
+
 
     // Has many: student_activities
-    let student_activities = item
-        .find_related(crate::models::academic::student::campaign::student_activities::Entity)
-        .filter(crate::models::academic::student::campaign::student_activities::Column::DeletedAt.is_null())
-        .all(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .into_iter()
-        .map(|sa| crate::dtos::academic::student::campaign::student_activities::StudentActivityResponse {
-            id: sa.id,
-            name: sa.name,
-            cumulative_index: sa.cumulative_index,
-            grand_cumulative_index: sa.grand_cumulative_index,
-            total_credit: sa.total_credit,
-            grand_total_credit: sa.grand_total_credit,
-            student_id: sa.student_id,
-            unit_activity_id: sa.unit_activity_id,
-            status_id: sa.status_id,
-            resign_status_id: sa.resign_status_id,
-            unit_id: sa.unit_id,
-            is_lock: sa.is_lock,
-            created_at: sa.created_at,
-            updated_at: sa.updated_at,
-            deleted_at: sa.deleted_at,
-            sync_at: sa.sync_at,
-            created_by: sa.created_by,
-            updated_by: sa.updated_by,
-            feeder_id: sa.feeder_id,
-            finance_id: sa.finance_id,
-            finance_fee: sa.finance_fee,
-            academic_year: None,
-            academic_year_name: None,
-        })
-        .collect();
+    let student_activities = if options.load_student_activities {
+        Some(item
+            .find_related(crate::models::academic::student::campaign::student_activities::Entity)
+                    .filter(crate::models::academic::student::campaign::student_activities::Column::DeletedAt.is_null())
+                    .all(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                    .into_iter()
+                    .map(|sa| crate::dtos::academic::student::campaign::student_activities::StudentActivityResponse {
+                        id: sa.id,
+                        name: sa.name,
+                        cumulative_index: sa.cumulative_index,
+                        grand_cumulative_index: sa.grand_cumulative_index,
+                        total_credit: sa.total_credit,
+                        grand_total_credit: sa.grand_total_credit,
+                        student_id: sa.student_id,
+                        unit_activity_id: sa.unit_activity_id,
+                        status_id: sa.status_id,
+                        resign_status_id: sa.resign_status_id,
+                        unit_id: sa.unit_id,
+                        is_lock: sa.is_lock,
+                        created_at: sa.created_at,
+                        updated_at: sa.updated_at,
+                        deleted_at: sa.deleted_at,
+                        sync_at: sa.sync_at,
+                        created_by: sa.created_by,
+                        updated_by: sa.updated_by,
+                        feeder_id: sa.feeder_id,
+                        finance_id: sa.finance_id,
+                        finance_fee: sa.finance_fee,
+                        academic_year: None,
+                        academic_year_name: None,
+                    })
+                    .collect())
+    } else {
+        None
+    };
+
 
     // Has many: final_assignment_decrees
-    let final_assignment_decrees = item
-        .find_related(crate::models::academic::student::final_assignment::transaction::final_assignment_decrees::Entity)
-        .filter(crate::models::academic::student::final_assignment::transaction::final_assignment_decrees::Column::DeletedAt.is_null())
-        .all(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .into_iter()
-        .map(|fad| crate::dtos::academic::student::final_assignment::transaction::final_assignment_decrees::FinalAssignmentDecreeResponse {
-            id: fad.id,
-            decree_number: fad.decree_number,
-            decree_date: fad.decree_date,
-            unit_id: fad.unit_id,
-            activity_id: fad.activity_id,
-            staff_id: fad.staff_id,
-            created_at: fad.created_at,
-            updated_at: fad.updated_at,
-            deleted_at: fad.deleted_at,
-            sync_at: fad.sync_at,
-            created_by: fad.created_by,
-            updated_by: fad.updated_by,
-        })
-        .collect();
+    let final_assignment_decrees = if options.load_final_assignment_decrees {
+        Some(item
+            .find_related(crate::models::academic::student::final_assignment::transaction::final_assignment_decrees::Entity)
+                    .filter(crate::models::academic::student::final_assignment::transaction::final_assignment_decrees::Column::DeletedAt.is_null())
+                    .all(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                    .into_iter()
+                    .map(|fad| crate::dtos::academic::student::final_assignment::transaction::final_assignment_decrees::FinalAssignmentDecreeResponse {
+                        id: fad.id,
+                        decree_number: fad.decree_number,
+                        decree_date: fad.decree_date,
+                        unit_id: fad.unit_id,
+                        activity_id: fad.activity_id,
+                        staff_id: fad.staff_id,
+                        created_at: fad.created_at,
+                        updated_at: fad.updated_at,
+                        deleted_at: fad.deleted_at,
+                        sync_at: fad.sync_at,
+                        created_by: fad.created_by,
+                        updated_by: fad.updated_by,
+                    })
+                    .collect())
+    } else {
+        None
+    };
+
 
     // Has many: candidate_unit
-    let candidate_unit = item
-        .find_related(crate::models::academic::candidate::master::candidate_unit::Entity)
-        .filter(crate::models::academic::candidate::master::candidate_unit::Column::DeletedAt.is_null())
-        .all(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .into_iter()
-        .map(|cu| crate::dtos::academic::candidate::master::candidate_unit::CandidateUnitResponse {
-            id: cu.id,
-            candidate_id: cu.candidate_id,
-            unit_id: cu.unit_id,
-            registration_category_id: cu.registration_category_id,
-            created_at: cu.created_at,
-            updated_at: cu.updated_at,
-            deleted_at: cu.deleted_at,
-            sync_at: cu.sync_at,
-            created_by: cu.created_by,
-            updated_by: cu.updated_by,
-        })
-        .collect();
+    let candidate_unit = if options.load_candidate_unit {
+        Some(item
+            .find_related(crate::models::academic::candidate::master::candidate_unit::Entity)
+                    .filter(crate::models::academic::candidate::master::candidate_unit::Column::DeletedAt.is_null())
+                    .all(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                    .into_iter()
+                    .map(|cu| crate::dtos::academic::candidate::master::candidate_unit::CandidateUnitResponse {
+                        id: cu.id,
+                        candidate_id: cu.candidate_id,
+                        unit_id: cu.unit_id,
+                        registration_category_id: cu.registration_category_id,
+                        created_at: cu.created_at,
+                        updated_at: cu.updated_at,
+                        deleted_at: cu.deleted_at,
+                        sync_at: cu.sync_at,
+                        created_by: cu.created_by,
+                        updated_by: cu.updated_by,
+                    })
+                    .collect())
+    } else {
+        None
+    };
+
 
     // Has many: candidate_unit_choices
-    let candidate_unit_choices = item
-        .find_related(crate::models::academic::candidate::transaction::candidate_unit_choices::Entity)
-        .filter(crate::models::academic::candidate::transaction::candidate_unit_choices::Column::DeletedAt.is_null())
-        .all(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .into_iter()
-        .map(|cuc| crate::dtos::academic::candidate::transaction::candidate_unit_choices::CandidateUnitChoiceResponse {
-            id: cuc.id,
-            candidate_id: cuc.candidate_id,
-            unit_id: cuc.unit_id,
-            student_registration_id: cuc.student_registration_id,
-            registration_category_id: cuc.registration_category_id,
-            phase_id: cuc.phase_id,
-            priority: cuc.priority,
-            created_at: cuc.created_at,
-            updated_at: cuc.updated_at,
-            deleted_at: cuc.deleted_at,
-            sync_at: cuc.sync_at,
-            created_by: cuc.created_by,
-            updated_by: cuc.updated_by,
-        })
-        .collect();
+    let candidate_unit_choices = if options.load_candidate_unit_choices {
+        Some(item
+            .find_related(crate::models::academic::candidate::transaction::candidate_unit_choices::Entity)
+                    .filter(crate::models::academic::candidate::transaction::candidate_unit_choices::Column::DeletedAt.is_null())
+                    .all(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                    .into_iter()
+                    .map(|cuc| crate::dtos::academic::candidate::transaction::candidate_unit_choices::CandidateUnitChoiceResponse {
+                        id: cuc.id,
+                        candidate_id: cuc.candidate_id,
+                        unit_id: cuc.unit_id,
+                        student_registration_id: cuc.student_registration_id,
+                        registration_category_id: cuc.registration_category_id,
+                        phase_id: cuc.phase_id,
+                        priority: cuc.priority,
+                        created_at: cuc.created_at,
+                        updated_at: cuc.updated_at,
+                        deleted_at: cuc.deleted_at,
+                        sync_at: cuc.sync_at,
+                        created_by: cuc.created_by,
+                        updated_by: cuc.updated_by,
+                    })
+                    .collect())
+    } else {
+        None
+    };
+
 
     // Has many: registration_types
-    let registration_types = item
-        .find_related(crate::models::academic::candidate::reference::registration_types::Entity)
-        .filter(crate::models::academic::candidate::reference::registration_types::Column::DeletedAt.is_null())
-        .all(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .into_iter()
-        .map(|rt| crate::dtos::common::reference::ReferenceResponse {
-            id: rt.id,
-            code: rt.code.unwrap_or_default(),
-            alphabet_code: rt.alphabet_code.unwrap_or_default(),
-            name: rt.name,
-            created_at: rt.created_at.unwrap_or_default(),
-            updated_at: rt.updated_at.unwrap_or_default(),
-            deleted_at: rt.deleted_at,
-            sync_at: rt.sync_at,
-            created_by: rt.created_by,
-            updated_by: rt.updated_by,
-        })
-        .collect();
+    let registration_types = if options.load_registration_types {
+        Some(item
+            .find_related(crate::models::academic::candidate::reference::registration_types::Entity)
+                    .filter(crate::models::academic::candidate::reference::registration_types::Column::DeletedAt.is_null())
+                    .all(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                    .into_iter()
+                    .map(|rt| crate::dtos::common::reference::ReferenceResponse {
+                        id: rt.id,
+                        code: rt.code.unwrap_or_default(),
+                        alphabet_code: rt.alphabet_code.unwrap_or_default(),
+                        name: rt.name,
+                        created_at: rt.created_at.unwrap_or_default(),
+                        updated_at: rt.updated_at.unwrap_or_default(),
+                        deleted_at: rt.deleted_at,
+                        sync_at: rt.sync_at,
+                        created_by: rt.created_by,
+                        updated_by: rt.updated_by,
+                    })
+                    .collect())
+    } else {
+        None
+    };
+
 
     // Has many: bundles
-    let bundles = item
-        .find_related(crate::models::academic::survey::master::bundles::Entity)
-        .filter(crate::models::academic::survey::master::bundles::Column::DeletedAt.is_null())
-        .all(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .into_iter()
-        .map(|b| crate::dtos::academic::survey::master::bundles::BundleResponse {
-            id: b.id,
-            code: b.code,
-            alphabet_code: b.alphabet_code,
-            name: b.name,
-            institution_id: b.institution_id,
-            bundle_category_id: b.bundle_category_id,
-            unit_id: b.unit_id,
-            suggestion: b.suggestion,
-            created_at: b.created_at,
-            updated_at: b.updated_at,
-            sync_at: b.sync_at,
-            deleted_at: b.deleted_at,
-            created_by: b.created_by,
-            updated_by: b.updated_by,
-        })
-        .collect();
+    let bundles = if options.load_bundles {
+        Some(item
+            .find_related(crate::models::academic::survey::master::bundles::Entity)
+                    .filter(crate::models::academic::survey::master::bundles::Column::DeletedAt.is_null())
+                    .all(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                    .into_iter()
+                    .map(|b| crate::dtos::academic::survey::master::bundles::BundleResponse {
+                        id: b.id,
+                        code: b.code,
+                        alphabet_code: b.alphabet_code,
+                        name: b.name,
+                        institution_id: b.institution_id,
+                        bundle_category_id: b.bundle_category_id,
+                        unit_id: b.unit_id,
+                        suggestion: b.suggestion,
+                        created_at: b.created_at,
+                        updated_at: b.updated_at,
+                        sync_at: b.sync_at,
+                        deleted_at: b.deleted_at,
+                        created_by: b.created_by,
+                        updated_by: b.updated_by,
+                    })
+                    .collect())
+    } else {
+        None
+    };
+
 
     Ok(UnitResponse {
         id: item.id,
@@ -672,23 +780,23 @@ pub async fn load_unit_with_relations(
         education,
         parent,
         staffes: Some(staffes),
-        courses: Some(courses),
-        curriculums: Some(curriculums),
-        students: Some(students),
-        rooms: Some(rooms),
-        activities: Some(activities),
-        class_codes: Some(class_codes),
-        grades: Some(grades),
-        concentrations: Some(concentrations),
-        homebases: Some(homebases),
-        recognitions: Some(recognitions),
-        decrees: Some(decrees),
-        student_activities: Some(student_activities),
-        final_assignment_decrees: Some(final_assignment_decrees),
-        candidate_unit: Some(candidate_unit),
-        candidate_unit_choices: Some(candidate_unit_choices),
-        registration_types: Some(registration_types),
-        bundles: Some(bundles),
+        courses,
+        curriculums,
+        students,
+        rooms,
+        activities,
+        class_codes,
+        grades,
+        concentrations,
+        homebases,
+        recognitions,
+        decrees,
+        student_activities,
+        final_assignment_decrees,
+        candidate_unit,
+        candidate_unit_choices,
+        registration_types,
+        bundles,
     })
 }
 
@@ -727,7 +835,7 @@ pub async fn list_units(
     let data: Vec<UnitResponse> = if query.with_relations.unwrap_or(false) {
         let mut full_items = Vec::new();
         for item in &items {
-            full_items.push(load_unit_with_relations(item, db).await?);
+            full_items.push(load_unit_with_relations(item, db, LoadUnitRelationsOptions::default()).await?);
         }
         full_items
     } else {
@@ -781,7 +889,27 @@ pub async fn get_unit(
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
         .ok_or_else(|| StatusError::not_found().brief("Unit not found"))?;
 
-    let response = load_unit_with_relations(&item, db).await?;
+    let options = LoadUnitRelationsOptions {
+        load_courses: req.query::<bool>("load_courses").unwrap_or(false),
+        load_curriculums: req.query::<bool>("load_curriculums").unwrap_or(false),
+        load_students: req.query::<bool>("load_students").unwrap_or(false),
+        load_rooms: req.query::<bool>("load_rooms").unwrap_or(false),
+        load_activities: req.query::<bool>("load_activities").unwrap_or(false),
+        load_class_codes: req.query::<bool>("load_class_codes").unwrap_or(false),
+        load_grades: req.query::<bool>("load_grades").unwrap_or(false),
+        load_concentrations: req.query::<bool>("load_concentrations").unwrap_or(false),
+        load_homebases: req.query::<bool>("load_homebases").unwrap_or(false),
+        load_recognitions: req.query::<bool>("load_recognitions").unwrap_or(false),
+        load_decrees: req.query::<bool>("load_decrees").unwrap_or(false),
+        load_student_activities: req.query::<bool>("load_student_activities").unwrap_or(false),
+        load_final_assignment_decrees: req.query::<bool>("load_final_assignment_decrees").unwrap_or(false),
+        load_candidate_unit: req.query::<bool>("load_candidate_unit").unwrap_or(false),
+        load_candidate_unit_choices: req.query::<bool>("load_candidate_unit_choices").unwrap_or(false),
+        load_registration_types: req.query::<bool>("load_registration_types").unwrap_or(false),
+        load_bundles: req.query::<bool>("load_bundles").unwrap_or(false),
+    };
+
+    let response = load_unit_with_relations(&item, db, options).await?;
     Ok(Json(response))
 }
 

@@ -92,7 +92,7 @@ export default function MasterShowPage() {
                         </a>
                         <Show when={selectedId()}>
                             <a
-                                href={`${basePath}/edit?id=${selectedId()}`}
+                                href={`${basePath}/${selectedId()}/edit`}
                                 class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs shadow-xs transition-colors"
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -159,11 +159,6 @@ export default function MasterShowPage() {
                                     </div>
 
                                     <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60">
-                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">Code / Identifier</span>
-                                        <span class="font-mono text-neutral-800 dark:text-neutral-200 block">{record()?.code || record()?.kode || '-'}</span>
-                                    </div>
-
-                                    <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60">
                                         <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">Created At</span>
                                         <span class="font-mono text-neutral-800 dark:text-neutral-200 block">{record()?.created_at || '-'}</span>
                                     </div>
@@ -188,36 +183,42 @@ export default function MasterShowPage() {
                                             <span class="font-mono text-neutral-800 dark:text-neutral-200 block truncate">{record().curriculum_type.name || record().curriculum_type.nama || '-'}</span>
                                         </div>
                                     </Show>
-                                </div>
+                                    <Show when={record()?.total_credit !== undefined && record()?.total_credit !== null}>
+                                        <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60">
+                                            <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">Total Credit</span>
+                                            <span class="font-mono text-neutral-800 dark:text-neutral-200 block">{record().total_credit}</span>
+                                        </div>
+                                    </Show>
 
-                                <div class="mt-6">
-                                    <h3 class="text-sm font-bold font-mono text-neutral-900 dark:text-white mb-3">All Entity Attributes</h3>
-                                    <div class="border border-neutral-200 dark:border-neutral-700 overflow-hidden">
-                                        <table class="w-full text-xs text-left">
-                                            <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
-                                                <For each={Object.entries(record() || {}).filter(([k]) => !['curriculum_details', 'recognitions', 'students', 'unit', 'academic_year', 'curriculum_type'].includes(k))}>
-                                                    {([key, val]) => (
-                                                        <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-700/30">
-                                                            <td class="px-4 py-2.5 font-mono font-semibold text-neutral-600 dark:text-neutral-400 w-1/3 bg-neutral-50 dark:bg-neutral-900/30">
-                                                                {key}
-                                                            </td>
-                                                            <td class="px-4 py-2.5 font-mono text-neutral-900 dark:text-white">
-                                                                {typeof val === 'object' && val !== null ? (
-                                                                    <div class="max-h-64 overflow-y-auto overflow-x-hidden bg-white dark:bg-neutral-800/50 p-2.5 border border-neutral-200 dark:border-neutral-700/60 shadow-inner">
-                                                                        <pre class="whitespace-pre-wrap text-[10px] sm:text-xs leading-relaxed">{JSON.stringify(val, null, 2)}</pre>
-                                                                    </div>
-                                                                ) : (
-                                                                    <span class="break-all">{String(val ?? '-')}</span>
-                                                                )}
-                                                            </td>
-                                                        </tr>
-                                                    )}
-                                                </For>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
+                                    <Show when={record()?.mandatory_course_credit !== undefined && record()?.mandatory_course_credit !== null}>
+                                        <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60">
+                                            <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">Mandatory Credit</span>
+                                            <span class="font-mono text-neutral-800 dark:text-neutral-200 block">{record().mandatory_course_credit}</span>
+                                        </div>
+                                    </Show>
 
+                                    <Show when={record()?.optional_course_credit !== undefined && record()?.optional_course_credit !== null}>
+                                        <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60">
+                                            <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">Optional Credit</span>
+                                            <span class="font-mono text-neutral-800 dark:text-neutral-200 block">{record().optional_course_credit}</span>
+                                        </div>
+                                    </Show>
+
+                                    <Show when={record()?.is_active !== undefined && record()?.is_active !== null}>
+                                        <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60">
+                                            <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">Status</span>
+                                            <span class="font-mono block">
+                                                <span class={`px-1.5 py-0.5 text-xs font-medium border ${record().is_active
+                                                        ? 'bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800'
+                                                        : 'bg-neutral-100 text-neutral-600 border-neutral-200 dark:bg-neutral-700 dark:text-neutral-400'
+                                                    }`}>
+                                                    {record().is_active ? 'Active' : 'Inactive'}
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </Show>
+
+                                </div>
                                 <Show when={record()?.curriculum_details && Array.isArray(record().curriculum_details) && record().curriculum_details.length > 0}>
                                     <div class="mt-8">
                                         <h3 class="text-sm font-bold font-mono text-neutral-900 dark:text-white mb-3">Curriculum Details</h3>
