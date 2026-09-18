@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@floating-ui/dom": "^1.8.0",
+    "@neodrag/solid": "^2.3.1",
     "@solidjs/router": "^1.0.0",
     "@solidjs/start": "^2.0.5",
     "@tanstack/charts": "^0.16.2",

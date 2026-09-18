@@ -6,6 +6,7 @@
       "name": "example-with-tailwindcss",
       "dependencies": {
         "@floating-ui/dom": "^1.8.0",
+        "@neodrag/solid": "^2.3.1",
         "@solidjs/router": "^1.0.0",
         "@solidjs/start": "^2.0.5",
         "@tanstack/charts": "^0.16.2",
@@ -153,6 +154,8 @@
     "@keyv/serialize": ["@keyv/serialize@1.1.1", "", {}, "sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA=="],
 
     "@napi-rs/wasm-runtime": ["@napi-rs/wasm-runtime@1.1.6", "", { "dependencies": { "@tybys/wasm-util": "0.10.3" }, "peerDependencies": { "@emnapi/core": "1.11.1", "@emnapi/runtime": "1.11.1" } }, "sha512-ZLv/JdUfkvOy9eCnnBaGfiO+XimbjebAeO+MRQqD/B+FR1tnRN0tpKSJHRbE8sFfS6aqsXZ67TQjfwfsxULVbg=="],
+
+    "@neodrag/solid": ["@neodrag/solid@2.3.1", "", { "peerDependencies": { "solid-js": "^1.0.0" } }, "sha512-oLuB+0yrB27RR7R41dKjdmNbPGgAIeyCHokH5bj1LXcTJKnlKAa0/V9ijfVLo+MQuP8XlX5T62TVhmKnUVoJWA=="],
 
     "@nodelib/fs.scandir": ["@nodelib/fs.scandir@2.1.5", "", { "dependencies": { "@nodelib/fs.stat": "2.0.5", "run-parallel": "1.2.0" } }, "sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g=="],
 
