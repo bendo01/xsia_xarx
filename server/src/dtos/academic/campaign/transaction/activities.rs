@@ -10,6 +10,7 @@ pub struct ActivityQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
     pub name: Option<String>,
+    pub unit_id: Option<Uuid>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
@@ -86,4 +87,10 @@ pub struct PaginatedActivityResponse {
     pub page: u64,
     pub page_size: u64,
     pub total_pages: u64,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct ActivityOptionRequest {
+    pub search: Option<String>,
+    pub unit_id: Option<Uuid>,
 }

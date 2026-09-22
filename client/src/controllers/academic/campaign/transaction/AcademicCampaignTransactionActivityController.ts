@@ -40,6 +40,7 @@ export async function listActivities(queryParams?: {
     page?: number;
     page_size?: number;
     name?: string;
+    unit_id?: string;
 }): Promise<{
     data: CampaignActivityItem[];
     total: number;
@@ -52,6 +53,7 @@ export async function listActivities(queryParams?: {
         if (queryParams?.page) params.set('page', String(queryParams.page));
         if (queryParams?.page_size) params.set('page_size', String(queryParams.page_size));
         if (queryParams?.name) params.set('name', queryParams.name);
+        if (queryParams?.unit_id) params.set('unit_id', queryParams.unit_id);
 
         const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/activities?${params.toString()}`, {
             method: 'GET',
