@@ -10,6 +10,8 @@ pub struct HomebaseQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
     pub lecturer_id: Option<Uuid>,
+    pub unit_id: Option<Uuid>,
+    pub search: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
@@ -39,6 +41,10 @@ pub struct HomebaseResponse {
     pub status: Option<crate::dtos::common::reference::ReferenceResponse>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub contract: Option<crate::dtos::common::reference::ReferenceResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub lecturer_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub lecturer: Option<crate::dtos::academic::lecturer::master::lecturers::LecturerResponse>,
 }
 
 impl Default for HomebaseResponse {
@@ -62,6 +68,8 @@ impl Default for HomebaseResponse {
             unit: None,
             status: None,
             contract: None,
+            lecturer_name: None,
+            lecturer: None,
         }
     }
 }

@@ -1,8 +1,8 @@
 use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
-    PaginatorTrait, QueryFilter, QueryOrder, Set,
+    sea_query::{extension::postgres::PgExpr, Expr}, ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, EntityTrait,
+    IntoActiveModel, PaginatorTrait, QueryFilter, QueryOrder, Set,
 };
 use uuid::Uuid;
 use validator::Validate;
@@ -13,6 +13,7 @@ use crate::dtos::academic::lecturer::transaction::homebases::{
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::lecturer::transaction::homebases as entity_mod;
+use crate::models::academic::lecturer::master::lecturers as lecturer_mod;
 
 #[endpoint(tags("Academic - Lecturer - Transaction - Homebase"), status_codes(200, 500))]
 pub async fn list_homebases(
@@ -27,10 +28,25 @@ pub async fn list_homebases(
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
-    let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
+    let mut select = entity_mod::Entity::find()
+        .find_also_related(lecturer_mod::Entity)
+        .filter(entity_mod::Column::DeletedAt.is_null());
 
     if let Some(lecturer_id) = query.lecturer_id {
         select = select.filter(entity_mod::Column::LecturerId.eq(lecturer_id));
+    }
+
+    if let Some(unit_id) = query.unit_id {
+        select = select.filter(entity_mod::Column::UnitId.eq(unit_id));
+    }
+
+    if let Some(ref search) = query.search {
+        let search_pattern = format!("%{}%", search.trim());
+        select = select.filter(
+            Condition::any()
+                .add(Expr::col((lecturer_mod::Entity, lecturer_mod::Column::Name)).ilike(search_pattern.clone()))
+                .add(Expr::col((lecturer_mod::Entity, lecturer_mod::Column::Code)).ilike(search_pattern))
+        );
     }
 
     let paginator = select
@@ -42,7 +58,7 @@ pub async fn list_homebases(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| HomebaseResponse {
+    let data = items.into_iter().map(|(item, lecturer)| HomebaseResponse {
             id: item.id,
             lecturer_id: item.lecturer_id,
             unit_id: item.unit_id,
@@ -55,6 +71,19 @@ pub async fn list_homebases(
             sync_at: item.sync_at,
             created_by: item.created_by,
             updated_by: item.updated_by,
+            lecturer_name: lecturer.clone().and_then(|l| l.name.clone()),
+            lecturer: lecturer.map(|l| crate::dtos::academic::lecturer::master::lecturers::LecturerResponse {
+                id: l.id,
+                code: l.code,
+                name: l.name,
+                individual_id: l.individual_id,
+                institution_id: l.institution_id,
+                status_id: l.status_id,
+                contract_id: l.contract_id,
+                rank_id: l.rank_id,
+                group_id: l.group_id,
+                ..Default::default()
+            }),
             ..Default::default()
     }).collect();
 
@@ -101,7 +130,9 @@ pub async fn get_homebase(
             updated_by: item.updated_by,
             ..Default::default()
     }))
-}#[endpoint(tags("Academic - Lecturer - Transaction - Homebase"), status_codes(200, 400, 500))]
+}
+
+#[endpoint(tags("Academic - Lecturer - Transaction - Homebase"), status_codes(200, 400, 500))]
 pub async fn create_homebase(
         req: &mut Request,
         depot: &mut Depot,

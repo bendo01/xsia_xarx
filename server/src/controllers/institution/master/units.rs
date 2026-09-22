@@ -510,6 +510,7 @@ pub async fn load_unit_with_relations(
                         unit: None,
                         status: None,
                         contract: None,
+                        ..Default::default()
                     })
                     .collect())
     } else {

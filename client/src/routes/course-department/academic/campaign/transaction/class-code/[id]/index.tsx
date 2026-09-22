@@ -44,8 +44,8 @@ export default function ClassCodeDetailPage() {
     return (
         <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
             <TopBar />
-            
-            <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 max-w-4xl">
+
+            <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
@@ -94,43 +94,43 @@ export default function ClassCodeDetailPage() {
                             </svg>
                         </div>
                     </Show>
-                    
+
                     <Show when={!isLoading() && itemData()}>
                         <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6">
                             <div class="sm:col-span-1">
                                 <dt class="text-sm font-medium text-neutral-500 dark:text-neutral-400">Class Code Name</dt>
                                 <dd class="mt-1 text-base text-neutral-900 dark:text-white font-semibold uppercase">{itemData().name}</dd>
                             </div>
-                            
+
                             <div class="sm:col-span-1">
                                 <dt class="text-sm font-medium text-neutral-500 dark:text-neutral-400">Code</dt>
                                 <dd class="mt-1 text-base text-neutral-900 dark:text-white">{itemData().code}</dd>
                             </div>
-                            
+
                             <div class="sm:col-span-1">
                                 <dt class="text-sm font-medium text-neutral-500 dark:text-neutral-400">Alphabet Code</dt>
                                 <dd class="mt-1 text-base text-neutral-900 dark:text-white">{itemData().alphabet_code || '-'}</dd>
                             </div>
-                            
+
                             <div class="sm:col-span-1">
                                 <dt class="text-sm font-medium text-neutral-500 dark:text-neutral-400">Activity</dt>
                                 <dd class="mt-1 text-base text-neutral-900 dark:text-white">{getActivityName(itemData().activity_id)}</dd>
                             </div>
-                            
+
                             <div class="sm:col-span-1">
                                 <dt class="text-sm font-medium text-neutral-500 dark:text-neutral-400">Start Effective Date</dt>
                                 <dd class="mt-1 text-base text-neutral-900 dark:text-white">
                                     {itemData().start_effective_date ? new Date(itemData().start_effective_date).toLocaleDateString() : '-'}
                                 </dd>
                             </div>
-                            
+
                             <div class="sm:col-span-1">
                                 <dt class="text-sm font-medium text-neutral-500 dark:text-neutral-400">End Effective Date</dt>
                                 <dd class="mt-1 text-base text-neutral-900 dark:text-white">
                                     {itemData().end_effective_date ? new Date(itemData().end_effective_date).toLocaleDateString() : '-'}
                                 </dd>
                             </div>
-                            
+
                             <div class="sm:col-span-1">
                                 <dt class="text-sm font-medium text-neutral-500 dark:text-neutral-400">Capacity</dt>
                                 <dd class="mt-1 text-base text-neutral-900 dark:text-white">{itemData().capacity}</dd>

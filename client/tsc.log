@@ -1,0 +1,81 @@
+src/components/chart/chart_render.test.tsx(8,42): error TS2307: Cannot find module '~/routes/course-department/institution/master/unit/[id]/show' or its corresponding type declarations.
+src/components/chart/chart_render.test.tsx(9,51): error TS2307: Cannot find module '~/routes/course-department/academic/student/master/student/[id]/show' or its corresponding type declarations.
+src/controllers/building/reference/BuildingReferenceCategoryController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/building/reference/BuildingReferenceConditionController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/building/reference/BuildingReferenceRoomTypeController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/building/reference/BuildingReferenceVarietyController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/contact/reference/ContactReferenceElectronicMailTypeController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/contact/reference/ContactReferencePhoneTypeController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/contact/reference/ContactReferenceResidenceTypeController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/contact/reference/ContactReferenceWebsiteTypeController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/institution/reference/InstitutionReferenceCategoryController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/institution/reference/InstitutionReferencePositionTypeController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/institution/reference/InstitutionReferenceUnitTypeController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/institution/reference/InstitutionReferenceVarietyController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/person/reference/PersonReferenceAgeClassificationController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/person/reference/PersonReferenceBloodTypeController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/person/reference/PersonReferenceEyeColorController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/person/reference/PersonReferenceGenderController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/person/reference/PersonReferenceHairColorController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/person/reference/PersonReferenceHairTypeController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/person/reference/PersonReferenceIdentificationTypeController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/person/reference/PersonReferenceIncomeController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/person/reference/PersonReferenceMaritalStatusController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/person/reference/PersonReferenceOccupationController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/person/reference/PersonReferenceProfessionController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/person/reference/PersonReferenceRelativeTypeController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/controllers/person/reference/PersonReferenceReligionController.ts(32,81): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'number'.
+  Type 'string' is not assignable to type 'number'.
+src/routes/administrator/location/regency/index.tsx(129,49): error TS2345: Argument of type '{ per_page: number; }' is not assignable to parameter of type 'TypePaginationForm'.
+  Property 'page' is missing in type '{ per_page: number; }' but required in type 'TypePaginationForm'.
+src/routes/administrator/location/regency/index.tsx(131,48): error TS2345: Argument of type '{ per_page: number; }' is not assignable to parameter of type 'TypePaginationForm'.
+  Property 'page' is missing in type '{ per_page: number; }' but required in type 'TypePaginationForm'.
+src/routes/administrator/location/sub-district/index.tsx(148,48): error TS2345: Argument of type '{ per_page: number; }' is not assignable to parameter of type 'TypePaginationForm'.
+  Property 'page' is missing in type '{ per_page: number; }' but required in type 'TypePaginationForm'.
+src/routes/administrator/location/sub-district/index.tsx(149,49): error TS2345: Argument of type '{ per_page: number; }' is not assignable to parameter of type 'TypePaginationForm'.
+  Property 'page' is missing in type '{ per_page: number; }' but required in type 'TypePaginationForm'.
+src/routes/administrator/location/sub-district/index.tsx(150,48): error TS2345: Argument of type '{ per_page: number; }' is not assignable to parameter of type 'TypePaginationForm'.
+  Property 'page' is missing in type '{ per_page: number; }' but required in type 'TypePaginationForm'.
+src/routes/administrator/location/village/index.tsx(173,52): error TS2345: Argument of type '{ per_page: number; }' is not assignable to parameter of type 'TypePaginationForm'.
+  Property 'page' is missing in type '{ per_page: number; }' but required in type 'TypePaginationForm'.
+src/routes/administrator/location/village/index.tsx(174,48): error TS2345: Argument of type '{ per_page: number; }' is not assignable to parameter of type 'TypePaginationForm'.
+  Property 'page' is missing in type '{ per_page: number; }' but required in type 'TypePaginationForm'.
+src/routes/administrator/location/village/index.tsx(175,49): error TS2345: Argument of type '{ per_page: number; }' is not assignable to parameter of type 'TypePaginationForm'.
+  Property 'page' is missing in type '{ per_page: number; }' but required in type 'TypePaginationForm'.
+src/routes/administrator/location/village/index.tsx(176,48): error TS2345: Argument of type '{ per_page: number; }' is not assignable to parameter of type 'TypePaginationForm'.
+  Property 'page' is missing in type '{ per_page: number; }' but required in type 'TypePaginationForm'.
+src/routes/course-department/academic/lecturer/master/lecturer/index.tsx(15,10): error TS2305: Module '"~/controllers/master/masterApiController"' has no exported member 'masterApiList'.
+src/routes/course-department/academic/lecturer/master/lecturer/index.tsx(175,96): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/routes/course-department/academic/lecturer/master/lecturer/index.tsx(187,49): error TS7006: Parameter 'u' implicitly has an 'any' type.
+src/routes/course-department/academic/lecturer/master/lecturer/index.tsx(258,21): error TS2304: Cannot find name 'selectedAcademicYearId'.
+src/routes/course-department/academic/lecturer/master/lecturer/index.tsx(325,13): error TS2304: Cannot find name 'selectedAcademicYearId'.
+src/routes/course-department/academic/lecturer/master/lecturer/index.tsx(384,34): error TS2304: Cannot find name 'unitAcademicYears'.
+src/routes/course-department/academic/lecturer/master/lecturer/index.tsx(467,40): error TS2304: Cannot find name 'selectedAcademicYearId'.
+src/routes/course-department/academic/lecturer/master/lecturer/index.tsx(469,37): error TS2304: Cannot find name 'setSelectedAcademicYearId'.
+src/routes/course-department/academic/lecturer/master/lecturer/index.tsx(475,72): error TS2304: Cannot find name 'unitAcademicYears'.
+src/routes/course-department/academic/lecturer/master/lecturer/index.tsx(476,44): error TS2304: Cannot find name 'unitAcademicYears'.
+src/routes/course-department/academic/student/master/student/StudentMaster.test.tsx(5,51): error TS2307: Cannot find module './[id]/show' or its corresponding type declarations.

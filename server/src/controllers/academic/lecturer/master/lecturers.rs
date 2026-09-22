@@ -308,6 +308,7 @@ pub async fn load_lecturer_with_relations(
                 unit: unit_dto,
                 status: status_dto,
                 contract: contract_dto,
+                ..Default::default()
             }
         })
         .collect();
