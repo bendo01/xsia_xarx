@@ -5,7 +5,7 @@ import { getStorageItem } from '../../lib/storage';
 export default function MenuCourseDepartment() {
     const unitHref = () => {
         const uId = getStorageItem('unit_id');
-        return uId ? `/course-department/institution/master/unit/${uId}/show` : '/course-department/institution/master/unit/[id]/show';
+        return uId ? `/course-department/institution/master/unit/${uId}` : '/course-department/institution/master/unit/[id]';
     };
 
     const staffHref = () => {
