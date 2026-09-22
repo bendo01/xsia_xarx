@@ -179,7 +179,7 @@ export function getDashboardPathForRole(
             return uId ? `/course-department/institution/master/unit/${uId}` : '/course-department/institution/master/unit/[id]';
         }
         case 'student':
-            return indId ? `/student/person/master/individual/${indId}/show` : '/student/person/master/individual/[id]/show';
+            return indId ? `/student/person/master/individual/${indId}` : '/student/person/master/individual/[id]';
         case 'lecturer':
             return indId ? `/lecturer/person/master/individual/${indId}/show` : '/lecturer/person/master/individual/[id]/show';
         case 'candidate':
@@ -191,7 +191,7 @@ export function getDashboardPathForRole(
                 const uId = resolveRoleItemUnitId(roleItem);
                 return uId ? `/course-department/institution/master/unit/${uId}` : '/course-department/institution/master/unit/[id]';
             }
-            return indId ? `/student/person/master/individual/${indId}/show` : '/student/person/master/individual/[id]/show';
+            return indId ? `/student/person/master/individual/${indId}` : '/student/person/master/individual/[id]';
     }
 }
 
