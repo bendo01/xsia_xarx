@@ -673,6 +673,11 @@ pub async fn forgot_password(
 
     payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
+    let mut phone_number = payload.phone_number.clone();
+    if phone_number.starts_with('0') {
+        phone_number = format!("62{}", &phone_number[1..]);
+    }
+
     let user = entity_mod::Entity::find()
         .filter(entity_mod::Column::Email.eq(&payload.email))
         .filter(entity_mod::Column::DeletedAt.is_null())
@@ -734,7 +739,124 @@ pub async fn forgot_password(
                         let saved_role = role_active.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
                         saved_role.id
                     };
-                    final_role_id = Some(role_id);
+                    if final_role_id.is_none() {
+                        final_role_id = Some(role_id);
+                    }
+                }
+            }
+
+            // Check Lecturer by individual_id
+            let lecturer = crate::models::academic::lecturer::master::lecturers::Entity::find()
+                .filter(crate::models::academic::lecturer::master::lecturers::Column::IndividualId.eq(individual_id))
+                .filter(crate::models::academic::lecturer::master::lecturers::Column::DeletedAt.is_null())
+                .one(db)
+                .await
+                .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+            if let Some(lecturer) = lecturer {
+                let position_type = crate::models::institution::reference::position_type::Entity::find()
+                    .filter(crate::models::institution::reference::position_type::Column::Name.eq("Dosen"))
+                    .filter(crate::models::institution::reference::position_type::Column::DeletedAt.is_null())
+                    .one(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+                if let Some(pt) = position_type {
+                    let role_exists = role_entity::Entity::find()
+                        .filter(role_entity::Column::UserId.eq(current_user_id))
+                        .filter(role_entity::Column::RoleableType.eq("App\\Models\\Academic\\Lecturer\\Master\\Lecturer"))
+                        .filter(role_entity::Column::RoleableId.eq(lecturer.id))
+                        .filter(role_entity::Column::PositionTypeId.eq(pt.id))
+                        .filter(role_entity::Column::DeletedAt.is_null())
+                        .one(db)
+                        .await
+                        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+                    let role_id = if let Some(role) = role_exists {
+                        role.id
+                    } else {
+                        let role_active = role_entity::ActiveModel {
+                            id: Set(Uuid::new_v4()),
+                            name: Set("Dosen".to_string()),
+                            user_id: Set(Some(current_user_id)),
+                            position_type_id: Set(Some(pt.id)),
+                            roleable_id: Set(Some(lecturer.id)),
+                            roleable_type: Set(Some("App\\Models\\Academic\\Lecturer\\Master\\Lecturer".to_string())),
+                            created_at: Set(now),
+                            updated_at: Set(now),
+                            deleted_at: Set(None),
+                            sync_at: Set(None),
+                            created_by: Set(None),
+                            updated_by: Set(None),
+                        };
+                        let saved_role = role_active.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+                        saved_role.id
+                    };
+                    if final_role_id.is_none() {
+                        final_role_id = Some(role_id);
+                    }
+                }
+            }
+
+            // Check Staff by individual_id
+            let employee = crate::models::institution::master::employees::Entity::find()
+                .filter(crate::models::institution::master::employees::Column::IndividualId.eq(individual_id))
+                .filter(crate::models::institution::master::employees::Column::DeletedAt.is_null())
+                .one(db)
+                .await
+                .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+            if let Some(employee) = employee {
+                let staff = crate::models::institution::master::staffes::Entity::find()
+                    .filter(crate::models::institution::master::staffes::Column::EmployeeId.eq(employee.id))
+                    .filter(crate::models::institution::master::staffes::Column::DeletedAt.is_null())
+                    .one(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+                if let Some(staff) = staff {
+                    let position_type = crate::models::institution::reference::position_type::Entity::find()
+                        .filter(crate::models::institution::reference::position_type::Column::Name.eq("Tendik"))
+                        .filter(crate::models::institution::reference::position_type::Column::DeletedAt.is_null())
+                        .one(db)
+                        .await
+                        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+                    if let Some(pt) = position_type {
+                        let role_exists = role_entity::Entity::find()
+                            .filter(role_entity::Column::UserId.eq(current_user_id))
+                            .filter(role_entity::Column::RoleableType.eq("App\\Models\\Institution\\Master\\Staff"))
+                            .filter(role_entity::Column::RoleableId.eq(staff.id))
+                            .filter(role_entity::Column::PositionTypeId.eq(pt.id))
+                            .filter(role_entity::Column::DeletedAt.is_null())
+                            .one(db)
+                            .await
+                            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+                        let role_id = if let Some(role) = role_exists {
+                            role.id
+                        } else {
+                            let role_active = role_entity::ActiveModel {
+                                id: Set(Uuid::new_v4()),
+                                name: Set("Tendik".to_string()),
+                                user_id: Set(Some(current_user_id)),
+                                position_type_id: Set(Some(pt.id)),
+                                roleable_id: Set(Some(staff.id)),
+                                roleable_type: Set(Some("App\\Models\\Institution\\Master\\Staff".to_string())),
+                                created_at: Set(now),
+                                updated_at: Set(now),
+                                deleted_at: Set(None),
+                                sync_at: Set(None),
+                                created_by: Set(None),
+                                updated_by: Set(None),
+                            };
+                            let saved_role = role_active.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+                            saved_role.id
+                        };
+                        if final_role_id.is_none() {
+                            final_role_id = Some(role_id);
+                        }
+                    }
                 }
             }
 
@@ -750,7 +872,7 @@ pub async fn forgot_password(
 
             // Save phone number if not exists
             let phone_exists = crate::models::contact::master::phones::Entity::find()
-                .filter(crate::models::contact::master::phones::Column::PhoneNumber.eq(&payload.phone_number))
+                .filter(crate::models::contact::master::phones::Column::PhoneNumber.eq(&phone_number))
                 .filter(crate::models::contact::master::phones::Column::PhoneableType.eq("App\\Models\\Person\\Master\\Individual"))
                 .filter(crate::models::contact::master::phones::Column::PhoneableId.eq(individual_id))
                 .filter(crate::models::contact::master::phones::Column::DeletedAt.is_null())
@@ -761,7 +883,7 @@ pub async fn forgot_password(
             if phone_exists.is_none() {
                 let phone_active = crate::models::contact::master::phones::ActiveModel {
                     id: Set(Uuid::new_v4()),
-                    phone_number: Set(payload.phone_number.clone()),
+                    phone_number: Set(phone_number.clone()),
                     phone_type_id: Set(phone_type_id),
                     phoneable_id: Set(individual_id),
                     phoneable_type: Set("App\\Models\\Person\\Master\\Individual".to_string()),
@@ -795,7 +917,7 @@ pub async fn forgot_password(
         email::enqueue_email(queue, &job).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         let wa_text = format!("You requested a password reset. Use the following token to reset your password:\n{}", reset_token);
-        let wa_link = format!("https://wa.me/{}?text={}", payload.phone_number, urlencoding::encode(&wa_text));
+        let wa_link = format!("https://wa.me/{}?text={}", phone_number, urlencoding::encode(&wa_text));
 
         return Ok(Json(ForgotPasswordResponse {
             wa_link,
