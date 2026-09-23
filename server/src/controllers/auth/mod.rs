@@ -45,8 +45,8 @@ pub fn router() -> Router {
         .push(Router::with_path("login").post(user::login))
         .push(Router::with_path("login-with-session").post(user::login_with_session))
         .push(Router::with_path("verify/{token}").get(user::verify_email))
-        .push(Router::with_path("forgot").post(user::forgot_password))
-        .push(Router::with_path("reset").post(user::reset_password))
+        .push(Router::with_path("forgot-password").post(user::forgot_password))
+        .push(Router::with_path("reset-password").post(user::reset_password))
         .push(Router::with_path("resend-verification-token").post(user::resend_verification_token))
         // Protected Auth Endpoints
         .push(

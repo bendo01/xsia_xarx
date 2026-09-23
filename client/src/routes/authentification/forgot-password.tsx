@@ -1,7 +1,7 @@
 import { createForm } from '@tanstack/solid-form';
 import { createSignal, onMount, onCleanup, Show } from 'solid-js';
 import { toast } from '~/components/toast/Toaster';
-import { A } from '@solidjs/router';
+import { A, useNavigate } from '@solidjs/router';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0.1:5800/api/v1").replace(/\/+$/, "");
 
@@ -11,6 +11,7 @@ export default function ForgotPasswordRequest() {
     const [errorMessage, setErrorMessage] = createSignal<string | null>(null);
     const [successWaLink, setSuccessWaLink] = createSignal<string | null>(null);
     const [successMessage, setSuccessMessage] = createSignal<string | null>(null);
+    const navigate = useNavigate();
 
     const form = createForm(() => ({
         defaultValues: {
@@ -28,7 +29,7 @@ export default function ForgotPasswordRequest() {
             setSuccessWaLink(null);
 
             try {
-                const response = await fetch(`${getBaseUrl()}/forgot`, {
+                const response = await fetch(`${getBaseUrl()}/forgot-password`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -59,6 +60,9 @@ export default function ForgotPasswordRequest() {
                     if (data?.wa_link) {
                         window.open(data.wa_link, "_blank");
                     }
+                    setTimeout(() => {
+                        navigate('/authentification/password-reset');
+                    }, 1500);
                 }
             } catch (err: any) {
                 const msg = err?.message || "Network Error";

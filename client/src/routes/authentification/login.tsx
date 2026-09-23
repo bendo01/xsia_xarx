@@ -385,6 +385,9 @@ export default function Login() {
                             />
                             <span>{t('auth.login.rememberMe')}</span>
                         </label>
+                        <A href="/authentification/forgot-password" class="text-blue-400 hover:text-blue-300 transition-colors">
+                            Forgot Password?
+                        </A>
                     </div>
 
                     {/* Submit Button */}

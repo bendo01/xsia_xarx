@@ -1,6 +1,6 @@
 import { createForm } from '@tanstack/solid-form';
 import { createSignal, onMount, onCleanup, Show } from 'solid-js';
-import { useSearchParams, A } from '@solidjs/router';
+import { useSearchParams, A, useNavigate } from '@solidjs/router';
 import { toast } from '~/components/toast/Toaster';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0.1:5800/api/v1").replace(/\/+$/, "");
@@ -8,6 +8,7 @@ const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0
 export default function PasswordReset() {
     let canvasRef: HTMLCanvasElement | undefined;
     const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
     const [isLoading, setIsLoading] = createSignal(false);
     const [errorMessage, setErrorMessage] = createSignal<string | null>(null);
     const [successWaLink, setSuccessWaLink] = createSignal<string | null>(null);
@@ -45,7 +46,7 @@ export default function PasswordReset() {
             setSuccessWaLink(null);
 
             try {
-                const response = await fetch(`${getBaseUrl()}/reset_password`, {
+                const response = await fetch(`${getBaseUrl()}/reset-password`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -76,6 +77,9 @@ export default function PasswordReset() {
                     if (data?.wa_link) {
                         window.open(data.wa_link, "_blank");
                     }
+                    setTimeout(() => {
+                        navigate('/authentification/login_with_session');
+                    }, 1500);
                 }
             } catch (err: any) {
                 const msg = err?.message || "Network Error";
@@ -191,7 +195,7 @@ export default function PasswordReset() {
 
             {/* Glassmorphic Card */}
             <div class="relative z-10 w-full max-w-lg p-8 sm:p-10 bg-slate-900/60 backdrop-blur-2xl border border-emerald-500/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] rounded-xs flex flex-col items-center">
-                
+
                 <h1 class="text-[26px] sm:text-[30px] font-bold text-white tracking-wide mb-1 font-sans">
                     Reset Kata Sandi
                 </h1>
@@ -207,9 +211,9 @@ export default function PasswordReset() {
                             <line x1="12" y1="16" x2="12.01" y2="16" />
                         </svg>
                         <span class="flex-1 leading-snug">{errorMessage()}</span>
-                        <button 
-                            type="button" 
-                            onClick={() => setErrorMessage(null)} 
+                        <button
+                            type="button"
+                            onClick={() => setErrorMessage(null)}
                             class="text-red-400 hover:text-white transition-colors"
                         >
                             <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -234,12 +238,12 @@ export default function PasswordReset() {
                     </div>
                 </Show>
 
-                <form 
+                <form
                     onSubmit={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         form.handleSubmit();
-                    }} 
+                    }}
                     class="w-full space-y-4 mb-6"
                 >
                     <form.Field name="token">

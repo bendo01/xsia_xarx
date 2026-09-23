@@ -341,6 +341,13 @@ export default function LoginWithSession() {
                         )}
                     </form.Field>
 
+                    {/* Options */}
+                    <div class="flex items-center justify-end pt-1 text-xs">
+                        <A href="/authentification/forgot-password" class="text-emerald-400 hover:text-emerald-300 transition-colors">
+                            Forgot Password?
+                        </A>
+                    </div>
+
                     {/* Submit Button */}
                     <form.Subscribe selector={(state) => state.canSubmit}>
                         {(canSubmit) => (
