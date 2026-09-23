@@ -100,7 +100,7 @@ export const id: TranslationSchema = {
             networkError: 'Gagal terhubung ke server autentikasi.',
         },
         sessionLogin: {
-            title: 'Gateway Sesi',
+            title: 'Sesi Gateway',
             subtitle: 'Autentikasi Berbasis Sesi',
             description: 'Buka sesi HTTP aman yang dikelola server untuk operasi desktop dan operasional administratif.',
             startSessionButton: 'Mulai Sesi Aman',

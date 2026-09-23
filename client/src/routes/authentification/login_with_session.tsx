@@ -37,7 +37,7 @@ export default function LoginWithSession() {
                 if (response.code === 200) {
                     const userName = response.user?.name || "User";
                     toast.success(t('auth.session.sessionStarted', { name: userName }));
-                    
+
                     // Process roles and determine target dashboard
                     const targetDashboard = await processLoginSuccess(response, true);
 
@@ -194,31 +194,31 @@ export default function LoginWithSession() {
                 {/* Security Badge Pill */}
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-xs bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold tracking-wide mb-5 animate-pulse">
                     <span class="size-2 rounded-xs bg-emerald-400"></span>
-                    <span>{t('auth.session.ephemeralBadge')}</span>
+                    <span>{t('auth.sessionLogin.title')}</span>
                 </div>
 
                 {/* Logo with Emerald Glow */}
                 <div class="w-[85px] h-[85px] rounded-xs bg-[#111827]/90 border-[3px] border-emerald-500/80 flex items-center justify-center mb-4 shadow-[0_0_30px_rgba(16,185,129,0.35)] relative overflow-hidden transition-transform duration-300 hover:scale-105">
                     <svg class="size-10 text-emerald-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
                 </div>
 
                 {/* Header Titles */}
                 <h1 class="text-[26px] sm:text-[30px] font-bold text-white tracking-wide mb-1 font-sans">
-                    {t('auth.session.title')}
+                    {t('auth.sessionLogin.title')}
                 </h1>
                 <p class="text-white/60 text-xs font-semibold tracking-wider uppercase mb-3 font-mono">
-                    {t('auth.session.subtitle')}
+                    {t('auth.sessionLogin.subtitle')}
                 </p>
 
                 {/* Info Notice Box */}
                 <div class="w-full mb-6 p-3 bg-emerald-950/40 border border-emerald-500/20 rounded-xs flex items-start gap-2.5 text-emerald-200/90 text-xs leading-relaxed">
                     <svg class="shrink-0 size-4 text-emerald-400 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="12" y1="16" x2="12" y2="12"/>
-                        <line x1="12" y1="8" x2="12.01" y2="8"/>
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="16" x2="12" y2="12" />
+                        <line x1="12" y1="8" x2="12.01" y2="8" />
                     </svg>
                     <span>
                         {t('auth.session.notice')}
@@ -234,9 +234,9 @@ export default function LoginWithSession() {
                             <line x1="12" y1="16" x2="12.01" y2="16" />
                         </svg>
                         <span class="flex-1 leading-snug">{errorMessage()}</span>
-                        <button 
-                            type="button" 
-                            onClick={() => setErrorMessage(null)} 
+                        <button
+                            type="button"
+                            onClick={() => setErrorMessage(null)}
                             class="text-red-400 hover:text-white transition-colors"
                             aria-label="Dismiss error"
                         >
@@ -249,12 +249,12 @@ export default function LoginWithSession() {
                 </Show>
 
                 {/* Login Form */}
-                <form 
+                <form
                     onSubmit={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         form.handleSubmit();
-                    }} 
+                    }}
                     class="w-full space-y-4 mb-6"
                 >
                     {/* Email Input Field */}
