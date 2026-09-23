@@ -918,6 +918,13 @@ pub async fn forgot_password(
         email::enqueue_email(queue, &job).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         let wa_text = format!("You requested a password reset. Use the following token to reset your password:\n{}", reset_token);
+        
+        let wa_config = crate::config::openwa::OpenwaConfig::from_env();
+        let wa_sender = crate::services::messenger::openwa::OpenWaSender::new(wa_config);
+        if let Err(e) = wa_sender.send_message(&phone_number, &wa_text).await {
+            tracing::error!("Failed to send WA message: {}", e);
+        }
+
         let wa_link = format!("https://wa.me/{}?text={}", phone_number, urlencoding::encode(&wa_text));
 
         return Ok(Json(ForgotPasswordResponse {
@@ -995,7 +1002,13 @@ pub async fn reset_password(
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
     let wa_link = if let Some(p) = phone {
-        format!("https://wa.me/{}?text={}", p.phone_number, urlencoding::encode("Your password has been successfully reset."))
+        let wa_text = "Your password has been successfully reset.";
+        let wa_config = crate::config::openwa::OpenwaConfig::from_env();
+        let wa_sender = crate::services::messenger::openwa::OpenWaSender::new(wa_config);
+        if let Err(e) = wa_sender.send_message(&p.phone_number, wa_text).await {
+            tracing::error!("Failed to send WA message: {}", e);
+        }
+        format!("https://wa.me/{}?text={}", p.phone_number, urlencoding::encode(wa_text))
     } else {
         "".to_string()
     };
@@ -1126,7 +1139,7 @@ pub async fn set_current_role(
 }
 
 #[endpoint(tags("Auth - Resend Verification"), status_codes(200, 400, 500))]
-pub async fn resend_verification_mail(
+pub async fn resend_verification_token(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -1163,15 +1176,35 @@ pub async fn resend_verification_mail(
         active_model.email_verification_sent_at = Set(Some(now));
         active_model.updated_at = Set(now);
 
-        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let updated_user = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
+        let wa_text = format!("Please verify your email by entering the following token:\n{}", verification_token);
         let job = EmailJob {
             to: payload.email.clone(),
             subject: "Verify your email".to_string(),
-            body: format!("Please verify your email by entering the following token:\n{}", verification_token),
+            body: wa_text.clone(),
         };
 
         email::enqueue_email(queue, &job).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        {
+            let individual_id = updated_user.individual_id;
+            let phone = crate::models::contact::master::phones::Entity::find()
+                .filter(crate::models::contact::master::phones::Column::PhoneableType.eq("App\\Models\\Person\\Master\\Individual"))
+                .filter(crate::models::contact::master::phones::Column::PhoneableId.eq(individual_id))
+                .filter(crate::models::contact::master::phones::Column::DeletedAt.is_null())
+                .one(db)
+                .await
+                .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+            if let Some(p) = phone {
+                let wa_config = crate::config::openwa::OpenwaConfig::from_env();
+                let wa_sender = crate::services::messenger::openwa::OpenWaSender::new(wa_config);
+                if let Err(e) = wa_sender.send_message(&p.phone_number, &wa_text).await {
+                    tracing::error!("Failed to send WA message: {}", e);
+                }
+            }
+        }
     }
 
     Ok(Json(MessageResponse {
@@ -1352,7 +1385,14 @@ pub async fn account_acquisition(
 
     email::enqueue_email(queue, &job).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let wa_link = format!("https://wa.me/{}?text={}", payload.phone_number, urlencoding::encode("Your account has been successfully created."));
+    let wa_text = "Your account has been successfully created.";
+    let wa_config = crate::config::openwa::OpenwaConfig::from_env();
+    let wa_sender = crate::services::messenger::openwa::OpenWaSender::new(wa_config);
+    if let Err(e) = wa_sender.send_message(&payload.phone_number, wa_text).await {
+        tracing::error!("Failed to send WA message: {}", e);
+    }
+
+    let wa_link = format!("https://wa.me/{}?text={}", payload.phone_number, urlencoding::encode(wa_text));
 
     Ok(Json(AccountAcquisitionResponse { 
         wa_link,
