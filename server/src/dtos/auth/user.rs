@@ -121,8 +121,6 @@ pub struct SessionLoginResponse {
 pub struct ForgotPasswordRequest {
     #[validate(email)]
     pub email: String,
-    pub nik: String,
-    pub student_code: String,
     pub phone_number: String,
 }
 

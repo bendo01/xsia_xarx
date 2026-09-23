@@ -17,13 +17,18 @@ export default function PasswordReset() {
 
     const form = createForm(() => ({
         defaultValues: {
-            token: searchParams.token || '',
+            token: (Array.isArray(searchParams.token) ? searchParams.token[0] : searchParams.token) || '',
             new_password: '',
             confirm_password: '',
         },
         onSubmit: async ({ value }) => {
             if (!value.token) {
-                setErrorMessage("Token reset tidak ditemukan");
+                setErrorMessage("Token reset wajib diisi");
+                return;
+            }
+            const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+            if (!uuidRegex.test(value.token)) {
+                setErrorMessage("Format token tidak valid");
                 return;
             }
             if (!value.new_password || !value.confirm_password) {
@@ -83,9 +88,6 @@ export default function PasswordReset() {
     }));
 
     onMount(() => {
-        if (!searchParams.token) {
-            setErrorMessage("Token reset tidak ditemukan di URL.");
-        }
 
         if (!canvasRef) return;
         const canvas = canvasRef;
@@ -242,10 +244,23 @@ export default function PasswordReset() {
                 >
                     <form.Field name="token">
                         {(field) => (
-                            <input
-                                type="hidden"
-                                value={field().state.value}
-                            />
+                            <div class="space-y-1">
+                                <label class="block text-xs font-medium text-white/80 px-1">Token Reset</label>
+                                <div class="relative flex items-center">
+                                    <input
+                                        type="text"
+                                        placeholder="Masukkan token dari email/WA"
+                                        required
+                                        value={field().state.value}
+                                        onBlur={field().handleBlur}
+                                        onInput={(e) => {
+                                            field().handleChange(e.currentTarget.value);
+                                            if (errorMessage()) setErrorMessage(null);
+                                        }}
+                                        class="w-full bg-[#111827]/70 border border-emerald-500/20 text-white placeholder-white/30 pl-4 py-3 rounded-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400/50 transition-all text-sm shadow-inner"
+                                    />
+                                </div>
+                            </div>
                         )}
                     </form.Field>
 

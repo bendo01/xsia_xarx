@@ -421,7 +421,7 @@ pub async fn register(
     }
 
     let hashed_password = hash_password(&payload.password)?;
-    let verification_token = generate_random_token(32);
+    let verification_token = Uuid::new_v4().to_string();
     let now = Utc::now().naive_utc();
     let new_id = Uuid::new_v4();
     let new_pid = Uuid::new_v4();
@@ -455,11 +455,10 @@ pub async fn register(
     active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
     // Send verification email via queue
-    let verify_url = format!("http://localhost:3000/auth/verify?token={}", verification_token);
     let job = EmailJob {
         to: payload.email.clone(),
         subject: "Welcome! Please verify your email".to_string(),
-        body: format!("Please verify your email by clicking the following link:\n{}", verify_url),
+        body: format!("Please verify your email by entering the following token:\n{}", verification_token),
     };
 
     email::enqueue_email(queue, &job).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
@@ -674,28 +673,6 @@ pub async fn forgot_password(
 
     payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-    // 1. Check Individual by nik
-    let individual = crate::models::person::master::individual::Entity::find()
-        .filter(crate::models::person::master::individual::Column::Code.eq(&payload.nik))
-        .filter(crate::models::person::master::individual::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Individual not found"))?;
-
-    // 2. Check Student by student_code
-    let student = crate::models::academic::student::master::students::Entity::find()
-        .filter(crate::models::academic::student::master::students::Column::Code.eq(&payload.student_code))
-        .filter(crate::models::academic::student::master::students::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("Student not found"))?;
-
-    if student.individual_id != individual.id {
-        return Err(StatusError::bad_request().brief("Student does not match the provided Individual"));
-    }
-
     let user = entity_mod::Entity::find()
         .filter(entity_mod::Column::Email.eq(&payload.email))
         .filter(entity_mod::Column::DeletedAt.is_null())
@@ -706,94 +683,119 @@ pub async fn forgot_password(
     if let Some(existing) = user {
         let current_user_id = existing.id;
         let now = Utc::now().naive_utc();
+        let mut final_role_id = existing.current_role_id;
 
-        // Check/Create Position Type and Role
-        let position_type = crate::models::institution::reference::position_type::Entity::find()
-            .filter(crate::models::institution::reference::position_type::Column::Name.eq("Mahasiswa"))
-            .filter(crate::models::institution::reference::position_type::Column::DeletedAt.is_null())
-            .one(db)
-            .await
-            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-            .ok_or_else(|| StatusError::not_found().brief("Position type not found"))?;
+        if let Some(individual_id) = existing.individual_id {
+            // Check Student by individual_id
+            let student = crate::models::academic::student::master::students::Entity::find()
+                .filter(crate::models::academic::student::master::students::Column::IndividualId.eq(individual_id))
+                .filter(crate::models::academic::student::master::students::Column::DeletedAt.is_null())
+                .one(db)
+                .await
+                .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        let role_exists = role_entity::Entity::find()
-            .filter(role_entity::Column::UserId.eq(current_user_id))
-            .filter(role_entity::Column::RoleableType.eq("App\\Models\\Academic\\Student\\Master\\Student"))
-            .filter(role_entity::Column::RoleableId.eq(student.id))
-            .filter(role_entity::Column::PositionTypeId.eq(position_type.id))
-            .filter(role_entity::Column::DeletedAt.is_null())
-            .one(db)
-            .await
-            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+            if let Some(student) = student {
+                // Check/Create Position Type and Role
+                let position_type = crate::models::institution::reference::position_type::Entity::find()
+                    .filter(crate::models::institution::reference::position_type::Column::Name.eq("Mahasiswa"))
+                    .filter(crate::models::institution::reference::position_type::Column::DeletedAt.is_null())
+                    .one(db)
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        let role_id = if let Some(role) = role_exists {
-            role.id
-        } else {
-            let role_active = role_entity::ActiveModel {
-                id: Set(Uuid::new_v4()),
-                name: Set("Mahasiswa".to_string()),
-                user_id: Set(Some(current_user_id)),
-                position_type_id: Set(Some(position_type.id)),
-                roleable_id: Set(Some(student.id)),
-                roleable_type: Set(Some("App\\Models\\Academic\\Student\\Master\\Student".to_string())),
-                created_at: Set(now),
-                updated_at: Set(now),
-                deleted_at: Set(None),
-                sync_at: Set(None),
-                created_by: Set(None),
-                updated_by: Set(None),
-            };
-            let saved_role = role_active.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
-            saved_role.id
-        };
+                if let Some(pt) = position_type {
+                    let role_exists = role_entity::Entity::find()
+                        .filter(role_entity::Column::UserId.eq(current_user_id))
+                        .filter(role_entity::Column::RoleableType.eq("App\\Models\\Academic\\Student\\Master\\Student"))
+                        .filter(role_entity::Column::RoleableId.eq(student.id))
+                        .filter(role_entity::Column::PositionTypeId.eq(pt.id))
+                        .filter(role_entity::Column::DeletedAt.is_null())
+                        .one(db)
+                        .await
+                        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        // Save phone number if not exists
-        let phone_exists = crate::models::contact::master::phones::Entity::find()
-            .filter(crate::models::contact::master::phones::Column::PhoneNumber.eq(&payload.phone_number))
-            .filter(crate::models::contact::master::phones::Column::PhoneableType.eq("App\\Models\\Person\\Master\\Individual"))
-            .filter(crate::models::contact::master::phones::Column::PhoneableId.eq(individual.id))
-            .filter(crate::models::contact::master::phones::Column::DeletedAt.is_null())
-            .one(db)
-            .await
-            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+                    let role_id = if let Some(role) = role_exists {
+                        role.id
+                    } else {
+                        let role_active = role_entity::ActiveModel {
+                            id: Set(Uuid::new_v4()),
+                            name: Set("Mahasiswa".to_string()),
+                            user_id: Set(Some(current_user_id)),
+                            position_type_id: Set(Some(pt.id)),
+                            roleable_id: Set(Some(student.id)),
+                            roleable_type: Set(Some("App\\Models\\Academic\\Student\\Master\\Student".to_string())),
+                            created_at: Set(now),
+                            updated_at: Set(now),
+                            deleted_at: Set(None),
+                            sync_at: Set(None),
+                            created_by: Set(None),
+                            updated_by: Set(None),
+                        };
+                        let saved_role = role_active.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+                        saved_role.id
+                    };
+                    final_role_id = Some(role_id);
+                }
+            }
 
-        if phone_exists.is_none() {
-            let phone_active = crate::models::contact::master::phones::ActiveModel {
-                id: Set(Uuid::new_v4()),
-                phone_number: Set(payload.phone_number.clone()),
-                phone_type_id: Set(None),
-                phoneable_id: Set(individual.id),
-                phoneable_type: Set("App\\Models\\Person\\Master\\Individual".to_string()),
-                created_at: Set(Some(now)),
-                updated_at: Set(Some(now)),
-                deleted_at: Set(None),
-                sync_at: Set(None),
-                created_by: Set(None),
-                updated_by: Set(None),
-            };
-            phone_active.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+            // Find Phone Type with code 1
+            let phone_type = crate::models::contact::reference::phone_types::Entity::find()
+                .filter(crate::models::contact::reference::phone_types::Column::Code.eq(1))
+                .filter(crate::models::contact::reference::phone_types::Column::DeletedAt.is_null())
+                .one(db)
+                .await
+                .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+            let phone_type_id = phone_type.map(|pt| pt.id);
+
+            // Save phone number if not exists
+            let phone_exists = crate::models::contact::master::phones::Entity::find()
+                .filter(crate::models::contact::master::phones::Column::PhoneNumber.eq(&payload.phone_number))
+                .filter(crate::models::contact::master::phones::Column::PhoneableType.eq("App\\Models\\Person\\Master\\Individual"))
+                .filter(crate::models::contact::master::phones::Column::PhoneableId.eq(individual_id))
+                .filter(crate::models::contact::master::phones::Column::DeletedAt.is_null())
+                .one(db)
+                .await
+                .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+            if phone_exists.is_none() {
+                let phone_active = crate::models::contact::master::phones::ActiveModel {
+                    id: Set(Uuid::new_v4()),
+                    phone_number: Set(payload.phone_number.clone()),
+                    phone_type_id: Set(phone_type_id),
+                    phoneable_id: Set(individual_id),
+                    phoneable_type: Set("App\\Models\\Person\\Master\\Individual".to_string()),
+                    created_at: Set(Some(now)),
+                    updated_at: Set(Some(now)),
+                    deleted_at: Set(None),
+                    sync_at: Set(None),
+                    created_by: Set(None),
+                    updated_by: Set(None),
+                };
+                phone_active.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+            }
         }
 
-        let reset_token = generate_random_token(32);
+        let reset_token = Uuid::new_v4().to_string();
         
         let mut active_model = existing.into_active_model();
         active_model.reset_token = Set(Some(reset_token.clone()));
         active_model.reset_sent_at = Set(Some(now));
-        active_model.current_role_id = Set(Some(role_id));
+        active_model.current_role_id = Set(final_role_id);
         active_model.updated_at = Set(now);
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        let reset_url = format!("http://localhost:3000/auth/reset?token={}", reset_token);
         let job = EmailJob {
             to: payload.email.clone(),
             subject: "Password Reset Request".to_string(),
-            body: format!("You requested a password reset. Click the link to reset your password:\n{}", reset_url),
+            body: format!("You requested a password reset. Use the following token to reset your password:\n{}", reset_token),
         };
 
         email::enqueue_email(queue, &job).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        let wa_link = format!("https://wa.me/{}?text={}", payload.phone_number, urlencoding::encode("Please check your email to reset your password."));
+        let wa_text = format!("You requested a password reset. Use the following token to reset your password:\n{}", reset_token);
+        let wa_link = format!("https://wa.me/{}?text={}", payload.phone_number, urlencoding::encode(&wa_text));
 
         return Ok(Json(ForgotPasswordResponse {
             wa_link,
@@ -1030,7 +1032,7 @@ pub async fn resend_verification_mail(
             return Err(StatusError::bad_request().brief("Account is already verified"));
         }
 
-        let verification_token = generate_random_token(32);
+        let verification_token = Uuid::new_v4().to_string();
         let now = Utc::now().naive_utc();
 
         let mut active_model = existing.into_active_model();
@@ -1040,11 +1042,10 @@ pub async fn resend_verification_mail(
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        let verify_url = format!("http://localhost:3000/auth/verify?token={}", verification_token);
         let job = EmailJob {
             to: payload.email.clone(),
             subject: "Verify your email".to_string(),
-            body: format!("Please verify your email by clicking the following link:\n{}", verify_url),
+            body: format!("Please verify your email by entering the following token:\n{}", verification_token),
         };
 
         email::enqueue_email(queue, &job).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
@@ -1220,11 +1221,10 @@ pub async fn account_acquisition(
     }
 
     // 9. Send email and open WA
-    let login_url = "http://localhost:3000/auth/login".to_string();
     let job = EmailJob {
         to: payload.email.clone(),
         subject: "Account Acquisition Successful".to_string(),
-        body: format!("Your account has been successfully created. You can now login at:\n{}", login_url),
+        body: "Your account has been successfully created. You can now login.".to_string(),
     };
 
     email::enqueue_email(queue, &job).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
@@ -1236,3 +1236,4 @@ pub async fn account_acquisition(
         message: "Akun berhasil dibuat.".to_string()
     }))
 }
+
