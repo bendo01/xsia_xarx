@@ -690,7 +690,8 @@ pub async fn forgot_password(
         let now = Utc::now().naive_utc();
         let mut final_role_id = existing.current_role_id;
 
-        if let Some(individual_id) = existing.individual_id {
+        {
+            let individual_id = existing.individual_id;
             // Check Student by individual_id
             let student = crate::models::academic::student::master::students::Entity::find()
                 .filter(crate::models::academic::student::master::students::Column::IndividualId.eq(individual_id))
