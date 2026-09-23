@@ -921,11 +921,14 @@ pub async fn forgot_password(
         
         let wa_config = crate::config::openwa::OpenwaConfig::from_env();
         let wa_sender = crate::services::messenger::openwa::OpenWaSender::new(wa_config);
-        if let Err(e) = wa_sender.send_message(&phone_number, &wa_text).await {
-            tracing::error!("Failed to send WA message: {}", e);
-        }
-
-        let wa_link = format!("https://wa.me/{}?text={}", phone_number, urlencoding::encode(&wa_text));
+        
+        let wa_link = match wa_sender.send_message(&phone_number, &wa_text).await {
+            Ok(_) => "".to_string(),
+            Err(e) => {
+                tracing::error!("Failed to send WA message: {}", e);
+                format!("https://wa.me/{}?text={}", phone_number, urlencoding::encode(&wa_text))
+            }
+        };
 
         return Ok(Json(ForgotPasswordResponse {
             wa_link,
@@ -1005,10 +1008,13 @@ pub async fn reset_password(
         let wa_text = "Your password has been successfully reset.";
         let wa_config = crate::config::openwa::OpenwaConfig::from_env();
         let wa_sender = crate::services::messenger::openwa::OpenWaSender::new(wa_config);
-        if let Err(e) = wa_sender.send_message(&p.phone_number, wa_text).await {
-            tracing::error!("Failed to send WA message: {}", e);
+        match wa_sender.send_message(&p.phone_number, wa_text).await {
+            Ok(_) => "".to_string(),
+            Err(e) => {
+                tracing::error!("Failed to send WA message: {}", e);
+                format!("https://wa.me/{}?text={}", p.phone_number, urlencoding::encode(wa_text))
+            }
         }
-        format!("https://wa.me/{}?text={}", p.phone_number, urlencoding::encode(wa_text))
     } else {
         "".to_string()
     };
@@ -1388,11 +1394,14 @@ pub async fn account_acquisition(
     let wa_text = "Your account has been successfully created.";
     let wa_config = crate::config::openwa::OpenwaConfig::from_env();
     let wa_sender = crate::services::messenger::openwa::OpenWaSender::new(wa_config);
-    if let Err(e) = wa_sender.send_message(&payload.phone_number, wa_text).await {
-        tracing::error!("Failed to send WA message: {}", e);
-    }
-
-    let wa_link = format!("https://wa.me/{}?text={}", payload.phone_number, urlencoding::encode(wa_text));
+    
+    let wa_link = match wa_sender.send_message(&payload.phone_number, wa_text).await {
+        Ok(_) => "".to_string(),
+        Err(e) => {
+            tracing::error!("Failed to send WA message: {}", e);
+            format!("https://wa.me/{}?text={}", payload.phone_number, urlencoding::encode(wa_text))
+        }
+    };
 
     Ok(Json(AccountAcquisitionResponse { 
         wa_link,
