@@ -1,0 +1,52 @@
+@startuml "Diagram Kerangka Konseptual"
+    top to bottom direction
+    skinparam shadowing false
+    skinparam componentStyle rectangle
+    skinparam ArrowColor #333333
+    skinparam RectangleBorderColor #1f4e79
+    skinparam RectangleBackgroundColor #e8f0fa
+    skinparam DatabaseBorderColor #1f4e79
+    skinparam DatabaseBackgroundColor #eef5ff
+    skinparam cloudBorderColor #1f4e79
+    skinparam cloudBackgroundColor #f5f9ff
+
+    cloud "SIAKAD\n(Internal)" as SIAKAD
+    cloud "FEEDER\n(PDDikti)" as FEEDER
+    cloud "Regulasi PDF\n(Permen/UU/SOP)" as REGULASI
+
+    component "ETL / Ingest" as ETL
+    database "Staging DB\n(staging_siakad_*, staging_feeder_*)" as STAGING
+    database "Regulation Index\n(regulation_*, chunk, embedding,\nlayout coords)" as REG_DB
+
+    SIAKAD --> ETL
+    FEEDER --> ETL
+    REGULASI --> REG_DB
+    ETL --> STAGING
+
+    component "Probabilistic Entity Resolution\n(Blocking + Features + FS/EM/ML)" as ER
+    database "entity_link\n(pair SIAKAD↔FEEDER + confidence)" as ELINK
+
+    STAGING --> ER
+    ER --> ELINK
+
+    component "Compliance Anomaly Detection\n(Rules + IF/LOF/AE)" as ANOM
+    database "anomaly_event\n(type, score, evidence)" as AEVT
+
+    ELINK --> ANOM
+    STAGING --> ANOM
+    ANOM --> AEVT
+
+    component "Indexing RAG\n(BM25 + Dense + Layout-aware)" as INDEX
+    component "RAG Service\n(Retriever + LLM + Citation)" as RAG
+    component "Policy/Validity Checker\n(Masa berlaku regulasi)" as POLICY
+    component "Chatbot Ketua Prodi\n(QA berbukti)" as CHAT
+    component "Audit & Observability\n(metrik, log, drift)" as OBS
+
+    REG_DB --> INDEX
+    INDEX --> RAG
+    ELINK --> RAG
+    AEVT --> RAG
+    RAG <--> POLICY
+    RAG --> CHAT
+    CHAT --> OBS
+@enduml
