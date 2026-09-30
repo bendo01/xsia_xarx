@@ -17,6 +17,7 @@ import {
     normalizeRoleName,
     type UserRoleItem
 } from '../../lib/authStore';
+import { masterApiShow } from '../../controllers/master/masterApiController';
 import { toast } from '../toast/Toaster';
 import { t } from '../../i18n';
 import MenuAdministrator from './administrator';
@@ -36,7 +37,7 @@ export default function DynamicMenu() {
         enrichUserRolesWithStudentCodes();
     });
 
-    const handleRoleChange = (roleOrName: UserRoleItem | string) => {
+    const handleRoleChange = async (roleOrName: UserRoleItem | string) => {
         const role = typeof roleOrName === 'string'
             ? userRolesSignal().find(r => r.id === roleOrName || r.name === roleOrName)
             : roleOrName;
@@ -52,7 +53,25 @@ export default function DynamicMenu() {
         const codeDisplay = role?.code ? ` (${role.code})` : '';
         toast.info(t('auth.login.roleSwitched', { role: `${displayName}${codeDisplay}` }));
         
-        let targetDashboard = getDashboardPathForRole(roleName, role);
+        // For rectorat roles, resolve institution_id if not yet cached
+        let resolvedRole = role;
+        if (normalizeRoleName(roleName, role) === 'rectorat' && role?.roleable_id && role.roleable_type?.includes('Staff') && !role.institution_id) {
+            try {
+                const staffRes = await masterApiShow<any>('institution/master/staffes', role.roleable_id);
+                const employeeId = staffRes.data?.employee_id;
+                if (employeeId) {
+                    const employeeRes = await masterApiShow<any>('institution/master/employees', employeeId);
+                    const institutionId = employeeRes.data?.institution_id;
+                    if (institutionId) {
+                        resolvedRole = { ...role, institution_id: institutionId };
+                    }
+                }
+            } catch (e) {
+                console.warn('Failed to resolve institution_id during menu role switch:', e);
+            }
+        }
+
+        let targetDashboard = getDashboardPathForRole(roleName, resolvedRole);
         if (normalizeRoleName(roleName, role) === 'student' && role?.code) {
             targetDashboard = `${targetDashboard}?code=${encodeURIComponent(role.code)}&student_id=${encodeURIComponent(role.roleable_id || '')}`;
         }

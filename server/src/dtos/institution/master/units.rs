@@ -12,6 +12,7 @@ pub struct UnitQuery {
     pub name: Option<String>,
     pub code: Option<String>,
     pub with_relations: Option<bool>,
+    pub institution_id: Option<Uuid>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
