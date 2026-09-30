@@ -1773,12 +1773,11 @@ pub async fn get_unit_dashboard(
         let mut gpa_count = 0;
         
         for sa in &student_activities {
-            if let Some(sa_ay) = activity_to_ay.get(&sa.unit_activity_id) {
-                if *sa_ay == ay.id && sa.grand_cumulative_index > 0.0 {
+            if let Some(sa_ay) = activity_to_ay.get(&sa.unit_activity_id)
+                && *sa_ay == ay.id && sa.grand_cumulative_index > 0.0 {
                     total_gpa += sa.grand_cumulative_index;
                     gpa_count += 1;
                 }
-            }
         }
         
         let avg_gpa = if gpa_count > 0 { total_gpa / gpa_count as f64 } else { 0.0 };

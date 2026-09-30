@@ -122,13 +122,11 @@ pub async fn get_curriculum(
 
     let mut course_ids = Vec::new();
     for detail in &curriculum_details {
-        if let Some(id_val) = detail.get("course_id") {
-            if let Some(id_str) = id_val.as_str() {
-                if let Ok(id) = uuid::Uuid::parse_str(id_str) {
+        if let Some(id_val) = detail.get("course_id")
+            && let Some(id_str) = id_val.as_str()
+                && let Ok(id) = uuid::Uuid::parse_str(id_str) {
                     course_ids.push(id);
                 }
-            }
-        }
     }
     course_ids.sort();
     course_ids.dedup();
@@ -150,18 +148,14 @@ pub async fn get_curriculum(
     let mut competence_ids = Vec::new();
 
     for course in &courses_json {
-        if let Some(id_str) = course.get("group_id").and_then(|v| v.as_str()) {
-            if let Ok(id) = uuid::Uuid::parse_str(id_str) { group_ids.push(id); }
-        }
-        if let Some(id_str) = course.get("variety_id").and_then(|v| v.as_str()) {
-            if let Ok(id) = uuid::Uuid::parse_str(id_str) { variety_ids.push(id); }
-        }
-        if let Some(id_str) = course.get("unit_id").and_then(|v| v.as_str()) {
-            if let Ok(id) = uuid::Uuid::parse_str(id_str) { unit_ids.push(id); }
-        }
-        if let Some(id_str) = course.get("competence_id").and_then(|v| v.as_str()) {
-            if let Ok(id) = uuid::Uuid::parse_str(id_str) { competence_ids.push(id); }
-        }
+        if let Some(id_str) = course.get("group_id").and_then(|v| v.as_str())
+            && let Ok(id) = uuid::Uuid::parse_str(id_str) { group_ids.push(id); }
+        if let Some(id_str) = course.get("variety_id").and_then(|v| v.as_str())
+            && let Ok(id) = uuid::Uuid::parse_str(id_str) { variety_ids.push(id); }
+        if let Some(id_str) = course.get("unit_id").and_then(|v| v.as_str())
+            && let Ok(id) = uuid::Uuid::parse_str(id_str) { unit_ids.push(id); }
+        if let Some(id_str) = course.get("competence_id").and_then(|v| v.as_str())
+            && let Ok(id) = uuid::Uuid::parse_str(id_str) { competence_ids.push(id); }
     }
     
     group_ids.sort(); group_ids.dedup();
