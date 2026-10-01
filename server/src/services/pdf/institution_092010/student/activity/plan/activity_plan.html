@@ -24,15 +24,15 @@
                     </tr>
                     <tr>
                         <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">Program Studi</td>
-                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">{{student_activity.unit.code}} / {{student_activity.unit.name}}</td>
+                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">{% if student_activity.unit %}{{ student_activity.unit.code | default(value="-") }} / {{ student_activity.unit.name | default(value="-") }}{% else %}-{% endif %}</td>
                     </tr>
                     <tr>
                         <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">Tahun Akademik</td>
-                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">{{student_activity.unit_activity.academic_year.name}}</td>
+                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">{% if student_activity.unit_activity and student_activity.unit_activity.academic_year %}{{ student_activity.unit_activity.academic_year.name | default(value="-") }}{% else %}-{% endif %}</td>
                     </tr>
                     <tr>
                         <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">Status</td>
-                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">{{student_activity.status.name}}</td>
+                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">{{ student_activity.status.name | default(value="-") }}</td>
                     </tr>
                     <tr>
                         <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">Tanggal Cetak</td>
@@ -55,10 +55,10 @@
                     {% for detail in student_activity.detail_activities %}
                     <tr>
                         <td class="border border-gray-300 text-center">{{loop.index}}</td>
-                        <td class="border border-gray-300 text-center">{{detail.course.code}}</td>
-                        <td class="border border-gray-300 text-center">{{detail.course.name}}</td>
-                        <td class="border border-gray-300 text-center">{{detail.course.total_credit}}</td>
-                        <td class="border border-gray-300 text-center">{{detail.teach_activity.class_code.alphabet_code}}</td>
+                        <td class="border border-gray-300 text-center">{{detail.course.code | default(value="-")}}</td>
+                        <td class="border border-gray-300 text-center">{{detail.course.name | default(value="-")}}</td>
+                        <td class="border border-gray-300 text-center">{{detail.course.total_credit | default(value=0)}}</td>
+                        <td class="border border-gray-300 text-center">{% if detail.teach_activity and detail.teach_activity.class_code %}{{detail.teach_activity.class_code.alphabet_code | default(value="-")}}{% else %}-{% endif %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

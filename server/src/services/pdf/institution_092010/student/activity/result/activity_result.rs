@@ -191,6 +191,11 @@ pub async fn generate_html_content(
         status: status.map(|st| StatusInfo {
             id: st.id,
             name: st.name,
+        }).or_else(|| {
+            Some(StatusInfo {
+                id: Uuid::nil(),
+                name: "Aktif".to_string(),
+            })
         }),
         unit_activity,
         detail_activities: if detail_activities.is_empty() {

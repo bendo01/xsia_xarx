@@ -1,22 +1,56 @@
 import { toast } from '~/components/toast/Toaster';
 
 /**
+ * Directly downloads a PDF Blob to the user's computer/device without opening a new tab.
+ *
+ * @param blob The PDF Blob received from the server
+ * @param filename The filename to use for download (e.g. "KRS_12345_Semester_1.pdf")
+ * @param docTitle Descriptive title for user notifications (e.g. "KRS (Kartu Rencana Studi)")
+ */
+export function downloadPdf(blob: Blob, filename: string, docTitle = 'Document PDF') {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    toast.success(`File ${docTitle} berhasil diunduh.`);
+
+    setTimeout(() => {
+        try {
+            window.URL.revokeObjectURL(url);
+        } catch {}
+    }, 60000);
+}
+
+/**
  * Handles opening or downloading a PDF Blob safely across all browsers.
- * If popups are enabled and allowed, it opens the PDF in a new tab.
- * If the browser blocks popups (standard behavior after async API fetch),
- * it seamlessly falls back to triggering a direct file download and notifies the user.
+ * If forceDownload is true, directly triggers file download without opening a new tab.
+ * If false, it tries opening the PDF in a new tab, falling back to direct download if popups are blocked.
  *
  * @param blob The PDF Blob received from the server
  * @param filename The default filename to use for download (e.g. "KRS_20231.pdf")
  * @param docTitle Descriptive title for user notifications (e.g. "KRS (Kartu Rencana Studi)")
+ * @param forceDownload Set to true to always download directly
  */
-export function openOrDownloadPdf(blob: Blob, filename: string, docTitle = 'Document PDF') {
+export function openOrDownloadPdf(
+    blob: Blob,
+    filename: string,
+    docTitle = 'Document PDF',
+    forceDownload = false
+) {
+    if (forceDownload) {
+        return downloadPdf(blob, filename, docTitle);
+    }
+
     const url = window.URL.createObjectURL(blob);
     let popup: Window | null = null;
 
     try {
         popup = window.open(url, '_blank');
-    } catch (_) {
+    } catch {
         popup = null;
     }
 
@@ -38,7 +72,7 @@ export function openOrDownloadPdf(blob: Blob, filename: string, docTitle = 'Docu
     } else {
         try {
             popup.focus();
-        } catch (_) {}
+        } catch {}
         toast.success(`${docTitle} berhasil dibuka di tab baru.`);
     }
 
@@ -46,6 +80,6 @@ export function openOrDownloadPdf(blob: Blob, filename: string, docTitle = 'Docu
     setTimeout(() => {
         try {
             window.URL.revokeObjectURL(url);
-        } catch (_) {}
+        } catch {}
     }, 60000);
 }

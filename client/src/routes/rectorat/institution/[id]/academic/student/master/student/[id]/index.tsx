@@ -11,8 +11,11 @@ import {
 } from '~/controllers/person/master/PersonMasterIndividualController';
 import {
     listStudentActivities,
+    printActivityPlan,
+    printActivityResult,
     type StudentActivityItem
 } from '~/controllers/academic/student/campaign/AcademicStudentCampaignActivityController';
+import { openOrDownloadPdf } from '~/lib/pdfHelper';
 import type { PersonMasterIndividualDataObject } from '~/models/person/master/Individual';
 import AcademicPerformanceChart, { type AcademicTrendPoint } from '~/components/chart/academic_performance_chart';
 import StudentCreditChart from '~/components/chart/student_credit_chart';
@@ -188,6 +191,74 @@ export default function RectoratStudentDetail() {
         const act = latestActivity();
         if (!act) return 0;
         return act.grand_total_credit || act.total_credit || 0;
+    };
+
+    const [printingKey, setPrintingKey] = createSignal<string | null>(null);
+
+    const isPrintingKRS = (actId?: string) => {
+        if (!actId) return (printingKey() || '').startsWith('krs');
+        return printingKey() === `krs-${actId}`;
+    };
+
+    const isPrintingKHS = (actId?: string) => {
+        if (!actId) return (printingKey() || '').startsWith('khs');
+        return printingKey() === `khs-${actId}`;
+    };
+
+    const handlePrintKRS = async (targetAct?: StudentActivityItem) => {
+        const act = targetAct || latestActivity() || activities()[0];
+        if (!act?.id) {
+            toast.danger('Activity ID is missing.');
+            return;
+        }
+
+        const key = `krs-${act.id}`;
+        setPrintingKey(key);
+        try {
+            const semLabel = act.academic_year?.name || act.academic_year_name || act.name || act.semester_name || 'Semester';
+            toast.info(`Generating KRS (${semLabel}) PDF...`);
+            const blob = await printActivityPlan(act.id);
+            if (blob) {
+                const nim = student()?.code || 'Student';
+                const semName = (act.name || semLabel).replace(/\s+/g, '_');
+                openOrDownloadPdf(blob, `KRS_${nim}_${semName}.pdf`, `KRS (${semLabel})`, true);
+            } else {
+                toast.danger('Failed to generate KRS PDF.');
+            }
+        } catch (err) {
+            console.error('Error printing KRS:', err);
+            toast.danger('An error occurred while generating KRS PDF.');
+        } finally {
+            setPrintingKey(null);
+        }
+    };
+
+    const handlePrintKHS = async (targetAct?: StudentActivityItem) => {
+        const act = targetAct || latestActivity() || activities()[0];
+        if (!act?.id) {
+            toast.danger('Activity ID is missing.');
+            return;
+        }
+
+        const key = `khs-${act.id}`;
+        setPrintingKey(key);
+        try {
+            const semLabel = act.academic_year?.name || act.academic_year_name || act.name || act.semester_name || 'Semester';
+            toast.info(`Generating KHS (${semLabel}) PDF...`);
+            const blob = await printActivityResult(act.id);
+            if (blob) {
+                const nim = student()?.code || 'Student';
+                const semName = (act.name || semLabel).replace(/\s+/g, '_');
+                openOrDownloadPdf(blob, `KHS_${nim}_${semName}.pdf`, `KHS (${semLabel})`, true);
+            } else {
+                toast.danger('Failed to generate KHS PDF.');
+            }
+        } catch (err) {
+            console.error('Error printing KHS:', err);
+            toast.danger('An error occurred while generating KHS PDF.');
+        } finally {
+            setPrintingKey(null);
+        }
     };
 
     const formatDate = (d?: string | null) => {
@@ -526,7 +597,7 @@ export default function RectoratStudentDetail() {
                         {/* Semester Breakdown Table (KHS) */}
                         <Show when={activities().length > 0}>
                             <div class="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm overflow-hidden">
-                                <div class="p-5 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
+                                <div class="p-5 border-b border-neutral-200 dark:border-neutral-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                     <div>
                                         <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
                                             Riwayat Aktivitas Semester & Nilai (KHS)
@@ -535,9 +606,6 @@ export default function RectoratStudentDetail() {
                                             Rincian capaian akademik per semester mahasiswa.
                                         </p>
                                     </div>
-                                    <span class="text-xs font-mono text-neutral-400">
-                                        {activities().length} Semester
-                                    </span>
                                 </div>
 
                                 <div class="overflow-x-auto">
@@ -551,6 +619,7 @@ export default function RectoratStudentDetail() {
                                                 <th class="px-5 py-3 text-center">IPS</th>
                                                 <th class="px-5 py-3 text-center">IPK</th>
                                                 <th class="px-5 py-3 text-center">Status</th>
+                                                <th class="px-5 py-3 text-center">Dokumen / Cetak</th>
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-neutral-100 dark:divide-neutral-800">
@@ -577,6 +646,40 @@ export default function RectoratStudentDetail() {
                                                             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
                                                                 {act.status_name || 'Selesai'}
                                                             </span>
+                                                        </td>
+                                                        <td class="px-5 py-3 text-center">
+                                                            <div class="flex items-center justify-center gap-1.5">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handlePrintKRS(act)}
+                                                                    disabled={isPrintingKRS(act.id)}
+                                                                    class="px-2.5 py-1 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-md text-[11px] font-bold inline-flex items-center gap-1 transition-colors disabled:opacity-50"
+                                                                    title="Cetak KRS (Kartu Rencana Studi)"
+                                                                >
+                                                                    <Show
+                                                                        when={!isPrintingKRS(act.id)}
+                                                                        fallback={<div class="size-3 border-2 border-neutral-400 border-t-transparent rounded-full animate-spin"></div>}
+                                                                    >
+                                                                        <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect width="12" height="8" x="6" y="14" /></svg>
+                                                                    </Show>
+                                                                    <span>KRS</span>
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handlePrintKHS(act)}
+                                                                    disabled={isPrintingKHS(act.id)}
+                                                                    class="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/80 rounded-md text-[11px] font-bold inline-flex items-center gap-1 transition-colors disabled:opacity-50"
+                                                                    title="Cetak KHS (Kartu Hasil Studi)"
+                                                                >
+                                                                    <Show
+                                                                        when={!isPrintingKHS(act.id)}
+                                                                        fallback={<div class="size-3 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin"></div>}
+                                                                    >
+                                                                        <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
+                                                                    </Show>
+                                                                    <span>KHS</span>
+                                                                </button>
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 )}
