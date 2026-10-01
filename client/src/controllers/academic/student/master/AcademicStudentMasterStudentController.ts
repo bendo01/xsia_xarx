@@ -124,7 +124,7 @@ export async function listStudents(queryParams?: {
 }
 
 export async function getStudentById(id: string): Promise<StudentMasterItem | null> {
-    if (!id || id === '00000000-0000-0000-0000-000000000000') return null;
+    if (!id || id === 'student' || id === '[id]' || id === ':id' || id === '00000000-0000-0000-0000-000000000000') return null;
     try {
         const res = await fetch(`${getBaseUrl()}/academic/student/master/students/${id}`, {
             method: 'GET',
@@ -139,6 +139,7 @@ export async function getStudentById(id: string): Promise<StudentMasterItem | nu
 }
 
 export async function academicStudentMasterStudent(id: string): Promise<StudentDataObject | null> {
+    if (!id || id === 'student' || id === '[id]' || id === ':id' || id === '00000000-0000-0000-0000-000000000000') return null;
     try {
         const response = await fetch(`${getBaseUrl()}/academic/student/master/students/${id}`, {
             method: 'GET',

@@ -28,10 +28,14 @@ export default function CourseDepartmentStudentMasterShowPage() {
 
     const resolveStudentId = () => {
         const pId = params.id;
-        if (pId && pId !== '[id]' && pId !== ':id') {
+        if (pId && pId !== '[id]' && pId !== ':id' && pId !== 'student' && pId !== '00000000-0000-0000-0000-000000000000') {
             return pId.trim();
         }
-        return ((searchParams.id as string) || (searchParams.student_id as string) || '').trim();
+        const qId = ((searchParams.id as string) || (searchParams.student_id as string) || '').trim();
+        if (qId && qId !== '[id]' && qId !== ':id' && qId !== 'student' && qId !== '00000000-0000-0000-0000-000000000000') {
+            return qId;
+        }
+        return '';
     };
 
     const fetchStudentDetail = async () => {

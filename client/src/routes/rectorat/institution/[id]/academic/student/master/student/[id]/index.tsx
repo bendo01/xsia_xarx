@@ -1,5 +1,5 @@
 import { createSignal, createEffect, onMount, Show, For, createMemo } from 'solid-js';
-import { useParams, useSearchParams, A } from '@solidjs/router';
+import { useParams, useSearchParams, useLocation, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import {
@@ -21,6 +21,7 @@ import { resolveInstitutionFromStaffRole } from '~/lib/rectoratHelper';
 export default function RectoratStudentDetail() {
     const params = useParams();
     const [searchParams] = useSearchParams();
+    const location = useLocation();
 
     const [resolvedInstitutionId, setResolvedInstitutionId] = createSignal<string>('');
     const [student, setStudent] = createSignal<StudentMasterItem | null>(null);
@@ -29,40 +30,56 @@ export default function RectoratStudentDetail() {
     const [isLoading, setIsLoading] = createSignal(true);
     const [error, setError] = createSignal<string | null>(null);
 
+    const isValidId = (id?: string | null): id is string => {
+        if (!id) return false;
+        const trimmed = id.trim();
+        return (
+            trimmed !== '' &&
+            trimmed !== '[id]' &&
+            trimmed !== ':id' &&
+            trimmed !== 'student' &&
+            trimmed !== '00000000-0000-0000-0000-000000000000'
+        );
+    };
+
     const resolveStudentId = () => {
-        const parts = window.location.pathname.split('/').filter(Boolean);
+        // 1. In SolidStart routes with nested [id], params.id is the inner (student) param
+        if (isValidId(params.id)) {
+            return params.id.trim();
+        }
+
+        // 2. Extract from reactive router location pathname or window.location
+        const pathname = location.pathname || (typeof window !== 'undefined' ? window.location.pathname : '');
+        const parts = pathname.split('/').filter(Boolean);
         const last = parts[parts.length - 1];
-        if (last && last !== '[id]' && last !== ':id') {
+        if (isValidId(last)) {
             return last.trim();
         }
-        return (
-            (params as any).studentId ||
-            (params as any).id2 ||
-            (searchParams.id as string) ||
-            (searchParams.student_id as string) ||
-            ''
-        ).trim();
+
+        // 3. Fallback to query params
+        const qId = (searchParams.id as string) || (searchParams.student_id as string);
+        if (isValidId(qId)) {
+            return qId.trim();
+        }
+
+        return '';
     };
 
     const resolveInstIdFromPath = () => {
-        const parts = window.location.pathname.split('/').filter(Boolean);
+        const pathname = location.pathname || (typeof window !== 'undefined' ? window.location.pathname : '');
+        const parts = pathname.split('/').filter(Boolean);
         const instIdx = parts.indexOf('institution');
         if (
             instIdx !== -1 &&
             parts[instIdx + 1] &&
-            parts[instIdx + 1] !== '[id]' &&
-            parts[instIdx + 1] !== '00000000-0000-0000-0000-000000000000'
+            isValidId(parts[instIdx + 1])
         ) {
-            return parts[instIdx + 1];
+            return parts[instIdx + 1].trim();
         }
-        return params.id &&
-            params.id !== '[id]' &&
-            params.id !== '00000000-0000-0000-0000-000000000000'
-            ? params.id
-            : '';
+        return '';
     };
 
-    const institutionId = () => resolvedInstitutionId() || resolveInstIdFromPath() || params.id;
+    const institutionId = () => resolvedInstitutionId() || resolveInstIdFromPath();
 
     // Resolve institution ID
     createEffect(async () => {
@@ -78,7 +95,7 @@ export default function RectoratStudentDetail() {
 
     const fetchStudentDetail = async () => {
         const sid = resolveStudentId();
-        if (!sid || sid === '[id]' || sid === ':id') {
+        if (!isValidId(sid)) {
             setIsLoading(false);
             return;
         }
