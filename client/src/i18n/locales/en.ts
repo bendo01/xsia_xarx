@@ -157,6 +157,7 @@ export const en: TranslationSchema = {
             courseList: 'Course',
             curriculumList: 'Curriculum',
             studentActivityList: 'Student Activity',
+            teachActivityList: 'Teach Activity',
         },
         courseDepartment: {
             departmentDashboard: 'Department Dashboard',

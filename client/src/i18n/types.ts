@@ -157,6 +157,7 @@ export interface TranslationSchema {
             courseList: string;
             curriculumList: string;
             studentActivityList: string;
+            teachActivityList: string;
         };
         courseDepartment: {
             departmentDashboard: string;

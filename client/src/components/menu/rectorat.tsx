@@ -47,7 +47,7 @@ export default function MenuRectorat() {
                     <div class="w-full details-anim-content">
                         <ul class="pt-1 ps-6 space-y-1 overflow-hidden border-s-2 border-neutral-200 dark:border-neutral-700 ms-3 mt-1">
                             <li>
-                                <A href={`/rectorat/institution/${instId()}/student/master/student`} class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
+                                <A href={`/rectorat/institution/${instId()}/academic/student/master/student`} class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
                                     <span class="size-1.5 rounded-full bg-purple-400"></span> {t('menu.rectorat.studentList')}
                                 </A>
                             </li>
