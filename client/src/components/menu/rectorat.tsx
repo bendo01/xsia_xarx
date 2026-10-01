@@ -57,6 +57,31 @@ export default function MenuRectorat() {
                                 </A>
                             </li>
                             <li>
+                                <A href={`/rectorat/institution/${instId()}/academic/campaign/transaction/activity`} class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
+                                    <span class="size-1.5 rounded-full bg-purple-400"></span> {t('menu.rectorat.activityUnitList')}
+                                </A>
+                            </li>
+                            <li>
+                                <A href={`/rectorat/institution/${instId()}/academic/campaign/transaction/class-code`} class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
+                                    <span class="size-1.5 rounded-full bg-purple-400"></span> {t('menu.rectorat.classCodeUnitList')}
+                                </A>
+                            </li>
+                            <li>
+                                <A href={`/rectorat/institution/${instId()}/academic/campaign/transaction/grade`} class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
+                                    <span class="size-1.5 rounded-full bg-purple-400"></span> {t('menu.rectorat.gradeUnitList')}
+                                </A>
+                            </li>
+                            <li>
+                                <A href={`/rectorat/institution/${instId()}/academic/campaign/transaction/teach`} class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
+                                    <span class="size-1.5 rounded-full bg-purple-400"></span> {t('menu.rectorat.teachActivityList')}
+                                </A>
+                            </li>
+                            <li>
+                                <A href={`/rectorat/institution/${instId()}/academic/campaign/transaction/teach`} class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
+                                    <span class="size-1.5 rounded-full bg-purple-400"></span> {t('menu.rectorat.studentActivityList')}
+                                </A>
+                            </li>
+                            <li>
                                 <A href={`/rectorat/institution/${instId()}/unit`} class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
                                     <span class="size-1.5 rounded-full bg-purple-400"></span> {t('menu.rectorat.facultiesDepartments')}
                                 </A>

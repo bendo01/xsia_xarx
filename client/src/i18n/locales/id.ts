@@ -158,6 +158,9 @@ export const id: TranslationSchema = {
             curriculumList: 'Kurikulum',
             studentActivityList: 'Aktifitas Peserta Didik',
             teachActivityList: 'Pengajaran',
+            activityUnitList: 'Unit Kegiatan',
+            classCodeUnitList: 'Unit Kode Kelas',
+            gradeUnitList: 'Unit Nilai',
         },
         courseDepartment: {
             departmentDashboard: 'Dasbor Program Studi',
