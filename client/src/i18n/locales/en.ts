@@ -151,6 +151,12 @@ export const en: TranslationSchema = {
             institutionalGovernance: 'Institutional Governance',
             facultiesDepartments: 'Faculties & Departments',
             qualityAssurance: 'Quality Assurance & Accreditation',
+            listData: 'List Data',
+            studentList: 'Students',
+            lecturerList: 'Lecturer',
+            courseList: 'Course',
+            curriculumList: 'Curriculum',
+            studentActivityList: 'Student Activity',
         },
         courseDepartment: {
             departmentDashboard: 'Department Dashboard',

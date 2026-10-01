@@ -151,6 +151,12 @@ export const id: TranslationSchema = {
             institutionalGovernance: 'Tata Kelola Institusi',
             facultiesDepartments: 'Fakultas & Program Studi',
             qualityAssurance: 'Penjaminan Mutu & Akreditasi',
+            listData: 'List Data',
+            studentList: 'Mahasiswa',
+            lecturerList: 'Tenaga Pendidik',
+            courseList: 'Matakuliah',
+            curriculumList: 'Kurikulum',
+            studentActivityList: 'Aktifitas Mahasiswa',
         },
         courseDepartment: {
             departmentDashboard: 'Dasbor Program Studi',

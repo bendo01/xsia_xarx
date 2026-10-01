@@ -151,6 +151,12 @@ export interface TranslationSchema {
             institutionalGovernance: string;
             facultiesDepartments: string;
             qualityAssurance: string;
+            listData: string;
+            studentList: string;
+            lecturerList: string;
+            courseList: string;
+            curriculumList: string;
+            studentActivityList: string;
         };
         courseDepartment: {
             departmentDashboard: string;
