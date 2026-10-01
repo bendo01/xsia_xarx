@@ -1,8 +1,10 @@
 use std::collections::HashMap;
 use chrono::Utc;
 use salvo::prelude::*;
+use sea_orm::sea_query::extension::postgres::PgExpr;
+use sea_orm::sea_query::Expr;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
+    ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, EntityTrait, IntoActiveModel,
     PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, Set,
 };
 use uuid::Uuid;
@@ -170,17 +172,32 @@ pub async fn list_students(
 
     let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
 
+    let search_term = query.search.as_ref().or(query.q.as_ref());
+    if let Some(search) = search_term {
+        let trimmed = search.trim();
+        if !trimmed.is_empty() {
+            let search_pattern = format!("%{}%", trimmed);
+            select = select.filter(
+                Condition::any()
+                    .add(Expr::col(entity_mod::Column::Name).ilike(search_pattern.clone()))
+                    .add(Expr::col(entity_mod::Column::Code).ilike(search_pattern)),
+            );
+        }
+    }
+
     if let Some(ref name) = query.name {
         let trimmed = name.trim();
         if !trimmed.is_empty() {
-            select = select.filter(entity_mod::Column::Name.contains(trimmed));
+            let search_pattern = format!("%{}%", trimmed);
+            select = select.filter(Expr::col(entity_mod::Column::Name).ilike(search_pattern));
         }
     }
 
     if let Some(ref code) = query.code {
         let trimmed = code.trim();
         if !trimmed.is_empty() {
-            select = select.filter(entity_mod::Column::Code.contains(trimmed));
+            let search_pattern = format!("%{}%", trimmed);
+            select = select.filter(Expr::col(entity_mod::Column::Code).ilike(search_pattern));
         }
     }
 
@@ -208,32 +225,71 @@ pub async fn list_students(
         }
     }
 
-    if let Some(academic_year_id) = query.academic_year_id {
-        select = select.filter(entity_mod::Column::AcademicYearId.eq(academic_year_id));
+    let mut academic_year_filter_uuids = Vec::new();
+    if let Some(raw_years) = query.academic_year_ids.as_deref().or(query.academic_year_id.as_deref()) {
+        for val in raw_years.split(',') {
+            let val_trimmed = val.trim();
+            if !val_trimmed.is_empty() {
+                if let Ok(u) = Uuid::parse_str(val_trimmed) {
+                    academic_year_filter_uuids.push(u);
+                }
+            }
+        }
+    }
+    if !academic_year_filter_uuids.is_empty() {
+        if academic_year_filter_uuids.len() == 1 {
+            select = select.filter(entity_mod::Column::AcademicYearId.eq(academic_year_filter_uuids[0]));
+        } else {
+            select = select.filter(entity_mod::Column::AcademicYearId.is_in(academic_year_filter_uuids));
+        }
     }
 
-    if let Some(status_id) = query.status_id {
-        select = select.filter(entity_mod::Column::StatusId.eq(status_id));
+    let mut status_filter_uuids = Vec::new();
+    if let Some(raw_statuses) = query.status_ids.as_deref().or(query.status_id.as_deref()) {
+        for val in raw_statuses.split(',') {
+            let val_trimmed = val.trim();
+            if !val_trimmed.is_empty() {
+                if let Ok(u) = Uuid::parse_str(val_trimmed) {
+                    status_filter_uuids.push(u);
+                }
+            }
+        }
+    }
+    if !status_filter_uuids.is_empty() {
+        if status_filter_uuids.len() == 1 {
+            select = select.filter(entity_mod::Column::StatusId.eq(status_filter_uuids[0]));
+        } else {
+            select = select.filter(entity_mod::Column::StatusId.is_in(status_filter_uuids));
+        }
     }
 
-    let sort_by = query.sort_by.as_deref().or(query.order_by.as_deref()).unwrap_or("code");
-    let sort_dir = query.sort_dir.as_deref().or(query.order_dir.as_deref()).unwrap_or("asc");
+    let sort_by = query
+        .sort_by
+        .as_deref()
+        .or(query.order_by.as_deref())
+        .or(query.column.as_deref())
+        .unwrap_or("code");
+    let sort_dir = query
+        .sort_dir
+        .as_deref()
+        .or(query.order_dir.as_deref())
+        .unwrap_or("asc");
 
     let is_desc = sort_dir.eq_ignore_ascii_case("desc");
 
-    select = match sort_by {
-        "code" => {
+    select = match sort_by.trim().to_ascii_lowercase().as_str() {
+        "code" | "nim" => {
             if is_desc {
-                select.order_by_desc(entity_mod::Column::Code)
+                select.order_by_desc(entity_mod::Column::Code).order_by_asc(entity_mod::Column::Name)
             } else {
-                select.order_by_asc(entity_mod::Column::Code)
+                select.order_by_asc(entity_mod::Column::Code).order_by_asc(entity_mod::Column::Name)
             }
         }
-        "name" => {
+        "name" | "nama" => {
             if is_desc {
-                select.order_by_desc(entity_mod::Column::Name)
+                select.order_by_desc(entity_mod::Column::Name).order_by_asc(entity_mod::Column::Code)
             } else {
-                select.order_by_asc(entity_mod::Column::Name)
+                select.order_by_asc(entity_mod::Column::Name).order_by_asc(entity_mod::Column::Code)
             }
         }
         "registered" => {

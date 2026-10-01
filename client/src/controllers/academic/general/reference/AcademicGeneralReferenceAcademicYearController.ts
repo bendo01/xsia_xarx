@@ -148,3 +148,27 @@ export async function AcademicGeneralReferenceControllerAcademicYearDelete(
         };
     }
 }
+
+export async function getAcademicYearOptions(): Promise<Array<{ id: string; name: string }>> {
+    try {
+        const res = await fetch(`${getBaseUrl()}/${path}/options`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({}),
+        });
+        if (!res.ok) {
+            const resGet = await fetch(`${getBaseUrl()}/${path}/options`, {
+                method: 'GET',
+                headers: getHeaders(),
+            });
+            if (!resGet.ok) return [];
+            const data = await resGet.json();
+            return Array.isArray(data) ? data : (data.data || []);
+        }
+        const data = await res.json();
+        return Array.isArray(data) ? data : (data.data || []);
+    } catch (e) {
+        console.warn('Failed to load academic year options:', e);
+        return [];
+    }
+}

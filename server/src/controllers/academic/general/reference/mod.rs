@@ -27,7 +27,8 @@ pub fn router() -> Router {
                 .post_named("academic.general.reference.academic_years.create_academic_year", academic_years::create_academic_year)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.general.reference.academic_years.options_academic_years", academic_years::options_academic_years),
+                        .post_named("academic.general.reference.academic_years.options_academic_years", academic_years::options_academic_years)
+                        .get_named("academic.general.reference.academic_years.options_academic_years_get", academic_years::options_academic_years),
                 )
                 .push(
                     Router::with_path("{id}")

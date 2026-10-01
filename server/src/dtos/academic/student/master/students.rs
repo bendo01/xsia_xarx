@@ -130,17 +130,22 @@ pub async fn list_students_by_unit(
 pub struct StudentQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
+    pub search: Option<String>,
+    pub q: Option<String>,
     pub name: Option<String>,
     pub code: Option<String>,
     pub individual_id: Option<Uuid>,
     pub unit_id: Option<Uuid>,
     pub institution_id: Option<Uuid>,
-    pub academic_year_id: Option<Uuid>,
-    pub status_id: Option<Uuid>,
+    pub academic_year_id: Option<String>,
+    pub academic_year_ids: Option<String>,
+    pub status_id: Option<String>,
+    pub status_ids: Option<String>,
     pub sort_by: Option<String>,
     pub sort_dir: Option<String>,
     pub order_by: Option<String>,
     pub order_dir: Option<String>,
+    pub column: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]

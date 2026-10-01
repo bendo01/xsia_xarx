@@ -1,17 +1,25 @@
+import { createSignal, onMount } from 'solid-js';
 import { A } from '@solidjs/router';
 import { t } from '../../i18n';
 import { getStorageItem } from '../../lib/authStore';
+import { resolveInstitutionFromStaffRole } from '../../lib/rectoratHelper';
 
 export default function MenuRectorat() {
-    const instId = getStorageItem('institution_id') || '00000000-0000-0000-0000-000000000000';
-    const dashboardHref = `/rectorat/institution/${instId}`;
+    const [instId, setInstId] = createSignal(getStorageItem('institution_id') || '00000000-0000-0000-0000-000000000000');
+
+    onMount(async () => {
+        const resolved = await resolveInstitutionFromStaffRole(instId());
+        if (resolved) {
+            setInstId(resolved);
+        }
+    });
 
     return (
         <ul class="space-y-1">
             {/* Dashboard */}
             <li>
                 <A 
-                    href={dashboardHref} 
+                    href={`/rectorat/institution/${instId()}`} 
                     activeClass="bg-purple-600/15 text-purple-600 dark:text-purple-400 font-semibold"
                     class="flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
                 >
@@ -39,7 +47,7 @@ export default function MenuRectorat() {
                     <div class="w-full details-anim-content">
                         <ul class="pt-1 ps-6 space-y-1 overflow-hidden border-s-2 border-neutral-200 dark:border-neutral-700 ms-3 mt-1">
                             <li>
-                                <A href={dashboardHref} class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
+                                <A href={`/rectorat/institution/${instId()}`} class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
                                     <span class="size-1.5 rounded-full bg-purple-400"></span> {t('menu.rectorat.enrollmentTrends')}
                                 </A>
                             </li>
@@ -49,18 +57,23 @@ export default function MenuRectorat() {
                                 </A>
                             </li>
                             <li>
-                                <A href={`/rectorat/institution/${instId}/unit`} class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
+                                <A href={`/rectorat/institution/${instId()}/unit`} class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
                                     <span class="size-1.5 rounded-full bg-purple-400"></span> {t('menu.rectorat.facultiesDepartments')}
                                 </A>
                             </li>
                             <li>
-                                <A href={`/rectorat/institution/${instId}/employee`} class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
+                                <A href={`/rectorat/institution/${instId()}/employee`} class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
                                     <span class="size-1.5 rounded-full bg-indigo-400"></span> Pegawai
                                 </A>
                             </li>
                             <li>
-                                <A href={`/rectorat/institution/${instId}/staff`} class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
+                                <A href={`/rectorat/institution/${instId()}/staff`} class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
                                     <span class="size-1.5 rounded-full bg-teal-400"></span> Staf
+                                </A>
+                            </li>
+                            <li>
+                                <A href={`/rectorat/institution/${instId()}/academic`} class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
+                                    <span class="size-1.5 rounded-full bg-blue-400"></span> Akademik
                                 </A>
                             </li>
                         </ul>

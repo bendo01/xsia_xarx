@@ -75,7 +75,8 @@ pub fn router() -> Router {
                 .post_named("academic.student.reference.statuses.create_statuse", statuses::create_statuse)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.student.reference.statuses.options_statuses", statuses::options_statuses),
+                        .post_named("academic.student.reference.statuses.options_statuses", statuses::options_statuses)
+                        .get_named("academic.student.reference.statuses.options_statuses_get", statuses::options_statuses),
                 )
                 .push(
                     Router::with_path("{id}")

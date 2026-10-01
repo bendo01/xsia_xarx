@@ -54,13 +54,16 @@ export interface StudentMasterItem {
 export async function listStudents(queryParams?: {
     page?: number;
     page_size?: number;
+    search?: string;
     name?: string;
     code?: string;
     individual_id?: string;
     unit_id?: string;
     institution_id?: string;
     academic_year_id?: string;
+    academic_year_ids?: string;
     status_id?: string;
+    status_ids?: string;
     sort_by?: string;
     sort_dir?: string;
     order_by?: string;
@@ -76,13 +79,16 @@ export async function listStudents(queryParams?: {
         const params = new URLSearchParams();
         if (queryParams?.page) params.set('page', String(queryParams.page));
         if (queryParams?.page_size) params.set('page_size', String(queryParams.page_size));
+        if (queryParams?.search) params.set('search', queryParams.search);
         if (queryParams?.name) params.set('name', queryParams.name);
         if (queryParams?.code) params.set('code', queryParams.code);
         if (queryParams?.individual_id) params.set('individual_id', queryParams.individual_id);
         if (queryParams?.unit_id) params.set('unit_id', queryParams.unit_id);
         if (queryParams?.institution_id) params.set('institution_id', queryParams.institution_id);
         if (queryParams?.academic_year_id) params.set('academic_year_id', queryParams.academic_year_id);
+        if (queryParams?.academic_year_ids) params.set('academic_year_ids', queryParams.academic_year_ids);
         if (queryParams?.status_id) params.set('status_id', queryParams.status_id);
+        if (queryParams?.status_ids) params.set('status_ids', queryParams.status_ids);
         if (queryParams?.sort_by) params.set('sort_by', queryParams.sort_by);
         if (queryParams?.sort_dir) params.set('sort_dir', queryParams.sort_dir);
         if (queryParams?.order_by) params.set('order_by', queryParams.order_by);
