@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel, ModelTrait,
+    ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, EntityTrait, IntoActiveModel, ModelTrait,
     PaginatorTrait, QueryFilter, QueryOrder, Set,
 };
 use uuid::Uuid;
@@ -523,6 +523,28 @@ pub async fn list_lecturers(
         select = select.filter(entity_mod::Column::IndividualId.eq(individual_id));
     }
 
+    if let Some(institution_id) = query.institution_id {
+        let matching_lecturer_ids: Vec<Uuid> = crate::models::academic::lecturer::transaction::homebases::Entity::find()
+            .filter(crate::models::academic::lecturer::transaction::homebases::Column::InstitutionId.eq(institution_id))
+            .filter(crate::models::academic::lecturer::transaction::homebases::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|h| h.lecturer_id)
+            .collect();
+
+        if matching_lecturer_ids.is_empty() {
+            select = select.filter(entity_mod::Column::InstitutionId.eq(institution_id));
+        } else {
+            select = select.filter(
+                Condition::any()
+                    .add(entity_mod::Column::InstitutionId.eq(institution_id))
+                    .add(entity_mod::Column::Id.is_in(matching_lecturer_ids))
+            );
+        }
+    }
+
     let paginator = select
         .order_by_asc(entity_mod::Column::Name)
         .paginate(db, page_size);
@@ -544,7 +566,7 @@ pub async fn list_lecturers(
             code: item.code.clone(),
             name: item.name,
             individual_id: item.individual_id,
-            institution_id: item.institution_id,
+            institution_id: item.institution_id.or(query.institution_id),
             alternative_code: item.alternative_code,
             accessor_number: item.accessor_number,
             identification_number: item.identification_number,

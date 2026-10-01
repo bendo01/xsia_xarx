@@ -3,11 +3,13 @@ import { useParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { masterApiIndex } from '~/controllers/master/masterApiController';
 import { toast } from '~/components/toast/Toaster';
+import { resolveInstitutionFromStaffRole } from '~/lib/rectoratHelper';
 import type { AcademicLecturerMasterLecturer } from '~/models/academic/lecturer/master/Lecturer';
 
 export default function RectoratLecturerIndex() {
     const params = useParams();
-    const institutionId = () => params.id;
+    const [resolvedInstitutionId, setResolvedInstitutionId] = createSignal<string>('');
+    const institutionId = () => resolvedInstitutionId() || params.id;
 
     const [allItems, setAllItems] = createSignal<AcademicLecturerMasterLecturer[]>([]);
     const [isLoading, setIsLoading] = createSignal(true);
@@ -16,9 +18,20 @@ export default function RectoratLecturerIndex() {
     const [searchQuery, setSearchQuery] = createSignal('');
     const [filterStatus, setFilterStatus] = createSignal<'all' | 'active' | 'inactive'>('all');
 
+    const scopedItems = createMemo(() => {
+        const instId = institutionId();
+        if (!instId || instId === '[id]' || instId === '00000000-0000-0000-0000-000000000000') {
+            return allItems();
+        }
+        return allItems().filter(l =>
+            l.institution_id === instId ||
+            (l.homebases && l.homebases.some(h => h.institution_id === instId))
+        );
+    });
+
     const filteredItems = createMemo(() => {
-        let data = allItems();
-        const q = searchQuery().toLowerCase();
+        let data = scopedItems();
+        const q = searchQuery().toLowerCase().trim();
         if (q) {
             data = data.filter(l =>
                 (l.name ?? '').toLowerCase().includes(q) ||
@@ -39,15 +52,27 @@ export default function RectoratLecturerIndex() {
         return filteredItems().slice(start, start + itemsPerPage());
     });
 
-    const activeCount = createMemo(() => allItems().filter(l => !l.end_date).length);
-    const inactiveCount = createMemo(() => allItems().filter(l => !!l.end_date).length);
+    const activeCount = createMemo(() => scopedItems().filter(l => !l.end_date).length);
+    const inactiveCount = createMemo(() => scopedItems().filter(l => !!l.end_date).length);
 
     const fetchData = async () => {
-        const instId = institutionId();
-        if (!instId || instId === '[id]') return;
+        let instId = resolvedInstitutionId();
+        if (!instId || instId === '[id]' || instId === '00000000-0000-0000-0000-000000000000') {
+            instId = await resolveInstitutionFromStaffRole(params.id);
+            if (instId) {
+                setResolvedInstitutionId(instId);
+            }
+        }
+
+        if (!instId || instId === '[id]') {
+            setAllItems([]);
+            setIsLoading(false);
+            return;
+        }
+
         setIsLoading(true);
         try {
-            // Lecturer list endpoint accepts institution_id as a filter via the controller
+            // Fetch lecturer list scoped by institution_id based on parameter
             const response = await masterApiIndex<AcademicLecturerMasterLecturer>(
                 'academic/lecturer/master/lecturers',
                 {
@@ -56,7 +81,13 @@ export default function RectoratLecturerIndex() {
                     institution_id: instId,
                 }
             );
-            setAllItems(response.data ?? []);
+
+            const rawData = response?.data ?? [];
+            const scopedData = rawData.filter(l =>
+                l.institution_id === instId ||
+                (l.homebases && l.homebases.some(h => h.institution_id === instId))
+            );
+            setAllItems(scopedData);
         } catch (e) {
             console.error(e);
             setAllItems([]);
@@ -67,7 +98,7 @@ export default function RectoratLecturerIndex() {
     };
 
     createEffect(() => {
-        institutionId();
+        params.id;
         fetchData();
     });
 
@@ -139,7 +170,7 @@ export default function RectoratLecturerIndex() {
                     {/* Stats */}
                     <div class="flex items-center gap-3 shrink-0">
                         <div class="text-center px-4 py-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm min-w-[72px]">
-                            <p class="text-2xl font-black text-neutral-900 dark:text-white">{allItems().length}</p>
+                            <p class="text-2xl font-black text-neutral-900 dark:text-white">{scopedItems().length}</p>
                             <p class="text-[11px] text-neutral-500 dark:text-neutral-400 font-medium uppercase tracking-wide">Total</p>
                         </div>
                         <div class="text-center px-4 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 shadow-sm min-w-[72px]">
