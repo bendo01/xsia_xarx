@@ -449,7 +449,9 @@ pub async fn get_student(
         &curriculums_map,
         &selection_types_map,
     )))
-}#[endpoint(tags("Academic - Student - Master - Student"), status_codes(200, 400, 500))]
+}
+
+#[endpoint(tags("Academic - Student - Master - Student"), status_codes(200, 400, 500))]
 pub async fn create_student(
         req: &mut Request,
         depot: &mut Depot,
