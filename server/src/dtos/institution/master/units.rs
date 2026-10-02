@@ -426,4 +426,5 @@ pub struct UnitCourseCategoryDistributionResponse {
 pub struct UnitOptionRequest {
     pub search: Option<String>,
     pub institution_id: Option<Uuid>,
+    pub unit_type_id: Option<Uuid>,
 }

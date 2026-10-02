@@ -10,6 +10,7 @@ import {
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionActivityController';
 import { getAcademicYearOptions } from '~/controllers/academic/general/reference/AcademicGeneralReferenceAcademicYearController';
 import { getUnitOptions } from '~/controllers/institution/master/InstitutionMasterUnitController';
+import { InstitutionReferenceControllerUnitTypeIndex } from '~/controllers/institution/reference/InstitutionReferenceUnitTypeController';
 
 interface UnitOption {
     id: string;
@@ -69,11 +70,30 @@ export default function RectoratInstitutionActivityIndex() {
     const [units, setUnits] = createSignal<UnitOption[]>([]);
     const [academicYears, setAcademicYears] = createSignal<AcademicYearOption[]>([]);
 
-    // Load filter options (Units via options_units and Academic Years via options_academic_years)
+    // Resolve unit_type_id for Program Studi Perguruan Tinggi (code = 5, alphabet_code = 'PRODI', name = 'Program Studi Perguruan Tinggi')
+    const resolveProdiUnitTypeId = async (): Promise<string | undefined> => {
+        try {
+            const res = await InstitutionReferenceControllerUnitTypeIndex({ page: 1, per_page: 50 });
+            const list = res.data || [];
+            const prodi = list.find(
+                (item: any) =>
+                    item.code === 5 ||
+                    item.alphabet_code === 'PRODI' ||
+                    item.name === 'Program Studi Perguruan Tinggi'
+            );
+            if (prodi?.id) return prodi.id;
+        } catch (e) {
+            console.warn('Failed to load unit types for PRODI filter:', e);
+        }
+        return '019759fd-36e8-4f43-80ed-4f687a48145d';
+    };
+
+    // Load filter options (Units via options_units filtered by PRODI unit type, and Academic Years via options_academic_years)
     const loadFilterOptions = async (instId: string) => {
         try {
+            const prodiUnitTypeId = await resolveProdiUnitTypeId();
             const [unitsData, ayData] = await Promise.all([
-                getUnitOptions({ institution_id: instId }),
+                getUnitOptions({ institution_id: instId, unit_type_id: prodiUnitTypeId }),
                 getAcademicYearOptions(),
             ]);
 
@@ -221,10 +241,10 @@ export default function RectoratInstitutionActivityIndex() {
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 flex flex-col font-sans transition-colors duration-200">
             <TopBar />
 
-            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8 space-y-6 sm:space-y-8">
                 {/* Header & Breadcrumb */}
-                <div class="space-y-4">
-                    <nav class="flex items-center gap-2 text-xs font-mono text-neutral-500 dark:text-neutral-400">
+                <div class="space-y-3 sm:space-y-4">
+                    <nav class="flex items-center gap-2 text-xs font-mono text-neutral-500 dark:text-neutral-400 overflow-x-auto scrollbar-none whitespace-nowrap py-1">
                         <A href="/rectorat" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                             Rektorat
                         </A>
@@ -242,18 +262,18 @@ export default function RectoratInstitutionActivityIndex() {
                         </span>
                     </nav>
 
-                    <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 sm:p-8 border border-neutral-200/80 dark:border-neutral-800 shadow-sm relative overflow-hidden backdrop-blur-xs">
+                    <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 sm:p-8 border border-neutral-200/80 dark:border-neutral-800 shadow-sm relative overflow-hidden backdrop-blur-xs">
                         <div class="absolute -right-16 -top-16 w-64 h-64 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-                            <div class="space-y-2">
-                                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-semibold uppercase tracking-wider border border-blue-200 dark:border-blue-800/80">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 relative z-10">
+                            <div class="space-y-1.5 sm:space-y-2">
+                                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-2xs sm:text-xs font-semibold uppercase tracking-wider border border-blue-200 dark:border-blue-800/80">
                                     <span class="size-2 rounded-full bg-blue-500 animate-pulse" />
                                     <span>Academic / Campaign / Transaction</span>
                                 </div>
-                                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
+                                <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
                                     Aktivitas Transaksi Akademik
                                 </h1>
-                                <p class="text-sm text-neutral-500 dark:text-neutral-400 max-w-2xl leading-relaxed">
+                                <p class="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 max-w-2xl leading-relaxed">
                                     Monitoring dan kelola aktivitas kampanye penerimaan dan registrasi mahasiswa per Program Studi pada institusi ini.
                                 </p>
                             </div>
@@ -262,7 +282,7 @@ export default function RectoratInstitutionActivityIndex() {
                                 <button
                                     type="button"
                                     onClick={() => fetchActivities()}
-                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 text-sm font-medium transition-all shadow-2xs hover:scale-[1.02] active:scale-[0.98]"
+                                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 text-xs sm:text-sm font-medium transition-all shadow-2xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                                     title="Segarkan Data"
                                 >
                                     <svg
@@ -289,7 +309,7 @@ export default function RectoratInstitutionActivityIndex() {
                 />
 
                 {/* KPI Metrics Cards */}
-                <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
                     {/* Card 1: Total Activities */}
                     <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs relative overflow-hidden group hover:border-blue-400 dark:hover:border-blue-700 transition-all duration-200">
                         <div class="flex items-center justify-between">
@@ -564,72 +584,69 @@ export default function RectoratInstitutionActivityIndex() {
                     </Show>
                 </div>
 
-                {/* Data Table Container */}
+                {/* Data Table & Mobile Card List Container */}
                 <div class="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200/80 dark:border-neutral-800 shadow-2xs overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-neutral-50/80 dark:bg-neutral-800/50 border-b border-neutral-200 dark:border-neutral-800 text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                                <tr>
-                                    <th class="px-6 py-4">Aktivitas & Durasi</th>
-                                    <th class="px-6 py-4">Program Studi</th>
-                                    <th class="px-6 py-4">Tahun Akademik</th>
-                                    <th class="px-6 py-4">Realisasi Target</th>
-                                    <th class="px-6 py-4">Periode Transaksi</th>
-                                    <th class="px-6 py-4 text-center">Status</th>
-                                    <th class="px-6 py-4 text-right">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-neutral-200/80 dark:divide-neutral-800/80">
-                                <Show
-                                    when={!isLoading()}
-                                    fallback={
+                    <Show
+                        when={!isLoading()}
+                        fallback={
+                            <div class="px-6 py-16 text-center">
+                                <div class="flex flex-col items-center justify-center gap-3">
+                                    <div class="size-8 rounded-full border-2 border-blue-600 border-t-transparent animate-spin" />
+                                    <span class="text-sm text-neutral-500 dark:text-neutral-400 font-medium">
+                                        Memuat data aktivitas...
+                                    </span>
+                                </div>
+                            </div>
+                        }
+                    >
+                        <Show
+                            when={activities().length > 0}
+                            fallback={
+                                <div class="px-6 py-16 text-center">
+                                    <div class="max-w-sm mx-auto flex flex-col items-center">
+                                        <div class="size-14 rounded-2xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-400 mb-3 shadow-inner">
+                                            <svg class="size-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-base font-bold text-neutral-900 dark:text-white mb-1">
+                                            Tidak ada aktivitas ditemukan
+                                        </h3>
+                                        <p class="text-xs text-neutral-500 dark:text-neutral-400 mb-4">
+                                            Tidak ada rekaman data aktivitas transaksi pada scope institusi ini dengan filter yang dipilih.
+                                        </p>
+                                        <Show when={searchQuery() || selectedUnitId() || selectedAcademicYearId() || selectedStatus() !== 'all'}>
+                                            <button
+                                                onClick={() => {
+                                                    setSearchQuery('');
+                                                    setSelectedUnitId('');
+                                                    setSelectedAcademicYearId('');
+                                                    setSelectedStatus('all');
+                                                }}
+                                                class="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 transition-colors cursor-pointer"
+                                            >
+                                                Hapus Filter
+                                            </button>
+                                        </Show>
+                                    </div>
+                                </div>
+                            }
+                        >
+                            {/* Desktop Table View (md and above) */}
+                            <div class="hidden md:block overflow-x-auto">
+                                <table class="w-full text-left text-sm">
+                                    <thead class="bg-neutral-50/80 dark:bg-neutral-800/50 border-b border-neutral-200 dark:border-neutral-800 text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
                                         <tr>
-                                            <td colspan="7" class="px-6 py-16 text-center">
-                                                <div class="flex flex-col items-center justify-center gap-3">
-                                                    <div class="size-8 rounded-full border-2 border-blue-600 border-t-transparent animate-spin" />
-                                                    <span class="text-sm text-neutral-500 dark:text-neutral-400 font-medium">
-                                                        Memuat data aktivitas...
-                                                    </span>
-                                                </div>
-                                            </td>
+                                            <th class="px-6 py-4">Aktivitas & Durasi</th>
+                                            <th class="px-6 py-4">Program Studi</th>
+                                            <th class="px-6 py-4">Tahun Akademik</th>
+                                            <th class="px-6 py-4">Realisasi Target</th>
+                                            <th class="px-6 py-4">Periode Transaksi</th>
+                                            <th class="px-6 py-4 text-center">Status</th>
+                                            <th class="px-6 py-4 text-right">Aksi</th>
                                         </tr>
-                                    }
-                                >
-                                    <Show
-                                        when={activities().length > 0}
-                                        fallback={
-                                            <tr>
-                                                <td colspan="7" class="px-6 py-16 text-center">
-                                                    <div class="max-w-sm mx-auto flex flex-col items-center">
-                                                        <div class="size-14 rounded-2xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-400 mb-3 shadow-inner">
-                                                            <svg class="size-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                                                            </svg>
-                                                        </div>
-                                                        <h3 class="text-base font-bold text-neutral-900 dark:text-white mb-1">
-                                                            Tidak ada aktivitas ditemukan
-                                                        </h3>
-                                                        <p class="text-xs text-neutral-500 dark:text-neutral-400 mb-4">
-                                                            Tidak ada rekaman data aktivitas transaksi pada scope institusi ini dengan filter yang dipilih.
-                                                        </p>
-                                                        <Show when={searchQuery() || selectedUnitId() || selectedAcademicYearId() || selectedStatus() !== 'all'}>
-                                                            <button
-                                                                onClick={() => {
-                                                                    setSearchQuery('');
-                                                                    setSelectedUnitId('');
-                                                                    setSelectedAcademicYearId('');
-                                                                    setSelectedStatus('all');
-                                                                }}
-                                                                class="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 transition-colors"
-                                                            >
-                                                                Hapus Filter
-                                                            </button>
-                                                        </Show>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        }
-                                    >
+                                    </thead>
+                                    <tbody class="divide-y divide-neutral-200/80 dark:divide-neutral-800/80">
                                         <For each={activities()}>
                                             {(item) => {
                                                 const target = item.student_target || 0;
@@ -759,31 +776,162 @@ export default function RectoratInstitutionActivityIndex() {
                                                 );
                                             }}
                                         </For>
-                                    </Show>
-                                </Show>
-                            </tbody>
-                        </table>
-                    </div>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {/* Mobile Card List View (below md) */}
+                            <div class="block md:hidden divide-y divide-neutral-200/80 dark:divide-neutral-800/80">
+                                <For each={activities()}>
+                                    {(item) => {
+                                        const target = item.student_target || 0;
+                                        const became = item.became_student || 0;
+                                        const percentage = target > 0 ? Math.min(100, Math.round((became / target) * 100)) : 0;
+                                        const unitName = item.unit_name || units().find((u) => u.id === item.unit_id)?.name || 'Unit Terdaftar';
+                                        const yearName = item.academic_year_name || academicYears().find((ay) => ay.id === item.academic_year_id)?.name || 'Tahun Akademik';
+
+                                        return (
+                                            <div class="p-4 sm:p-5 flex flex-col gap-3.5 hover:bg-neutral-50/60 dark:hover:bg-neutral-800/30 transition-colors">
+                                                {/* Top row: Status & Year badge */}
+                                                <div class="flex items-center justify-between gap-2">
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200/80 dark:border-purple-800/50 font-medium text-xs">
+                                                        <span class="size-1.5 rounded-full bg-purple-500" />
+                                                        {yearName}
+                                                    </span>
+
+                                                    <Show
+                                                        when={item.is_active !== false}
+                                                        fallback={
+                                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 text-xs font-medium border border-neutral-300 dark:border-neutral-700">
+                                                                <span class="size-1.5 rounded-full bg-neutral-400" />
+                                                                Non-aktif
+                                                            </span>
+                                                        }
+                                                    >
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 text-xs font-medium border border-emerald-200 dark:border-emerald-800">
+                                                            <span class="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                            Aktif
+                                                        </span>
+                                                    </Show>
+                                                </div>
+
+                                                {/* Activity Name & Unit */}
+                                                <div class="space-y-1">
+                                                    <A
+                                                        href={`/rectorat/institution/${institutionId()}/academic/campaign/transaction/activity/${item.id}`}
+                                                        class="font-bold text-base text-neutral-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors leading-snug block"
+                                                    >
+                                                        {item.name}
+                                                    </A>
+                                                    <div class="flex items-center gap-1.5 text-xs text-neutral-600 dark:text-neutral-400">
+                                                        <svg class="size-3.5 text-blue-500 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.333A1.5 1.5 0 0 0 18 8.833H6a1.5 1.5 0 0 0-1.5 1.5V21" />
+                                                        </svg>
+                                                        <span class="font-medium text-neutral-700 dark:text-neutral-300">{unitName}</span>
+                                                    </div>
+                                                </div>
+
+                                                {/* Target & Realisasi Card */}
+                                                <div class="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-200/70 dark:border-neutral-700/60 space-y-2">
+                                                    <div class="flex items-center justify-between text-xs">
+                                                        <span class="font-medium text-neutral-500 dark:text-neutral-400">
+                                                            Realisasi Kuota
+                                                        </span>
+                                                        <span class="font-mono font-bold text-neutral-900 dark:text-white">
+                                                            {became} / {target} Mhs ({percentage}%)
+                                                        </span>
+                                                    </div>
+                                                    <div class="w-full h-2 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+                                                        <div
+                                                            class={`h-full rounded-full transition-all duration-300 ${
+                                                                percentage >= 100
+                                                                    ? 'bg-emerald-500'
+                                                                    : percentage >= 75
+                                                                        ? 'bg-blue-500'
+                                                                        : percentage >= 50
+                                                                            ? 'bg-amber-500'
+                                                                            : 'bg-indigo-500'
+                                                            }`}
+                                                            style={{ width: `${percentage}%` }}
+                                                        />
+                                                    </div>
+                                                    <div class="grid grid-cols-3 gap-2 pt-1 text-center font-mono text-xs">
+                                                        <div class="p-1.5 rounded-lg bg-white dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                                            <span class="text-2xs text-neutral-400 block">Target</span>
+                                                            <span class="font-bold text-neutral-800 dark:text-neutral-200">{target}</span>
+                                                        </div>
+                                                        <div class="p-1.5 rounded-lg bg-white dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                                            <span class="text-2xs text-neutral-400 block">Pendaftar</span>
+                                                            <span class="font-bold text-neutral-800 dark:text-neutral-200">{item.candidate_number || 0}</span>
+                                                        </div>
+                                                        <div class="p-1.5 rounded-lg bg-white dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                                            <span class="text-2xs text-neutral-400 block">Lolos</span>
+                                                            <span class="font-bold text-emerald-600 dark:text-emerald-400">{item.candidate_pass || 0}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Date Info */}
+                                                <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+                                                    <div class="p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-200/50 dark:border-neutral-700/50">
+                                                        <span class="text-2xs uppercase text-neutral-400 block font-semibold">Periode Aktivitas</span>
+                                                        <span class="text-neutral-800 dark:text-neutral-200 block text-2xs mt-0.5">
+                                                            {formatDate(item.start_date)} - {formatDate(item.end_date)}
+                                                        </span>
+                                                        <Show when={item.week_quantity}>
+                                                            <span class="text-2xs text-blue-600 dark:text-blue-400 font-semibold mt-0.5 block">
+                                                                {item.week_quantity} Minggu
+                                                            </span>
+                                                        </Show>
+                                                    </div>
+                                                    <div class="p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-200/50 dark:border-neutral-700/50">
+                                                        <span class="text-2xs uppercase text-neutral-400 block font-semibold">Periode Transaksi</span>
+                                                        <span class="text-neutral-800 dark:text-neutral-200 block text-2xs mt-0.5">
+                                                            {formatDate(item.start_transaction)}
+                                                        </span>
+                                                        <span class="text-2xs text-neutral-400 block">
+                                                            s/d {formatDate(item.end_transaction)}
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                {/* Detail Button */}
+                                                <A
+                                                    href={`/rectorat/institution/${institutionId()}/academic/campaign/transaction/activity/${item.id}`}
+                                                    class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/80 text-blue-700 dark:text-blue-300 font-semibold text-xs border border-blue-200/80 dark:border-blue-800/80 transition-all shadow-2xs active:scale-[0.98]"
+                                                >
+                                                    <span>Lihat Detail Aktivitas</span>
+                                                    <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                                    </svg>
+                                                </A>
+                                            </div>
+                                        );
+                                    }}
+                                </For>
+                            </div>
+                        </Show>
+                    </Show>
 
                     {/* Pagination Bar */}
-                    <div class="px-6 py-4 bg-neutral-50/80 dark:bg-neutral-800/40 border-t border-neutral-200 dark:border-neutral-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div class="flex items-center gap-4 text-xs text-neutral-500 dark:text-neutral-400">
+                    <div class="px-4 sm:px-6 py-3.5 sm:py-4 bg-neutral-50/80 dark:bg-neutral-800/40 border-t border-neutral-200 dark:border-neutral-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                        <div class="flex flex-wrap items-center justify-between sm:justify-start gap-3 text-xs text-neutral-500 dark:text-neutral-400">
                             <div>
                                 Menampilkan <span class="font-semibold text-neutral-800 dark:text-neutral-200">
                                     {totalData() === 0 ? 0 : (currentPage() - 1) * itemsPerPage() + 1}
                                 </span> - <span class="font-semibold text-neutral-800 dark:text-neutral-200">
                                     {Math.min(currentPage() * itemsPerPage(), totalData())}
-                                </span> dari <span class="font-semibold text-neutral-800 dark:text-neutral-200">{totalData()}</span> aktivitas
+                                </span> dari <span class="font-semibold text-neutral-800 dark:text-neutral-200">{totalData()}</span>
                             </div>
-                            <div class="flex items-center gap-1.5">
-                                <span>Per halaman:</span>
+                            <div class="flex items-center gap-1.5 ml-auto sm:ml-0">
+                                <span>Per hal:</span>
                                 <select
                                     value={itemsPerPage()}
                                     onChange={(e) => {
                                         setItemsPerPage(Number(e.currentTarget.value));
                                         setCurrentPage(1);
                                     }}
-                                    class="px-2 py-1 rounded-lg text-xs bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 focus:outline-hidden"
+                                    class="px-2 py-1 rounded-lg text-xs bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 focus:outline-hidden cursor-pointer"
                                 >
                                     <option value="10">10</option>
                                     <option value="25">25</option>
@@ -793,12 +941,12 @@ export default function RectoratInstitutionActivityIndex() {
                         </div>
 
                         {/* Page Navigation */}
-                        <div class="flex items-center gap-1.5 self-center sm:self-auto">
+                        <div class="flex items-center justify-center gap-1.5 self-center sm:self-auto">
                             <button
                                 type="button"
                                 disabled={currentPage() <= 1}
                                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                                class="p-2 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                                class="p-2 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
                                 title="Halaman Sebelumnya"
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -806,7 +954,7 @@ export default function RectoratInstitutionActivityIndex() {
                                 </svg>
                             </button>
 
-                            <div class="px-3 py-1 text-xs font-semibold text-neutral-700 dark:text-neutral-300">
+                            <div class="px-3 py-1 text-xs font-semibold font-mono text-neutral-700 dark:text-neutral-300">
                                 {currentPage()} / {totalPages()}
                             </div>
 
@@ -814,7 +962,7 @@ export default function RectoratInstitutionActivityIndex() {
                                 type="button"
                                 disabled={currentPage() >= totalPages()}
                                 onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
-                                class="p-2 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                                class="p-2 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
                                 title="Halaman Selanjutnya"
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

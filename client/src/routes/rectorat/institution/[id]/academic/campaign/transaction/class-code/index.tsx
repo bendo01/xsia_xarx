@@ -9,6 +9,7 @@ import {
     type ClassCodeItem,
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionClassCodeController';
 import { getUnitOptions } from '~/controllers/institution/master/InstitutionMasterUnitController';
+import { InstitutionReferenceControllerUnitTypeIndex } from '~/controllers/institution/reference/InstitutionReferenceUnitTypeController';
 
 interface UnitOption {
     id: string;
@@ -63,10 +64,29 @@ export default function RectoratInstitutionClassCodeIndex() {
     // Quick Detail Modal State
     const [selectedItemForModal, setSelectedItemForModal] = createSignal<ClassCodeItem | null>(null);
 
+    // Resolve unit_type_id for Program Studi Perguruan Tinggi (code = 5, alphabet_code = 'PRODI', name = 'Program Studi Perguruan Tinggi')
+    const resolveProdiUnitTypeId = async (): Promise<string | undefined> => {
+        try {
+            const res = await InstitutionReferenceControllerUnitTypeIndex({ page: 1, per_page: 50 });
+            const list = res.data || [];
+            const prodi = list.find(
+                (item: any) =>
+                    item.code === 5 ||
+                    item.alphabet_code === 'PRODI' ||
+                    item.name === 'Program Studi Perguruan Tinggi'
+            );
+            if (prodi?.id) return prodi.id;
+        } catch (e) {
+            console.warn('Failed to load unit types for PRODI filter:', e);
+        }
+        return '019759fd-36e8-4f43-80ed-4f687a48145d';
+    };
+
     // Load filter options (Units via options_units based on institution_id)
     const loadUnitOptions = async (instId: string) => {
         try {
-            const unitsData = await getUnitOptions({ institution_id: instId });
+            const prodiUnitTypeId = await resolveProdiUnitTypeId();
+            const unitsData = await getUnitOptions({ institution_id: instId, unit_type_id: prodiUnitTypeId });
             if (Array.isArray(unitsData)) {
                 setUnits(unitsData);
             }
@@ -193,10 +213,10 @@ export default function RectoratInstitutionClassCodeIndex() {
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 flex flex-col font-sans transition-colors duration-200">
             <TopBar />
 
-            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8 space-y-6 sm:space-y-8">
                 {/* Header & Breadcrumb */}
-                <div class="space-y-4">
-                    <nav class="flex items-center gap-2 text-xs font-mono text-neutral-500 dark:text-neutral-400">
+                <div class="space-y-3 sm:space-y-4">
+                    <nav class="flex items-center gap-2 text-xs font-mono text-neutral-500 dark:text-neutral-400 overflow-x-auto scrollbar-none whitespace-nowrap py-1">
                         <A href="/rectorat" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                             Rektorat
                         </A>
@@ -214,18 +234,18 @@ export default function RectoratInstitutionClassCodeIndex() {
                         </span>
                     </nav>
 
-                    <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 sm:p-8 border border-neutral-200/80 dark:border-neutral-800 shadow-sm relative overflow-hidden backdrop-blur-xs">
+                    <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 sm:p-8 border border-neutral-200/80 dark:border-neutral-800 shadow-sm relative overflow-hidden backdrop-blur-xs">
                         <div class="absolute -right-16 -top-16 w-64 h-64 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-full blur-3xl pointer-events-none" />
-                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-                            <div class="space-y-2">
-                                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-xs font-semibold uppercase tracking-wider border border-indigo-200 dark:border-indigo-800/80">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 relative z-10">
+                            <div class="space-y-1.5 sm:space-y-2">
+                                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-2xs sm:text-xs font-semibold uppercase tracking-wider border border-indigo-200 dark:border-indigo-800/80">
                                     <span class="size-2 rounded-full bg-indigo-500 animate-pulse" />
                                     <span>Academic / Campaign / Transaction</span>
                                 </div>
-                                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
+                                <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
                                     Unit Kode Kelas
                                 </h1>
-                                <p class="text-sm text-neutral-500 dark:text-neutral-400 max-w-2xl leading-relaxed">
+                                <p class="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 max-w-2xl leading-relaxed">
                                     Master pembagian kode kelas, kuota daya tampung, dan periode efektif perkuliahan per Program Studi pada institusi ini.
                                 </p>
                             </div>
@@ -234,7 +254,7 @@ export default function RectoratInstitutionClassCodeIndex() {
                                 <button
                                     type="button"
                                     onClick={() => fetchClassCodes()}
-                                    class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 text-sm font-medium transition-all shadow-2xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 text-xs sm:text-sm font-medium transition-all shadow-2xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                                     title="Segarkan Data"
                                 >
                                     <svg
@@ -261,20 +281,20 @@ export default function RectoratInstitutionClassCodeIndex() {
                 />
 
                 {/* KPI Metrics Cards */}
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                     {/* Card 1: Total Class Codes */}
-                    <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs relative overflow-hidden group hover:border-indigo-400 dark:hover:border-indigo-700 transition-all duration-200">
+                    <div class="bg-white dark:bg-neutral-900 rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs relative overflow-hidden group hover:border-indigo-400 dark:hover:border-indigo-700 transition-all duration-200">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Total Kode Kelas</span>
-                            <div class="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/60">
+                            <div class="p-2 sm:p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/60">
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <rect width="18" height="18" x="3" y="3" rx="2" />
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 9h18M9 21V9" />
                                 </svg>
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <span class="text-2xl sm:text-3xl font-extrabold text-neutral-900 dark:text-white">
+                        <div class="mt-3 sm:mt-4">
+                            <span class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-neutral-900 dark:text-white">
                                 {totalData()}
                             </span>
                             <span class="text-xs text-neutral-500 dark:text-neutral-400 block mt-0.5">Entitas Terdaftar</span>
@@ -282,17 +302,17 @@ export default function RectoratInstitutionClassCodeIndex() {
                     </div>
 
                     {/* Card 2: Total Daya Tampung */}
-                    <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs relative overflow-hidden group hover:border-blue-400 dark:hover:border-blue-700 transition-all duration-200">
+                    <div class="bg-white dark:bg-neutral-900 rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs relative overflow-hidden group hover:border-blue-400 dark:hover:border-blue-700 transition-all duration-200">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Total Daya Tampung</span>
-                            <div class="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60">
+                            <div class="p-2 sm:p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60">
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
                                 </svg>
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <span class="text-2xl sm:text-3xl font-extrabold text-neutral-900 dark:text-white">
+                        <div class="mt-3 sm:mt-4">
+                            <span class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-neutral-900 dark:text-white">
                                 {summaryStats().totalCapacity.toLocaleString('id-ID')}
                             </span>
                             <span class="text-xs text-neutral-500 dark:text-neutral-400 block mt-0.5">Akumulasi Kursi Kelas</span>
@@ -300,35 +320,35 @@ export default function RectoratInstitutionClassCodeIndex() {
                     </div>
 
                     {/* Card 3: Rata-Rata Kapasitas */}
-                    <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs relative overflow-hidden group hover:border-emerald-400 dark:hover:border-emerald-700 transition-all duration-200">
+                    <div class="bg-white dark:bg-neutral-900 rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs relative overflow-hidden group hover:border-emerald-400 dark:hover:border-emerald-700 transition-all duration-200">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Rata-Rata Kapasitas</span>
-                            <div class="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60">
+                            <div class="p-2 sm:p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60">
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
                                 </svg>
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <span class="text-2xl sm:text-3xl font-extrabold text-neutral-900 dark:text-white">
-                                {summaryStats().avgCapacity} <span class="text-sm font-normal text-neutral-500">Mhs/Kelas</span>
+                        <div class="mt-3 sm:mt-4">
+                            <span class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-neutral-900 dark:text-white">
+                                {summaryStats().avgCapacity} <span class="text-xs sm:text-sm font-normal text-neutral-500">Mhs/Kelas</span>
                             </span>
                             <span class="text-xs text-neutral-500 dark:text-neutral-400 block mt-0.5">Estimasi Per Rombel</span>
                         </div>
                     </div>
 
                     {/* Card 4: Program Studi Aktif */}
-                    <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs relative overflow-hidden group hover:border-purple-400 dark:hover:border-purple-700 transition-all duration-200">
+                    <div class="bg-white dark:bg-neutral-900 rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs relative overflow-hidden group hover:border-purple-400 dark:hover:border-purple-700 transition-all duration-200">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Unit Terlibat</span>
-                            <div class="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800/60">
+                            <div class="p-2 sm:p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800/60">
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.333A1.5 1.5 0 0 0 18 8.833H6a1.5 1.5 0 0 0-1.5 1.5V21" />
                                 </svg>
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <span class="text-2xl sm:text-3xl font-extrabold text-neutral-900 dark:text-white">
+                        <div class="mt-3 sm:mt-4">
+                            <span class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-neutral-900 dark:text-white">
                                 {selectedUnitId() ? 1 : units().length}
                             </span>
                             <span class="text-xs text-neutral-500 dark:text-neutral-400 block mt-0.5">Program Studi Terdata</span>
@@ -448,7 +468,8 @@ export default function RectoratInstitutionClassCodeIndex() {
 
                 {/* Data Table Container */}
                 <div class="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200/80 dark:border-neutral-800 shadow-2xs overflow-hidden">
-                    <div class="overflow-x-auto">
+                    {/* Desktop Table View (md and above) */}
+                    <div class="hidden md:block overflow-x-auto">
                         <table class="w-full text-left text-sm">
                             <thead class="bg-neutral-50/80 dark:bg-neutral-800/50 border-b border-neutral-200 dark:border-neutral-800 text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
                                 <tr>
@@ -625,34 +646,182 @@ export default function RectoratInstitutionClassCodeIndex() {
                         </table>
                     </div>
 
-                    {/* Pagination Controls */}
-                    <div class="px-6 py-4 bg-neutral-50/60 dark:bg-neutral-800/40 border-t border-neutral-200 dark:border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <div class="flex items-center gap-3 text-xs text-neutral-500 dark:text-neutral-400">
-                            <span>Tampilkan per halaman:</span>
-                            <select
-                                value={itemsPerPage()}
-                                onChange={(e) => {
-                                    setItemsPerPage(Number(e.currentTarget.value));
-                                    setCurrentPage(1);
-                                }}
-                                class="px-2.5 py-1 rounded-lg bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-xs font-medium cursor-pointer"
+                    {/* Mobile Card List View (below md) */}
+                    <div class="block md:hidden">
+                        <Show
+                            when={!isLoading()}
+                            fallback={
+                                <div class="px-6 py-16 text-center">
+                                    <div class="flex flex-col items-center justify-center gap-3">
+                                        <div class="size-8 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
+                                        <span class="text-sm text-neutral-500 dark:text-neutral-400 font-medium">
+                                            Memuat data kode kelas...
+                                        </span>
+                                    </div>
+                                </div>
+                            }
+                        >
+                            <Show
+                                when={classCodes().length > 0}
+                                fallback={
+                                    <div class="px-6 py-16 text-center">
+                                        <div class="max-w-sm mx-auto flex flex-col items-center">
+                                            <div class="size-14 rounded-2xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-400 mb-3 shadow-inner">
+                                                <svg class="size-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                                    <rect width="18" height="18" x="3" y="3" rx="2" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 9h18M9 21V9" />
+                                                </svg>
+                                            </div>
+                                            <h3 class="text-base font-bold text-neutral-900 dark:text-white mb-1">
+                                                Tidak ada kode kelas ditemukan
+                                            </h3>
+                                            <p class="text-xs text-neutral-500 dark:text-neutral-400 mb-4">
+                                                Tidak ada data kode kelas untuk institusi atau Program Studi yang dipilih.
+                                            </p>
+                                            <Show when={searchQuery() || selectedUnitId()}>
+                                                <button
+                                                    onClick={() => {
+                                                        setSearchQuery('');
+                                                        setSelectedUnitId('');
+                                                    }}
+                                                    class="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 transition-colors cursor-pointer"
+                                                >
+                                                    Hapus Filter
+                                                </button>
+                                            </Show>
+                                        </div>
+                                    </div>
+                                }
                             >
-                                <option value="10">10</option>
-                                <option value="25">25</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                            </select>
-                            <span>
+                                <div class="divide-y divide-neutral-200/80 dark:divide-neutral-800/80">
+                                    <For each={classCodes()}>
+                                        {(item) => {
+                                            const unitName = units().find((u) => u.id === item.unit_id)?.name || item.unit_name || 'Program Studi Terdaftar';
+
+                                            return (
+                                                <div class="p-4 sm:p-5 flex flex-col gap-3.5 hover:bg-neutral-50/60 dark:hover:bg-neutral-800/30 transition-colors">
+                                                    {/* Header Row: Badge + Name + Capacity */}
+                                                    <div class="flex items-start justify-between gap-2.5">
+                                                        <div class="flex items-center gap-2.5 min-w-0">
+                                                            <div class="size-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/80 dark:border-indigo-800/60 flex items-center justify-center font-mono font-bold text-sm shrink-0">
+                                                                {item.alphabet_code || item.code || 'KL'}
+                                                            </div>
+                                                            <div class="min-w-0 space-y-0.5">
+                                                                <A
+                                                                    href={`/rectorat/institution/${institutionId()}/academic/campaign/transaction/class-code/${item.id}`}
+                                                                    class="text-sm font-bold text-neutral-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors block truncate"
+                                                                >
+                                                                    {item.name}
+                                                                </A>
+                                                                <div class="flex items-center gap-1.5 text-2xs font-mono text-neutral-500 dark:text-neutral-400">
+                                                                    <Show when={item.code !== undefined && item.code !== null}>
+                                                                        <span>Kode: #{item.code}</span>
+                                                                    </Show>
+                                                                    <Show when={item.alphabet_code}>
+                                                                        <span>• ({item.alphabet_code})</span>
+                                                                    </Show>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <Show
+                                                            when={item.capacity && item.capacity > 0}
+                                                            fallback={
+                                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-2xs shrink-0">
+                                                                    -
+                                                                </span>
+                                                            }
+                                                        >
+                                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/50 font-bold font-mono text-xs shrink-0">
+                                                                <svg class="size-3 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21c-2.17 0-5.216-.584-7.499-1.632Z" />
+                                                                </svg>
+                                                                {item.capacity} Mhs
+                                                            </span>
+                                                        </Show>
+                                                    </div>
+
+                                                    {/* Info Grid */}
+                                                    <div class="grid grid-cols-2 gap-2 text-xs">
+                                                        <div class="p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-200/50 dark:border-neutral-700/50 space-y-0.5">
+                                                            <span class="text-2xs uppercase text-neutral-400 font-semibold block">Program Studi</span>
+                                                            <span class="font-medium text-neutral-800 dark:text-neutral-200 truncate block text-xs">
+                                                                {unitName}
+                                                            </span>
+                                                        </div>
+                                                        <div class="p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-200/50 dark:border-neutral-700/50 space-y-0.5 font-mono">
+                                                            <span class="text-2xs uppercase text-neutral-400 font-semibold block">Masa Berlaku</span>
+                                                            <span class="text-neutral-800 dark:text-neutral-200 block text-2xs truncate">
+                                                                {formatDate(item.start_effective_date)}
+                                                            </span>
+                                                            <span class="text-neutral-500 dark:text-neutral-400 block text-2xs truncate">
+                                                                s/d {formatDate(item.end_effective_date)}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Action Buttons */}
+                                                    <div class="flex items-center gap-2 pt-0.5">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setSelectedItemForModal(item)}
+                                                            class="flex-1 py-2 px-3 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 font-semibold text-xs text-center inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                                                        >
+                                                            <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                            </svg>
+                                                            <span>Pratinjau</span>
+                                                        </button>
+                                                        <A
+                                                            href={`/rectorat/institution/${institutionId()}/academic/campaign/transaction/class-code/${item.id}`}
+                                                            class="flex-1 py-2 px-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/80 text-indigo-700 dark:text-indigo-300 font-semibold text-xs text-center inline-flex items-center justify-center gap-1.5 border border-indigo-200 dark:border-indigo-800/80 transition-colors"
+                                                        >
+                                                            <span>Detail Lengkap</span>
+                                                            <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                                                            </svg>
+                                                        </A>
+                                                    </div>
+                                                </div>
+                                            );
+                                        }}
+                                    </For>
+                                </div>
+                            </Show>
+                        </Show>
+                    </div>
+
+                    {/* Pagination Controls */}
+                    <div class="px-4 sm:px-6 py-3.5 sm:py-4 bg-neutral-50/60 dark:bg-neutral-800/40 border-t border-neutral-200 dark:border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+                        <div class="flex flex-wrap items-center justify-between sm:justify-start gap-3 text-xs text-neutral-500 dark:text-neutral-400 w-full sm:w-auto">
+                            <div class="flex items-center gap-1.5">
+                                <span>Per hal:</span>
+                                <select
+                                    value={itemsPerPage()}
+                                    onChange={(e) => {
+                                        setItemsPerPage(Number(e.currentTarget.value));
+                                        setCurrentPage(1);
+                                    }}
+                                    class="px-2 py-1 rounded-lg bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-xs font-medium cursor-pointer"
+                                >
+                                    <option value="10">10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                            <span class="ml-auto sm:ml-0">
                                 Total <strong>{totalData()}</strong> data
                             </span>
                         </div>
 
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center justify-center gap-1.5 self-center sm:self-auto">
                             <button
                                 type="button"
                                 disabled={currentPage() <= 1}
                                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                                class="p-2 rounded-lg bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
+                                class="p-2 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
                                 title="Halaman Sebelumnya"
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -660,7 +829,7 @@ export default function RectoratInstitutionClassCodeIndex() {
                                 </svg>
                             </button>
 
-                            <span class="text-xs font-mono font-medium px-3 py-1 bg-white dark:bg-neutral-800 rounded-lg border border-neutral-300 dark:border-neutral-700">
+                            <span class="text-xs font-mono font-medium px-3 py-1 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700">
                                 {currentPage()} / {totalPages()}
                             </span>
 
@@ -668,7 +837,7 @@ export default function RectoratInstitutionClassCodeIndex() {
                                 type="button"
                                 disabled={currentPage() >= totalPages()}
                                 onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
-                                class="p-2 rounded-lg bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
+                                class="p-2 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
                                 title="Halaman Selanjutnya"
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -684,7 +853,7 @@ export default function RectoratInstitutionClassCodeIndex() {
             <Show when={selectedItemForModal()}>
                 {(item) => (
                     <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
-                        <div class="bg-white dark:bg-neutral-900 rounded-2xl max-w-lg w-full border border-neutral-200 dark:border-neutral-800 shadow-2xl overflow-hidden p-6 space-y-6">
+                        <div class="bg-white dark:bg-neutral-900 rounded-2xl max-w-lg w-full border border-neutral-200 dark:border-neutral-800 shadow-2xl overflow-y-auto max-h-[90vh] p-5 sm:p-6 space-y-5 sm:space-y-6">
                             <div class="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                                 <div class="flex items-center gap-3">
                                     <div class="size-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
@@ -708,7 +877,7 @@ export default function RectoratInstitutionClassCodeIndex() {
                                 </button>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-4 text-xs">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs">
                                 <div class="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 space-y-1">
                                     <span class="text-neutral-500 text-2xs uppercase">Program Studi</span>
                                     <p class="font-semibold text-neutral-800 dark:text-neutral-200">
@@ -735,17 +904,17 @@ export default function RectoratInstitutionClassCodeIndex() {
                                 </div>
                             </div>
 
-                            <div class="flex items-center justify-end gap-3 pt-2">
+                            <div class="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 pt-2">
                                 <button
                                     type="button"
                                     onClick={() => setSelectedItemForModal(null)}
-                                    class="px-4 py-2 rounded-xl text-xs font-semibold bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 cursor-pointer"
+                                    class="w-full sm:w-auto px-4 py-2.5 sm:py-2 rounded-xl text-xs font-semibold bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 text-center cursor-pointer transition-colors"
                                 >
                                     Tutup
                                 </button>
                                 <A
                                     href={`/rectorat/institution/${institutionId()}/academic/campaign/transaction/class-code/${item().id}`}
-                                    class="px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
+                                    class="w-full sm:w-auto px-4 py-2.5 sm:py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white text-center transition-colors"
                                 >
                                     Buka Halaman Lengkap
                                 </A>

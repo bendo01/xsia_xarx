@@ -5,12 +5,14 @@ const server_api_url = import.meta.env.VITE_API_SERVER_URL ?? "http://localhost:
 export async function getUnitOptions(queryParams?: {
     search?: string;
     institution_id?: string;
+    unit_type_id?: string;
 }): Promise<Array<{ id: string; name: string }>> {
     try {
         const baseUrl = (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
         const params = new URLSearchParams();
         if (queryParams?.search) params.set('search', queryParams.search);
         if (queryParams?.institution_id) params.set('institution_id', queryParams.institution_id);
+        if (queryParams?.unit_type_id) params.set('unit_type_id', queryParams.unit_type_id);
 
         const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
         const headers: Record<string, string> = {

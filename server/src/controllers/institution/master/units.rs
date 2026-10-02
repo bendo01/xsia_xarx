@@ -1127,6 +1127,10 @@ pub async fn options_units(
         select = select.filter(entity_mod::Column::InstitutionId.eq(institution_id));
     }
 
+    if let Some(unit_type_id) = payload.unit_type_id {
+        select = select.filter(entity_mod::Column::UnitTypeId.eq(unit_type_id));
+    }
+
     let items = select
         .order_by_asc(entity_mod::Column::Name)
         .all(db)
