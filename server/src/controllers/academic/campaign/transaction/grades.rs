@@ -39,6 +39,22 @@ pub async fn list_grades(
 
     if let Some(unit_id) = query.unit_id {
         select = select.filter(entity_mod::Column::UnitId.eq(unit_id));
+    } else if let Some(institution_id) = query.institution_id {
+        let matching_unit_ids: Vec<Uuid> = crate::models::institution::master::units::Entity::find()
+            .filter(crate::models::institution::master::units::Column::InstitutionId.eq(institution_id))
+            .filter(crate::models::institution::master::units::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|u| u.id)
+            .collect();
+
+        if matching_unit_ids.is_empty() {
+            select = select.filter(entity_mod::Column::UnitId.eq(Uuid::nil()));
+        } else {
+            select = select.filter(entity_mod::Column::UnitId.is_in(matching_unit_ids));
+        }
     }
 
     let paginator = select

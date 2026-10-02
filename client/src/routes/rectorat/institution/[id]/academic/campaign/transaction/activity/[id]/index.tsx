@@ -252,7 +252,7 @@ export default function RectoratActivityDetail() {
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 flex flex-col font-sans transition-colors duration-200">
             <TopBar />
 
-            <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
                 {/* Navigation and Breadcrumb */}
                 <div class="space-y-4">
                     <nav class="flex items-center gap-2 text-xs font-mono text-neutral-500 dark:text-neutral-400">
@@ -614,13 +614,12 @@ export default function RectoratActivityDetail() {
                             </div>
                             <div class="w-full h-3 bg-neutral-200 dark:bg-neutral-800 rounded-full overflow-hidden">
                                 <div
-                                    class={`h-full rounded-full transition-all duration-500 ${
-                                        (stats()?.targetRate || 0) >= 100
+                                    class={`h-full rounded-full transition-all duration-500 ${(stats()?.targetRate || 0) >= 100
                                             ? 'bg-emerald-500'
                                             : (stats()?.targetRate || 0) >= 75
-                                            ? 'bg-blue-600'
-                                            : 'bg-amber-500'
-                                    }`}
+                                                ? 'bg-blue-600'
+                                                : 'bg-amber-500'
+                                        }`}
                                     style={{ width: `${Math.min(100, stats()?.targetRate || 0)}%` }}
                                 />
                             </div>

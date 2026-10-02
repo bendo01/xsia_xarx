@@ -1,9 +1,9 @@
 import { createSignal, createEffect, For, Show, createMemo, onMount } from 'solid-js';
 import { useParams, useLocation, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
+import CampaignTransactionNavBar from '~/components/navigation/CampaignTransactionNavBar';
 import { toast } from '~/components/toast/Toaster';
 import { resolveInstitutionFromStaffRole } from '~/lib/rectoratHelper';
-import { masterApiIndex } from '~/controllers/master/masterApiController';
 import {
     listActivities,
     type CampaignActivityItem,
@@ -221,7 +221,7 @@ export default function RectoratInstitutionActivityIndex() {
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 flex flex-col font-sans transition-colors duration-200">
             <TopBar />
 
-            <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
                 {/* Header & Breadcrumb */}
                 <div class="space-y-4">
                     <nav class="flex items-center gap-2 text-xs font-mono text-neutral-500 dark:text-neutral-400">
@@ -281,6 +281,12 @@ export default function RectoratInstitutionActivityIndex() {
                         </div>
                     </div>
                 </div>
+
+                {/* Sub-Navigation Bar */}
+                <CampaignTransactionNavBar
+                    institutionId={institutionId}
+                    activeTab="activity"
+                />
 
                 {/* KPI Metrics Cards */}
                 <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
@@ -423,11 +429,10 @@ export default function RectoratInstitutionActivityIndex() {
                                         setSelectedUnitId(e.currentTarget.value);
                                         setCurrentPage(1);
                                     }}
-                                    class={`w-full px-3.5 py-2.5 rounded-xl text-sm bg-neutral-50 dark:bg-neutral-800/80 border text-neutral-900 dark:text-neutral-100 focus:outline-hidden focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all cursor-pointer ${
-                                        selectedUnitId()
+                                    class={`w-full px-3.5 py-2.5 rounded-xl text-sm bg-neutral-50 dark:bg-neutral-800/80 border text-neutral-900 dark:text-neutral-100 focus:outline-hidden focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all cursor-pointer ${selectedUnitId()
                                             ? 'border-blue-500 dark:border-blue-400 pr-8 ring-1 ring-blue-500/20'
                                             : 'border-neutral-300 dark:border-neutral-700'
-                                    }`}
+                                        }`}
                                 >
                                     <option value="">Semua Program Studi</option>
                                     <For each={units()}>
@@ -469,11 +474,10 @@ export default function RectoratInstitutionActivityIndex() {
                                         setSelectedAcademicYearId(e.currentTarget.value);
                                         setCurrentPage(1);
                                     }}
-                                    class={`w-full px-3.5 py-2.5 rounded-xl text-sm bg-neutral-50 dark:bg-neutral-800/80 border text-neutral-900 dark:text-neutral-100 focus:outline-hidden focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all cursor-pointer ${
-                                        selectedAcademicYearId()
+                                    class={`w-full px-3.5 py-2.5 rounded-xl text-sm bg-neutral-50 dark:bg-neutral-800/80 border text-neutral-900 dark:text-neutral-100 focus:outline-hidden focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all cursor-pointer ${selectedAcademicYearId()
                                             ? 'border-purple-500 dark:border-purple-400 pr-8 ring-1 ring-purple-500/20'
                                             : 'border-neutral-300 dark:border-neutral-700'
-                                    }`}
+                                        }`}
                                 >
                                     <option value="">Semua Tahun Akademik</option>
                                     <For each={academicYears()}>
@@ -694,15 +698,14 @@ export default function RectoratInstitutionActivityIndex() {
                                                                 {/* Progress Bar */}
                                                                 <div class="w-full h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
                                                                     <div
-                                                                        class={`h-full rounded-full transition-all duration-300 ${
-                                                                            percentage >= 100
+                                                                        class={`h-full rounded-full transition-all duration-300 ${percentage >= 100
                                                                                 ? 'bg-emerald-500'
                                                                                 : percentage >= 75
-                                                                                ? 'bg-blue-500'
-                                                                                : percentage >= 50
-                                                                                ? 'bg-amber-500'
-                                                                                : 'bg-indigo-500'
-                                                                        }`}
+                                                                                    ? 'bg-blue-500'
+                                                                                    : percentage >= 50
+                                                                                        ? 'bg-amber-500'
+                                                                                        : 'bg-indigo-500'
+                                                                            }`}
                                                                         style={{ width: `${percentage}%` }}
                                                                     />
                                                                 </div>

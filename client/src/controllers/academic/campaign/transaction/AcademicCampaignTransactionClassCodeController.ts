@@ -16,36 +16,36 @@ const getHeaders = (): Record<string, string> => {
     return headers;
 };
 
-export interface GradeItem {
+export interface ClassCodeItem {
     id: string;
     code?: number | null;
     alphabet_code?: string | null;
     name: string;
-    grade: number;
-    minimum: number;
-    maximum: number;
-    start_date?: string | null;
-    end_date?: string | null;
-    unit_id: string;
-    unit_name?: string | null;
+    activity_id: string;
+    start_effective_date?: string | null;
+    end_effective_date?: string | null;
     created_at?: string | null;
     updated_at?: string | null;
     deleted_at?: string | null;
     sync_at?: string | null;
     created_by?: string | null;
     updated_by?: string | null;
-    feeder_id?: string | null;
+    unit_id?: string | null;
+    capacity?: number | null;
+    unit_name?: string | null;
+    activity_name?: string | null;
 }
 
-export async function listGrades(queryParams?: {
+export async function listClassCodes(queryParams?: {
     page?: number;
     page_size?: number;
     name?: string;
     code?: string;
     unit_id?: string;
     institution_id?: string;
+    activity_id?: string;
 }): Promise<{
-    data: GradeItem[];
+    data: ClassCodeItem[];
     total: number;
     page: number;
     page_size: number;
@@ -54,19 +54,19 @@ export async function listGrades(queryParams?: {
     try {
         const params = new URLSearchParams();
         if (queryParams?.page) params.set('page', String(queryParams.page));
-        if (queryParams?.page_size) params.set('page_size', String(queryParams.page_size || 50));
+        if (queryParams?.page_size) params.set('page_size', String(queryParams.page_size));
         if (queryParams?.name) params.set('name', queryParams.name);
         if (queryParams?.code) params.set('code', queryParams.code);
         if (queryParams?.unit_id) params.set('unit_id', queryParams.unit_id);
         if (queryParams?.institution_id) params.set('institution_id', queryParams.institution_id);
 
-        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/grades?${params.toString()}`, {
+        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/class-codes?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });
 
         if (!res.ok) {
-            throw new Error(`HTTP error! status: ${res.status}`);
+            return { data: [], total: 0, page: 1, page_size: 10, total_pages: 0 };
         }
 
         const json = await res.json();
@@ -74,69 +74,44 @@ export async function listGrades(queryParams?: {
             data: json.data || [],
             total: json.total || (json.data ? json.data.length : 0),
             page: json.page || 1,
-            page_size: json.page_size || 50,
+            page_size: json.page_size || 10,
             total_pages: json.total_pages || 1,
         };
     } catch (err) {
-        console.warn('Error fetching grades list:', err);
-        return {
-            data: [],
-            total: 0,
-            page: 1,
-            page_size: 50,
-            total_pages: 0,
-        };
+        console.warn('Error fetching class codes list:', err);
+        return { data: [], total: 0, page: 1, page_size: 10, total_pages: 0 };
     }
 }
 
-export async function getGradeById(id: string): Promise<GradeItem | null> {
+export async function getClassCodeById(id: string): Promise<ClassCodeItem | null> {
     if (!id || id === '00000000-0000-0000-0000-000000000000') return null;
     try {
-        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/grades/${id}`, {
+        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/class-codes/${id}`, {
             method: 'GET',
             headers: getHeaders(),
         });
         if (!res.ok) return null;
         return await res.json();
     } catch (err) {
-        console.warn(`Error fetching grade ${id}:`, err);
+        console.warn(`Error fetching class code ${id}:`, err);
         return null;
     }
 }
 
-export async function getGradesByUnit(unitId: string): Promise<GradeItem[]> {
-    if (!unitId || unitId === '00000000-0000-0000-0000-000000000000') return [];
-    try {
-        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/grades/unit/${unitId}`, {
-            method: 'GET',
-            headers: getHeaders(),
-        });
-        if (!res.ok) {
-            console.warn(`Failed to fetch grades for unit ${unitId}: ${res.status}`);
-            return [];
-        }
-        const json = await res.json();
-        return Array.isArray(json) ? json : (json.data || []);
-    } catch (err) {
-        console.warn(`Error fetching grades for unit ${unitId}:`, err);
-        return [];
-    }
-}
-
-export async function createGrade(payload: Partial<GradeItem>): Promise<{
+export async function createClassCode(payload: Partial<ClassCodeItem>): Promise<{
     success: boolean;
-    data?: GradeItem;
+    data?: ClassCodeItem;
     message?: string;
 }> {
     try {
-        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/grades`, {
+        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/class-codes`, {
             method: 'POST',
             headers: getHeaders(),
             body: JSON.stringify(payload),
         });
         const data = await res.json();
         if (!res.ok) {
-            return { success: false, message: data.message || 'Gagal menambahkan skala nilai' };
+            return { success: false, message: data.message || 'Gagal menambahkan kode kelas' };
         }
         return { success: true, data };
     } catch (err: any) {
@@ -144,20 +119,20 @@ export async function createGrade(payload: Partial<GradeItem>): Promise<{
     }
 }
 
-export async function updateGrade(id: string, payload: Partial<GradeItem>): Promise<{
+export async function updateClassCode(id: string, payload: Partial<ClassCodeItem>): Promise<{
     success: boolean;
-    data?: GradeItem;
+    data?: ClassCodeItem;
     message?: string;
 }> {
     try {
-        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/grades/${id}`, {
+        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/class-codes/${id}`, {
             method: 'PUT',
             headers: getHeaders(),
             body: JSON.stringify(payload),
         });
         const data = await res.json();
         if (!res.ok) {
-            return { success: false, message: data.message || 'Gagal memperbarui skala nilai' };
+            return { success: false, message: data.message || 'Gagal memperbarui kode kelas' };
         }
         return { success: true, data };
     } catch (err: any) {
@@ -165,17 +140,17 @@ export async function updateGrade(id: string, payload: Partial<GradeItem>): Prom
     }
 }
 
-export async function deleteGrade(id: string): Promise<{ success: boolean; message?: string }> {
+export async function deleteClassCode(id: string): Promise<{ success: boolean; message?: string }> {
     try {
-        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/grades/${id}`, {
+        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/class-codes/${id}`, {
             method: 'DELETE',
             headers: getHeaders(),
         });
         const data = await res.json();
         if (!res.ok) {
-            return { success: false, message: data.message || 'Gagal menghapus skala nilai' };
+            return { success: false, message: data.message || 'Gagal menghapus kode kelas' };
         }
-        return { success: true, message: data.message || 'Skala nilai berhasil dihapus' };
+        return { success: true, message: data.message || 'Kode kelas berhasil dihapus' };
     } catch (err: any) {
         return { success: false, message: err.message || 'Terjadi kesalahan sistem' };
     }
