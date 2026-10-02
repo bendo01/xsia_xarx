@@ -1,7 +1,7 @@
 import { createSignal } from 'solid-js';
 export { getStorageItem, setStorageItem, removeStorageItem } from './storage';
 import { getStorageItem, setStorageItem, removeStorageItem } from './storage';
-import { GetUserRoles, GetCurrentUser, LogoutUser as apiLogoutUser } from '../controllers/auth/AuthUser';
+import { GetUserRoles, GetCurrentUser, ChangeUserRole, LogoutUser as apiLogoutUser } from '../controllers/auth/AuthUser';
 import { getStudentById } from '../controllers/academic/student/master/AcademicStudentMasterStudentController';
 import { masterApiShow } from '../controllers/master/masterApiController';
 import { t } from '../i18n';
@@ -86,6 +86,26 @@ export function normalizeRoleName(rawRole: string | null | undefined, roleItem?:
     }
     if (!rawRole) return 'guest';
     const lower = rawRole.toLowerCase().trim().replace(/[-\s]+/g, '_');
+
+    // Specific rectorat keywords before generic admin keyword to avoid "biro_administrasi" or "dekan" etc. being caught
+    if (
+        lower.includes('rektor') ||
+        lower.includes('rector') ||
+        lower.includes('dekan') ||
+        lower.includes('decan') ||
+        lower.includes('yayasan') ||
+        lower.includes('pimpinan') ||
+        lower.includes('biro_administrasi') ||
+        lower.includes('pdpt') ||
+        lower.includes('pengembangan_teknologi_informasi') ||
+        lower.includes('sekertaris_rektor') ||
+        lower.includes('sekretaris_rektor') ||
+        lower.includes('lpti') ||
+        lower.includes('bauk')
+    ) {
+        return 'rectorat';
+    }
+
     if (lower.includes('admin') || lower === 'administrator') {
         return 'administrator';
     }
@@ -115,9 +135,6 @@ export function normalizeRoleName(rawRole: string | null | undefined, roleItem?:
     ) {
         return 'course_department';
     }
-    if (lower.includes('rektor') || lower.includes('rector') || lower.includes('yayasan') || lower.includes('pimpinan') || lower.includes('biro administrasi') || lower.includes('pdpt') || lower.includes('pengembangan teknologi informasi') || lower.includes('sekertaris rektor') || lower.includes('lpti')) {
-        return 'rectorat';
-    }
     if (lower === 'user' || lower === 'staff') {
         if (isStaffProgramStudi(rawRole)) {
             return 'course_department';
@@ -127,8 +144,8 @@ export function normalizeRoleName(rawRole: string | null | undefined, roleItem?:
     return lower;
 }
 
-export function getRoleDisplayName(roleName: string): string {
-    const norm = normalizeRoleName(roleName);
+export function getRoleDisplayName(roleName: string, roleItem?: UserRoleItem | null): string {
+    const norm = normalizeRoleName(roleName, roleItem);
     switch (norm) {
         case 'administrator':
             return t('roles.administrator');
@@ -187,12 +204,14 @@ export function getDashboardPathForRole(
             return '/candidate/academic/candidate/master/candidate';
         case 'rectorat': {
             // Prefer dynamically resolved institution_id stored on roleItem,
-            // then fall back to storage, then env var.
+            // then fall back to activeInstitutionIdSignal or storage, then env var or university default.
             const instId =
                 roleItem?.institution_id ||
+                activeInstitutionIdSignal() ||
                 getStorageItem('institution_id') ||
+                (import.meta as any).env?.CURRENT_INSTITUTION_ID ||
                 import.meta.env.VITE_INSTITUTION_ID ||
-                '00000000-0000-0000-0000-000000000000';
+                'ed7e8c02-451b-4548-aa81-26b8d0b7fdec';
             return `/rectorat/institution/${instId}`;
         }
         default:
@@ -287,19 +306,39 @@ const [currentUserSignal, setCurrentUserSignal] = createSignal<StoredUser | null
 const [userRolesSignal, setUserRolesSignal] = createSignal<UserRoleItem[]>([]);
 const [activeRoleSignal, setActiveRoleSignal] = createSignal<string>('student');
 const [currentRoleIdSignal, setCurrentRoleIdSignal] = createSignal<string>('');
+const [activeInstitutionIdSignal, setActiveInstitutionIdSignal] = createSignal<string>('');
 const [isAuthenticatedSignal, setIsAuthenticatedSignal] = createSignal<boolean>(false);
 const [activeStudentIdSignal, setActiveStudentIdSignal] = createSignal<string>('');
 const [activeStudentCodeSignal, setActiveStudentCodeSignal] = createSignal<string>('');
 
 export {
     currentUserSignal,
+    setCurrentUserSignal,
     userRolesSignal,
+    setUserRolesSignal,
     activeRoleSignal,
+    setActiveRoleSignal,
     currentRoleIdSignal,
+    setCurrentRoleIdSignal,
+    activeInstitutionIdSignal,
+    setActiveInstitutionIdSignal,
     isAuthenticatedSignal,
+    setIsAuthenticatedSignal,
     activeStudentIdSignal,
-    activeStudentCodeSignal
+    setActiveStudentIdSignal,
+    activeStudentCodeSignal,
+    setActiveStudentCodeSignal
 };
+
+export function getActiveInstitutionId(): string {
+    return activeInstitutionIdSignal() || getStorageItem('institution_id') || '';
+}
+
+export function setActiveInstitution(institutionId: string, isSession: boolean = false): void {
+    if (!institutionId || institutionId === '00000000-0000-0000-0000-000000000000') return;
+    setStorageItem('institution_id', institutionId, isSession);
+    setActiveInstitutionIdSignal(institutionId);
+}
 
 export function getActiveStudentId(): string {
     return getStorageItem('active_student_id') || '';
@@ -335,18 +374,43 @@ export async function enrichUserRolesWithStudentCodes(): Promise<UserRoleItem[]>
             }
         }
         if (
-            (normalizeRoleName(r.name) === 'course_department' || isStaffProgramStudi(r) || r.roleable_type?.includes('Staff')) &&
+            (normalizeRoleName(r.name, r) === 'rectorat' || normalizeRoleName(r.name, r) === 'course_department' || isStaffProgramStudi(r) || r.roleable_type?.includes('Staff')) &&
             r.roleable_id &&
-            !r.unit_id
+            (!r.unit_id || !r.institution_id)
         ) {
             try {
                 const staffRes = await masterApiShow<any>('institution/master/staffes', r.roleable_id);
+                let enrichedRole = { ...r };
+                let roleChanged = false;
                 if (staffRes.data?.unit_id) {
-                    changed = true;
-                    if (!getStorageItem('unit_id')) {
-                        setStorageItem('unit_id', staffRes.data.unit_id);
+                    if (!enrichedRole.unit_id) {
+                        enrichedRole.unit_id = staffRes.data.unit_id;
+                        roleChanged = true;
                     }
-                    return { ...r, unit_id: staffRes.data.unit_id };
+                    if (!enrichedRole.institution_id) {
+                        try {
+                            const unitRes = await masterApiShow<any>('institution/master/units', staffRes.data.unit_id);
+                            const instId = unitRes.data?.institution_id || unitRes.data?.institution?.id;
+                            if (instId) {
+                                enrichedRole.institution_id = instId;
+                                roleChanged = true;
+                            }
+                        } catch {}
+                    }
+                }
+                if (!enrichedRole.institution_id && staffRes.data?.employee_id) {
+                    try {
+                        const empRes = await masterApiShow<any>('institution/master/employees', staffRes.data.employee_id);
+                        const instId = empRes.data?.institution_id || empRes.data?.institution?.id;
+                        if (instId) {
+                            enrichedRole.institution_id = instId;
+                            roleChanged = true;
+                        }
+                    } catch {}
+                }
+                if (roleChanged) {
+                    changed = true;
+                    return enrichedRole;
                 }
             } catch {
                 // Ignore
@@ -365,6 +429,9 @@ export async function enrichUserRolesWithStudentCodes(): Promise<UserRoleItem[]>
         if (currentRole?.unit_id) {
             setStorageItem('unit_id', currentRole.unit_id);
         }
+        if (currentRole?.institution_id) {
+            setActiveInstitution(currentRole.institution_id);
+        }
     }
     return updatedRoles;
 }
@@ -377,10 +444,12 @@ export function refreshAuthState(): void {
     const studentId = getActiveStudentId();
     const studentCode = getActiveStudentCode();
     const currentRoleId = getStorageItem('current_role') || '';
+    const instId = getStorageItem('institution_id') || '';
     setCurrentUserSignal(user);
     setUserRolesSignal(roles);
     setActiveRoleSignal(active);
     setCurrentRoleIdSignal(currentRoleId);
+    setActiveInstitutionIdSignal(instId);
     setActiveStudentIdSignal(studentId);
     setActiveStudentCodeSignal(studentCode);
     setIsAuthenticatedSignal(Boolean(token && token !== 'undefined' && token !== ''));
@@ -398,19 +467,79 @@ export function setActiveRole(roleNameOrId: string, isSession: boolean = false):
         targetId = matchedById.id;
         targetRole = matchedById;
     } else {
-        const matchedByName = roles.find(r => normalizeRoleName(r.name) === normalizeRoleName(roleNameOrId));
-        if (matchedByName) {
-            targetName = matchedByName.name;
-            targetId = matchedByName.id;
-            targetRole = matchedByName;
+        const queryLower = roleNameOrId.toLowerCase().trim();
+        const queryClean = queryLower.replace(/[-\s_]+/g, '');
+
+        // 1. Exact name match
+        let found = roles.find(r => r.name.toLowerCase().trim() === queryLower);
+        // 2. Clean name match (ignoring whitespace and dashes)
+        if (!found) {
+            found = roles.find(r => r.name.toLowerCase().replace(/[-\s_]+/g, '') === queryClean);
+        }
+        // 3. Keyword match for LPTI / Dekan / Rektor etc.
+        if (!found) {
+            if (queryClean.includes('lpti')) {
+                found = roles.find(r => r.name.toLowerCase().includes('lpti'));
+            } else if (queryClean.includes('dekan')) {
+                found = roles.find(r => r.name.toLowerCase().includes('dekan'));
+            } else if (queryClean.includes('rektor')) {
+                found = roles.find(r => r.name.toLowerCase().includes('rektor'));
+            }
+        }
+        // 4. Role category match (only if matches exactly one role)
+        if (!found) {
+            const categoryMatches = roles.filter(r => normalizeRoleName(r.name, r) === normalizeRoleName(roleNameOrId));
+            if (categoryMatches.length === 1) {
+                found = categoryMatches[0];
+            }
+        }
+
+        if (found) {
+            targetName = found.name;
+            targetId = found.id;
+            targetRole = found;
         }
     }
 
-    const normalized = normalizeRoleName(targetName);
+    const normalized = normalizeRoleName(targetName, targetRole);
     setStorageItem('active_role', normalized, isSession);
     setStorageItem('current_role', targetId, isSession);
     setActiveRoleSignal(normalized);
     setCurrentRoleIdSignal(targetId);
+
+    // Sync stored user with current_role_id
+    const curUser = getStoredUser();
+    if (curUser) {
+        curUser.current_role_id = targetId;
+        setStorageItem('user', JSON.stringify(curUser), isSession);
+        setStorageItem('current_user', JSON.stringify(curUser), isSession);
+        setCurrentUserSignal(curUser);
+    }
+
+    // Persist current_role_id to the database via API
+    const isUuid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(targetId);
+    if (isUuid && isAuthenticated()) {
+        ChangeUserRole(targetId).then((res) => {
+            if (res.code === 200 && res.data) {
+                setCurrentUserSignal(res.data);
+                if (res.data.roles && Array.isArray(res.data.roles)) {
+                    const currentRoles = getStoredRoles();
+                    const merged = res.data.roles.map((r: any) => {
+                        const prev = currentRoles.find((p: any) => p.id === r.id);
+                        return {
+                            ...r,
+                            code: r.code || prev?.code,
+                            institution_id: r.institution_id || prev?.institution_id,
+                        };
+                    });
+                    setUserRolesSignal(merged);
+                    setStorageItem('roles', JSON.stringify(merged), isSession);
+                }
+            }
+        }).catch((err) => {
+            console.warn('Failed to persist current_role_id to server:', err);
+        });
+    }
 
     if (targetRole && normalized === 'student' && targetRole.roleable_id) {
         setActiveStudent(targetRole.roleable_id, targetRole.code, isSession);
@@ -419,29 +548,35 @@ export function setActiveRole(roleNameOrId: string, isSession: boolean = false):
         setStorageItem('unit_id', targetRole.unit_id, isSession);
     }
 
-    // For rectorat roles: use cached institution_id or resolve asynchronously
-    if (normalized === 'rectorat' && targetRole?.roleable_id && targetRole.roleable_type?.includes('Staff')) {
-        if (targetRole.institution_id) {
-            // Already resolved — persist to storage
-            setStorageItem('institution_id', targetRole.institution_id, isSession);
-        } else {
-            // Resolve asynchronously in background (staff → employee → institution_id)
+    // For rectorat roles: ensure valid institution_id in storage and resolve details
+    if (normalized === 'rectorat') {
+        if (targetRole?.institution_id) {
+            setActiveInstitution(targetRole.institution_id, isSession);
+        } else if (targetRole?.roleable_id && targetRole.roleable_type?.includes('Staff')) {
             (async () => {
                 try {
                     const staffRes = await masterApiShow<any>('institution/master/staffes', targetRole!.roleable_id!);
-                    const employeeId = staffRes.data?.employee_id;
-                    if (employeeId) {
-                        const employeeRes = await masterApiShow<any>('institution/master/employees', employeeId);
-                        const institutionId = employeeRes.data?.institution_id;
-                        if (institutionId) {
-                            setStorageItem('institution_id', institutionId, isSession);
-                            const storedRoles = getStoredRoles();
-                            const roleIdx = storedRoles.findIndex(r => r.id === targetRole!.id);
-                            if (roleIdx !== -1) {
-                                storedRoles[roleIdx] = { ...storedRoles[roleIdx], institution_id: institutionId };
-                                setStorageItem('roles', JSON.stringify(storedRoles), isSession);
-                                setUserRolesSignal(storedRoles);
-                            }
+                    let instId: string | undefined;
+                    if (staffRes.data?.unit_id) {
+                        try {
+                            const unitRes = await masterApiShow<any>('institution/master/units', staffRes.data.unit_id);
+                            instId = unitRes.data?.institution_id || unitRes.data?.institution?.id;
+                        } catch {}
+                    }
+                    if (!instId && staffRes.data?.employee_id) {
+                        try {
+                            const employeeRes = await masterApiShow<any>('institution/master/employees', staffRes.data.employee_id);
+                            instId = employeeRes.data?.institution_id || employeeRes.data?.institution?.id;
+                        } catch {}
+                    }
+                    if (instId) {
+                        setActiveInstitution(instId, isSession);
+                        const storedRoles = getStoredRoles();
+                        const roleIdx = storedRoles.findIndex(r => r.id === targetRole!.id);
+                        if (roleIdx !== -1) {
+                            storedRoles[roleIdx] = { ...storedRoles[roleIdx], institution_id: instId };
+                            setStorageItem('roles', JSON.stringify(storedRoles), isSession);
+                            setUserRolesSignal(storedRoles);
                         }
                     }
                 } catch (e) {
@@ -586,22 +721,28 @@ export async function processLoginSuccess(loginResponse: any, isSession: boolean
         !activeRoleItem.institution_id
     ) {
         try {
-            // Fetch staff record to get employee_id
             const staffRes = await masterApiShow<any>('institution/master/staffes', activeRoleItem.roleable_id);
-            const employeeId = staffRes.data?.employee_id;
-            if (employeeId) {
-                // Fetch employee record to get institution_id
-                const employeeRes = await masterApiShow<any>('institution/master/employees', employeeId);
-                const institutionId = employeeRes.data?.institution_id;
-                if (institutionId) {
-                    activeRoleItem.institution_id = institutionId;
-                    setStorageItem('institution_id', institutionId, isSession);
-                    const roleIdx = roles.findIndex(r => r.id === activeRoleItem?.id);
-                    if (roleIdx !== -1) {
-                        roles[roleIdx] = { ...roles[roleIdx], institution_id: institutionId };
-                        setStorageItem('roles', JSON.stringify(roles), isSession);
-                        setUserRolesSignal(roles);
-                    }
+            let institutionId: string | undefined;
+            if (staffRes.data?.unit_id) {
+                try {
+                    const unitRes = await masterApiShow<any>('institution/master/units', staffRes.data.unit_id);
+                    institutionId = unitRes.data?.institution_id || unitRes.data?.institution?.id;
+                } catch {}
+            }
+            if (!institutionId && staffRes.data?.employee_id) {
+                try {
+                    const employeeRes = await masterApiShow<any>('institution/master/employees', staffRes.data.employee_id);
+                    institutionId = employeeRes.data?.institution_id || employeeRes.data?.institution?.id;
+                } catch {}
+            }
+            if (institutionId) {
+                activeRoleItem.institution_id = institutionId;
+                setActiveInstitution(institutionId, isSession);
+                const roleIdx = roles.findIndex(r => r.id === activeRoleItem?.id);
+                if (roleIdx !== -1) {
+                    roles[roleIdx] = { ...roles[roleIdx], institution_id: institutionId };
+                    setStorageItem('roles', JSON.stringify(roles), isSession);
+                    setUserRolesSignal(roles);
                 }
             }
         } catch (e) {
@@ -615,6 +756,8 @@ export async function processLoginSuccess(loginResponse: any, isSession: boolean
 export function logout(): void {
     apiLogoutUser();
     removeStorageItem('active_role');
+    removeStorageItem('institution_id');
+    setActiveInstitutionIdSignal('');
     refreshAuthState();
 }
 
@@ -662,12 +805,6 @@ export function canAccessRoute(pathname: string): RouteAccessResult {
     const activeRole = getActiveRole();
     const storedRoles = getStoredRoles();
 
-    // Administrator role has elevated bypass access across all areas
-    const isAdmin = activeRole === 'administrator' || storedRoles.some(r => normalizeRoleName(r.name, r) === 'administrator');
-    if (isAdmin) {
-        return { allowed: true };
-    }
-
     // If active role matches the required role, access is granted
     if (activeRole === requiredRole) {
         return { allowed: true };
@@ -680,6 +817,12 @@ export function canAccessRoute(pathname: string): RouteAccessResult {
             allowed: true,
             switchRole: matchingRoleItem,
         };
+    }
+
+    // Administrator role has elevated bypass access across all areas
+    const isAdmin = activeRole === 'administrator' || storedRoles.some(r => normalizeRoleName(r.name, r) === 'administrator');
+    if (isAdmin) {
+        return { allowed: true };
     }
 
     // User is authenticated but does not possess the required role (e.g. student visiting /course-department/...)

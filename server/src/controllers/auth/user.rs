@@ -1,7 +1,7 @@
 use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
+    ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, EntityTrait, IntoActiveModel,
     PaginatorTrait, QueryFilter, QueryOrder, Set,
 };
 use uuid::Uuid;
@@ -1092,21 +1092,40 @@ pub async fn set_current_role(
         StatusError::bad_request().brief("Invalid UUID format for role_id")
     })?;
 
-    // Verify role belongs to user
-    let user_role = role_entity::Entity::find_by_id(role_id)
-        .filter(role_entity::Column::UserId.eq(current_user_id))
-        .filter(role_entity::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::forbidden().brief("Role does not belong to the current user"))?;
-
+    // Find user first
     let user = entity_mod::Entity::find_by_id(current_user_id)
         .filter(entity_mod::Column::DeletedAt.is_null())
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
         .ok_or_else(|| StatusError::not_found().brief("User not found"))?;
+
+    // Check if user has admin privileges
+    let user_roles_check = fetch_user_roles(db, current_user_id).await;
+    let is_admin = user_roles_check.iter().any(|r| {
+        let name = r.name.to_lowercase();
+        let name_clean = name.replace([' ', '-', '_'], "");
+        name_clean == "superadmin" || name_clean == "admin" || name_clean == "administrator" || name.contains("admin")
+    });
+
+    // Verify role belongs to user or is shared or user is admin
+    let role_query = role_entity::Entity::find_by_id(role_id)
+        .filter(role_entity::Column::DeletedAt.is_null());
+
+    let user_role = if is_admin {
+        role_query.one(db).await
+    } else {
+        role_query
+            .filter(
+                Condition::any()
+                    .add(role_entity::Column::UserId.eq(current_user_id))
+                    .add(role_entity::Column::UserId.is_null())
+            )
+            .one(db)
+            .await
+    }
+    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+    .ok_or_else(|| StatusError::forbidden().brief("Role does not belong to the current user"))?;
 
     let mut active_model = user.into_active_model();
     active_model.current_role_id = Set(Some(user_role.id));
@@ -1116,7 +1135,23 @@ pub async fn set_current_role(
         StatusError::internal_server_error().brief(e.to_string())
     })?;
 
-    let user_roles = fetch_user_roles(db, updated_user.id).await;
+    let mut user_roles = fetch_user_roles(db, updated_user.id).await;
+    if !user_roles.iter().any(|r| r.id == user_role.id) {
+        user_roles.push(crate::dtos::auth::role::RoleResponse {
+            id: user_role.id,
+            name: user_role.name.clone(),
+            user_id: user_role.user_id,
+            position_type_id: user_role.position_type_id,
+            roleable_id: user_role.roleable_id,
+            roleable_type: user_role.roleable_type.clone(),
+            created_at: user_role.created_at,
+            updated_at: user_role.updated_at,
+            deleted_at: user_role.deleted_at,
+            sync_at: user_role.sync_at,
+            created_by: user_role.created_by,
+            updated_by: user_role.updated_by,
+        });
+    }
 
     Ok(Json(UserResponse {
         id: updated_user.id,

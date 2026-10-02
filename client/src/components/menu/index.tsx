@@ -9,6 +9,7 @@ import {
     activeStudentIdSignal,
     currentRoleIdSignal,
     setActiveRole, 
+    setActiveInstitution,
     setActiveStudent, 
     enrichUserRolesWithStudentCodes,
     getRoleDisplayName, 
@@ -17,7 +18,8 @@ import {
     normalizeRoleName,
     type UserRoleItem
 } from '../../lib/authStore';
-import { masterApiShow } from '../../controllers/master/masterApiController';
+import { ChangeUserRole } from '../../controllers/auth/AuthUser';
+import { resolveInstitutionFromStaffRole } from '../../lib/rectoratHelper';
 import { toast } from '../toast/Toaster';
 import { t } from '../../i18n';
 import MenuAdministrator from './administrator';
@@ -38,33 +40,48 @@ export default function DynamicMenu() {
     });
 
     const handleRoleChange = async (roleOrName: UserRoleItem | string) => {
-        const role = typeof roleOrName === 'string'
-            ? userRolesSignal().find(r => r.id === roleOrName || r.name === roleOrName)
+        const roles = userRolesSignal();
+        let role = typeof roleOrName === 'string'
+            ? roles.find(r => r.id === roleOrName || r.name === roleOrName)
             : roleOrName;
+        if (!role && typeof roleOrName === 'string') {
+            const q = roleOrName.toLowerCase().trim().replace(/[-\s_]+/g, '');
+            role = roles.find(r => r.name.toLowerCase().replace(/[-\s_]+/g, '') === q) ||
+                   (q.includes('lpti') ? roles.find(r => r.name.toLowerCase().includes('lpti')) : undefined) ||
+                   (q.includes('dekan') ? roles.find(r => r.name.toLowerCase().includes('dekan')) : undefined) ||
+                   (q.includes('rektor') ? roles.find(r => r.name.toLowerCase().includes('rektor')) : undefined);
+        }
         const roleName = typeof roleOrName === 'string' ? (role?.name || roleOrName) : roleOrName.name;
         const roleId = role?.id || (typeof roleOrName === 'string' ? roleOrName : roleOrName.name);
 
         setIsSwitchingRole(true);
         setActiveRole(roleId);
-        if (role && normalizeRoleName(role.name) === 'student' && role.roleable_id) {
+
+        // Explicitly persist to backend database (server/src/models/auth/user.rs current_role_id)
+        const isUuid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(roleId);
+        if (isUuid) {
+            try {
+                await ChangeUserRole(roleId);
+            } catch (e) {
+                console.warn('Failed to call ChangeUserRole:', e);
+            }
+        }
+
+        if (role && normalizeRoleName(role.name, role) === 'student' && role.roleable_id) {
             setActiveStudent(role.roleable_id, role.code);
         }
-        const displayName = getRoleDisplayName(roleName);
+        const displayName = getRoleDisplayName(roleName, role);
         const codeDisplay = role?.code ? ` (${role.code})` : '';
         toast.info(t('auth.login.roleSwitched', { role: `${displayName}${codeDisplay}` }));
         
-        // For rectorat roles, resolve institution_id if not yet cached
+        // For rectorat roles, resolve institution_id
         let resolvedRole = role;
-        if (normalizeRoleName(roleName, role) === 'rectorat' && role?.roleable_id && role.roleable_type?.includes('Staff') && !role.institution_id) {
+        if (normalizeRoleName(roleName, role) === 'rectorat') {
             try {
-                const staffRes = await masterApiShow<any>('institution/master/staffes', role.roleable_id);
-                const employeeId = staffRes.data?.employee_id;
-                if (employeeId) {
-                    const employeeRes = await masterApiShow<any>('institution/master/employees', employeeId);
-                    const institutionId = employeeRes.data?.institution_id;
-                    if (institutionId) {
-                        resolvedRole = { ...role, institution_id: institutionId };
-                    }
+                const instId = await resolveInstitutionFromStaffRole(undefined, role || roleId);
+                if (instId) {
+                    resolvedRole = { ...(role || {}), id: roleId, name: roleName, institution_id: instId };
+                    setActiveInstitution(instId);
                 }
             } catch (e) {
                 console.warn('Failed to resolve institution_id during menu role switch:', e);
@@ -118,7 +135,7 @@ export default function DynamicMenu() {
                             <div class="grid grid-cols-2 gap-1.5">
                                 <For each={userRolesSignal()}>
                                     {(roleItem) => {
-                                        const isStudent = () => normalizeRoleName(roleItem.name) === 'student';
+                                        const isStudent = () => normalizeRoleName(roleItem.name, roleItem) === 'student';
                                         const isCurrent = () => {
                                             if (currentRoleIdSignal()) {
                                                 return roleItem.id === currentRoleIdSignal();
@@ -126,7 +143,7 @@ export default function DynamicMenu() {
                                             if (isStudent() && activeStudentIdSignal() && roleItem.roleable_id) {
                                                 return roleItem.roleable_id === activeStudentIdSignal();
                                             }
-                                            return normalizeRoleName(roleItem.name) === activeRoleSignal();
+                                            return normalizeRoleName(roleItem.name, roleItem) === activeRoleSignal();
                                         };
                                         const studentCode = () => roleItem.code || (isStudent() && isCurrent() ? activeStudentCodeSignal() : '');
 
@@ -141,7 +158,7 @@ export default function DynamicMenu() {
                                                 }`}
                                             >
                                                 <div class="flex flex-col min-w-0">
-                                                    <span class="truncate">{getRoleDisplayName(roleItem.name)}</span>
+                                                    <span class="truncate">{getRoleDisplayName(roleItem.name, roleItem)}</span>
                                                     <Show when={isStudent() && studentCode()}>
                                                         <span class={`text-[10px] font-mono font-bold truncate ${
                                                             isCurrent() ? 'text-blue-100' : 'text-neutral-500 dark:text-neutral-400'

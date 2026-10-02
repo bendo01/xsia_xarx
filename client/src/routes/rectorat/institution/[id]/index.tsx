@@ -1,7 +1,8 @@
 import { createSignal, createEffect, onMount, For, Show, createMemo } from 'solid-js';
-import { useParams } from '@solidjs/router';
+import { useParams, useNavigate } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
-import { masterApiIndex, getBaseApiUrl, getAuthHeaders } from '~/controllers/master/masterApiController';
+import { masterApiIndex, masterApiShow, getBaseApiUrl, getAuthHeaders } from '~/controllers/master/masterApiController';
+import { resolveInstitutionFromStaffRole } from '~/lib/rectoratHelper';
 import { toast } from '~/components/toast/Toaster';
 import EChart from '~/components/chart/echart_component';
 
@@ -67,6 +68,7 @@ function extractLatestGpa(dash: any): number {
 }
 
 export default function RectoratInstitutionDashboard() {
+    const navigate = useNavigate();
     const params = useParams();
     const institutionId = () => params.id;
 
@@ -81,11 +83,21 @@ export default function RectoratInstitutionDashboard() {
 
     const fetchProdiUnits = async () => {
         const instId = institutionId();
-        if (!instId || instId === '[id]') return;
+        if (!instId || instId === '[id]' || instId === '00000000-0000-0000-0000-000000000000') return;
         setIsLoadingUnits(true);
         setDashboards([]);
+        setProdiUnits([]);
         setLoadedCount(0);
+        setSelectedProdiId(null);
+        setInstitutionName('');
         try {
+            // Eagerly fetch institution details directly for immediate header title update
+            masterApiShow<any>('institution/master/institutions', instId).then((res) => {
+                if (res.data?.name) {
+                    setInstitutionName(res.data.name);
+                }
+            }).catch(() => {});
+
             const res = await masterApiIndex<ProdiUnit>('institution/master/units', {
                 page: 1, per_page: 200,
                 institution_id: instId,
@@ -98,7 +110,7 @@ export default function RectoratInstitutionDashboard() {
             });
             setProdiUnits(prodi);
             setTotalToLoad(prodi.length);
-            if (all.length > 0) {
+            if (all.length > 0 && !institutionName()) {
                 setInstitutionName((all[0] as any)?.institution?.name || '');
             }
 
@@ -146,7 +158,20 @@ export default function RectoratInstitutionDashboard() {
         }
     };
 
-    onMount(() => { fetchProdiUnits(); });
+    createEffect(async () => {
+        let id = institutionId();
+        if (!id || id === '[id]' || id === '00000000-0000-0000-0000-000000000000') {
+            const resolved = await resolveInstitutionFromStaffRole();
+            if (resolved && resolved !== id) {
+                navigate(`/rectorat/institution/${resolved}`, { replace: true });
+                return;
+            }
+            id = resolved;
+        }
+        if (id && id !== '[id]' && id !== '00000000-0000-0000-0000-000000000000') {
+            fetchProdiUnits();
+        }
+    });
 
     const filteredDashboards = createMemo(() => {
         const q = searchQuery().toLowerCase();

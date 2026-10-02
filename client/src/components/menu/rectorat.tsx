@@ -1,16 +1,35 @@
-import { createSignal, onMount } from 'solid-js';
+import { onMount, createEffect } from 'solid-js';
 import { A } from '@solidjs/router';
 import { t } from '../../i18n';
-import { getStorageItem } from '../../lib/authStore';
+import { getStorageItem, activeInstitutionIdSignal, currentRoleIdSignal, setActiveInstitution } from '../../lib/authStore';
 import { resolveInstitutionFromStaffRole } from '../../lib/rectoratHelper';
 
+const getInitialInstId = () => {
+    const stored = activeInstitutionIdSignal() || getStorageItem('institution_id');
+    if (stored && stored !== '00000000-0000-0000-0000-000000000000') return stored;
+    return (import.meta as any).env?.CURRENT_INSTITUTION_ID || import.meta.env.VITE_INSTITUTION_ID || 'ed7e8c02-451b-4548-aa81-26b8d0b7fdec';
+};
+
 export default function MenuRectorat() {
-    const [instId, setInstId] = createSignal(getStorageItem('institution_id') || '00000000-0000-0000-0000-000000000000');
+    const instId = () => activeInstitutionIdSignal() || getInitialInstId();
+
+    createEffect(async () => {
+        const roleId = currentRoleIdSignal();
+        if (roleId) {
+            const resolved = await resolveInstitutionFromStaffRole(undefined, roleId);
+            if (resolved && resolved !== activeInstitutionIdSignal()) {
+                setActiveInstitution(resolved);
+            }
+        }
+    });
 
     onMount(async () => {
-        const resolved = await resolveInstitutionFromStaffRole(instId());
-        if (resolved) {
-            setInstId(resolved);
+        const current = activeInstitutionIdSignal();
+        if (!current || current === '00000000-0000-0000-0000-000000000000') {
+            const resolved = await resolveInstitutionFromStaffRole();
+            if (resolved) {
+                setActiveInstitution(resolved);
+            }
         }
     });
 

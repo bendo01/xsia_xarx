@@ -10,6 +10,8 @@ import {
   refreshAuthState,
   currentUserSignal,
   activeRoleSignal,
+  currentRoleIdSignal,
+  activeInstitutionIdSignal,
   isAuthenticatedSignal,
   isAuthenticated,
   setActiveRole,
@@ -70,6 +72,11 @@ describe("Auth Store & Role Engine (White-Box Unit Tests)", () => {
       expect(normalizeRoleName("rectorat")).toBe("rectorat");
       expect(normalizeRoleName("rektorat")).toBe("rectorat");
       expect(normalizeRoleName("pimpinan")).toBe("rectorat");
+      expect(normalizeRoleName("Wakil Dekan")).toBe("rectorat");
+      expect(normalizeRoleName("Dekan")).toBe("rectorat");
+      expect(normalizeRoleName("Ketua LPTI")).toBe("rectorat");
+      expect(normalizeRoleName("Rektor")).toBe("rectorat");
+      expect(normalizeRoleName("Yayasan")).toBe("rectorat");
     });
   });
 
@@ -90,15 +97,15 @@ describe("Auth Store & Role Engine (White-Box Unit Tests)", () => {
     it("maps roles to their respective primary dashboard route", () => {
       expect(getDashboardPathForRole("administrator")).toBe("/administrator/person/master/individual");
       expect(getDashboardPathForRole("course_department")).toBe("/course-department/institution/master/unit/[id]");
-      expect(getDashboardPathForRole("student")).toBe("/student/person/master/individual/[id]/show");
+      expect(getDashboardPathForRole("student")).toBe("/student/person/master/individual/[id]");
       expect(getDashboardPathForRole("lecturer")).toBe("/lecturer/person/master/individual/[id]/show");
       expect(getDashboardPathForRole("candidate")).toBe("/candidate/academic/candidate/master/candidate");
-      expect(getDashboardPathForRole("rectorat")).toBe("/dashboard/rectorat");
+      expect(getDashboardPathForRole("rectorat")).toContain("/rectorat/institution/");
     });
 
     it("resolves user individual_id and roleable unit_id when provided", () => {
       expect(getDashboardPathForRole("student", undefined, { individual_id: "9b63ae16-3da7-437e-990c-82eb97df5e00" }))
-        .toBe("/student/person/master/individual/9b63ae16-3da7-437e-990c-82eb97df5e00/show");
+        .toBe("/student/person/master/individual/9b63ae16-3da7-437e-990c-82eb97df5e00");
       expect(getDashboardPathForRole("lecturer", undefined, { individual_id: "lecturer-ind-123" }))
         .toBe("/lecturer/person/master/individual/lecturer-ind-123/show");
       expect(getDashboardPathForRole("course_department", { id: "1", name: "prodi", roleable_id: "unit-123" }))
@@ -193,6 +200,82 @@ describe("Auth Store & Role Engine (White-Box Unit Tests)", () => {
       expect(getActiveRole()).toBe("administrator");
     });
 
+    it("allows switching active role from administrator to rectorat (Wakil Dekan) and persists current_role_id", async () => {
+      const mockLoginResponse = {
+        user: {
+          id: "aa27599a-b279-42f7-bc87-0425c909c6c4",
+          name: "Benny",
+          current_role_id: "5dc9fe0d-1780-47d1-a409-e109151f6cbd",
+          roles: [
+            { id: "5dc9fe0d-1780-47d1-a409-e109151f6cbd", name: "Administrator" },
+            { id: "67ae5f7e-d2ff-407c-81e8-94588f7c54b1", name: "Wakil Dekan" },
+          ],
+        },
+      };
+
+      setStorageItem("token", "token-benny");
+      setStorageItem("user", JSON.stringify(mockLoginResponse.user));
+      await processLoginSuccess(mockLoginResponse);
+      expect(activeRoleSignal()).toBe("administrator");
+
+      setActiveRole("67ae5f7e-d2ff-407c-81e8-94588f7c54b1");
+      expect(activeRoleSignal()).toBe("rectorat");
+      expect(getActiveRole()).toBe("rectorat");
+      expect(currentRoleIdSignal()).toBe("67ae5f7e-d2ff-407c-81e8-94588f7c54b1");
+      expect(getStoredUser()?.current_role_id).toBe("67ae5f7e-d2ff-407c-81e8-94588f7c54b1");
+    });
+
+    it("switches correctly between two rectorat roles with different institution_ids", async () => {
+      const mockUserWithTwoRectoratRoles = {
+        user: {
+          id: "aa27599a-b279-42f7-bc87-0425c909c6c4",
+          name: "Benny",
+          current_role_id: "67ae5f7e-d2ff-407c-81e8-94588f7c54b1",
+          roles: [
+            {
+              id: "67ae5f7e-d2ff-407c-81e8-94588f7c54b1",
+              name: "Wakil Dekan",
+              institution_id: "1b626d4f-d4cc-4f1f-bdf5-ce3eb42160d2",
+            },
+            {
+              id: "2defd705-25d3-4e95-8135-da1b8e0775bc",
+              name: "Ketua LPTI",
+              institution_id: "ed7e8c02-451b-4548-aa81-26b8d0b7fdec",
+            },
+          ],
+        },
+      };
+
+      setStorageItem("token", "token-benny");
+      setStorageItem("user", JSON.stringify(mockUserWithTwoRectoratRoles.user));
+      setStorageItem("roles", JSON.stringify(mockUserWithTwoRectoratRoles.user.roles));
+      await processLoginSuccess(mockUserWithTwoRectoratRoles);
+
+      // Start on Wakil Dekan
+      setActiveRole("67ae5f7e-d2ff-407c-81e8-94588f7c54b1");
+      expect(activeRoleSignal()).toBe("rectorat");
+      expect(activeInstitutionIdSignal()).toBe("1b626d4f-d4cc-4f1f-bdf5-ce3eb42160d2");
+      const pathWakilDekan = getDashboardPathForRole("Wakil Dekan", mockUserWithTwoRectoratRoles.user.roles[0]);
+      expect(pathWakilDekan).toBe("/rectorat/institution/1b626d4f-d4cc-4f1f-bdf5-ce3eb42160d2");
+
+      // Switch to Ketua LPTI by ID
+      setActiveRole("2defd705-25d3-4e95-8135-da1b8e0775bc");
+      expect(activeRoleSignal()).toBe("rectorat");
+      expect(activeInstitutionIdSignal()).toBe("ed7e8c02-451b-4548-aa81-26b8d0b7fdec");
+      const pathLpti = getDashboardPathForRole("Ketua LPTI", mockUserWithTwoRectoratRoles.user.roles[1]);
+      expect(pathLpti).toBe("/rectorat/institution/ed7e8c02-451b-4548-aa81-26b8d0b7fdec");
+
+      // Switch back to Wakil Dekan by name
+      setActiveRole("Wakil Dekan");
+      expect(activeRoleSignal()).toBe("rectorat");
+      expect(activeInstitutionIdSignal()).toBe("1b626d4f-d4cc-4f1f-bdf5-ce3eb42160d2");
+
+      // Switch to Kepala LPTI by name variation ("Kepala LPTI")
+      setActiveRole("Kepala LPTI");
+      expect(activeRoleSignal()).toBe("rectorat");
+      expect(activeInstitutionIdSignal()).toBe("ed7e8c02-451b-4548-aa81-26b8d0b7fdec");
+    });
+
     it("correctly sets student role for marshamarshaif@gmail.com with Mahasiswa role and prevents administrator access", async () => {
       const mockStudentResponse = {
         token: "jwt-student-token",
@@ -222,7 +305,7 @@ describe("Auth Store & Role Engine (White-Box Unit Tests)", () => {
       expect(currentUserSignal()?.name).toBe("MARSHA");
       expect(activeRoleSignal()).toBe("student");
       expect(getActiveRole()).toBe("student");
-      expect(dashboardPath).toBe("/student/person/master/individual/9b63ae16-3da7-437e-990c-82eb97df5e00/show");
+      expect(dashboardPath).toBe("/student/person/master/individual/9b63ae16-3da7-437e-990c-82eb97df5e00");
 
       const storedRoles = getStoredRoles();
       expect(storedRoles.length).toBe(1);
@@ -248,7 +331,7 @@ describe("Auth Store & Role Engine (White-Box Unit Tests)", () => {
 
       expect(activeRoleSignal()).toBe("student");
       expect(getActiveRole()).toBe("student");
-      expect(dashboardPath).toBe("/student/person/master/individual/[id]/show");
+      expect(dashboardPath).toBe("/student/person/master/individual/[id]");
 
       const storedRoles = getStoredRoles();
       expect(storedRoles.length).toBe(1);
@@ -314,7 +397,7 @@ describe("Auth Store & Role Engine (White-Box Unit Tests)", () => {
       const result = canAccessRoute("/course-department/academic/student/master?unit_id=94a676ce-06e6-4fd5-88c2-3122533f9ccb");
       expect(result.allowed).toBe(false);
       expect(result.reason).toBe("unauthorized");
-      expect(result.redirectTo).toBe("/student/person/master/individual/9b63ae16-3da7-437e-990c-82eb97df5e00/show");
+      expect(result.redirectTo).toBe("/student/person/master/individual/9b63ae16-3da7-437e-990c-82eb97df5e00");
     });
 
     it("PREVENTS student from accessing administrator pages", () => {
@@ -329,7 +412,7 @@ describe("Auth Store & Role Engine (White-Box Unit Tests)", () => {
       const result = canAccessRoute("/administrator/person/master/individual");
       expect(result.allowed).toBe(false);
       expect(result.reason).toBe("unauthorized");
-      expect(result.redirectTo).toBe("/student/person/master/individual/9b63ae16-3da7-437e-990c-82eb97df5e00/show");
+      expect(result.redirectTo).toBe("/student/person/master/individual/9b63ae16-3da7-437e-990c-82eb97df5e00");
     });
 
     it("ALLOWS student to access student routes", () => {

@@ -217,6 +217,7 @@ export async function GetCurrentUser() {
             };
         }
         setStorageItem("current_user", JSON.stringify(data));
+        setStorageItem("user", JSON.stringify(data));
         if (data.id) setStorageItem("id", String(data.id));
         if (data.pid) setStorageItem("pid", String(data.pid));
         if (data.individual_id) setStorageItem("individual_id", String(data.individual_id));
@@ -243,7 +244,7 @@ export async function GetCurrentUser() {
 export async function ChangeUserRole(role_id: string) {
     try {
         const response = await fetch(`${getBaseUrl()}/user/set_current_role/${role_id}`, {
-            method: "GET",
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 Accept: "application/json",
@@ -258,9 +259,21 @@ export async function ChangeUserRole(role_id: string) {
             };
         }
         setStorageItem("current_user", JSON.stringify(data));
+        setStorageItem("user", JSON.stringify(data));
         if (data.current_role_id) setStorageItem("current_role", String(data.current_role_id));
         if (data.roles && Array.isArray(data.roles)) {
-            setStorageItem("roles", JSON.stringify(data.roles));
+            const rawStored = getStorageItem("roles");
+            let prevRoles: any[] = [];
+            try { prevRoles = rawStored ? JSON.parse(rawStored) : []; } catch {}
+            const merged = data.roles.map((r: any) => {
+                const prev = prevRoles.find((p: any) => p.id === r.id);
+                return {
+                    ...r,
+                    code: r.code || prev?.code,
+                    institution_id: r.institution_id || prev?.institution_id,
+                };
+            });
+            setStorageItem("roles", JSON.stringify(merged));
         }
         return {
             code: 200,

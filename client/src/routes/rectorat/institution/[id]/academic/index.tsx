@@ -1,4 +1,4 @@
-import { createSignal, onMount, Show, For, createMemo } from 'solid-js';
+import { createSignal, createEffect, onMount, Show, For, createMemo } from 'solid-js';
 import { useParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { masterApiIndex } from '~/controllers/master/masterApiController';
@@ -65,7 +65,13 @@ export default function RectoratAcademicHub() {
         }
     };
 
-    onMount(() => fetchStats());
+    createEffect(() => {
+        const pId = params.id;
+        if (pId && pId !== resolvedInstitutionId()) {
+            setResolvedInstitutionId(pId);
+        }
+        fetchStats();
+    });
 
     const sections = createMemo(() => [
         {

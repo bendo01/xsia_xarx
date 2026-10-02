@@ -11,6 +11,7 @@ import {
     currentRoleIdSignal,
     logout,
     setActiveRole,
+    setActiveInstitution,
     setActiveStudent,
     getRoleDisplayName,
     getDashboardPathForRole,
@@ -21,6 +22,8 @@ import {
     type UserRoleItem
 } from '../../lib/authStore';
 import { masterApiShow } from '../../controllers/master/masterApiController';
+import { ChangeUserRole } from '../../controllers/auth/AuthUser';
+import { resolveInstitutionFromStaffRole } from '../../lib/rectoratHelper';
 import { toast } from '../toast/Toaster';
 import { t, getLocale, setLocale, toggleLocale, SUPPORTED_LOCALES } from '../../i18n';
 
@@ -50,35 +53,49 @@ export default function TopBar() {
     };
 
     const handleRoleSwitch = async (roleOrName: UserRoleItem | string) => {
-        const role = typeof roleOrName === 'string'
-            ? userRolesSignal().find(r => r.id === roleOrName || r.name === roleOrName)
+        const roles = userRolesSignal();
+        let role = typeof roleOrName === 'string'
+            ? roles.find(r => r.id === roleOrName || r.name === roleOrName)
             : roleOrName;
+        if (!role && typeof roleOrName === 'string') {
+            const q = roleOrName.toLowerCase().trim().replace(/[-\s_]+/g, '');
+            role = roles.find(r => r.name.toLowerCase().replace(/[-\s_]+/g, '') === q) ||
+                   (q.includes('lpti') ? roles.find(r => r.name.toLowerCase().includes('lpti')) : undefined) ||
+                   (q.includes('dekan') ? roles.find(r => r.name.toLowerCase().includes('dekan')) : undefined) ||
+                   (q.includes('rektor') ? roles.find(r => r.name.toLowerCase().includes('rektor')) : undefined);
+        }
         const roleName = typeof roleOrName === 'string' ? (role?.name || roleOrName) : roleOrName.name;
         const roleId = role?.id || (typeof roleOrName === 'string' ? roleOrName : roleOrName.name);
 
         setActiveRole(roleId);
-        if (role && normalizeRoleName(role.name) === 'student' && role.roleable_id) {
+
+        // Explicitly persist to backend database (server/src/models/auth/user.rs current_role_id)
+        const isUuid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(roleId);
+        if (isUuid) {
+            try {
+                await ChangeUserRole(roleId);
+            } catch (e) {
+                console.warn('Failed to call ChangeUserRole:', e);
+            }
+        }
+
+        if (role && normalizeRoleName(role.name, role) === 'student' && role.roleable_id) {
             setActiveStudent(role.roleable_id, role.code);
         }
-        const displayName = getRoleDisplayName(roleName);
+        const displayName = getRoleDisplayName(roleName, role);
         const codeDisplay = role?.code ? ` (${role.code})` : '';
         toast.success(t('auth.login.roleSwitched', { role: `${displayName}${codeDisplay}` }));
 
-        // For rectorat roles, resolve institution_id if not yet cached
+        // For rectorat roles, resolve institution_id
         let resolvedRole = role;
-        if (normalizeRoleName(roleName, role) === 'rectorat' && role?.roleable_id && role.roleable_type?.includes('Staff') && !role.institution_id) {
+        if (normalizeRoleName(roleName, role) === 'rectorat') {
             try {
-                const staffRes = await masterApiShow<any>('institution/master/staffes', role.roleable_id);
-                const employeeId = staffRes.data?.employee_id;
-                if (employeeId) {
-                    const employeeRes = await masterApiShow<any>('institution/master/employees', employeeId);
-                    const institutionId = employeeRes.data?.institution_id;
-                    if (institutionId) {
-                        resolvedRole = { ...role, institution_id: institutionId };
-                    }
+                const instId = await resolveInstitutionFromStaffRole(undefined, role || roleId);
+                if (instId) {
+                    resolvedRole = { ...(role || {}), id: roleId, name: roleName, institution_id: instId };
+                    setActiveInstitution(instId);
                 }
             } catch (e) {
-                // Fall back to storage or env var
                 console.warn('Failed to resolve institution_id during role switch:', e);
             }
         }
@@ -92,7 +109,7 @@ export default function TopBar() {
 
     const userName = () => currentUserSignal()?.name || "User Account";
     const userEmail = () => currentUserSignal()?.email || "user@example.com";
-    const activeRoleDisplay = () => getRoleDisplayName(activeRoleSignal());
+    const activeRoleDisplay = () => getRoleDisplayName(activeRoleSignal(), userRolesSignal().find(r => r.id === currentRoleIdSignal() || normalizeRoleName(r.name, r) === activeRoleSignal()));
 
     return (
         <header class="sticky top-0 z-20 flex flex-wrap sm:justify-start sm:flex-nowrap w-full py-2.5 bg-white/95 dark:bg-neutral-900/95 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-700 shadow-2xs">
@@ -295,7 +312,7 @@ export default function TopBar() {
                                             <div class="space-y-1">
                                                 <For each={userRolesSignal()}>
                                                     {(r) => {
-                                                        const isStudent = () => normalizeRoleName(r.name) === 'student';
+                                                        const isStudent = () => normalizeRoleName(r.name, r) === 'student';
                                                         const isSelected = () => {
                                                             if (currentRoleIdSignal()) {
                                                                 return r.id === currentRoleIdSignal();
@@ -303,7 +320,7 @@ export default function TopBar() {
                                                             if (isStudent() && activeStudentIdSignal() && r.roleable_id) {
                                                                 return r.roleable_id === activeStudentIdSignal();
                                                             }
-                                                            return normalizeRoleName(r.name) === activeRoleSignal();
+                                                            return normalizeRoleName(r.name, r) === activeRoleSignal();
                                                         };
                                                         const studentCode = () => r.code || (isStudent() && isSelected() ? activeStudentCodeSignal() : '');
 
@@ -317,7 +334,7 @@ export default function TopBar() {
                                                                     }`}
                                                             >
                                                                 <div class="flex items-center gap-2 min-w-0">
-                                                                    <span class="truncate">{getRoleDisplayName(r.name)}</span>
+                                                                    <span class="truncate">{getRoleDisplayName(r.name, r)}</span>
                                                                     <Show when={isStudent() && studentCode()}>
                                                                         <span class="inline-flex items-center px-1.5 py-0.5 rounded-xs text-[10px] font-mono font-bold bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700">
                                                                             {studentCode()}

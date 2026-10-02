@@ -4,6 +4,9 @@ import {
     currentRoleIdSignal,
     getStoredUser,
     currentUserSignal,
+    activeInstitutionIdSignal,
+    setActiveInstitution,
+    setUserRolesSignal,
     type UserRoleItem,
 } from './authStore';
 import { getStorageItem, setStorageItem } from './storage';
@@ -17,34 +20,28 @@ function isValidUuid(id?: string | null): boolean {
     if (trimmed === '' || trimmed === '[id]' || trimmed === ':id' || trimmed === ZERO_UUID) {
         return false;
     }
-    // Basic UUID check
     return /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(trimmed);
 }
 
 /**
  * Resolves the institution ID for rectorat views.
- * Uses the user role's roleable_id to find the institution
- * where roleable_type = 'App\Models\Institution\Master\Staff'.
- *
  * Lookup flow:
- * 1. staff (roleable_id) -> employee_id -> employee -> institution_id
- * 2. staff (roleable_id) -> unit_id -> unit -> institution_id
+ * 1. staff (roleable_id) -> unit_id -> unit -> institution_id
+ * 2. staff (roleable_id) -> employee_id -> employee -> institution_id
  */
-export async function resolveInstitutionFromStaffRole(preferredInstitutionId?: string): Promise<string> {
-    if (isValidUuid(preferredInstitutionId)) {
-        setStorageItem('institution_id', preferredInstitutionId!);
+export async function resolveInstitutionFromStaffRole(
+    preferredInstitutionId?: string,
+    targetRoleOrId?: UserRoleItem | string | null
+): Promise<string> {
+    // If an explicit valid UUID is provided without a target role request (e.g. from page route params.id)
+    if (isValidUuid(preferredInstitutionId) && !targetRoleOrId) {
+        setActiveInstitution(preferredInstitutionId!);
         return preferredInstitutionId!;
     }
 
-    // Check cached in storage
-    const cached = getStorageItem('institution_id');
-    if (isValidUuid(cached)) {
-        return cached!;
-    }
-
-    // Collect all user roles
-    const storedRoles = getStoredRoles() || [];
+    // Collect all available roles
     const signalRoles = userRolesSignal() || [];
+    const storedRoles = getStoredRoles() || [];
     const user = currentUserSignal() || getStoredUser();
     const userObjRoles = user?.roles || [];
 
@@ -57,82 +54,140 @@ export async function resolveInstitutionFromStaffRole(preferredInstitutionId?: s
         }
     }
 
-    const currentRoleId = currentRoleIdSignal() || getStorageItem('current_role') || '';
-
-    // Find staff roles: roleable_type = 'App\Models\Institution\Master\Staff' (or contains 'Staff')
-    const staffRoles = allRoles.filter((r) => {
-        const type = r.roleable_type || '';
-        return (
-            (type === 'App\\Models\\Institution\\Master\\Staff' || type.includes('Staff')) &&
-            isValidUuid(r.roleable_id)
-        );
-    });
-
-    // Prioritize active role first, then roles with names suggesting rectorat / leadership / staff
-    staffRoles.sort((a, b) => {
-        if (a.id === currentRoleId) return -1;
-        if (b.id === currentRoleId) return 1;
-        const aName = (a.name || '').toLowerCase();
-        const bName = (b.name || '').toLowerCase();
-        const aIsRectorat = aName.includes('rektor') || aName.includes('dekan') || aName.includes('lpti') || aName.includes('yayasan');
-        const bIsRectorat = bName.includes('rektor') || bName.includes('dekan') || bName.includes('lpti') || bName.includes('yayasan');
-        if (aIsRectorat && !bIsRectorat) return -1;
-        if (!aIsRectorat && bIsRectorat) return 1;
-        return 0;
-    });
-
-    for (const role of staffRoles) {
-        if (isValidUuid(role.institution_id)) {
-            setStorageItem('institution_id', role.institution_id!);
-            return role.institution_id!;
+    // Identify target role
+    let targetRole: UserRoleItem | undefined;
+    if (targetRoleOrId) {
+        if (typeof targetRoleOrId === 'object' && targetRoleOrId.id) {
+            targetRole = allRoles.find(r => r.id === targetRoleOrId.id) || targetRoleOrId;
+        } else if (typeof targetRoleOrId === 'string') {
+            const q = targetRoleOrId.toLowerCase().trim();
+            const qClean = q.replace(/[-\s_]+/g, '');
+            targetRole = allRoles.find(r => r.id === targetRoleOrId) ||
+                allRoles.find(r => r.name.toLowerCase().trim() === q) ||
+                allRoles.find(r => r.name.toLowerCase().replace(/[-\s_]+/g, '') === qClean) ||
+                (qClean.includes('lpti') ? allRoles.find(r => r.name.toLowerCase().includes('lpti')) : undefined) ||
+                (qClean.includes('dekan') ? allRoles.find(r => r.name.toLowerCase().includes('dekan')) : undefined) ||
+                (qClean.includes('rektor') ? allRoles.find(r => r.name.toLowerCase().includes('rektor')) : undefined);
         }
+    }
 
-        const staffId = role.roleable_id;
-        if (!isValidUuid(staffId)) continue;
+    if (!targetRole) {
+        const activeRoleId = currentRoleIdSignal() || getStorageItem('current_role') || '';
+        if (activeRoleId) {
+            targetRole = allRoles.find(r => r.id === activeRoleId);
+        }
+    }
 
-        try {
-            const staffRes = await masterApiShow<any>('institution/master/staffes', staffId!);
-            const staff = staffRes.data;
-            if (staff) {
-                // 1. Try staff -> employee -> institution_id
-                if (isValidUuid(staff.employee_id)) {
-                    const empRes = await masterApiShow<any>('institution/master/employees', staff.employee_id);
-                    const emp = empRes.data;
-                    const instId = emp?.institution_id || emp?.institution?.id;
-                    if (isValidUuid(instId)) {
-                        setStorageItem('institution_id', instId);
-                        role.institution_id = instId;
-                        return instId;
-                    }
-                }
+    // If target role already has institution_id cached
+    if (targetRole && isValidUuid(targetRole.institution_id)) {
+        setActiveInstitution(targetRole.institution_id!);
+        return targetRole.institution_id!;
+    }
 
-                // 2. Try staff -> unit -> institution_id
-                if (isValidUuid(staff.unit_id)) {
-                    const unitRes = await masterApiShow<any>('institution/master/units', staff.unit_id);
-                    const unit = unitRes.data;
-                    const instId = unit?.institution_id || unit?.institution?.id;
-                    if (isValidUuid(instId)) {
-                        setStorageItem('institution_id', instId);
-                        role.institution_id = instId;
-                        return instId;
-                    }
+    // If target role is a staff role, resolve from its roleable_id
+    if (targetRole && isValidUuid(targetRole.roleable_id)) {
+        const instId = await lookupStaffInstitution(targetRole.roleable_id!);
+        if (isValidUuid(instId)) {
+            targetRole.institution_id = instId;
+            cacheRoleInstitution(targetRole.id, instId!);
+            setActiveInstitution(instId!);
+            return instId!;
+        }
+    }
+
+    // Only search other staff roles if NO specific target role or active role exists
+    if (!targetRoleOrId) {
+        const currentRoleId = currentRoleIdSignal() || getStorageItem('current_role') || '';
+        const otherStaffRoles = allRoles.filter((r) => {
+            const type = r.roleable_type || '';
+            return (
+                r.id !== currentRoleId &&
+                (type === 'App\\Models\\Institution\\Master\\Staff' || type.includes('Staff')) &&
+                isValidUuid(r.roleable_id)
+            );
+        });
+
+        for (const role of otherStaffRoles) {
+            if (isValidUuid(role.institution_id)) {
+                setActiveInstitution(role.institution_id!);
+                return role.institution_id!;
+            }
+            if (isValidUuid(role.roleable_id)) {
+                const instId = await lookupStaffInstitution(role.roleable_id!);
+                if (isValidUuid(instId)) {
+                    role.institution_id = instId;
+                    cacheRoleInstitution(role.id, instId!);
+                    setActiveInstitution(instId!);
+                    return instId!;
                 }
             }
-        } catch (e) {
-            console.warn(`Failed to resolve institution from staff role ${role.name} (${staffId}):`, e);
         }
     }
 
     // Fallback: environment variables or default known institution
     const envInstId =
-        (import.meta as any).env?.VITE_INSTITUTION_ID ||
-        (import.meta as any).env?.CURRENT_INSTITUTION_ID;
+        (import.meta as any).env?.CURRENT_INSTITUTION_ID ||
+        (import.meta as any).env?.VITE_INSTITUTION_ID;
     if (isValidUuid(envInstId)) {
-        setStorageItem('institution_id', envInstId);
+        setActiveInstitution(envInstId);
         return envInstId;
     }
 
+    const cached = getStorageItem('institution_id');
+    if (isValidUuid(cached)) {
+        setActiveInstitution(cached!);
+        return cached!;
+    }
+
     const defaultFallback = 'ed7e8c02-451b-4548-aa81-26b8d0b7fdec';
-    setStorageItem('institution_id', defaultFallback);
+    setActiveInstitution(defaultFallback);
     return defaultFallback;
+}
+
+async function lookupStaffInstitution(staffId: string): Promise<string | undefined> {
+    try {
+        const staffRes = await masterApiShow<any>('institution/master/staffes', staffId);
+        const staff = staffRes.data;
+        if (!staff) return undefined;
+
+        // Direct property check if relations are already loaded
+        if (isValidUuid(staff.institution_id)) return staff.institution_id;
+        if (isValidUuid(staff.unit?.institution_id)) return staff.unit.institution_id;
+        if (isValidUuid(staff.employee?.institution_id)) return staff.employee.institution_id;
+
+        // 1. Try staff -> unit -> institution_id
+        if (isValidUuid(staff.unit_id)) {
+            try {
+                const unitRes = await masterApiShow<any>('institution/master/units', staff.unit_id);
+                const instId = unitRes.data?.institution_id || unitRes.data?.institution?.id;
+                if (isValidUuid(instId)) return instId;
+            } catch (e) {
+                // Ignore
+            }
+        }
+
+        // 2. Try staff -> employee -> institution_id
+        if (isValidUuid(staff.employee_id)) {
+            try {
+                const empRes = await masterApiShow<any>('institution/master/employees', staff.employee_id);
+                const instId = empRes.data?.institution_id || empRes.data?.institution?.id;
+                if (isValidUuid(instId)) return instId;
+            } catch (e) {
+                // Ignore
+            }
+        }
+    } catch (e) {
+        console.warn(`Failed to lookup staff institution for ${staffId}:`, e);
+    }
+    return undefined;
+}
+
+function cacheRoleInstitution(roleId: string, institutionId: string): void {
+    const storedRoles = getStoredRoles();
+    const idx = storedRoles.findIndex(r => r.id === roleId);
+    if (idx !== -1) {
+        storedRoles[idx] = { ...storedRoles[idx], institution_id: institutionId };
+        setStorageItem('roles', JSON.stringify(storedRoles));
+        setUserRolesSignal(storedRoles);
+    }
 }

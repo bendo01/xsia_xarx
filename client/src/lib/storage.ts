@@ -14,6 +14,9 @@ export function setStorageItem(key: string, value: string, isSession: boolean = 
         sessionStorage.setItem(key, value);
     } else {
         localStorage.setItem(key, value);
+        if (sessionStorage.getItem(key) !== null) {
+            sessionStorage.setItem(key, value);
+        }
     }
 }
 
