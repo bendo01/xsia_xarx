@@ -421,3 +421,9 @@ pub struct UnitCourseCategoryDistributionResponse {
     pub data: Vec<CourseCategoryItemResponse>,
     pub categories: Vec<CourseCategoryItemResponse>,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct UnitOptionRequest {
+    pub search: Option<String>,
+    pub institution_id: Option<Uuid>,
+}

@@ -50,6 +50,11 @@ pub fn router() -> Router {
                 .get_named("institution.master.units.list_units", units::list_units)
                 .post_named("institution.master.units.create_unit", units::create_unit)
                 .push(
+                    Router::with_path("options")
+                        .post_named("institution.master.units.options_units", units::options_units)
+                        .get_named("institution.master.units.options_units_get", units::options_units),
+                )
+                .push(
                     Router::with_path("{unit_id}/dashboard")
                         .get_named("institution.master.units.get_unit_dashboard", units::get_unit_dashboard),
                 )

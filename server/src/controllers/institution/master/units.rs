@@ -17,8 +17,9 @@ use crate::dtos::institution::master::units::{
     ChartLineSeriesItem, PieLegend, PieItemStyle, PieLabel, PieEmphasis,
     PieLabelLine, PieDataItem, PieSeriesItem, RegencyDataset,
     RegencyGrid, RegencyXAxis, RegencyYAxis, BarEncode, BarSeriesItem,
+    UnitOptionRequest,
 };
-use crate::dtos::common::reference::MessageResponse;
+use crate::dtos::common::reference::{MessageResponse, OptionItem};
 use crate::models::institution::master::units as entity_mod;
 
 
@@ -382,6 +383,8 @@ pub async fn load_unit_with_relations(
                         sync_at: a.sync_at,
                         created_by: a.created_by,
                         updated_by: a.updated_by,
+                        unit_name: None,
+                        academic_year_name: None,
                     })
                     .collect())
     } else {
@@ -1094,6 +1097,54 @@ pub async fn delete_unit(
             message: "Unit deleted successfully".to_string(),
         }))
 }
+
+#[endpoint(tags("Institution - Master - Unit"), status_codes(200, 500))]
+pub async fn options_units(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<Vec<OptionItem>>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let payload: UnitOptionRequest = req
+        .parse_json()
+        .await
+        .ok()
+        .or_else(|| req.parse_queries().ok())
+        .unwrap_or_default();
+
+    let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
+
+    if let Some(ref search) = payload.search {
+        let search_trimmed = search.trim();
+        if !search_trimmed.is_empty() {
+            select = select.filter(entity_mod::Column::Name.contains(search_trimmed));
+        }
+    }
+
+    if let Some(institution_id) = payload.institution_id {
+        select = select.filter(entity_mod::Column::InstitutionId.eq(institution_id));
+    }
+
+    let items = select
+        .order_by_asc(entity_mod::Column::Name)
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let data = items
+        .into_iter()
+        .map(|item| OptionItem {
+            id: item.id,
+            name: item.name.unwrap_or_default(),
+        })
+        .collect();
+
+    Ok(Json(data))
+}
+
+pub use options_units as options_unit;
 
 /// Dashboard endpoint: returns unit with all data needed by the show page in a single response,
 /// including academic statistics, student yearly trends, course category distribution, and demographic sub-district distribution.

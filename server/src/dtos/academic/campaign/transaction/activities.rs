@@ -11,6 +11,8 @@ pub struct ActivityQuery {
     pub page_size: Option<u64>,
     pub name: Option<String>,
     pub unit_id: Option<Uuid>,
+    pub institution_id: Option<Uuid>,
+    pub academic_year_id: Option<Uuid>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
@@ -38,6 +40,8 @@ pub struct ActivityResponse {
     pub sync_at: Option<NaiveDateTime>,
     pub created_by: Option<Uuid>,
     pub updated_by: Option<Uuid>,
+    pub unit_name: Option<String>,
+    pub academic_year_name: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
@@ -93,4 +97,5 @@ pub struct PaginatedActivityResponse {
 pub struct ActivityOptionRequest {
     pub search: Option<String>,
     pub unit_id: Option<Uuid>,
+    pub institution_id: Option<Uuid>,
 }

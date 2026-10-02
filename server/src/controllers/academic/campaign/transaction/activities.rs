@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
@@ -33,8 +34,28 @@ pub async fn list_activities(
         select = select.filter(entity_mod::Column::Name.contains(name));
     }
 
+    if let Some(academic_year_id) = query.academic_year_id {
+        select = select.filter(entity_mod::Column::AcademicYearId.eq(academic_year_id));
+    }
+
     if let Some(unit_id) = query.unit_id {
         select = select.filter(entity_mod::Column::UnitId.eq(unit_id));
+    } else if let Some(institution_id) = query.institution_id {
+        let matching_unit_ids: Vec<Uuid> = crate::models::institution::master::units::Entity::find()
+            .filter(crate::models::institution::master::units::Column::InstitutionId.eq(institution_id))
+            .filter(crate::models::institution::master::units::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|u| u.id)
+            .collect();
+
+        if matching_unit_ids.is_empty() {
+            select = select.filter(entity_mod::Column::UnitId.eq(Uuid::nil()));
+        } else {
+            select = select.filter(entity_mod::Column::UnitId.is_in(matching_unit_ids));
+        }
     }
 
     let paginator = select
@@ -46,7 +67,38 @@ pub async fn list_activities(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| ActivityResponse {
+    let unit_ids: Vec<Uuid> = items.iter().map(|item| item.unit_id).collect();
+    let units_map: HashMap<Uuid, String> = if unit_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::institution::master::units::Entity::find()
+            .filter(crate::models::institution::master::units::Column::Id.is_in(unit_ids))
+            .all(db)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .map(|u| (u.id, u.name.unwrap_or_default()))
+            .collect()
+    };
+
+    let ay_ids: Vec<Uuid> = items.iter().map(|item| item.academic_year_id).collect();
+    let ay_map: HashMap<Uuid, String> = if ay_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::academic::general::reference::academic_years::Entity::find()
+            .filter(crate::models::academic::general::reference::academic_years::Column::Id.is_in(ay_ids))
+            .all(db)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .map(|ay| (ay.id, ay.name))
+            .collect()
+    };
+
+    let data = items.into_iter().map(|item| {
+        let u_name = units_map.get(&item.unit_id).cloned();
+        let ay_name = ay_map.get(&item.academic_year_id).cloned();
+        ActivityResponse {
             id: item.id,
             name: item.name.clone(),
             week_quantity: item.week_quantity,
@@ -70,7 +122,9 @@ pub async fn list_activities(
             sync_at: item.sync_at,
             created_by: item.created_by,
             updated_by: item.updated_by,
-
+            unit_name: u_name,
+            academic_year_name: ay_name,
+        }
     }).collect();
 
     Ok(Json(PaginatedActivityResponse {
@@ -101,6 +155,20 @@ pub async fn get_activitie(
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
         .ok_or_else(|| StatusError::not_found().brief("Activity not found"))?;
 
+    let unit_name = crate::models::institution::master::units::Entity::find_by_id(item.unit_id)
+        .one(db)
+        .await
+        .ok()
+        .flatten()
+        .and_then(|u| u.name);
+
+    let academic_year_name = crate::models::academic::general::reference::academic_years::Entity::find_by_id(item.academic_year_id)
+        .one(db)
+        .await
+        .ok()
+        .flatten()
+        .map(|ay| ay.name);
+
     Ok(Json(ActivityResponse {
             id: item.id,
             name: item.name.clone(),
@@ -125,7 +193,8 @@ pub async fn get_activitie(
             sync_at: item.sync_at,
             created_by: item.created_by,
             updated_by: item.updated_by,
-
+            unit_name,
+            academic_year_name,
     }))
 }#[endpoint(tags("Academic - Campaign - Transaction - Activity"), status_codes(200, 400, 500))]
 pub async fn create_activitie(
@@ -197,7 +266,8 @@ pub async fn create_activitie(
             sync_at: item.sync_at,
             created_by: item.created_by,
             updated_by: item.updated_by,
-
+            unit_name: None,
+            academic_year_name: None,
         }))
 }
 
@@ -305,7 +375,8 @@ pub async fn update_activitie(
             sync_at: item.sync_at,
             created_by: item.created_by,
             updated_by: item.updated_by,
-
+            unit_name: None,
+            academic_year_name: None,
         }))
 }
 #[endpoint(tags("Academic - Campaign - Transaction - Activity"), status_codes(200, 400, 404, 500))]
@@ -367,6 +438,22 @@ pub async fn options_activities(
 
     if let Some(unit_id) = payload.unit_id {
         select = select.filter(entity_mod::Column::UnitId.eq(unit_id));
+    } else if let Some(institution_id) = payload.institution_id {
+        let matching_unit_ids: Vec<Uuid> = crate::models::institution::master::units::Entity::find()
+            .filter(crate::models::institution::master::units::Column::InstitutionId.eq(institution_id))
+            .filter(crate::models::institution::master::units::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|u| u.id)
+            .collect();
+
+        if matching_unit_ids.is_empty() {
+            select = select.filter(entity_mod::Column::UnitId.eq(Uuid::nil()));
+        } else {
+            select = select.filter(entity_mod::Column::UnitId.is_in(matching_unit_ids));
+        }
     }
 
     let items = select

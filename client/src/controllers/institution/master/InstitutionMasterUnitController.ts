@@ -2,6 +2,47 @@ import type { ModelSelectItem } from "../../../models/common/select/ModelSelectI
 
 const server_api_url = import.meta.env.VITE_API_SERVER_URL ?? "http://localhost:5155/api/";
 
+export async function getUnitOptions(queryParams?: {
+    search?: string;
+    institution_id?: string;
+}): Promise<Array<{ id: string; name: string }>> {
+    try {
+        const baseUrl = (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
+        const params = new URLSearchParams();
+        if (queryParams?.search) params.set('search', queryParams.search);
+        if (queryParams?.institution_id) params.set('institution_id', queryParams.institution_id);
+
+        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        const headers: Record<string, string> = {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        };
+
+        const res = await fetch(`${baseUrl}/institution/master/units/options?${params.toString()}`, {
+            method: 'GET',
+            headers,
+        });
+
+        if (!res.ok) {
+            const resPost = await fetch(`${baseUrl}/institution/master/units/options`, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify(queryParams || {}),
+            });
+            if (!resPost.ok) return [];
+            const data = await resPost.json();
+            return Array.isArray(data) ? data : (data.data || []);
+        }
+
+        const data = await res.json();
+        return Array.isArray(data) ? data : (data.data || []);
+    } catch (e) {
+        console.warn('Failed to load unit options:', e);
+        return [];
+    }
+}
+
 export async function getUnitLists(): Promise<{
     code: number;
     message: string | ModelSelectItem[];

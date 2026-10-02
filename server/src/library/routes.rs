@@ -6633,6 +6633,18 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "institution.master.units.create_unit",
         },
         RouteDefinition {
+            url: "/api/v1/institution/master/units/options",
+            method: "POST",
+            handler: "units::options_units",
+            name: "institution.master.units.options_units",
+        },
+        RouteDefinition {
+            url: "/api/v1/institution/master/units/options",
+            method: "GET",
+            handler: "units::options_units",
+            name: "institution.master.units.options_units_get",
+        },
+        RouteDefinition {
             url: "/api/v1/institution/master/units/{unit_id}/dashboard",
             method: "GET",
             handler: "units::get_unit_dashboard",
