@@ -129,7 +129,7 @@ Before starting, ensure you have the following installed on your machine:
 
 - **Rust**: Version `1.97.1+` (or latest stable supporting edition 2024)
 - **Node.js**: `v24+` and **pnpm** (or `npm`/`yarn`/`bun`)
-- **PostgreSQL**: `v15+` with `pgvector` extension enabled
+- **PostgreSQL**: `v15+` with `pg_uuidv7`, `pgvector`, and `pgmq` extensions (see [Database Requirement](#4-database-requirement))
 - **Redis**: `v7+` for background job execution
 - **SeaORM CLI**: Installed via Cargo:
 
@@ -696,6 +696,76 @@ bun run preview
 ```
 
 ---
+
+### 4. Database Requirement
+
+The backend requires **PostgreSQL `v15+`** with these extensions installed on the server and enabled in **both** the main and test databases (`xsia_xarx`, `xsia_xarx_test`):
+
+| Extension | `CREATE EXTENSION` name | Repository | Purpose |
+| :--- | :--- | :--- | :--- |
+| **pg_uuidv7** | `pg_uuidv7` | [fboulnois/pg_uuidv7](https://github.com/fboulnois/pg_uuidv7) | Time-ordered UUIDv7 primary keys via `uuid_generate_v7()` |
+| **pgvector** | `vector` | [pgvector/pgvector](https://github.com/pgvector/pgvector) | `vector` column type & similarity search for AI embeddings |
+| **pgmq** | `pgmq` | [pgmq/pgmq](https://github.com/pgmq/pgmq) | PostgreSQL-native message queue for background jobs (e.g. email) |
+
+#### A. Install the Extensions (build from source)
+
+Make sure the PostgreSQL server development headers are installed first (e.g. `postgresql-server-dev-<version>` on Debian/Ubuntu, `postgresql<version>-devel` on Fedora/RHEL) and that `pg_config` is on your `PATH`.
+
+```bash
+# 1. pg_uuidv7
+git clone https://github.com/fboulnois/pg_uuidv7.git
+cd pg_uuidv7 && make && sudo make install && cd ..
+
+# 2. pgvector
+git clone https://github.com/pgvector/pgvector.git
+cd pgvector && make && sudo make install && cd ..
+
+# 3. pgmq
+git clone https://github.com/pgmq/pgmq.git
+cd pgmq/pgmq-extension && make && sudo make install && cd ../..
+```
+
+> 💡 Prebuilt packages are also available for some platforms (e.g. `postgresql-<version>-pgvector` via the PGDG apt/yum repositories, or the `pg_uuidv7` release tarballs on GitHub). Check each repository's README for your OS.
+
+#### B. Enable the Extensions
+
+Run the following as a superuser on **each** database:
+
+```sql
+CREATE EXTENSION IF NOT EXISTS pg_uuidv7;
+CREATE EXTENSION IF NOT EXISTS vector;
+CREATE EXTENSION IF NOT EXISTS pgmq;
+```
+
+Or from the shell:
+
+```bash
+for DB in xsia_xarx xsia_xarx_test; do
+  psql -U postgres -d "$DB" \
+    -c "CREATE EXTENSION IF NOT EXISTS pg_uuidv7;" \
+    -c "CREATE EXTENSION IF NOT EXISTS vector;" \
+    -c "CREATE EXTENSION IF NOT EXISTS pgmq;"
+done
+```
+
+#### C. Verify
+
+```sql
+SELECT extname, extversion
+FROM pg_extension
+WHERE extname IN ('pg_uuidv7', 'vector', 'pgmq');
+
+-- Quick smoke tests
+SELECT uuid_generate_v7();
+SELECT '[1,2,3]'::vector;
+SELECT pgmq.create('healthcheck'); SELECT pgmq.drop_queue('healthcheck');
+```
+
+> ⚠️ **PGMQ fallback:** On startup the server calls `PGMQueueExt::init()`. If the `pgmq` extension is unavailable, it falls back to installing the PGMQ schema from embedded SQL (`install-sql-embedded` feature). Installing the native extension is still recommended for production.
+
+---
+
+
 
 ## 📄 License
 
