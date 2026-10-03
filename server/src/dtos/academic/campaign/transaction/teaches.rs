@@ -20,6 +20,8 @@ pub struct TeachQuery {
     pub teach_decree_id: Option<Uuid>,
     pub course_id: Option<Uuid>,
     pub lecturer_id: Option<Uuid>,
+    pub unit_id: Option<Uuid>,
+    pub institution_id: Option<Uuid>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
@@ -94,6 +96,21 @@ pub struct TeachResponse {
     pub course_evaluation_plannings: Option<Vec<CourseEvaluationPlanningResponse>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub evaluation_types: Option<Vec<ReferenceResponse>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub class_code: Option<crate::dtos::academic::campaign::transaction::class_codes::ClassCodeResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub course: Option<crate::dtos::academic::course::master::courses::CourseResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub activity: Option<crate::dtos::academic::campaign::transaction::activities::ActivityResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub curriculum_detail: Option<crate::dtos::academic::course::master::curriculum_details::CurriculumDetailResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub teach_decree: Option<crate::dtos::academic::campaign::transaction::teach_decrees::TeachDecreeResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub encounter_category: Option<crate::dtos::common::reference::ReferenceResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub scope: Option<crate::dtos::common::reference::ReferenceResponse>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]

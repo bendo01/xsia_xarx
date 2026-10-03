@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel, LoaderTrait,
     PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, Set,
 };
 use uuid::Uuid;
@@ -111,7 +111,15 @@ pub async fn list_teaches(
         (da_counts, pk_counts)
     };
 
-    let data = items.into_iter().map(|item| {
+    let class_codes = items.load_one(crate::models::academic::campaign::transaction::class_codes::Entity, db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+    let courses = items.load_one(crate::models::academic::course::master::courses::Entity, db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+    let activities = items.load_one(crate::models::academic::campaign::transaction::activities::Entity, db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+    let curriculum_details = items.load_one(crate::models::academic::course::master::curriculum_details::Entity, db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+    let teach_decrees = items.load_one(crate::models::academic::campaign::transaction::teach_decrees::Entity, db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+    let encounter_categories = items.load_one(crate::models::academic::campaign::reference::encounter_categories::Entity, db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+    let scopes = items.load_one(crate::models::academic::campaign::reference::scopes::Entity, db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let data = items.into_iter().enumerate().map(|(idx, item)| {
         let enrolled_count = counts.get(&item.id).copied()
             .or_else(|| item.feeder_id.and_then(|fid| feeder_counts.get(&fid).copied()))
             .unwrap_or(0);
@@ -147,6 +155,138 @@ pub async fn list_teaches(
             detail_activity_evaluation_components: None,
             course_evaluation_plannings: None,
             evaluation_types: None,
+            class_code: class_codes.get(idx).and_then(|c| c.as_ref()).map(|c| crate::dtos::academic::campaign::transaction::class_codes::ClassCodeResponse {
+                id: c.id,
+                code: c.code,
+                alphabet_code: c.alphabet_code.clone(),
+                name: c.name.clone(),
+                activity_id: c.activity_id,
+                start_effective_date: c.start_effective_date,
+                end_effective_date: c.end_effective_date,
+                created_at: c.created_at,
+                updated_at: c.updated_at,
+                deleted_at: c.deleted_at,
+                sync_at: c.sync_at,
+                created_by: c.created_by,
+                updated_by: c.updated_by,
+                unit_id: c.unit_id,
+                capacity: c.capacity,
+            }),
+            course: courses.get(idx).and_then(|c| c.as_ref()).map(|c| crate::dtos::academic::course::master::courses::CourseResponse {
+                id: c.id,
+                code: c.code.clone(),
+                name: c.name.clone(),
+                implementation_method: c.implementation_method.clone(),
+                total_credit: c.total_credit,
+                lecture_credit: c.lecture_credit,
+                practice_credit: c.practice_credit,
+                field_practice_credit: c.field_practice_credit,
+                simulation_credit: c.simulation_credit,
+                has_unit: c.has_unit,
+                has_syllabus: c.has_syllabus,
+                has_material: c.has_material,
+                has_practice: c.has_practice,
+                has_dictation: c.has_dictation,
+                group_id: c.group_id,
+                variety_id: c.variety_id,
+                unit_id: c.unit_id,
+                competence_id: c.competence_id,
+                feeder_course_group_id: c.feeder_course_group_id,
+                feeder_course_type_id: c.feeder_course_type_id,
+                feeder_course_id: c.feeder_course_id,
+                start_date: c.start_date,
+                end_date: c.end_date,
+                created_at: c.created_at,
+                updated_at: c.updated_at,
+                deleted_at: c.deleted_at,
+                sync_at: c.sync_at,
+                created_by: c.created_by,
+                updated_by: c.updated_by,
+            }),
+            activity: activities.get(idx).and_then(|c| c.as_ref()).map(|c| crate::dtos::academic::campaign::transaction::activities::ActivityResponse {
+                id: c.id,
+                name: c.name.clone(),
+                week_quantity: c.week_quantity,
+                student_target: c.student_target,
+                candidate_number: c.candidate_number,
+                candidate_pass: c.candidate_pass,
+                became_student: c.became_student,
+                transfer_student: c.transfer_student,
+                total_class_member: c.total_class_member,
+                start_date: c.start_date,
+                end_date: c.end_date,
+                start_transaction: c.start_transaction,
+                end_transaction: c.end_transaction,
+                unit_id: c.unit_id,
+                academic_year_id: c.academic_year_id,
+                is_active: c.is_active,
+                feeder_id: c.feeder_id,
+                created_at: c.created_at,
+                updated_at: c.updated_at,
+                deleted_at: c.deleted_at,
+                sync_at: c.sync_at,
+                created_by: c.created_by,
+                updated_by: c.updated_by,
+                unit_name: None,
+                academic_year_name: None,
+            }),
+            curriculum_detail: curriculum_details.get(idx).and_then(|c| c.as_ref()).map(|c| crate::dtos::academic::course::master::curriculum_details::CurriculumDetailResponse {
+                id: c.id,
+                code: c.code,
+                curriculum_id: c.curriculum_id,
+                semester_id: c.semester_id,
+                course_id: c.course_id,
+                created_at: c.created_at,
+                updated_at: c.updated_at,
+                deleted_at: c.deleted_at,
+                sync_at: c.sync_at,
+                created_by: c.created_by,
+                updated_by: c.updated_by,
+                credit: c.credit,
+                name: c.name.clone(),
+                concentration_id: c.concentration_id,
+                is_convertable_to_mbkm: c.is_convertable_to_mbkm,
+                feeder_id: c.feeder_id,
+                is_convertable_to_prior_learning_recognition: c.is_convertable_to_prior_learning_recognition,
+            }),
+            teach_decree: teach_decrees.get(idx).and_then(|c| c.as_ref()).map(|c| crate::dtos::academic::campaign::transaction::teach_decrees::TeachDecreeResponse {
+                id: c.id,
+                decree_number: c.decree_number.clone(),
+                decree_date: c.decree_date,
+                activity_id: c.activity_id,
+                staff_id: c.staff_id,
+                created_at: c.created_at,
+                updated_at: c.updated_at,
+                deleted_at: c.deleted_at,
+                sync_at: c.sync_at,
+                created_by: c.created_by,
+                updated_by: c.updated_by,
+                feeder_id: c.feeder_id,
+            }),
+            encounter_category: encounter_categories.get(idx).and_then(|c| c.as_ref()).map(|c| crate::dtos::common::reference::ReferenceResponse {
+                id: c.id,
+                code: c.code,
+                alphabet_code: c.alphabet_code.clone(),
+                name: c.name.clone(),
+                created_at: c.created_at.unwrap_or_default(),
+                updated_at: c.updated_at.unwrap_or_default(),
+                deleted_at: c.deleted_at,
+                sync_at: c.sync_at,
+                created_by: c.created_by,
+                updated_by: c.updated_by,
+            }),
+            scope: scopes.get(idx).and_then(|c| c.as_ref()).map(|c| crate::dtos::common::reference::ReferenceResponse {
+                id: c.id,
+                code: c.code,
+                alphabet_code: c.alphabet_code.clone(),
+                name: c.name.clone(),
+                created_at: c.created_at.unwrap_or_default(),
+                updated_at: c.updated_at.unwrap_or_default(),
+                deleted_at: c.deleted_at,
+                sync_at: c.sync_at,
+                created_by: c.created_by,
+                updated_by: c.updated_by,
+            }),
         }
     }).collect();
 
@@ -401,6 +541,13 @@ pub async fn get_teache(
             detail_activity_evaluation_components: Some(detail_activity_evaluation_components),
             course_evaluation_plannings: Some(course_evaluation_plannings),
             evaluation_types: Some(evaluation_types),
+            class_code: None,
+            course: None,
+            activity: None,
+            curriculum_detail: None,
+            teach_decree: None,
+            encounter_category: None,
+            scope: None,
     }))
 }
 
@@ -482,6 +629,13 @@ pub async fn create_teache(
             detail_activity_evaluation_components: None,
             course_evaluation_plannings: None,
             evaluation_types: None,
+            class_code: None,
+            course: None,
+            activity: None,
+            curriculum_detail: None,
+            teach_decree: None,
+            encounter_category: None,
+            scope: None,
         }))
 }
 
@@ -606,6 +760,13 @@ pub async fn update_teache(
             detail_activity_evaluation_components: None,
             course_evaluation_plannings: None,
             evaluation_types: None,
+            class_code: None,
+            course: None,
+            activity: None,
+            curriculum_detail: None,
+            teach_decree: None,
+            encounter_category: None,
+            scope: None,
         }))
 }
 #[endpoint(tags("Academic - Campaign - Transaction - Teach"), status_codes(200, 400, 404, 500))]

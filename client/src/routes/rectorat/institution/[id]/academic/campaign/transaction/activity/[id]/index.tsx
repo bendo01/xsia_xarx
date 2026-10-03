@@ -24,13 +24,16 @@ interface AcademicYearDetail {
 interface TeachItem {
     id: string;
     name: string;
-    code?: string;
+    class_code?: {
+        alphabet_code?: string;
+        capacity?: number;
+    };
+    course?: {
+        code?: string;
+        name?: string;
+        total_credit?: number;
+    };
     activity_id?: string;
-    course_name?: string;
-    course_code?: string;
-    credit?: number;
-    capacity?: number;
-    student_count?: number;
 }
 
 export default function RectoratActivityDetail() {
@@ -836,16 +839,16 @@ export default function RectoratActivityDetail() {
                                                 {(t) => (
                                                     <tr class="hover:bg-neutral-50/50 dark:hover:bg-neutral-800/40">
                                                         <td class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">
-                                                            {t.name}
+                                                            {t.class_code?.alphabet_code || t.name || '-'}
                                                         </td>
                                                         <td class="px-4 py-3 text-neutral-600 dark:text-neutral-300">
-                                                            {t.course_name || t.course_code || '-'}
+                                                            {t.course?.code && t.course?.name ? `${t.course.code} / ${t.course.name}` : t.course?.name || t.course?.code || '-'}
                                                         </td>
                                                         <td class="px-4 py-3 text-center font-mono">
-                                                            {t.credit || '-'}
+                                                            {t.course?.total_credit ?? '-'}
                                                         </td>
                                                         <td class="px-4 py-3 text-center font-mono">
-                                                            {t.capacity || '-'}
+                                                            {t.class_code?.capacity ?? '-'}
                                                         </td>
                                                         <td class="px-4 py-3 text-right">
                                                             <A

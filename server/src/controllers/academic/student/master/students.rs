@@ -229,11 +229,10 @@ pub async fn list_students(
     if let Some(raw_years) = query.academic_year_ids.as_deref().or(query.academic_year_id.as_deref()) {
         for val in raw_years.split(',') {
             let val_trimmed = val.trim();
-            if !val_trimmed.is_empty() {
-                if let Ok(u) = Uuid::parse_str(val_trimmed) {
+            if !val_trimmed.is_empty()
+                && let Ok(u) = Uuid::parse_str(val_trimmed) {
                     academic_year_filter_uuids.push(u);
                 }
-            }
         }
     }
     if !academic_year_filter_uuids.is_empty() {
@@ -248,11 +247,10 @@ pub async fn list_students(
     if let Some(raw_statuses) = query.status_ids.as_deref().or(query.status_id.as_deref()) {
         for val in raw_statuses.split(',') {
             let val_trimmed = val.trim();
-            if !val_trimmed.is_empty() {
-                if let Ok(u) = Uuid::parse_str(val_trimmed) {
+            if !val_trimmed.is_empty()
+                && let Ok(u) = Uuid::parse_str(val_trimmed) {
                     status_filter_uuids.push(u);
                 }
-            }
         }
     }
     if !status_filter_uuids.is_empty() {

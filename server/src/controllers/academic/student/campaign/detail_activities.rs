@@ -151,6 +151,13 @@ async fn load_relations_for_detail_activities(
                 detail_activity_evaluation_components: None,
                 course_evaluation_plannings: None,
                 evaluation_types: None,
+                class_code: None,
+                course: None,
+                activity: None,
+                curriculum_detail: None,
+                teach_decree: None,
+                encounter_category: None,
+                scope: None,
             }))
             .collect()
     };
