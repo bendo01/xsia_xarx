@@ -1,9 +1,11 @@
 use std::ffi::OsStr;
 use std::sync::OnceLock;
+use base64::Engine as _;
 use chrono::Local;
 use headless_chrome::{types::PrintToPdfOptions, Browser, LaunchOptions};
+use qrcode::{EcLevel, QrCode};
 use sea_orm::{
-    ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter,
+    ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QueryOrder,
 };
 use tera::{Context, Tera};
 use uuid::Uuid;
@@ -18,7 +20,11 @@ use crate::models::academic::student::campaign::detail_activities as AcademicStu
 use crate::models::academic::student::campaign::student_activities as AcademicStudentCampaignActivity;
 use crate::models::academic::student::master::students as AcademicStudentMasterStudent;
 use crate::models::academic::student::reference::statuses as AcademicStudentReferenceStatus;
+use crate::models::document::transaction::archives as DocumentTransactionArchive;
+use crate::models::institution::master::staffes as InstitutionMasterStaff;
 use crate::models::institution::master::units as InstitutionMasterUnit;
+use crate::models::institution::reference::position_type as InstitutionReferencePositionType;
+use crate::models::institution::reference::unit_types as InstitutionReferenceUnitType;
 use crate::services::image::encode::EncodeService;
 use crate::services::pdf::institution_092010::student::activity::plan::activity_plan::{
     AcademicYearInfo, ActivityInfo, ClassCodeInfo, CourseInfo, DetailActivityDto,
@@ -37,6 +43,61 @@ fn get_templates() -> &'static Tera {
         }
         tera
     })
+}
+
+fn generate_qr_signature(text: &str, relative_path: Option<&str>) -> String {
+    if let Ok(code) = QrCode::with_error_correction_level(text, EcLevel::L) {
+        let image = code.render::<image::Luma<u8>>().build();
+
+        if let Some(rel_path) = relative_path {
+            let full_path = if let Ok(app_dir) = std::env::var("APP_DIRECTORY") {
+                if !app_dir.is_empty() {
+                    std::path::Path::new(&app_dir).join(rel_path)
+                } else {
+                    std::path::PathBuf::from(rel_path)
+                }
+            } else {
+                std::path::PathBuf::from(rel_path)
+            };
+            if let Some(parent) = full_path.parent() {
+                let _ = std::fs::create_dir_all(parent);
+            }
+            let _ = image.save(&full_path);
+        }
+
+        let mut bytes: Vec<u8> = Vec::new();
+        let mut cursor = std::io::Cursor::new(&mut bytes);
+        if image.write_to(&mut cursor, image::ImageFormat::Png).is_ok() {
+            let b64 = base64::engine::general_purpose::STANDARD.encode(&bytes);
+            return format!("<img src='data:image/png;base64,{}' width='80' height='80' style='margin: 0 auto;' />", b64);
+        }
+    }
+    String::new()
+}
+
+async fn get_signature_image(
+    db: &DatabaseConnection,
+    archiveable_type: &str,
+    archiveable_id: Uuid,
+) -> String {
+    let archive = DocumentTransactionArchive::Entity::find()
+        .filter(DocumentTransactionArchive::Column::ArchiveableType.eq(archiveable_type))
+        .filter(DocumentTransactionArchive::Column::ArchiveableId.eq(archiveable_id))
+        .filter(DocumentTransactionArchive::Column::Mimetype.contains("image"))
+        .order_by_desc(DocumentTransactionArchive::Column::CreatedAt)
+        .one(db)
+        .await;
+
+    if let Ok(Some(archive)) = archive {
+        let image_path = format!("{}{}", archive.dir, archive.name);
+        if let Ok(base64) = EncodeService::base64_encode(&image_path) {
+            return format!(
+                "<img src='data:{};base64,{}' width='80' height='80' style='margin: 0 auto;' />",
+                archive.mimetype, base64
+            );
+        }
+    }
+    String::new()
 }
 
 pub async fn generate_html_content(
@@ -182,15 +243,15 @@ pub async fn generate_html_content(
             total_credit: activity.total_credit,
             grand_total_credit: activity.grand_total_credit,
         },
-        student: student.map(|s| StudentInfo {
+        student: student.as_ref().map(|s| StudentInfo {
             id: s.id,
-            code: s.code,
-            name: s.name,
+            code: s.code.clone(),
+            name: s.name.clone(),
         }),
-        unit: unit.map(|u| UnitInfo {
+        unit: unit.as_ref().map(|u| UnitInfo {
             id: u.id,
-            code: u.code,
-            name: u.name,
+            code: u.code.clone(),
+            name: u.name.clone(),
         }),
         status: status.map(|st| StatusInfo {
             id: st.id,
@@ -209,11 +270,147 @@ pub async fn generate_html_content(
         },
     };
 
+    // 1. Student Signature
+    let (student_signature, student_name, student_code) = if let Some(ref st) = student {
+        let mut sig = get_signature_image(
+            db,
+            "App\\Model\\Academic\\Student\\Master\\Student",
+            st.id,
+        )
+        .await;
+
+        if sig.is_empty() {
+            let signature_text = format!("Ditandatangani oleh mahasiswa: {} {}", st.code, st.name);
+            let unit_code = unit.as_ref().and_then(|u| u.code.as_deref()).unwrap_or("default");
+            let save_path = format!("public/img/academic/student/092010/{}/{}/signature.png", unit_code, st.code);
+            sig = generate_qr_signature(&signature_text, Some(&save_path));
+        }
+        (sig, st.name.clone(), st.code.clone())
+    } else {
+        (String::new(), String::new(), String::new())
+    };
+
+    // 2. Course Department Signature (Head of Program Study - PositionType code 10)
+    let (cs_staff_signature, cs_staff_name, cs_staff_code) = if let Some(ref u) = unit {
+        let pos_opt = InstitutionReferencePositionType::Entity::find()
+            .filter(InstitutionReferencePositionType::Column::Code.eq(10))
+            .one(db)
+            .await?;
+
+        let staff_opt = if let Some(pos) = pos_opt {
+            InstitutionMasterStaff::Entity::find()
+                .filter(InstitutionMasterStaff::Column::UnitId.eq(u.id))
+                .filter(InstitutionMasterStaff::Column::PositionTypeId.eq(pos.id))
+                .filter(InstitutionMasterStaff::Column::DeletedAt.is_null())
+                .filter(InstitutionMasterStaff::Column::EndDate.is_null())
+                .one(db)
+                .await?
+        } else {
+            None
+        };
+
+        match staff_opt {
+            Some(staff) => {
+                let mut sig = get_signature_image(db, "App\\Model\\Institution\\Master\\Staff", staff.id).await;
+                let s_name = staff.name.unwrap_or_default();
+                let s_code = staff.code.unwrap_or_default();
+                if sig.is_empty() {
+                    let signature_text = format!("Ditandatangani oleh kepala program studi: {} {}", s_code, s_name);
+                    let unit_code = u.code.as_deref().unwrap_or("default");
+                    let save_path = format!(
+                        "public/img/institution/092010/{}/staff/{}/signature.png",
+                        unit_code,
+                        s_code.replace(' ', "_").to_lowercase()
+                    );
+                    sig = generate_qr_signature(&signature_text, Some(&save_path));
+                }
+                (sig, s_name, s_code)
+            }
+            None => (String::new(), String::new(), String::new()),
+        }
+    } else {
+        (String::new(), String::new(), String::new())
+    };
+
+    // 3. BAAK Signature (Head of Academic Bureau - UnitType code 2, PositionType code 18)
+    let (baak_signature, baak_name, baak_code) = {
+        let bureau_unit_type = InstitutionReferenceUnitType::Entity::find()
+            .filter(InstitutionReferenceUnitType::Column::Code.eq(2))
+            .one(db)
+            .await?;
+
+        let head_position_type = InstitutionReferencePositionType::Entity::find()
+            .filter(InstitutionReferencePositionType::Column::Code.eq(18))
+            .one(db)
+            .await?;
+
+        let staff_opt = if let (Some(u_type), Some(p_type)) = (bureau_unit_type, head_position_type) {
+            let bureau_units = InstitutionMasterUnit::Entity::find()
+                .filter(InstitutionMasterUnit::Column::UnitTypeId.eq(u_type.id))
+                .filter(InstitutionMasterUnit::Column::DeletedAt.is_null())
+                .all(db)
+                .await?;
+
+            let unit_ids: Vec<Uuid> = bureau_units.into_iter().map(|u| u.id).collect();
+
+            if !unit_ids.is_empty() {
+                InstitutionMasterStaff::Entity::find()
+                    .filter(InstitutionMasterStaff::Column::UnitId.is_in(unit_ids))
+                    .filter(InstitutionMasterStaff::Column::PositionTypeId.eq(p_type.id))
+                    .filter(InstitutionMasterStaff::Column::DeletedAt.is_null())
+                    .filter(InstitutionMasterStaff::Column::EndDate.is_null())
+                    .one(db)
+                    .await?
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
+        match staff_opt {
+            Some(staff) => {
+                let mut sig = get_signature_image(db, "App\\Model\\Institution\\Master\\Staff", staff.id).await;
+                let s_name = staff.name.unwrap_or_default();
+                let s_code = staff.code.unwrap_or_default();
+                if sig.is_empty() {
+                    let signature_text = format!(
+                        "Ditandatangani oleh kepala Biro Administrasi Akademik dan Kemahasiswaan: {} {}",
+                        s_code, s_name
+                    );
+                    let save_path = format!(
+                        "public/img/institution/092010/BAAK/staff/{}/signature.png",
+                        s_code.replace(' ', "_").to_lowercase()
+                    );
+                    sig = generate_qr_signature(&signature_text, Some(&save_path));
+                }
+                (sig, s_name, s_code)
+            }
+            None => (String::new(), String::new(), String::new()),
+        }
+    };
+
+    // 4. Empty Signature for Academic Advisor
+    let pa_signature = match EncodeService::base64_encode("public/img/empty_signature.png") {
+        Ok(base64) => format!("<img src='data:image/png;base64,{}' width='80' height='80' style='margin: 0 auto;' />", base64),
+        Err(_) => String::new(),
+    };
+
     let server_domain = std::env::var("SERVER_DOMAIN").unwrap_or_else(|_| "localhost".to_string());
 
     let templates = get_templates();
     let mut context = Context::new();
     context.insert("student_activity", &student_activity_dto);
+    context.insert("cs_staff_signature", &cs_staff_signature);
+    context.insert("student_signature", &student_signature);
+    context.insert("baak_signature", &baak_signature);
+    context.insert("pa_signature", &pa_signature);
+    context.insert("student_name", &student_name);
+    context.insert("student_code", &student_code);
+    context.insert("cs_staff_name", &cs_staff_name);
+    context.insert("cs_staff_code", &cs_staff_code);
+    context.insert("baak_name", &baak_name);
+    context.insert("baak_code", &baak_code);
     context.insert(
         "print_date",
         &Local::now().format("%d-%m-%Y %H:%M:%S").to_string(),

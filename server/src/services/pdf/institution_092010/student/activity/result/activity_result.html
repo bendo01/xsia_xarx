@@ -87,6 +87,39 @@
                     {% endif %}
                 </tbody>
             </table>
+            <br />
+            <div style="width: 100%; display: block; margin-top: 30px; page-break-inside: avoid;">
+                <table style="width: 100%; border: none;">
+                    <thead class="text-xs text-gray-700 uppercase dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="text-center">Kepala BAAK</th>
+                            <th scope="col" class="text-center">Kepala Program Studi</th>
+                            <th scope="col" class="text-center">Pembimbing Akademik</th>
+                            <th scope="col" class="text-center">Mahasiswa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="text-xs">
+                            <td class="text-center">{{ baak_signature | safe }}</td>
+                            <td class="text-center">{{ cs_staff_signature | safe }}</td>
+                            <td class="text-center">{{ pa_signature | safe }}</td>
+                            <td class="text-center">{{ student_signature | safe }}</td>
+                        </tr>
+                        <tr class="text-xs">
+                            <td class="text-center">{{ baak_name }}</td>
+                            <td class="text-center">{{ cs_staff_name }}</td>
+                            <td class="text-center"></td>
+                            <td class="text-center">{{student_name}}</td>
+                        </tr>
+                        <tr class="text-xs">
+                            <td class="text-center">{% if baak_code %}NIK {{ baak_code }}{% endif %}</td>
+                            <td class="text-center">{% if cs_staff_code %}NIK {{ cs_staff_code }}{% endif %}</td>
+                            <td class="text-center"></td>
+                            <td class="text-center">NIM: {{student_code}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </body>
 </html>

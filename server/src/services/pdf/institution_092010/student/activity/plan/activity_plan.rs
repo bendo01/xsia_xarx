@@ -159,7 +159,7 @@ fn generate_qr_signature(text: &str, relative_path: Option<&str>) -> String {
         let mut cursor = std::io::Cursor::new(&mut bytes);
         if image.write_to(&mut cursor, image::ImageFormat::Png).is_ok() {
             let b64 = base64::engine::general_purpose::STANDARD.encode(&bytes);
-            return format!("<img src='data:image/png;base64,{}' height='50' />", b64);
+            return format!("<img src='data:image/png;base64,{}' width='80' height='80' style='margin: 0 auto;' />", b64);
         }
     }
     String::new()
@@ -182,7 +182,7 @@ async fn get_signature_image(
         let image_path = format!("{}{}", archive.dir, archive.name);
         if let Ok(base64) = EncodeService::base64_encode(&image_path) {
             return format!(
-                "<img src='data:{};base64,{}' height='50' />",
+                "<img src='data:{};base64,{}' width='80' height='80' style='margin: 0 auto;' />",
                 archive.mimetype, base64
             );
         }
@@ -482,7 +482,7 @@ pub async fn generate_html_content(
 
     // 4. Empty Signature for Academic Advisor
     let pa_signature = match EncodeService::base64_encode("public/img/empty_signature.png") {
-        Ok(base64) => format!("<img src='data:image/png;base64,{}' height='50' />", base64),
+        Ok(base64) => format!("<img src='data:image/png;base64,{}' width='80' height='80' style='margin: 0 auto;' />", base64),
         Err(_) => String::new(),
     };
 
