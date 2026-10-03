@@ -41,3 +41,4 @@ pub mod get_40_list_rencana_pembelajaran;
 pub mod get_41_list_rencana_evaluasi;
 pub mod get_42_list_mahasiswa_lulus_do;
 pub mod get_43_detail_mahasiswa_lulus_do;
+pub mod get_all_data;

@@ -387,6 +387,7 @@ cargo run -- task
 | `EstimateDetailPerkuliahanMahasiswa` | Fetch and process GetDetailPerkuliahanMahasiswa data from Feeder Dikti | `cargo run -- task EstimateDetailPerkuliahanMahasiswa ` |
 | `EstimateGetAgama` | Fetch and process GetAgama data from Feeder Dikti | `cargo run -- task EstimateGetAgama ` |
 | `EstimateGetAlatTransportasi` | Fetch and process GetAlatTransportasi data from Feeder Dikti | `cargo run -- task EstimateGetAlatTransportasi ` |
+| `EstimateGetAllMasterData` | Sequentially run all master estimasi tasks (except GetAllPT & GetAllProdi). Continues on failure and reports a summary; pass `--fail-fast` to abort on the first error | `cargo run -- task EstimateGetAllMasterData` or `cargo run -- task EstimateGetAllMasterData --fail-fast` |
 | `EstimateGetAllProdi` | Fetch and process GetAllProdi data from Feeder Dikti | `cargo run -- task EstimateGetAllProdi ` |
 | `EstimateGetAllPT` | Fetch and process GetAllPT data from Feeder Dikti | `cargo run -- task EstimateGetAllPT ` |
 | `EstimateGetDosenPengajarKelasKuliah` | Fetch and process GetDosenPengajarKelasKuliah data from Feeder Dikti | `cargo run -- task EstimateGetDosenPengajarKelasKuliah ` |
@@ -698,4 +699,13 @@ bun run preview
 
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
+**Personal License** — Copyright © 2026 Benny L.E.P. All rights reserved.
+
+This project is the personal property of the author and is provided for **personal use only**.
+Without prior written permission from the author, you may **not**:
+
+- Copy, modify, merge, or create derivative works of this software
+- Distribute, sublicense, sell, or publish this software or any part of it
+- Use this software for commercial purposes
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM THE USE OF THIS SOFTWARE.

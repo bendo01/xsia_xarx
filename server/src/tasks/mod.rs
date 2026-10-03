@@ -71,6 +71,7 @@ Box::new(feeder_dikti::downstream::estimasi::master::get_28_aktifitas_mengajar_d
         Box::new(feeder_dikti::downstream::estimasi::master::get_10_riwayat_penelitian_dosen::EstimateRiwayatPenelitianDosen),
         Box::new(feeder_dikti::downstream::estimasi::master::get_11_riwayat_sertifikasi_dosen::EstimateRiwayatSertifikasiDosen),
         Box::new(feeder_dikti::downstream::estimasi::master::get_36_transkrip_mahasiswa::EstimateTranskripMahasiswa),
+        Box::new(feeder_dikti::downstream::estimasi::master::get_all_data::EstimateGetAllMasterData),
         Box::new(feeder_dikti::downstream::estimasi::reference::get_agama::EstimateGetAgama),
         Box::new(feeder_dikti::downstream::estimasi::reference::get_alat_transportasi::EstimateGetAlatTransportasi),
         Box::new(feeder_dikti::downstream::estimasi::reference::get_ikatan_kerja_sdm::EstimateGetIkatanKerjaSdm),
