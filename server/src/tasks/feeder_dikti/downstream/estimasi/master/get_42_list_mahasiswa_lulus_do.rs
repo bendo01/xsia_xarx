@@ -10,7 +10,7 @@ use crate::models::feeder::akumulasi::estimasi as FeederAkumulasiEstimasi;
 use crate::tasks::feeder_dikti::downstream::feeder_request::{InputRequestData, RequestData};
 use crate::tasks::Task;
 
-use crate::jobs::feeder_dikti::downstream::master::upsert::get_list_mahasiswa_lulus_do::{
+use crate::jobs::feeder_dikti::downstream::master::upsert::get_42_list_mahasiswa_lulus_do::{
     ModelInputListMahasiswaLulusDO, Worker as JobWorker, WorkerArgs,
 };
 

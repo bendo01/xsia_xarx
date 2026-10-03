@@ -10,7 +10,7 @@ use crate::models::feeder::akumulasi::estimasi as FeederAkumulasiEstimasi;
 use crate::tasks::feeder_dikti::downstream::feeder_request::{InputRequestData, RequestData};
 use crate::tasks::Task;
 
-use crate::jobs::feeder_dikti::downstream::master::upsert::get_riwayat_fungsional_dosen::{
+use crate::jobs::feeder_dikti::downstream::master::upsert::get_08_riwayat_fungsional_dosen::{
     ModelInput, Worker as JobWorker, WorkerArgs,
 };
 

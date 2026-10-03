@@ -10,7 +10,7 @@ use crate::models::feeder::akumulasi::estimasi as FeederAkumulasiEstimasi;
 use crate::tasks::feeder_dikti::downstream::feeder_request::{InputRequestData, RequestData};
 use crate::tasks::Task;
 
-use crate::jobs::feeder_dikti::downstream::master::upsert::get_detail_nilai_perkuliahan_kelas::{
+use crate::jobs::feeder_dikti::downstream::master::upsert::get_32_detail_nilai_perkuliahan_kelas::{
     ModelInput, Worker as JobWorker, WorkerArgs,
 };
 
@@ -20,7 +20,8 @@ const API_ACTION: &str = "GetDetailNilaiPerkuliahanKelas";
 
 // API Request Configuration
 const DEFAULT_LIMIT: i32 = 1000;
-const DEFAULT_ORDER: &str = "kode_mata_kuliah ASC";
+// Must be a unique/deterministic ordering, otherwise OFFSET pagination skips and duplicates rows
+const DEFAULT_ORDER: &str = "id_kelas_kuliah ASC, id_registrasi_mahasiswa ASC";
 const DEFAULT_FILTER: &str = "";
 
 

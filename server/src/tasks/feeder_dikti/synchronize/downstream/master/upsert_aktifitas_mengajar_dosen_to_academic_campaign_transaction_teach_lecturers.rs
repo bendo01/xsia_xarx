@@ -35,25 +35,42 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
     async fn run(&self, db: &DatabaseConnection, args: &[String]) -> Result<(), Box<dyn std::error::Error>> {
         use indicatif::{ProgressBar, ProgressStyle};
         use sea_orm::PaginatorTrait;
+        use std::time::Duration;
 
-        let show_progress = args.iter().any(|arg| arg == "true" || arg == "--progress");
-
-        let total_records = if show_progress {
-            FeederAktifitas::Entity::find().count(db).await?
-        } else {
-            0
-        };
+        // Progress bar is shown by default; pass `false` or `--no-progress` to disable it.
+        let show_progress = !args.iter().any(|arg| arg == "false" || arg == "--no-progress");
 
         let pb = if show_progress {
-            let bar = ProgressBar::new(total_records);
-            bar.set_style(ProgressStyle::default_bar()
-                .template("{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {pos}/{len} ({eta})")
-                .unwrap_or_else(|_| ProgressStyle::default_bar())
-                .progress_chars("#>-"));
+            // Spinner while counting source rows (COUNT(*) can be slow on large tables)
+            let bar = ProgressBar::new_spinner();
+            bar.set_style(
+                ProgressStyle::default_spinner()
+                    .template("{spinner:.green} [{elapsed_precise}] {msg}")
+                    .unwrap_or_else(|_| ProgressStyle::default_spinner()),
+            );
+            bar.enable_steady_tick(Duration::from_millis(100));
+            bar.set_message("Counting feeder aktifitas_mengajar_dosen records...");
+
+            let total_records = FeederAktifitas::Entity::find().count(db).await?;
+
+            bar.set_length(total_records);
+            bar.set_position(0);
+            bar.set_style(
+                ProgressStyle::default_bar()
+                    .template("{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {pos}/{len} ({percent}%, {per_sec}, eta {eta}) {msg}")
+                    .unwrap_or_else(|_| ProgressStyle::default_bar())
+                    .progress_chars("#>-"),
+            );
+            bar.set_message("");
             Some(bar)
         } else {
             None
         };
+
+        let mut inserted: u64 = 0;
+        let mut updated: u64 = 0;
+        let mut skipped: u64 = 0;
+        let mut teach_not_found: u64 = 0;
 
         // Create log file
         let log_dir = "logs";
@@ -176,6 +193,7 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
                 }
 
                 if teach_opt.is_none() {
+                    teach_not_found += 1;
                     writeln!(log_file, "Teach not found for record ID: {}", record.id)?;
                 }
                 
@@ -198,6 +216,7 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
                         active_model.updated_at = Set(Some(chrono::Local::now().naive_local()));
                         
                         active_model.update(&txn).await?;
+                        updated += 1;
                     } else {
                         let new_teach_lecturer = AcademicTeachLecturer::ActiveModel {
                             id: Set(Uuid::new_v4()),
@@ -212,12 +231,18 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
                             ..Default::default()
                         };
                         new_teach_lecturer.insert(&txn).await?;
+                        inserted += 1;
                     }
+                } else {
+                    skipped += 1;
                 }
                 
                 txn.commit().await?;
                 
                 if let Some(ref pb) = pb {
+                    pb.set_message(format!(
+                        "inserted: {inserted} | updated: {updated} | skipped: {skipped} | teach not found: {teach_not_found}"
+                    ));
                     pb.inc(1);
                 }
             }
@@ -225,8 +250,13 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
             offset += limit;
         }
         
+        let summary = format!(
+            "Sync completed - inserted: {inserted} | updated: {updated} | skipped: {skipped} | teach not found: {teach_not_found} (see {log_file_path})"
+        );
         if let Some(pb) = pb {
-            pb.finish_with_message("Sync completed");
+            pb.finish_with_message(summary);
+        } else {
+            println!("{summary}");
         }
         
         Ok(())

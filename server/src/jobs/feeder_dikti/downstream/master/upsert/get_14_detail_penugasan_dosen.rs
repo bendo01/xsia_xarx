@@ -82,7 +82,7 @@ pub struct ModelInputListPenugasanSemuaDosen {
 
 #[derive(Deserialize, Debug, Serialize, Clone)]
 pub struct WorkerArgs {
-    pub records: Vec<ModelInputListPenugasanSemuaDosen>,
+    pub records: Vec<ModelInputDetailPenugasanDosen>,
 }
 
 
@@ -115,7 +115,7 @@ impl Worker {
     }
 
 
-    pub async fn upsert_record(txn: &DatabaseTransaction, record: &ModelInputListPenugasanSemuaDosen) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+    pub async fn upsert_record(txn: &DatabaseTransaction, record: &ModelInputDetailPenugasanDosen) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         // Validate that id_registrasi_dosen exists (it's the unique key)
         let id_registrasi_dosen = record
             .id_registrasi_dosen
@@ -124,88 +124,84 @@ impl Worker {
         // Start transaction
         let sync_time = Local::now().naive_local();
 
-        // Check if record exists
-        let existing = penugasan_dosen::Entity::find()
+        // Check if record exists (one penugasan per id_registrasi_dosen per tahun ajaran)
+        let query = penugasan_dosen::Entity::find()
             .filter(penugasan_dosen::Column::DeletedAt.is_null())
-            .filter(penugasan_dosen::Column::IdRegistrasiDosen.eq(id_registrasi_dosen))
-            .one(txn)
-            .await?;
+            .filter(penugasan_dosen::Column::IdRegistrasiDosen.eq(id_registrasi_dosen));
+        let query = match &record.id_tahun_ajaran {
+            Some(id_tahun_ajaran) => query.filter(penugasan_dosen::Column::IdTahunAjaran.eq(id_tahun_ajaran.clone())),
+            None => query.filter(penugasan_dosen::Column::IdTahunAjaran.is_null()),
+        };
+        let existing = query.one(txn).await?;
 
-        let action =
-            if let Some(existing_record) = existing {
-                // Update existing record
-                let mut active: penugasan_dosen::ActiveModel = existing_record.into_active_model();
+        let action = if let Some(existing_record) = existing {
+            // Update existing record
+            let mut active: penugasan_dosen::ActiveModel = existing_record.into_active_model();
 
-                active.id_dosen = Set(record.id_dosen);
-                active.nama_dosen = Set(record.nama_dosen.clone());
-                active.nuptk = Set(record.nuptk.clone());
-                active.jenis_kelamin = Set(record.jenis_kelamin.clone());
-                active.id_tahun_ajaran = Set(record.id_tahun_ajaran.clone());
-                active.nama_tahun_ajaran = Set(record.nama_tahun_ajaran.clone());
-                active.id_prodi = Set(record.id_prodi);
-                active.nama_program_studi = Set(record.nama_program_studi.clone());
-                active.nomor_surat_tugas = Set(record.nomor_surat_tugas.clone());
-                active.tanggal_surat_tugas = Set(record
+            active.id_tahun_ajaran = Set(record.id_tahun_ajaran.clone());
+            active.nama_tahun_ajaran = Set(record.nama_tahun_ajaran.clone());
+            active.id_perguruan_tinggi = Set(record.id_perguruan_tinggi);
+            active.nama_perguruan_tinggi = Set(record.nama_perguruan_tinggi.clone());
+            active.nidn = Set(record.nidn.clone());
+            active.nuptk = Set(record.nuptk.clone());
+            active.id_dosen = Set(record.id_dosen);
+            active.nama_dosen = Set(record.nama_dosen.clone());
+            active.id_prodi = Set(record.id_prodi);
+            active.nama_program_studi = Set(record.nama_program_studi.clone());
+            active.nomor_surat_tugas = Set(record.nomor_surat_tugas.clone());
+            active.tanggal_surat_tugas = Set(record
+                .tanggal_surat_tugas
+                .map(|d| d.format("%d-%m-%Y").to_string()));
+            active.mulai_surat_tugas = Set(record
+                .mulai_surat_tugas
+                .map(|d| d.format("%d-%m-%Y").to_string()));
+            active.sync_at = Set(Some(sync_time));
+            active.updated_at = Set(Some(sync_time));
+
+            active.update(txn).await?;
+            "UPDATED"
+        } else {
+            // Insert new record
+            let pk_id = Uuid::new_v4();
+
+            let new_record = penugasan_dosen::ActiveModel {
+                id: Set(pk_id),
+                id_registrasi_dosen: Set(Some(id_registrasi_dosen)),
+                id_tahun_ajaran: Set(record.id_tahun_ajaran.clone()),
+                nama_tahun_ajaran: Set(record.nama_tahun_ajaran.clone()),
+                id_perguruan_tinggi: Set(record.id_perguruan_tinggi),
+                nama_perguruan_tinggi: Set(record.nama_perguruan_tinggi.clone()),
+                nidn: Set(record.nidn.clone()),
+                nuptk: Set(record.nuptk.clone()),
+                id_dosen: Set(record.id_dosen),
+                nama_dosen: Set(record.nama_dosen.clone()),
+                id_prodi: Set(record.id_prodi),
+                nama_program_studi: Set(record.nama_program_studi.clone()),
+                nomor_surat_tugas: Set(record.nomor_surat_tugas.clone()),
+                tanggal_surat_tugas: Set(record
                     .tanggal_surat_tugas
-                    .map(|d| d.format("%d-%m-%Y").to_string()));
-                active.apakah_homebase = Set(record.apakah_homebase.as_ref().and_then(|s| match s
-                    .as_str()
-                {
-                    "1" => Some(true),
-                    "0" => Some(false),
-                    _ => None,
-                }));
-                active.sync_at = Set(Some(sync_time));
-                active.updated_at = Set(Some(sync_time));
-
-                active.update(txn).await?;
-                "UPDATED"
-            } else {
-                // Insert new record
-                let pk_id = Uuid::new_v4();
-
-                let new_record = penugasan_dosen::ActiveModel {
-                    id: Set(pk_id),
-                    id_registrasi_dosen: Set(Some(id_registrasi_dosen)),
-                    id_dosen: Set(record.id_dosen),
-                    nama_dosen: Set(record.nama_dosen.clone()),
-                    nuptk: Set(record.nuptk.clone()),
-                    jenis_kelamin: Set(record.jenis_kelamin.clone()),
-                    id_tahun_ajaran: Set(record.id_tahun_ajaran.clone()),
-                    nama_tahun_ajaran: Set(record.nama_tahun_ajaran.clone()),
-                    id_prodi: Set(record.id_prodi),
-                    nama_program_studi: Set(record.nama_program_studi.clone()),
-                    nomor_surat_tugas: Set(record.nomor_surat_tugas.clone()),
-                    tanggal_surat_tugas: Set(record
-                        .tanggal_surat_tugas
-                        .map(|d| d.format("%d-%m-%Y").to_string())),
-                    apakah_homebase: Set(record.apakah_homebase.as_ref().and_then(|s| {
-                        match s.as_str() {
-                            "1" => Some(true),
-                            "0" => Some(false),
-                            _ => None,
-                        }
-                    })),
-                    sync_at: Set(Some(sync_time)),
-                    created_at: Set(Some(sync_time)),
-                    updated_at: Set(Some(sync_time)),
-                    created_by: Set(None),
-                    updated_by: Set(None),
-                    deleted_at: Set(None),
-                    nidn: Set(None),
-                    id_perguruan_tinggi: Set(None),
-                    nama_perguruan_tinggi: Set(None),
-                    mulai_surat_tugas: Set(None),
-                    tgl_create: Set(None),
-                    tgl_ptk_keluar: Set(None),
-                    id_stat_pegawai: Set(None),
-                    id_jns_keluar: Set(None),
-                    id_ikatan_kerja: Set(None),
-                };
-
-                new_record.insert(txn).await?;
-                "INSERTED"
+                    .map(|d| d.format("%d-%m-%Y").to_string())),
+                mulai_surat_tugas: Set(record
+                    .mulai_surat_tugas
+                    .map(|d| d.format("%d-%m-%Y").to_string())),
+                sync_at: Set(Some(sync_time)),
+                created_at: Set(Some(sync_time)),
+                updated_at: Set(Some(sync_time)),
+                created_by: Set(None),
+                updated_by: Set(None),
+                deleted_at: Set(None),
+                jenis_kelamin: Set(None),
+                tgl_create: Set(None),
+                tgl_ptk_keluar: Set(None),
+                id_stat_pegawai: Set(None),
+                id_jns_keluar: Set(None),
+                id_ikatan_kerja: Set(None),
+                apakah_homebase: Set(None),
             };
+
+            new_record.insert(txn).await?;
+            "INSERTED"
+        };
 
         // Commit transaction
 
