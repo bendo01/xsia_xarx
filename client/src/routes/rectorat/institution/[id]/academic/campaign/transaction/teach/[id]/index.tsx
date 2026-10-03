@@ -118,69 +118,13 @@ export default function RectoratTeachDetail() {
 
             setTeach(data);
 
-            const promises: Promise<any>[] = [];
-
-            // 1. Load course detail
-            if (data.course_id && isValidId(data.course_id)) {
-                promises.push(
-                    getCourseById(data.course_id)
-                        .then((c) => {
-                            if (c) {
-                                setCourse(c);
-                                // Load unit if course has unit_id
-                                if (c.unit_id && isValidId(c.unit_id)) {
-                                    masterApiShow<UnitDetail>('institution/master/units', c.unit_id)
-                                        .then((res) => {
-                                            if (res.data) setUnit(res.data);
-                                        })
-                                        .catch((e) => console.warn('Could not load unit detail:', e));
-                                }
-                            }
-                        })
-                        .catch((e) => console.warn('Could not load course detail:', e))
-                );
+            // Populate directly from the enhanced TeachResponse
+            if (data.course) setCourse(data.course);
+            if (data.class_code) setClassCode(data.class_code);
+            if (data.activity) setActivity(data.activity);
+            if (data.teach_lecturers && Array.isArray(data.teach_lecturers)) {
+                setTeachLecturers(data.teach_lecturers);
             }
-
-            // 2. Load class code detail
-            if (data.class_code_id && isValidId(data.class_code_id)) {
-                promises.push(
-                    getClassCodeById(data.class_code_id)
-                        .then((cc) => {
-                            if (cc) setClassCode(cc);
-                        })
-                        .catch((e) => console.warn('Could not load class code detail:', e))
-                );
-            }
-
-            // 3. Load activity detail
-            if (data.activity_id && isValidId(data.activity_id)) {
-                promises.push(
-                    getActivityById(data.activity_id)
-                        .then((act) => {
-                            if (act) setActivity(act);
-                        })
-                        .catch((e) => console.warn('Could not load activity detail:', e))
-                );
-            }
-
-            // 4. Load teach lecturers & lecturers
-            promises.push(
-                listTeachLecturers({ teach_id: tId })
-                    .then((tl) => {
-                        if (Array.isArray(tl)) setTeachLecturers(tl);
-                    })
-                    .catch((e) => console.warn('Could not load teach lecturers:', e))
-            );
-
-            promises.push(
-                listLecturers({ page_size: 300 })
-                    .then((l) => {
-                        if (Array.isArray(l)) setLecturersList(l);
-                    })
-                    .catch((e) => console.warn('Could not load lecturers list:', e))
-            );
-
-            await Promise.allSettled(promises);
         } catch (e: any) {
             console.error('Error loading teach detail:', e);
             setError(e.message || 'Gagal memuat detail data kelas mengajar.');
@@ -742,6 +686,7 @@ export default function RectoratTeachDetail() {
                                             <th class="px-6 py-3.5">NIM & Nama Mahasiswa</th>
                                             <th class="px-6 py-3.5 text-center">SKS</th>
                                             <th class="px-6 py-3.5 text-center">Nilai Angka</th>
+                                            <th class="px-6 py-3.5 text-center">Nilai Huruf</th>
                                             <th class="px-6 py-3.5 text-center">Status Kunci</th>
                                         </tr>
                                     </thead>
@@ -750,7 +695,7 @@ export default function RectoratTeachDetail() {
                                             when={filteredStudents().length > 0}
                                             fallback={
                                                 <tr>
-                                                    <td colspan="4" class="px-6 py-12 text-center text-xs text-neutral-500">
+                                                    <td colspan="5" class="px-6 py-12 text-center text-xs text-neutral-500">
                                                         Tidak ada data mahasiswa terdaftar yang cocok dengan filter.
                                                     </td>
                                                 </tr>
@@ -779,6 +724,9 @@ export default function RectoratTeachDetail() {
                                                         </td>
                                                         <td class="px-6 py-3.5 text-center font-mono font-bold text-xs">
                                                             {student.mark !== null && student.mark !== undefined ? student.mark.toFixed(2) : '-'}
+                                                        </td>
+                                                        <td class="px-6 py-3.5 text-center font-mono font-bold text-xs">
+                                                            {student.grade?.alphabet_code || '-'}
                                                         </td>
                                                         <td class="px-6 py-3.5 text-center">
                                                             <Show

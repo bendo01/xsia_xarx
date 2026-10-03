@@ -158,6 +158,7 @@ async fn load_relations_for_detail_activities(
                 teach_decree: None,
                 encounter_category: None,
                 scope: None,
+                teach_lecturers: None,
             }))
             .collect()
     };

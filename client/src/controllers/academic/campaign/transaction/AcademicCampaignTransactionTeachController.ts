@@ -52,6 +52,14 @@ export interface TeachItem {
     detail_activity_evaluation_components?: any[];
     course_evaluation_plannings?: any[];
     evaluation_types?: any[];
+    teach_lecturers?: any[];
+    class_code?: any;
+    course?: any;
+    activity?: any;
+    curriculum_detail?: any;
+    teach_decree?: any;
+    encounter_category?: any;
+    scope?: any;
 }
 
 export async function listTeaches(queryParams?: {

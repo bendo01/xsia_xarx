@@ -16,6 +16,7 @@ use crate::dtos::academic::campaign::transaction::teach_evaluations::TeachEvalua
 use crate::dtos::academic::student::campaign::detail_activities::DetailActivityResponse;
 use crate::dtos::academic::student::campaign::detail_activity_evaluation_components::DetailActivityEvaluationComponentResponse;
 use crate::dtos::academic::course::master::course_evaluation_plannings::CourseEvaluationPlanningResponse;
+use crate::dtos::academic::campaign::transaction::grades::GradeResponse;
 use crate::dtos::common::reference::{MessageResponse, ReferenceResponse};
 use crate::models::academic::campaign::transaction::teaches as entity_mod;
 
@@ -155,6 +156,7 @@ pub async fn list_teaches(
             detail_activity_evaluation_components: None,
             course_evaluation_plannings: None,
             evaluation_types: None,
+            teach_lecturers: None,
             class_code: class_codes.get(idx).and_then(|c| c.as_ref()).map(|c| crate::dtos::academic::campaign::transaction::class_codes::ClassCodeResponse {
                 id: c.id,
                 code: c.code,
@@ -317,6 +319,102 @@ pub async fn get_teache(
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
         .ok_or_else(|| StatusError::not_found().brief("Teach not found"))?;
+    let items = vec![item.clone()];
+
+    let class_codes = items.load_one(crate::models::academic::campaign::transaction::class_codes::Entity, db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+    let courses = items.load_one(crate::models::academic::course::master::courses::Entity, db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+    let activities = items.load_one(crate::models::academic::campaign::transaction::activities::Entity, db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+    let curriculum_details = items.load_one(crate::models::academic::course::master::curriculum_details::Entity, db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+    let teach_decrees = items.load_one(crate::models::academic::campaign::transaction::teach_decrees::Entity, db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+    let encounter_categories = items.load_one(crate::models::academic::campaign::reference::encounter_categories::Entity, db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+    let scopes = items.load_one(crate::models::academic::campaign::reference::scopes::Entity, db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let teach_lecturer_models = crate::models::academic::campaign::transaction::teach_lecturers::Entity::find()
+        .filter(crate::models::academic::campaign::transaction::teach_lecturers::Column::TeachId.eq(item.id))
+        .filter(crate::models::academic::campaign::transaction::teach_lecturers::Column::DeletedAt.is_null())
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let lecturer_ids: Vec<Uuid> = teach_lecturer_models.iter().map(|l| l.lecturer_id).collect();
+    let lecturers_map: HashMap<Uuid, (Option<String>, Option<String>)> = if lecturer_ids.is_empty() {
+        HashMap::new()
+    } else {
+        let lecturer_list = crate::models::academic::lecturer::master::lecturers::Entity::find()
+            .filter(crate::models::academic::lecturer::master::lecturers::Column::Id.is_in(lecturer_ids))
+            .filter(crate::models::academic::lecturer::master::lecturers::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        let individual_ids: Vec<Uuid> = lecturer_list.iter().map(|l| l.individual_id).collect();
+        let individuals_map: HashMap<Uuid, crate::models::person::master::individual::Model> = if individual_ids.is_empty() {
+            HashMap::new()
+        } else {
+            crate::models::person::master::individual::Entity::find()
+                .filter(crate::models::person::master::individual::Column::Id.is_in(individual_ids))
+                .filter(crate::models::person::master::individual::Column::DeletedAt.is_null())
+                .all(db)
+                .await
+                .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                .into_iter()
+                .map(|ind| (ind.id, ind))
+                .collect()
+        };
+
+        lecturer_list
+            .into_iter()
+            .map(|l| {
+                let mut name = None;
+                if let Some(ind) = individuals_map.get(&l.individual_id) {
+                    let front = ind.front_title.as_deref().unwrap_or("").trim();
+                    let last = ind.last_title.as_deref().unwrap_or("").trim();
+                    let base_name = ind.name.trim();
+                    let full = match (front.is_empty(), last.is_empty()) {
+                        (true, true) => base_name.to_string(),
+                        (false, true) => format!("{} {}", front, base_name),
+                        (true, false) => format!("{}, {}", base_name, last),
+                        (false, false) => format!("{} {}, {}", front, base_name, last),
+                    };
+                    if !full.is_empty() {
+                        name = Some(full);
+                    }
+                }
+                (l.id, (Some(l.code), name))
+            })
+            .collect()
+    };
+
+    let teach_lecturers: Vec<crate::dtos::academic::campaign::transaction::teach_lecturers::TeachLecturerResponse> = teach_lecturer_models
+        .into_iter()
+        .map(|tl| {
+            let lecturer_info = lecturers_map.get(&tl.lecturer_id);
+            let name = lecturer_info
+                .and_then(|info| info.1.clone())
+                .or_else(|| tl.name.clone().filter(|s| !s.trim().is_empty() && !s.starts_with("DosenAktifitasPengajaran")));
+            let code = lecturer_info.and_then(|info| info.0.clone());
+            
+            crate::dtos::academic::campaign::transaction::teach_lecturers::TeachLecturerResponse {
+                id: tl.id,
+                name,
+                code,
+                planning: tl.planning,
+                realization: tl.realization,
+                credit: tl.credit,
+                is_lecturer_home_base: tl.is_lecturer_home_base,
+                lecturer_id: tl.lecturer_id,
+                teach_id: tl.teach_id,
+                created_at: tl.created_at,
+                updated_at: tl.updated_at,
+                deleted_at: tl.deleted_at,
+                sync_at: tl.sync_at,
+                created_by: tl.created_by,
+                updated_by: tl.updated_by,
+                feeder_id: tl.feeder_id,
+                teach: None,
+            }
+        })
+        .collect();
 
     // 1. Fetch teach_evaluations
     let teach_eval_models = crate::models::academic::campaign::transaction::teach_evaluations::Entity::find()
@@ -381,10 +479,43 @@ pub async fn get_teache(
         let mut sa_map: HashMap<Uuid, (String, String)> = HashMap::new();
         for sa in sa_list {
             if let Some(info) = st_map.get(&sa.student_id) {
-                sa_map.insert(sa.id, info.clone());
+        sa_map.insert(sa.id, info.clone());
             }
         }
         sa_map
+    };
+
+    let grade_ids: Vec<Uuid> = detail_act_models.iter().filter_map(|da| da.grade_id).collect();
+    let grades_map: HashMap<Uuid, GradeResponse> = if grade_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::academic::campaign::transaction::grades::Entity::find()
+            .filter(crate::models::academic::campaign::transaction::grades::Column::Id.is_in(grade_ids))
+            .filter(crate::models::academic::campaign::transaction::grades::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|g| (g.id, GradeResponse {
+                id: g.id,
+                code: g.code,
+                alphabet_code: g.alphabet_code,
+                name: g.name,
+                grade: g.grade,
+                minimum: g.minimum,
+                maximum: g.maximum,
+                start_date: g.start_date,
+                end_date: g.end_date,
+                unit_id: g.unit_id,
+                created_at: g.created_at,
+                updated_at: g.updated_at,
+                deleted_at: g.deleted_at,
+                sync_at: g.sync_at,
+                created_by: g.created_by,
+                updated_by: g.updated_by,
+                feeder_id: g.feeder_id,
+            }))
+            .collect()
     };
 
     let detail_activities: Vec<DetailActivityResponse> = detail_act_models
@@ -415,7 +546,7 @@ pub async fn get_teache(
                 curiculum_detail_sequence: da.curiculum_detail_sequence,
                 student_name,
                 student_nim,
-                grade: None,
+                grade: da.grade_id.and_then(|gid| grades_map.get(&gid).cloned()),
                 course: None,
                 teach: None,
                 teach_lecturers: None,
@@ -541,13 +672,139 @@ pub async fn get_teache(
             detail_activity_evaluation_components: Some(detail_activity_evaluation_components),
             course_evaluation_plannings: Some(course_evaluation_plannings),
             evaluation_types: Some(evaluation_types),
-            class_code: None,
-            course: None,
-            activity: None,
-            curriculum_detail: None,
-            teach_decree: None,
-            encounter_category: None,
-            scope: None,
+            class_code: class_codes.into_iter().next().flatten().as_ref().map(|c| crate::dtos::academic::campaign::transaction::class_codes::ClassCodeResponse {
+                id: c.id,
+                code: c.code.clone(),
+                alphabet_code: c.alphabet_code.clone(),
+                name: c.name.clone(),
+                activity_id: c.activity_id,
+                start_effective_date: c.start_effective_date,
+                end_effective_date: c.end_effective_date,
+                created_at: c.created_at,
+                updated_at: c.updated_at,
+                deleted_at: c.deleted_at,
+                sync_at: c.sync_at,
+                created_by: c.created_by,
+                updated_by: c.updated_by,
+                unit_id: c.unit_id,
+                capacity: c.capacity,
+            }),
+            course: courses.into_iter().next().flatten().as_ref().map(|c| crate::dtos::academic::course::master::courses::CourseResponse {
+                id: c.id,
+                code: c.code.clone(),
+                name: c.name.clone(),
+                implementation_method: c.implementation_method.clone(),
+                total_credit: c.total_credit,
+                lecture_credit: c.lecture_credit,
+                practice_credit: c.practice_credit,
+                field_practice_credit: c.field_practice_credit,
+                simulation_credit: c.simulation_credit,
+                has_unit: c.has_unit,
+                has_syllabus: c.has_syllabus,
+                has_material: c.has_material,
+                has_practice: c.has_practice,
+                has_dictation: c.has_dictation,
+                group_id: c.group_id,
+                variety_id: c.variety_id,
+                unit_id: c.unit_id,
+                competence_id: c.competence_id,
+                feeder_course_group_id: c.feeder_course_group_id,
+                feeder_course_type_id: c.feeder_course_type_id,
+                feeder_course_id: c.feeder_course_id,
+                start_date: c.start_date,
+                end_date: c.end_date,
+                created_at: c.created_at,
+                updated_at: c.updated_at,
+                deleted_at: c.deleted_at,
+                sync_at: c.sync_at,
+                created_by: c.created_by,
+                updated_by: c.updated_by,
+            }),
+            activity: activities.into_iter().next().flatten().as_ref().map(|c| crate::dtos::academic::campaign::transaction::activities::ActivityResponse {
+                id: c.id,
+                name: c.name.clone(),
+                week_quantity: c.week_quantity,
+                student_target: c.student_target,
+                candidate_number: c.candidate_number,
+                candidate_pass: c.candidate_pass,
+                became_student: c.became_student,
+                transfer_student: c.transfer_student,
+                total_class_member: c.total_class_member,
+                start_date: c.start_date,
+                end_date: c.end_date,
+                start_transaction: c.start_transaction,
+                end_transaction: c.end_transaction,
+                unit_id: c.unit_id,
+                academic_year_id: c.academic_year_id,
+                is_active: c.is_active,
+                feeder_id: c.feeder_id,
+                created_at: c.created_at,
+                updated_at: c.updated_at,
+                deleted_at: c.deleted_at,
+                sync_at: c.sync_at,
+                created_by: c.created_by,
+                updated_by: c.updated_by,
+                unit_name: None,
+                academic_year_name: None,
+            }),
+            curriculum_detail: curriculum_details.into_iter().next().flatten().as_ref().map(|c| crate::dtos::academic::course::master::curriculum_details::CurriculumDetailResponse {
+                id: c.id,
+                code: c.code.clone(),
+                curriculum_id: c.curriculum_id,
+                semester_id: c.semester_id,
+                course_id: c.course_id,
+                created_at: c.created_at,
+                updated_at: c.updated_at,
+                deleted_at: c.deleted_at,
+                sync_at: c.sync_at,
+                created_by: c.created_by,
+                updated_by: c.updated_by,
+                credit: c.credit,
+                name: c.name.clone(),
+                concentration_id: c.concentration_id,
+                is_convertable_to_mbkm: c.is_convertable_to_mbkm,
+                feeder_id: c.feeder_id,
+                is_convertable_to_prior_learning_recognition: c.is_convertable_to_prior_learning_recognition,
+            }),
+            teach_decree: teach_decrees.into_iter().next().flatten().as_ref().map(|c| crate::dtos::academic::campaign::transaction::teach_decrees::TeachDecreeResponse {
+                id: c.id,
+                decree_number: c.decree_number.clone(),
+                decree_date: c.decree_date,
+                activity_id: c.activity_id,
+                staff_id: c.staff_id,
+                created_at: c.created_at,
+                updated_at: c.updated_at,
+                deleted_at: c.deleted_at,
+                sync_at: c.sync_at,
+                created_by: c.created_by,
+                updated_by: c.updated_by,
+                feeder_id: c.feeder_id,
+            }),
+            encounter_category: encounter_categories.into_iter().next().flatten().as_ref().map(|c| crate::dtos::common::reference::ReferenceResponse {
+                id: c.id,
+                code: c.code.clone(),
+                alphabet_code: c.alphabet_code.clone(),
+                name: c.name.clone(),
+                created_at: c.created_at.unwrap_or_default(),
+                updated_at: c.updated_at.unwrap_or_default(),
+                deleted_at: c.deleted_at,
+                sync_at: c.sync_at,
+                created_by: c.created_by,
+                updated_by: c.updated_by,
+            }),
+            scope: scopes.into_iter().next().flatten().as_ref().map(|c| crate::dtos::common::reference::ReferenceResponse {
+                id: c.id,
+                code: c.code.clone(),
+                alphabet_code: c.alphabet_code.clone(),
+                name: c.name.clone(),
+                created_at: c.created_at.unwrap_or_default(),
+                updated_at: c.updated_at.unwrap_or_default(),
+                deleted_at: c.deleted_at,
+                sync_at: c.sync_at,
+                created_by: c.created_by,
+                updated_by: c.updated_by,
+            }),
+            teach_lecturers: Some(teach_lecturers),
     }))
 }
 
@@ -636,6 +893,7 @@ pub async fn create_teache(
             teach_decree: None,
             encounter_category: None,
             scope: None,
+            teach_lecturers: None,
         }))
 }
 
@@ -767,6 +1025,7 @@ pub async fn update_teache(
             teach_decree: None,
             encounter_category: None,
             scope: None,
+            teach_lecturers: None,
         }))
 }
 #[endpoint(tags("Academic - Campaign - Transaction - Teach"), status_codes(200, 400, 404, 500))]

@@ -111,6 +111,8 @@ pub struct TeachResponse {
     pub encounter_category: Option<crate::dtos::common::reference::ReferenceResponse>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub scope: Option<crate::dtos::common::reference::ReferenceResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub teach_lecturers: Option<Vec<crate::dtos::academic::campaign::transaction::teach_lecturers::TeachLecturerResponse>>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
