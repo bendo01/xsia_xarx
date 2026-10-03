@@ -114,6 +114,10 @@ pub async fn generate_html_content(
             .one(db)
             .await?;
 
+        if course.is_none() {
+            continue;
+        }
+
         let grade = match detail.grade_id {
             Some(gid) => {
                 AcademicCampaignTransactionGrade::Entity::find_by_id(gid)
