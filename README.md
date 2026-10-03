@@ -374,86 +374,86 @@ cargo run -- task
 
 | Task Name | Description | Example Command |
 | :--- | :--- | :--- |
-| `EstimateAktifitasMengajarDosen` | Fetch and process GetAktivitasMengajarDosen data from Feeder Dikti | `cargo run -- task EstimateAktifitasMengajarDosen` |
-| `EstimateBiodataDosen` | Fetch and process DetailBiodataDosen data from Feeder Dikti | `cargo run -- task EstimateBiodataDosen` |
-| `EstimateBiodataMahasiswa` | Fetch and process GetBiodataMahasiswa data from Feeder Dikti | `cargo run -- task EstimateBiodataMahasiswa` |
-| `EstimateDetailKelasKuliah` | Fetch and process GetDetailKelasKuliah data from Feeder Dikti | `cargo run -- task EstimateDetailKelasKuliah` |
-| `EstimateDetailKurikulum` | Fetch and process GetDetailKurikulum data from Feeder Dikti | `cargo run -- task EstimateDetailKurikulum` |
-| `EstimateDetailMahasiswaLulusDO` | Fetch and process GetDetailMahasiswaLulusDO data from Feeder Dikti | `cargo run -- task EstimateDetailMahasiswaLulusDO` |
-| `EstimateDetailMatakuliah` | Fetch and process GetDetailMataKuliah data from Feeder Dikti | `cargo run -- task EstimateDetailMatakuliah` |
-| `EstimateDetailNilaiPerkuliahanKelas` | Fetch and process GetDetailNilaiPerkuliahanKelas data from Feeder Dikti | `cargo run -- task EstimateDetailNilaiPerkuliahanKelas` |
-| `EstimateDetailPenugasanDosen` | Fetch and process GetDetailPenugasanDosen data from Feeder Dikti | `cargo run -- task EstimateDetailPenugasanDosen` |
-| `EstimateDetailPeriodePerkuliahan` | Fetch and process GetDetailPeriodePerkuliahan data from Feeder Dikti | `cargo run -- task EstimateDetailPeriodePerkuliahan` |
-| `EstimateDetailPerkuliahanMahasiswa` | Fetch and process GetDetailPerkuliahanMahasiswa data from Feeder Dikti | `cargo run -- task EstimateDetailPerkuliahanMahasiswa` |
-| `EstimateGetAgama` | Fetch and process GetAgama data from Feeder Dikti | `cargo run -- task EstimateGetAgama` |
-| `EstimateGetAlatTransportasi` | Fetch and process GetAlatTransportasi data from Feeder Dikti | `cargo run -- task EstimateGetAlatTransportasi` |
-| `EstimateGetAllProdi` | Fetch and process GetAllProdi data from Feeder Dikti | `cargo run -- task EstimateGetAllProdi` |
-| `EstimateGetAllPT` | Fetch and process GetAllPT data from Feeder Dikti | `cargo run -- task EstimateGetAllPT` |
-| `EstimateGetDosenPengajarKelasKuliah` | Fetch and process GetDosenPengajarKelasKuliah data from Feeder Dikti | `cargo run -- task EstimateGetDosenPengajarKelasKuliah` |
-| `EstimateGetIkatanKerjaSdm` | Fetch and process GetIkatanKerjaSdm data from Feeder Dikti | `cargo run -- task EstimateGetIkatanKerjaSdm` |
-| `EstimateGetJabfung` | Fetch and process GetJabatanFungsional data from Feeder Dikti | `cargo run -- task EstimateGetJabfung` |
-| `EstimateGetJalurMasuk` | Fetch and process GetJalurMasuk data from Feeder Dikti | `cargo run -- task EstimateGetJalurMasuk` |
-| `EstimateGetJenisAktifitasMahasiswa` | Fetch and process GetJenisAktivitasMahasiswa data from Feeder Dikti | `cargo run -- task EstimateGetJenisAktifitasMahasiswa` |
-| `EstimateGetJenisEvaluasi` | Fetch and process GetJenisEvaluasi data from Feeder Dikti | `cargo run -- task EstimateGetJenisEvaluasi` |
-| `EstimateGetJenisKeluar` | Fetch and process GetJenisKeluar data from Feeder Dikti | `cargo run -- task EstimateGetJenisKeluar` |
-| `EstimateGetJenisPendaftaran` | Fetch and process GetJenisPendaftaran data from Feeder Dikti | `cargo run -- task EstimateGetJenisPendaftaran` |
-| `EstimateGetJenisPrestasi` | Fetch and process GetJenisPrestasi data from Feeder Dikti | `cargo run -- task EstimateGetJenisPrestasi` |
-| `EstimateGetJenisSertifikasi` | Fetch and process GetJenisSertifikasi data from Feeder Dikti | `cargo run -- task EstimateGetJenisSertifikasi` |
-| `EstimateGetJenisSMS` | Fetch and process GetJenisSMS data from Feeder Dikti | `cargo run -- task EstimateGetJenisSMS` |
-| `EstimateGetJenisSubstansi` | Fetch and process GetJenisSubstansi data from Feeder Dikti | `cargo run -- task EstimateGetJenisSubstansi` |
-| `EstimateGetJenisTinggal` | Fetch and process GetJenisTinggal data from Feeder Dikti | `cargo run -- task EstimateGetJenisTinggal` |
-| `EstimateGetJenjangPendidikan` | Fetch and process GetJenjangPendidikan data from Feeder Dikti | `cargo run -- task EstimateGetJenjangPendidikan` |
-| `EstimateGetKategoriKegiatan` | Fetch and process GetKategoriKegiatan data from Feeder Dikti | `cargo run -- task EstimateGetKategoriKegiatan` |
-| `EstimateGetLembagaPengangkat` | Fetch and process GetLembagaPengangkat data from Feeder Dikti | `cargo run -- task EstimateGetLembagaPengangkat` |
-| `EstimateGetLevelWilayah` | Fetch and process GetLevelWilayah data from Feeder Dikti | `cargo run -- task EstimateGetLevelWilayah` |
-| `EstimateGetNegara` | Fetch and process GetNegara data from Feeder Dikti | `cargo run -- task EstimateGetNegara` |
-| `EstimateGetPangkatGolongan` | Fetch and process GetPangkatGolongan data from Feeder Dikti | `cargo run -- task EstimateGetPangkatGolongan` |
-| `EstimateGetPekerjaan` | Fetch and process GetPekerjaan data from Feeder Dikti | `cargo run -- task EstimateGetPekerjaan` |
-| `EstimateGetPembiayaan` | Fetch and process GetPembiayaan data from Feeder Dikti | `cargo run -- task EstimateGetPembiayaan` |
-| `EstimateGetPenghasilan` | Fetch and process GetPenghasilan data from Feeder Dikti | `cargo run -- task EstimateGetPenghasilan` |
-| `EstimateGetProdi` | Fetch and process GetProdi data from Feeder Dikti | `cargo run -- task EstimateGetProdi` |
-| `EstimateGetProfilPT` | Fetch and process GetProfilPT data from Feeder Dikti | `cargo run -- task EstimateGetProfilPT` |
-| `EstimateGetSemester` | Fetch and process GetSemester data from Feeder Dikti | `cargo run -- task EstimateGetSemester` |
-| `EstimateGetStatusKeaktifanPegawai` | Fetch and process GetStatusKeaktifanPegawai data from Feeder Dikti | `cargo run -- task EstimateGetStatusKeaktifanPegawai` |
-| `EstimateGetStatusKepegawaian` | Fetch and process GetStatusKepegawaian data from Feeder Dikti | `cargo run -- task EstimateGetStatusKepegawaian` |
-| `EstimateGetStatusMahasiswa` | Fetch and process GetStatusMahasiswa data from Feeder Dikti | `cargo run -- task EstimateGetStatusMahasiswa` |
-| `EstimateGetTahunAjaran` | Fetch and process GetTahunAjaran data from Feeder Dikti | `cargo run -- task EstimateGetTahunAjaran` |
-| `EstimateGetTingkatPrestasi` | Fetch and process GetTingkatPrestasi data from Feeder Dikti | `cargo run -- task EstimateGetTingkatPrestasi` |
-| `EstimateGetWilayah` | Fetch and process GetWilayah data from Feeder Dikti | `cargo run -- task EstimateGetWilayah` |
-| `EstimateKRSMahasiswa` | Fetch and process GetKRSMahasiswa data from Feeder Dikti | `cargo run -- task EstimateKRSMahasiswa` |
-| `EstimateListDosen` | Fetch and process GetListDosen data from Feeder Dikti | `cargo run -- task EstimateListDosen` |
-| `EstimateListKelasKuliah` | Fetch and process GetListKelasKuliah data from Feeder Dikti | `cargo run -- task EstimateListKelasKuliah` |
-| `EstimateListKomponenEvaluasiKelas` | Fetch and process GetListKomponenEvaluasiKelas data from Feeder Dikti | `cargo run -- task EstimateListKomponenEvaluasiKelas` |
-| `EstimateListKurikulum` | Fetch and process GetListKurikulum data from Feeder Dikti | `cargo run -- task EstimateListKurikulum` |
-| `EstimateListMahasiswa` | Fetch and process GetListMahasiswa data from Feeder Dikti | `cargo run -- task EstimateListMahasiswa` |
-| `EstimateListMahasiswaLulusDO` | Fetch and process GetListMahasiswaLulusDO data from Feeder Dikti | `cargo run -- task EstimateListMahasiswaLulusDO` |
-| `EstimateListMatakuliah` | Fetch and process GetListMataKuliah data from Feeder Dikti | `cargo run -- task EstimateListMatakuliah` |
-| `EstimateListNilaiPerkuliahanKelas` | Fetch and process GetListNilaiPerkuliahanKelas data from Feeder Dikti | `cargo run -- task EstimateListNilaiPerkuliahanKelas` |
-| `EstimateListNilaiTransferPendidikanMahasiswa` | Fetch and process GetNilaiTransferPendidikanMahasiswa data from Feeder Dikti | `cargo run -- task EstimateListNilaiTransferPendidikanMahasiswa` |
-| `EstimateListPenugasanDosen` | Fetch and process GetListPenugasanDosen data from Feeder Dikti | `cargo run -- task EstimateListPenugasanDosen` |
-| `EstimateListPenugasanSemuaDosen` | Fetch and process GetListPenugasanSemuaDosen data from Feeder Dikti | `cargo run -- task EstimateListPenugasanSemuaDosen` |
-| `EstimateListPeriodePerkuliahan` | Fetch and process GetListPeriodePerkuliahan data from Feeder Dikti | `cargo run -- task EstimateListPeriodePerkuliahan` |
-| `EstimateListPerkuliahanMahasiswa` | Fetch and process GetListPerkuliahanMahasiswa data from Feeder Dikti | `cargo run -- task EstimateListPerkuliahanMahasiswa` |
-| `EstimateListRencanaEvaluasi` | Fetch and process GetListRencanaEvaluasi data from Feeder Dikti | `cargo run -- task EstimateListRencanaEvaluasi` |
-| `EstimateListRencanaPembelajaran` | Fetch and process GetListRencanaPembelajaran data from Feeder Dikti | `cargo run -- task EstimateListRencanaPembelajaran` |
-| `EstimateListRiwayatPendidikanMahasiswa` | Fetch and process GetListRiwayatPendidikanMahasiswa data from Feeder Dikti | `cargo run -- task EstimateListRiwayatPendidikanMahasiswa` |
-| `EstimateListSkalaNilaiProdi` | Fetch and process GetListSkalaNilaiProdi data from Feeder Dikti | `cargo run -- task EstimateListSkalaNilaiProdi` |
-| `EstimateMatkulKurikulum` | Fetch and process GetMatkulKurikulum data from Feeder Dikti | `cargo run -- task EstimateMatkulKurikulum` |
-| `EstimatePesertaKelasKuliah` | Fetch and process GetPesertaKelasKuliah data from Feeder Dikti | `cargo run -- task EstimatePesertaKelasKuliah` |
-| `EstimateRiwayatFungsionalDosen` | Fetch and process GetRiwayatFungsionalDosen data from Feeder Dikti | `cargo run -- task EstimateRiwayatFungsionalDosen` |
-| `EstimateRiwayatNilaiMahasiswa` | Fetch and process GetRiwayatNilaiMahasiswa data from Feeder Dikti | `cargo run -- task EstimateRiwayatNilaiMahasiswa` |
-| `EstimateRiwayatPangkatDosen` | Fetch and process GetRiwayatPangkatDosen data from Feeder Dikti | `cargo run -- task EstimateRiwayatPangkatDosen` |
-| `EstimateRiwayatPendidikanDosen` | Fetch and process GetRiwayatPendidikanDosen data from Feeder Dikti | `cargo run -- task EstimateRiwayatPendidikanDosen` |
-| `EstimateRiwayatPenelitianDosen` | Fetch and process GetRiwayatPenelitianDosen data from Feeder Dikti | `cargo run -- task EstimateRiwayatPenelitianDosen` |
-| `EstimateRiwayatSertifikasiDosen` | Fetch and process GetRiwayatSertifikasiDosen data from Feeder Dikti | `cargo run -- task EstimateRiwayatSertifikasiDosen` |
-| `EstimateTranskripMahasiswa` | Fetch and process GetTranskripMahasiswa data from Feeder Dikti | `cargo run -- task EstimateTranskripMahasiswa` |
-| `example` | Test task demonstrating argument passing and database access. | `cargo run -- task example arg1 arg2` |
-| `hash:password` | Generates secure password hashes using Argon2id (application standard) and Bcrypt. | `cargo run -- task hash:password "MySecretPass123"` |
-| `route:list` | Displays a table of all registered system HTTP routes, methods, and handlers. | `cargo run -- task route:list` |
-| `sync_permissions` | Synchronizes predefined route permission records into the `auth.permissions` database table. | `cargo run -- task sync_permissions` |
-| `SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer` | Upsert aktifitas_mengajar_dosen to academic_campaign_transaction.teach_lecturers | `cargo run -- task SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer` |
+| `EstimateAktifitasMengajarDosen` | Fetch and process GetAktivitasMengajarDosen data from Feeder Dikti | `cargo run -- task EstimateAktifitasMengajarDosen ` |
+| `EstimateBiodataDosen` | Fetch and process DetailBiodataDosen data from Feeder Dikti | `cargo run -- task EstimateBiodataDosen ` |
+| `EstimateBiodataMahasiswa` | Fetch and process GetBiodataMahasiswa data from Feeder Dikti | `cargo run -- task EstimateBiodataMahasiswa ` |
+| `EstimateDetailKelasKuliah` | Fetch and process GetDetailKelasKuliah data from Feeder Dikti | `cargo run -- task EstimateDetailKelasKuliah ` |
+| `EstimateDetailKurikulum` | Fetch and process GetDetailKurikulum data from Feeder Dikti | `cargo run -- task EstimateDetailKurikulum ` |
+| `EstimateDetailMahasiswaLulusDO` | Fetch and process GetDetailMahasiswaLulusDO data from Feeder Dikti | `cargo run -- task EstimateDetailMahasiswaLulusDO ` |
+| `EstimateDetailMatakuliah` | Fetch and process GetDetailMataKuliah data from Feeder Dikti | `cargo run -- task EstimateDetailMatakuliah ` |
+| `EstimateDetailNilaiPerkuliahanKelas` | Fetch and process GetDetailNilaiPerkuliahanKelas data from Feeder Dikti | `cargo run -- task EstimateDetailNilaiPerkuliahanKelas ` |
+| `EstimateDetailPenugasanDosen` | Fetch and process GetDetailPenugasanDosen data from Feeder Dikti | `cargo run -- task EstimateDetailPenugasanDosen ` |
+| `EstimateDetailPeriodePerkuliahan` | Fetch and process GetDetailPeriodePerkuliahan data from Feeder Dikti | `cargo run -- task EstimateDetailPeriodePerkuliahan ` |
+| `EstimateDetailPerkuliahanMahasiswa` | Fetch and process GetDetailPerkuliahanMahasiswa data from Feeder Dikti | `cargo run -- task EstimateDetailPerkuliahanMahasiswa ` |
+| `EstimateGetAgama` | Fetch and process GetAgama data from Feeder Dikti | `cargo run -- task EstimateGetAgama ` |
+| `EstimateGetAlatTransportasi` | Fetch and process GetAlatTransportasi data from Feeder Dikti | `cargo run -- task EstimateGetAlatTransportasi ` |
+| `EstimateGetAllProdi` | Fetch and process GetAllProdi data from Feeder Dikti | `cargo run -- task EstimateGetAllProdi ` |
+| `EstimateGetAllPT` | Fetch and process GetAllPT data from Feeder Dikti | `cargo run -- task EstimateGetAllPT ` |
+| `EstimateGetDosenPengajarKelasKuliah` | Fetch and process GetDosenPengajarKelasKuliah data from Feeder Dikti | `cargo run -- task EstimateGetDosenPengajarKelasKuliah ` |
+| `EstimateGetIkatanKerjaSdm` | Fetch and process GetIkatanKerjaSdm data from Feeder Dikti | `cargo run -- task EstimateGetIkatanKerjaSdm ` |
+| `EstimateGetJabfung` | Fetch and process GetJabatanFungsional data from Feeder Dikti | `cargo run -- task EstimateGetJabfung ` |
+| `EstimateGetJalurMasuk` | Fetch and process GetJalurMasuk data from Feeder Dikti | `cargo run -- task EstimateGetJalurMasuk ` |
+| `EstimateGetJenisAktifitasMahasiswa` | Fetch and process GetJenisAktivitasMahasiswa data from Feeder Dikti | `cargo run -- task EstimateGetJenisAktifitasMahasiswa ` |
+| `EstimateGetJenisEvaluasi` | Fetch and process GetJenisEvaluasi data from Feeder Dikti | `cargo run -- task EstimateGetJenisEvaluasi ` |
+| `EstimateGetJenisKeluar` | Fetch and process GetJenisKeluar data from Feeder Dikti | `cargo run -- task EstimateGetJenisKeluar ` |
+| `EstimateGetJenisPendaftaran` | Fetch and process GetJenisPendaftaran data from Feeder Dikti | `cargo run -- task EstimateGetJenisPendaftaran ` |
+| `EstimateGetJenisPrestasi` | Fetch and process GetJenisPrestasi data from Feeder Dikti | `cargo run -- task EstimateGetJenisPrestasi ` |
+| `EstimateGetJenisSertifikasi` | Fetch and process GetJenisSertifikasi data from Feeder Dikti | `cargo run -- task EstimateGetJenisSertifikasi ` |
+| `EstimateGetJenisSMS` | Fetch and process GetJenisSMS data from Feeder Dikti | `cargo run -- task EstimateGetJenisSMS ` |
+| `EstimateGetJenisSubstansi` | Fetch and process GetJenisSubstansi data from Feeder Dikti | `cargo run -- task EstimateGetJenisSubstansi ` |
+| `EstimateGetJenisTinggal` | Fetch and process GetJenisTinggal data from Feeder Dikti | `cargo run -- task EstimateGetJenisTinggal ` |
+| `EstimateGetJenjangPendidikan` | Fetch and process GetJenjangPendidikan data from Feeder Dikti | `cargo run -- task EstimateGetJenjangPendidikan ` |
+| `EstimateGetKategoriKegiatan` | Fetch and process GetKategoriKegiatan data from Feeder Dikti | `cargo run -- task EstimateGetKategoriKegiatan ` |
+| `EstimateGetLembagaPengangkat` | Fetch and process GetLembagaPengangkat data from Feeder Dikti | `cargo run -- task EstimateGetLembagaPengangkat ` |
+| `EstimateGetLevelWilayah` | Fetch and process GetLevelWilayah data from Feeder Dikti | `cargo run -- task EstimateGetLevelWilayah ` |
+| `EstimateGetNegara` | Fetch and process GetNegara data from Feeder Dikti | `cargo run -- task EstimateGetNegara ` |
+| `EstimateGetPangkatGolongan` | Fetch and process GetPangkatGolongan data from Feeder Dikti | `cargo run -- task EstimateGetPangkatGolongan ` |
+| `EstimateGetPekerjaan` | Fetch and process GetPekerjaan data from Feeder Dikti | `cargo run -- task EstimateGetPekerjaan ` |
+| `EstimateGetPembiayaan` | Fetch and process GetPembiayaan data from Feeder Dikti | `cargo run -- task EstimateGetPembiayaan ` |
+| `EstimateGetPenghasilan` | Fetch and process GetPenghasilan data from Feeder Dikti | `cargo run -- task EstimateGetPenghasilan ` |
+| `EstimateGetProdi` | Fetch and process GetProdi data from Feeder Dikti | `cargo run -- task EstimateGetProdi ` |
+| `EstimateGetProfilPT` | Fetch and process GetProfilPT data from Feeder Dikti | `cargo run -- task EstimateGetProfilPT ` |
+| `EstimateGetSemester` | Fetch and process GetSemester data from Feeder Dikti | `cargo run -- task EstimateGetSemester ` |
+| `EstimateGetStatusKeaktifanPegawai` | Fetch and process GetStatusKeaktifanPegawai data from Feeder Dikti | `cargo run -- task EstimateGetStatusKeaktifanPegawai ` |
+| `EstimateGetStatusKepegawaian` | Fetch and process GetStatusKepegawaian data from Feeder Dikti | `cargo run -- task EstimateGetStatusKepegawaian ` |
+| `EstimateGetStatusMahasiswa` | Fetch and process GetStatusMahasiswa data from Feeder Dikti | `cargo run -- task EstimateGetStatusMahasiswa ` |
+| `EstimateGetTahunAjaran` | Fetch and process GetTahunAjaran data from Feeder Dikti | `cargo run -- task EstimateGetTahunAjaran ` |
+| `EstimateGetTingkatPrestasi` | Fetch and process GetTingkatPrestasi data from Feeder Dikti | `cargo run -- task EstimateGetTingkatPrestasi ` |
+| `EstimateGetWilayah` | Fetch and process GetWilayah data from Feeder Dikti | `cargo run -- task EstimateGetWilayah ` |
+| `EstimateKRSMahasiswa` | Fetch and process GetKRSMahasiswa data from Feeder Dikti | `cargo run -- task EstimateKRSMahasiswa ` |
+| `EstimateListDosen` | Fetch and process GetListDosen data from Feeder Dikti | `cargo run -- task EstimateListDosen ` |
+| `EstimateListKelasKuliah` | Fetch and process GetListKelasKuliah data from Feeder Dikti | `cargo run -- task EstimateListKelasKuliah ` |
+| `EstimateListKomponenEvaluasiKelas` | Fetch and process GetListKomponenEvaluasiKelas data from Feeder Dikti | `cargo run -- task EstimateListKomponenEvaluasiKelas ` |
+| `EstimateListKurikulum` | Fetch and process GetListKurikulum data from Feeder Dikti | `cargo run -- task EstimateListKurikulum ` |
+| `EstimateListMahasiswa` | Fetch and process GetListMahasiswa data from Feeder Dikti | `cargo run -- task EstimateListMahasiswa ` |
+| `EstimateListMahasiswaLulusDO` | Fetch and process GetListMahasiswaLulusDO data from Feeder Dikti | `cargo run -- task EstimateListMahasiswaLulusDO ` |
+| `EstimateListMatakuliah` | Fetch and process GetListMataKuliah data from Feeder Dikti | `cargo run -- task EstimateListMatakuliah ` |
+| `EstimateListNilaiPerkuliahanKelas` | Fetch and process GetListNilaiPerkuliahanKelas data from Feeder Dikti | `cargo run -- task EstimateListNilaiPerkuliahanKelas ` |
+| `EstimateListNilaiTransferPendidikanMahasiswa` | Fetch and process GetNilaiTransferPendidikanMahasiswa data from Feeder Dikti | `cargo run -- task EstimateListNilaiTransferPendidikanMahasiswa ` |
+| `EstimateListPenugasanDosen` | Fetch and process GetListPenugasanDosen data from Feeder Dikti | `cargo run -- task EstimateListPenugasanDosen ` |
+| `EstimateListPenugasanSemuaDosen` | Fetch and process GetListPenugasanSemuaDosen data from Feeder Dikti | `cargo run -- task EstimateListPenugasanSemuaDosen ` |
+| `EstimateListPeriodePerkuliahan` | Fetch and process GetListPeriodePerkuliahan data from Feeder Dikti | `cargo run -- task EstimateListPeriodePerkuliahan ` |
+| `EstimateListPerkuliahanMahasiswa` | Fetch and process GetListPerkuliahanMahasiswa data from Feeder Dikti | `cargo run -- task EstimateListPerkuliahanMahasiswa ` |
+| `EstimateListRencanaEvaluasi` | Fetch and process GetListRencanaEvaluasi data from Feeder Dikti | `cargo run -- task EstimateListRencanaEvaluasi ` |
+| `EstimateListRencanaPembelajaran` | Fetch and process GetListRencanaPembelajaran data from Feeder Dikti | `cargo run -- task EstimateListRencanaPembelajaran ` |
+| `EstimateListRiwayatPendidikanMahasiswa` | Fetch and process GetListRiwayatPendidikanMahasiswa data from Feeder Dikti | `cargo run -- task EstimateListRiwayatPendidikanMahasiswa ` |
+| `EstimateListSkalaNilaiProdi` | Fetch and process GetListSkalaNilaiProdi data from Feeder Dikti | `cargo run -- task EstimateListSkalaNilaiProdi ` |
+| `EstimateMatkulKurikulum` | Fetch and process GetMatkulKurikulum data from Feeder Dikti | `cargo run -- task EstimateMatkulKurikulum ` |
+| `EstimatePesertaKelasKuliah` | Fetch and process GetPesertaKelasKuliah data from Feeder Dikti | `cargo run -- task EstimatePesertaKelasKuliah ` |
+| `EstimateRiwayatFungsionalDosen` | Fetch and process GetRiwayatFungsionalDosen data from Feeder Dikti | `cargo run -- task EstimateRiwayatFungsionalDosen ` |
+| `EstimateRiwayatNilaiMahasiswa` | Fetch and process GetRiwayatNilaiMahasiswa data from Feeder Dikti | `cargo run -- task EstimateRiwayatNilaiMahasiswa ` |
+| `EstimateRiwayatPangkatDosen` | Fetch and process GetRiwayatPangkatDosen data from Feeder Dikti | `cargo run -- task EstimateRiwayatPangkatDosen ` |
+| `EstimateRiwayatPendidikanDosen` | Fetch and process GetRiwayatPendidikanDosen data from Feeder Dikti | `cargo run -- task EstimateRiwayatPendidikanDosen ` |
+| `EstimateRiwayatPenelitianDosen` | Fetch and process GetRiwayatPenelitianDosen data from Feeder Dikti | `cargo run -- task EstimateRiwayatPenelitianDosen ` |
+| `EstimateRiwayatSertifikasiDosen` | Fetch and process GetRiwayatSertifikasiDosen data from Feeder Dikti | `cargo run -- task EstimateRiwayatSertifikasiDosen ` |
+| `EstimateTranskripMahasiswa` | Fetch and process GetTranskripMahasiswa data from Feeder Dikti | `cargo run -- task EstimateTranskripMahasiswa ` |
+| `example` | An example task that prints a message | `cargo run -- task example arg1 arg2` |
+| `hash:password` | Hashes input string/password using Argon2id and Bcrypt from arguments | `cargo run -- task hash:password "MySecretPass123"` |
+| `route:list` | Lists all system routes with their URL path, HTTP method, handler function, and route name | `cargo run -- task route:list ` |
+| `sync:student-roles` | Synchronizes student roles into the auth.roles table | `cargo run -- task sync:student-roles ` |
+| `sync_permissions` | Synchronizes all predefined route permissions into the auth.permissions table | `cargo run -- task sync_permissions ` |
+| `SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer` | Upsert aktifitas_mengajar_dosen to academic_campaign_transaction.teach_lecturers | `cargo run -- task SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer ` |
 | `SyncNilaiPerkuliahanKelasToDetailActivities` | Upsert detail_nilai_perkuliahan_kelas to academic_student_campaign.detail_activities | `cargo run -- task SyncNilaiPerkuliahanKelasToDetailActivities true` |
-
 ##### 🔑 Password Hashing Utility (`hash:password`)
 
 Hash a raw password string directly from command-line arguments:
