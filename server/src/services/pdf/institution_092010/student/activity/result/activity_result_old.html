@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Kartu Hasil Studi (KHS)</title>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/roboto-font@0.1.0/css/fonts.min.css" rel="stylesheet" />
+    </head>
+    <body>
+        <div class="container mx-auto">
+            <h1 class="text-lg font-bold text-center mb-1">KARTU HASIL STUDI</h1>
+            <table class="border-collapse table-auto w-full text-xs text-left">
+                <tbody>
+                    <tr>
+                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">Nomor Induk</td>
+                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">{{ student_activity.student.code | default(value="-") }}</td>
+                    </tr>
+                    <tr>
+                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">Nama</td>
+                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">{{ student_activity.student.name | default(value="-") }}</td>
+                    </tr>
+                    <tr>
+                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">Program Studi</td>
+                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">{{ student_activity.unit.code | default(value="") }} / {{ student_activity.unit.name | default(value="-") }}</td>
+                    </tr>
+                    <tr>
+                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">Tahun Akademik</td>
+                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">{{ student_activity.unit_activity.academic_year.name | default(value="-") }}</td>
+                    </tr>
+                    <tr>
+                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">Status</td>
+                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">{{ student_activity.status.name | default(value="-") }}</td>
+                    </tr>
+                    <tr>
+                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">Tanggal Cetak</td>
+                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">{{ print_date }}</td>
+                    </tr>
+                    <tr>
+                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">Indeks Prestasi Sementara</td>
+                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">{{ student_activity.activity.cumulative_index | default(value="0") }}</td>
+                    </tr>
+                    <tr>
+                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">Kredit Tempuh Semester</td>
+                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">{{ student_activity.activity.total_credit | default(value="0") }}</td>
+                    </tr>
+                    <tr>
+                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">Indeks Prestasi Kumulatif</td>
+                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">{{ student_activity.activity.grand_cumulative_index | default(value="0") }}</td>
+                    </tr>
+                    <tr>
+                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">Total Kredit Tempuh</td>
+                        <td class="border-b border-gray-300 dark:border-gray-600 p-1 text-gray-700 dark:text-gray-300">{{ student_activity.activity.grand_total_credit | default(value="0") }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <br />
+            <table class="w-full text-xs border-collapse border border-gray-300">
+                <thead>
+                    <tr>
+                        <th class="border border-gray-300 p-1">No</th>
+                        <th class="border border-gray-300 p-1">Kode</th>
+                        <th class="border border-gray-300 p-1">Nama</th>
+                        <th class="border border-gray-300 p-1">Kredit</th>
+                        <th class="border border-gray-300 p-1">Nilai Huruf</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if student_activity.detail_activities %}
+                    {% for detail in student_activity.detail_activities %}
+                    <tr>
+                        <td class="border border-gray-300 p-1 text-center">{{loop.index}}</td>
+                        <td class="border border-gray-300 p-1 text-center">{{detail.course.code | default(value="-")}}</td>
+                        <td class="border border-gray-300 p-1 text-left">{{detail.course.name | default(value="-")}}</td>
+                        <td class="border border-gray-300 p-1 text-center">{{detail.course.total_credit | default(value="0")}}</td>
+                        {% if detail.grade and detail.grade.name %}
+                        <td class="border border-gray-300 p-1 text-center font-bold">{{detail.grade.name}}</td>
+                        {% else %}
+                        <td class="border border-gray-300 p-1 text-center">-</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="border border-gray-300 p-2 text-center text-gray-400">Tidak ada mata kuliah</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            <br />
+            <div style="width: 100%; display: block; margin-top: 30px; page-break-inside: avoid;">
+                <table style="width: 100%; border: none;">
+                    <thead class="text-xs text-gray-700 uppercase dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="text-center">Kepala BAAK</th>
+                            <th scope="col" class="text-center">Kepala Program Studi</th>
+                            <th scope="col" class="text-center">Pembimbing Akademik</th>
+                            <th scope="col" class="text-center">Mahasiswa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="text-xs">
+                            <td class="text-center">{{ baak_signature | safe }}</td>
+                            <td class="text-center">{{ cs_staff_signature | safe }}</td>
+                            <td class="text-center">{{ pa_signature | safe }}</td>
+                            <td class="text-center">{{ student_signature | safe }}</td>
+                        </tr>
+                        <tr class="text-xs">
+                            <td class="text-center">{{ baak_name }}</td>
+                            <td class="text-center">{{ cs_staff_name }}</td>
+                            <td class="text-center"></td>
+                            <td class="text-center">{{student_name}}</td>
+                        </tr>
+                        <tr class="text-xs">
+                            <td class="text-center">{% if baak_code %}NIK {{ baak_code }}{% endif %}</td>
+                            <td class="text-center">{% if cs_staff_code %}NIK {{ cs_staff_code }}{% endif %}</td>
+                            <td class="text-center"></td>
+                            <td class="text-center">NIM: {{student_code}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>
