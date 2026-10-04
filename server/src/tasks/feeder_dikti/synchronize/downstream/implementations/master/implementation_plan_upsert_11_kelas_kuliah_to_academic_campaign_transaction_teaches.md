@@ -25,7 +25,7 @@ Implement a data synchronization task that upserts records from the Feeder Dikti
 
 ### Task Implementation
 
-#### [MODIFY] [upsert_10_kelas_kuliah_to_academic_campaign_transaction_teaches.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/upsert_10_kelas_kuliah_to_academic_campaign_transaction_teaches.rs)
+#### [MODIFY] [upsert_11_kelas_kuliah_to_academic_campaign_transaction_teaches.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/upsert_11_kelas_kuliah_to_academic_campaign_transaction_teaches.rs)
 
 - Implement `SyncKelasKuliahToAcademicTransactionTeaches` implementing the `crate::tasks::Task` trait.
 - **Preload static references once before the processing loop** into `HashMap` to avoid N+1 query explosion:
@@ -158,12 +158,12 @@ Follows the standard repository pattern: **find existing record → if `None`, `
 
 #### [MODIFY] [mod.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/mod.rs)
 
-- Ensure `pub mod upsert_10_kelas_kuliah_to_academic_campaign_transaction_teaches;` is exported.
+- Ensure `pub mod upsert_11_kelas_kuliah_to_academic_campaign_transaction_teaches;` is exported.
 
 #### [MODIFY] [tasks/mod.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/mod.rs)
 
 - Register task in `get_tasks()`:
-  `Box::new(feeder_dikti::synchronize::downstream::master::upsert_10_kelas_kuliah_to_academic_campaign_transaction_teaches::SyncKelasKuliahToAcademicTransactionTeaches)`
+  `Box::new(feeder_dikti::synchronize::downstream::master::upsert_11_kelas_kuliah_to_academic_campaign_transaction_teaches::SyncKelasKuliahToAcademicTransactionTeaches)`
 
 ## Resolved Decisions
 

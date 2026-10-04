@@ -26,6 +26,7 @@
 - [Real-time Communication & WebSockets](#-real-time-communication--websockets)
 - [Database Migrations & Entity Generation](#-database-migrations--entity-generation)
 - [Background Workers & Task Runner](#-background-workers--task-runner)
+  - [PDDikti Feeder Synchronization Hierarchy](#3-pddikti-feeder-downstream-master-synchronization-hierarchy)
 - [Testing & Quality Assurance](#-testing--quality-assurance)
   - [1. Backend Testing (`server/`)](#1-backend-testing-server)
   - [2. Frontend Testing (`client/`)](#2-frontend-testing-client)
@@ -494,7 +495,101 @@ cargo run -- task sync_permissions
 cargo run -- task sync:permissions
 ```
 
-#### 3. Creating a Custom Task
+#### 3. PDDikti Feeder Downstream Master Synchronization Hierarchy
+
+Data synchronization from the local `feeder_master` schema to institutional and academic system tables must be executed following a strict **Directed Acyclic Graph (DAG)** to guarantee that all relational foreign key dependencies are satisfied.
+
+```mermaid
+flowchart TD
+    subgraph L1["Tier 1: Master Identity & Core Reference"]
+        T01["01: Mahasiswa (students)"]
+        T02["02: Dosen (lecturers)"]
+        T03["03: Periode Aktivitas (activities)"]
+        T04["04: Skala Nilai (grades)"]
+        T05["05: Mata Kuliah (courses)"]
+    end
+
+    subgraph L2["Tier 2: Kurikulum & Perencanaan Matakuliah"]
+        T06["06: Kurikulum & Detail (curriculums)"]
+        T07["07: Rencana Evaluasi (course_evaluation_plannings)"]
+        T08["08: RPS (course_learn_plannings)"]
+    end
+
+    subgraph L3["Tier 3: Kode Kelas Perkuliahan"]
+        T09["09: Kode Kelas dari Kelas Kuliah (class_codes)"]
+        T10["10: Kode Kelas dari KRS (class_codes)"]
+    end
+
+    subgraph L4["Tier 4: Kelas Perkuliahan (Teaches)"]
+        T11["11: Kelas Kuliah (teaches)"]
+        T12["12: Kelas Kuliah dari KRS (teaches)"]
+        T13["13: Metrik Kelas Kuliah (teaches metrics)"]
+    end
+
+    subgraph L5["Tier 5: Relasi Kelas Perkuliahan"]
+        T14["14: Dosen Pengajar (teach_lecturers)"]
+        T15["15: Komponen Evaluasi Kelas (teach_evaluations)"]
+    end
+
+    subgraph L6["Tier 6: Aktivitas Semester & Konversi"]
+        T16["16: AKM Mahasiswa (student_activities)"]
+        T17["17: Nilai Transfer (convertions)"]
+    end
+
+    subgraph L7["Tier 7: KRS & Nilai Mahasiswa"]
+        T18["18: KRS Mahasiswa (detail_activities)"]
+        T19["19: Peserta Kelas (detail_activities)"]
+        T20["20: Detail Nilai Perkuliahan (detail_activities)"]
+    end
+
+    T05 --> T06
+    T05 --> T07
+    T05 --> T08
+
+    T03 --> T09
+    T03 --> T10
+
+    T03 & T05 & T09 & T10 --> T11
+    T03 & T05 & T09 & T10 --> T12
+    T11 & T12 --> T13
+
+    T02 & T11 & T13 --> T14
+    T11 & T13 --> T15
+
+    T01 & T03 --> T16
+    T01 & T05 & T04 --> T17
+
+    T01 & T16 & T11 --> T18
+    T01 & T16 & T11 --> T19
+    T18 & T19 & T04 --> T20
+```
+
+##### Master Synchronization Pipeline Matrix
+
+| Step | Implementation Plan | Feeder Source Table | Target System Table | Relational Dependencies |
+| :---: | :--- | :--- | :--- | :--- |
+| **01** | [01_biodata_mahasiswa_and_mahasiswa](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_01_biodata_mahasiswa_and_mahasiswa_to_individual_and_student.md) | `biodata_mahasiswa`, `mahasiswa` | `person_master.individuals`, `academic_student_master.students` | Static references (`units`, `academic_years`, `religions`, `districts`) |
+| **02** | [02_biodata_dosen_and_dosen](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_02_biodata_dosen_and_dosen_to_individual_lecturer.md) | `biodata_dosen`, `dosen` | `person_master.individuals`, `academic_lecturer_master.lecturers` | Static references (`units`, `religions`, `districts`) |
+| **03** | [03_periode_perkuliahan](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_03_periode_perkuliahan_to_academic_campaign_transaction_activities.md) | `periode_perkuliahan` | `academic_campaign_transaction.activities` | `institution_master.units`, `academic_general_reference.academic_years` |
+| **04** | [04_skala_nilai_prodi](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_04_skala_nilai_prodi_to_academic_campaign_transaction_grades.md) | `skala_nilai_program_studi` | `academic_campaign_transaction.grades` | `institution_master.units` |
+| **05** | [05_matakuliah](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_05_matakuliah_to_academic_course_master_course.md) | `matakuliah` | `academic_course_master.courses` | `institution_master.units` |
+| **06** | [06_kurikulum_and_matkul_kurikulum](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_06_kurikulum_and_matkul_kurikulum_to_academic_course_master_curriculums_and_academic_course_master_curriculum_details.md) | `kurikulum`, `matakuliah_kurikulum` | `academic_course_master.curriculums`, `curriculum_details` | Step 05 (`courses`), `units`, `academic_years` |
+| **07** | [07_rencana_evaluasi](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_07_rencana_evaluasi_to_academic_course_master_course_evaluation_plannings.md) | `rencana_evaluasi` | `academic_course_master.course_evaluation_plannings` | Step 05 (`courses`), `evaluation_types` |
+| **08** | [08_rencana_pembelajaran](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_08_rencana_pembelajaran_to_academic_course_master_course_learn_plannings.md) | `rencana_pembelajaran` | `academic_course_master.course_learn_plannings` (RPS) | Step 05 (`courses`), `units`, `institutions` |
+| **09** | [09_kelas_kuliah_to_class_code](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_09_kelas_kuliah_to_academic_campaign_transaction_class_code.md) | `kelas_kuliah` | `academic_campaign_transaction.class_codes` | Step 03 (`activities`), `units`, `academic_years` |
+| **10** | [10_kartu_rencana_studi_to_class_code](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_10_kartu_rencana_studi_mahasiswa_to_academic_campaign_transaction_class_code.md) | `kartu_rencana_studi_mahasiswa` | `academic_campaign_transaction.class_codes` | Step 03 (`activities`), `units`, `academic_years` |
+| **11** | [11_kelas_kuliah_to_teaches](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_11_kelas_kuliah_to_academic_campaign_transaction_teaches.md) | `kelas_kuliah` | `academic_campaign_transaction.teaches` | Step 03 (`activities`), Step 05 (`courses`), Step 09 (`class_codes`) |
+| **12** | [12_kartu_rencana_studi_to_teaches](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_12_kartu_rencana_studi_mahasiswa_to_academic_campaign_transaction_teaches.md) | `kartu_rencana_studi_mahasiswa` | `academic_campaign_transaction.teaches` | Step 03 (`activities`), Step 05 (`courses`), Step 09-10 (`class_codes`) |
+| **13** | [13_nilai_perkuliahan_kelas_to_teaches](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_13_nilai_perkuliahan_kelas_to_academic_campaign_transaction_teaches.md) | `nilai_perkuliahan_kelas` | `academic_campaign_transaction.teaches` (metrics) | Step 11-12 (`teaches`), Step 03 (`activities`), Step 05 (`courses`) |
+| **14** | [14_aktifitas_mengajar_dosen](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_14_aktifitas_mengajar_dosen_to_academic_campaign_transaction_teach_lecturers.md) | `aktifitas_mengajar_dosen` | `academic_campaign_transaction.teach_lecturers` | Step 02 (`lecturers`), Step 11-13 (`teaches`), Step 05 (`courses`) |
+| **15** | [15_komponen_evaluasi_kelas](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_15_komponen_evaluasi_kelas_to_academic_campaign_teach_evaluations.md) | `komponen_evaluasi_kelas` | `academic_campaign_transaction.teach_evaluations` | Step 11-13 (`teaches`), `evaluation_types` |
+| **16** | [16_perkuliahan_mahasiswa](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_16_perkuliahan_mahasiswa_to_academic_student_campaign_activities.md) | `perkuliahan_mahasiswa` | `academic_student_campaign.student_activities` (AKM) | Step 01 (`students`), Step 03 (`activities`), `academic_years` |
+| **17** | [17_nilai_transfer_pendidikan](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_17_nilai_transfer_pendidikan_mahasiswa_to_academic_student_campaign_convertions.md) | `nilai_transfer_pendidikan_mahasiswa` | `academic_student_campaign.convertions` | Step 01 (`students`), Step 05 (`courses`), Step 04 (`grades`) |
+| **18** | [18_kartu_rencana_studi_to_detail](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_18_kartu_rencana_studi_mahasiswa_to_academic_student_campaign_detail_activities.md) | `kartu_rencana_studi_mahasiswa` | `academic_student_campaign.detail_activities` | Step 01 (`students`), Step 16 (`student_activities`), Step 11-13 (`teaches`), Step 05 (`courses`) |
+| **19** | [19_peserta_kelas_kuliah](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_19_peserta_kelas_kuliah_to_academic_student_campaign_detail_activities.md) | `peserta_kelas_kuliah` | `academic_student_campaign.detail_activities` | Step 01 (`students`), Step 16 (`student_activities`), Step 11-13 (`teaches`), Step 03 (`activities`) |
+| **20** | [20_detail_nilai_perkuliahan_kelas](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_20_detail_nilai_perkuliahan_kelas_to_academic_student_campaign_detail_activities.md) | `detail_nilai_perkuliahan_kelas` | `academic_student_campaign.detail_activities` (grades) | Step 18-19 (`detail_activities`), Step 01 (`students`), Step 11-13 (`teaches`), Step 04 (`grades`) |
+
+#### 4. Creating a Custom Task
 
 To create a new task:
 

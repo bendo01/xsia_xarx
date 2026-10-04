@@ -29,7 +29,7 @@ Implement a data synchronization task that upserts records from the Feeder Dikti
 
 ### Task Implementation
 
-#### [MODIFY] [upsert_12_aktifitas_mengajar_dosen_to_academic_campaign_transaction_teach_lecturers.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/upsert_12_aktifitas_mengajar_dosen_to_academic_campaign_transaction_teach_lecturers.rs)
+#### [MODIFY] [upsert_14_aktifitas_mengajar_dosen_to_academic_campaign_transaction_teach_lecturers.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/upsert_14_aktifitas_mengajar_dosen_to_academic_campaign_transaction_teach_lecturers.rs)
 
 - Implement `SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer` implementing the `crate::tasks::Task` trait.
 - **Preload static references once before the processing loop** into `HashMap` to avoid N+1 query explosion (~15,000 DB roundtrips reduced to a handful):
@@ -160,12 +160,12 @@ Follows the standard repository pattern: **find existing record → if `None`, `
 
 #### [MODIFY] [mod.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/mod.rs)
 
-- Ensure `pub mod upsert_12_aktifitas_mengajar_dosen_to_academic_campaign_transaction_teach_lecturers;` is exported.
+- Ensure `pub mod upsert_14_aktifitas_mengajar_dosen_to_academic_campaign_transaction_teach_lecturers;` is exported.
 
 #### [MODIFY] [tasks/mod.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/mod.rs)
 
 - Task registered in `get_tasks()`:
-  `Box::new(feeder_dikti::synchronize::downstream::master::upsert_12_aktifitas_mengajar_dosen_to_academic_campaign_transaction_teach_lecturers::SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer)`
+  `Box::new(feeder_dikti::synchronize::downstream::master::upsert_14_aktifitas_mengajar_dosen_to_academic_campaign_transaction_teach_lecturers::SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer)`
 
 ## Resolved Decisions
 

@@ -23,7 +23,7 @@ Implement a data synchronization task that upserts class evaluation grading comp
 
 ### Task Implementation
 
-#### [MODIFY] [upsert_18_komponen_evaluasi_kelas_to_academic_campaign_teach_evaluations.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/upsert_18_komponen_evaluasi_kelas_to_academic_campaign_teach_evaluations.rs)
+#### [MODIFY] [upsert_15_komponen_evaluasi_kelas_to_academic_campaign_teach_evaluations.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/upsert_15_komponen_evaluasi_kelas_to_academic_campaign_teach_evaluations.rs)
 
 - Implement `SyncKomponenEvaluasiKelasToTeachEvaluations` implementing the `crate::tasks::Task` trait.
 - **Preload static references once before the processing loop** into `HashMap`:
@@ -97,7 +97,7 @@ async fn upsert_teach_evaluation(
 
 #### [MODIFY] [mod.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/mod.rs)
 
-- Ensure `pub mod upsert_18_komponen_evaluasi_kelas_to_academic_campaign_teach_evaluations;` is exported.
+- Ensure `pub mod upsert_15_komponen_evaluasi_kelas_to_academic_campaign_teach_evaluations;` is exported.
 
 #### [MODIFY] [tasks/mod.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/mod.rs)
 

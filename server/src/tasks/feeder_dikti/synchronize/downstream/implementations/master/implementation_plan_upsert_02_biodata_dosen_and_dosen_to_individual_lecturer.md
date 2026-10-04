@@ -28,7 +28,7 @@ Implement a data synchronization task that upserts records from the Feeder Dikti
 
 #### [MODIFY] [upsert_02_biodata_dosen_and_dosen_to_individual_lecturer.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/upsert_02_biodata_dosen_and_dosen_to_individual_lecturer.rs)
 
-- Implement a struct `SyncBiodataDosenToAcademicLecturerMasterLecturer` that implements the `crate::tasks::Task` trait. Follow the structure of [upsert_12](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/upsert_12_aktifitas_mengajar_dosen_to_academic_campaign_transaction_teach_lecturers.rs).
+- Implement a struct `SyncBiodataDosenToAcademicLecturerMasterLecturer` that implements the `crate::tasks::Task` trait. Follow the structure of [upsert_12](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/upsert_14_aktifitas_mengajar_dosen_to_academic_campaign_transaction_teach_lecturers.rs).
 - **Preload reference tables once** before the loop into `HashMap`s, since they are small. Do not query them for every record:
   - `person_reference.genders`, `religions`, `marital_statuses`, `identification_types`
   - `academic_lecturer_reference.statuses`, `groups`, `contracts`, `ranks`

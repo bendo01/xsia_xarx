@@ -32,7 +32,7 @@ Implement a data synchronization task that upserts student semester progress rec
 
 ### Task Implementation
 
-#### [MODIFY] [upsert_09_perkuliahan_mahasiswa_to_academic_student_campaign_activities.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/upsert_09_perkuliahan_mahasiswa_to_academic_student_campaign_activities.rs)
+#### [MODIFY] [upsert_16_perkuliahan_mahasiswa_to_academic_student_campaign_activities.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/upsert_16_perkuliahan_mahasiswa_to_academic_student_campaign_activities.rs)
 
 - Implement `SyncPerkuliahanMahasiswaToAcademicStudentActivities` implementing the `crate::tasks::Task` trait.
 - **Preload static references once before the processing loop** into `HashMap`:
@@ -128,7 +128,7 @@ async fn upsert_student_activity(
 
 #### [MODIFY] [mod.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/mod.rs)
 
-- Ensure `pub mod upsert_09_perkuliahan_mahasiswa_to_academic_student_campaign_activities;` is exported.
+- Ensure `pub mod upsert_16_perkuliahan_mahasiswa_to_academic_student_campaign_activities;` is exported.
 
 #### [MODIFY] [tasks/mod.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/mod.rs)
 

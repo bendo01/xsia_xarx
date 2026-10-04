@@ -26,7 +26,7 @@ Implement a data synchronization task that upserts course teaching class records
 
 ### Task Implementation
 
-#### [MODIFY] [upsert_11_kartu_rencana_studi_mahasiswa_to_academic_campaign_transaction_teaches.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/upsert_11_kartu_rencana_studi_mahasiswa_to_academic_campaign_transaction_teaches.rs)
+#### [MODIFY] [upsert_12_kartu_rencana_studi_mahasiswa_to_academic_campaign_transaction_teaches.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/upsert_12_kartu_rencana_studi_mahasiswa_to_academic_campaign_transaction_teaches.rs)
 
 - Implement `SyncKartuRencanaStudiMahasiswaToAcademicTransactionTeaches` implementing the `crate::tasks::Task` trait.
 - **Preload static references once before the processing loop** into `HashMap`:
@@ -142,7 +142,7 @@ async fn upsert_teach(
 
 #### [MODIFY] [mod.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/mod.rs)
 
-- Ensure `pub mod upsert_11_kartu_rencana_studi_mahasiswa_to_academic_campaign_transaction_teaches;` is exported.
+- Ensure `pub mod upsert_12_kartu_rencana_studi_mahasiswa_to_academic_campaign_transaction_teaches;` is exported.
 
 #### [MODIFY] [tasks/mod.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/mod.rs)
 

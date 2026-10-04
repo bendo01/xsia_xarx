@@ -30,7 +30,7 @@ Implement a data synchronization task that upserts records from the Feeder Dikti
 
 #### [MODIFY] [upsert_01_biodata_mahasiswa_and_mahasiswa_to_individual_and_student.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/upsert_01_biodata_mahasiswa_and_mahasiswa_to_individual_and_student.rs)
 
-- Implement a struct `SyncBiodataMahasiswaToAcademicStudentMasterStudent` implementing the `crate::tasks::Task` trait. Follow the structure of [upsert_12](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/upsert_12_aktifitas_mengajar_dosen_to_academic_campaign_transaction_teach_lecturers.rs).
+- Implement a struct `SyncBiodataMahasiswaToAcademicStudentMasterStudent` implementing the `crate::tasks::Task` trait. Follow the structure of [upsert_12](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/upsert_14_aktifitas_mengajar_dosen_to_academic_campaign_transaction_teach_lecturers.rs).
 - **Preload reference tables once** before the processing loop into memory (`HashMap`s) to avoid thousands of repetitive queries:
   - `person_reference.genders` (by `alphabet_code`)
   - `person_reference.religions` (by lowercase `name` and code `1..=6`)

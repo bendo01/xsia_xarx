@@ -22,7 +22,7 @@ Implement a data synchronization task that upserts weekly lesson learning plan r
 
 ### Task Implementation
 
-#### [MODIFY] [upsert_20_rencana_pembelajaran_to_academic_course_master_course_learn_plannings.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/upsert_20_rencana_pembelajaran_to_academic_course_master_course_learn_plannings.rs)
+#### [MODIFY] [upsert_08_rencana_pembelajaran_to_academic_course_master_course_learn_plannings.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/upsert_08_rencana_pembelajaran_to_academic_course_master_course_learn_plannings.rs)
 
 - Implement `SyncRencanaPembelajaranToCourseLearnPlannings` implementing the `crate::tasks::Task` trait.
 - **Preload static references once before the processing loop** into `HashMap`:
@@ -110,7 +110,7 @@ async fn upsert_learn_planning(
 
 #### [MODIFY] [mod.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/mod.rs)
 
-- Ensure `pub mod upsert_20_rencana_pembelajaran_to_academic_course_master_course_learn_plannings;` is exported.
+- Ensure `pub mod upsert_08_rencana_pembelajaran_to_academic_course_master_course_learn_plannings;` is exported.
 
 #### [MODIFY] [tasks/mod.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/mod.rs)
 

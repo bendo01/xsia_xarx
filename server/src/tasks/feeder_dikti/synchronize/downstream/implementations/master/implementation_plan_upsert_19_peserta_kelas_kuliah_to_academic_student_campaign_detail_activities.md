@@ -21,7 +21,7 @@ Implement a data synchronization task that upserts class participant records fro
 
 ### Task Implementation
 
-#### [MODIFY] [upsert_15_peserta_kelas_kuliah_to_academic_student_campaign_detail_activities.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/upsert_15_peserta_kelas_kuliah_to_academic_student_campaign_detail_activities.rs)
+#### [MODIFY] [upsert_19_peserta_kelas_kuliah_to_academic_student_campaign_detail_activities.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/upsert_19_peserta_kelas_kuliah_to_academic_student_campaign_detail_activities.rs)
 
 - Implement `SyncPesertaKelasKuliahToDetailActivities` implementing the `crate::tasks::Task` trait.
 - **Preload static references once before the processing loop** into `HashMap`:
@@ -129,7 +129,7 @@ async fn upsert_participant_detail_activity(
 
 #### [MODIFY] [mod.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/mod.rs)
 
-- Ensure `pub mod upsert_15_peserta_kelas_kuliah_to_academic_student_campaign_detail_activities;` is exported.
+- Ensure `pub mod upsert_19_peserta_kelas_kuliah_to_academic_student_campaign_detail_activities;` is exported.
 
 #### [MODIFY] [tasks/mod.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/mod.rs)
 
