@@ -1,9 +1,10 @@
 use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
+    ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, EntityTrait, IntoActiveModel,
     PaginatorTrait, QueryFilter, QueryOrder, Set,
 };
+use sea_orm::sea_query::{extension::postgres::PgExpr, Expr};
 use uuid::Uuid;
 use validator::Validate;
 
@@ -31,16 +32,94 @@ pub async fn list_student_activities(
 
     let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
 
-    if let Some(ref name) = query.name {
-        select = select.filter(entity_mod::Column::Name.contains(name));
+    let search_term = query.search.as_ref().or(query.q.as_ref());
+    if let Some(search) = search_term {
+        let trimmed = search.trim();
+        if !trimmed.is_empty() {
+            let search_pattern = format!("%{}%", trimmed);
+            let matching_student_ids: Vec<Uuid> = crate::models::academic::student::master::students::Entity::find()
+                .filter(
+                    Condition::any()
+                        .add(Expr::col(crate::models::academic::student::master::students::Column::Name).ilike(search_pattern.clone()))
+                        .add(Expr::col(crate::models::academic::student::master::students::Column::Code).ilike(search_pattern.clone()))
+                )
+                .filter(crate::models::academic::student::master::students::Column::DeletedAt.is_null())
+                .all(db)
+                .await
+                .unwrap_or_default()
+                .into_iter()
+                .map(|s| s.id)
+                .collect();
+
+            let mut cond = Condition::any()
+                .add(Expr::col(entity_mod::Column::Name).ilike(search_pattern));
+            if !matching_student_ids.is_empty() {
+                cond = cond.add(entity_mod::Column::StudentId.is_in(matching_student_ids));
+            }
+            select = select.filter(cond);
+        }
+    } else if let Some(ref name) = query.name {
+        let trimmed = name.trim();
+        if !trimmed.is_empty() {
+            let search_pattern = format!("%{}%", trimmed);
+            select = select.filter(Expr::col(entity_mod::Column::Name).ilike(search_pattern));
+        }
     }
+
     if let Some(student_id) = query.student_id {
         select = select.filter(entity_mod::Column::StudentId.eq(student_id));
     }
 
-    let paginator = select
-        .order_by_asc(entity_mod::Column::Name)
-        .paginate(db, page_size);
+    if let Some(unit_id) = query.unit_id {
+        select = select.filter(entity_mod::Column::UnitId.eq(unit_id));
+    } else if let Some(institution_id) = query.institution_id {
+        let matching_unit_ids: Vec<Uuid> = crate::models::institution::master::units::Entity::find()
+            .filter(crate::models::institution::master::units::Column::InstitutionId.eq(institution_id))
+            .filter(crate::models::institution::master::units::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|u| u.id)
+            .collect();
+
+        if matching_unit_ids.is_empty() {
+            select = select.filter(entity_mod::Column::UnitId.eq(Uuid::nil()));
+        } else {
+            select = select.filter(entity_mod::Column::UnitId.is_in(matching_unit_ids));
+        }
+    }
+
+    if let Some(status_id) = query.status_id {
+        select = select.filter(entity_mod::Column::StatusId.eq(status_id));
+    }
+
+    if let Some(academic_year_id) = query.academic_year_id {
+        let matching_ua_ids: Vec<Uuid> = crate::models::academic::campaign::transaction::activities::Entity::find()
+            .filter(crate::models::academic::campaign::transaction::activities::Column::AcademicYearId.eq(academic_year_id))
+            .filter(crate::models::academic::campaign::transaction::activities::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .map(|ua| ua.id)
+            .collect();
+
+        if matching_ua_ids.is_empty() {
+            select = select.filter(entity_mod::Column::UnitActivityId.eq(Uuid::nil()));
+        } else {
+            select = select.filter(entity_mod::Column::UnitActivityId.is_in(matching_ua_ids));
+        }
+    }
+
+    let sort_by = query.sort_by.as_deref().unwrap_or("created_at");
+    let sort_dir = query.sort_dir.as_deref().unwrap_or("desc");
+    let paginator = match (sort_by, sort_dir) {
+        ("name", "asc") => select.order_by_asc(entity_mod::Column::Name),
+        ("name", "desc") => select.order_by_desc(entity_mod::Column::Name),
+        ("created_at", "asc") => select.order_by_asc(entity_mod::Column::CreatedAt),
+        _ => select.order_by_desc(entity_mod::Column::CreatedAt).order_by_asc(entity_mod::Column::Name),
+    }.paginate(db, page_size);
 
     let total = paginator.num_items().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
     let total_pages = (total as f64 / page_size as f64).ceil() as u64;
@@ -80,6 +159,56 @@ pub async fn list_student_activities(
                     (ua.id, (ua.academic_year_id, *code, name.clone()))
                 })
             })
+            .collect()
+    };
+
+    let student_ids: Vec<Uuid> = items.iter().map(|item| item.student_id).collect();
+    let students_map: std::collections::HashMap<Uuid, (String, String, Uuid)> = if student_ids.is_empty() {
+        std::collections::HashMap::new()
+    } else {
+        crate::models::academic::student::master::students::Entity::find()
+            .filter(crate::models::academic::student::master::students::Column::Id.is_in(student_ids))
+            .filter(crate::models::academic::student::master::students::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .map(|s| (s.id, (s.name, s.code, s.unit_id)))
+            .collect()
+    };
+
+    let mut all_unit_ids: Vec<Uuid> = items.iter().filter_map(|item| item.unit_id).collect();
+    for (_, (_, _, u_id)) in &students_map {
+        if *u_id != Uuid::nil() && !all_unit_ids.iter().any(|id| id == u_id) {
+            all_unit_ids.push(*u_id);
+        }
+    }
+    let units_map: std::collections::HashMap<Uuid, (String, String)> = if all_unit_ids.is_empty() {
+        std::collections::HashMap::new()
+    } else {
+        crate::models::institution::master::units::Entity::find()
+            .filter(crate::models::institution::master::units::Column::Id.is_in(all_unit_ids))
+            .filter(crate::models::institution::master::units::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .map(|u| (u.id, (u.name.unwrap_or_default(), u.code.unwrap_or_default())))
+            .collect()
+    };
+
+    let status_ids: Vec<Uuid> = items.iter().map(|item| item.status_id).collect();
+    let statuses_map: std::collections::HashMap<Uuid, String> = if status_ids.is_empty() {
+        std::collections::HashMap::new()
+    } else {
+        crate::models::academic::student::reference::statuses::Entity::find()
+            .filter(crate::models::academic::student::reference::statuses::Column::Id.is_in(status_ids))
+            .filter(crate::models::academic::student::reference::statuses::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .map(|s| (s.id, s.name))
             .collect()
     };
 
@@ -211,6 +340,17 @@ pub async fn list_student_activities(
             cumulative_index
         };
 
+        let (std_name, std_code, std_unit_id) = students_map
+            .get(&item.student_id)
+            .cloned()
+            .unwrap_or((String::new(), String::new(), Uuid::nil()));
+        let eff_unit_id = item.unit_id.unwrap_or(std_unit_id);
+        let (u_name, u_code) = units_map
+            .get(&eff_unit_id)
+            .cloned()
+            .unwrap_or((String::new(), String::new()));
+        let st_name = statuses_map.get(&item.status_id).cloned();
+
         StudentActivityResponse {
             id: item.id,
             name: item.name,
@@ -222,7 +362,7 @@ pub async fn list_student_activities(
             unit_activity_id: item.unit_activity_id,
             status_id: item.status_id,
             resign_status_id: item.resign_status_id,
-            unit_id: item.unit_id,
+            unit_id: item.unit_id.or(if eff_unit_id != Uuid::nil() { Some(eff_unit_id) } else { None }),
             is_lock: item.is_lock,
             created_at: item.created_at,
             updated_at: item.updated_at,
@@ -235,6 +375,11 @@ pub async fn list_student_activities(
             finance_fee: item.finance_fee,
             academic_year,
             academic_year_name,
+            student_name: if !std_name.is_empty() { Some(std_name) } else { None },
+            student_code: if !std_code.is_empty() { Some(std_code) } else { None },
+            unit_name: if !u_name.is_empty() { Some(u_name) } else { None },
+            unit_code: if !u_code.is_empty() { Some(u_code) } else { None },
+            status_name: st_name,
         }
     }).collect();
 
@@ -322,6 +467,11 @@ pub async fn get_student_activitie(
             finance_fee: item.finance_fee,
             academic_year,
             academic_year_name,
+            student_name: None,
+            student_code: None,
+            unit_name: None,
+            unit_code: None,
+            status_name: None,
     }))
 }#[endpoint(tags("Academic - Student - Campaign - StudentActivity"), status_codes(200, 400, 500))]
 pub async fn create_student_activitie(
@@ -391,6 +541,11 @@ pub async fn create_student_activitie(
             finance_fee: item.finance_fee,
             academic_year: None,
             academic_year_name: None,
+            student_name: None,
+            student_code: None,
+            unit_name: None,
+            unit_code: None,
+            status_name: None,
         }))
 }
 
@@ -492,6 +647,11 @@ pub async fn update_student_activitie(
             finance_fee: item.finance_fee,
             academic_year: None,
             academic_year_name: None,
+            student_name: None,
+            student_code: None,
+            unit_name: None,
+            unit_code: None,
+            status_name: None,
         }))
 }
 #[endpoint(tags("Academic - Student - Campaign - StudentActivity"), status_codes(200, 400, 404, 500))]

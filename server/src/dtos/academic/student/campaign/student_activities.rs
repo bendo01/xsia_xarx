@@ -11,6 +11,14 @@ pub struct StudentActivityQuery {
     pub page_size: Option<u64>,
     pub name: Option<String>,
     pub student_id: Option<Uuid>,
+    pub unit_id: Option<Uuid>,
+    pub institution_id: Option<Uuid>,
+    pub search: Option<String>,
+    pub q: Option<String>,
+    pub status_id: Option<Uuid>,
+    pub academic_year_id: Option<Uuid>,
+    pub sort_by: Option<String>,
+    pub sort_dir: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
@@ -40,6 +48,16 @@ pub struct StudentActivityResponse {
     pub academic_year: Option<crate::dtos::common::reference::ReferenceResponse>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub academic_year_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub student_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub student_code: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub unit_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub unit_code: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status_name: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]

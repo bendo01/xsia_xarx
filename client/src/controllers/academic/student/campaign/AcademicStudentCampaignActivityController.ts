@@ -1,6 +1,4 @@
 import { getStorageItem } from '~/lib/storage';
-import { ModelPagination as PaginateResult, ModelPaginationForm } from '~/models/pagination/ModelPagination';
-import { AcademicStudentCampaignActivityResponse } from '~/models/academic/student/campaign/ActivityResponse';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
 
@@ -45,6 +43,10 @@ export interface StudentActivityItem {
     status_name?: string;
     academic_year?: { id?: string; name?: string; code?: string } | null;
     academic_year_name?: string;
+    student_name?: string;
+    student_code?: string;
+    unit_name?: string;
+    unit_code?: string;
 }
 
 export async function listStudentActivities(queryParams?: {
@@ -52,6 +54,13 @@ export async function listStudentActivities(queryParams?: {
     page_size?: number;
     name?: string;
     student_id?: string;
+    unit_id?: string;
+    institution_id?: string;
+    search?: string;
+    status_id?: string;
+    academic_year_id?: string;
+    sort_by?: string;
+    sort_dir?: string;
 }): Promise<{
     data: StudentActivityItem[];
     total: number;
@@ -65,6 +74,13 @@ export async function listStudentActivities(queryParams?: {
         if (queryParams?.page_size) params.set('page_size', String(queryParams.page_size));
         if (queryParams?.name) params.set('name', queryParams.name);
         if (queryParams?.student_id) params.set('student_id', queryParams.student_id);
+        if (queryParams?.unit_id) params.set('unit_id', queryParams.unit_id);
+        if (queryParams?.institution_id) params.set('institution_id', queryParams.institution_id);
+        if (queryParams?.search) params.set('search', queryParams.search);
+        if (queryParams?.status_id) params.set('status_id', queryParams.status_id);
+        if (queryParams?.academic_year_id) params.set('academic_year_id', queryParams.academic_year_id);
+        if (queryParams?.sort_by) params.set('sort_by', queryParams.sort_by);
+        if (queryParams?.sort_dir) params.set('sort_dir', queryParams.sort_dir);
 
         const res = await fetch(`${getBaseUrl()}/academic/student/campaign/student-activities?${params.toString()}`, {
             method: 'GET',

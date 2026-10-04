@@ -610,6 +610,11 @@ pub async fn load_unit_with_relations(
                         finance_fee: sa.finance_fee,
                         academic_year: None,
                         academic_year_name: None,
+                        student_name: None,
+                        student_code: None,
+                        unit_name: None,
+                        unit_code: None,
+                        status_name: None,
                     })
                     .collect())
     } else {
