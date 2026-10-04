@@ -56,7 +56,9 @@ The master task supports several orchestrator options:
 ## Verification Plan
 
 ### Automated Checks
+
 - `cargo check --bin xsia_xarx` to verify all traits, async bounds, and exports.
 
 ### Manual Verification
+
 - Execute `cargo run -- task SyncAllMasterData` or targeted subsets to inspect step-by-step logging and live timing.
