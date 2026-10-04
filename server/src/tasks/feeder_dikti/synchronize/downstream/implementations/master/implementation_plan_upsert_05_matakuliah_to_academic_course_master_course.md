@@ -34,6 +34,8 @@ Implement a data synchronization task that upserts records from the Feeder Dikti
 - Implement `SyncMatakuliahToAcademicCourseMasterCourse` implementing the `crate::tasks::Task` trait.
 - **Preload static references once before the processing loop** into `HashMap`:
   - `units` keyed by `feeder_id: Uuid`
+  - `varieties` keyed by `alphabet_code: String` and `name: String`
+  - `groups` keyed by `alphabet_code: String` and `name: String`
 - Iterate over `feeder_master.matakuliah` in batches of 1,000 (`order_by_asc(Id)`).
 - **Fault-tolerant per-record transaction**: Wrap each record in an isolated transaction (`db.begin().await`). If an error occurs, roll back that transaction, write the error to the log, increment `errors`, and continue to the next record without terminating the entire synchronization run.
 
@@ -42,6 +44,10 @@ Implement a data synchronization task that upserts records from the Feeder Dikti
 ```rust
 struct ReferenceCache {
     units_by_feeder_id: HashMap<Uuid, InstitutionUnit::Model>,
+    varieties_by_alphabet_code: HashMap<String, AcademicCourseVariety::Model>,
+    varieties_by_name: HashMap<String, AcademicCourseVariety::Model>,
+    groups_by_alphabet_code: HashMap<String, AcademicCourseGroup::Model>,
+    groups_by_name: HashMap<String, AcademicCourseGroup::Model>,
 }
 ```
 
@@ -57,6 +63,7 @@ async fn upsert_course(
     txn: &DatabaseTransaction,
     record: &FeederMatakuliah::Model,
     unit: &InstitutionUnit::Model,
+    cache: &ReferenceCache,
 ) -> Result<(AcademicCourse::Model, UpsertAction), sea_orm::DbErr>;
 ```
 
@@ -67,6 +74,9 @@ Follows the standard repository pattern: **find existing record → if `None`, `
 - **Find**:
   1. Try direct match: `academic_course_master.courses` WHERE `feeder_course_id = record.id_matkul`.
   2. If `None` and `kode_mata_kuliah` present: fallback match WHERE `code = record.kode_mata_kuliah AND unit_id = unit.id`.
+- **Dynamic Reference Resolution**:
+  - `variety_id`: Resolved from `record.id_jenis_mata_kuliah` (by `alphabet_code`) or `record.nama_jenis_mata_kuliah` (by `name`). Fallback to `Uuid::nil()`.
+  - `group_id`: Resolved from `record.id_kelompok_mata_kuliah` (by `alphabet_code`) or `record.nama_kelompok_mata_kuliah` (by `name`). Fallback to `Some(Uuid::nil())`.
 - **Synced fields** (set on both insert and update):
   - `code`: `record.kode_mata_kuliah.clone().unwrap_or_default()`
   - `name`: `record.nama_mata_kuliah.clone().unwrap_or_default()`
@@ -85,23 +95,27 @@ Follows the standard repository pattern: **find existing record → if `None`, `
   - `unit_id`: `unit.id`
   - `start_date`: `record.tanggal_mulai_efektif.map(|dt| dt.date())`
   - `end_date`: `record.tanggal_selesai_efektif.map(|dt| dt.date())`
+  - `variety_id`: `variety_id` (if not `Uuid::nil()`)
+  - `group_id`: `group_id` (if not `Some(Uuid::nil())`)
   - `sync_at`: `Some(Local::now().naive_local())`
   - `updated_at`: `Some(Local::now().naive_local())`
 - **If record does not exist → insert** with:
   - `id`: `Uuid::new_v4()`
-  - `variety_id`: `Uuid::nil()`
-  - `group_id`: `Some(Uuid::nil())`
+  - `variety_id`: `variety_id`
+  - `group_id`: `group_id`
   - `competence_id`: `Some(Uuid::nil())`
   - `created_at`: `Some(Local::now().naive_local())`
   - Synced fields
-- **Otherwise → update** the synced fields only. Do **not** overwrite `variety_id`, `group_id`, or `created_at`.
+- **Otherwise → update** the synced fields. Updates `variety_id` and `group_id` when resolved.
 
 #### Resolution Rules
 
 | Step | Target Entity | Resolution Query & Rule | Fallback & Handling |
 | :--- | :--- | :--- | :--- |
 | 1. Unit | `units` | Lookup from preloaded memory cache: `units_by_feeder_id.get(&id_prodi)`. | If not found, log `REFERENCE_NOT_FOUND` and skip record. |
-| 2. Course | `courses` | 1) Query by `feeder_course_id = record.id_matkul`. 2) Fallback: query by `code = record.kode_mata_kuliah AND unit_id = unit.id`. | If found: update; if not found: insert. |
+| 2. Variety | `varieties` | Lookup `varieties_by_alphabet_code.get(id_jenis_mata_kuliah)` or `varieties_by_name.get(nama_jenis_mata_kuliah)`. | Fallback: `Uuid::nil()`. |
+| 3. Group | `groups` | Lookup `groups_by_alphabet_code.get(id_kelompok_mata_kuliah)` or `groups_by_name.get(nama_kelompok_mata_kuliah)`. | Fallback: `Some(Uuid::nil())`. |
+| 4. Course | `courses` | 1) Query by `feeder_course_id = record.id_matkul`. 2) Fallback: query by `code = record.kode_mata_kuliah AND unit_id = unit.id`. | If found: update; if not found: insert. |
 
 #### Per-record Flow (`run`)
 
