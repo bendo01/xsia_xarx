@@ -6,7 +6,7 @@ Implement a data synchronization task that upserts records from the Feeder Dikti
 
 ### Task Implementation
 
-#### [MODIFY] [upsert_nilai_perkuliahan_kelas_to_academic_student_campaign_detail_activities.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/upsert_nilai_perkuliahan_kelas_to_academic_student_campaign_detail_activities.rs)
+#### [MODIFY] [upsert_14_detail_nilai_perkuliahan_kelas_to_academic_student_campaign_detail_activities.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/upsert_14_detail_nilai_perkuliahan_kelas_to_academic_student_campaign_detail_activities.rs)
 
 - Implement a struct `SyncNilaiPerkuliahanKelasToDetailActivities` that implements the `crate::tasks::Task` trait.
 - loop data every 1000 data Fetch all records (or batch fetch) from `crate::models::feeder::master::nilai_perkuliahan_kelas::Entity`.
@@ -23,6 +23,19 @@ Implement a data synchronization task that upserts records from the Feeder Dikti
   - detail_activities.mark = feeder_master.detail_nilai_perkuliahan_kelas.nilai_angka
   - detail_activities.grade_id = grade.id
   - detail_activities.is_lock = true
+
+#### Logging & Progress
+
+- **Progress Bar (`indicatif`)**:
+  - Controlled by task arguments: shown by default; disabled if `args.iter().any(|arg| arg == "false" || arg == "--no-progress")`.
+  - **Stage 1 (Counting)**: Indeterminate spinner with steady 100ms tick and message `"Counting feeder detail_nilai_perkuliahan_kelas records..."`.
+    - Style: `ProgressStyle::default_spinner().template("{spinner:.green} [{elapsed_precise}] {msg}")`
+  - **Stage 2 (Processing)**: Deterministic bar initialized with `total_records`.
+    - Style: `ProgressStyle::default_bar().template("{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {pos}/{len} ({percent}%, {per_sec}, eta {eta}) {msg}").progress_chars("#>-")`
+  - **Live Progress Updates**: Advance position with `pb.inc(1)` and update message with live counters:
+    - `format!("inserted: {inserted} | updated: {updated} | skipped: {skipped}")`
+  - **Completion**: Call `pb.finish_with_message(...)` (or `println!` if disabled) with the final summary message:
+    - `format!("Sync completed - inserted: {inserted} | updated: {updated} | skipped: {skipped}")`
   
 #### [MODIFY] [mod.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/tasks/feeder_dikti/synchronize/downstream/master/mod.rs)
 
