@@ -1,3 +1,4 @@
+pub mod upsert_00_all;
 pub mod upsert_01_biodata_mahasiswa_and_mahasiswa_to_individual_and_student;
 pub mod upsert_02_biodata_dosen_and_dosen_to_individual_lecturer;
 pub mod upsert_03_periode_perkuliahan_to_academic_campaign_transaction_activities;

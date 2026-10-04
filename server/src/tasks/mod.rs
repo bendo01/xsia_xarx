@@ -27,6 +27,7 @@ pub fn get_tasks() -> Vec<Box<dyn Task>> {
         Box::new(utilities::hash_password::HashPasswordTask),
         Box::new(utilities::sync_student_roles::SyncStudentRolesTask),
         // Feeder Dikti Downstream Master Synchronization Tasks
+        Box::new(feeder_dikti::synchronize::downstream::master::upsert_00_all::SyncAllMasterData),
         Box::new(feeder_dikti::synchronize::downstream::master::upsert_01_biodata_mahasiswa_and_mahasiswa_to_individual_and_student::SyncBiodataMahasiswaToAcademicStudentMasterStudent),
         Box::new(feeder_dikti::synchronize::downstream::master::upsert_02_biodata_dosen_and_dosen_to_individual_lecturer::SyncBiodataDosenToAcademicLecturerMasterLecturer),
         Box::new(feeder_dikti::synchronize::downstream::master::upsert_03_periode_perkuliahan_to_academic_campaign_transaction_activities::SyncPeriodePerkuliahanToAcademicTransactionActivities),
@@ -134,6 +135,7 @@ pub async fn run_task(name: Option<String>, args: &[String], db: &DatabaseConnec
             if task.name() == task_name 
                 || task.name().replace(':', "_") == task_name 
                 || task.name().replace('_', ":") == task_name 
+                || (task.name() == "SyncAllMasterData" && (task_name == "SyncUpsertAllMasterData" || task_name == "upsert_00_all" || task_name == "sync_all_master_data"))
             {
                 println!("Running task: {}", task.name());
                 return task.run(db, args).await;

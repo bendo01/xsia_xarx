@@ -543,6 +543,11 @@ flowchart TD
         T20["20: Detail Nilai Perkuliahan (detail_activities)"]
     end
 
+    subgraph L8["Tier 8: Detail Kontak Individu"]
+        T21["21: Kontak Mahasiswa (contact_details)"]
+        T22["22: Kontak Dosen (contact_details)"]
+    end
+
     T05 --> T06
     T05 --> T07
     T05 --> T08
@@ -563,12 +568,37 @@ flowchart TD
     T01 & T16 & T11 --> T18
     T01 & T16 & T11 --> T19
     T18 & T19 & T04 --> T20
+
+    T01 --> T21
+    T02 --> T22
+```
+
+##### Running Downstream Master Synchronization
+
+You can execute the entire pipeline sequentially using the master orchestrator `SyncAllMasterData` (`upsert_00_all`), or run specific steps:
+
+```bash
+# Execute the full pipeline sequentially (Steps 01 to 22)
+cargo run -- task SyncAllMasterData
+
+# Abort immediately if any step fails
+cargo run -- task SyncAllMasterData --fail-fast
+
+# Start execution from a specific step (e.g. resume from step 14)
+cargo run -- task SyncAllMasterData --start-from 14
+
+# Run only a specific step (e.g. step 21)
+cargo run -- task SyncAllMasterData --only 21
+
+# Run without interactive progress bars
+cargo run -- task SyncAllMasterData --no-progress
 ```
 
 ##### Master Synchronization Pipeline Matrix
 
 | Step | Implementation Plan | Feeder Source Table | Target System Table | Relational Dependencies |
 | :---: | :--- | :--- | :--- | :--- |
+| **00** | [00_all](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_00_all.md) | *All master feeder tables* | *All target tables (Steps 01–22)* | Sequential execution of all 22 tasks |
 | **01** | [01_biodata_mahasiswa_and_mahasiswa](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_01_biodata_mahasiswa_and_mahasiswa_to_individual_and_student.md) | `biodata_mahasiswa`, `mahasiswa` | `person_master.individuals`, `academic_student_master.students` | Static references (`units`, `academic_years`, `religions`, `districts`) |
 | **02** | [02_biodata_dosen_and_dosen](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_02_biodata_dosen_and_dosen_to_individual_lecturer.md) | `biodata_dosen`, `dosen` | `person_master.individuals`, `academic_lecturer_master.lecturers` | Static references (`units`, `religions`, `districts`) |
 | **03** | [03_periode_perkuliahan](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_03_periode_perkuliahan_to_academic_campaign_transaction_activities.md) | `periode_perkuliahan` | `academic_campaign_transaction.activities` | `institution_master.units`, `academic_general_reference.academic_years` |
@@ -589,6 +619,8 @@ flowchart TD
 | **18** | [18_kartu_rencana_studi_to_detail](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_18_kartu_rencana_studi_mahasiswa_to_academic_student_campaign_detail_activities.md) | `kartu_rencana_studi_mahasiswa` | `academic_student_campaign.detail_activities` | Step 01 (`students`), Step 16 (`student_activities`), Step 11-13 (`teaches`), Step 05 (`courses`) |
 | **19** | [19_peserta_kelas_kuliah](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_19_peserta_kelas_kuliah_to_academic_student_campaign_detail_activities.md) | `peserta_kelas_kuliah` | `academic_student_campaign.detail_activities` | Step 01 (`students`), Step 16 (`student_activities`), Step 11-13 (`teaches`), Step 03 (`activities`) |
 | **20** | [20_detail_nilai_perkuliahan_kelas](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_20_detail_nilai_perkuliahan_kelas_to_academic_student_campaign_detail_activities.md) | `detail_nilai_perkuliahan_kelas` | `academic_student_campaign.detail_activities` (grades) | Step 18-19 (`detail_activities`), Step 01 (`students`), Step 11-13 (`teaches`), Step 04 (`grades`) |
+| **21** | [21_biodata_mahasiswa_to_contact_details](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_21_biodata_mahasiswa_to_contact_details.md) | `biodata_mahasiswa` | `contact_master.phones`, `electronic_mails`, `residences` | Step 01 (`individuals`), `location` |
+| **22** | [22_biodata_dosen_to_contact_details](server/src/tasks/feeder_dikti/synchronize/downstream/implementations/master/implementation_plan_upsert_22_biodata_dosen_to_contact_details.md) | `biodata_dosen` | `contact_master.phones`, `electronic_mails`, `residences` | Step 02 (`individuals`), `location` |
 
 #### 4. Creating a Custom Task
 
