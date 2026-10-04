@@ -1,0 +1,18 @@
+[2026-10-04 18:24:53] Starting synchronization of perkuliahan_mahasiswa to student_activities...
+[2026-10-04 18:25:08] SKIPPED: Student not found for id_registrasi_mahasiswa 60afb7f4-afb1-44af-9289-0ef42651b836 (record id: 019ab936-f4e3-7bc6-9704-fb7ee8c6d061)
+[2026-10-04 18:25:08] SKIPPED: Student not found for id_registrasi_mahasiswa 60afb7f4-afb1-44af-9289-0ef42651b836 (record id: 019ab936-f4e9-7f1b-8bb1-76dc1fcbed3b)
+[2026-10-04 18:25:08] SKIPPED: Student not found for id_registrasi_mahasiswa 60afb7f4-afb1-44af-9289-0ef42651b836 (record id: 019ab936-f4ef-7b4d-bcef-04d8665db13d)
+[2026-10-04 18:25:08] SKIPPED: Student not found for id_registrasi_mahasiswa 60afb7f4-afb1-44af-9289-0ef42651b836 (record id: 019ab936-f4f6-7454-84b0-144876b578d4)
+[2026-10-04 18:25:08] SKIPPED: Student not found for id_registrasi_mahasiswa 60afb7f4-afb1-44af-9289-0ef42651b836 (record id: 019ab936-f4fc-70b5-aadb-76844b56169a)
+[2026-10-04 18:25:08] SKIPPED: Student not found for id_registrasi_mahasiswa 60afb7f4-afb1-44af-9289-0ef42651b836 (record id: 019ab936-f502-76e5-b2ed-406c534ffee9)
+[2026-10-04 18:25:08] SKIPPED: Student not found for id_registrasi_mahasiswa 60afb7f4-afb1-44af-9289-0ef42651b836 (record id: 019ab936-f509-7958-8785-7bb7e5d95503)
+[2026-10-04 18:25:41] SKIPPED: Student not found for id_registrasi_mahasiswa ee03d25a-de60-40dc-aa6f-6b5e30df83b2 (record id: 019ab937-0c54-7fbd-a908-0c3e55025b68)
+[2026-10-04 18:25:41] SKIPPED: Student not found for id_registrasi_mahasiswa ee03d25a-de60-40dc-aa6f-6b5e30df83b2 (record id: 019ab937-0c5a-7f68-9077-296c8be33514)
+[2026-10-04 18:25:41] SKIPPED: Student not found for id_registrasi_mahasiswa ee03d25a-de60-40dc-aa6f-6b5e30df83b2 (record id: 019ab937-0c61-7190-a90a-e72d4780d9e0)
+[2026-10-04 18:25:41] SKIPPED: Student not found for id_registrasi_mahasiswa ee03d25a-de60-40dc-aa6f-6b5e30df83b2 (record id: 019ab937-0c68-7e82-af04-161fed8256a2)
+[2026-10-04 18:25:41] SKIPPED: Student not found for id_registrasi_mahasiswa ee03d25a-de60-40dc-aa6f-6b5e30df83b2 (record id: 019ab937-0c6e-752a-832f-5e6a548104ac)
+[2026-10-04 18:25:41] SKIPPED: Student not found for id_registrasi_mahasiswa ee03d25a-de60-40dc-aa6f-6b5e30df83b2 (record id: 019ab937-0c76-788d-b97d-770ca26f5193)
+[2026-10-04 18:25:41] SKIPPED: Student not found for id_registrasi_mahasiswa ee03d25a-de60-40dc-aa6f-6b5e30df83b2 (record id: 019ab937-0c7d-79c2-8ca4-1fb8d32ad01b)
+[2026-10-04 18:25:52] SKIPPED: Student not found for id_registrasi_mahasiswa 60afb7f4-afb1-44af-9289-0ef42651b836 (record id: 019ff602-5bf1-7158-afff-ca37a45f9c10)
+[2026-10-04 18:26:04] SKIPPED: Student not found for id_registrasi_mahasiswa ee03d25a-de60-40dc-aa6f-6b5e30df83b2 (record id: 019ff602-d44f-7cdf-810e-ab83514f0752)
+[2026-10-04 18:26:29] Summary: inserted: 183, updated: 3749, skipped: 16, errors: 0

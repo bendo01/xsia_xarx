@@ -454,8 +454,29 @@ cargo run -- task
 | `route:list` | Lists all system routes with their URL path, HTTP method, handler function, and route name | `cargo run -- task route:list` |
 | `sync:student-roles` | Synchronizes student roles into the auth.roles table | `cargo run -- task sync:student-roles` |
 | `sync_permissions` | Synchronizes all predefined route permissions into the auth.permissions table | `cargo run -- task sync_permissions` |
-| `SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer` | Upsert aktifitas_mengajar_dosen to academic_campaign_transaction.teach_lecturers | `cargo run -- task SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer` |
-| `SyncNilaiPerkuliahanKelasToDetailActivities` | Upsert detail_nilai_perkuliahan_kelas to academic_student_campaign.detail_activities | `cargo run -- task SyncNilaiPerkuliahanKelasToDetailActivities true` |
+| `SyncAllMasterData` | Sequentially run all 22 downstream master synchronization tasks (01 to 22) in topological DAG dependency order | `cargo run -- task SyncAllMasterData` or `cargo run -- task SyncAllMasterData --fail-fast` |
+| `SyncBiodataMahasiswaToAcademicStudentMasterStudent` | Upsert biodata_mahasiswa and mahasiswa to person_master.individuals and academic_student_master.students (Step 01) | `cargo run -- task SyncBiodataMahasiswaToAcademicStudentMasterStudent` |
+| `SyncBiodataDosenToAcademicLecturerMasterLecturer` | Upsert biodata_dosen and dosen to person_master.individuals and academic_lecturer_master.lecturers (Step 02) | `cargo run -- task SyncBiodataDosenToAcademicLecturerMasterLecturer` |
+| `SyncPeriodePerkuliahanToAcademicTransactionActivities` | Upsert periode_perkuliahan to academic_campaign_transaction.activities (Step 03) | `cargo run -- task SyncPeriodePerkuliahanToAcademicTransactionActivities` |
+| `SyncSkalaNilaiProdiToAcademicTransactionGrades` | Upsert skala_nilai_program_studi to academic_campaign_transaction.grades (Step 04) | `cargo run -- task SyncSkalaNilaiProdiToAcademicTransactionGrades` |
+| `SyncMatakuliahToAcademicCourseMasterCourse` | Upsert matakuliah to academic_course_master.courses (Step 05) | `cargo run -- task SyncMatakuliahToAcademicCourseMasterCourse` |
+| `SyncKurikulumAndMatkulKurikulumToCurriculumsAndDetails` | Upsert kurikulum and matakuliah_kurikulum to academic_course_master.curriculums and details (Step 06) | `cargo run -- task SyncKurikulumAndMatkulKurikulumToCurriculumsAndDetails` |
+| `SyncRencanaEvaluasiToCourseEvaluationPlannings` | Upsert rencana_evaluasi to academic_course_master.course_evaluation_plannings (Step 07) | `cargo run -- task SyncRencanaEvaluasiToCourseEvaluationPlannings` |
+| `SyncRencanaPembelajaranToCourseLearnPlannings` | Upsert rencana_pembelajaran to academic_course_master.course_learn_plannings RPS (Step 08) | `cargo run -- task SyncRencanaPembelajaranToCourseLearnPlannings` |
+| `SyncKelasKuliahToAcademicCampaignTransactionClassCode` | Upsert kelas_kuliah to academic_campaign_transaction.class_codes (Step 09) | `cargo run -- task SyncKelasKuliahToAcademicCampaignTransactionClassCode` |
+| `SyncKartuRencanaStudiMahasiswaToAcademicCampaignTransactionClassCode` | Upsert kartu_rencana_studi_mahasiswa to academic_campaign_transaction.class_codes (Step 10) | `cargo run -- task SyncKartuRencanaStudiMahasiswaToAcademicCampaignTransactionClassCode` |
+| `SyncKelasKuliahToAcademicTransactionTeaches` | Upsert kelas_kuliah to academic_campaign_transaction.teaches (Step 11) | `cargo run -- task SyncKelasKuliahToAcademicTransactionTeaches` |
+| `SyncKartuRencanaStudiMahasiswaToAcademicTransactionTeaches` | Upsert kartu_rencana_studi_mahasiswa to academic_campaign_transaction.teaches (Step 12) | `cargo run -- task SyncKartuRencanaStudiMahasiswaToAcademicTransactionTeaches` |
+| `SyncNilaiPerkuliahanKelasToTransactionTeaches` | Upsert nilai_perkuliahan_kelas to academic_campaign_transaction.teaches metrics (Step 13) | `cargo run -- task SyncNilaiPerkuliahanKelasToTransactionTeaches` |
+| `SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer` | Upsert aktifitas_mengajar_dosen to academic_campaign_transaction.teach_lecturers (Step 14) | `cargo run -- task SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer` |
+| `SyncKomponenEvaluasiKelasToTeachEvaluations` | Upsert komponen_evaluasi_kelas to academic_campaign_transaction.teach_evaluations (Step 15) | `cargo run -- task SyncKomponenEvaluasiKelasToTeachEvaluations` |
+| `SyncPerkuliahanMahasiswaToAcademicStudentActivities` | Upsert perkuliahan_mahasiswa to academic_student_campaign.student_activities AKM (Step 16) | `cargo run -- task SyncPerkuliahanMahasiswaToAcademicStudentActivities` |
+| `SyncNilaiTransferPendidikanMahasiswaToConvertions` | Upsert nilai_transfer_pendidikan_mahasiswa to academic_student_campaign.convertions (Step 17) | `cargo run -- task SyncNilaiTransferPendidikanMahasiswaToConvertions` |
+| `SyncKartuRencanaStudiMahasiswaToDetailActivities` | Upsert kartu_rencana_studi_mahasiswa to academic_student_campaign.detail_activities (Step 18) | `cargo run -- task SyncKartuRencanaStudiMahasiswaToDetailActivities` |
+| `SyncPesertaKelasKuliahToDetailActivities` | Upsert peserta_kelas_kuliah to academic_student_campaign.detail_activities (Step 19) | `cargo run -- task SyncPesertaKelasKuliahToDetailActivities` |
+| `SyncNilaiPerkuliahanKelasToDetailActivities` | Upsert detail_nilai_perkuliahan_kelas to academic_student_campaign.detail_activities grades (Step 20) | `cargo run -- task SyncNilaiPerkuliahanKelasToDetailActivities` |
+| `SyncBiodataMahasiswaToContactDetails` | Upsert biodata_mahasiswa to contact_master phones, emails, and residences (Step 21) | `cargo run -- task SyncBiodataMahasiswaToContactDetails` |
+| `SyncBiodataDosenToContactDetails` | Upsert biodata_dosen to contact_master phones, emails, and residences (Step 22) | `cargo run -- task SyncBiodataDosenToContactDetails` |
 
 ##### 🔑 Password Hashing Utility (`hash:password`)
 
@@ -494,6 +515,41 @@ Sync predefined system permission constants into the PostgreSQL database:
 cargo run -- task sync_permissions
 # or
 cargo run -- task sync:permissions
+```
+
+##### 📥 Feeder Master Data Estimation Orchestrator (`EstimateGetAllMasterData`)
+
+Run all master data estimation and extraction tasks from PDDikti Feeder sequentially (excluding `GetAllPT` and `GetAllProdi`):
+
+```bash
+# Execute all master estimation tasks sequentially
+cargo run -- task EstimateGetAllMasterData
+
+# Abort immediately if any sub-task encounters an error
+cargo run -- task EstimateGetAllMasterData --fail-fast
+```
+
+##### 🔄 Downstream Master Synchronization Orchestrator (`SyncAllMasterData` / `upsert_00_all`)
+
+Execute all 22 downstream master synchronization tasks sequentially from the local `feeder_master` schema to institutional and academic tables following topological DAG dependencies:
+
+```bash
+# Execute the complete pipeline sequentially (Steps 01 to 22)
+cargo run -- task SyncAllMasterData
+# Or using the file/task alias:
+cargo run -- task upsert_00_all
+
+# Abort immediately on the first encountered error
+cargo run -- task SyncAllMasterData --fail-fast
+
+# Resume/start execution from a specific step (e.g., resume from Step 14)
+cargo run -- task SyncAllMasterData --start-from 14
+
+# Execute only a single targeted step (e.g., Step 21)
+cargo run -- task SyncAllMasterData --only 21
+
+# Run without interactive progress bars
+cargo run -- task SyncAllMasterData --no-progress
 ```
 
 #### 3. PDDikti Feeder Downstream Master Synchronization Hierarchy
