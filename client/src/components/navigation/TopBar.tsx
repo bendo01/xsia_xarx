@@ -9,6 +9,11 @@ import {
     activeStudentCodeSignal,
     activeStudentIdSignal,
     currentRoleIdSignal,
+    setCurrentRoleIdSignal,
+    activeInstitutionIdSignal,
+    activeInstitutionNameSignal,
+    institutionCache,
+    lookupInstitutionName,
     logout,
     setActiveRole,
     setActiveInstitution,
@@ -60,14 +65,21 @@ export default function TopBar() {
         if (!role && typeof roleOrName === 'string') {
             const q = roleOrName.toLowerCase().trim().replace(/[-\s_]+/g, '');
             role = roles.find(r => r.name.toLowerCase().replace(/[-\s_]+/g, '') === q) ||
-                   (q.includes('lpti') ? roles.find(r => r.name.toLowerCase().includes('lpti')) : undefined) ||
-                   (q.includes('dekan') ? roles.find(r => r.name.toLowerCase().includes('dekan')) : undefined) ||
-                   (q.includes('rektor') ? roles.find(r => r.name.toLowerCase().includes('rektor')) : undefined);
+                (q.includes('lpti') ? roles.find(r => r.name.toLowerCase().includes('lpti')) : undefined) ||
+                (q.includes('dekan') ? roles.find(r => r.name.toLowerCase().includes('dekan')) : undefined) ||
+                (q.includes('fakultas') ? roles.find(r => r.name.toLowerCase().includes('fakultas')) : undefined) ||
+                (q.includes('rektor') ? roles.find(r => r.name.toLowerCase().includes('rektor')) : undefined);
         }
         const roleName = typeof roleOrName === 'string' ? (role?.name || roleOrName) : roleOrName.name;
         const roleId = role?.id || (typeof roleOrName === 'string' ? roleOrName : roleOrName.name);
 
         setActiveRole(roleId);
+        setCurrentRoleIdSignal(roleId);
+
+        // Immediately update active institution if present on role item
+        if (role?.institution_name || role?.institution_id) {
+            setActiveInstitution(role.institution_id || '', false, role.institution_name);
+        }
 
         // Explicitly persist to backend database (server/src/models/auth/user.rs current_role_id)
         const isUuid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(roleId);
@@ -86,14 +98,18 @@ export default function TopBar() {
         const codeDisplay = role?.code ? ` (${role.code})` : '';
         toast.success(t('auth.login.roleSwitched', { role: `${displayName}${codeDisplay}` }));
 
-        // For rectorat roles, resolve institution_id
+        // For roles without resolved institution_id, dynamically resolve and cache
         let resolvedRole = role;
-        if (normalizeRoleName(roleName, role) === 'rectorat') {
+        if (!resolvedRole?.institution_id) {
             try {
-                const instId = await resolveInstitutionFromStaffRole(undefined, role || roleId);
-                if (instId) {
-                    resolvedRole = { ...(role || {}), id: roleId, name: roleName, institution_id: instId };
-                    setActiveInstitution(instId);
+                const normRole = normalizeRoleName(roleName, role);
+                if (normRole === 'rectorat' || normRole === 'course_department' || role?.roleable_type?.includes('Staff')) {
+                    const instId = await resolveInstitutionFromStaffRole(undefined, role || roleId);
+                    if (instId) {
+                        const instName = await lookupInstitutionName(instId);
+                        resolvedRole = { ...(role || {}), id: roleId, name: roleName, institution_id: instId, institution_name: instName || undefined };
+                        setActiveInstitution(instId, false, instName);
+                    }
                 }
             } catch (e) {
                 console.warn('Failed to resolve institution_id during role switch:', e);
@@ -109,7 +125,37 @@ export default function TopBar() {
 
     const userName = () => currentUserSignal()?.name || "User Account";
     const userEmail = () => currentUserSignal()?.email || "user@example.com";
-    const activeRoleDisplay = () => getRoleDisplayName(activeRoleSignal(), userRolesSignal().find(r => r.id === currentRoleIdSignal() || normalizeRoleName(r.name, r) === activeRoleSignal()));
+    const currentRoleItem = () => {
+        const roles = userRolesSignal();
+        const roleId = currentRoleIdSignal();
+        if (roleId) {
+            const byId = roles.find(r => r.id === roleId);
+            if (byId) return byId;
+        }
+        const activeStudentId = activeStudentIdSignal();
+        if (activeRoleSignal() === 'student' && activeStudentId) {
+            const byStudentId = roles.find(r => r.roleable_id === activeStudentId);
+            if (byStudentId) return byStudentId;
+        }
+        return roles.find(r => normalizeRoleName(r.name, r) === activeRoleSignal()) || roles[0];
+    };
+    const activeRoleDisplay = () => {
+        const item = currentRoleItem();
+        if (!item?.name) return getRoleDisplayName(activeRoleSignal(), item);
+        const lower = item.name.toLowerCase().trim();
+        if (['lecturer', 'student', 'administrator', 'candidate', 'rectorat', 'course_department', 'user', 'guest'].includes(lower)) {
+            return getRoleDisplayName(item.name, item);
+        }
+        return item.name;
+    };
+    const activeInstitutionDisplay = () => {
+        const item = currentRoleItem();
+        if (item?.institution_name) return item.institution_name;
+        if (activeInstitutionNameSignal()) return activeInstitutionNameSignal();
+        const instId = item?.institution_id || activeInstitutionIdSignal();
+        if (instId && institutionCache[instId]) return institutionCache[instId];
+        return '';
+    };
 
     return (
         <header class="sticky top-0 z-20 flex flex-wrap sm:justify-start sm:flex-nowrap w-full py-2.5 bg-white/95 dark:bg-neutral-900/95 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-700 shadow-2xs">
@@ -134,6 +180,10 @@ export default function TopBar() {
                                 <span>{activeRoleDisplay()}</span>
                                 <Show when={activeRoleSignal() === 'student' && activeStudentCodeSignal()}>
                                     <span class="text-blue-500 dark:text-blue-400 font-mono">({activeStudentCodeSignal()})</span>
+                                </Show>
+                                <Show when={activeInstitutionDisplay()}>
+                                    <span class="text-neutral-300 dark:text-neutral-600 font-normal">|</span>
+                                    <span class="font-normal text-neutral-600 dark:text-neutral-300 truncate max-w-44">{activeInstitutionDisplay()}</span>
                                 </Show>
                             </div>
                         </Show>
@@ -275,7 +325,13 @@ export default function TopBar() {
                                     </div>
                                     <div class="flex flex-col flex-1 min-w-0">
                                         <span class="truncate font-semibold text-neutral-900 dark:text-white">{userName()}</span>
-                                        <span class="truncate text-[11px] text-neutral-500 dark:text-neutral-400">{activeRoleDisplay()}</span>
+                                        <div class="flex items-center gap-1 truncate text-[11px] text-neutral-500 dark:text-neutral-400">
+                                            <span class="truncate">{activeRoleDisplay()}</span>
+                                            <Show when={activeInstitutionDisplay()}>
+                                                <span class="shrink-0 text-neutral-400 dark:text-neutral-600">•</span>
+                                                <span class="truncate text-[10px]">{activeInstitutionDisplay()}</span>
+                                            </Show>
+                                        </div>
                                     </div>
                                     <svg class="shrink-0 size-4 text-neutral-400 ms-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5" /><path d="m7 9 5-5 5 5" /></svg>
                                 </button>
@@ -298,6 +354,11 @@ export default function TopBar() {
                                             <Show when={activeRoleSignal() === 'student' && activeStudentCodeSignal()}>
                                                 <span class="inline-block text-[10px] font-mono font-bold px-2 py-0.5 rounded-xs bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                                                     NIM: {activeStudentCodeSignal()}
+                                                </span>
+                                            </Show>
+                                            <Show when={activeInstitutionDisplay()}>
+                                                <span class="inline-block text-[10px] font-medium px-2 py-0.5 rounded-xs bg-neutral-200/70 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 truncate max-w-full">
+                                                    {activeInstitutionDisplay()}
                                                 </span>
                                             </Show>
                                         </div>
@@ -323,21 +384,30 @@ export default function TopBar() {
                                                             return normalizeRoleName(r.name, r) === activeRoleSignal();
                                                         };
                                                         const studentCode = () => r.code || (isStudent() && isSelected() ? activeStudentCodeSignal() : '');
+                                                        const roleName = () => r.name || getRoleDisplayName(r.name, r);
+                                                        const institutionName = () => r.institution_name || '';
 
                                                         return (
                                                             <button
                                                                 type="button"
                                                                 onClick={() => handleRoleSwitch(r)}
-                                                                class={`w-full flex items-center justify-between py-1.5 px-2.5 rounded-xs text-xs font-medium transition-colors ${isSelected()
-                                                                        ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/70 dark:text-blue-300 font-semibold'
-                                                                        : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700'
+                                                                class={`w-full flex items-center justify-between py-2 px-2.5 rounded-xs text-xs font-medium transition-colors ${isSelected()
+                                                                    ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/70 dark:text-blue-300 font-semibold'
+                                                                    : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700'
                                                                     }`}
                                                             >
-                                                                <div class="flex items-center gap-2 min-w-0">
-                                                                    <span class="truncate">{getRoleDisplayName(r.name, r)}</span>
-                                                                    <Show when={isStudent() && studentCode()}>
-                                                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-xs text-[10px] font-mono font-bold bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700">
-                                                                            {studentCode()}
+                                                                <div class="flex flex-col text-start min-w-0 flex-1">
+                                                                    <div class="flex items-center gap-2 min-w-0">
+                                                                        <span class="truncate font-semibold">{roleName()}</span>
+                                                                        <Show when={isStudent() && studentCode()}>
+                                                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded-xs text-[10px] font-mono font-bold bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700">
+                                                                                {studentCode()}
+                                                                            </span>
+                                                                        </Show>
+                                                                    </div>
+                                                                    <Show when={institutionName()}>
+                                                                        <span class={`truncate text-[10px] font-normal mt-0.5 ${isSelected() ? 'text-blue-600/80 dark:text-blue-300/80' : 'text-neutral-500 dark:text-neutral-400'}`}>
+                                                                            {institutionName()}
                                                                         </span>
                                                                     </Show>
                                                                 </div>

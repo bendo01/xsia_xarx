@@ -18,6 +18,7 @@ export interface UserRoleItem {
     code?: string;
     unit_id?: string;
     institution_id?: string;
+    institution_name?: string;
 }
 
 export interface StoredUser {
@@ -93,6 +94,7 @@ export function normalizeRoleName(rawRole: string | null | undefined, roleItem?:
         lower.includes('rector') ||
         lower.includes('dekan') ||
         lower.includes('decan') ||
+        lower.includes('fakultas') ||
         lower.includes('yayasan') ||
         lower.includes('pimpinan') ||
         lower.includes('biro_administrasi') ||
@@ -127,6 +129,8 @@ export function normalizeRoleName(rawRole: string | null | undefined, roleItem?:
         lower.includes('department') ||
         lower.includes('course') ||
         lower.includes('baak') ||
+        lower.includes('program_studi') ||
+        lower.includes('programstudi') ||
         lower.includes('kepala_program_studi') ||
         lower.includes('sekertaris_program_studi') ||
         lower.includes('sekretaris_program_studi') ||
@@ -307,6 +311,7 @@ const [userRolesSignal, setUserRolesSignal] = createSignal<UserRoleItem[]>([]);
 const [activeRoleSignal, setActiveRoleSignal] = createSignal<string>('student');
 const [currentRoleIdSignal, setCurrentRoleIdSignal] = createSignal<string>('');
 const [activeInstitutionIdSignal, setActiveInstitutionIdSignal] = createSignal<string>('');
+const [activeInstitutionNameSignal, setActiveInstitutionNameSignal] = createSignal<string>(getStorageItem('institution_name') || '');
 const [isAuthenticatedSignal, setIsAuthenticatedSignal] = createSignal<boolean>(false);
 const [activeStudentIdSignal, setActiveStudentIdSignal] = createSignal<string>('');
 const [activeStudentCodeSignal, setActiveStudentCodeSignal] = createSignal<string>('');
@@ -322,6 +327,8 @@ export {
     setCurrentRoleIdSignal,
     activeInstitutionIdSignal,
     setActiveInstitutionIdSignal,
+    activeInstitutionNameSignal,
+    setActiveInstitutionNameSignal,
     isAuthenticatedSignal,
     setIsAuthenticatedSignal,
     activeStudentIdSignal,
@@ -334,10 +341,31 @@ export function getActiveInstitutionId(): string {
     return activeInstitutionIdSignal() || getStorageItem('institution_id') || '';
 }
 
-export function setActiveInstitution(institutionId: string, isSession: boolean = false): void {
-    if (!institutionId || institutionId === '00000000-0000-0000-0000-000000000000') return;
-    setStorageItem('institution_id', institutionId, isSession);
-    setActiveInstitutionIdSignal(institutionId);
+export function getActiveInstitutionName(): string {
+    return activeInstitutionNameSignal() || getStorageItem('institution_name') || '';
+}
+
+export function setActiveInstitution(institutionId: string, isSession: boolean = false, institutionName?: string): void {
+    if (institutionId && institutionId !== '00000000-0000-0000-0000-000000000000') {
+        setStorageItem('institution_id', institutionId, isSession);
+        setActiveInstitutionIdSignal(institutionId);
+    }
+    if (institutionName) {
+        setStorageItem('institution_name', institutionName, isSession);
+        setActiveInstitutionNameSignal(institutionName);
+        if (institutionId) institutionCache[institutionId] = institutionName;
+    } else if (institutionId && institutionCache[institutionId]) {
+        const cached = institutionCache[institutionId];
+        setStorageItem('institution_name', cached, isSession);
+        setActiveInstitutionNameSignal(cached);
+    } else if (institutionId && institutionId !== '00000000-0000-0000-0000-000000000000') {
+        lookupInstitutionName(institutionId).then((name) => {
+            if (name) {
+                setStorageItem('institution_name', name, isSession);
+                setActiveInstitutionNameSignal(name);
+            }
+        });
+    }
 }
 
 export function getActiveStudentId(): string {
@@ -357,64 +385,165 @@ export function setActiveStudent(studentId: string, studentCode?: string, isSess
     }
 }
 
+export const institutionCache: Record<string, string> = {
+    'ed7e8c02-451b-4548-aa81-26b8d0b7fdec': 'Institut Teknologi dan Kesehatan Tri Tunas Nasional'
+};
+
+export async function lookupInstitutionName(instId?: string): Promise<string> {
+    if (!instId || instId === '00000000-0000-0000-0000-000000000000') return '';
+    if (institutionCache[instId]) return institutionCache[instId];
+    try {
+        const res = await masterApiShow<any>('institution/master/institutions', instId);
+        const name = res?.data?.name || res?.data?.institution?.name || '';
+        if (name) {
+            institutionCache[instId] = name;
+            return name;
+        }
+    } catch {}
+    return '';
+}
+
 export async function enrichUserRolesWithStudentCodes(): Promise<UserRoleItem[]> {
     const roles = getStoredRoles();
     if (roles.length === 0) return [];
     let changed = false;
     const updatedRoles = await Promise.all(roles.map(async (r) => {
-        if ((normalizeRoleName(r.name) === 'student' || r.roleable_type?.includes('Student')) && r.roleable_id && !r.code) {
+        let enrichedRole = { ...r };
+        let roleChanged = false;
+
+        // 1. Student code and unit/institution enrichment
+        if ((normalizeRoleName(r.name) === 'student' || r.roleable_type?.includes('Student')) && r.roleable_id) {
             try {
-                const std = await getStudentById(r.roleable_id);
-                if (std?.code) {
-                    changed = true;
-                    return { ...r, code: std.code };
+                if (!enrichedRole.code || !enrichedRole.unit_id) {
+                    const std = await getStudentById(r.roleable_id);
+                    if (std?.code && !enrichedRole.code) {
+                        enrichedRole.code = std.code;
+                        roleChanged = true;
+                    }
+                    if (std?.unit_id && !enrichedRole.unit_id) {
+                        enrichedRole.unit_id = std.unit_id;
+                        roleChanged = true;
+                    }
+                }
+                if (enrichedRole.unit_id && !enrichedRole.institution_name) {
+                    const unitRes = await masterApiShow<any>('institution/master/units', enrichedRole.unit_id);
+                    const instName = unitRes.data?.institution?.name || unitRes.data?.institution_name;
+                    const instId = unitRes.data?.institution_id || unitRes.data?.institution?.id;
+                    if (instId && !enrichedRole.institution_id) {
+                        enrichedRole.institution_id = instId;
+                        roleChanged = true;
+                    }
+                    if (instName) {
+                        enrichedRole.institution_name = instName;
+                        if (instId) institutionCache[instId] = instName;
+                        roleChanged = true;
+                    }
                 }
             } catch {
                 // Ignore
             }
         }
+
+        // 2. Staff institution & unit enrichment
         if (
             (normalizeRoleName(r.name, r) === 'rectorat' || normalizeRoleName(r.name, r) === 'course_department' || isStaffProgramStudi(r) || r.roleable_type?.includes('Staff')) &&
             r.roleable_id &&
-            (!r.unit_id || !r.institution_id)
+            (!enrichedRole.unit_id || !enrichedRole.institution_id || !enrichedRole.institution_name)
         ) {
             try {
                 const staffRes = await masterApiShow<any>('institution/master/staffes', r.roleable_id);
-                let enrichedRole = { ...r };
-                let roleChanged = false;
                 if (staffRes.data?.unit_id) {
                     if (!enrichedRole.unit_id) {
                         enrichedRole.unit_id = staffRes.data.unit_id;
                         roleChanged = true;
                     }
-                    if (!enrichedRole.institution_id) {
-                        try {
-                            const unitRes = await masterApiShow<any>('institution/master/units', staffRes.data.unit_id);
-                            const instId = unitRes.data?.institution_id || unitRes.data?.institution?.id;
-                            if (instId) {
-                                enrichedRole.institution_id = instId;
-                                roleChanged = true;
-                            }
-                        } catch {}
-                    }
-                }
-                if (!enrichedRole.institution_id && staffRes.data?.employee_id) {
                     try {
-                        const empRes = await masterApiShow<any>('institution/master/employees', staffRes.data.employee_id);
-                        const instId = empRes.data?.institution_id || empRes.data?.institution?.id;
-                        if (instId) {
+                        const unitRes = await masterApiShow<any>('institution/master/units', staffRes.data.unit_id);
+                        const instId = unitRes.data?.institution_id || unitRes.data?.institution?.id;
+                        const instName = unitRes.data?.institution?.name || unitRes.data?.institution_name;
+                        if (instId && !enrichedRole.institution_id) {
                             enrichedRole.institution_id = instId;
+                            roleChanged = true;
+                        }
+                        if (instName && !enrichedRole.institution_name) {
+                            enrichedRole.institution_name = instName;
                             roleChanged = true;
                         }
                     } catch {}
                 }
-                if (roleChanged) {
-                    changed = true;
-                    return enrichedRole;
+                if (!enrichedRole.institution_name && staffRes.data?.employee_id) {
+                    try {
+                        const empRes = await masterApiShow<any>('institution/master/employees', staffRes.data.employee_id);
+                        const instId = empRes.data?.institution_id || empRes.data?.institution?.id;
+                        const instName = empRes.data?.institution?.name || empRes.data?.institution_name;
+                        if (instId && !enrichedRole.institution_id) {
+                            enrichedRole.institution_id = instId;
+                            roleChanged = true;
+                        }
+                        if (instName && !enrichedRole.institution_name) {
+                            enrichedRole.institution_name = instName;
+                            roleChanged = true;
+                        }
+                    } catch {}
                 }
             } catch {
                 // Ignore
             }
+        }
+
+        // 3. Lecturer institution enrichment
+        if ((normalizeRoleName(r.name) === 'lecturer' || r.roleable_type?.includes('Lecturer')) && r.roleable_id && (!enrichedRole.institution_id || !enrichedRole.institution_name)) {
+            try {
+                const lecRes = await masterApiShow<any>('academic/lecturer/master/lecturers', r.roleable_id);
+                const instId = lecRes.data?.institution_id;
+                if (instId && !enrichedRole.institution_id) {
+                    enrichedRole.institution_id = instId;
+                    roleChanged = true;
+                }
+            } catch {}
+        }
+
+        // 4. Candidate institution enrichment
+        if ((normalizeRoleName(r.name) === 'candidate' || r.roleable_type?.includes('Candidate')) && r.roleable_id && (!enrichedRole.institution_id || !enrichedRole.institution_name)) {
+            try {
+                const candRes = await masterApiShow<any>('academic/candidate/master/candidates', r.roleable_id);
+                const instId = candRes.data?.institution_id;
+                if (instId && !enrichedRole.institution_id) {
+                    enrichedRole.institution_id = instId;
+                    roleChanged = true;
+                }
+            } catch {}
+        }
+
+        // 5. Look up institution name if institution_id is known
+        if (enrichedRole.institution_id && !enrichedRole.institution_name) {
+            try {
+                const instName = await lookupInstitutionName(enrichedRole.institution_id);
+                if (instName) {
+                    enrichedRole.institution_name = instName;
+                    roleChanged = true;
+                }
+            } catch {}
+        }
+
+        // 6. Fallback to default institution if still no institution_name and not staff with different unit
+        if (!enrichedRole.institution_name && !r.roleable_type?.includes('Staff')) {
+            const defaultId = (import.meta as any).env?.CURRENT_INSTITUTION_ID || 'ed7e8c02-451b-4548-aa81-26b8d0b7fdec';
+            if (defaultId) {
+                try {
+                    const instName = await lookupInstitutionName(defaultId);
+                    if (instName) {
+                        enrichedRole.institution_name = instName;
+                        if (!enrichedRole.institution_id) enrichedRole.institution_id = defaultId;
+                        roleChanged = true;
+                    }
+                } catch {}
+            }
+        }
+
+        if (roleChanged) {
+            changed = true;
+            return enrichedRole;
         }
         return r;
     }));
@@ -429,8 +558,13 @@ export async function enrichUserRolesWithStudentCodes(): Promise<UserRoleItem[]>
         if (currentRole?.unit_id) {
             setStorageItem('unit_id', currentRole.unit_id);
         }
-        if (currentRole?.institution_id) {
-            setActiveInstitution(currentRole.institution_id);
+        if (currentRole?.institution_id || currentRole?.institution_name) {
+            setActiveInstitution(currentRole.institution_id || '', false, currentRole.institution_name);
+        }
+    } else {
+        const activeCurrent = updatedRoles.find(r => r.id === (currentRoleIdSignal() || getStorageItem('current_role')) || (getActiveStudentId() && r.roleable_id === getActiveStudentId()));
+        if (activeCurrent && (activeCurrent.institution_id || activeCurrent.institution_name) && !activeInstitutionNameSignal()) {
+            setActiveInstitution(activeCurrent.institution_id || '', false, activeCurrent.institution_name);
         }
     }
     return updatedRoles;
@@ -445,18 +579,22 @@ export function refreshAuthState(): void {
     const studentCode = getActiveStudentCode();
     const currentRoleId = getStorageItem('current_role') || '';
     const instId = getStorageItem('institution_id') || '';
+    const instName = getStorageItem('institution_name') || '';
     setCurrentUserSignal(user);
     setUserRolesSignal(roles);
     setActiveRoleSignal(active);
     setCurrentRoleIdSignal(currentRoleId);
     setActiveInstitutionIdSignal(instId);
+    setActiveInstitutionNameSignal(instName);
     setActiveStudentIdSignal(studentId);
     setActiveStudentCodeSignal(studentCode);
     setIsAuthenticatedSignal(Boolean(token && token !== 'undefined' && token !== ''));
 }
 
 export function setActiveRole(roleNameOrId: string, isSession: boolean = false): void {
-    const roles = getStoredRoles();
+    const signalRoles = userRolesSignal();
+    const storedRoles = getStoredRoles();
+    const roles = signalRoles.length > 0 ? signalRoles : storedRoles;
     let targetName = roleNameOrId;
     let targetId = roleNameOrId;
     let targetRole: UserRoleItem | undefined;
@@ -480,8 +618,8 @@ export function setActiveRole(roleNameOrId: string, isSession: boolean = false):
         if (!found) {
             if (queryClean.includes('lpti')) {
                 found = roles.find(r => r.name.toLowerCase().includes('lpti'));
-            } else if (queryClean.includes('dekan')) {
-                found = roles.find(r => r.name.toLowerCase().includes('dekan'));
+            } else if (queryClean.includes('dekan') || queryClean.includes('fakultas')) {
+                found = roles.find(r => r.name.toLowerCase().includes('dekan') || r.name.toLowerCase().includes('fakultas'));
             } else if (queryClean.includes('rektor')) {
                 found = roles.find(r => r.name.toLowerCase().includes('rektor'));
             }
@@ -507,6 +645,11 @@ export function setActiveRole(roleNameOrId: string, isSession: boolean = false):
     setActiveRoleSignal(normalized);
     setCurrentRoleIdSignal(targetId);
 
+    // Sync active institution for ANY targetRole with institution details
+    if (targetRole?.institution_id || targetRole?.institution_name) {
+        setActiveInstitution(targetRole.institution_id || '', isSession, targetRole.institution_name);
+    }
+
     // Sync stored user with current_role_id
     const curUser = getStoredUser();
     if (curUser) {
@@ -523,13 +666,15 @@ export function setActiveRole(roleNameOrId: string, isSession: boolean = false):
             if (res.code === 200 && res.data) {
                 setCurrentUserSignal(res.data);
                 if (res.data.roles && Array.isArray(res.data.roles)) {
-                    const currentRoles = getStoredRoles();
+                    const currentRoles = userRolesSignal().length > 0 ? userRolesSignal() : getStoredRoles();
                     const merged = res.data.roles.map((r: any) => {
                         const prev = currentRoles.find((p: any) => p.id === r.id);
                         return {
                             ...r,
                             code: r.code || prev?.code,
+                            unit_id: r.unit_id || prev?.unit_id,
                             institution_id: r.institution_id || prev?.institution_id,
+                            institution_name: r.institution_name || prev?.institution_name,
                         };
                     });
                     setUserRolesSignal(merged);
@@ -736,11 +881,13 @@ export async function processLoginSuccess(loginResponse: any, isSession: boolean
                 } catch {}
             }
             if (institutionId) {
+                const instName = institutionCache[institutionId] || '';
                 activeRoleItem.institution_id = institutionId;
-                setActiveInstitution(institutionId, isSession);
+                if (instName) activeRoleItem.institution_name = instName;
+                setActiveInstitution(institutionId, isSession, instName);
                 const roleIdx = roles.findIndex(r => r.id === activeRoleItem?.id);
                 if (roleIdx !== -1) {
-                    roles[roleIdx] = { ...roles[roleIdx], institution_id: institutionId };
+                    roles[roleIdx] = { ...roles[roleIdx], institution_id: institutionId, ...(instName ? { institution_name: instName } : {}) };
                     setStorageItem('roles', JSON.stringify(roles), isSession);
                     setUserRolesSignal(roles);
                 }
@@ -757,7 +904,9 @@ export function logout(): void {
     apiLogoutUser();
     removeStorageItem('active_role');
     removeStorageItem('institution_id');
+    removeStorageItem('institution_name');
     setActiveInstitutionIdSignal('');
+    setActiveInstitutionNameSignal('');
     refreshAuthState();
 }
 

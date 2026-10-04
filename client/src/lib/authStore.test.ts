@@ -45,6 +45,7 @@ describe("Auth Store & Role Engine (White-Box Unit Tests)", () => {
       expect(normalizeRoleName("prodi")).toBe("course_department");
       expect(normalizeRoleName("jurusan")).toBe("course_department");
       expect(normalizeRoleName("kaprodi")).toBe("course_department");
+      expect(normalizeRoleName("Program Studi")).toBe("course_department");
       expect(normalizeRoleName("course_department")).toBe("course_department");
     });
 
@@ -74,6 +75,7 @@ describe("Auth Store & Role Engine (White-Box Unit Tests)", () => {
       expect(normalizeRoleName("pimpinan")).toBe("rectorat");
       expect(normalizeRoleName("Wakil Dekan")).toBe("rectorat");
       expect(normalizeRoleName("Dekan")).toBe("rectorat");
+      expect(normalizeRoleName("Fakultas")).toBe("rectorat");
       expect(normalizeRoleName("Ketua LPTI")).toBe("rectorat");
       expect(normalizeRoleName("Rektor")).toBe("rectorat");
       expect(normalizeRoleName("Yayasan")).toBe("rectorat");

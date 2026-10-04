@@ -1,19 +1,19 @@
 import { createSignal, onMount, Show, For, Switch, Match } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import { 
-    isAuthenticatedSignal, 
-    userRolesSignal, 
-    activeRoleSignal, 
-    currentUserSignal, 
+import {
+    isAuthenticatedSignal,
+    userRolesSignal,
+    activeRoleSignal,
+    currentUserSignal,
     activeStudentCodeSignal,
     activeStudentIdSignal,
     currentRoleIdSignal,
-    setActiveRole, 
+    setActiveRole,
     setActiveInstitution,
-    setActiveStudent, 
+    setActiveStudent,
     enrichUserRolesWithStudentCodes,
-    getRoleDisplayName, 
-    getDashboardPathForRole, 
+    getRoleDisplayName,
+    getDashboardPathForRole,
     refreshAuthState,
     normalizeRoleName,
     type UserRoleItem
@@ -47,9 +47,10 @@ export default function DynamicMenu() {
         if (!role && typeof roleOrName === 'string') {
             const q = roleOrName.toLowerCase().trim().replace(/[-\s_]+/g, '');
             role = roles.find(r => r.name.toLowerCase().replace(/[-\s_]+/g, '') === q) ||
-                   (q.includes('lpti') ? roles.find(r => r.name.toLowerCase().includes('lpti')) : undefined) ||
-                   (q.includes('dekan') ? roles.find(r => r.name.toLowerCase().includes('dekan')) : undefined) ||
-                   (q.includes('rektor') ? roles.find(r => r.name.toLowerCase().includes('rektor')) : undefined);
+                (q.includes('lpti') ? roles.find(r => r.name.toLowerCase().includes('lpti')) : undefined) ||
+                (q.includes('dekan') ? roles.find(r => r.name.toLowerCase().includes('dekan')) : undefined) ||
+                (q.includes('fakultas') ? roles.find(r => r.name.toLowerCase().includes('fakultas')) : undefined) ||
+                (q.includes('rektor') ? roles.find(r => r.name.toLowerCase().includes('rektor')) : undefined);
         }
         const roleName = typeof roleOrName === 'string' ? (role?.name || roleOrName) : roleOrName.name;
         const roleId = role?.id || (typeof roleOrName === 'string' ? roleOrName : roleOrName.name);
@@ -73,7 +74,7 @@ export default function DynamicMenu() {
         const displayName = getRoleDisplayName(roleName, role);
         const codeDisplay = role?.code ? ` (${role.code})` : '';
         toast.info(t('auth.login.roleSwitched', { role: `${displayName}${codeDisplay}` }));
-        
+
         // For rectorat roles, resolve institution_id
         let resolvedRole = role;
         if (normalizeRoleName(roleName, role) === 'rectorat') {
@@ -101,7 +102,7 @@ export default function DynamicMenu() {
 
     return (
         <div class="w-full flex flex-col gap-3">
-            {/* Authenticated User Role Badge & Multi-Role Switcher */}
+            {/* Authenticated User Role Badge & Multi-Role Switcher
             <Show when={isAuthenticatedSignal()}>
                 <div class="p-3 bg-neutral-100 dark:bg-neutral-800/80 rounded-xl border border-neutral-200/80 dark:border-neutral-700/80 mb-2">
                     <div class="flex items-center justify-between gap-2 mb-2">
@@ -126,7 +127,7 @@ export default function DynamicMenu() {
                         </div>
                     </div>
 
-                    {/* Multi-role Switcher (shown when user has more than 1 role) */}
+                    {/* Multi-role Switcher (shown when user has more than 1 role) 
                     <Show when={userRolesSignal().length > 1}>
                         <div class="mt-2 pt-2 border-t border-neutral-200 dark:border-neutral-700/60">
                             <label class="block text-[10px] font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 mb-1.5 font-mono">
@@ -181,6 +182,7 @@ export default function DynamicMenu() {
                     </Show>
                 </div>
             </Show>
+            */}
 
             {/* Role Menu Render */}
             <div class="w-full">

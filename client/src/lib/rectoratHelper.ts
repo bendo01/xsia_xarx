@@ -7,6 +7,8 @@ import {
     activeInstitutionIdSignal,
     setActiveInstitution,
     setUserRolesSignal,
+    institutionCache,
+    lookupInstitutionName,
     type UserRoleItem,
 } from './authStore';
 import { getStorageItem, setStorageItem } from './storage';
@@ -67,6 +69,7 @@ export async function resolveInstitutionFromStaffRole(
                 allRoles.find(r => r.name.toLowerCase().replace(/[-\s_]+/g, '') === qClean) ||
                 (qClean.includes('lpti') ? allRoles.find(r => r.name.toLowerCase().includes('lpti')) : undefined) ||
                 (qClean.includes('dekan') ? allRoles.find(r => r.name.toLowerCase().includes('dekan')) : undefined) ||
+                (qClean.includes('fakultas') ? allRoles.find(r => r.name.toLowerCase().includes('fakultas')) : undefined) ||
                 (qClean.includes('rektor') ? allRoles.find(r => r.name.toLowerCase().includes('rektor')) : undefined);
         }
     }
@@ -80,7 +83,7 @@ export async function resolveInstitutionFromStaffRole(
 
     // If target role already has institution_id cached
     if (targetRole && isValidUuid(targetRole.institution_id)) {
-        setActiveInstitution(targetRole.institution_id!);
+        setActiveInstitution(targetRole.institution_id!, false, targetRole.institution_name);
         return targetRole.institution_id!;
     }
 
@@ -88,9 +91,11 @@ export async function resolveInstitutionFromStaffRole(
     if (targetRole && isValidUuid(targetRole.roleable_id)) {
         const instId = await lookupStaffInstitution(targetRole.roleable_id!);
         if (isValidUuid(instId)) {
+            const instName = targetRole.institution_name || institutionCache[instId!] || '';
             targetRole.institution_id = instId;
-            cacheRoleInstitution(targetRole.id, instId!);
-            setActiveInstitution(instId!);
+            if (instName) targetRole.institution_name = instName;
+            cacheRoleInstitution(targetRole.id, instId!, instName);
+            setActiveInstitution(instId!, false, instName);
             return instId!;
         }
     }
@@ -160,6 +165,8 @@ async function lookupStaffInstitution(staffId: string): Promise<string | undefin
             try {
                 const unitRes = await masterApiShow<any>('institution/master/units', staff.unit_id);
                 const instId = unitRes.data?.institution_id || unitRes.data?.institution?.id;
+                const instName = unitRes.data?.institution?.name || unitRes.data?.institution_name;
+                if (instId && instName) institutionCache[instId] = instName;
                 if (isValidUuid(instId)) return instId;
             } catch (e) {
                 // Ignore
@@ -171,6 +178,8 @@ async function lookupStaffInstitution(staffId: string): Promise<string | undefin
             try {
                 const empRes = await masterApiShow<any>('institution/master/employees', staff.employee_id);
                 const instId = empRes.data?.institution_id || empRes.data?.institution?.id;
+                const instName = empRes.data?.institution?.name || empRes.data?.institution_name;
+                if (instId && instName) institutionCache[instId] = instName;
                 if (isValidUuid(instId)) return instId;
             } catch (e) {
                 // Ignore
@@ -182,11 +191,16 @@ async function lookupStaffInstitution(staffId: string): Promise<string | undefin
     return undefined;
 }
 
-function cacheRoleInstitution(roleId: string, institutionId: string): void {
+function cacheRoleInstitution(roleId: string, institutionId: string, institutionName?: string): void {
     const storedRoles = getStoredRoles();
     const idx = storedRoles.findIndex(r => r.id === roleId);
+    const name = institutionName || institutionCache[institutionId] || '';
     if (idx !== -1) {
-        storedRoles[idx] = { ...storedRoles[idx], institution_id: institutionId };
+        storedRoles[idx] = {
+            ...storedRoles[idx],
+            institution_id: institutionId,
+            ...(name ? { institution_name: name } : {})
+        };
         setStorageItem('roles', JSON.stringify(storedRoles));
         setUserRolesSignal(storedRoles);
     }

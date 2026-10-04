@@ -270,7 +270,9 @@ export async function ChangeUserRole(role_id: string) {
                 return {
                     ...r,
                     code: r.code || prev?.code,
+                    unit_id: r.unit_id || prev?.unit_id,
                     institution_id: r.institution_id || prev?.institution_id,
+                    institution_name: r.institution_name || prev?.institution_name,
                 };
             });
             setStorageItem("roles", JSON.stringify(merged));
