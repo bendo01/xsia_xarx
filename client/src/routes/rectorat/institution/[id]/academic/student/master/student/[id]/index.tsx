@@ -514,11 +514,13 @@ export default function RectoratStudentDetail() {
                                         Grafik perkembangan indeks prestasi (IPS & IPK) dan beban kredit SKS mahasiswa berbasis Apache ECharts.
                                     </p>
                                 </div>
+                                {/* 
                                 <div class="flex items-center gap-2">
                                     <span class="px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-mono text-[11px] font-semibold border border-blue-200 dark:border-blue-800">
                                         Apache ECharts
                                     </span>
                                 </div>
+                                */}
                             </div>
 
                             <Show
@@ -619,7 +621,7 @@ export default function RectoratStudentDetail() {
                                                 <th class="px-5 py-3 text-center">IPS</th>
                                                 <th class="px-5 py-3 text-center">IPK</th>
                                                 <th class="px-5 py-3 text-center">Status</th>
-                                                <th class="px-5 py-3 text-center">Dokumen / Cetak</th>
+                                                <th class="px-5 py-3 text-center">Aksi / Cetak</th>
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-neutral-100 dark:divide-neutral-800">
@@ -649,6 +651,17 @@ export default function RectoratStudentDetail() {
                                                         </td>
                                                         <td class="px-5 py-3 text-center">
                                                             <div class="flex items-center justify-center gap-1.5">
+                                                                <A
+                                                                    href={`/rectorat/institution/${institutionId()}/academic/student/campaign/student-activity/${act.id}`}
+                                                                    class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/80 rounded-md text-[11px] font-bold inline-flex items-center gap-1 transition-colors"
+                                                                    title="Lihat Detail Aktivitas Semester"
+                                                                >
+                                                                    <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                                                                        <circle cx="12" cy="12" r="3" />
+                                                                    </svg>
+                                                                    <span>Detail</span>
+                                                                </A>
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => handlePrintKRS(act)}
