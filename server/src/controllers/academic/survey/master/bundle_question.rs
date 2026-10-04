@@ -13,6 +13,7 @@ use crate::dtos::academic::survey::master::bundle_question::{
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::survey::master::bundle_question as entity_mod;
+use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Survey - Master - BundleQuestion"), status_codes(200, 500))]
 pub async fn list_bundle_question(
@@ -117,8 +118,8 @@ pub async fn create_bundle_question(
         updated_at: Set(Some(now)),
         sync_at: Set(None),
         deleted_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
     };
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
@@ -172,6 +173,7 @@ pub async fn update_bundle_question(
             active_model.question_id = Set(question_id);
         }
     active_model.updated_at = Set(Some(now));
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -212,6 +214,7 @@ pub async fn delete_bundle_question(
 
         active_model.deleted_at = Set(Some(Utc::now().into()));
         active_model.updated_at = Set(Some(now));
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 

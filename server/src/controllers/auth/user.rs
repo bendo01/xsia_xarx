@@ -26,6 +26,7 @@ use argon2::{
 use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
 use chrono::Duration;
+use crate::middleware::auth::auth_user_id;
 
 pub async fn fetch_user_roles(db: &DatabaseConnection, user_id: Uuid) -> Vec<crate::dtos::auth::role::RoleResponse> {
     let roles = role_entity::Entity::find()
@@ -197,8 +198,8 @@ pub async fn create_user(
         created_at: Set(now),
         updated_at: Set(now),
         deleted_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
     };
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
@@ -303,6 +304,7 @@ pub async fn update_user(
             active_model.magic_link_expiration = Set(Some(magic_link_expiration));
         }
     active_model.updated_at = Set(now);
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -355,6 +357,7 @@ pub async fn delete_user(
 
         active_model.deleted_at = Set(Some(now));
         active_model.updated_at = Set(now);
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -448,8 +451,8 @@ pub async fn register(
         created_at: Set(now),
         updated_at: Set(now),
         deleted_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
     };
 
     active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
@@ -493,6 +496,7 @@ pub async fn verify_email(
     active_model.email_verified_at = Set(Some(now));
     active_model.email_verification_token = Set(None);
     active_model.updated_at = Set(now);
+    active_model.updated_by = Set(auth_user_id(depot));
 
     active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -734,8 +738,8 @@ pub async fn forgot_password(
                             updated_at: Set(now),
                             deleted_at: Set(None),
                             sync_at: Set(None),
-                            created_by: Set(None),
-                            updated_by: Set(None),
+                            created_by: Set(auth_user_id(depot)),
+                            updated_by: Set(auth_user_id(depot)),
                         };
                         let saved_role = role_active.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
                         saved_role.id
@@ -787,8 +791,8 @@ pub async fn forgot_password(
                             updated_at: Set(now),
                             deleted_at: Set(None),
                             sync_at: Set(None),
-                            created_by: Set(None),
-                            updated_by: Set(None),
+                            created_by: Set(auth_user_id(depot)),
+                            updated_by: Set(auth_user_id(depot)),
                         };
                         let saved_role = role_active.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
                         saved_role.id
@@ -848,8 +852,8 @@ pub async fn forgot_password(
                                 updated_at: Set(now),
                                 deleted_at: Set(None),
                                 sync_at: Set(None),
-                                created_by: Set(None),
-                                updated_by: Set(None),
+                                created_by: Set(auth_user_id(depot)),
+                                updated_by: Set(auth_user_id(depot)),
                             };
                             let saved_role = role_active.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
                             saved_role.id
@@ -892,8 +896,8 @@ pub async fn forgot_password(
                     updated_at: Set(Some(now)),
                     deleted_at: Set(None),
                     sync_at: Set(None),
-                    created_by: Set(None),
-                    updated_by: Set(None),
+                    created_by: Set(auth_user_id(depot)),
+                    updated_by: Set(auth_user_id(depot)),
                 };
                 phone_active.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
             }
@@ -906,6 +910,7 @@ pub async fn forgot_password(
         active_model.reset_sent_at = Set(Some(now));
         active_model.current_role_id = Set(final_role_id);
         active_model.updated_at = Set(now);
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -984,6 +989,7 @@ pub async fn reset_password(
     active_model.reset_token = Set(None);
     active_model.reset_sent_at = Set(None);
     active_model.updated_at = Set(now);
+    active_model.updated_by = Set(auth_user_id(depot));
 
     let updated_user = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -1130,6 +1136,7 @@ pub async fn set_current_role(
     let mut active_model = user.into_active_model();
     active_model.current_role_id = Set(Some(user_role.id));
     active_model.updated_at = Set(Utc::now().naive_utc());
+    active_model.updated_by = Set(auth_user_id(depot));
 
     let updated_user = active_model.update(db).await.map_err(|e| {
         StatusError::internal_server_error().brief(e.to_string())
@@ -1216,6 +1223,7 @@ pub async fn resend_verification_token(
         active_model.email_verification_token = Set(Some(verification_token.clone()));
         active_model.email_verification_sent_at = Set(Some(now));
         active_model.updated_at = Set(now);
+        active_model.updated_by = Set(auth_user_id(depot));
 
         let updated_user = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -1345,8 +1353,8 @@ pub async fn account_acquisition(
         created_at: Set(now),
         updated_at: Set(now),
         deleted_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
     };
 
     let saved = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
@@ -1384,8 +1392,8 @@ pub async fn account_acquisition(
             updated_at: Set(now),
             deleted_at: Set(None),
             sync_at: Set(None),
-            created_by: Set(None),
-            updated_by: Set(None),
+            created_by: Set(auth_user_id(depot)),
+            updated_by: Set(auth_user_id(depot)),
         };
         role_active.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
     }
@@ -1411,8 +1419,8 @@ pub async fn account_acquisition(
             updated_at: Set(Some(now)),
             deleted_at: Set(None),
             sync_at: Set(None),
-            created_by: Set(None),
-            updated_by: Set(None),
+            created_by: Set(auth_user_id(depot)),
+            updated_by: Set(auth_user_id(depot)),
         };
         phone_active.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
     }

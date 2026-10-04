@@ -14,6 +14,7 @@ use crate::dtos::academic::campaign::transaction::activities::{
 };
 use crate::dtos::common::reference::{MessageResponse, OptionItem};
 use crate::models::academic::campaign::transaction::activities as entity_mod;
+use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Campaign - Transaction - Activity"), status_codes(200, 500))]
 pub async fn list_activities(
@@ -236,8 +237,8 @@ pub async fn create_activitie(
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
         sync_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
     };
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
@@ -348,6 +349,7 @@ pub async fn update_activitie(
             active_model.feeder_id = Set(Some(feeder_id));
         }
     active_model.updated_at = Set(Some(now));
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -403,6 +405,7 @@ pub async fn delete_activitie(
 
         active_model.deleted_at = Set(Some(now));
         active_model.updated_at = Set(Some(now));
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 

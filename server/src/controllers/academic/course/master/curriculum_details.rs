@@ -13,6 +13,7 @@ use crate::dtos::academic::course::master::curriculum_details::{
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::course::master::curriculum_details as entity_mod;
+use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Course - Master - CurriculumDetail"), status_codes(200, 500))]
 pub async fn list_curriculum_details(
@@ -143,8 +144,8 @@ pub async fn create_curriculum_detail(
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
         sync_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
         credit: Set(payload.credit),
         name: Set(payload.name),
         concentration_id: Set(payload.concentration_id),
@@ -236,6 +237,7 @@ pub async fn update_curriculum_detail(
             active_model.is_convertable_to_prior_learning_recognition = Set(Some(is_convertable_to_prior_learning_recognition));
         }
     active_model.updated_at = Set(Some(now));
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -284,6 +286,7 @@ pub async fn delete_curriculum_detail(
 
         active_model.deleted_at = Set(Some(now));
         active_model.updated_at = Set(Some(now));
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 

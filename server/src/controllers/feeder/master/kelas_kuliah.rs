@@ -13,6 +13,7 @@ use crate::dtos::feeder::master::kelas_kuliah::{
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::feeder::master::kelas_kuliah as entity_mod;
+use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Master - KelasKuliah"), status_codes(200, 500))]
 pub async fn list_kelas_kuliah(
@@ -163,8 +164,8 @@ pub async fn create_kelas_kuliah(
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
         sync_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
         id_kelas_kuliah: Set(payload.id_kelas_kuliah),
         id_prodi: Set(payload.id_prodi),
         nama_program_studi: Set(payload.nama_program_studi),
@@ -340,6 +341,7 @@ pub async fn update_kelas_kuliah(
             active_model.apa_untuk_pditt = Set(Some(apa_untuk_pditt));
         }
     active_model.updated_at = Set(Some(now));
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -404,6 +406,7 @@ pub async fn delete_kelas_kuliah(
 
         active_model.deleted_at = Set(Some(now));
         active_model.updated_at = Set(Some(now));
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 

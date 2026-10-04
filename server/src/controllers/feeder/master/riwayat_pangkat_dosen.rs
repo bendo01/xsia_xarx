@@ -13,6 +13,7 @@ use crate::dtos::feeder::master::riwayat_pangkat_dosen::{
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::feeder::master::riwayat_pangkat_dosen as entity_mod;
+use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Master - RiwayatPangkatDosen"), status_codes(200, 500))]
 pub async fn list_riwayat_pangkat_dosen(
@@ -141,8 +142,8 @@ pub async fn create_riwayat_pangkat_dosen(
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
         sync_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
         nuptk: Set(payload.nuptk),
         masa_kerja_dalam_tahun: Set(payload.masa_kerja_dalam_tahun),
         masa_kerja_dalam_bulan: Set(payload.masa_kerja_dalam_bulan),
@@ -235,6 +236,7 @@ pub async fn update_riwayat_pangkat_dosen(
             active_model.masa_kerja_dalam_bulan = Set(Some(masa_kerja_dalam_bulan));
         }
     active_model.updated_at = Set(Some(now));
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -284,6 +286,7 @@ pub async fn delete_riwayat_pangkat_dosen(
 
         active_model.deleted_at = Set(Some(now));
         active_model.updated_at = Set(Some(now));
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 

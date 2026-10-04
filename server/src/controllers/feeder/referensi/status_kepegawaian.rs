@@ -13,6 +13,7 @@ use crate::dtos::feeder::referensi::status_kepegawaian::{
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::feeder::referensi::status_kepegawaian as entity_mod;
+use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Referensi - StatusKepegawaian"), status_codes(200, 500))]
 pub async fn list_status_kepegawaian(
@@ -116,8 +117,8 @@ pub async fn create_status_kepegawaian(
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
         sync_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
         id_status_pegawai: Set(payload.id_status_pegawai),
     };
 
@@ -172,6 +173,7 @@ pub async fn update_status_kepegawaian(
             active_model.id_status_pegawai = Set(Some(id_status_pegawai));
         }
     active_model.updated_at = Set(Some(now));
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -212,6 +214,7 @@ pub async fn delete_status_kepegawaian(
 
         active_model.deleted_at = Set(Some(now));
         active_model.updated_at = Set(Some(now));
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 

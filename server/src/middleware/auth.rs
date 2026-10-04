@@ -1,5 +1,12 @@
 use salvo::prelude::*;
+use uuid::Uuid;
 use crate::config::jwt::{JwtConfig, verify_token};
+
+/// Returns the authenticated user's id (set by [`JwtAuth`]) for audit columns
+/// such as `created_by` / `updated_by`. Returns `None` on unauthenticated routes.
+pub fn auth_user_id(depot: &Depot) -> Option<Uuid> {
+    depot.get::<Uuid>("current_user_id").ok().copied()
+}
 
 pub struct JwtAuth;
 

@@ -23,6 +23,7 @@ use crate::dtos::person::master::individual::{
 };
 use crate::dtos::common::reference::{MessageResponse, ReferenceResponse};
 use crate::models::person::master::individual as entity_mod;
+use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Person - Master - Individual"), status_codes(200, 500))]
 pub async fn list_individual(
@@ -703,8 +704,8 @@ pub async fn create_individual(
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
         sync_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
     };
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
@@ -822,6 +823,7 @@ pub async fn update_individual(
             active_model.is_deceased = Set(is_deceased);
         }
     active_model.updated_at = Set(Some(now));
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -878,6 +880,7 @@ pub async fn delete_individual(
 
         active_model.deleted_at = Set(Some(Utc::now().into()));
         active_model.updated_at = Set(Some(now));
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 

@@ -13,6 +13,7 @@ use crate::dtos::academic::campaign::transaction::grades::{
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::campaign::transaction::grades as entity_mod;
+use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Campaign - Transaction - Grade"), status_codes(200, 500))]
 pub async fn list_grades(
@@ -169,8 +170,8 @@ pub async fn create_grade(
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
         sync_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
         feeder_id: Set(payload.feeder_id),
     };
 
@@ -257,6 +258,7 @@ pub async fn update_grade(
             active_model.feeder_id = Set(Some(feeder_id));
         }
     active_model.updated_at = Set(Some(now));
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -305,6 +307,7 @@ pub async fn delete_grade(
 
         active_model.deleted_at = Set(Some(now));
         active_model.updated_at = Set(Some(now));
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 

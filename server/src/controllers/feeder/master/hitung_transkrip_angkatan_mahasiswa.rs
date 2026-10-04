@@ -13,6 +13,7 @@ use crate::dtos::feeder::master::hitung_transkrip_angkatan_mahasiswa::{
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::feeder::master::hitung_transkrip_angkatan_mahasiswa as entity_mod;
+use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Master - HitungTranskripAngkatanMahasiswa"), status_codes(200, 500))]
 pub async fn list_hitung_transkrip_angkatan_mahasiswa(
@@ -117,8 +118,8 @@ pub async fn create_hitung_transkrip_angkatan_mahasiswa(
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
         sync_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
     };
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
@@ -172,6 +173,7 @@ pub async fn update_hitung_transkrip_angkatan_mahasiswa(
             active_model.id_prodi = Set(Some(id_prodi));
         }
     active_model.updated_at = Set(Some(now));
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -212,6 +214,7 @@ pub async fn delete_hitung_transkrip_angkatan_mahasiswa(
 
         active_model.deleted_at = Set(Some(now));
         active_model.updated_at = Set(Some(now));
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 

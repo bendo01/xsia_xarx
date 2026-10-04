@@ -13,6 +13,7 @@ use crate::dtos::feeder::master::matakuliah::{
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::feeder::master::matakuliah as entity_mod;
+use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Master - Matakuliah"), status_codes(200, 500))]
 pub async fn list_matakuliah(
@@ -161,8 +162,8 @@ pub async fn create_matakuliah(
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
         sync_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
         id_matkul: Set(payload.id_matkul),
         kode_mata_kuliah: Set(payload.kode_mata_kuliah),
         nama_mata_kuliah: Set(payload.nama_mata_kuliah),
@@ -333,6 +334,7 @@ pub async fn update_matakuliah(
             active_model.status_sync = Set(Some(status_sync));
         }
     active_model.updated_at = Set(Some(now));
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -396,6 +398,7 @@ pub async fn delete_matakuliah(
 
         active_model.deleted_at = Set(Some(now));
         active_model.updated_at = Set(Some(now));
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 

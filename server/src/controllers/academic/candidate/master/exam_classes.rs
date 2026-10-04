@@ -13,6 +13,7 @@ use crate::dtos::academic::candidate::master::exam_classes::{
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::candidate::master::exam_classes as entity_mod;
+use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Candidate - Master - ExamClass"), status_codes(200, 500))]
 pub async fn list_exam_classes(
@@ -152,8 +153,8 @@ pub async fn create_exam_classe(
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
         sync_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
     };
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
@@ -243,6 +244,7 @@ pub async fn update_exam_classe(
             active_model.is_online = Set(Some(is_online));
         }
     active_model.updated_at = Set(Some(now));
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -292,6 +294,7 @@ pub async fn delete_exam_classe(
 
         active_model.deleted_at = Set(Some(now));
         active_model.updated_at = Set(Some(now));
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 

@@ -13,6 +13,7 @@ use crate::dtos::institution::master::employees::{
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::institution::master::employees as entity_mod;
+use crate::middleware::auth::auth_user_id;
 
 pub async fn load_employee_with_relations(
     item: &entity_mod::Model,
@@ -267,8 +268,8 @@ pub async fn create_employee(
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
         sync_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
     };
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
@@ -342,6 +343,7 @@ pub async fn update_employee(
             active_model.is_active = Set(is_active);
         }
     active_model.updated_at = Set(Some(now));
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -387,6 +389,7 @@ pub async fn delete_employee(
 
         active_model.deleted_at = Set(Some(now));
         active_model.updated_at = Set(Some(now));
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 

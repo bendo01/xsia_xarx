@@ -11,6 +11,7 @@ use crate::dtos::common::reference::{
     CreateReferenceRequest, MessageResponse, OptionItem, OptionRequest, PaginatedReferenceResponse, ReferenceQuery, ReferenceResponse, UpdateReferenceRequest,
 };
 use crate::models::academic::course::reference::varieties as entity_mod;
+use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Course - Reference - Variety"), status_codes(200, 500))]
 pub async fn list_varieties(
@@ -129,8 +130,8 @@ pub async fn create_varietie(
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
         sync_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
     };
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
@@ -188,6 +189,7 @@ pub async fn update_varietie(
             active_model.name = Set(name);
         }
     active_model.updated_at = Set(Some(now));
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -229,6 +231,7 @@ pub async fn delete_varietie(
 
         active_model.deleted_at = Set(Some(now));
         active_model.updated_at = Set(Some(now));
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 

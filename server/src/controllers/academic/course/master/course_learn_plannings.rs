@@ -13,6 +13,7 @@ use crate::dtos::academic::course::master::course_learn_plannings::{
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::course::master::course_learn_plannings as entity_mod;
+use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Course - Master - CourseLearnPlanning"), status_codes(200, 500))]
 pub async fn list_course_learn_plannings(
@@ -140,8 +141,8 @@ pub async fn create_course_learn_planning(
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
         sync_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
         feeder_id_rencana_ajar: Set(payload.feeder_id_rencana_ajar),
     };
 
@@ -212,6 +213,7 @@ pub async fn update_course_learn_planning(
             active_model.feeder_id_rencana_ajar = Set(Some(feeder_id_rencana_ajar));
         }
     active_model.updated_at = Set(Some(now));
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -256,6 +258,7 @@ pub async fn delete_course_learn_planning(
 
         active_model.deleted_at = Set(Some(now));
         active_model.updated_at = Set(Some(now));
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 

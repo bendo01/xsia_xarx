@@ -11,6 +11,7 @@ use crate::dtos::common::reference::{
     CreateReferenceRequest, MessageResponse, OptionItem, OptionRequest, PaginatedReferenceResponse, ReferenceQuery, ReferenceResponse, UpdateReferenceRequest,
 };
 use crate::models::academic::candidate::reference::registration_types as entity_mod;
+use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Candidate - Reference - RegistrationType"), status_codes(200, 500))]
 pub async fn list_registration_types(
@@ -126,8 +127,8 @@ pub async fn create_registration_type(
         updated_at: Set(Some(now)),
         sync_at: Set(None),
         deleted_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
         student_registration_id: Set(None),
         unit_id: Set(None),
         registration_category_id: Set(None),
@@ -189,6 +190,7 @@ pub async fn update_registration_type(
             active_model.name = Set(name);
         }
     active_model.updated_at = Set(Some(now));
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -230,6 +232,7 @@ pub async fn delete_registration_type(
 
         active_model.deleted_at = Set(Some(now));
         active_model.updated_at = Set(Some(now));
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 

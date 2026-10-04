@@ -13,6 +13,7 @@ use crate::dtos::academic::prior_learning_recognition::transaction::evaluation_d
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::prior_learning_recognition::transaction::evaluation_details as entity_mod;
+use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Prior_Learning_Recognition - Transaction - EvaluationDetail"), status_codes(200, 500))]
 pub async fn list_evaluation_details(
@@ -120,8 +121,8 @@ pub async fn create_evaluation_detail(
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
         sync_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
     };
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
@@ -179,6 +180,7 @@ pub async fn update_evaluation_detail(
             active_model.evidence_type_id = Set(Some(evidence_type_id));
         }
     active_model.updated_at = Set(Some(now));
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -220,6 +222,7 @@ pub async fn delete_evaluation_detail(
 
         active_model.deleted_at = Set(Some(Utc::now().into()));
         active_model.updated_at = Set(Some(now));
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 

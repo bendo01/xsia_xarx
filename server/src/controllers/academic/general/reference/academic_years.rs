@@ -12,6 +12,7 @@ use crate::dtos::common::reference::{
     ReferenceQuery, ReferenceResponse, UpdateReferenceRequest,
 };
 use crate::models::academic::general::reference::academic_years as entity_mod;
+use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - General - Reference - AcademicYear"), status_codes(200, 500))]
 pub async fn list_academic_years(
@@ -131,8 +132,8 @@ pub async fn create_academic_year(
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
         sync_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
         is_active: Set(None),
         start_date: Set(None),
         end_date: Set(None),
@@ -190,6 +191,7 @@ pub async fn update_academic_year(
             active_model.name = Set(name);
         }
     active_model.updated_at = Set(Some(now));
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -231,6 +233,7 @@ pub async fn delete_academic_year(
 
         active_model.deleted_at = Set(Some(now));
         active_model.updated_at = Set(Some(now));
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 

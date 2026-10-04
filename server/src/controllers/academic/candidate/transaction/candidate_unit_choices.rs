@@ -13,6 +13,7 @@ use crate::dtos::academic::candidate::transaction::candidate_unit_choices::{
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::candidate::transaction::candidate_unit_choices as entity_mod;
+use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Candidate - Transaction - CandidateUnitChoice"), status_codes(200, 500))]
 pub async fn list_candidate_unit_choices(
@@ -129,8 +130,8 @@ pub async fn create_candidate_unit_choice(
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
         sync_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
     };
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
@@ -200,6 +201,7 @@ pub async fn update_candidate_unit_choice(
             active_model.priority = Set(priority);
         }
     active_model.updated_at = Set(Some(now));
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -244,6 +246,7 @@ pub async fn delete_candidate_unit_choice(
 
         active_model.deleted_at = Set(Some(now));
         active_model.updated_at = Set(Some(now));
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 

@@ -13,6 +13,7 @@ use crate::dtos::feeder::master::mahasiswa_lulusan_dropout::{
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::feeder::master::mahasiswa_lulusan_dropout as entity_mod;
+use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Master - MahasiswaLulusanDropout"), status_codes(200, 500))]
 pub async fn list_mahasiswa_lulusan_dropout(
@@ -215,8 +216,8 @@ pub async fn create_mahasiswa_lulusan_dropout(
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
         sync_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
         id_registrasi_mahasiswa: Set(payload.id_registrasi_mahasiswa),
         id_mahasiswa: Set(payload.id_mahasiswa),
         id_perguruan_tinggi: Set(payload.id_perguruan_tinggi),
@@ -522,6 +523,7 @@ pub async fn update_mahasiswa_lulusan_dropout(
             active_model.status_sync = Set(Some(status_sync));
         }
     active_model.updated_at = Set(Some(now));
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -612,6 +614,7 @@ pub async fn delete_mahasiswa_lulusan_dropout(
 
         active_model.deleted_at = Set(Some(now));
         active_model.updated_at = Set(Some(now));
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 

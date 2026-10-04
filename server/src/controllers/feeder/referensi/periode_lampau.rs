@@ -13,6 +13,7 @@ use crate::dtos::feeder::referensi::periode_lampau::{
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::feeder::referensi::periode_lampau as entity_mod;
+use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Referensi - PeriodeLampau"), status_codes(200, 500))]
 pub async fn list_periode_lampau(
@@ -132,8 +133,8 @@ pub async fn create_periode_lampau(
         created_at: Set(Some(now)),
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
     };
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
@@ -207,6 +208,7 @@ pub async fn update_periode_lampau(
             active_model.tipe_periode = Set(Some(tipe_periode));
         }
     active_model.updated_at = Set(Some(now));
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -252,6 +254,7 @@ pub async fn delete_periode_lampau(
 
         active_model.deleted_at = Set(Some(Utc::now().into()));
         active_model.updated_at = Set(Some(now));
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 

@@ -13,6 +13,7 @@ use crate::dtos::feeder::master::dosen_pembimbing::{
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::feeder::master::dosen_pembimbing as entity_mod;
+use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Master - DosenPembimbing"), status_codes(200, 500))]
 pub async fn list_dosen_pembimbing(
@@ -135,8 +136,8 @@ pub async fn create_dosen_pembimbing(
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
         sync_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
     };
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
@@ -214,6 +215,7 @@ pub async fn update_dosen_pembimbing(
             active_model.jenis_aktivitas = Set(Some(jenis_aktivitas));
         }
     active_model.updated_at = Set(Some(now));
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -260,6 +262,7 @@ pub async fn delete_dosen_pembimbing(
 
         active_model.deleted_at = Set(Some(now));
         active_model.updated_at = Set(Some(now));
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 

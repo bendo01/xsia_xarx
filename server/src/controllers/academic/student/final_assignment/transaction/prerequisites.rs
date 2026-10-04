@@ -13,6 +13,7 @@ use crate::dtos::academic::student::final_assignment::transaction::prerequisites
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::student::final_assignment::transaction::prerequisites as entity_mod;
+use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Student - Final_Assignment - Transaction - Prerequisite"), status_codes(200, 500))]
 pub async fn list_prerequisites(
@@ -138,8 +139,8 @@ pub async fn create_prerequisite(
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
         sync_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
     };
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
@@ -221,6 +222,7 @@ pub async fn update_prerequisite(
             active_model.filesize = Set(Some(filesize));
         }
     active_model.updated_at = Set(Some(now));
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -268,6 +270,7 @@ pub async fn delete_prerequisite(
 
         active_model.deleted_at = Set(Some(now));
         active_model.updated_at = Set(Some(now));
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 

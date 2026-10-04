@@ -13,6 +13,7 @@ use crate::dtos::feeder::master::kurikulum::{
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::feeder::master::kurikulum as entity_mod;
+use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Master - Kurikulum"), status_codes(200, 500))]
 pub async fn list_kurikulum(
@@ -139,8 +140,8 @@ pub async fn create_kurikulum(
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
         sync_at: Set(None),
-        created_by: Set(None),
-        updated_by: Set(None),
+        created_by: Set(auth_user_id(depot)),
+        updated_by: Set(auth_user_id(depot)),
         id_kurikulum: Set(payload.id_kurikulum),
         nama_kurikulum: Set(payload.nama_kurikulum),
         id_prodi: Set(payload.id_prodi),
@@ -256,6 +257,7 @@ pub async fn update_kurikulum(
             active_model.status_sync = Set(Some(status_sync));
         }
     active_model.updated_at = Set(Some(now));
+    active_model.updated_by = Set(auth_user_id(depot));
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -308,6 +310,7 @@ pub async fn delete_kurikulum(
 
         active_model.deleted_at = Set(Some(now));
         active_model.updated_at = Set(Some(now));
+        active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
