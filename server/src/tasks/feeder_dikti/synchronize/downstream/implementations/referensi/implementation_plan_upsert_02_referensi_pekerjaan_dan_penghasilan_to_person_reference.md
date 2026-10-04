@@ -1,6 +1,7 @@
 # Deskripsi Capaian
 
 Implement a reference synchronization task that upserts records from Feeder Dikti tables `feeder_referensi.pekerjaan` and `feeder_referensi.penghasilan` to the system reference tables:
+
 - `person_reference.occupations`
 - `person_reference.incomes`
 

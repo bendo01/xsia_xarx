@@ -1,6 +1,7 @@
 # Deskripsi Capaian
 
 Implement a comprehensive reference synchronization task that upserts student-related dictionaries from Feeder Dikti tables to `academic_student_reference` tables:
+
 - `feeder_referensi.jenis_pendaftaran` ➔ `academic_student_reference.registrations`
 - `feeder_referensi.jenis_keluar` ➔ `academic_student_reference.resign_statuses`
 - `feeder_referensi.status_mahasiswa` ➔ `academic_student_reference.statuses`

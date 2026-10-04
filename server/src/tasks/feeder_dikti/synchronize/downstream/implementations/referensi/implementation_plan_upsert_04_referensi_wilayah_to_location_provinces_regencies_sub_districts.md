@@ -1,6 +1,7 @@
 # Deskripsi Capaian
 
 Implement a hierarchical location reference synchronization task that upserts territorial boundaries from the Feeder Dikti table `feeder_referensi.wilayah` to the `location` schema tables:
+
 - `location.provinces` (Level 1, 34 rows)
 - `location.regencies` (Level 2, 514 rows)
 - `location.sub_districts` (Level 3, 7,270 rows)
