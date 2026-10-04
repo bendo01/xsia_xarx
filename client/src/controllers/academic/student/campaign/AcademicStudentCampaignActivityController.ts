@@ -47,6 +47,15 @@ export interface StudentActivityItem {
     student_code?: string;
     unit_name?: string;
     unit_code?: string;
+    resign_status_name?: string;
+    finance_name?: string;
+    student?: any;
+    unit_activity?: any;
+    status?: any;
+    resign_status?: any;
+    unit?: any;
+    finance?: any;
+    detail_activities?: any[];
 }
 
 export async function listStudentActivities(queryParams?: {

@@ -19,7 +19,7 @@ use crate::dtos::academic::campaign::transaction::teach_lecturers::TeachLecturer
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::student::campaign::detail_activities as entity_mod;
 
-async fn load_relations_for_detail_activities(
+pub async fn load_relations_for_detail_activities(
     db: &DatabaseConnection,
     items: &[entity_mod::Model],
 ) -> Result<(
@@ -288,7 +288,7 @@ async fn load_relations_for_detail_activities(
     Ok((grades_map, courses_map, teaches_map, teach_lecturers_map, students_map))
 }
 
-fn map_model_to_response(
+pub fn map_model_to_response(
     item: entity_mod::Model,
     grades_map: &HashMap<Uuid, GradeResponse>,
     courses_map: &HashMap<Uuid, CourseResponse>,
@@ -298,8 +298,16 @@ fn map_model_to_response(
 ) -> DetailActivityResponse {
     let grade = item.grade_id.and_then(|gid| grades_map.get(&gid).cloned());
     let course = courses_map.get(&item.course_id).cloned();
-    let teach = item.teach_id.and_then(|tid| teaches_map.get(&tid).cloned());
+    let mut teach = item.teach_id.and_then(|tid| teaches_map.get(&tid).cloned());
     let teach_lecturers = item.teach_id.and_then(|tid| teach_lecturers_map.get(&tid).cloned());
+    if let Some(t) = teach.as_mut() {
+        if t.teach_lecturers.is_none() {
+            t.teach_lecturers = teach_lecturers.clone();
+        }
+        if t.course.is_none() {
+            t.course = course.clone();
+        }
+    }
     let (student_name, student_nim) = students_map
         .get(&item.activity_id)
         .map(|(n, c)| (Some(n.clone()), Some(c.clone())))

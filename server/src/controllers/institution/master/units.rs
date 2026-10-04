@@ -615,6 +615,7 @@ pub async fn load_unit_with_relations(
                         unit_name: None,
                         unit_code: None,
                         status_name: None,
+                        ..Default::default()
                     })
                     .collect())
     } else {

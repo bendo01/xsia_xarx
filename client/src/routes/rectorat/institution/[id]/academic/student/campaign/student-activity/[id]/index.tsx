@@ -124,9 +124,9 @@ export default function RectoratStudentActivityDetail() {
                 setActivity(actRes);
 
                 // Fetch Student and Individual info if student_id is available
-                if (actRes.student_id) {
+                if (actRes.student || actRes.student_id) {
                     try {
-                        const std = await getStudentById(actRes.student_id);
+                        const std = actRes.student || await getStudentById(actRes.student_id);
                         if (std) {
                             setStudent(std);
                             if (std.individual_id) {
@@ -144,9 +144,11 @@ export default function RectoratStudentActivityDetail() {
                 }
             }
 
-            const rawDetails = (detailRes.data || []).filter(
-                (d) => d.activity_id === activityId || (actRes && d.activity_id === actRes.id)
-            );
+            const rawDetails = (actRes?.detail_activities && actRes.detail_activities.length > 0)
+                ? actRes.detail_activities
+                : (detailRes.data || []).filter(
+                    (d) => d.activity_id === activityId || (actRes && d.activity_id === actRes.id)
+                );
             const courses = coursesList || [];
             const teaches = teachesRes.data || [];
             const grades = gradesRes.data || [];

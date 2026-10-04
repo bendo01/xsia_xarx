@@ -21,7 +21,7 @@ pub struct StudentActivityQuery {
     pub sort_dir: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
 pub struct StudentActivityResponse {
     pub id: Uuid,
     pub name: Option<String>,
@@ -58,6 +58,28 @@ pub struct StudentActivityResponse {
     pub unit_code: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub status_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub resign_status_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub finance_name: Option<String>,
+
+    // Belongs to relations
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub student: Option<crate::dtos::academic::student::master::students::StudentResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub unit_activity: Option<crate::dtos::academic::campaign::transaction::activities::ActivityResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status: Option<crate::dtos::common::reference::ReferenceResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub resign_status: Option<crate::dtos::common::reference::ReferenceResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub unit: Option<crate::dtos::institution::master::units::UnitResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub finance: Option<crate::dtos::common::reference::ReferenceResponse>,
+
+    // Has many relations
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub detail_activities: Option<Vec<crate::dtos::academic::student::campaign::detail_activities::DetailActivityResponse>>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]

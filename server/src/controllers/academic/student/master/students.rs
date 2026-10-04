@@ -417,6 +417,33 @@ pub async fn list_distinct_academic_years(
     Ok(Json(response))
 }
 
+pub async fn find_student_response_by_id(
+    db: &DatabaseConnection,
+    id: Uuid,
+) -> Result<Option<StudentResponse>, StatusError> {
+    let item = match entity_mod::Entity::find_by_id(id)
+        .filter(entity_mod::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+    {
+        Some(item) => item,
+        None => return Ok(None),
+    };
+
+    let (units_map, statuses_map, academic_years_map, curriculums_map, selection_types_map) =
+        load_relations_for_students(db, std::slice::from_ref(&item)).await?;
+
+    Ok(Some(to_response(
+        item,
+        &units_map,
+        &statuses_map,
+        &academic_years_map,
+        &curriculums_map,
+        &selection_types_map,
+    )))
+}
+
 #[endpoint(tags("Academic - Student - Master - Student"), status_codes(200, 400, 404, 500))]
 pub async fn get_student(
     req: &mut Request,
@@ -429,24 +456,11 @@ pub async fn get_student(
     let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
     let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let item = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+    let res = find_student_response_by_id(db, id)
+        .await?
         .ok_or_else(|| StatusError::not_found().brief("Student not found"))?;
 
-    let (units_map, statuses_map, academic_years_map, curriculums_map, selection_types_map) =
-        load_relations_for_students(db, std::slice::from_ref(&item)).await?;
-
-    Ok(Json(to_response(
-        item,
-        &units_map,
-        &statuses_map,
-        &academic_years_map,
-        &curriculums_map,
-        &selection_types_map,
-    )))
+    Ok(Json(res))
 }
 
 #[endpoint(tags("Academic - Student - Master - Student"), status_codes(200, 400, 500))]

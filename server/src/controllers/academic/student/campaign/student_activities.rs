@@ -380,6 +380,7 @@ pub async fn list_student_activities(
             unit_name: if !u_name.is_empty() { Some(u_name) } else { None },
             unit_code: if !u_code.is_empty() { Some(u_code) } else { None },
             status_name: st_name,
+            ..Default::default()
         }
     }).collect();
 
@@ -411,12 +412,22 @@ pub async fn get_student_activitie(
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
         .ok_or_else(|| StatusError::not_found().brief("StudentActivity not found"))?;
 
-    let (academic_year, academic_year_name) = if let Ok(Some(ua)) = crate::models::academic::campaign::transaction::activities::Entity::find_by_id(item.unit_activity_id)
-        .filter(crate::models::academic::campaign::transaction::activities::Column::DeletedAt.is_null())
-        .one(db)
+    // 1. Belongs to: student
+    let student_res = crate::controllers::academic::student::master::students::find_student_response_by_id(db, item.student_id)
         .await
+        .ok()
+        .flatten();
+    let student_name = student_res.as_ref().map(|s| s.name.clone());
+    let student_code = student_res.as_ref().map(|s| s.code.clone());
+
+    // 2. Belongs to: unit_activity and academic_year
+    let (unit_activity_res, academic_year_res, academic_year_name) = if let Ok(Some(ua)) =
+        crate::models::academic::campaign::transaction::activities::Entity::find_by_id(item.unit_activity_id)
+            .filter(crate::models::academic::campaign::transaction::activities::Column::DeletedAt.is_null())
+            .one(db)
+            .await
     {
-        if let Ok(Some(ay)) = crate::models::academic::general::reference::academic_years::Entity::find_by_id(ua.academic_year_id)
+        let (ay_res, ay_name) = if let Ok(Some(ay)) = crate::models::academic::general::reference::academic_years::Entity::find_by_id(ua.academic_year_id)
             .filter(crate::models::academic::general::reference::academic_years::Column::DeletedAt.is_null())
             .one(db)
             .await
@@ -438,10 +449,199 @@ pub async fn get_student_activitie(
             )
         } else {
             (None, None)
+        };
+
+        let ua_unit_name = crate::models::institution::master::units::Entity::find_by_id(ua.unit_id)
+            .filter(crate::models::institution::master::units::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+            .ok()
+            .flatten()
+            .and_then(|u| u.name);
+
+        let ua_res = Some(crate::dtos::academic::campaign::transaction::activities::ActivityResponse {
+            id: ua.id,
+            name: ua.name,
+            week_quantity: ua.week_quantity,
+            student_target: ua.student_target,
+            candidate_number: ua.candidate_number,
+            candidate_pass: ua.candidate_pass,
+            became_student: ua.became_student,
+            transfer_student: ua.transfer_student,
+            total_class_member: ua.total_class_member,
+            start_date: ua.start_date,
+            end_date: ua.end_date,
+            start_transaction: ua.start_transaction,
+            end_transaction: ua.end_transaction,
+            unit_id: ua.unit_id,
+            academic_year_id: ua.academic_year_id,
+            is_active: ua.is_active,
+            feeder_id: ua.feeder_id,
+            created_at: ua.created_at,
+            updated_at: ua.updated_at,
+            deleted_at: ua.deleted_at,
+            sync_at: ua.sync_at,
+            created_by: ua.created_by,
+            updated_by: ua.updated_by,
+            unit_name: ua_unit_name,
+            academic_year_name: ay_name.clone(),
+        });
+
+        (ua_res, ay_res, ay_name)
+    } else {
+        (None, None, None)
+    };
+
+    // 3. Belongs to: status
+    let (status_res, status_name) = if let Ok(Some(s)) = crate::models::academic::student::reference::statuses::Entity::find_by_id(item.status_id)
+        .filter(crate::models::academic::student::reference::statuses::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+    {
+        (
+            Some(crate::dtos::common::reference::ReferenceResponse {
+                id: s.id,
+                code: s.code,
+                alphabet_code: s.alphabet_code.unwrap_or_default(),
+                name: s.name.clone(),
+                created_at: s.created_at.unwrap_or_else(|| chrono::Utc::now().naive_utc()),
+                updated_at: s.updated_at.unwrap_or_else(|| chrono::Utc::now().naive_utc()),
+                deleted_at: s.deleted_at.map(|d| d.naive_utc()),
+                sync_at: s.sync_at,
+                created_by: s.created_by,
+                updated_by: s.updated_by,
+            }),
+            Some(s.name),
+        )
+    } else {
+        (None, None)
+    };
+
+    // 4. Belongs to: resign_status
+    let (resign_status_res, resign_status_name) = if let Some(rs_id) = item.resign_status_id {
+        if let Ok(Some(rs)) = crate::models::academic::student::reference::resign_statuses::Entity::find_by_id(rs_id)
+            .filter(crate::models::academic::student::reference::resign_statuses::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+        {
+            (
+                Some(crate::dtos::common::reference::ReferenceResponse {
+                    id: rs.id,
+                    code: rs.code,
+                    alphabet_code: rs.alphabet_code.unwrap_or_default(),
+                    name: rs.name.clone(),
+                    created_at: rs.created_at.unwrap_or_else(|| chrono::Utc::now().naive_utc()),
+                    updated_at: rs.updated_at.unwrap_or_else(|| chrono::Utc::now().naive_utc()),
+                    deleted_at: rs.deleted_at.map(|d| d.naive_utc()),
+                    sync_at: rs.sync_at,
+                    created_by: rs.created_by,
+                    updated_by: rs.updated_by,
+                }),
+                Some(rs.name),
+            )
+        } else {
+            (None, None)
         }
     } else {
         (None, None)
     };
+
+    // 5. Belongs to: unit
+    let eff_unit_id = item.unit_id.or_else(|| student_res.as_ref().map(|s| s.unit_id));
+    let unit_res = if let Some(uid) = eff_unit_id {
+        if let Ok(Some(u)) = crate::models::institution::master::units::Entity::find_by_id(uid)
+            .filter(crate::models::institution::master::units::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+        {
+            Some(crate::dtos::institution::master::units::UnitResponse {
+                id: u.id,
+                code: u.code,
+                name: u.name,
+                is_active: u.is_active,
+                unit_type_id: u.unit_type_id,
+                institution_id: u.institution_id,
+                parent_id: u.parent_id,
+                education_id: u.education_id,
+                feeder_id: u.feeder_id,
+                lft: u.lft,
+                rght: u.rght,
+                created_at: u.created_at,
+                updated_at: u.updated_at,
+                sync_at: u.sync_at,
+                deleted_at: u.deleted_at,
+                created_by: u.created_by,
+                updated_by: u.updated_by,
+                ..Default::default()
+            })
+        } else {
+            None
+        }
+    } else {
+        None
+    };
+    let unit_name = unit_res.as_ref().and_then(|u| u.name.clone());
+    let unit_code = unit_res.as_ref().and_then(|u| u.code.clone());
+
+    // 6. Belongs to: finance
+    let (finance_res, finance_name) = if let Some(f_id) = item.finance_id {
+        if let Ok(Some(f)) = crate::models::academic::student::reference::finances::Entity::find_by_id(f_id)
+            .filter(crate::models::academic::student::reference::finances::Column::DeletedAt.is_null())
+            .one(db)
+            .await
+        {
+            (
+                Some(crate::dtos::common::reference::ReferenceResponse {
+                    id: f.id,
+                    code: f.code,
+                    alphabet_code: f.alphabet_code.unwrap_or_default(),
+                    name: f.name.clone(),
+                    created_at: f.created_at.unwrap_or_else(|| chrono::Utc::now().naive_utc()),
+                    updated_at: f.updated_at.unwrap_or_else(|| chrono::Utc::now().naive_utc()),
+                    deleted_at: f.deleted_at.map(|d| d.naive_utc()),
+                    sync_at: f.sync_at,
+                    created_by: f.created_by,
+                    updated_by: f.updated_by,
+                }),
+                Some(f.name),
+            )
+        } else {
+            (None, None)
+        }
+    } else {
+        (None, None)
+    };
+
+    // 7. Has many: detail_activities with courses, teaches, teach_lecturers, lecturers, grades
+    let detail_activity_models = crate::models::academic::student::campaign::detail_activities::Entity::find()
+        .filter(crate::models::academic::student::campaign::detail_activities::Column::ActivityId.eq(item.id))
+        .filter(crate::models::academic::student::campaign::detail_activities::Column::DeletedAt.is_null())
+        .order_by_asc(crate::models::academic::student::campaign::detail_activities::Column::CuriculumDetailSequence)
+        .order_by_asc(crate::models::academic::student::campaign::detail_activities::Column::CreatedAt)
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let (grades_map, courses_map, teaches_map, teach_lecturers_map, students_map) =
+        crate::controllers::academic::student::campaign::detail_activities::load_relations_for_detail_activities(
+            db,
+            &detail_activity_models,
+        ).await?;
+
+    let detail_activities: Vec<crate::dtos::academic::student::campaign::detail_activities::DetailActivityResponse> =
+        detail_activity_models
+            .into_iter()
+            .map(|da| {
+                crate::controllers::academic::student::campaign::detail_activities::map_model_to_response(
+                    da,
+                    &grades_map,
+                    &courses_map,
+                    &teaches_map,
+                    &teach_lecturers_map,
+                    &students_map,
+                )
+            })
+            .collect();
 
     Ok(Json(StudentActivityResponse {
             id: item.id,
@@ -454,7 +654,7 @@ pub async fn get_student_activitie(
             unit_activity_id: item.unit_activity_id,
             status_id: item.status_id,
             resign_status_id: item.resign_status_id,
-            unit_id: item.unit_id,
+            unit_id: item.unit_id.or(eff_unit_id),
             is_lock: item.is_lock,
             created_at: item.created_at,
             updated_at: item.updated_at,
@@ -465,15 +665,26 @@ pub async fn get_student_activitie(
             feeder_id: item.feeder_id,
             finance_id: item.finance_id,
             finance_fee: item.finance_fee,
-            academic_year,
+            academic_year: academic_year_res,
             academic_year_name,
-            student_name: None,
-            student_code: None,
-            unit_name: None,
-            unit_code: None,
-            status_name: None,
+            student_name,
+            student_code,
+            unit_name,
+            unit_code,
+            status_name,
+            resign_status_name,
+            finance_name,
+            student: student_res,
+            unit_activity: unit_activity_res,
+            status: status_res,
+            resign_status: resign_status_res,
+            unit: unit_res,
+            finance: finance_res,
+            detail_activities: Some(detail_activities),
     }))
-}#[endpoint(tags("Academic - Student - Campaign - StudentActivity"), status_codes(200, 400, 500))]
+}
+
+#[endpoint(tags("Academic - Student - Campaign - StudentActivity"), status_codes(200, 400, 500))]
 pub async fn create_student_activitie(
         req: &mut Request,
         depot: &mut Depot,
@@ -546,6 +757,7 @@ pub async fn create_student_activitie(
             unit_name: None,
             unit_code: None,
             status_name: None,
+            ..Default::default()
         }))
 }
 
@@ -652,6 +864,7 @@ pub async fn update_student_activitie(
             unit_name: None,
             unit_code: None,
             status_name: None,
+            ..Default::default()
         }))
 }
 #[endpoint(tags("Academic - Student - Campaign - StudentActivity"), status_codes(200, 400, 404, 500))]
