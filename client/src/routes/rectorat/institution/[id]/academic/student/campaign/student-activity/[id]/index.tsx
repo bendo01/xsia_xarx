@@ -1,4 +1,4 @@
-import { createSignal, onMount, createEffect, For, Show } from 'solid-js';
+import { createSignal, createEffect, For, Show } from 'solid-js';
 import { useParams, useSearchParams, useLocation, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
@@ -8,15 +8,7 @@ import {
     printActivityResult,
     type StudentActivityItem
 } from '~/controllers/academic/student/campaign/AcademicStudentCampaignActivityController';
-import {
-    listDetailActivities,
-    type DetailActivityItem
-} from '~/controllers/academic/student/campaign/AcademicStudentCampaignDetailActivityController';
-import {
-    listCourses,
-    listTeaches
-} from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachController';
-import { listGrades } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionGradeController';
+import type { DetailActivityItem } from '~/controllers/academic/student/campaign/AcademicStudentCampaignDetailActivityController';
 import {
     getStudentById,
     type StudentMasterItem
@@ -41,6 +33,9 @@ export default function RectoratStudentActivityDetail() {
     const [isLoading, setIsLoading] = createSignal(true);
     const [isPrintingKRS, setIsPrintingKRS] = createSignal(false);
     const [isPrintingKHS, setIsPrintingKHS] = createSignal(false);
+
+    let lastFetchedActivityId = '';
+    let isFetching = false;
 
     const isValidId = (id?: string | null): id is string => {
         if (!id) return false;
@@ -98,74 +93,62 @@ export default function RectoratStudentActivityDetail() {
         }
     });
 
-    const fetchActivityDetail = async () => {
-        const activityId = resolveActivityId();
+    const fetchActivityDetail = async (targetId?: string) => {
+        const activityId = targetId || resolveActivityId();
         if (!activityId) {
             setIsLoading(false);
             return;
         }
 
+        if (isFetching && lastFetchedActivityId === activityId) {
+            return;
+        }
+
+        lastFetchedActivityId = activityId;
+        isFetching = true;
         setIsLoading(true);
         try {
-            // 1. Fetch student activity and supporting datasets in parallel
-            const [actRes, detailRes, coursesList, teachesRes, gradesRes] = await Promise.all([
-                getStudentActivityById(activityId),
-                listDetailActivities({
-                    page: 1,
-                    page_size: 100,
-                    activity_id: activityId,
-                }),
-                listCourses(),
-                listTeaches({ page: 1, page_size: 100 }),
-                listGrades({ page: 1, page_size: 100 }),
-            ]);
+            // getStudentActivityById already embeds student, unit_activity, status, unit, finance,
+            // and detail_activities with courses, teaches, lecturers, and grades
+            const actRes = await getStudentActivityById(activityId);
 
             if (actRes) {
                 setActivity(actRes);
 
-                // Fetch Student and Individual info if student_id is available
-                if (actRes.student || actRes.student_id) {
+                // Student info is already embedded in actRes.student
+                if (actRes.student) {
+                    setStudent(actRes.student);
+                } else if (actRes.student_id) {
                     try {
-                        const std = actRes.student || await getStudentById(actRes.student_id);
-                        if (std) {
-                            setStudent(std);
-                            if (std.individual_id) {
-                                try {
-                                    const indRes = await PersonMasterIndividualControllerShow(std.individual_id);
-                                    if (indRes && indRes.data) {
-                                        setIndividual(indRes.data);
-                                    }
-                                } catch {}
-                            }
-                        }
+                        const std = await getStudentById(actRes.student_id);
+                        if (std) setStudent(std);
                     } catch (e) {
                         console.warn('Failed to load student details for activity:', e);
                     }
                 }
             }
 
-            const rawDetails = (actRes?.detail_activities && actRes.detail_activities.length > 0)
-                ? actRes.detail_activities
-                : (detailRes.data || []).filter(
-                    (d) => d.activity_id === activityId || (actRes && d.activity_id === actRes.id)
-                );
-            const courses = coursesList || [];
-            const teaches = teachesRes.data || [];
-            const grades = gradesRes.data || [];
+            const rawDetails: any[] = actRes?.detail_activities || [];
 
-            // 2. Enrich detail activities with course, teach, lecturer, and grade details
+            const cleanName = (val?: string) => {
+                if (!val || val.startsWith('DosenAktifitasPengajaran')) return '';
+                return val.trim();
+            };
+
+            // Enrich detail activities with embedded course, teach, lecturer, and grade details
             const enrichedDetails: DetailActivityItem[] = rawDetails.map((detail) => {
-                const course = detail.course || courses.find((c: any) => c.id === detail.course_id);
-                const teach = detail.teach || teaches.find((t: any) => t.id === detail.teach_id || t.course_id === detail.course_id);
-                const grade = detail.grade || grades.find((g: any) => g.id === detail.grade_id);
+                const course = detail.course || detail.teach?.course;
+                const teach = detail.teach;
+                const grade = detail.grade;
 
-                const cleanName = (val?: string) => {
-                    if (!val || val.startsWith('DosenAktifitasPengajaran')) return '';
-                    return val.trim();
-                };
+                const rawLecturers = (detail.teach_lecturers && detail.teach_lecturers.length > 0)
+                    ? detail.teach_lecturers
+                    : (teach?.teach_lecturers && teach.teach_lecturers.length > 0)
+                        ? teach.teach_lecturers
+                        : null;
 
-                const lecturerList: { code?: string; name: string }[] = detail.teach_lecturers && detail.teach_lecturers.length > 0
-                    ? detail.teach_lecturers.map((tl: any) => ({
+                const lecturerList: { code?: string; name: string }[] = rawLecturers
+                    ? rawLecturers.map((tl: any) => ({
                         code: (tl.code || tl.lecturer_code || tl.lecturer?.code || '').trim(),
                         name: cleanName(tl.name || tl.lecturer_name || tl.lecturer?.name || (typeof tl === 'string' ? tl : '')),
                     })).filter((l: any) => l.name || l.code)
@@ -195,18 +178,15 @@ export default function RectoratStudentActivityDetail() {
             console.error('Error fetching student activity details:', err);
             toast.danger('Gagal memuat detail aktivitas semester mahasiswa.');
         } finally {
+            isFetching = false;
             setIsLoading(false);
         }
     };
 
-    onMount(() => {
-        fetchActivityDetail();
-    });
-
     createEffect(() => {
         const actId = resolveActivityId();
-        if (actId) {
-            fetchActivityDetail();
+        if (actId && actId !== lastFetchedActivityId) {
+            fetchActivityDetail(actId);
         }
     });
 
@@ -292,13 +272,14 @@ export default function RectoratStudentActivityDetail() {
     };
 
     const studentDisplayName = () =>
-        individual()?.individual?.name ||
-        (individual() as any)?.name ||
+        activity()?.student_name ||
         student()?.name ||
         (student() as any)?.individual?.name ||
+        individual()?.individual?.name ||
+        (individual() as any)?.name ||
         'Mahasiswa';
 
-    const studentCode = () => student()?.code || '-';
+    const studentCode = () => activity()?.student_code || student()?.code || '-';
 
     const getGradeBadgeClass = (grade?: string) => {
         if (!grade || grade === '-') {
@@ -388,9 +369,9 @@ export default function RectoratStudentActivityDetail() {
                                 <span class="font-bold text-neutral-800 dark:text-neutral-200">{studentDisplayName()}</span>
                                 <span>•</span>
                                 <span class="font-mono">NIM: {studentCode()}</span>
-                                <Show when={student()?.unit_name || (student() as any)?.unit?.name}>
+                                <Show when={student()?.unit_name || (student() as any)?.unit?.name || activity()?.unit_name || (activity() as any)?.unit?.name}>
                                     <span>•</span>
-                                    <span>{student()?.unit_name || (student() as any)?.unit?.name}</span>
+                                    <span>{student()?.unit_name || (student() as any)?.unit?.name || activity()?.unit_name || (activity() as any)?.unit?.name}</span>
                                 </Show>
                             </div>
                         </div>
