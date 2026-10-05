@@ -311,6 +311,7 @@ pub async fn load_unit_with_relations(
                         academic_year_name: None,
                         curriculum_name: None,
                         selection_type_name: None,
+                        ..Default::default()
                     })
                     .collect())
     } else {

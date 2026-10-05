@@ -10,7 +10,6 @@ import {
     PersonMasterIndividualControllerShow
 } from '~/controllers/person/master/PersonMasterIndividualController';
 import {
-    listStudentActivities,
     printActivityPlan,
     printActivityResult,
     type StudentActivityItem
@@ -115,9 +114,8 @@ export default function RectoratStudentDetail() {
             }
             setStudent(stdRecord);
 
-            // 2. Fetch Student Academic Activities (KHS, IPK, IPS, SKS per semester)
-            const actRes = await listStudentActivities({ student_id: sid, page: 1, page_size: 50 }).catch(() => null);
-            setActivities(actRes?.data || []);
+            // 2. Set Student Academic Activities directly from student record
+            setActivities(stdRecord.student_activities || []);
 
             // 3. Fetch linked Individual details (NIK, Birth, Address)
             if (stdRecord.individual_id && stdRecord.individual_id !== '00000000-0000-0000-0000-000000000000') {
@@ -148,9 +146,65 @@ export default function RectoratStudentDetail() {
 
     const ind = () => individual()?.individual;
 
-    // Academic Trend Points for Apache ECharts
-    const academicTrendData = createMemo<AcademicTrendPoint[]>(() => {
+    // Helper to calculate numeric chronological order for academic years
+    const getAcademicYearOrder = (act: StudentActivityItem): number => {
+        const texts = [
+            act.academic_year?.name,
+            act.academic_year_name,
+            act.name,
+            act.semester_name,
+        ].filter(Boolean) as string[];
+
+        for (const text of texts) {
+            const m = text.match(/\b(19\d\d|20\d\d)\s*(?:[/-]\s*\d{2,4})?\s*(?:Sem(?:ester)?|\/)?\s*(Ganjil|Genap|Pendek|Antara|[1-3])\b/i);
+            if (m) {
+                const yr = parseInt(m[1], 10);
+                let sem = 1;
+                const term = (m[2] || '').toLowerCase();
+                if (term === '2' || term === 'genap') sem = 2;
+                else if (term === '3' || term === 'pendek' || term === 'antara') sem = 3;
+                else if (term === '1' || term === 'ganjil') sem = 1;
+                else if (!isNaN(parseInt(term, 10))) sem = parseInt(term, 10);
+                return yr * 10 + sem;
+            }
+            const fiveDigit = text.match(/\b(19\d\d|20\d\d)([1-3])\b/);
+            if (fiveDigit) {
+                return parseInt(fiveDigit[1], 10) * 10 + parseInt(fiveDigit[2], 10);
+            }
+        }
+
+        if (act.academic_year?.code !== undefined && act.academic_year?.code !== null) {
+            const num = Number(act.academic_year.code);
+            if (!isNaN(num) && num > 0) return num;
+        }
+
+        if (act.created_at) {
+            const time = new Date(act.created_at).getTime();
+            if (!isNaN(time) && time > 0) return time;
+        }
+
+        return 0;
+    };
+
+    // Activities sorted ascending chronologically by academic year
+    const sortedActivities = createMemo<StudentActivityItem[]>(() => {
         const list = activities();
+        if (list.length === 0) return [];
+
+        return [...list].sort((a, b) => {
+            const orderA = getAcademicYearOrder(a);
+            const orderB = getAcademicYearOrder(b);
+            if (orderA !== orderB) return orderA - orderB;
+            const timeA = a.created_at ? new Date(a.created_at).getTime() : 0;
+            const timeB = b.created_at ? new Date(b.created_at).getTime() : 0;
+            if (timeA !== timeB) return timeA - timeB;
+            return (a.name || '').localeCompare(b.name || '');
+        });
+    });
+
+    // Academic Trend Points for Apache ECharts (sorted ascending by academic year)
+    const academicTrendData = createMemo<AcademicTrendPoint[]>(() => {
+        const list = sortedActivities();
         if (list.length === 0) return [];
 
         return list.map((act, idx) => {
@@ -171,7 +225,7 @@ export default function RectoratStudentDetail() {
 
     // Summary computed values
     const latestActivity = createMemo(() => {
-        const list = activities();
+        const list = sortedActivities();
         return list.length > 0 ? list[list.length - 1] : null;
     });
 

@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
@@ -394,168 +395,182 @@ pub async fn list_student_activities(
     }))
 }
 
-#[endpoint(tags("Academic - Student - Campaign - StudentActivity"), status_codes(200, 400, 404, 500))]
-pub async fn get_student_activitie(
-    req: &mut Request,
-    depot: &mut Depot,
-) -> Result<Json<StudentActivityResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
+pub async fn load_full_student_activities(
+    db: &DatabaseConnection,
+    items: Vec<entity_mod::Model>,
+) -> Result<Vec<StudentActivityResponse>, StatusError> {
+    if items.is_empty() {
+        return Ok(Vec::new());
+    }
 
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+    let unit_activity_ids: Vec<Uuid> = items.iter().map(|item| item.unit_activity_id).filter(|id| *id != Uuid::nil()).collect();
+    let status_ids: Vec<Uuid> = items.iter().map(|item| item.status_id).filter(|id| *id != Uuid::nil()).collect();
+    let resign_status_ids: Vec<Uuid> = items.iter().filter_map(|item| item.resign_status_id).filter(|id| *id != Uuid::nil()).collect();
+    let unit_ids: Vec<Uuid> = items.iter().filter_map(|item| item.unit_id).filter(|id| *id != Uuid::nil()).collect();
+    let finance_ids: Vec<Uuid> = items.iter().filter_map(|item| item.finance_id).filter(|id| *id != Uuid::nil()).collect();
+    let activity_ids: Vec<Uuid> = items.iter().map(|item| item.id).collect();
 
-    let item = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("StudentActivity not found"))?;
-
-    // 1. Belongs to: student
-    let student_res = crate::controllers::academic::student::master::students::find_student_response_by_id(db, item.student_id)
-        .await
-        .ok()
-        .flatten();
-    let student_name = student_res.as_ref().map(|s| s.name.clone());
-    let student_code = student_res.as_ref().map(|s| s.code.clone());
-
-    // 2. Belongs to: unit_activity and academic_year
-    let (unit_activity_res, academic_year_res, academic_year_name) = if let Ok(Some(ua)) =
-        crate::models::academic::campaign::transaction::activities::Entity::find_by_id(item.unit_activity_id)
+    // 1. Unit activities & Academic years
+    let unit_activities_map = if unit_activity_ids.is_empty() {
+        HashMap::new()
+    } else {
+        let uas = crate::models::academic::campaign::transaction::activities::Entity::find()
+            .filter(crate::models::academic::campaign::transaction::activities::Column::Id.is_in(unit_activity_ids))
             .filter(crate::models::academic::campaign::transaction::activities::Column::DeletedAt.is_null())
-            .one(db)
+            .all(db)
             .await
-    {
-        let (ay_res, ay_name) = if let Ok(Some(ay)) = crate::models::academic::general::reference::academic_years::Entity::find_by_id(ua.academic_year_id)
-            .filter(crate::models::academic::general::reference::academic_years::Column::DeletedAt.is_null())
-            .one(db)
-            .await
-        {
-            (
-                Some(crate::dtos::common::reference::ReferenceResponse {
-                    id: ay.id,
-                    code: ay.code,
-                    alphabet_code: String::new(),
-                    name: ay.name.clone(),
-                    created_at: ay.created_at.unwrap_or_else(|| chrono::Utc::now().naive_utc()),
-                    updated_at: ay.updated_at.unwrap_or_else(|| chrono::Utc::now().naive_utc()),
-                    deleted_at: ay.deleted_at,
-                    sync_at: ay.sync_at,
-                    created_by: ay.created_by,
-                    updated_by: ay.updated_by,
-                }),
-                Some(ay.name),
-            )
+            .unwrap_or_default();
+
+        let ay_ids: Vec<Uuid> = uas.iter().map(|ua| ua.academic_year_id).filter(|id| *id != Uuid::nil()).collect();
+        let ays = if ay_ids.is_empty() {
+            vec![]
         } else {
-            (None, None)
+            crate::models::academic::general::reference::academic_years::Entity::find()
+                .filter(crate::models::academic::general::reference::academic_years::Column::Id.is_in(ay_ids))
+                .filter(crate::models::academic::general::reference::academic_years::Column::DeletedAt.is_null())
+                .all(db)
+                .await
+                .unwrap_or_default()
+        };
+        let ay_map: HashMap<Uuid, (i32, String)> = ays
+            .iter()
+            .map(|ay| (ay.id, (ay.code, ay.name.clone())))
+            .collect();
+        let ay_ref_map: HashMap<Uuid, crate::dtos::common::reference::ReferenceResponse> = ays
+            .into_iter()
+            .map(|ay| (ay.id, crate::dtos::common::reference::ReferenceResponse {
+                id: ay.id,
+                code: ay.code,
+                alphabet_code: String::new(),
+                name: ay.name,
+                created_at: ay.created_at.unwrap_or_else(|| chrono::Utc::now().naive_utc()),
+                updated_at: ay.updated_at.unwrap_or_else(|| chrono::Utc::now().naive_utc()),
+                deleted_at: ay.deleted_at,
+                sync_at: ay.sync_at,
+                created_by: ay.created_by,
+                updated_by: ay.updated_by,
+            }))
+            .collect();
+
+        let ua_unit_ids: Vec<Uuid> = uas.iter().map(|ua| ua.unit_id).filter(|id| *id != Uuid::nil()).collect();
+        let ua_units_map: HashMap<Uuid, String> = if ua_unit_ids.is_empty() {
+            HashMap::new()
+        } else {
+            crate::models::institution::master::units::Entity::find()
+                .filter(crate::models::institution::master::units::Column::Id.is_in(ua_unit_ids))
+                .filter(crate::models::institution::master::units::Column::DeletedAt.is_null())
+                .all(db)
+                .await
+                .unwrap_or_default()
+                .into_iter()
+                .map(|u| (u.id, u.name.unwrap_or_default()))
+                .collect()
         };
 
-        let ua_unit_name = crate::models::institution::master::units::Entity::find_by_id(ua.unit_id)
-            .filter(crate::models::institution::master::units::Column::DeletedAt.is_null())
-            .one(db)
-            .await
-            .ok()
-            .flatten()
-            .and_then(|u| u.name);
+        let ua_map: HashMap<Uuid, (crate::dtos::academic::campaign::transaction::activities::ActivityResponse, Option<crate::dtos::common::reference::ReferenceResponse>)> = uas
+            .into_iter()
+            .map(|ua| {
+                let ay_name = ay_map.get(&ua.academic_year_id).map(|(_, n)| n.clone());
+                let ay_ref = ay_ref_map.get(&ua.academic_year_id).cloned();
+                let u_name = ua_units_map.get(&ua.unit_id).cloned();
+                let resp = crate::dtos::academic::campaign::transaction::activities::ActivityResponse {
+                    id: ua.id,
+                    name: ua.name,
+                    week_quantity: ua.week_quantity,
+                    student_target: ua.student_target,
+                    candidate_number: ua.candidate_number,
+                    candidate_pass: ua.candidate_pass,
+                    became_student: ua.became_student,
+                    transfer_student: ua.transfer_student,
+                    total_class_member: ua.total_class_member,
+                    start_date: ua.start_date,
+                    end_date: ua.end_date,
+                    start_transaction: ua.start_transaction,
+                    end_transaction: ua.end_transaction,
+                    unit_id: ua.unit_id,
+                    academic_year_id: ua.academic_year_id,
+                    is_active: ua.is_active,
+                    feeder_id: ua.feeder_id,
+                    created_at: ua.created_at,
+                    updated_at: ua.updated_at,
+                    deleted_at: ua.deleted_at,
+                    sync_at: ua.sync_at,
+                    created_by: ua.created_by,
+                    updated_by: ua.updated_by,
+                    unit_name: u_name,
+                    academic_year_name: ay_name,
+                };
+                (ua.id, (resp, ay_ref))
+            })
+            .collect();
 
-        let ua_res = Some(crate::dtos::academic::campaign::transaction::activities::ActivityResponse {
-            id: ua.id,
-            name: ua.name,
-            week_quantity: ua.week_quantity,
-            student_target: ua.student_target,
-            candidate_number: ua.candidate_number,
-            candidate_pass: ua.candidate_pass,
-            became_student: ua.became_student,
-            transfer_student: ua.transfer_student,
-            total_class_member: ua.total_class_member,
-            start_date: ua.start_date,
-            end_date: ua.end_date,
-            start_transaction: ua.start_transaction,
-            end_transaction: ua.end_transaction,
-            unit_id: ua.unit_id,
-            academic_year_id: ua.academic_year_id,
-            is_active: ua.is_active,
-            feeder_id: ua.feeder_id,
-            created_at: ua.created_at,
-            updated_at: ua.updated_at,
-            deleted_at: ua.deleted_at,
-            sync_at: ua.sync_at,
-            created_by: ua.created_by,
-            updated_by: ua.updated_by,
-            unit_name: ua_unit_name,
-            academic_year_name: ay_name.clone(),
-        });
-
-        (ua_res, ay_res, ay_name)
-    } else {
-        (None, None, None)
+        ua_map
     };
 
-    // 3. Belongs to: status
-    let (status_res, status_name) = if let Ok(Some(s)) = crate::models::academic::student::reference::statuses::Entity::find_by_id(item.status_id)
-        .filter(crate::models::academic::student::reference::statuses::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-    {
-        (
-            Some(crate::dtos::common::reference::ReferenceResponse {
+    // 2. Statuses
+    let statuses_map: HashMap<Uuid, crate::dtos::common::reference::ReferenceResponse> = if status_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::academic::student::reference::statuses::Entity::find()
+            .filter(crate::models::academic::student::reference::statuses::Column::Id.is_in(status_ids))
+            .filter(crate::models::academic::student::reference::statuses::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .map(|s| (s.id, crate::dtos::common::reference::ReferenceResponse {
                 id: s.id,
                 code: s.code,
                 alphabet_code: s.alphabet_code.unwrap_or_default(),
-                name: s.name.clone(),
+                name: s.name,
                 created_at: s.created_at.unwrap_or_else(|| chrono::Utc::now().naive_utc()),
                 updated_at: s.updated_at.unwrap_or_else(|| chrono::Utc::now().naive_utc()),
                 deleted_at: s.deleted_at.map(|d| d.naive_utc()),
                 sync_at: s.sync_at,
                 created_by: s.created_by,
                 updated_by: s.updated_by,
-            }),
-            Some(s.name),
-        )
-    } else {
-        (None, None)
+            }))
+            .collect()
     };
 
-    // 4. Belongs to: resign_status
-    let (resign_status_res, resign_status_name) = if let Some(rs_id) = item.resign_status_id {
-        if let Ok(Some(rs)) = crate::models::academic::student::reference::resign_statuses::Entity::find_by_id(rs_id)
+    // 3. Resign statuses
+    let resign_statuses_map: HashMap<Uuid, crate::dtos::common::reference::ReferenceResponse> = if resign_status_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::academic::student::reference::resign_statuses::Entity::find()
+            .filter(crate::models::academic::student::reference::resign_statuses::Column::Id.is_in(resign_status_ids))
             .filter(crate::models::academic::student::reference::resign_statuses::Column::DeletedAt.is_null())
-            .one(db)
+            .all(db)
             .await
-        {
-            (
-                Some(crate::dtos::common::reference::ReferenceResponse {
-                    id: rs.id,
-                    code: rs.code,
-                    alphabet_code: rs.alphabet_code.unwrap_or_default(),
-                    name: rs.name.clone(),
-                    created_at: rs.created_at.unwrap_or_else(|| chrono::Utc::now().naive_utc()),
-                    updated_at: rs.updated_at.unwrap_or_else(|| chrono::Utc::now().naive_utc()),
-                    deleted_at: rs.deleted_at.map(|d| d.naive_utc()),
-                    sync_at: rs.sync_at,
-                    created_by: rs.created_by,
-                    updated_by: rs.updated_by,
-                }),
-                Some(rs.name),
-            )
-        } else {
-            (None, None)
-        }
-    } else {
-        (None, None)
+            .unwrap_or_default()
+            .into_iter()
+            .map(|rs| (rs.id, crate::dtos::common::reference::ReferenceResponse {
+                id: rs.id,
+                code: rs.code,
+                alphabet_code: rs.alphabet_code.unwrap_or_default(),
+                name: rs.name,
+                created_at: rs.created_at.unwrap_or_else(|| chrono::Utc::now().naive_utc()),
+                updated_at: rs.updated_at.unwrap_or_else(|| chrono::Utc::now().naive_utc()),
+                deleted_at: rs.deleted_at.map(|d| d.naive_utc()),
+                sync_at: rs.sync_at,
+                created_by: rs.created_by,
+                updated_by: rs.updated_by,
+            }))
+            .collect()
     };
 
-    // 5. Belongs to: unit
-    let eff_unit_id = item.unit_id.or_else(|| student_res.as_ref().map(|s| s.unit_id));
-    let unit_res = if let Some(uid) = eff_unit_id {
-        if let Ok(Some(u)) = crate::models::institution::master::units::Entity::find_by_id(uid)
+    // 4. Units
+    let units_map: HashMap<Uuid, crate::dtos::institution::master::units::UnitResponse> = if unit_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::institution::master::units::Entity::find()
+            .filter(crate::models::institution::master::units::Column::Id.is_in(unit_ids))
             .filter(crate::models::institution::master::units::Column::DeletedAt.is_null())
-            .one(db)
+            .all(db)
             .await
-        {
-            Some(crate::dtos::institution::master::units::UnitResponse {
+            .unwrap_or_default()
+            .into_iter()
+            .map(|u| (u.id, crate::dtos::institution::master::units::UnitResponse {
                 id: u.id,
                 code: u.code,
                 name: u.name,
@@ -574,88 +589,159 @@ pub async fn get_student_activitie(
                 created_by: u.created_by,
                 updated_by: u.updated_by,
                 ..Default::default()
-            })
-        } else {
-            None
-        }
-    } else {
-        None
+            }))
+            .collect()
     };
-    let unit_name = unit_res.as_ref().and_then(|u| u.name.clone());
-    let unit_code = unit_res.as_ref().and_then(|u| u.code.clone());
 
-    // 6. Belongs to: finance
-    let (finance_res, finance_name) = if let Some(f_id) = item.finance_id {
-        if let Ok(Some(f)) = crate::models::academic::student::reference::finances::Entity::find_by_id(f_id)
+    // 5. Finances
+    let finances_map: HashMap<Uuid, crate::dtos::common::reference::ReferenceResponse> = if finance_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::academic::student::reference::finances::Entity::find()
+            .filter(crate::models::academic::student::reference::finances::Column::Id.is_in(finance_ids))
             .filter(crate::models::academic::student::reference::finances::Column::DeletedAt.is_null())
-            .one(db)
+            .all(db)
             .await
-        {
-            (
-                Some(crate::dtos::common::reference::ReferenceResponse {
-                    id: f.id,
-                    code: f.code,
-                    alphabet_code: f.alphabet_code.unwrap_or_default(),
-                    name: f.name.clone(),
-                    created_at: f.created_at.unwrap_or_else(|| chrono::Utc::now().naive_utc()),
-                    updated_at: f.updated_at.unwrap_or_else(|| chrono::Utc::now().naive_utc()),
-                    deleted_at: f.deleted_at.map(|d| d.naive_utc()),
-                    sync_at: f.sync_at,
-                    created_by: f.created_by,
-                    updated_by: f.updated_by,
-                }),
-                Some(f.name),
-            )
-        } else {
-            (None, None)
-        }
-    } else {
-        (None, None)
+            .unwrap_or_default()
+            .into_iter()
+            .map(|f| (f.id, crate::dtos::common::reference::ReferenceResponse {
+                id: f.id,
+                code: f.code,
+                alphabet_code: f.alphabet_code.unwrap_or_default(),
+                name: f.name,
+                created_at: f.created_at.unwrap_or_else(|| chrono::Utc::now().naive_utc()),
+                updated_at: f.updated_at.unwrap_or_else(|| chrono::Utc::now().naive_utc()),
+                deleted_at: f.deleted_at.map(|d| d.naive_utc()),
+                sync_at: f.sync_at,
+                created_by: f.created_by,
+                updated_by: f.updated_by,
+            }))
+            .collect()
     };
 
-    // 7. Has many: detail_activities with courses, teaches, teach_lecturers, lecturers, grades
-    let detail_activity_models = crate::models::academic::student::campaign::detail_activities::Entity::find()
-        .filter(crate::models::academic::student::campaign::detail_activities::Column::ActivityId.eq(item.id))
-        .filter(crate::models::academic::student::campaign::detail_activities::Column::DeletedAt.is_null())
-        .order_by_asc(crate::models::academic::student::campaign::detail_activities::Column::CuriculumDetailSequence)
-        .order_by_asc(crate::models::academic::student::campaign::detail_activities::Column::CreatedAt)
-        .all(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+    // 6. Detail activities
+    let mut details_by_activity: HashMap<Uuid, Vec<crate::dtos::academic::student::campaign::detail_activities::DetailActivityResponse>> = HashMap::new();
+    let mut activity_totals: HashMap<Uuid, (f64, f64, f64)> = HashMap::new();
+    if !activity_ids.is_empty() {
+        let detail_models = crate::models::academic::student::campaign::detail_activities::Entity::find()
+            .filter(crate::models::academic::student::campaign::detail_activities::Column::ActivityId.is_in(activity_ids.clone()))
+            .filter(crate::models::academic::student::campaign::detail_activities::Column::DeletedAt.is_null())
+            .order_by_asc(crate::models::academic::student::campaign::detail_activities::Column::CuriculumDetailSequence)
+            .order_by_asc(crate::models::academic::student::campaign::detail_activities::Column::CreatedAt)
+            .all(db)
+            .await
+            .unwrap_or_default();
 
-    let (grades_map, courses_map, teaches_map, teach_lecturers_map, students_map) =
-        crate::controllers::academic::student::campaign::detail_activities::load_relations_for_detail_activities(
-            db,
-            &detail_activity_models,
-        ).await?;
+        if !detail_models.is_empty() {
+            let (grades_map, courses_map, teaches_map, teach_lecturers_map, students_map) =
+                crate::controllers::academic::student::campaign::detail_activities::load_relations_for_detail_activities(
+                    db,
+                    &detail_models,
+                ).await?;
 
-    let detail_activities: Vec<crate::dtos::academic::student::campaign::detail_activities::DetailActivityResponse> =
-        detail_activity_models
-            .into_iter()
-            .map(|da| {
-                crate::controllers::academic::student::campaign::detail_activities::map_model_to_response(
+            for da in detail_models {
+                let act_id = da.activity_id;
+                let cred = da.credit.or_else(|| courses_map.get(&da.course_id).map(|c| c.total_credit)).unwrap_or(0.0);
+                let grade_val = da.grade_id.and_then(|gid| grades_map.get(&gid).map(|g| g.grade));
+                let entry = activity_totals.entry(act_id).or_insert((0.0, 0.0, 0.0));
+                entry.0 += cred;
+                if let Some(g) = grade_val {
+                    entry.1 += cred;
+                    entry.2 += g * cred;
+                }
+
+                let resp = crate::controllers::academic::student::campaign::detail_activities::map_model_to_response(
                     da,
                     &grades_map,
                     &courses_map,
                     &teaches_map,
                     &teach_lecturers_map,
                     &students_map,
-                )
-            })
-            .collect();
+                );
+                details_by_activity.entry(act_id).or_default().push(resp);
+            }
+        }
+    }
 
-    Ok(Json(StudentActivityResponse {
+    let mut running_total_credit = 0.0;
+    let mut running_graded_credit = 0.0;
+    let mut running_weighted_sum = 0.0;
+
+    let result = items.into_iter().map(|item| {
+        let (ua_opt, ay_ref_opt) = unit_activities_map.get(&item.unit_activity_id).cloned().unzip();
+        let academic_year_name = ua_opt.as_ref().and_then(|u| u.academic_year_name.clone());
+        let st_opt = statuses_map.get(&item.status_id).cloned();
+        let status_name = st_opt.as_ref().map(|s| s.name.clone());
+        let rs_opt = item.resign_status_id.and_then(|id| resign_statuses_map.get(&id).cloned());
+        let resign_status_name = rs_opt.as_ref().map(|r| r.name.clone());
+        let u_opt = item.unit_id.and_then(|id| units_map.get(&id).cloned());
+        let unit_name = u_opt.as_ref().and_then(|u| u.name.clone());
+        let unit_code = u_opt.as_ref().and_then(|u| u.code.clone());
+        let fin_opt = item.finance_id.and_then(|id| finances_map.get(&id).cloned());
+        let finance_name = fin_opt.as_ref().map(|f| f.name.clone());
+        let details = details_by_activity.remove(&item.id).unwrap_or_default();
+
+        let (calc_sks, graded_sks, weighted_sum) = activity_totals.get(&item.id).copied().unwrap_or((0.0, 0.0, 0.0));
+        let calc_ips = if graded_sks > 0.0 { weighted_sum / graded_sks } else { 0.0 };
+
+        let total_credit = if item.total_credit.unwrap_or(0.0) > 0.0 {
+            item.total_credit
+        } else if calc_sks > 0.0 {
+            Some(calc_sks)
+        } else {
+            item.total_credit
+        };
+
+        let cumulative_index = if item.cumulative_index > 0.0 {
+            item.cumulative_index
+        } else if calc_ips > 0.0 {
+            calc_ips
+        } else {
+            item.cumulative_index
+        };
+
+        let current_sem_sks = total_credit.unwrap_or(0.0);
+        let current_graded_sks = if graded_sks > 0.0 { graded_sks } else { current_sem_sks };
+        let current_weighted = if weighted_sum > 0.0 { weighted_sum } else { cumulative_index * current_graded_sks };
+
+        running_total_credit += current_sem_sks;
+        running_graded_credit += current_graded_sks;
+        running_weighted_sum += current_weighted;
+
+        let computed_ipk = if running_graded_credit > 0.0 {
+            running_weighted_sum / running_graded_credit
+        } else {
+            cumulative_index
+        };
+
+        let grand_total_credit = if item.grand_total_credit.unwrap_or(0.0) > 0.0 && item.grand_total_credit.unwrap_or(0.0) != total_credit.unwrap_or(0.0) {
+            item.grand_total_credit
+        } else if running_total_credit > 0.0 {
+            Some(running_total_credit)
+        } else {
+            total_credit
+        };
+
+        let grand_cumulative_index = if item.grand_cumulative_index > 0.0 && (item.grand_cumulative_index - cumulative_index).abs() > 0.0001 {
+            item.grand_cumulative_index
+        } else if computed_ipk > 0.0 {
+            computed_ipk
+        } else {
+            cumulative_index
+        };
+
+        StudentActivityResponse {
             id: item.id,
             name: item.name,
-            cumulative_index: item.cumulative_index,
-            grand_cumulative_index: item.grand_cumulative_index,
-            total_credit: item.total_credit,
-            grand_total_credit: item.grand_total_credit,
+            cumulative_index,
+            grand_cumulative_index,
+            total_credit,
+            grand_total_credit,
             student_id: item.student_id,
             unit_activity_id: item.unit_activity_id,
             status_id: item.status_id,
             resign_status_id: item.resign_status_id,
-            unit_id: item.unit_id.or(eff_unit_id),
+            unit_id: item.unit_id,
             is_lock: item.is_lock,
             created_at: item.created_at,
             updated_at: item.updated_at,
@@ -666,23 +752,98 @@ pub async fn get_student_activitie(
             feeder_id: item.feeder_id,
             finance_id: item.finance_id,
             finance_fee: item.finance_fee,
-            academic_year: academic_year_res,
+            academic_year: ay_ref_opt.flatten(),
             academic_year_name,
-            student_name,
-            student_code,
+            student_name: None,
+            student_code: None,
             unit_name,
             unit_code,
             status_name,
             resign_status_name,
             finance_name,
-            student: student_res,
-            unit_activity: unit_activity_res,
-            status: status_res,
-            resign_status: resign_status_res,
-            unit: unit_res,
-            finance: finance_res,
-            detail_activities: Some(detail_activities),
-    }))
+            student: None,
+            unit_activity: ua_opt,
+            status: st_opt,
+            resign_status: rs_opt,
+            unit: u_opt,
+            finance: fin_opt,
+            detail_activities: Some(details),
+        }
+    }).collect();
+
+    Ok(result)
+}
+
+pub async fn find_student_activities_by_student_id(
+    db: &DatabaseConnection,
+    student_id: Uuid,
+) -> Result<Vec<StudentActivityResponse>, StatusError> {
+    let items = entity_mod::Entity::find()
+        .filter(entity_mod::Column::StudentId.eq(student_id))
+        .filter(entity_mod::Column::DeletedAt.is_null())
+        .order_by_asc(entity_mod::Column::CreatedAt)
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    load_full_student_activities(db, items).await
+}
+
+pub async fn find_student_activity_response_by_id(
+    db: &DatabaseConnection,
+    id: Uuid,
+) -> Result<Option<StudentActivityResponse>, StatusError> {
+    let item = match entity_mod::Entity::find_by_id(id)
+        .filter(entity_mod::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+    {
+        Some(item) => item,
+        None => return Ok(None),
+    };
+
+    let student_id = item.student_id;
+    let mut responses = load_full_student_activities(db, vec![item]).await?;
+    let mut res = match responses.pop() {
+        Some(r) => r,
+        None => return Ok(None),
+    };
+
+    if student_id != Uuid::nil() {
+        if let Ok(Some(std)) = crate::controllers::academic::student::master::students::find_student_response_by_id_ext(db, student_id, false).await {
+            res.student_name = Some(std.name.clone());
+            res.student_code = Some(std.code.clone());
+            if res.unit.is_none() && std.unit.is_some() {
+                res.unit_id = Some(std.unit_id);
+                res.unit_name = std.unit_name.clone();
+                res.unit_code = std.unit_code.clone();
+                res.unit = std.unit.clone();
+            }
+            res.student = Some(std);
+        }
+    }
+
+    Ok(Some(res))
+}
+
+#[endpoint(tags("Academic - Student - Campaign - StudentActivity"), status_codes(200, 400, 404, 500))]
+pub async fn get_student_activitie(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<StudentActivityResponse>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+
+    let res = find_student_activity_response_by_id(db, id)
+        .await?
+        .ok_or_else(|| StatusError::not_found().brief("StudentActivity not found"))?;
+
+    Ok(Json(res))
 }
 
 #[endpoint(tags("Academic - Student - Campaign - StudentActivity"), status_codes(200, 400, 500))]
@@ -729,37 +890,11 @@ pub async fn create_student_activitie(
 
         let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(StudentActivityResponse {
-            id: item.id,
-            name: item.name,
-            cumulative_index: item.cumulative_index,
-            grand_cumulative_index: item.grand_cumulative_index,
-            total_credit: item.total_credit,
-            grand_total_credit: item.grand_total_credit,
-            student_id: item.student_id,
-            unit_activity_id: item.unit_activity_id,
-            status_id: item.status_id,
-            resign_status_id: item.resign_status_id,
-            unit_id: item.unit_id,
-            is_lock: item.is_lock,
-            created_at: item.created_at,
-            updated_at: item.updated_at,
-            deleted_at: item.deleted_at,
-            sync_at: item.sync_at,
-            created_by: item.created_by,
-            updated_by: item.updated_by,
-            feeder_id: item.feeder_id,
-            finance_id: item.finance_id,
-            finance_fee: item.finance_fee,
-            academic_year: None,
-            academic_year_name: None,
-            student_name: None,
-            student_code: None,
-            unit_name: None,
-            unit_code: None,
-            status_name: None,
-            ..Default::default()
-        }))
+        let res = find_student_activity_response_by_id(db, item.id)
+            .await?
+            .ok_or_else(|| StatusError::internal_server_error().brief("Failed to load created student activity"))?;
+
+        Ok(Json(res))
 }
 
 #[endpoint(tags("Academic - Student - Campaign - StudentActivity"), status_codes(200, 400, 404, 500))]
@@ -837,37 +972,11 @@ pub async fn update_student_activitie(
 
         let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        Ok(Json(StudentActivityResponse {
-            id: item.id,
-            name: item.name,
-            cumulative_index: item.cumulative_index,
-            grand_cumulative_index: item.grand_cumulative_index,
-            total_credit: item.total_credit,
-            grand_total_credit: item.grand_total_credit,
-            student_id: item.student_id,
-            unit_activity_id: item.unit_activity_id,
-            status_id: item.status_id,
-            resign_status_id: item.resign_status_id,
-            unit_id: item.unit_id,
-            is_lock: item.is_lock,
-            created_at: item.created_at,
-            updated_at: item.updated_at,
-            deleted_at: item.deleted_at,
-            sync_at: item.sync_at,
-            created_by: item.created_by,
-            updated_by: item.updated_by,
-            feeder_id: item.feeder_id,
-            finance_id: item.finance_id,
-            finance_fee: item.finance_fee,
-            academic_year: None,
-            academic_year_name: None,
-            student_name: None,
-            student_code: None,
-            unit_name: None,
-            unit_code: None,
-            status_name: None,
-            ..Default::default()
-        }))
+        let res = find_student_activity_response_by_id(db, item.id)
+            .await?
+            .ok_or_else(|| StatusError::internal_server_error().brief("Failed to load updated student activity"))?;
+
+        Ok(Json(res))
 }
 #[endpoint(tags("Academic - Student - Campaign - StudentActivity"), status_codes(200, 400, 404, 500))]
 pub async fn delete_student_activitie(

@@ -120,6 +120,7 @@ pub async fn list_students_by_unit(
             academic_year_name: academic_years_map.get(&item.academic_year_id).cloned(),
             curriculum_name: curriculums_map.get(&item.curriculum_id).cloned(),
             selection_type_name: selection_types_map.get(&item.selection_type_id).cloned(),
+            ..Default::default()
         })
         .collect();
 
@@ -183,6 +184,86 @@ pub struct StudentResponse {
     pub academic_year_name: Option<String>,
     pub curriculum_name: Option<String>,
     pub selection_type_name: Option<String>,
+
+    // Belongs to relations
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub selection_type: Option<crate::dtos::common::reference::ReferenceResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub individual: Option<Box<crate::dtos::person::master::individual::IndividualResponse>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status: Option<crate::dtos::common::reference::ReferenceResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub unit: Option<crate::dtos::institution::master::units::UnitResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub academic_year: Option<crate::dtos::common::reference::ReferenceResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub registration: Option<crate::dtos::common::reference::ReferenceResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub resign_status: Option<crate::dtos::common::reference::ReferenceResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub concentration: Option<crate::dtos::academic::course::master::concentrations::ConcentrationResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub curriculum: Option<crate::dtos::academic::course::master::curriculums::CurriculumResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub class_code: Option<crate::dtos::academic::campaign::transaction::class_codes::ClassCodeResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub finance: Option<crate::dtos::common::reference::ReferenceResponse>,
+
+    // Has many relations
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub student_activities: Option<Vec<crate::dtos::academic::student::campaign::student_activities::StudentActivityResponse>>,
+}
+
+impl Default for StudentResponse {
+    fn default() -> Self {
+        Self {
+            id: Uuid::nil(),
+            code: String::new(),
+            name: String::new(),
+            selection_type_id: Uuid::nil(),
+            registered: chrono::NaiveDate::from_ymd_opt(1970, 1, 1).unwrap(),
+            individual_id: Uuid::nil(),
+            status_id: Uuid::nil(),
+            unit_id: Uuid::nil(),
+            academic_year_id: Uuid::nil(),
+            registration_id: Uuid::nil(),
+            nisn: None,
+            resign_status_id: Uuid::nil(),
+            concentration_id: Uuid::nil(),
+            curriculum_id: Uuid::nil(),
+            class_code_id: Uuid::nil(),
+            transfer_code: None,
+            transfer_unit_id: Uuid::nil(),
+            id_mahasiswa: None,
+            id_registrasi_mahasiswa: None,
+            finance_fee: None,
+            finance_id: None,
+            created_at: None,
+            updated_at: None,
+            deleted_at: None,
+            sync_at: None,
+            created_by: None,
+            updated_by: None,
+            unit_name: None,
+            unit_code: None,
+            status_name: None,
+            academic_year_name: None,
+            curriculum_name: None,
+            selection_type_name: None,
+            selection_type: None,
+            individual: None,
+            status: None,
+            unit: None,
+            academic_year: None,
+            registration: None,
+            resign_status: None,
+            concentration: None,
+            curriculum: None,
+            class_code: None,
+            finance: None,
+            student_activities: None,
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]

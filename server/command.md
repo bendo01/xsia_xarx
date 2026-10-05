@@ -145,3 +145,27 @@ SELECT id, name, user_id, position_type_id, created_at, updated_at, sync_at, del
  FROM auth.roles
  WHERE roleable_id = '20fc46ee-3696-4ee8-941a-bed725a4930c';
 ```
+
+```sql
+DELETE FROM academic_student_campaign.detail_activities WHERE teach_id = '019c0547-8d01-7d4e-9d32-69144d747627';
+
+DELETE FROM academic_student_campaign.detail_activities WHERE teach_id = '019c0547-8d22-71e1-a837-9e229aa8c144';
+
+DELETE FROM academic_student_campaign.detail_activities WHERE teach_id = '019c0547-8d3e-7098-9c5c-65b183160ebb';
+
+DELETE FROM academic_student_campaign.detail_activities WHERE teach_id = '019c0547-8d54-72b6-a26a-6e8a4b417ce1';
+
+DELETE FROM academic_student_campaign.detail_activities WHERE teach_id = '019c0547-8d69-75a7-8f83-f3c9760f71fe';
+
+DELETE FROM academic_student_campaign.detail_activities WHERE teach_id = '019c0547-8d7e-723e-bf8e-aa7ca9cf285a';
+
+DELETE FROM academic_student_campaign.detail_activities WHERE teach_id = '019c0547-8d98-716e-8e5e-78ec19ab6c57';
+
+DELETE FROM academic_student_campaign.detail_activities WHERE teach_id = '019c0547-8db2-76e6-b47b-82768361298b';
+
+DELETE FROM academic_student_campaign.detail_activities WHERE teach_id = '019c0547-8dc8-785b-9fe5-55d0ec703c20';
+
+DELETE FROM academic_student_campaign.detail_activities WHERE teach_id = '019c0547-8ddb-7c5f-871c-ac88c85a3cc7';
+
+DELETE FROM academic_student_campaign.detail_activities WHERE teach_id = '019c0547-8df9-7720-ba34-0a9b03cc8c78';
+```

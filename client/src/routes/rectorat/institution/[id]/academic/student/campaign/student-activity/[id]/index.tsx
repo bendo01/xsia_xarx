@@ -482,7 +482,7 @@ export default function RectoratStudentActivityDetail() {
                                 <thead class="bg-neutral-100 dark:bg-neutral-900/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-neutral-200 dark:border-neutral-700">
                                     <tr>
                                         <th class="py-3 px-4 text-start">No</th>
-                                        <th class="py-3 px-4 text-start">Teach ID</th>
+                                        {/* <th class="py-3 px-4 text-start">Teach ID</th> */}
                                         <th class="py-3 px-4 text-start">Kode MK</th>
                                         <th class="py-3 px-4 text-start">Nama Mata Kuliah</th>
                                         <th class="py-3 px-4 text-center">SKS</th>
@@ -504,7 +504,7 @@ export default function RectoratStudentActivityDetail() {
                                         {(c, idx) => (
                                             <tr class="hover:bg-neutral-50/80 dark:hover:bg-neutral-700/30 transition-colors">
                                                 <td class="py-3 px-4 font-mono text-neutral-400">{idx() + 1}</td>
-                                                <td class="py-3 px-4 font-mono text-neutral-400">{c.teach_id}</td>
+                                                {/* <td class="py-3 px-4 font-mono text-neutral-400">{c.teach_id}</td> */}
                                                 <td class="py-3 px-4 font-mono font-semibold text-neutral-800 dark:text-neutral-200">
                                                     {c.course_code || '-'}
                                                 </td>
@@ -612,6 +612,13 @@ export default function RectoratStudentActivityDetail() {
                                             <h3 class="text-sm font-bold text-neutral-900 dark:text-white leading-snug">
                                                 {c.course_name || '-'}
                                             </h3>
+                                            {/* TODO 
+                                            <Show when={c.teach_id}>
+                                                <p class="text-[10px] font-mono text-neutral-400 dark:text-neutral-500 mt-0.5 truncate">
+                                                    Teach ID: {c.teach_id}
+                                                </p>
+                                            </Show>
+                                            */}
                                         </div>
 
                                         {/* Lecturer */}

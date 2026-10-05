@@ -19,6 +19,8 @@ const getHeaders = (): Record<string, string> => {
     return headers;
 };
 
+import type { StudentActivityItem } from '~/controllers/academic/student/campaign/AcademicStudentCampaignActivityController';
+
 export interface StudentMasterItem {
     id: string;
     code: string;
@@ -45,10 +47,24 @@ export interface StudentMasterItem {
     updated_at?: string;
     // Enhanced UI
     unit_name?: string;
+    unit_code?: string;
     status_name?: string;
     selection_type_name?: string;
     curriculum_name?: string;
     academic_year_name?: string;
+    // Relations
+    selection_type?: any;
+    individual?: PersonMasterIndividual;
+    status?: any;
+    unit?: any;
+    academic_year?: any;
+    registration?: any;
+    resign_status?: any;
+    concentration?: any;
+    curriculum?: any;
+    class_code?: any;
+    finance?: any;
+    student_activities?: StudentActivityItem[];
 }
 
 export async function listStudents(queryParams?: {

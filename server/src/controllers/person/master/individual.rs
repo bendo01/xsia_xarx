@@ -612,6 +612,7 @@ pub async fn get_individual(
                 academic_year_name: student_academic_years_map.get(&s.academic_year_id).cloned(),
                 curriculum_name: None,
                 selection_type_name: None,
+                ..Default::default()
             }
         })
         .collect::<Vec<_>>();
