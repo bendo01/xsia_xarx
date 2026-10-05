@@ -541,3 +541,16 @@ pub async fn generate_pdf(
     let pdf = tab.print_to_pdf(Some(pdf_options))?;
     Ok(pdf)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_template_parses() {
+        let mut tera = Tera::default();
+        let template_content = include_str!("activity_result.html");
+        tera.add_raw_template("activity_result.html", template_content).unwrap();
+    }
+}
+
