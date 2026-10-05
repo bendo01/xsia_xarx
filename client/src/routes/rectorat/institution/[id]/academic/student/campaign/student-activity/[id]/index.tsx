@@ -476,11 +476,13 @@ export default function RectoratStudentActivityDetail() {
                             <p class="text-xs font-mono">Memuat daftar mata kuliah...</p>
                         </div>
                     }>
-                        <div class="overflow-x-auto">
+                        {/* Desktop Table View */}
+                        <div class="hidden md:block overflow-x-auto">
                             <table class="w-full text-xs text-start">
                                 <thead class="bg-neutral-100 dark:bg-neutral-900/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-neutral-200 dark:border-neutral-700">
                                     <tr>
                                         <th class="py-3 px-4 text-start">No</th>
+                                        <th class="py-3 px-4 text-start">Teach ID</th>
                                         <th class="py-3 px-4 text-start">Kode MK</th>
                                         <th class="py-3 px-4 text-start">Nama Mata Kuliah</th>
                                         <th class="py-3 px-4 text-center">SKS</th>
@@ -502,6 +504,7 @@ export default function RectoratStudentActivityDetail() {
                                         {(c, idx) => (
                                             <tr class="hover:bg-neutral-50/80 dark:hover:bg-neutral-700/30 transition-colors">
                                                 <td class="py-3 px-4 font-mono text-neutral-400">{idx() + 1}</td>
+                                                <td class="py-3 px-4 font-mono text-neutral-400">{c.teach_id}</td>
                                                 <td class="py-3 px-4 font-mono font-semibold text-neutral-800 dark:text-neutral-200">
                                                     {c.course_code || '-'}
                                                 </td>
@@ -563,6 +566,107 @@ export default function RectoratStudentActivityDetail() {
                                     </For>
                                 </tbody>
                             </table>
+                        </div>
+
+                        {/* Mobile Card List View */}
+                        <div class="block md:hidden divide-y divide-neutral-100 dark:divide-neutral-700/50">
+                            <For each={detailCourses()} fallback={
+                                <div class="py-12 px-4 text-center text-neutral-400 font-mono text-xs">
+                                    Tidak ada mata kuliah yang terdaftar pada aktivitas semester ini.
+                                </div>
+                            }>
+                                {(c, idx) => (
+                                    <div class="p-4 flex flex-col gap-3 hover:bg-neutral-50/60 dark:hover:bg-neutral-900/30 transition-colors">
+                                        {/* Header Row: Index + Course Code + SKS Chip + Status Badge */}
+                                        <div class="flex items-center justify-between gap-2 flex-wrap">
+                                            <div class="flex items-center gap-1.5 flex-wrap">
+                                                <span class="px-1.5 py-0.5 rounded-xs bg-neutral-100 dark:bg-neutral-700 font-mono text-neutral-500 dark:text-neutral-400 text-[10px] font-bold">
+                                                    #{idx() + 1}
+                                                </span>
+                                                <span class="font-mono font-bold text-xs text-blue-600 dark:text-blue-400">
+                                                    {c.course_code || '-'}
+                                                </span>
+                                                <span class="px-2 py-0.5 rounded-xs bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 font-mono text-[10px] font-bold">
+                                                    {c.credit ?? 0} SKS
+                                                </span>
+                                            </div>
+
+                                            <div>
+                                                <Show
+                                                    when={c.grade_letter && c.grade_letter !== '-' && !c.grade_letter.toUpperCase().startsWith('E')}
+                                                    fallback={
+                                                        <span class="inline-block px-2 py-0.5 rounded-xs text-[10px] font-bold bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400">
+                                                            {c.grade_letter?.toUpperCase().startsWith('E') ? 'Tidak Lulus' : 'Belum Ada Nilai'}
+                                                        </span>
+                                                    }
+                                                >
+                                                    <span class="inline-block px-2 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80">
+                                                        Lulus
+                                                    </span>
+                                                </Show>
+                                            </div>
+                                        </div>
+
+                                        {/* Course Name */}
+                                        <div>
+                                            <h3 class="text-sm font-bold text-neutral-900 dark:text-white leading-snug">
+                                                {c.course_name || '-'}
+                                            </h3>
+                                        </div>
+
+                                        {/* Lecturer */}
+                                        <div class="text-xs text-neutral-600 dark:text-neutral-300 flex items-start gap-1.5">
+                                            <span class="text-neutral-400 dark:text-neutral-500 shrink-0 font-medium text-[11px]">Dosen:</span>
+                                            <div class="flex-1 text-[11px]">
+                                                <Show
+                                                    when={c.lecturers && c.lecturers.length > 0}
+                                                    fallback={<span>{c.lecturer_name || '-'}</span>}
+                                                >
+                                                    <div class="flex flex-col gap-1">
+                                                        <For each={c.lecturers}>
+                                                            {(lecturer: any) => (
+                                                                <span class="inline-flex items-center gap-1.5 leading-snug">
+                                                                    <span class="size-1 rounded-xs bg-neutral-400 dark:bg-neutral-500 shrink-0"></span>
+                                                                    <span>
+                                                                        {lecturer.code ? (
+                                                                            <span class="font-mono text-blue-600 dark:text-blue-400 me-1">{lecturer.code} -</span>
+                                                                        ) : null}
+                                                                        <span>{lecturer.name || lecturer}</span>
+                                                                    </span>
+                                                                </span>
+                                                            )}
+                                                        </For>
+                                                    </div>
+                                                </Show>
+                                            </div>
+                                        </div>
+
+                                        {/* Academic Performance KPI Grid */}
+                                        <div class="grid grid-cols-3 gap-2 pt-2 mt-0.5 border-t border-neutral-100 dark:border-neutral-700/40 text-center">
+                                            <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                                <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">Nilai Angka</span>
+                                                <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
+                                                    {c.mark != null && c.mark > 0 ? Number(c.mark).toFixed(2) : '-'}
+                                                </span>
+                                            </div>
+
+                                            <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                                <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">Nilai Huruf</span>
+                                                <span class={`inline-block px-2.5 py-0.5 rounded-xs font-mono font-bold text-xs ${getGradeBadgeClass(c.grade_letter)}`}>
+                                                    {c.grade_letter || '-'}
+                                                </span>
+                                            </div>
+
+                                            <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                                <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">Bobot / Indeks</span>
+                                                <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
+                                                    {c.grade_point != null ? Number(c.grade_point).toFixed(2) : '-'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </For>
                         </div>
                     </Show>
                 </div>
