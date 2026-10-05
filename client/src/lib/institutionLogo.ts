@@ -15,6 +15,17 @@ for (const key of Object.keys(logoGlob)) {
     }
 }
 
+// Statically glob existing favicon.ico in public directory
+const faviconGlob = import.meta.glob('/public/img/logo/*/favicon.ico', { eager: true });
+
+const availableFaviconCodes = new Set<string>();
+for (const key of Object.keys(faviconGlob)) {
+    const match = key.match(/\/img\/logo\/([^/]+)\/favicon\.ico$/);
+    if (match?.[1]) {
+        availableFaviconCodes.add(match[1]);
+    }
+}
+
 /**
  * Returns the configured institution code from environment variables.
  */
@@ -48,3 +59,25 @@ export function getInstitutionLogo(code?: string): string | null {
     }
     return null;
 }
+
+/**
+ * Checks whether an institution favicon exists for the given code (or currently configured code).
+ */
+export function hasInstitutionFavicon(code?: string): boolean {
+    const targetCode = (code !== undefined ? code : getInstitutionCode()).replace(/^["']|["']$/g, '').trim();
+    if (!targetCode) return false;
+    return availableFaviconCodes.has(targetCode);
+}
+
+/**
+ * Returns the public URL of the institution favicon if it exists, or /favicon.ico fallback.
+ * Example: /img/logo/092010/favicon.ico
+ */
+export function getInstitutionFavicon(code?: string): string {
+    const targetCode = (code !== undefined ? code : getInstitutionCode()).replace(/^["']|["']$/g, '').trim();
+    if (targetCode && availableFaviconCodes.has(targetCode)) {
+        return `/img/logo/${targetCode}/favicon.ico`;
+    }
+    return '/favicon.ico';
+}
+

@@ -1,9 +1,9 @@
 // @refresh reload
 import { createHandler, StartServer } from "@solidjs/start/server";
-import { getInstitutionLogo } from "~/lib/institutionLogo";
+import { getInstitutionFavicon } from "~/lib/institutionLogo";
 
 export default createHandler(() => {
-  const iconHref = getInstitutionLogo() || "/favicon.ico";
+  const iconHref = getInstitutionFavicon();
 
   return (
     <StartServer
