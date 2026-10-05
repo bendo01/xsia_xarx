@@ -1,5 +1,6 @@
 import { onMount, Show, For } from 'solid-js';
 import { useNavigate, A } from '@solidjs/router';
+import { getInstitutionLogo } from '~/lib/institutionLogo';
 import DynamicMenu from '../menu/index';
 import {
     currentUserSignal,
@@ -164,9 +165,22 @@ export default function TopBar() {
                     {/* Brand / Logo */}
                     <div class="flex items-center gap-3">
                         <A class="flex items-center gap-2 text-lg font-bold tracking-tight text-neutral-900 dark:text-white focus:outline-hidden" href={isAuthenticatedSignal() ? getDashboardPathForRole(activeRoleSignal()) : "/"} aria-label="Brand">
-                            <div class="size-8 rounded-xs bg-blue-600 flex items-center justify-center text-white shadow-sm font-black text-sm">
-                                X
-                            </div>
+                            <Show
+                                when={getInstitutionLogo()}
+                                fallback={
+                                    <div class="size-8 rounded-xs bg-blue-600 flex items-center justify-center text-white shadow-sm font-black text-sm">
+                                        X
+                                    </div>
+                                }
+                            >
+                                {(logo) => (
+                                    <img
+                                        src={logo()}
+                                        alt="Logo"
+                                        class="size-8 rounded-xs object-contain shadow-xs"
+                                    />
+                                )}
+                            </Show>
                             <div class="flex flex-col">
                                 <span class="leading-none text-sm font-extrabold tracking-wide">XSIA XARX</span>
                                 <span class="leading-none text-[10px] text-neutral-500 dark:text-neutral-400 font-mono">{t('nav.brandSubtitle')}</span>
@@ -267,9 +281,22 @@ export default function TopBar() {
                     {/* Header */}
                     <div class="flex justify-between items-center pb-4 mb-4 border-b border-neutral-200 dark:border-neutral-800 shrink-0">
                         <div class="flex items-center gap-2.5">
-                            <div class="size-8 rounded-xs bg-blue-600 text-white flex items-center justify-center font-bold text-xs">
-                                X
-                            </div>
+                            <Show
+                                when={getInstitutionLogo()}
+                                fallback={
+                                    <div class="size-8 rounded-xs bg-blue-600 text-white flex items-center justify-center font-bold text-xs">
+                                        X
+                                    </div>
+                                }
+                            >
+                                {(logo) => (
+                                    <img
+                                        src={logo()}
+                                        alt="Logo"
+                                        class="size-8 rounded-xs object-contain"
+                                    />
+                                )}
+                            </Show>
                             <div>
                                 <h2 class="text-sm font-bold text-neutral-900 dark:text-white leading-tight">{t('nav.workspaceMenu')}</h2>
                                 <p class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">

@@ -3,6 +3,7 @@ import { onMount, onCleanup, createSignal, Show } from 'solid-js';
 import { useNavigate, A } from '@solidjs/router';
 import { LoginUser, isAuthenticated } from '~/controllers/auth/AuthUser';
 import { processLoginSuccess, getDashboardPathForRole, getActiveRole } from '~/lib/authStore';
+import { getInstitutionLogo } from '~/lib/institutionLogo';
 import { toast } from '~/components/toast/Toaster';
 import { t, getLocale, toggleLocale } from '~/i18n';
 
@@ -236,13 +237,24 @@ export default function Login() {
             <div class="relative z-10 w-full max-w-lg p-8 sm:p-10 bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] rounded-xs flex flex-col items-center">
 
                 {/* Logo */}
-                <div class="w-[90px] h-[90px] rounded-xs bg-[#1A1A1D]/80 border-[3px] border-[#3A76F0] flex items-center justify-center mb-5 shadow-[0_0_30px_rgba(58,118,240,0.45)] relative overflow-hidden transition-transform duration-300 hover:scale-105">
-                    <svg width="42" height="42" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M3.5 16.5L3.5 8.5L8.5 13.5L8.5 21.5L3.5 16.5Z" fill="white" />
-                        <path d="M9.5 12.5L9.5 4.5L14.5 9.5L14.5 17.5L9.5 12.5Z" fill="white" />
-                        <path d="M15.5 8.5L15.5 0.5L20.5 5.5L20.5 13.5L15.5 8.5Z" fill="white" />
-                    </svg>
-                </div>
+                <Show
+                    when={getInstitutionLogo()}
+                    fallback={
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mb-5">
+                            <path d="M3.5 16.5L3.5 8.5L8.5 13.5L8.5 21.5L3.5 16.5Z" fill="white" />
+                            <path d="M9.5 12.5L9.5 4.5L14.5 9.5L14.5 17.5L9.5 12.5Z" fill="white" />
+                            <path d="M15.5 8.5L15.5 0.5L20.5 5.5L20.5 13.5L15.5 8.5Z" fill="white" />
+                        </svg>
+                    }
+                >
+                    {(logo) => (
+                        <img
+                            src={logo()}
+                            alt="Logo"
+                            class="size-20 object-contain mb-5 drop-shadow-lg transition-transform duration-300 hover:scale-105"
+                        />
+                    )}
+                </Show>
 
                 {/* Header Titles */}
                 <h1 class="text-[28px] sm:text-[32px] font-bold text-white tracking-wide mb-1 font-sans">

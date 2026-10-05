@@ -1,15 +1,19 @@
 // @refresh reload
 import { createHandler, StartServer } from "@solidjs/start/server";
+import { getInstitutionLogo } from "~/lib/institutionLogo";
 
-export default createHandler(() => (
-  <StartServer
-    document={({ assets, children, scripts }) => (
-      <html lang="en">
-        <head>
-          <meta charset="utf-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <title>SIAKA</title>
-          <link rel="icon" href="/favicon.ico" />
+export default createHandler(() => {
+  const iconHref = getInstitutionLogo() || "/favicon.ico";
+
+  return (
+    <StartServer
+      document={({ assets, children, scripts }) => (
+        <html lang="en">
+          <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>SIAKA</title>
+            <link rel="icon" href={iconHref} />
           <script>
             {`
               if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -26,6 +30,7 @@ export default createHandler(() => (
           {scripts}
         </body>
       </html>
-    )}
-  />
-));
+      )}
+    />
+  );
+});
