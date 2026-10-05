@@ -115,6 +115,10 @@ export interface TranslationSchema {
             authentication: string;
             jwtSignIn: string;
             sessionSignIn: string;
+            accountAcquisition: string;
+            forgotPassword: string;
+            verifyAccount: string;
+            passwordReset: string;
             publicInfo: string;
             institutionProfile: string;
             admissionsPmb: string;

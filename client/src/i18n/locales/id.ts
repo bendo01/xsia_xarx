@@ -111,10 +111,14 @@ export const id: TranslationSchema = {
     },
     menu: {
         guest: {
-            home: 'Portal Utama Publik',
+            home: 'Beranda Publik & Panduan',
             authentication: 'Autentikasi',
+            sessionSignIn: 'Masuk Sesi (Default)',
+            accountAcquisition: 'Permohonan Akun',
+            forgotPassword: 'Lupa Kata Sandi',
+            verifyAccount: 'Verifikasi Akun',
+            passwordReset: 'Reset Kata Sandi',
             jwtSignIn: 'Masuk Standar (JWT)',
-            sessionSignIn: 'Masuk Sesi',
             publicInfo: 'Informasi Publik',
             institutionProfile: 'Profil Institusi',
             admissionsPmb: 'Informasi PMB & Penerimaan',

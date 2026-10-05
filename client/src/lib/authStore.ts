@@ -946,7 +946,7 @@ export function canAccessRoute(pathname: string): RouteAccessResult {
         const returnUrl = encodeURIComponent(cleanPath);
         return {
             allowed: false,
-            redirectTo: `/authentification/login?return_url=${returnUrl}`,
+            redirectTo: `/authentification/login_with_session?return_url=${returnUrl}`,
             reason: 'unauthenticated',
         };
     }

@@ -4,27 +4,13 @@
  * and whether client/public/img/logo/${VITE_INSTITUTION_CODE}/android-chrome-512x512.png exists.
  */
 
-// Statically glob existing android-chrome-512x512.png logos in public directory
-const logoGlob = import.meta.glob('/public/img/logo/*/android-chrome-512x512.png', { eager: true });
+import {
+    availableLogoCodes as rawLogoCodes,
+    availableFaviconCodes as rawFaviconCodes,
+} from '~/config/institutionAssets';
 
-const availableLogoCodes = new Set<string>();
-for (const key of Object.keys(logoGlob)) {
-    const match = key.match(/\/img\/logo\/([^/]+)\/android-chrome-512x512\.png$/);
-    if (match?.[1]) {
-        availableLogoCodes.add(match[1]);
-    }
-}
-
-// Statically glob existing favicon.ico in public directory
-const faviconGlob = import.meta.glob('/public/img/logo/*/favicon.ico', { eager: true });
-
-const availableFaviconCodes = new Set<string>();
-for (const key of Object.keys(faviconGlob)) {
-    const match = key.match(/\/img\/logo\/([^/]+)\/favicon\.ico$/);
-    if (match?.[1]) {
-        availableFaviconCodes.add(match[1]);
-    }
-}
+const availableLogoCodes = new Set<string>(rawLogoCodes);
+const availableFaviconCodes = new Set<string>(rawFaviconCodes);
 
 /**
  * Returns the configured institution code from environment variables.

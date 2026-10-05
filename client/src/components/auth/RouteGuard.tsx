@@ -13,8 +13,9 @@ import { toast } from '~/components/toast/Toaster';
 export default function RouteGuard(props: { children: JSX.Element }) {
     const location = useLocation();
     const navigate = useNavigate();
-    const [isChecking, setIsChecking] = createSignal(true);
-    const [isAllowed, setIsAllowed] = createSignal(false);
+    const isPublic = isServer || !location.pathname || location.pathname === '/' || location.pathname.startsWith('/authentification');
+    const [isChecking, setIsChecking] = createSignal(!isPublic);
+    const [isAllowed, setIsAllowed] = createSignal(isPublic);
     let lastToastPath = '';
 
     const evaluateRoute = () => {

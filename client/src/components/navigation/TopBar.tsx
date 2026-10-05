@@ -55,7 +55,7 @@ export default function TopBar() {
     const handleSignOut = () => {
         logout();
         toast.info(t('auth.login.signedOut'));
-        navigate('/authentification/login', { replace: true });
+        navigate('/authentification/login_with_session', { replace: true });
     };
 
     const handleRoleSwitch = async (roleOrName: UserRoleItem | string) => {
@@ -321,22 +321,25 @@ export default function TopBar() {
 
                     {/* Footer / Account Dropdown */}
                     <footer class="mt-auto shrink-0 pt-4 border-t border-neutral-200 dark:border-neutral-800">
+                        {/* 
                         <Show when={isAuthenticatedSignal()} fallback={
                             <div class="flex flex-col gap-2">
                                 <A
-                                    href="/authentification/login"
-                                    class="w-full py-2.5 px-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xs text-center transition-colors shadow-xs"
-                                >
-                                    {t('nav.signInJwt')}
-                                </A>
-                                <A
                                     href="/authentification/login_with_session"
-                                    class="w-full py-2 px-3 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-xs font-medium rounded-xs text-center transition-colors"
+                                    class="w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xs text-center transition-colors shadow-xs"
                                 >
                                     {t('nav.sessionLogin')}
                                 </A>
+                                <A
+                                    href="/authentification/login"
+                                    class="w-full py-2 px-3 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-xs font-medium rounded-xs text-center transition-colors"
+                                >
+                                    {t('nav.signInJwt')}
+                                </A>
                             </div>
                         }>
+                            */}
+                        <Show when={isAuthenticatedSignal()}>
                             <div class="relative w-full inline-flex">
                                 <button
                                     command="toggle-popover"

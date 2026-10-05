@@ -168,7 +168,7 @@ export default function VerifyEmail() {
 
             {/* Glassmorphic Card */}
             <div class="relative z-10 w-full max-w-lg p-8 sm:p-10 bg-slate-900/60 backdrop-blur-2xl border border-emerald-500/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] rounded-xs flex flex-col items-center">
-                
+
                 {/* Logo */}
                 <Show when={getInstitutionLogo()}>
                     {(logo) => (
@@ -195,9 +195,9 @@ export default function VerifyEmail() {
                             <line x1="12" y1="16" x2="12.01" y2="16" />
                         </svg>
                         <span class="flex-1 leading-snug">{errorMessage()}</span>
-                        <button 
-                            type="button" 
-                            onClick={() => setErrorMessage(null)} 
+                        <button
+                            type="button"
+                            onClick={() => setErrorMessage(null)}
                             class="text-red-400 hover:text-white transition-colors"
                         >
                             <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -222,12 +222,12 @@ export default function VerifyEmail() {
                 </Show>
 
                 <Show when={!successMessage()}>
-                    <form 
+                    <form
                         onSubmit={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             form.handleSubmit();
-                        }} 
+                        }}
                         class="w-full space-y-4 mb-6"
                     >
                         <form.Field name="token">
@@ -283,7 +283,7 @@ export default function VerifyEmail() {
                 </Show>
 
                 <div class="w-full pt-4 border-t border-white/10 flex items-center justify-between text-xs text-white/50">
-                    <A href="/authentification/login" class="hover:text-emerald-300 transition-colors flex items-center gap-1">
+                    <A href="/authentification/login_with_session" class="hover:text-emerald-300 transition-colors flex items-center gap-1">
                         <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="m15 18-6-6 6-6" />
                         </svg>

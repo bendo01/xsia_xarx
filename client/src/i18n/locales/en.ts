@@ -111,10 +111,14 @@ export const en: TranslationSchema = {
     },
     menu: {
         guest: {
-            home: 'Public Home Portal',
+            home: 'Public Home & User Guide',
             authentication: 'Authentication',
+            sessionSignIn: 'Session Sign In (Default)',
+            accountAcquisition: 'Account Acquisition',
+            forgotPassword: 'Forgot Password',
+            verifyAccount: 'Verify Account',
+            passwordReset: 'Password Reset',
             jwtSignIn: 'Standard Sign In (JWT)',
-            sessionSignIn: 'Session Sign In',
             publicInfo: 'Public Information',
             institutionProfile: 'Institution Profile',
             admissionsPmb: 'Admissions & PMB Info',
