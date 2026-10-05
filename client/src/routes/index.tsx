@@ -222,12 +222,12 @@ export default function Home() {
 
                         {/* Main Headline */}
                         <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white max-w-3xl leading-tight sm:leading-tight mb-4">
-                            Panduan Lengkap Masuk & Pengelolaan Akun Portal
+                            Panduan Lengkap Masuk dan Pengelolaan Akun Portal
                         </h1>
 
                         {/* Subtitle */}
                         <p class="text-base sm:text-lg text-neutral-300 max-w-2xl font-normal leading-relaxed mb-8">
-                            Selamat datang di portal akademik terpadu <strong class="text-white font-semibold">XSIA XARX</strong>.
+                            Selamat datang di portal akademik terpadu.
                             Ikuti petunjuk langkah demi langkah di bawah ini untuk mengakses ruang kerja Anda, mendaftarkan akun baru, atau memulihkan kata sandi.
                         </p>
 
@@ -256,7 +256,7 @@ export default function Home() {
                                 </svg>
                                 <span>Permohonan Akun</span>
                             </A>
-
+                            {/* 
                             <A
                                 href="/authentification/login"
                                 class="inline-flex items-center justify-center gap-2 px-4 py-3.5 rounded-xs text-neutral-400 hover:text-white hover:bg-white/5 text-xs font-medium transition-colors"
@@ -269,6 +269,7 @@ export default function Home() {
                                 </svg>
                                 <span>Masuk Standar (JWT)</span>
                             </A>
+                            */}
                         </div>
                     </header>
 
@@ -418,7 +419,7 @@ export default function Home() {
                         </For>
                     </div>
 
-                    {/* Comparison Box: Session vs JWT */}
+                    {/* Comparison Box: Session vs JWT
                     <section class="bg-gradient-to-r from-emerald-950/30 via-slate-900/60 to-blue-950/30 border border-emerald-500/20 rounded-xs p-6 sm:p-8 mb-16">
                         <div class="max-w-3xl">
                             <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xs bg-emerald-500/10 text-emerald-400 text-xs font-mono font-bold uppercase mb-2 border border-emerald-500/20">
@@ -449,6 +450,7 @@ export default function Home() {
                             </div>
                         </div>
                     </section>
+                    */}
 
                     {/* Support & Helpdesk Footer */}
                     <footer class="text-center pt-8 border-t border-slate-800/80 text-xs text-neutral-500">
@@ -456,7 +458,7 @@ export default function Home() {
                             Butuh bantuan lebih lanjut terkait akun Anda? Hubungi Layanan Administrasi Akademik atau Pusat Data dan Sistem Informasi Institusi.
                         </p>
                         <p class="font-mono text-[11px] text-neutral-600">
-                            XSIA XARX Core Academic Engine • Single Sign-On Ready
+                            Sistem Informasi Akademik
                         </p>
                     </footer>
                 </div>

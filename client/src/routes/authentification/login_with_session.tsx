@@ -392,12 +392,14 @@ export default function LoginWithSession() {
 
                 {/* Card Footer Links */}
                 <div class="w-full pt-4 border-t border-white/10 flex items-center justify-between text-xs text-white/50">
+                    {/*
                     <A href="/authentification/login" class="hover:text-emerald-300 transition-colors flex items-center gap-1">
                         <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="m15 18-6-6 6-6" />
                         </svg>
                         {t('auth.session.standardLogin')}
                     </A>
+                    */}
                     <A href="/" class="hover:text-white transition-colors">
                         {t('menu.guest.home')}
                     </A>
