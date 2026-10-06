@@ -663,6 +663,24 @@ pub async fn load_full_student_activities(
         }
     }
 
+    // Sort student activities chronologically by academic year code before calculating running totals
+    let mut items = items;
+    items.sort_by(|a, b| {
+        let code_a = unit_activities_map
+            .get(&a.unit_activity_id)
+            .and_then(|(_, ay)| ay.as_ref().map(|r| r.code))
+            .unwrap_or(0);
+        let code_b = unit_activities_map
+            .get(&b.unit_activity_id)
+            .and_then(|(_, ay)| ay.as_ref().map(|r| r.code))
+            .unwrap_or(0);
+        if code_a != code_b {
+            code_a.cmp(&code_b)
+        } else {
+            a.created_at.cmp(&b.created_at)
+        }
+    });
+
     let mut running_total_credit = 0.0;
     let mut running_graded_credit = 0.0;
     let mut running_weighted_sum = 0.0;

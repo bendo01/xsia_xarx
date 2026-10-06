@@ -115,7 +115,7 @@ export default function RectoratStudentDetail() {
             setStudent(stdRecord);
 
             // 2. Set Student Academic Activities directly from student record
-            setActivities(stdRecord.student_activities || []);
+            setActivities(sortActivitiesChronologically(stdRecord.student_activities || []));
 
             // 3. Fetch linked Individual details (NIK, Birth, Address)
             if (stdRecord.individual_id && stdRecord.individual_id !== '00000000-0000-0000-0000-000000000000') {
@@ -148,15 +148,17 @@ export default function RectoratStudentDetail() {
 
     // Helper to calculate numeric chronological order for academic years
     const getAcademicYearOrder = (act: StudentActivityItem): number => {
-        const texts = [
+        // 1. Check explicit academic year names
+        const ayTexts = [
             act.academic_year?.name,
             act.academic_year_name,
-            act.name,
+            act.unit_activity?.academic_year?.name,
+            act.unit_activity?.academic_year_name,
             act.semester_name,
         ].filter(Boolean) as string[];
 
-        for (const text of texts) {
-            const m = text.match(/\b(19\d\d|20\d\d)\s*(?:[/-]\s*\d{2,4})?\s*(?:Sem(?:ester)?|\/)?\s*(Ganjil|Genap|Pendek|Antara|[1-3])\b/i);
+        for (const text of ayTexts) {
+            const m = text.match(/\b(19\d\d|20\d\d)\s*(?:[/-]\s*\d{2,4})?\s*(?:Sem(?:ester)?|\/|-)?\s*(Ganjil|Genap|Pendek|Antara|[1-3])\b/i);
             if (m) {
                 const yr = parseInt(m[1], 10);
                 let sem = 1;
@@ -173,11 +175,44 @@ export default function RectoratStudentDetail() {
             }
         }
 
-        if (act.academic_year?.code !== undefined && act.academic_year?.code !== null) {
-            const num = Number(act.academic_year.code);
-            if (!isNaN(num) && num > 0) return num;
+        // 2. Check academic_year code
+        const rawCode = act.academic_year?.code ?? act.unit_activity?.academic_year?.code;
+        if (rawCode !== undefined && rawCode !== null) {
+            const num = Number(rawCode);
+            if (!isNaN(num) && num > 0) {
+                if (num >= 10000) {
+                    return num;
+                } else if (num >= 1 && num < 1000) {
+                    const yr = 1980 + Math.floor((num - 1) / 3);
+                    const sem = ((num - 1) % 3) + 1;
+                    return yr * 10 + sem;
+                } else if (num >= 1980 && num <= 2100) {
+                    return num * 10 + 1;
+                }
+            }
         }
 
+        // 3. Fallback to act.name
+        if (act.name) {
+            const fiveDigit = act.name.match(/\b(19\d\d|20\d\d)([1-3])\b/);
+            if (fiveDigit) {
+                return parseInt(fiveDigit[1], 10) * 10 + parseInt(fiveDigit[2], 10);
+            }
+
+            const m = act.name.match(/\b(19\d\d|20\d\d)\s*(?:[/-]\s*\d{2,4})?\s*(?:Sem(?:ester)?|\/|-)?\s*(Ganjil|Genap|Pendek|Antara|[1-3])\b/i);
+            if (m) {
+                const yr = parseInt(m[1], 10);
+                let sem = 1;
+                const term = (m[2] || '').toLowerCase();
+                if (term === '2' || term === 'genap') sem = 2;
+                else if (term === '3' || term === 'pendek' || term === 'antara') sem = 3;
+                else if (term === '1' || term === 'ganjil') sem = 1;
+                else if (!isNaN(parseInt(term, 10))) sem = parseInt(term, 10);
+                return yr * 10 + sem;
+            }
+        }
+
+        // 4. Fallback to created_at
         if (act.created_at) {
             const time = new Date(act.created_at).getTime();
             if (!isNaN(time) && time > 0) return time;
@@ -186,11 +221,8 @@ export default function RectoratStudentDetail() {
         return 0;
     };
 
-    // Activities sorted ascending chronologically by academic year
-    const sortedActivities = createMemo<StudentActivityItem[]>(() => {
-        const list = activities();
-        if (list.length === 0) return [];
-
+    const sortActivitiesChronologically = (list: StudentActivityItem[]): StudentActivityItem[] => {
+        if (!list || list.length === 0) return [];
         return [...list].sort((a, b) => {
             const orderA = getAcademicYearOrder(a);
             const orderB = getAcademicYearOrder(b);
@@ -200,6 +232,11 @@ export default function RectoratStudentDetail() {
             if (timeA !== timeB) return timeA - timeB;
             return (a.name || '').localeCompare(b.name || '');
         });
+    };
+
+    // Activities sorted ascending chronologically by academic year
+    const sortedActivities = createMemo<StudentActivityItem[]>(() => {
+        return sortActivitiesChronologically(activities());
     });
 
     // Academic Trend Points for Apache ECharts (sorted ascending by academic year)
@@ -260,7 +297,7 @@ export default function RectoratStudentDetail() {
     };
 
     const handlePrintKRS = async (targetAct?: StudentActivityItem) => {
-        const act = targetAct || latestActivity() || activities()[0];
+        const act = targetAct || latestActivity() || sortedActivities()[sortedActivities().length - 1];
         if (!act?.id) {
             toast.danger('Activity ID is missing.');
             return;
@@ -288,7 +325,7 @@ export default function RectoratStudentDetail() {
     };
 
     const handlePrintKHS = async (targetAct?: StudentActivityItem) => {
-        const act = targetAct || latestActivity() || activities()[0];
+        const act = targetAct || latestActivity() || sortedActivities()[sortedActivities().length - 1];
         if (!act?.id) {
             toast.danger('Activity ID is missing.');
             return;
@@ -551,7 +588,7 @@ export default function RectoratStudentDetail() {
                                     </span>
                                 </div>
                                 <div class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
-                                    {activities().length} Semester Tercatat
+                                    {sortedActivities().length} Semester Tercatat
                                 </div>
                             </div>
                         </div>
@@ -651,7 +688,7 @@ export default function RectoratStudentDetail() {
                         </div>
 
                         {/* Semester Breakdown Table (KHS) */}
-                        <Show when={activities().length > 0}>
+                        <Show when={sortedActivities().length > 0}>
                             <div class="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm overflow-hidden">
                                 <div class="p-5 border-b border-neutral-200 dark:border-neutral-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                     <div>
@@ -679,7 +716,7 @@ export default function RectoratStudentDetail() {
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-neutral-100 dark:divide-neutral-800">
-                                            <For each={activities()}>
+                                            <For each={sortedActivities()}>
                                                 {(act, idx) => (
                                                     <tr class="hover:bg-neutral-50/80 dark:hover:bg-neutral-800/40 transition-colors">
                                                         <td class="px-5 py-3 font-mono text-neutral-400">{idx() + 1}</td>
