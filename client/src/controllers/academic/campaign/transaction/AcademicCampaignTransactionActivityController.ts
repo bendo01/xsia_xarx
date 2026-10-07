@@ -43,6 +43,9 @@ export interface CampaignActivityItem {
     academic_year_name?: string | null;
 }
 
+export type ActivityItem = CampaignActivityItem;
+
+
 export async function listActivities(queryParams?: {
     page?: number;
     page_size?: number;

@@ -4,7 +4,7 @@ import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import {
     getActivityById,
-    type ActivityItem,
+    type CampaignActivityItem,
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionActivityController';
 import { masterApiShow } from '~/controllers/master/masterApiController';
 
@@ -12,7 +12,7 @@ export default function AcademicCampaignTransactionActivityDetailPage() {
     const basePath = "/administrator/academic/campaign/transaction/activity";
     const params = useParams();
     const [isLoading, setIsLoading] = createSignal(true);
-    const [activity, setActivity] = createSignal<ActivityItem | any | null>(null);
+    const [activity, setActivity] = createSignal<CampaignActivityItem | any | null>(null);
     const [selectedId, setSelectedId] = createSignal<string>((params.id as string) || '');
 
     const fetchDetail = async (id: string) => {
