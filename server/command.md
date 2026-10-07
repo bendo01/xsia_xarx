@@ -169,3 +169,9 @@ DELETE FROM academic_student_campaign.detail_activities WHERE teach_id = '019c05
 
 DELETE FROM academic_student_campaign.detail_activities WHERE teach_id = '019c0547-8df9-7720-ba34-0a9b03cc8c78';
 ```
+
+## OpenWA API Key
+
+```sh
+docker exec openwa-api cat /app/data/.api-key
+```

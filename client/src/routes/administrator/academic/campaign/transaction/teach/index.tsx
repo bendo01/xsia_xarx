@@ -814,13 +814,13 @@ export default function AcademicCampaignTransactionTeachPage() {
                             <thead class="text-[11px] font-mono text-neutral-600 dark:text-neutral-400 uppercase bg-neutral-50 dark:bg-neutral-900/80 border-b border-neutral-200 dark:border-neutral-700">
                                 <tr>
                                     <th class="px-4 py-3.5 w-12 text-center">#</th>
-                                    <th class="px-4 py-3.5 min-w-[200px]">Class / Section</th>
-                                    <th class="px-4 py-3.5 min-w-[220px]">Course</th>
-                                    <th class="px-4 py-3.5 min-w-[180px]">Instructors</th>
-                                    <th class="px-4 py-3.5 min-w-[140px]">Enrollment</th>
-                                    <th class="px-4 py-3.5 min-w-[120px]">Period</th>
-                                    <th class="px-4 py-3.5 min-w-[90px] text-center">Status</th>
-                                    <th class="px-4 py-3.5 text-right min-w-[130px]">Actions</th>
+                                    <th class="px-4 py-3.5 min-w-50">Class / Section</th>
+                                    <th class="px-4 py-3.5 min-w-55">Course</th>
+                                    <th class="px-4 py-3.5 min-w-45">Instructors</th>
+                                    <th class="px-4 py-3.5 min-w-35">Enrollment</th>
+                                    <th class="px-4 py-3.5 min-w-30">Period</th>
+                                    <th class="px-4 py-3.5 min-w-22.5 text-center">Status</th>
+                                    <th class="px-4 py-3.5 text-right min-w-32.5">Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700/60 font-mono">
@@ -900,7 +900,7 @@ export default function AcademicCampaignTransactionTeachPage() {
                                                                         {item.name || getItemCourseName(item)}
                                                                     </a>
                                                                     <div class="flex items-center gap-1.5 mt-0.5 text-[11px] text-neutral-500">
-                                                                        <span class="truncate max-w-[140px]">{item.activity?.name || 'General Activity'}</span>
+                                                                        <span class="truncate max-w-35">{item.activity?.name || 'General Activity'}</span>
                                                                         <span>•</span>
                                                                         <button
                                                                             type="button"
@@ -932,7 +932,7 @@ export default function AcademicCampaignTransactionTeachPage() {
                                                         </td>
 
                                                         <td class="px-4 py-3">
-                                                            <span class="text-xs text-neutral-700 dark:text-neutral-300 block truncate max-w-[200px]" title={getItemLecturers(item)}>
+                                                            <span class="text-xs text-neutral-700 dark:text-neutral-300 block truncate max-w-50" title={getItemLecturers(item)}>
                                                                 {getItemLecturers(item)}
                                                             </span>
                                                         </td>
@@ -1095,7 +1095,7 @@ export default function AcademicCampaignTransactionTeachPage() {
                                                             <span class="px-1.5 py-0.5 text-[10px] font-bold bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-600">
                                                                 {getItemClassCode(item)}
                                                             </span>
-                                                            <span class="text-[10px] text-neutral-500 truncate max-w-[150px]">
+                                                            <span class="text-[10px] text-neutral-500 truncate max-w-37.5">
                                                                 {item.activity?.name || 'General Activity'}
                                                             </span>
                                                         </div>
@@ -1126,7 +1126,7 @@ export default function AcademicCampaignTransactionTeachPage() {
                                                 <div class="space-y-1 py-1 border-t border-b border-neutral-100 dark:border-neutral-700/60 text-[11px]">
                                                     <div class="flex justify-between text-neutral-500">
                                                         <span>Instructors:</span>
-                                                        <span class="text-neutral-800 dark:text-neutral-200 font-medium truncate max-w-[180px]">
+                                                        <span class="text-neutral-800 dark:text-neutral-200 font-medium truncate max-w-45">
                                                             {getItemLecturers(item)}
                                                         </span>
                                                     </div>
