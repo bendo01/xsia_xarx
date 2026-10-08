@@ -1,17 +1,18 @@
 use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
-    PaginatorTrait, QueryFilter, QueryOrder, Set, TransactionTrait,
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel, PaginatorTrait,
+    QueryFilter, QueryOrder, Set, TransactionTrait, QuerySelect,
 };
 use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::academic::student::campaign::detail_activity_evaluation_components::{
-    CreateDetailActivityEvaluationComponentRequest, DetailActivityEvaluationComponentQuery, DetailActivityEvaluationComponentResponse, PaginatedDetailActivityEvaluationComponentResponse,
-    UpdateDetailActivityEvaluationComponentRequest,
+    CreateDetailActivityEvaluationComponentRequest, DetailActivityEvaluationComponentQuery,
+    DetailActivityEvaluationComponentResponse, PaginatedDetailActivityEvaluationComponentResponse,
+    UpdateDetailActivityEvaluationComponentRequest, DetailActivityEvaluationComponentOptionRequest,
 };
-use crate::dtos::common::reference::MessageResponse;
+use crate::dtos::common::reference::{MessageResponse, OptionItem};
 use crate::models::academic::student::campaign::detail_activity_evaluation_components as entity_mod;
 use crate::middleware::auth::auth_user_id;
 use crate::services::auth::data_scope::DataScope;
@@ -275,4 +276,51 @@ pub async fn delete_detail_activity_evaluation_component(
         Ok(Json(MessageResponse {
             message: "DetailActivityEvaluationComponent deleted successfully".to_string(),
         }))
+}
+
+#[endpoint(tags("Academic - Student - Campaign - DetailActivityEvaluationComponent"), status_codes(200, 500))]
+pub async fn options_detail_activity_evaluation_components(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<Vec<OptionItem>>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let payload: DetailActivityEvaluationComponentOptionRequest = req
+        .parse_json()
+        .await
+        .ok()
+        .or_else(|| req.parse_queries().ok())
+        .unwrap_or_default();
+
+    let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
+
+    if let Some(ref search) = payload.search {
+        let search_trimmed = search.trim();
+        if !search_trimmed.is_empty() {
+            select = select.filter(entity_mod::Column::Name.contains(search_trimmed));
+        }
+    }
+
+    if let Some(detail_activity_id) = payload.detail_activity_id {
+        select = select.filter(entity_mod::Column::DetailActivityId.eq(detail_activity_id));
+    }
+
+    let items = select
+        .order_by_asc(entity_mod::Column::Name)
+        .limit(100)
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let data = items
+        .into_iter()
+        .map(|item| OptionItem {
+            id: item.id,
+            name: item.name.unwrap_or_default(),
+        })
+        .collect();
+
+    Ok(Json(data))
 }

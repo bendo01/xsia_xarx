@@ -28,6 +28,10 @@ pub fn router() -> Router {
                 .get_named("academic.survey.master.bundle_question.list_bundle_question", bundle_question::list_bundle_question)
                 .post_named("academic.survey.master.bundle_question.create_bundle_question", bundle_question::create_bundle_question)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.survey.master.bundle_question.options_bundle_question", bundle_question::options_bundle_question),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.survey.master.bundle_question.get_bundle_question", bundle_question::get_bundle_question)
                         .put_named("academic.survey.master.bundle_question.update_bundle_question", bundle_question::update_bundle_question)

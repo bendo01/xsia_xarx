@@ -59,3 +59,9 @@ pub struct PaginatedDetailActivityEvaluationComponentResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct DetailActivityEvaluationComponentOptionRequest {
+    pub search: Option<String>,
+    pub detail_activity_id: Option<Uuid>,
+}

@@ -47,3 +47,9 @@ pub struct PaginatedDecreeResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct DecreeOptionRequest {
+    pub search: Option<String>,
+    pub evaluation_id: Option<Uuid>,
+}

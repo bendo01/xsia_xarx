@@ -12,6 +12,10 @@ pub fn router() -> Router {
                 .get_named("academic.candidate.master.candidate_unit.list_candidate_unit", candidate_unit::list_candidate_unit)
                 .post_named("academic.candidate.master.candidate_unit.create_candidate_unit", candidate_unit::create_candidate_unit)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.candidate.master.candidate_unit.options_candidate_unit", candidate_unit::options_candidate_unit),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.candidate.master.candidate_unit.get_candidate_unit", candidate_unit::get_candidate_unit)
                         .put_named("academic.candidate.master.candidate_unit.update_candidate_unit", candidate_unit::update_candidate_unit)

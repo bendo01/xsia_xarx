@@ -1,18 +1,21 @@
+use std::collections::HashMap;
 use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
-    PaginatorTrait, QueryFilter, QueryOrder, Set, TransactionTrait,
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel, PaginatorTrait,
+    QueryFilter, QueryOrder, Set, TransactionTrait, Condition, QuerySelect,
 };
 use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::academic::student::final_assignment::transaction::prerequisites::{
-    CreatePrerequisiteRequest, PrerequisiteQuery, PrerequisiteResponse, PaginatedPrerequisiteResponse,
-    UpdatePrerequisiteRequest,
+    CreatePrerequisiteRequest, PrerequisiteQuery, PrerequisiteResponse,
+    PaginatedPrerequisiteResponse, UpdatePrerequisiteRequest, PrerequisiteOptionRequest,
 };
-use crate::dtos::common::reference::MessageResponse;
+use crate::dtos::common::reference::{MessageResponse, OptionItem};
 use crate::models::academic::student::final_assignment::transaction::prerequisites as entity_mod;
+use crate::models::academic::student::final_assignment::reference::requirements as requirement_mod;
+use crate::models::academic::student::final_assignment::reference::stages as stage_mod;
 use crate::middleware::auth::auth_user_id;
 use crate::services::auth::data_scope::DataScope;
 
@@ -289,4 +292,111 @@ pub async fn delete_prerequisite(
         Ok(Json(MessageResponse {
             message: "Prerequisite deleted successfully".to_string(),
         }))
+}
+
+#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - Prerequisite"), status_codes(200, 500))]
+pub async fn options_prerequisites(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<Vec<OptionItem>>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let payload: PrerequisiteOptionRequest = req
+        .parse_json()
+        .await
+        .ok()
+        .or_else(|| req.parse_queries().ok())
+        .unwrap_or_default();
+
+    let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
+    let mut is_scoped = false;
+
+    if let Some(submission_id) = payload.submission_id {
+        select = select.filter(entity_mod::Column::SubmissionId.eq(submission_id));
+        is_scoped = true;
+    }
+
+    if let Some(stage_id) = payload.stage_id {
+        select = select.filter(entity_mod::Column::StageId.eq(stage_id));
+        is_scoped = true;
+    }
+
+    if let Some(ref search) = payload.search {
+        let search_trimmed = search.trim();
+        if !search_trimmed.is_empty() {
+            let requirement_ids: Vec<Uuid> = requirement_mod::Entity::find()
+                .filter(requirement_mod::Column::DeletedAt.is_null())
+                .filter(requirement_mod::Column::Name.contains(search_trimmed))
+                .select_only()
+                .column(requirement_mod::Column::Id)
+                .into_tuple()
+                .all(db)
+                .await
+                .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+            let stage_ids: Vec<Uuid> = stage_mod::Entity::find()
+                .filter(stage_mod::Column::DeletedAt.is_null())
+                .filter(stage_mod::Column::Name.contains(search_trimmed))
+                .select_only()
+                .column(stage_mod::Column::Id)
+                .into_tuple()
+                .all(db)
+                .await
+                .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+            select = select.filter(
+                Condition::any()
+                    .add(entity_mod::Column::RequirementId.is_in(requirement_ids))
+                    .add(entity_mod::Column::StageId.is_in(stage_ids)),
+            );
+        }
+    }
+
+    // Unscoped requests are capped; slim-select narrows the list through `search`.
+    if !is_scoped {
+        select = select.limit(100);
+    }
+
+    let items = select
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let requirement_names: HashMap<Uuid, String> = requirement_mod::Entity::find()
+        .filter(requirement_mod::Column::Id.is_in(items.iter().map(|item| item.requirement_id).collect::<Vec<_>>()))
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .into_iter()
+        .map(|m| (m.id, m.name))
+        .collect();
+
+    let stage_names: HashMap<Uuid, String> = stage_mod::Entity::find()
+        .filter(stage_mod::Column::Id.is_in(items.iter().map(|item| item.stage_id).collect::<Vec<_>>()))
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .into_iter()
+        .map(|m| (m.id, m.name))
+        .collect();
+
+    let mut data: Vec<OptionItem> = items
+        .into_iter()
+        .map(|item| OptionItem {
+            id: item.id,
+            name: [
+                requirement_names.get(&item.requirement_id).cloned(),
+                stage_names.get(&item.stage_id).cloned(),
+            ]
+            .into_iter()
+            .flatten()
+            .collect::<Vec<_>>()
+            .join(" - "),
+        })
+        .collect();
+    data.sort_by(|a, b| a.name.cmp(&b.name));
+
+    Ok(Json(data))
 }

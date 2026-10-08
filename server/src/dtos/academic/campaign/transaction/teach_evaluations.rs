@@ -61,3 +61,9 @@ pub struct PaginatedTeachEvaluationResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct TeachEvaluationOptionRequest {
+    pub search: Option<String>,
+    pub teach_id: Option<Uuid>,
+}

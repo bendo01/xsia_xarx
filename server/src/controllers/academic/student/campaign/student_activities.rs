@@ -3,17 +3,17 @@ use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, EntityTrait, IntoActiveModel,
-    PaginatorTrait, QueryFilter, QueryOrder, Set, TransactionTrait,
+    PaginatorTrait, QueryFilter, QueryOrder, Set, TransactionTrait, QuerySelect,
 };
 use sea_orm::sea_query::{extension::postgres::PgExpr, Expr};
 use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::academic::student::campaign::student_activities::{
-    CreateStudentActivityRequest, StudentActivityQuery, StudentActivityResponse, PaginatedStudentActivityResponse,
-    UpdateStudentActivityRequest,
+    CreateStudentActivityRequest, StudentActivityQuery, StudentActivityResponse,
+    PaginatedStudentActivityResponse, UpdateStudentActivityRequest, StudentActivityOptionRequest,
 };
-use crate::dtos::common::reference::MessageResponse;
+use crate::dtos::common::reference::{MessageResponse, OptionItem};
 use crate::models::academic::student::campaign::student_activities as entity_mod;
 use crate::services::pdf::institution_092010::student::activity::plan::activity_plan as Institution092010StudentActivityPlan;
 use crate::services::pdf::institution_092010::student::activity::result::activity_result as Institution092010StudentActivityResult;
@@ -1125,4 +1125,55 @@ pub async fn print_activity_result(
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
     Ok(())
+}
+
+#[endpoint(tags("Academic - Student - Campaign - StudentActivity"), status_codes(200, 500))]
+pub async fn options_student_activities(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<Vec<OptionItem>>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let payload: StudentActivityOptionRequest = req
+        .parse_json()
+        .await
+        .ok()
+        .or_else(|| req.parse_queries().ok())
+        .unwrap_or_default();
+
+    let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
+
+    if let Some(ref search) = payload.search {
+        let search_trimmed = search.trim();
+        if !search_trimmed.is_empty() {
+            select = select.filter(entity_mod::Column::Name.contains(search_trimmed));
+        }
+    }
+
+    if let Some(student_id) = payload.student_id {
+        select = select.filter(entity_mod::Column::StudentId.eq(student_id));
+    }
+
+    if let Some(unit_id) = payload.unit_id {
+        select = select.filter(entity_mod::Column::UnitId.eq(unit_id));
+    }
+
+    let items = select
+        .order_by_asc(entity_mod::Column::Name)
+        .limit(100)
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let data = items
+        .into_iter()
+        .map(|item| OptionItem {
+            id: item.id,
+            name: item.name.unwrap_or_default(),
+        })
+        .collect();
+
+    Ok(Json(data))
 }

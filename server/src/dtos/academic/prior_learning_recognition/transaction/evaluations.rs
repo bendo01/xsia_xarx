@@ -53,3 +53,10 @@ pub struct PaginatedEvaluationResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct EvaluationOptionRequest {
+    pub search: Option<String>,
+    pub recognition_id: Option<Uuid>,
+    pub evaluator_id: Option<Uuid>,
+}

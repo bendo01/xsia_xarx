@@ -84,3 +84,10 @@ pub struct PaginatedAcademicGroupResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct AcademicGroupOptionRequest {
+    pub search: Option<String>,
+    pub lecturer_id: Option<Uuid>,
+    pub group_id: Option<Uuid>,
+}

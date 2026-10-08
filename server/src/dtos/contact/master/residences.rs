@@ -77,3 +77,10 @@ pub struct PaginatedResidenceResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct ResidenceOptionRequest {
+    pub search: Option<String>,
+    pub residenceable_id: Option<Uuid>,
+    pub village_id: Option<Uuid>,
+}

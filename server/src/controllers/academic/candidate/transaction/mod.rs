@@ -12,6 +12,10 @@ pub fn router() -> Router {
                 .get_named("academic.candidate.transaction.candidate_unit_choices.list_candidate_unit_choices", candidate_unit_choices::list_candidate_unit_choices)
                 .post_named("academic.candidate.transaction.candidate_unit_choices.create_candidate_unit_choice", candidate_unit_choices::create_candidate_unit_choice)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.candidate.transaction.candidate_unit_choices.options_candidate_unit_choices", candidate_unit_choices::options_candidate_unit_choices),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.candidate.transaction.candidate_unit_choices.get_candidate_unit_choice", candidate_unit_choices::get_candidate_unit_choice)
                         .put_named("academic.candidate.transaction.candidate_unit_choices.update_candidate_unit_choice", candidate_unit_choices::update_candidate_unit_choice)
@@ -23,6 +27,10 @@ pub fn router() -> Router {
                 .get_named("academic.candidate.transaction.documents.list_documents", documents::list_documents)
                 .post_named("academic.candidate.transaction.documents.create_document", documents::create_document)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.candidate.transaction.documents.options_documents", documents::options_documents),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.candidate.transaction.documents.get_document", documents::get_document)
                         .put_named("academic.candidate.transaction.documents.update_document", documents::update_document)
@@ -33,6 +41,10 @@ pub fn router() -> Router {
             Router::with_path("exams")
                 .get_named("academic.candidate.transaction.exams.list_exams", exams::list_exams)
                 .post_named("academic.candidate.transaction.exams.create_exam", exams::create_exam)
+                .push(
+                    Router::with_path("options")
+                        .post_named("academic.candidate.transaction.exams.options_exams", exams::options_exams),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("academic.candidate.transaction.exams.get_exam", exams::get_exam)

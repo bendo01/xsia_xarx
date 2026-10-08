@@ -65,3 +65,11 @@ pub struct PaginatedScheduleResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct ScheduleOptionRequest {
+    pub search: Option<String>,
+    pub submission_id: Option<Uuid>,
+    pub detail_activity_id: Option<Uuid>,
+    pub stage_id: Option<Uuid>,
+}

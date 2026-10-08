@@ -13,6 +13,10 @@ pub fn router() -> Router {
                 .get_named("academic.student.campaign.convertions.list_convertions", convertions::list_convertions)
                 .post_named("academic.student.campaign.convertions.create_convertion", convertions::create_convertion)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.student.campaign.convertions.options_convertions", convertions::options_convertions),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.student.campaign.convertions.get_convertion", convertions::get_convertion)
                         .put_named("academic.student.campaign.convertions.update_convertion", convertions::update_convertion)
@@ -39,6 +43,10 @@ pub fn router() -> Router {
                 .get_named("academic.student.campaign.detail_activity_evaluation_components.list_detail_activity_evaluation_components", detail_activity_evaluation_components::list_detail_activity_evaluation_components)
                 .post_named("academic.student.campaign.detail_activity_evaluation_components.create_detail_activity_evaluation_component", detail_activity_evaluation_components::create_detail_activity_evaluation_component)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.student.campaign.detail_activity_evaluation_components.options_detail_activity_evaluation_components", detail_activity_evaluation_components::options_detail_activity_evaluation_components),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.student.campaign.detail_activity_evaluation_components.get_detail_activity_evaluation_component", detail_activity_evaluation_components::get_detail_activity_evaluation_component)
                         .put_named("academic.student.campaign.detail_activity_evaluation_components.update_detail_activity_evaluation_component", detail_activity_evaluation_components::update_detail_activity_evaluation_component)
@@ -49,6 +57,10 @@ pub fn router() -> Router {
             Router::with_path("student-activities")
                 .get_named("academic.student.campaign.student_activities.list_student_activities", student_activities::list_student_activities)
                 .post_named("academic.student.campaign.student_activities.create_student_activitie", student_activities::create_student_activitie)
+                .push(
+                    Router::with_path("options")
+                        .post_named("academic.student.campaign.student_activities.options_student_activities", student_activities::options_student_activities),
+                )
                 .push(
                     Router::with_path("print_activity_plan/{id}")
                         .get_named("academic.student.campaign.student_activities.print_activity_plan", student_activities::print_activity_plan),

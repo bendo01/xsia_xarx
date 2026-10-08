@@ -30,6 +30,10 @@ pub fn router() -> Router {
                 .get_named("academic.campaign.transaction.calendar_details.list_calendar_details", calendar_details::list_calendar_details)
                 .post_named("academic.campaign.transaction.calendar_details.create_calendar_detail", calendar_details::create_calendar_detail)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.campaign.transaction.calendar_details.options_calendar_details", calendar_details::options_calendar_details),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.campaign.transaction.calendar_details.get_calendar_detail", calendar_details::get_calendar_detail)
                         .put_named("academic.campaign.transaction.calendar_details.update_calendar_detail", calendar_details::update_calendar_detail)
@@ -90,6 +94,10 @@ pub fn router() -> Router {
                 .get_named("academic.campaign.transaction.schedules.list_schedules", schedules::list_schedules)
                 .post_named("academic.campaign.transaction.schedules.create_schedule", schedules::create_schedule)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.campaign.transaction.schedules.options_schedules", schedules::options_schedules),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.campaign.transaction.schedules.get_schedule", schedules::get_schedule)
                         .put_named("academic.campaign.transaction.schedules.update_schedule", schedules::update_schedule)
@@ -100,6 +108,10 @@ pub fn router() -> Router {
             Router::with_path("teach-decrees")
                 .get_named("academic.campaign.transaction.teach_decrees.list_teach_decrees", teach_decrees::list_teach_decrees)
                 .post_named("academic.campaign.transaction.teach_decrees.create_teach_decree", teach_decrees::create_teach_decree)
+                .push(
+                    Router::with_path("options")
+                        .post_named("academic.campaign.transaction.teach_decrees.options_teach_decrees", teach_decrees::options_teach_decrees),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("academic.campaign.transaction.teach_decrees.get_teach_decree", teach_decrees::get_teach_decree)
@@ -112,6 +124,10 @@ pub fn router() -> Router {
                 .get_named("academic.campaign.transaction.teach_evaluations.list_teach_evaluations", teach_evaluations::list_teach_evaluations)
                 .post_named("academic.campaign.transaction.teach_evaluations.create_teach_evaluation", teach_evaluations::create_teach_evaluation)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.campaign.transaction.teach_evaluations.options_teach_evaluations", teach_evaluations::options_teach_evaluations),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.campaign.transaction.teach_evaluations.get_teach_evaluation", teach_evaluations::get_teach_evaluation)
                         .put_named("academic.campaign.transaction.teach_evaluations.update_teach_evaluation", teach_evaluations::update_teach_evaluation)
@@ -122,6 +138,10 @@ pub fn router() -> Router {
             Router::with_path("teach-lecturers")
                 .get_named("academic.campaign.transaction.teach_lecturers.list_teach_lecturers", teach_lecturers::list_teach_lecturers)
                 .post_named("academic.campaign.transaction.teach_lecturers.create_teach_lecturer", teach_lecturers::create_teach_lecturer)
+                .push(
+                    Router::with_path("options")
+                        .post_named("academic.campaign.transaction.teach_lecturers.options_teach_lecturers", teach_lecturers::options_teach_lecturers),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("academic.campaign.transaction.teach_lecturers.get_teach_lecturer", teach_lecturers::get_teach_lecturer)

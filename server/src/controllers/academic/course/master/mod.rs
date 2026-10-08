@@ -45,6 +45,10 @@ pub fn router() -> Router {
                 .get_named("academic.course.master.course_learn_plannings.list_course_learn_plannings", course_learn_plannings::list_course_learn_plannings)
                 .post_named("academic.course.master.course_learn_plannings.create_course_learn_planning", course_learn_plannings::create_course_learn_planning)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.course.master.course_learn_plannings.options_course_learn_plannings", course_learn_plannings::options_course_learn_plannings),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.course.master.course_learn_plannings.get_course_learn_planning", course_learn_plannings::get_course_learn_planning)
                         .put_named("academic.course.master.course_learn_plannings.update_course_learn_planning", course_learn_plannings::update_course_learn_planning)

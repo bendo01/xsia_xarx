@@ -12,6 +12,10 @@ pub fn router() -> Router {
                 .get_named("academic.lecturer.transaction.academic_groups.list_academic_groups", academic_groups::list_academic_groups)
                 .post_named("academic.lecturer.transaction.academic_groups.create_academic_group", academic_groups::create_academic_group)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.lecturer.transaction.academic_groups.options_academic_groups", academic_groups::options_academic_groups),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.lecturer.transaction.academic_groups.get_academic_group", academic_groups::get_academic_group)
                         .put_named("academic.lecturer.transaction.academic_groups.update_academic_group", academic_groups::update_academic_group)
@@ -23,6 +27,10 @@ pub fn router() -> Router {
                 .get_named("academic.lecturer.transaction.academic_ranks.list_academic_ranks", academic_ranks::list_academic_ranks)
                 .post_named("academic.lecturer.transaction.academic_ranks.create_academic_rank", academic_ranks::create_academic_rank)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.lecturer.transaction.academic_ranks.options_academic_ranks", academic_ranks::options_academic_ranks),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.lecturer.transaction.academic_ranks.get_academic_rank", academic_ranks::get_academic_rank)
                         .put_named("academic.lecturer.transaction.academic_ranks.update_academic_rank", academic_ranks::update_academic_rank)
@@ -33,6 +41,10 @@ pub fn router() -> Router {
             Router::with_path("homebases")
                 .get_named("academic.lecturer.transaction.homebases.list_homebases", homebases::list_homebases)
                 .post_named("academic.lecturer.transaction.homebases.create_homebase", homebases::create_homebase)
+                .push(
+                    Router::with_path("options")
+                        .post_named("academic.lecturer.transaction.homebases.options_homebases", homebases::options_homebases),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("academic.lecturer.transaction.homebases.get_homebase", homebases::get_homebase)

@@ -11,6 +11,10 @@ pub fn router() -> Router {
                 .get_named("person.master.biodata.list_biodata", biodata::list_biodata)
                 .post_named("person.master.biodata.create_biodata", biodata::create_biodata)
                 .push(
+                    Router::with_path("options")
+                        .post_named("person.master.biodata.options_biodata", biodata::options_biodata),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("person.master.biodata.get_biodata", biodata::get_biodata)
                         .put_named("person.master.biodata.update_biodata", biodata::update_biodata)

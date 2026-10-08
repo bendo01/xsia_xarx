@@ -14,6 +14,10 @@ pub fn router() -> Router {
                 .get_named("academic.prior_learning_recognition.transaction.decrees.list_decrees", decrees::list_decrees)
                 .post_named("academic.prior_learning_recognition.transaction.decrees.create_decree", decrees::create_decree)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.prior_learning_recognition.transaction.decrees.options_decrees", decrees::options_decrees),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.prior_learning_recognition.transaction.decrees.get_decree", decrees::get_decree)
                         .put_named("academic.prior_learning_recognition.transaction.decrees.update_decree", decrees::update_decree)
@@ -24,6 +28,10 @@ pub fn router() -> Router {
             Router::with_path("evaluation-details")
                 .get_named("academic.prior_learning_recognition.transaction.evaluation_details.list_evaluation_details", evaluation_details::list_evaluation_details)
                 .post_named("academic.prior_learning_recognition.transaction.evaluation_details.create_evaluation_detail", evaluation_details::create_evaluation_detail)
+                .push(
+                    Router::with_path("options")
+                        .post_named("academic.prior_learning_recognition.transaction.evaluation_details.options_evaluation_details", evaluation_details::options_evaluation_details),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("academic.prior_learning_recognition.transaction.evaluation_details.get_evaluation_detail", evaluation_details::get_evaluation_detail)
@@ -36,6 +44,10 @@ pub fn router() -> Router {
                 .get_named("academic.prior_learning_recognition.transaction.evaluations.list_evaluations", evaluations::list_evaluations)
                 .post_named("academic.prior_learning_recognition.transaction.evaluations.create_evaluation", evaluations::create_evaluation)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.prior_learning_recognition.transaction.evaluations.options_evaluations", evaluations::options_evaluations),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.prior_learning_recognition.transaction.evaluations.get_evaluation", evaluations::get_evaluation)
                         .put_named("academic.prior_learning_recognition.transaction.evaluations.update_evaluation", evaluations::update_evaluation)
@@ -46,6 +58,10 @@ pub fn router() -> Router {
             Router::with_path("evaluators")
                 .get_named("academic.prior_learning_recognition.transaction.evaluators.list_evaluators", evaluators::list_evaluators)
                 .post_named("academic.prior_learning_recognition.transaction.evaluators.create_evaluator", evaluators::create_evaluator)
+                .push(
+                    Router::with_path("options")
+                        .post_named("academic.prior_learning_recognition.transaction.evaluators.options_evaluators", evaluators::options_evaluators),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("academic.prior_learning_recognition.transaction.evaluators.get_evaluator", evaluators::get_evaluator)

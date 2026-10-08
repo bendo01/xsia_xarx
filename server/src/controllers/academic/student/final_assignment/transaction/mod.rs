@@ -16,6 +16,10 @@ pub fn router() -> Router {
                 .get_named("academic.student.final_assignment.transaction.advisers.list_advisers", advisers::list_advisers)
                 .post_named("academic.student.final_assignment.transaction.advisers.create_adviser", advisers::create_adviser)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.student.final_assignment.transaction.advisers.options_advisers", advisers::options_advisers),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.student.final_assignment.transaction.advisers.get_adviser", advisers::get_adviser)
                         .put_named("academic.student.final_assignment.transaction.advisers.update_adviser", advisers::update_adviser)
@@ -26,6 +30,10 @@ pub fn router() -> Router {
             Router::with_path("evaluation-details")
                 .get_named("academic.student.final_assignment.transaction.evaluation_details.list_evaluation_details", evaluation_details::list_evaluation_details)
                 .post_named("academic.student.final_assignment.transaction.evaluation_details.create_evaluation_detail", evaluation_details::create_evaluation_detail)
+                .push(
+                    Router::with_path("options")
+                        .post_named("academic.student.final_assignment.transaction.evaluation_details.options_evaluation_details", evaluation_details::options_evaluation_details),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("academic.student.final_assignment.transaction.evaluation_details.get_evaluation_detail", evaluation_details::get_evaluation_detail)
@@ -38,6 +46,10 @@ pub fn router() -> Router {
                 .get_named("academic.student.final_assignment.transaction.evaluation_summaries.list_evaluation_summaries", evaluation_summaries::list_evaluation_summaries)
                 .post_named("academic.student.final_assignment.transaction.evaluation_summaries.create_evaluation_summarie", evaluation_summaries::create_evaluation_summarie)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.student.final_assignment.transaction.evaluation_summaries.options_evaluation_summaries", evaluation_summaries::options_evaluation_summaries),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.student.final_assignment.transaction.evaluation_summaries.get_evaluation_summarie", evaluation_summaries::get_evaluation_summarie)
                         .put_named("academic.student.final_assignment.transaction.evaluation_summaries.update_evaluation_summarie", evaluation_summaries::update_evaluation_summarie)
@@ -48,6 +60,10 @@ pub fn router() -> Router {
             Router::with_path("final-assignment-decrees")
                 .get_named("academic.student.final_assignment.transaction.final_assignment_decrees.list_final_assignment_decrees", final_assignment_decrees::list_final_assignment_decrees)
                 .post_named("academic.student.final_assignment.transaction.final_assignment_decrees.create_final_assignment_decree", final_assignment_decrees::create_final_assignment_decree)
+                .push(
+                    Router::with_path("options")
+                        .post_named("academic.student.final_assignment.transaction.final_assignment_decrees.options_final_assignment_decrees", final_assignment_decrees::options_final_assignment_decrees),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("academic.student.final_assignment.transaction.final_assignment_decrees.get_final_assignment_decree", final_assignment_decrees::get_final_assignment_decree)
@@ -60,6 +76,10 @@ pub fn router() -> Router {
                 .get_named("academic.student.final_assignment.transaction.prerequisites.list_prerequisites", prerequisites::list_prerequisites)
                 .post_named("academic.student.final_assignment.transaction.prerequisites.create_prerequisite", prerequisites::create_prerequisite)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.student.final_assignment.transaction.prerequisites.options_prerequisites", prerequisites::options_prerequisites),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.student.final_assignment.transaction.prerequisites.get_prerequisite", prerequisites::get_prerequisite)
                         .put_named("academic.student.final_assignment.transaction.prerequisites.update_prerequisite", prerequisites::update_prerequisite)
@@ -71,6 +91,10 @@ pub fn router() -> Router {
                 .get_named("academic.student.final_assignment.transaction.schedules.list_schedules", schedules::list_schedules)
                 .post_named("academic.student.final_assignment.transaction.schedules.create_schedule", schedules::create_schedule)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.student.final_assignment.transaction.schedules.options_schedules", schedules::options_schedules),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.student.final_assignment.transaction.schedules.get_schedule", schedules::get_schedule)
                         .put_named("academic.student.final_assignment.transaction.schedules.update_schedule", schedules::update_schedule)
@@ -81,6 +105,10 @@ pub fn router() -> Router {
             Router::with_path("submissions")
                 .get_named("academic.student.final_assignment.transaction.submissions.list_submissions", submissions::list_submissions)
                 .post_named("academic.student.final_assignment.transaction.submissions.create_submission", submissions::create_submission)
+                .push(
+                    Router::with_path("options")
+                        .post_named("academic.student.final_assignment.transaction.submissions.options_submissions", submissions::options_submissions),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("academic.student.final_assignment.transaction.submissions.get_submission", submissions::get_submission)

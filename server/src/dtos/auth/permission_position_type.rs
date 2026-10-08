@@ -40,3 +40,10 @@ pub struct PaginatedPermissionPositionTypeResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct PermissionPositionTypeOptionRequest {
+    pub search: Option<String>,
+    pub position_type_id: Option<Uuid>,
+    pub permission_id: Option<Uuid>,
+}

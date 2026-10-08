@@ -59,3 +59,10 @@ pub struct PaginatedDocumentResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct DocumentOptionRequest {
+    pub search: Option<String>,
+    pub candidate_id: Option<Uuid>,
+    pub document_type_id: Option<Uuid>,
+}

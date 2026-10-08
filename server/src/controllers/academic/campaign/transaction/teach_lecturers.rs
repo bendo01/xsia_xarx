@@ -1,17 +1,17 @@
 use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
-    PaginatorTrait, QueryFilter, QueryOrder, Set,
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel, PaginatorTrait,
+    QueryFilter, QueryOrder, Set, QuerySelect,
 };
 use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::academic::campaign::transaction::teach_lecturers::{
-    CreateTeachLecturerRequest, TeachLecturerQuery, TeachLecturerResponse, PaginatedTeachLecturerResponse,
-    UpdateTeachLecturerRequest,
+    CreateTeachLecturerRequest, TeachLecturerQuery, TeachLecturerResponse,
+    PaginatedTeachLecturerResponse, UpdateTeachLecturerRequest, TeachLecturerOptionRequest,
 };
-use crate::dtos::common::reference::MessageResponse;
+use crate::dtos::common::reference::{MessageResponse, OptionItem};
 use crate::models::academic::campaign::transaction::teach_lecturers as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
@@ -283,4 +283,54 @@ pub async fn delete_teach_lecturer(
         Ok(Json(MessageResponse {
             message: "TeachLecturer deleted successfully".to_string(),
         }))
+}
+
+#[endpoint(tags("Academic - Campaign - Transaction - TeachLecturer"), status_codes(200, 500))]
+pub async fn options_teach_lecturers(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<Vec<OptionItem>>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let payload: TeachLecturerOptionRequest = req
+        .parse_json()
+        .await
+        .ok()
+        .or_else(|| req.parse_queries().ok())
+        .unwrap_or_default();
+
+    let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
+
+    if let Some(ref search) = payload.search {
+        let search_trimmed = search.trim();
+        if !search_trimmed.is_empty() {
+            select = select.filter(entity_mod::Column::Name.contains(search_trimmed));
+        }
+    }
+
+    if let Some(teach_id) = payload.teach_id {
+        select = select.filter(entity_mod::Column::TeachId.eq(teach_id));
+    }
+
+    if let Some(lecturer_id) = payload.lecturer_id {
+        select = select.filter(entity_mod::Column::LecturerId.eq(lecturer_id));
+    }
+
+    let items = select
+        .order_by_asc(entity_mod::Column::Name)
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let data = items
+        .into_iter()
+        .map(|item| OptionItem {
+            id: item.id,
+            name: item.name.unwrap_or_default(),
+        })
+        .collect();
+
+    Ok(Json(data))
 }

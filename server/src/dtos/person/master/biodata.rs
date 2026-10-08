@@ -80,3 +80,9 @@ pub struct PaginatedBiodataResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct BiodataOptionRequest {
+    pub search: Option<String>,
+    pub individual_id: Option<Uuid>,
+}

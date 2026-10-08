@@ -1,17 +1,17 @@
 use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
-    PaginatorTrait, QueryFilter, QueryOrder, Set,
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel, PaginatorTrait,
+    QueryFilter, QueryOrder, Set, QuerySelect,
 };
 use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::contact::master::websites::{
     CreateWebsiteRequest, WebsiteQuery, WebsiteResponse, PaginatedWebsiteResponse,
-    UpdateWebsiteRequest,
+    UpdateWebsiteRequest, WebsiteOptionRequest,
 };
-use crate::dtos::common::reference::MessageResponse;
+use crate::dtos::common::reference::{MessageResponse, OptionItem};
 use crate::models::contact::master::websites as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
@@ -237,4 +237,62 @@ pub async fn delete_website(
         Ok(Json(MessageResponse {
             message: "Website deleted successfully".to_string(),
         }))
+}
+
+#[endpoint(tags("Contact - Master - Website"), status_codes(200, 500))]
+pub async fn options_websites(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<Vec<OptionItem>>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let payload: WebsiteOptionRequest = req
+        .parse_json()
+        .await
+        .ok()
+        .or_else(|| req.parse_queries().ok())
+        .unwrap_or_default();
+
+    let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
+    let mut is_scoped = false;
+
+    if let Some(websiteable_id) = payload.websiteable_id {
+        select = select.filter(entity_mod::Column::WebsiteableId.eq(websiteable_id));
+        is_scoped = true;
+    }
+
+    if let Some(website_type_id) = payload.website_type_id {
+        select = select.filter(entity_mod::Column::WebsiteTypeId.eq(website_type_id));
+        is_scoped = true;
+    }
+
+    if let Some(ref search) = payload.search {
+        let search_trimmed = search.trim();
+        if !search_trimmed.is_empty() {
+            select = select.filter(entity_mod::Column::WebsiteUrl.contains(search_trimmed));
+        }
+    }
+
+    // Unscoped requests are capped; slim-select narrows the list through `search`.
+    if !is_scoped {
+        select = select.limit(100);
+    }
+
+    let items = select
+        .order_by_asc(entity_mod::Column::WebsiteUrl)
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let data = items
+        .into_iter()
+        .map(|item| OptionItem {
+            id: item.id,
+            name: item.website_url,
+        })
+        .collect();
+
+    Ok(Json(data))
 }

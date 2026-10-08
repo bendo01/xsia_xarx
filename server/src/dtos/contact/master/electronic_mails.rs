@@ -50,3 +50,10 @@ pub struct PaginatedElectronicMailResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct ElectronicMailOptionRequest {
+    pub search: Option<String>,
+    pub electronic_mailable_id: Option<Uuid>,
+    pub electronic_mail_type_id: Option<Uuid>,
+}

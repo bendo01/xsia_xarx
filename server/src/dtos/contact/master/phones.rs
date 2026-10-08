@@ -50,3 +50,10 @@ pub struct PaginatedPhoneResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct PhoneOptionRequest {
+    pub search: Option<String>,
+    pub phoneable_id: Option<Uuid>,
+    pub phone_type_id: Option<Uuid>,
+}

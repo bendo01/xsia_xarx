@@ -1,18 +1,21 @@
+use std::collections::HashMap;
 use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
-    PaginatorTrait, QueryFilter, QueryOrder, Set,
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel, PaginatorTrait,
+    QueryFilter, QueryOrder, Set, Condition, QuerySelect,
 };
 use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::academic::survey::master::bundle_question::{
-    CreateBundleQuestionRequest, BundleQuestionQuery, BundleQuestionResponse, PaginatedBundleQuestionResponse,
-    UpdateBundleQuestionRequest,
+    CreateBundleQuestionRequest, BundleQuestionQuery, BundleQuestionResponse,
+    PaginatedBundleQuestionResponse, UpdateBundleQuestionRequest, BundleQuestionOptionRequest,
 };
-use crate::dtos::common::reference::MessageResponse;
+use crate::dtos::common::reference::{MessageResponse, OptionItem};
 use crate::models::academic::survey::master::bundle_question as entity_mod;
+use crate::models::academic::survey::master::bundles as bundle_mod;
+use crate::models::academic::survey::master::questions as question_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Survey - Master - BundleQuestion"), status_codes(200, 500))]
@@ -221,4 +224,111 @@ pub async fn delete_bundle_question(
         Ok(Json(MessageResponse {
             message: "BundleQuestion deleted successfully".to_string(),
         }))
+}
+
+#[endpoint(tags("Academic - Survey - Master - BundleQuestion"), status_codes(200, 500))]
+pub async fn options_bundle_question(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<Vec<OptionItem>>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let payload: BundleQuestionOptionRequest = req
+        .parse_json()
+        .await
+        .ok()
+        .or_else(|| req.parse_queries().ok())
+        .unwrap_or_default();
+
+    let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
+    let mut is_scoped = false;
+
+    if let Some(bundle_id) = payload.bundle_id {
+        select = select.filter(entity_mod::Column::BundleId.eq(bundle_id));
+        is_scoped = true;
+    }
+
+    if let Some(question_id) = payload.question_id {
+        select = select.filter(entity_mod::Column::QuestionId.eq(question_id));
+        is_scoped = true;
+    }
+
+    if let Some(ref search) = payload.search {
+        let search_trimmed = search.trim();
+        if !search_trimmed.is_empty() {
+            let bundle_ids: Vec<Uuid> = bundle_mod::Entity::find()
+                .filter(bundle_mod::Column::DeletedAt.is_null())
+                .filter(bundle_mod::Column::Name.contains(search_trimmed))
+                .select_only()
+                .column(bundle_mod::Column::Id)
+                .into_tuple()
+                .all(db)
+                .await
+                .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+            let question_ids: Vec<Uuid> = question_mod::Entity::find()
+                .filter(question_mod::Column::DeletedAt.is_null())
+                .filter(question_mod::Column::Name.contains(search_trimmed))
+                .select_only()
+                .column(question_mod::Column::Id)
+                .into_tuple()
+                .all(db)
+                .await
+                .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+            select = select.filter(
+                Condition::any()
+                    .add(entity_mod::Column::BundleId.is_in(bundle_ids))
+                    .add(entity_mod::Column::QuestionId.is_in(question_ids)),
+            );
+        }
+    }
+
+    // Unscoped requests are capped; slim-select narrows the list through `search`.
+    if !is_scoped {
+        select = select.limit(100);
+    }
+
+    let items = select
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let bundle_names: HashMap<Uuid, String> = bundle_mod::Entity::find()
+        .filter(bundle_mod::Column::Id.is_in(items.iter().map(|item| item.bundle_id).collect::<Vec<_>>()))
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .into_iter()
+        .map(|m| (m.id, m.name))
+        .collect();
+
+    let question_names: HashMap<Uuid, String> = question_mod::Entity::find()
+        .filter(question_mod::Column::Id.is_in(items.iter().map(|item| item.question_id).collect::<Vec<_>>()))
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .into_iter()
+        .map(|m| (m.id, m.name))
+        .collect();
+
+    let mut data: Vec<OptionItem> = items
+        .into_iter()
+        .map(|item| OptionItem {
+            id: item.id,
+            name: [
+                bundle_names.get(&item.bundle_id).cloned(),
+                question_names.get(&item.question_id).cloned(),
+            ]
+            .into_iter()
+            .flatten()
+            .collect::<Vec<_>>()
+            .join(" - "),
+        })
+        .collect();
+    data.sort_by(|a, b| a.name.cmp(&b.name));
+
+    Ok(Json(data))
 }
