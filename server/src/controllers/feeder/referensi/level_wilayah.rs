@@ -16,7 +16,7 @@ use crate::models::feeder::referensi::level_wilayah as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Referensi - LevelWilayah"), status_codes(200, 500))]
-pub async fn list_level_wilayah(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedLevelWilayahResponse>, StatusError> {
@@ -62,7 +62,7 @@ pub async fn list_level_wilayah(
 }
 
 #[endpoint(tags("Feeder - Referensi - LevelWilayah"), status_codes(200, 400, 404, 500))]
-pub async fn get_level_wilayah(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<LevelWilayahResponse>, StatusError> {
@@ -93,7 +93,7 @@ pub async fn get_level_wilayah(
 
     }))
 }#[endpoint(tags("Feeder - Referensi - LevelWilayah"), status_codes(200, 400, 500))]
-pub async fn create_level_wilayah(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<LevelWilayahResponse>, StatusError> {
@@ -139,7 +139,7 @@ pub async fn create_level_wilayah(
 }
 
 #[endpoint(tags("Feeder - Referensi - LevelWilayah"), status_codes(200, 400, 404, 500))]
-pub async fn update_level_wilayah(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<LevelWilayahResponse>, StatusError> {
@@ -191,7 +191,7 @@ pub async fn update_level_wilayah(
         }))
 }
 #[endpoint(tags("Feeder - Referensi - LevelWilayah"), status_codes(200, 400, 404, 500))]
-pub async fn delete_level_wilayah(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

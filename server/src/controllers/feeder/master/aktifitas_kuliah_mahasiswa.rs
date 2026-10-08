@@ -16,7 +16,7 @@ use crate::models::feeder::master::aktifitas_kuliah_mahasiswa as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Master - AktifitasKuliahMahasiswa"), status_codes(200, 500))]
-pub async fn list_aktifitas_kuliah_mahasiswa(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedAktifitasKuliahMahasiswaResponse>, StatusError> {
@@ -77,7 +77,7 @@ pub async fn list_aktifitas_kuliah_mahasiswa(
 }
 
 #[endpoint(tags("Feeder - Master - AktifitasKuliahMahasiswa"), status_codes(200, 400, 404, 500))]
-pub async fn get_aktifitas_kuliah_mahasiswa(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<AktifitasKuliahMahasiswaResponse>, StatusError> {
@@ -123,7 +123,7 @@ pub async fn get_aktifitas_kuliah_mahasiswa(
 
     }))
 }#[endpoint(tags("Feeder - Master - AktifitasKuliahMahasiswa"), status_codes(200, 400, 500))]
-pub async fn create_aktifitas_kuliah_mahasiswa(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<AktifitasKuliahMahasiswaResponse>, StatusError> {
@@ -199,7 +199,7 @@ pub async fn create_aktifitas_kuliah_mahasiswa(
 }
 
 #[endpoint(tags("Feeder - Master - AktifitasKuliahMahasiswa"), status_codes(200, 400, 404, 500))]
-pub async fn update_aktifitas_kuliah_mahasiswa(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<AktifitasKuliahMahasiswaResponse>, StatusError> {
@@ -311,7 +311,7 @@ pub async fn update_aktifitas_kuliah_mahasiswa(
         }))
 }
 #[endpoint(tags("Feeder - Master - AktifitasKuliahMahasiswa"), status_codes(200, 400, 404, 500))]
-pub async fn delete_aktifitas_kuliah_mahasiswa(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

@@ -16,7 +16,7 @@ use crate::models::location::regencies as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Location -  - Regency"), status_codes(200, 500))]
-pub async fn list_regencies(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedRegencyResponse>, StatusError> {
@@ -86,7 +86,7 @@ pub async fn list_regencies(
 }
 
 #[endpoint(tags("Location -  - Regency"), status_codes(200, 400, 404, 500))]
-pub async fn get_regencie(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<RegencyResponse>, StatusError> {
@@ -133,7 +133,7 @@ pub async fn get_regencie(
 
     }))
 }#[endpoint(tags("Location -  - Regency"), status_codes(200, 400, 500))]
-pub async fn create_regencie(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<RegencyResponse>, StatusError> {
@@ -211,7 +211,7 @@ pub async fn create_regencie(
 }
 
 #[endpoint(tags("Location -  - Regency"), status_codes(200, 400, 404, 500))]
-pub async fn update_regencie(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<RegencyResponse>, StatusError> {
@@ -327,7 +327,7 @@ pub async fn update_regencie(
         }))
 }
 #[endpoint(tags("Location -  - Regency"), status_codes(200, 400, 404, 500))]
-pub async fn delete_regencie(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -360,7 +360,7 @@ pub async fn delete_regencie(
 }
 
 #[endpoint(tags("Location -  - Regency"), status_codes(200, 500))]
-pub async fn options_regencies(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

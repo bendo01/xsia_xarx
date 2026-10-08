@@ -16,7 +16,7 @@ use crate::models::feeder::akun::kredential as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Akun - Kredential"), status_codes(200, 500))]
-pub async fn list_kredential(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedKredentialResponse>, StatusError> {
@@ -64,7 +64,7 @@ pub async fn list_kredential(
 }
 
 #[endpoint(tags("Feeder - Akun - Kredential"), status_codes(200, 400, 404, 500))]
-pub async fn get_kredential(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<KredentialResponse>, StatusError> {
@@ -97,7 +97,7 @@ pub async fn get_kredential(
 
     }))
 }#[endpoint(tags("Feeder - Akun - Kredential"), status_codes(200, 400, 500))]
-pub async fn create_kredential(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<KredentialResponse>, StatusError> {
@@ -147,7 +147,7 @@ pub async fn create_kredential(
 }
 
 #[endpoint(tags("Feeder - Akun - Kredential"), status_codes(200, 400, 404, 500))]
-pub async fn update_kredential(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<KredentialResponse>, StatusError> {
@@ -207,7 +207,7 @@ pub async fn update_kredential(
         }))
 }
 #[endpoint(tags("Feeder - Akun - Kredential"), status_codes(200, 400, 404, 500))]
-pub async fn delete_kredential(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

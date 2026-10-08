@@ -16,7 +16,7 @@ use crate::models::location::continents as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Location -  - Continent"), status_codes(200, 500))]
-pub async fn list_continents(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedContinentResponse>, StatusError> {
@@ -72,7 +72,7 @@ pub async fn list_continents(
 }
 
 #[endpoint(tags("Location -  - Continent"), status_codes(200, 400, 404, 500))]
-pub async fn get_continent(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<ContinentResponse>, StatusError> {
@@ -105,7 +105,7 @@ pub async fn get_continent(
 
     }))
 }#[endpoint(tags("Location -  - Continent"), status_codes(200, 400, 500))]
-pub async fn create_continent(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ContinentResponse>, StatusError> {
@@ -155,7 +155,7 @@ pub async fn create_continent(
 }
 
 #[endpoint(tags("Location -  - Continent"), status_codes(200, 400, 404, 500))]
-pub async fn update_continent(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ContinentResponse>, StatusError> {
@@ -215,7 +215,7 @@ pub async fn update_continent(
         }))
 }
 #[endpoint(tags("Location -  - Continent"), status_codes(200, 400, 404, 500))]
-pub async fn delete_continent(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -248,7 +248,7 @@ pub async fn delete_continent(
 }
 
 #[endpoint(tags("Location -  - Continent"), status_codes(200, 500))]
-pub async fn options_continents(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

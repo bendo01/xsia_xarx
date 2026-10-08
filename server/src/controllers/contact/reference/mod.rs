@@ -10,62 +10,62 @@ pub fn router() -> Router {
     Router::with_path("reference")
         .push(
             Router::with_path("electronic-mail-types")
-                .get_named("contact.reference.electronic_mail_types.list_electronic_mail_types", electronic_mail_types::list_electronic_mail_types)
-                .post_named("contact.reference.electronic_mail_types.create_electronic_mail_type", electronic_mail_types::create_electronic_mail_type)
+                .get_named("contact.reference.electronic_mail_types.index", electronic_mail_types::index)
+                .post_named("contact.reference.electronic_mail_types.store", electronic_mail_types::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("contact.reference.electronic_mail_types.options_electronic_mail_types", electronic_mail_types::options_electronic_mail_types),
+                        .post_named("contact.reference.electronic_mail_types.option_select", electronic_mail_types::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("contact.reference.electronic_mail_types.get_electronic_mail_type", electronic_mail_types::get_electronic_mail_type)
-                        .put_named("contact.reference.electronic_mail_types.update_electronic_mail_type", electronic_mail_types::update_electronic_mail_type)
-                        .delete_named("contact.reference.electronic_mail_types.delete_electronic_mail_type", electronic_mail_types::delete_electronic_mail_type),
+                        .get_named("contact.reference.electronic_mail_types.show", electronic_mail_types::show)
+                        .put_named("contact.reference.electronic_mail_types.update", electronic_mail_types::update)
+                        .delete_named("contact.reference.electronic_mail_types.delete", electronic_mail_types::delete),
                 ),
         )
         .push(
             Router::with_path("phone-types")
-                .get_named("contact.reference.phone_types.list_phone_types", phone_types::list_phone_types)
-                .post_named("contact.reference.phone_types.create_phone_type", phone_types::create_phone_type)
+                .get_named("contact.reference.phone_types.index", phone_types::index)
+                .post_named("contact.reference.phone_types.store", phone_types::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("contact.reference.phone_types.options_phone_types", phone_types::options_phone_types),
+                        .post_named("contact.reference.phone_types.option_select", phone_types::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("contact.reference.phone_types.get_phone_type", phone_types::get_phone_type)
-                        .put_named("contact.reference.phone_types.update_phone_type", phone_types::update_phone_type)
-                        .delete_named("contact.reference.phone_types.delete_phone_type", phone_types::delete_phone_type),
+                        .get_named("contact.reference.phone_types.show", phone_types::show)
+                        .put_named("contact.reference.phone_types.update", phone_types::update)
+                        .delete_named("contact.reference.phone_types.delete", phone_types::delete),
                 ),
         )
         .push(
             Router::with_path("residence-types")
-                .get_named("contact.reference.residence_types.list_residence_types", residence_types::list_residence_types)
-                .post_named("contact.reference.residence_types.create_residence_type", residence_types::create_residence_type)
+                .get_named("contact.reference.residence_types.index", residence_types::index)
+                .post_named("contact.reference.residence_types.store", residence_types::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("contact.reference.residence_types.options_residence_types", residence_types::options_residence_types),
+                        .post_named("contact.reference.residence_types.option_select", residence_types::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("contact.reference.residence_types.get_residence_type", residence_types::get_residence_type)
-                        .put_named("contact.reference.residence_types.update_residence_type", residence_types::update_residence_type)
-                        .delete_named("contact.reference.residence_types.delete_residence_type", residence_types::delete_residence_type),
+                        .get_named("contact.reference.residence_types.show", residence_types::show)
+                        .put_named("contact.reference.residence_types.update", residence_types::update)
+                        .delete_named("contact.reference.residence_types.delete", residence_types::delete),
                 ),
         )
         .push(
             Router::with_path("website-types")
-                .get_named("contact.reference.website_types.list_website_types", website_types::list_website_types)
-                .post_named("contact.reference.website_types.create_website_type", website_types::create_website_type)
+                .get_named("contact.reference.website_types.index", website_types::index)
+                .post_named("contact.reference.website_types.store", website_types::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("contact.reference.website_types.options_website_types", website_types::options_website_types),
+                        .post_named("contact.reference.website_types.option_select", website_types::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("contact.reference.website_types.get_website_type", website_types::get_website_type)
-                        .put_named("contact.reference.website_types.update_website_type", website_types::update_website_type)
-                        .delete_named("contact.reference.website_types.delete_website_type", website_types::delete_website_type),
+                        .get_named("contact.reference.website_types.show", website_types::show)
+                        .put_named("contact.reference.website_types.update", website_types::update)
+                        .delete_named("contact.reference.website_types.delete", website_types::delete),
                 ),
         )
 }

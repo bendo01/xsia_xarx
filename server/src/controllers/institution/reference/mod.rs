@@ -10,62 +10,62 @@ pub fn router() -> Router {
     Router::with_path("reference")
         .push(
             Router::with_path("categories")
-                .get_named("institution.reference.categories.list_categories", categories::list_categories)
-                .post_named("institution.reference.categories.create_categorie", categories::create_categorie)
+                .get_named("institution.reference.categories.index", categories::index)
+                .post_named("institution.reference.categories.store", categories::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("institution.reference.categories.options_categories", categories::options_categories),
+                        .post_named("institution.reference.categories.option_select", categories::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("institution.reference.categories.get_categorie", categories::get_categorie)
-                        .put_named("institution.reference.categories.update_categorie", categories::update_categorie)
-                        .delete_named("institution.reference.categories.delete_categorie", categories::delete_categorie),
+                        .get_named("institution.reference.categories.show", categories::show)
+                        .put_named("institution.reference.categories.update", categories::update)
+                        .delete_named("institution.reference.categories.delete", categories::delete),
                 ),
         )
         .push(
             Router::with_path("position-type")
-                .get_named("institution.reference.position_type.list_position_type", position_type::list_position_type)
-                .post_named("institution.reference.position_type.create_position_type", position_type::create_position_type)
+                .get_named("institution.reference.position_type.index", position_type::index)
+                .post_named("institution.reference.position_type.store", position_type::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("institution.reference.position_type.options_position_type", position_type::options_position_type),
+                        .post_named("institution.reference.position_type.option_select", position_type::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("institution.reference.position_type.get_position_type", position_type::get_position_type)
-                        .put_named("institution.reference.position_type.update_position_type", position_type::update_position_type)
-                        .delete_named("institution.reference.position_type.delete_position_type", position_type::delete_position_type),
+                        .get_named("institution.reference.position_type.show", position_type::show)
+                        .put_named("institution.reference.position_type.update", position_type::update)
+                        .delete_named("institution.reference.position_type.delete", position_type::delete),
                 ),
         )
         .push(
             Router::with_path("unit-types")
-                .get_named("institution.reference.unit_types.list_unit_types", unit_types::list_unit_types)
-                .post_named("institution.reference.unit_types.create_unit_type", unit_types::create_unit_type)
+                .get_named("institution.reference.unit_types.index", unit_types::index)
+                .post_named("institution.reference.unit_types.store", unit_types::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("institution.reference.unit_types.options_unit_types", unit_types::options_unit_types),
+                        .post_named("institution.reference.unit_types.option_select", unit_types::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("institution.reference.unit_types.get_unit_type", unit_types::get_unit_type)
-                        .put_named("institution.reference.unit_types.update_unit_type", unit_types::update_unit_type)
-                        .delete_named("institution.reference.unit_types.delete_unit_type", unit_types::delete_unit_type),
+                        .get_named("institution.reference.unit_types.show", unit_types::show)
+                        .put_named("institution.reference.unit_types.update", unit_types::update)
+                        .delete_named("institution.reference.unit_types.delete", unit_types::delete),
                 ),
         )
         .push(
             Router::with_path("varieties")
-                .get_named("institution.reference.varieties.list_varieties", varieties::list_varieties)
-                .post_named("institution.reference.varieties.create_varietie", varieties::create_varietie)
+                .get_named("institution.reference.varieties.index", varieties::index)
+                .post_named("institution.reference.varieties.store", varieties::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("institution.reference.varieties.options_varieties", varieties::options_varieties),
+                        .post_named("institution.reference.varieties.option_select", varieties::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("institution.reference.varieties.get_varietie", varieties::get_varietie)
-                        .put_named("institution.reference.varieties.update_varietie", varieties::update_varietie)
-                        .delete_named("institution.reference.varieties.delete_varietie", varieties::delete_varietie),
+                        .get_named("institution.reference.varieties.show", varieties::show)
+                        .put_named("institution.reference.varieties.update", varieties::update)
+                        .delete_named("institution.reference.varieties.delete", varieties::delete),
                 ),
         )
 }

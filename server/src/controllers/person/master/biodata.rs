@@ -18,7 +18,7 @@ use crate::models::person::master::individual as individual_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Person - Master - Biodata"), status_codes(200, 500))]
-pub async fn list_biodata(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedBiodataResponse>, StatusError> {
@@ -76,7 +76,7 @@ pub async fn list_biodata(
 }
 
 #[endpoint(tags("Person - Master - Biodata"), status_codes(200, 400, 404, 500))]
-pub async fn get_biodata(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<BiodataResponse>, StatusError> {
@@ -119,7 +119,7 @@ pub async fn get_biodata(
 
     }))
 }#[endpoint(tags("Person - Master - Biodata"), status_codes(200, 400, 500))]
-pub async fn create_biodata(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<BiodataResponse>, StatusError> {
@@ -189,7 +189,7 @@ pub async fn create_biodata(
 }
 
 #[endpoint(tags("Person - Master - Biodata"), status_codes(200, 400, 404, 500))]
-pub async fn update_biodata(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<BiodataResponse>, StatusError> {
@@ -289,7 +289,7 @@ pub async fn update_biodata(
         }))
 }
 #[endpoint(tags("Person - Master - Biodata"), status_codes(200, 400, 404, 500))]
-pub async fn delete_biodata(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -322,7 +322,7 @@ pub async fn delete_biodata(
 }
 
 #[endpoint(tags("Person - Master - Biodata"), status_codes(200, 500))]
-pub async fn options_biodata(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

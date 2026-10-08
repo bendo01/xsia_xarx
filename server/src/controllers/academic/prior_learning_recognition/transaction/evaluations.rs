@@ -19,7 +19,7 @@ use crate::models::academic::course::master::course_evaluation_plannings as cour
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Prior_Learning_Recognition - Transaction - Evaluation"), status_codes(200, 500))]
-pub async fn list_evaluations(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedEvaluationResponse>, StatusError> {
@@ -68,7 +68,7 @@ pub async fn list_evaluations(
 }
 
 #[endpoint(tags("Academic - Prior_Learning_Recognition - Transaction - Evaluation"), status_codes(200, 400, 404, 500))]
-pub async fn get_evaluation(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<EvaluationResponse>, StatusError> {
@@ -102,7 +102,7 @@ pub async fn get_evaluation(
 
     }))
 }#[endpoint(tags("Academic - Prior_Learning_Recognition - Transaction - Evaluation"), status_codes(200, 400, 500))]
-pub async fn create_evaluation(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<EvaluationResponse>, StatusError> {
@@ -154,7 +154,7 @@ pub async fn create_evaluation(
 }
 
 #[endpoint(tags("Academic - Prior_Learning_Recognition - Transaction - Evaluation"), status_codes(200, 400, 404, 500))]
-pub async fn update_evaluation(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<EvaluationResponse>, StatusError> {
@@ -218,7 +218,7 @@ pub async fn update_evaluation(
         }))
 }
 #[endpoint(tags("Academic - Prior_Learning_Recognition - Transaction - Evaluation"), status_codes(200, 400, 404, 500))]
-pub async fn delete_evaluation(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -251,7 +251,7 @@ pub async fn delete_evaluation(
 }
 
 #[endpoint(tags("Academic - Prior_Learning_Recognition - Transaction - Evaluation"), status_codes(200, 500))]
-pub async fn options_evaluations(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

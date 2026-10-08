@@ -14,7 +14,7 @@ use crate::models::academic::student::reference::resign_statuses as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Student - Reference - ResignStatuse"), status_codes(200, 500))]
-pub async fn list_resign_statuses(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedReferenceResponse>, StatusError> {
@@ -69,7 +69,7 @@ pub async fn list_resign_statuses(
 }
 
 #[endpoint(tags("Academic - Student - Reference - ResignStatuse"), status_codes(200, 400, 404, 500))]
-pub async fn get_resign_statuse(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<ReferenceResponse>, StatusError> {
@@ -101,7 +101,7 @@ pub async fn get_resign_statuse(
 
     }))
 }#[endpoint(tags("Academic - Student - Reference - ResignStatuse"), status_codes(200, 400, 500))]
-pub async fn create_resign_statuse(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ReferenceResponse>, StatusError> {
@@ -149,7 +149,7 @@ pub async fn create_resign_statuse(
 }
 
 #[endpoint(tags("Academic - Student - Reference - ResignStatuse"), status_codes(200, 400, 404, 500))]
-pub async fn update_resign_statuse(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ReferenceResponse>, StatusError> {
@@ -205,7 +205,7 @@ pub async fn update_resign_statuse(
         }))
 }
 #[endpoint(tags("Academic - Student - Reference - ResignStatuse"), status_codes(200, 400, 404, 500))]
-pub async fn delete_resign_statuse(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -238,7 +238,7 @@ pub async fn delete_resign_statuse(
 }
 
 #[endpoint(tags("Academic - Student - Reference - ResignStatuse"), status_codes(200, 500))]
-pub async fn options_resign_statuses(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

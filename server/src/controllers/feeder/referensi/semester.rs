@@ -16,7 +16,7 @@ use crate::models::feeder::referensi::semester as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Referensi - Semester"), status_codes(200, 500))]
-pub async fn list_semester(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedSemesterResponse>, StatusError> {
@@ -67,7 +67,7 @@ pub async fn list_semester(
 }
 
 #[endpoint(tags("Feeder - Referensi - Semester"), status_codes(200, 400, 404, 500))]
-pub async fn get_semester(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<SemesterResponse>, StatusError> {
@@ -103,7 +103,7 @@ pub async fn get_semester(
 
     }))
 }#[endpoint(tags("Feeder - Referensi - Semester"), status_codes(200, 400, 500))]
-pub async fn create_semester(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<SemesterResponse>, StatusError> {
@@ -159,7 +159,7 @@ pub async fn create_semester(
 }
 
 #[endpoint(tags("Feeder - Referensi - Semester"), status_codes(200, 400, 404, 500))]
-pub async fn update_semester(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<SemesterResponse>, StatusError> {
@@ -231,7 +231,7 @@ pub async fn update_semester(
         }))
 }
 #[endpoint(tags("Feeder - Referensi - Semester"), status_codes(200, 400, 404, 500))]
-pub async fn delete_semester(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

@@ -17,7 +17,7 @@ use crate::models::academic::course::master::course_evaluation_plannings as enti
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Course - Master - CourseEvaluationPlanning"), status_codes(200, 500))]
-pub async fn list_course_evaluation_plannings(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedCourseEvaluationPlanningResponse>, StatusError> {
@@ -80,7 +80,7 @@ pub async fn list_course_evaluation_plannings(
 }
 
 #[endpoint(tags("Academic - Course - Master - CourseEvaluationPlanning"), status_codes(200, 400, 404, 500))]
-pub async fn get_course_evaluation_planning(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<CourseEvaluationPlanningResponse>, StatusError> {
@@ -116,7 +116,7 @@ pub async fn get_course_evaluation_planning(
 
     }))
 }#[endpoint(tags("Academic - Course - Master - CourseEvaluationPlanning"), status_codes(200, 400, 500))]
-pub async fn create_course_evaluation_planning(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<CourseEvaluationPlanningResponse>, StatusError> {
@@ -172,7 +172,7 @@ pub async fn create_course_evaluation_planning(
 }
 
 #[endpoint(tags("Academic - Course - Master - CourseEvaluationPlanning"), status_codes(200, 400, 404, 500))]
-pub async fn update_course_evaluation_planning(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<CourseEvaluationPlanningResponse>, StatusError> {
@@ -244,7 +244,7 @@ pub async fn update_course_evaluation_planning(
         }))
 }
 #[endpoint(tags("Academic - Course - Master - CourseEvaluationPlanning"), status_codes(200, 400, 404, 500))]
-pub async fn delete_course_evaluation_planning(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -277,7 +277,7 @@ pub async fn delete_course_evaluation_planning(
 }
 
 #[endpoint(tags("Academic - Course - Master - CourseEvaluationPlanning"), status_codes(200, 500))]
-pub async fn options_course_evaluation_plannings(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

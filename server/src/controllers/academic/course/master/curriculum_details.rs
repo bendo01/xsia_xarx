@@ -16,7 +16,7 @@ use crate::models::academic::course::master::curriculum_details as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Course - Master - CurriculumDetail"), status_codes(200, 500))]
-pub async fn list_curriculum_details(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedCurriculumDetailResponse>, StatusError> {
@@ -78,7 +78,7 @@ pub async fn list_curriculum_details(
 }
 
 #[endpoint(tags("Academic - Course - Master - CurriculumDetail"), status_codes(200, 400, 404, 500))]
-pub async fn get_curriculum_detail(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<CurriculumDetailResponse>, StatusError> {
@@ -117,7 +117,7 @@ pub async fn get_curriculum_detail(
 
     }))
 }#[endpoint(tags("Academic - Course - Master - CurriculumDetail"), status_codes(200, 400, 500))]
-pub async fn create_curriculum_detail(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<CurriculumDetailResponse>, StatusError> {
@@ -179,7 +179,7 @@ pub async fn create_curriculum_detail(
 }
 
 #[endpoint(tags("Academic - Course - Master - CurriculumDetail"), status_codes(200, 400, 404, 500))]
-pub async fn update_curriculum_detail(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<CurriculumDetailResponse>, StatusError> {
@@ -263,7 +263,7 @@ pub async fn update_curriculum_detail(
         }))
 }
 #[endpoint(tags("Academic - Course - Master - CurriculumDetail"), status_codes(200, 400, 404, 500))]
-pub async fn delete_curriculum_detail(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -296,7 +296,7 @@ pub async fn delete_curriculum_detail(
 }
 
 #[endpoint(tags("Academic - Course - Master - CurriculumDetail"), status_codes(200, 500))]
-pub async fn options_curriculum_details(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

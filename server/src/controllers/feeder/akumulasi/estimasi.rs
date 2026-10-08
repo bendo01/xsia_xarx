@@ -16,7 +16,7 @@ use crate::models::feeder::akumulasi::estimasi as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Akumulasi - Estimasi"), status_codes(200, 500))]
-pub async fn list_estimasi(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedEstimasiResponse>, StatusError> {
@@ -69,7 +69,7 @@ pub async fn list_estimasi(
 }
 
 #[endpoint(tags("Feeder - Akumulasi - Estimasi"), status_codes(200, 400, 404, 500))]
-pub async fn get_estimasi(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<EstimasiResponse>, StatusError> {
@@ -103,7 +103,7 @@ pub async fn get_estimasi(
 
     }))
 }#[endpoint(tags("Feeder - Akumulasi - Estimasi"), status_codes(200, 400, 500))]
-pub async fn create_estimasi(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<EstimasiResponse>, StatusError> {
@@ -155,7 +155,7 @@ pub async fn create_estimasi(
 }
 
 #[endpoint(tags("Feeder - Akumulasi - Estimasi"), status_codes(200, 400, 404, 500))]
-pub async fn update_estimasi(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<EstimasiResponse>, StatusError> {
@@ -219,7 +219,7 @@ pub async fn update_estimasi(
         }))
 }
 #[endpoint(tags("Feeder - Akumulasi - Estimasi"), status_codes(200, 400, 404, 500))]
-pub async fn delete_estimasi(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

@@ -16,7 +16,7 @@ use crate::models::academic::survey::transaction::responds as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Survey - Transaction - Respond"), status_codes(200, 500))]
-pub async fn list_responds(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedRespondResponse>, StatusError> {
@@ -69,7 +69,7 @@ pub async fn list_responds(
 }
 
 #[endpoint(tags("Academic - Survey - Transaction - Respond"), status_codes(200, 400, 404, 500))]
-pub async fn get_respond(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<RespondResponse>, StatusError> {
@@ -103,7 +103,7 @@ pub async fn get_respond(
 
     }))
 }#[endpoint(tags("Academic - Survey - Transaction - Respond"), status_codes(200, 400, 500))]
-pub async fn create_respond(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<RespondResponse>, StatusError> {
@@ -155,7 +155,7 @@ pub async fn create_respond(
 }
 
 #[endpoint(tags("Academic - Survey - Transaction - Respond"), status_codes(200, 400, 404, 500))]
-pub async fn update_respond(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<RespondResponse>, StatusError> {
@@ -219,7 +219,7 @@ pub async fn update_respond(
         }))
 }
 #[endpoint(tags("Academic - Survey - Transaction - Respond"), status_codes(200, 400, 404, 500))]
-pub async fn delete_respond(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -252,7 +252,7 @@ pub async fn delete_respond(
 }
 
 #[endpoint(tags("Academic - Survey - Transaction - Respond"), status_codes(200, 500))]
-pub async fn options_responds(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

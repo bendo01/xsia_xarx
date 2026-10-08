@@ -58,7 +58,7 @@ export default function RectoratInstitutionClassCodeIndex() {
     const [searchQuery, setSearchQuery] = createSignal('');
     const [selectedUnitId, setSelectedUnitId] = createSignal('');
 
-    // Unit Options from options_units
+    // Unit Options from units::option_select
     const [units, setUnits] = createSignal<UnitOption[]>([]);
 
     // Quick Detail Modal State
@@ -82,7 +82,7 @@ export default function RectoratInstitutionClassCodeIndex() {
         return '019759fd-36e8-4f43-80ed-4f687a48145d';
     };
 
-    // Load filter options (Units via options_units based on institution_id)
+    // Load filter options (Units via units::option_select based on institution_id)
     const loadUnitOptions = async (instId: string) => {
         try {
             const prodiUnitTypeId = await resolveProdiUnitTypeId();

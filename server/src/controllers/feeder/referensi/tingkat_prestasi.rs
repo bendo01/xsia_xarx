@@ -16,7 +16,7 @@ use crate::models::feeder::referensi::tingkat_prestasi as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Referensi - TingkatPrestasi"), status_codes(200, 500))]
-pub async fn list_tingkat_prestasi(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedTingkatPrestasiResponse>, StatusError> {
@@ -62,7 +62,7 @@ pub async fn list_tingkat_prestasi(
 }
 
 #[endpoint(tags("Feeder - Referensi - TingkatPrestasi"), status_codes(200, 400, 404, 500))]
-pub async fn get_tingkat_prestasi(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<TingkatPrestasiResponse>, StatusError> {
@@ -93,7 +93,7 @@ pub async fn get_tingkat_prestasi(
 
     }))
 }#[endpoint(tags("Feeder - Referensi - TingkatPrestasi"), status_codes(200, 400, 500))]
-pub async fn create_tingkat_prestasi(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<TingkatPrestasiResponse>, StatusError> {
@@ -139,7 +139,7 @@ pub async fn create_tingkat_prestasi(
 }
 
 #[endpoint(tags("Feeder - Referensi - TingkatPrestasi"), status_codes(200, 400, 404, 500))]
-pub async fn update_tingkat_prestasi(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<TingkatPrestasiResponse>, StatusError> {
@@ -191,7 +191,7 @@ pub async fn update_tingkat_prestasi(
         }))
 }
 #[endpoint(tags("Feeder - Referensi - TingkatPrestasi"), status_codes(200, 400, 404, 500))]
-pub async fn delete_tingkat_prestasi(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

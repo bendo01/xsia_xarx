@@ -16,7 +16,7 @@ use crate::models::document::transaction::archives as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Document - Transaction - Archive"), status_codes(200, 500))]
-pub async fn list_archives(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedArchiveResponse>, StatusError> {
@@ -73,7 +73,7 @@ pub async fn list_archives(
 }
 
 #[endpoint(tags("Document - Transaction - Archive"), status_codes(200, 400, 404, 500))]
-pub async fn get_archive(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<ArchiveResponse>, StatusError> {
@@ -111,7 +111,7 @@ pub async fn get_archive(
 
     }))
 }#[endpoint(tags("Document - Transaction - Archive"), status_codes(200, 400, 500))]
-pub async fn create_archive(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ArchiveResponse>, StatusError> {
@@ -171,7 +171,7 @@ pub async fn create_archive(
 }
 
 #[endpoint(tags("Document - Transaction - Archive"), status_codes(200, 400, 404, 500))]
-pub async fn update_archive(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ArchiveResponse>, StatusError> {
@@ -251,7 +251,7 @@ pub async fn update_archive(
         }))
 }
 #[endpoint(tags("Document - Transaction - Archive"), status_codes(200, 400, 404, 500))]
-pub async fn delete_archive(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -284,7 +284,7 @@ pub async fn delete_archive(
 }
 
 #[endpoint(tags("Document - Transaction - Archive"), status_codes(200, 500))]
-pub async fn options_archives(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

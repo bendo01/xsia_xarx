@@ -20,7 +20,7 @@ use crate::models::auth::permission as permission_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Auth - PermissionPositionType"), status_codes(200, 500))]
-pub async fn list_permission_position_type(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedPermissionPositionTypeResponse>, StatusError> {
@@ -72,7 +72,7 @@ pub async fn list_permission_position_type(
 }
 
 #[endpoint(tags("Auth - PermissionPositionType"), status_codes(200, 400, 404, 500))]
-pub async fn get_permission_position_type(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PermissionPositionTypeResponse>, StatusError> {
@@ -104,7 +104,7 @@ pub async fn get_permission_position_type(
 }
 
 #[endpoint(tags("Auth - PermissionPositionType"), status_codes(200, 400, 500))]
-pub async fn create_permission_position_type(
+pub async fn store(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PermissionPositionTypeResponse>, StatusError> {
@@ -171,7 +171,7 @@ pub async fn create_permission_position_type(
 }
 
 #[endpoint(tags("Auth - PermissionPositionType"), status_codes(200, 400, 404, 500))]
-pub async fn delete_permission_position_type(
+pub async fn delete(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -204,7 +204,7 @@ pub async fn delete_permission_position_type(
 }
 
 #[endpoint(tags("Auth - PermissionPositionType"), status_codes(200, 500))]
-pub async fn options_permission_position_type(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

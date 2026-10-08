@@ -23,7 +23,7 @@ use crate::middleware::auth::auth_user_id;
 use crate::services::auth::data_scope::DataScope;
 
 #[endpoint(tags("Academic - Campaign - Transaction - Teach"), status_codes(200, 500))]
-pub async fn list_teaches(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedTeachResponse>, StatusError> {
@@ -305,7 +305,7 @@ pub async fn list_teaches(
 }
 
 #[endpoint(tags("Academic - Campaign - Transaction - Teach"), status_codes(200, 400, 404, 500))]
-pub async fn get_teache(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<TeachResponse>, StatusError> {
@@ -813,7 +813,7 @@ pub async fn get_teache(
 }
 
 #[endpoint(tags("Academic - Campaign - Transaction - Teach"), status_codes(200, 400, 500))]
-pub async fn create_teache(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<TeachResponse>, StatusError> {
@@ -906,7 +906,7 @@ pub async fn create_teache(
 }
 
 #[endpoint(tags("Academic - Campaign - Transaction - Teach"), status_codes(200, 400, 404, 500))]
-pub async fn update_teache(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<TeachResponse>, StatusError> {
@@ -1042,7 +1042,7 @@ pub async fn update_teache(
         }))
 }
 #[endpoint(tags("Academic - Campaign - Transaction - Teach"), status_codes(200, 400, 404, 500))]
-pub async fn delete_teache(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -1297,7 +1297,7 @@ pub async fn get_teaches_by_lecturer(
 }
 
 #[endpoint(tags("Academic - Campaign - Transaction - Teach"), status_codes(200, 500))]
-pub async fn options_teaches(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

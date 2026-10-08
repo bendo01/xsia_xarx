@@ -16,7 +16,7 @@ use crate::models::feeder::referensi::ikatan_kerja_sumber_daya_manusia as entity
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Referensi - IkatanKerjaSumberDayaManusia"), status_codes(200, 500))]
-pub async fn list_ikatan_kerja_sumber_daya_manusia(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedIkatanKerjaSumberDayaManusiaResponse>, StatusError> {
@@ -62,7 +62,7 @@ pub async fn list_ikatan_kerja_sumber_daya_manusia(
 }
 
 #[endpoint(tags("Feeder - Referensi - IkatanKerjaSumberDayaManusia"), status_codes(200, 400, 404, 500))]
-pub async fn get_ikatan_kerja_sumber_daya_manusia(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<IkatanKerjaSumberDayaManusiaResponse>, StatusError> {
@@ -93,7 +93,7 @@ pub async fn get_ikatan_kerja_sumber_daya_manusia(
 
     }))
 }#[endpoint(tags("Feeder - Referensi - IkatanKerjaSumberDayaManusia"), status_codes(200, 400, 500))]
-pub async fn create_ikatan_kerja_sumber_daya_manusia(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<IkatanKerjaSumberDayaManusiaResponse>, StatusError> {
@@ -139,7 +139,7 @@ pub async fn create_ikatan_kerja_sumber_daya_manusia(
 }
 
 #[endpoint(tags("Feeder - Referensi - IkatanKerjaSumberDayaManusia"), status_codes(200, 400, 404, 500))]
-pub async fn update_ikatan_kerja_sumber_daya_manusia(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<IkatanKerjaSumberDayaManusiaResponse>, StatusError> {
@@ -191,7 +191,7 @@ pub async fn update_ikatan_kerja_sumber_daya_manusia(
         }))
 }
 #[endpoint(tags("Feeder - Referensi - IkatanKerjaSumberDayaManusia"), status_codes(200, 400, 404, 500))]
-pub async fn delete_ikatan_kerja_sumber_daya_manusia(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

@@ -8,33 +8,33 @@ pub fn router() -> Router {
     Router::with_path("reference")
         .push(
             Router::with_path("academic-year-categories")
-                .get_named("academic.general.reference.academic_year_categories.list_academic_year_categories", academic_year_categories::list_academic_year_categories)
-                .post_named("academic.general.reference.academic_year_categories.create_academic_year_categorie", academic_year_categories::create_academic_year_categorie)
+                .get_named("academic.general.reference.academic_year_categories.list_academic_year_categories", academic_year_categories::index)
+                .post_named("academic.general.reference.academic_year_categories.create_academic_year_categorie", academic_year_categories::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.general.reference.academic_year_categories.options_academic_year_categories", academic_year_categories::options_academic_year_categories),
+                        .post_named("academic.general.reference.academic_year_categories.options_academic_year_categories", academic_year_categories::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.general.reference.academic_year_categories.get_academic_year_categorie", academic_year_categories::get_academic_year_categorie)
-                        .put_named("academic.general.reference.academic_year_categories.update_academic_year_categorie", academic_year_categories::update_academic_year_categorie)
-                        .delete_named("academic.general.reference.academic_year_categories.delete_academic_year_categorie", academic_year_categories::delete_academic_year_categorie),
+                        .get_named("academic.general.reference.academic_year_categories.get_academic_year_categorie", academic_year_categories::show)
+                        .put_named("academic.general.reference.academic_year_categories.update_academic_year_categorie", academic_year_categories::update)
+                        .delete_named("academic.general.reference.academic_year_categories.delete_academic_year_categorie", academic_year_categories::delete),
                 ),
         )
         .push(
             Router::with_path("academic-years")
-                .get_named("academic.general.reference.academic_years.list_academic_years", academic_years::list_academic_years)
-                .post_named("academic.general.reference.academic_years.create_academic_year", academic_years::create_academic_year)
+                .get_named("academic.general.reference.academic_years.list_academic_years", academic_years::index)
+                .post_named("academic.general.reference.academic_years.create_academic_year", academic_years::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.general.reference.academic_years.options_academic_years", academic_years::options_academic_years)
-                        .get_named("academic.general.reference.academic_years.options_academic_years_get", academic_years::options_academic_years),
+                        .post_named("academic.general.reference.academic_years.options_academic_years", academic_years::option_select)
+                        .get_named("academic.general.reference.academic_years.options_academic_years_get", academic_years::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.general.reference.academic_years.get_academic_year", academic_years::get_academic_year)
-                        .put_named("academic.general.reference.academic_years.update_academic_year", academic_years::update_academic_year)
-                        .delete_named("academic.general.reference.academic_years.delete_academic_year", academic_years::delete_academic_year),
+                        .get_named("academic.general.reference.academic_years.get_academic_year", academic_years::show)
+                        .put_named("academic.general.reference.academic_years.update_academic_year", academic_years::update)
+                        .delete_named("academic.general.reference.academic_years.delete_academic_year", academic_years::delete),
                 ),
         )
 }

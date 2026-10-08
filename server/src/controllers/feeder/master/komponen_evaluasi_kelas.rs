@@ -16,7 +16,7 @@ use crate::models::feeder::master::komponen_evaluasi_kelas as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Master - KomponenEvaluasiKelas"), status_codes(200, 500))]
-pub async fn list_komponen_evaluasi_kelas(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedKomponenEvaluasiKelasResponse>, StatusError> {
@@ -69,7 +69,7 @@ pub async fn list_komponen_evaluasi_kelas(
 }
 
 #[endpoint(tags("Feeder - Master - KomponenEvaluasiKelas"), status_codes(200, 400, 404, 500))]
-pub async fn get_komponen_evaluasi_kela(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<KomponenEvaluasiKelasResponse>, StatusError> {
@@ -107,7 +107,7 @@ pub async fn get_komponen_evaluasi_kela(
 
     }))
 }#[endpoint(tags("Feeder - Master - KomponenEvaluasiKelas"), status_codes(200, 400, 500))]
-pub async fn create_komponen_evaluasi_kela(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<KomponenEvaluasiKelasResponse>, StatusError> {
@@ -167,7 +167,7 @@ pub async fn create_komponen_evaluasi_kela(
 }
 
 #[endpoint(tags("Feeder - Master - KomponenEvaluasiKelas"), status_codes(200, 400, 404, 500))]
-pub async fn update_komponen_evaluasi_kela(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<KomponenEvaluasiKelasResponse>, StatusError> {
@@ -247,7 +247,7 @@ pub async fn update_komponen_evaluasi_kela(
         }))
 }
 #[endpoint(tags("Feeder - Master - KomponenEvaluasiKelas"), status_codes(200, 400, 404, 500))]
-pub async fn delete_komponen_evaluasi_kela(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

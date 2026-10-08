@@ -16,7 +16,7 @@ use crate::models::feeder::referensi::negara as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Referensi - Negara"), status_codes(200, 500))]
-pub async fn list_negara(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedNegaraResponse>, StatusError> {
@@ -62,7 +62,7 @@ pub async fn list_negara(
 }
 
 #[endpoint(tags("Feeder - Referensi - Negara"), status_codes(200, 400, 404, 500))]
-pub async fn get_negara(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<NegaraResponse>, StatusError> {
@@ -93,7 +93,7 @@ pub async fn get_negara(
 
     }))
 }#[endpoint(tags("Feeder - Referensi - Negara"), status_codes(200, 400, 500))]
-pub async fn create_negara(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<NegaraResponse>, StatusError> {
@@ -139,7 +139,7 @@ pub async fn create_negara(
 }
 
 #[endpoint(tags("Feeder - Referensi - Negara"), status_codes(200, 400, 404, 500))]
-pub async fn update_negara(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<NegaraResponse>, StatusError> {
@@ -191,7 +191,7 @@ pub async fn update_negara(
         }))
 }
 #[endpoint(tags("Feeder - Referensi - Negara"), status_codes(200, 400, 404, 500))]
-pub async fn delete_negara(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

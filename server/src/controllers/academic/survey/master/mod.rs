@@ -10,62 +10,62 @@ pub fn router() -> Router {
     Router::with_path("master")
         .push(
             Router::with_path("answers")
-                .get_named("academic.survey.master.answers.list_answers", answers::list_answers)
-                .post_named("academic.survey.master.answers.create_answer", answers::create_answer)
+                .get_named("academic.survey.master.answers.list_answers", answers::index)
+                .post_named("academic.survey.master.answers.create_answer", answers::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.survey.master.answers.options_answers", answers::options_answers),
+                        .post_named("academic.survey.master.answers.options_answers", answers::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.survey.master.answers.get_answer", answers::get_answer)
-                        .put_named("academic.survey.master.answers.update_answer", answers::update_answer)
-                        .delete_named("academic.survey.master.answers.delete_answer", answers::delete_answer),
+                        .get_named("academic.survey.master.answers.get_answer", answers::show)
+                        .put_named("academic.survey.master.answers.update_answer", answers::update)
+                        .delete_named("academic.survey.master.answers.delete_answer", answers::delete),
                 ),
         )
         .push(
             Router::with_path("bundle-question")
-                .get_named("academic.survey.master.bundle_question.list_bundle_question", bundle_question::list_bundle_question)
-                .post_named("academic.survey.master.bundle_question.create_bundle_question", bundle_question::create_bundle_question)
+                .get_named("academic.survey.master.bundle_question.list_bundle_question", bundle_question::index)
+                .post_named("academic.survey.master.bundle_question.create_bundle_question", bundle_question::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.survey.master.bundle_question.options_bundle_question", bundle_question::options_bundle_question),
+                        .post_named("academic.survey.master.bundle_question.options_bundle_question", bundle_question::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.survey.master.bundle_question.get_bundle_question", bundle_question::get_bundle_question)
-                        .put_named("academic.survey.master.bundle_question.update_bundle_question", bundle_question::update_bundle_question)
-                        .delete_named("academic.survey.master.bundle_question.delete_bundle_question", bundle_question::delete_bundle_question),
+                        .get_named("academic.survey.master.bundle_question.get_bundle_question", bundle_question::show)
+                        .put_named("academic.survey.master.bundle_question.update_bundle_question", bundle_question::update)
+                        .delete_named("academic.survey.master.bundle_question.delete_bundle_question", bundle_question::delete),
                 ),
         )
         .push(
             Router::with_path("bundles")
-                .get_named("academic.survey.master.bundles.list_bundles", bundles::list_bundles)
-                .post_named("academic.survey.master.bundles.create_bundle", bundles::create_bundle)
+                .get_named("academic.survey.master.bundles.list_bundles", bundles::index)
+                .post_named("academic.survey.master.bundles.create_bundle", bundles::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.survey.master.bundles.options_bundles", bundles::options_bundles),
+                        .post_named("academic.survey.master.bundles.options_bundles", bundles::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.survey.master.bundles.get_bundle", bundles::get_bundle)
-                        .put_named("academic.survey.master.bundles.update_bundle", bundles::update_bundle)
-                        .delete_named("academic.survey.master.bundles.delete_bundle", bundles::delete_bundle),
+                        .get_named("academic.survey.master.bundles.get_bundle", bundles::show)
+                        .put_named("academic.survey.master.bundles.update_bundle", bundles::update)
+                        .delete_named("academic.survey.master.bundles.delete_bundle", bundles::delete),
                 ),
         )
         .push(
             Router::with_path("questions")
-                .get_named("academic.survey.master.questions.list_questions", questions::list_questions)
-                .post_named("academic.survey.master.questions.create_question", questions::create_question)
+                .get_named("academic.survey.master.questions.list_questions", questions::index)
+                .post_named("academic.survey.master.questions.create_question", questions::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.survey.master.questions.options_questions", questions::options_questions),
+                        .post_named("academic.survey.master.questions.options_questions", questions::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.survey.master.questions.get_question", questions::get_question)
-                        .put_named("academic.survey.master.questions.update_question", questions::update_question)
-                        .delete_named("academic.survey.master.questions.delete_question", questions::delete_question),
+                        .get_named("academic.survey.master.questions.get_question", questions::show)
+                        .put_named("academic.survey.master.questions.update_question", questions::update)
+                        .delete_named("academic.survey.master.questions.delete_question", questions::delete),
                 ),
         )
 }

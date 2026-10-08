@@ -16,7 +16,7 @@ use crate::models::feeder::master::rencana_evaluasi as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Master - RencanaEvaluasi"), status_codes(200, 500))]
-pub async fn list_rencana_evaluasi(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedRencanaEvaluasiResponse>, StatusError> {
@@ -75,7 +75,7 @@ pub async fn list_rencana_evaluasi(
 }
 
 #[endpoint(tags("Feeder - Master - RencanaEvaluasi"), status_codes(200, 400, 404, 500))]
-pub async fn get_rencana_evaluasi(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<RencanaEvaluasiResponse>, StatusError> {
@@ -119,7 +119,7 @@ pub async fn get_rencana_evaluasi(
 
     }))
 }#[endpoint(tags("Feeder - Master - RencanaEvaluasi"), status_codes(200, 400, 500))]
-pub async fn create_rencana_evaluasi(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<RencanaEvaluasiResponse>, StatusError> {
@@ -191,7 +191,7 @@ pub async fn create_rencana_evaluasi(
 }
 
 #[endpoint(tags("Feeder - Master - RencanaEvaluasi"), status_codes(200, 400, 404, 500))]
-pub async fn update_rencana_evaluasi(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<RencanaEvaluasiResponse>, StatusError> {
@@ -295,7 +295,7 @@ pub async fn update_rencana_evaluasi(
         }))
 }
 #[endpoint(tags("Feeder - Master - RencanaEvaluasi"), status_codes(200, 400, 404, 500))]
-pub async fn delete_rencana_evaluasi(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

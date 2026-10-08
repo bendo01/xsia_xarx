@@ -16,7 +16,7 @@ use crate::models::feeder::master::hitung_transkrip_angkatan_mahasiswa as entity
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Master - HitungTranskripAngkatanMahasiswa"), status_codes(200, 500))]
-pub async fn list_hitung_transkrip_angkatan_mahasiswa(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedHitungTranskripAngkatanMahasiswaResponse>, StatusError> {
@@ -62,7 +62,7 @@ pub async fn list_hitung_transkrip_angkatan_mahasiswa(
 }
 
 #[endpoint(tags("Feeder - Master - HitungTranskripAngkatanMahasiswa"), status_codes(200, 400, 404, 500))]
-pub async fn get_hitung_transkrip_angkatan_mahasiswa(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<HitungTranskripAngkatanMahasiswaResponse>, StatusError> {
@@ -93,7 +93,7 @@ pub async fn get_hitung_transkrip_angkatan_mahasiswa(
 
     }))
 }#[endpoint(tags("Feeder - Master - HitungTranskripAngkatanMahasiswa"), status_codes(200, 400, 500))]
-pub async fn create_hitung_transkrip_angkatan_mahasiswa(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<HitungTranskripAngkatanMahasiswaResponse>, StatusError> {
@@ -139,7 +139,7 @@ pub async fn create_hitung_transkrip_angkatan_mahasiswa(
 }
 
 #[endpoint(tags("Feeder - Master - HitungTranskripAngkatanMahasiswa"), status_codes(200, 400, 404, 500))]
-pub async fn update_hitung_transkrip_angkatan_mahasiswa(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<HitungTranskripAngkatanMahasiswaResponse>, StatusError> {
@@ -191,7 +191,7 @@ pub async fn update_hitung_transkrip_angkatan_mahasiswa(
         }))
 }
 #[endpoint(tags("Feeder - Master - HitungTranskripAngkatanMahasiswa"), status_codes(200, 400, 404, 500))]
-pub async fn delete_hitung_transkrip_angkatan_mahasiswa(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

@@ -16,7 +16,7 @@ use crate::models::contact::master::electronic_mails as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Contact - Master - ElectronicMail"), status_codes(200, 500))]
-pub async fn list_electronic_mails(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedElectronicMailResponse>, StatusError> {
@@ -64,7 +64,7 @@ pub async fn list_electronic_mails(
 }
 
 #[endpoint(tags("Contact - Master - ElectronicMail"), status_codes(200, 400, 404, 500))]
-pub async fn get_electronic_mail(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<ElectronicMailResponse>, StatusError> {
@@ -97,7 +97,7 @@ pub async fn get_electronic_mail(
 
     }))
 }#[endpoint(tags("Contact - Master - ElectronicMail"), status_codes(200, 400, 500))]
-pub async fn create_electronic_mail(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ElectronicMailResponse>, StatusError> {
@@ -147,7 +147,7 @@ pub async fn create_electronic_mail(
 }
 
 #[endpoint(tags("Contact - Master - ElectronicMail"), status_codes(200, 400, 404, 500))]
-pub async fn update_electronic_mail(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ElectronicMailResponse>, StatusError> {
@@ -207,7 +207,7 @@ pub async fn update_electronic_mail(
         }))
 }
 #[endpoint(tags("Contact - Master - ElectronicMail"), status_codes(200, 400, 404, 500))]
-pub async fn delete_electronic_mail(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -240,7 +240,7 @@ pub async fn delete_electronic_mail(
 }
 
 #[endpoint(tags("Contact - Master - ElectronicMail"), status_codes(200, 500))]
-pub async fn options_electronic_mails(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

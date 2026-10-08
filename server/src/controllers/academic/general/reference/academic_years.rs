@@ -15,7 +15,7 @@ use crate::models::academic::general::reference::academic_years as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - General - Reference - AcademicYear"), status_codes(200, 500))]
-pub async fn list_academic_years(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedReferenceResponse>, StatusError> {
@@ -70,7 +70,7 @@ pub async fn list_academic_years(
 }
 
 #[endpoint(tags("Academic - General - Reference - AcademicYear"), status_codes(200, 400, 404, 500))]
-pub async fn get_academic_year(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<ReferenceResponse>, StatusError> {
@@ -104,7 +104,7 @@ pub async fn get_academic_year(
 }
 
 #[endpoint(tags("Academic - General - Reference - AcademicYear"), status_codes(200, 400, 500))]
-pub async fn create_academic_year(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ReferenceResponse>, StatusError> {
@@ -157,7 +157,7 @@ pub async fn create_academic_year(
 }
 
 #[endpoint(tags("Academic - General - Reference - AcademicYear"), status_codes(200, 400, 404, 500))]
-pub async fn update_academic_year(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ReferenceResponse>, StatusError> {
@@ -210,7 +210,7 @@ pub async fn update_academic_year(
         }))
 }
 #[endpoint(tags("Academic - General - Reference - AcademicYear"), status_codes(200, 400, 404, 500))]
-pub async fn delete_academic_year(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -243,7 +243,7 @@ pub async fn delete_academic_year(
 }
 
 #[endpoint(tags("Academic - General - Reference - AcademicYear"), status_codes(200, 500))]
-pub async fn options_academic_years(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

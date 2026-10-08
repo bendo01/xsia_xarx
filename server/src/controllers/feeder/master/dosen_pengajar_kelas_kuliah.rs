@@ -16,7 +16,7 @@ use crate::models::feeder::master::dosen_pengajar_kelas_kuliah as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Master - DosenPengajarKelasKuliah"), status_codes(200, 500))]
-pub async fn list_dosen_pengajar_kelas_kuliah(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedDosenPengajarKelasKuliahResponse>, StatusError> {
@@ -76,7 +76,7 @@ pub async fn list_dosen_pengajar_kelas_kuliah(
 }
 
 #[endpoint(tags("Feeder - Master - DosenPengajarKelasKuliah"), status_codes(200, 400, 404, 500))]
-pub async fn get_dosen_pengajar_kelas_kuliah(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<DosenPengajarKelasKuliahResponse>, StatusError> {
@@ -121,7 +121,7 @@ pub async fn get_dosen_pengajar_kelas_kuliah(
 
     }))
 }#[endpoint(tags("Feeder - Master - DosenPengajarKelasKuliah"), status_codes(200, 400, 500))]
-pub async fn create_dosen_pengajar_kelas_kuliah(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<DosenPengajarKelasKuliahResponse>, StatusError> {
@@ -195,7 +195,7 @@ pub async fn create_dosen_pengajar_kelas_kuliah(
 }
 
 #[endpoint(tags("Feeder - Master - DosenPengajarKelasKuliah"), status_codes(200, 400, 404, 500))]
-pub async fn update_dosen_pengajar_kelas_kuliah(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<DosenPengajarKelasKuliahResponse>, StatusError> {
@@ -303,7 +303,7 @@ pub async fn update_dosen_pengajar_kelas_kuliah(
         }))
 }
 #[endpoint(tags("Feeder - Master - DosenPengajarKelasKuliah"), status_codes(200, 400, 404, 500))]
-pub async fn delete_dosen_pengajar_kelas_kuliah(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

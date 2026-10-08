@@ -19,7 +19,7 @@ use crate::models::document::transaction::archives as archive_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Prior_Learning_Recognition - Transaction - EvaluationDetail"), status_codes(200, 500))]
-pub async fn list_evaluation_details(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedEvaluationDetailResponse>, StatusError> {
@@ -66,7 +66,7 @@ pub async fn list_evaluation_details(
 }
 
 #[endpoint(tags("Academic - Prior_Learning_Recognition - Transaction - EvaluationDetail"), status_codes(200, 400, 404, 500))]
-pub async fn get_evaluation_detail(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<EvaluationDetailResponse>, StatusError> {
@@ -98,7 +98,7 @@ pub async fn get_evaluation_detail(
 
     }))
 }#[endpoint(tags("Academic - Prior_Learning_Recognition - Transaction - EvaluationDetail"), status_codes(200, 400, 500))]
-pub async fn create_evaluation_detail(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<EvaluationDetailResponse>, StatusError> {
@@ -146,7 +146,7 @@ pub async fn create_evaluation_detail(
 }
 
 #[endpoint(tags("Academic - Prior_Learning_Recognition - Transaction - EvaluationDetail"), status_codes(200, 400, 404, 500))]
-pub async fn update_evaluation_detail(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<EvaluationDetailResponse>, StatusError> {
@@ -202,7 +202,7 @@ pub async fn update_evaluation_detail(
         }))
 }
 #[endpoint(tags("Academic - Prior_Learning_Recognition - Transaction - EvaluationDetail"), status_codes(200, 400, 404, 500))]
-pub async fn delete_evaluation_detail(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -235,7 +235,7 @@ pub async fn delete_evaluation_detail(
 }
 
 #[endpoint(tags("Academic - Prior_Learning_Recognition - Transaction - EvaluationDetail"), status_codes(200, 500))]
-pub async fn options_evaluation_details(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

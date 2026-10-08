@@ -16,7 +16,7 @@ use crate::models::feeder::master::biodata_dosen as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Master - BiodataDosen"), status_codes(200, 500))]
-pub async fn list_biodata_dosen(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedBiodataDosenResponse>, StatusError> {
@@ -103,7 +103,7 @@ pub async fn list_biodata_dosen(
 }
 
 #[endpoint(tags("Feeder - Master - BiodataDosen"), status_codes(200, 400, 404, 500))]
-pub async fn get_biodata_dosen(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<BiodataDosenResponse>, StatusError> {
@@ -175,7 +175,7 @@ pub async fn get_biodata_dosen(
 
     }))
 }#[endpoint(tags("Feeder - Master - BiodataDosen"), status_codes(200, 400, 500))]
-pub async fn create_biodata_dosen(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<BiodataDosenResponse>, StatusError> {
@@ -303,7 +303,7 @@ pub async fn create_biodata_dosen(
 }
 
 #[endpoint(tags("Feeder - Master - BiodataDosen"), status_codes(200, 400, 404, 500))]
-pub async fn update_biodata_dosen(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<BiodataDosenResponse>, StatusError> {
@@ -519,7 +519,7 @@ pub async fn update_biodata_dosen(
         }))
 }
 #[endpoint(tags("Feeder - Master - BiodataDosen"), status_codes(200, 400, 404, 500))]
-pub async fn delete_biodata_dosen(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

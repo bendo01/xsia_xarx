@@ -16,7 +16,7 @@ use crate::models::feeder::rekapitulasi::laporan as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Rekapitulasi - Laporan"), status_codes(200, 500))]
-pub async fn list_laporan(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedLaporanResponse>, StatusError> {
@@ -67,7 +67,7 @@ pub async fn list_laporan(
 }
 
 #[endpoint(tags("Feeder - Rekapitulasi - Laporan"), status_codes(200, 400, 404, 500))]
-pub async fn get_laporan(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<LaporanResponse>, StatusError> {
@@ -103,7 +103,7 @@ pub async fn get_laporan(
 
     }))
 }#[endpoint(tags("Feeder - Rekapitulasi - Laporan"), status_codes(200, 400, 500))]
-pub async fn create_laporan(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<LaporanResponse>, StatusError> {
@@ -159,7 +159,7 @@ pub async fn create_laporan(
 }
 
 #[endpoint(tags("Feeder - Rekapitulasi - Laporan"), status_codes(200, 400, 404, 500))]
-pub async fn update_laporan(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<LaporanResponse>, StatusError> {
@@ -231,7 +231,7 @@ pub async fn update_laporan(
         }))
 }
 #[endpoint(tags("Feeder - Rekapitulasi - Laporan"), status_codes(200, 400, 404, 500))]
-pub async fn delete_laporan(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

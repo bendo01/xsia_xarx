@@ -19,7 +19,7 @@ use crate::models::auth::permission as permission_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Auth - PermissionRole"), status_codes(200, 500))]
-pub async fn list_permission_role(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedPermissionRoleResponse>, StatusError> {
@@ -71,7 +71,7 @@ pub async fn list_permission_role(
 }
 
 #[endpoint(tags("Auth - PermissionRole"), status_codes(200, 400, 404, 500))]
-pub async fn get_permission_role(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PermissionRoleResponse>, StatusError> {
@@ -103,7 +103,7 @@ pub async fn get_permission_role(
 }
 
 #[endpoint(tags("Auth - PermissionRole"), status_codes(200, 400, 500))]
-pub async fn create_permission_role(
+pub async fn store(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PermissionRoleResponse>, StatusError> {
@@ -170,7 +170,7 @@ pub async fn create_permission_role(
 }
 
 #[endpoint(tags("Auth - PermissionRole"), status_codes(200, 400, 404, 500))]
-pub async fn update_permission_role(
+pub async fn update(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PermissionRoleResponse>, StatusError> {
@@ -222,7 +222,7 @@ pub async fn update_permission_role(
 }
 
 #[endpoint(tags("Auth - PermissionRole"), status_codes(200, 400, 404, 500))]
-pub async fn delete_permission_role(
+pub async fn delete(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -255,7 +255,7 @@ pub async fn delete_permission_role(
 }
 
 #[endpoint(tags("Auth - PermissionRole"), status_codes(200, 500))]
-pub async fn options_permission_role(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

@@ -16,7 +16,7 @@ use crate::models::academic::campaign::transaction::teach_decrees as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Campaign - Transaction - TeachDecree"), status_codes(200, 500))]
-pub async fn list_teach_decrees(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedTeachDecreeResponse>, StatusError> {
@@ -69,7 +69,7 @@ pub async fn list_teach_decrees(
 }
 
 #[endpoint(tags("Academic - Campaign - Transaction - TeachDecree"), status_codes(200, 400, 404, 500))]
-pub async fn get_teach_decree(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<TeachDecreeResponse>, StatusError> {
@@ -103,7 +103,7 @@ pub async fn get_teach_decree(
 
     }))
 }#[endpoint(tags("Academic - Campaign - Transaction - TeachDecree"), status_codes(200, 400, 500))]
-pub async fn create_teach_decree(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<TeachDecreeResponse>, StatusError> {
@@ -155,7 +155,7 @@ pub async fn create_teach_decree(
 }
 
 #[endpoint(tags("Academic - Campaign - Transaction - TeachDecree"), status_codes(200, 400, 404, 500))]
-pub async fn update_teach_decree(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<TeachDecreeResponse>, StatusError> {
@@ -219,7 +219,7 @@ pub async fn update_teach_decree(
         }))
 }
 #[endpoint(tags("Academic - Campaign - Transaction - TeachDecree"), status_codes(200, 400, 404, 500))]
-pub async fn delete_teach_decree(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -252,7 +252,7 @@ pub async fn delete_teach_decree(
 }
 
 #[endpoint(tags("Academic - Campaign - Transaction - TeachDecree"), status_codes(200, 500))]
-pub async fn options_teach_decrees(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

@@ -13,107 +13,107 @@ pub fn router() -> Router {
     Router::with_path("transaction")
         .push(
             Router::with_path("advisers")
-                .get_named("academic.student.final_assignment.transaction.advisers.list_advisers", advisers::list_advisers)
-                .post_named("academic.student.final_assignment.transaction.advisers.create_adviser", advisers::create_adviser)
+                .get_named("academic.student.final_assignment.transaction.advisers.index", advisers::index)
+                .post_named("academic.student.final_assignment.transaction.advisers.store", advisers::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.student.final_assignment.transaction.advisers.options_advisers", advisers::options_advisers),
+                        .post_named("academic.student.final_assignment.transaction.advisers.option_select", advisers::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.student.final_assignment.transaction.advisers.get_adviser", advisers::get_adviser)
-                        .put_named("academic.student.final_assignment.transaction.advisers.update_adviser", advisers::update_adviser)
-                        .delete_named("academic.student.final_assignment.transaction.advisers.delete_adviser", advisers::delete_adviser),
+                        .get_named("academic.student.final_assignment.transaction.advisers.show", advisers::show)
+                        .put_named("academic.student.final_assignment.transaction.advisers.update", advisers::update)
+                        .delete_named("academic.student.final_assignment.transaction.advisers.delete", advisers::delete),
                 ),
         )
         .push(
             Router::with_path("evaluation-details")
-                .get_named("academic.student.final_assignment.transaction.evaluation_details.list_evaluation_details", evaluation_details::list_evaluation_details)
-                .post_named("academic.student.final_assignment.transaction.evaluation_details.create_evaluation_detail", evaluation_details::create_evaluation_detail)
+                .get_named("academic.student.final_assignment.transaction.evaluation_details.index", evaluation_details::index)
+                .post_named("academic.student.final_assignment.transaction.evaluation_details.store", evaluation_details::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.student.final_assignment.transaction.evaluation_details.options_evaluation_details", evaluation_details::options_evaluation_details),
+                        .post_named("academic.student.final_assignment.transaction.evaluation_details.option_select", evaluation_details::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.student.final_assignment.transaction.evaluation_details.get_evaluation_detail", evaluation_details::get_evaluation_detail)
-                        .put_named("academic.student.final_assignment.transaction.evaluation_details.update_evaluation_detail", evaluation_details::update_evaluation_detail)
-                        .delete_named("academic.student.final_assignment.transaction.evaluation_details.delete_evaluation_detail", evaluation_details::delete_evaluation_detail),
+                        .get_named("academic.student.final_assignment.transaction.evaluation_details.show", evaluation_details::show)
+                        .put_named("academic.student.final_assignment.transaction.evaluation_details.update", evaluation_details::update)
+                        .delete_named("academic.student.final_assignment.transaction.evaluation_details.delete", evaluation_details::delete),
                 ),
         )
         .push(
             Router::with_path("evaluation-summaries")
-                .get_named("academic.student.final_assignment.transaction.evaluation_summaries.list_evaluation_summaries", evaluation_summaries::list_evaluation_summaries)
-                .post_named("academic.student.final_assignment.transaction.evaluation_summaries.create_evaluation_summarie", evaluation_summaries::create_evaluation_summarie)
+                .get_named("academic.student.final_assignment.transaction.evaluation_summaries.index", evaluation_summaries::index)
+                .post_named("academic.student.final_assignment.transaction.evaluation_summaries.store", evaluation_summaries::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.student.final_assignment.transaction.evaluation_summaries.options_evaluation_summaries", evaluation_summaries::options_evaluation_summaries),
+                        .post_named("academic.student.final_assignment.transaction.evaluation_summaries.option_select", evaluation_summaries::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.student.final_assignment.transaction.evaluation_summaries.get_evaluation_summarie", evaluation_summaries::get_evaluation_summarie)
-                        .put_named("academic.student.final_assignment.transaction.evaluation_summaries.update_evaluation_summarie", evaluation_summaries::update_evaluation_summarie)
-                        .delete_named("academic.student.final_assignment.transaction.evaluation_summaries.delete_evaluation_summarie", evaluation_summaries::delete_evaluation_summarie),
+                        .get_named("academic.student.final_assignment.transaction.evaluation_summaries.show", evaluation_summaries::show)
+                        .put_named("academic.student.final_assignment.transaction.evaluation_summaries.update", evaluation_summaries::update)
+                        .delete_named("academic.student.final_assignment.transaction.evaluation_summaries.delete", evaluation_summaries::delete),
                 ),
         )
         .push(
             Router::with_path("final-assignment-decrees")
-                .get_named("academic.student.final_assignment.transaction.final_assignment_decrees.list_final_assignment_decrees", final_assignment_decrees::list_final_assignment_decrees)
-                .post_named("academic.student.final_assignment.transaction.final_assignment_decrees.create_final_assignment_decree", final_assignment_decrees::create_final_assignment_decree)
+                .get_named("academic.student.final_assignment.transaction.final_assignment_decrees.index", final_assignment_decrees::index)
+                .post_named("academic.student.final_assignment.transaction.final_assignment_decrees.store", final_assignment_decrees::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.student.final_assignment.transaction.final_assignment_decrees.options_final_assignment_decrees", final_assignment_decrees::options_final_assignment_decrees),
+                        .post_named("academic.student.final_assignment.transaction.final_assignment_decrees.option_select", final_assignment_decrees::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.student.final_assignment.transaction.final_assignment_decrees.get_final_assignment_decree", final_assignment_decrees::get_final_assignment_decree)
-                        .put_named("academic.student.final_assignment.transaction.final_assignment_decrees.update_final_assignment_decree", final_assignment_decrees::update_final_assignment_decree)
-                        .delete_named("academic.student.final_assignment.transaction.final_assignment_decrees.delete_final_assignment_decree", final_assignment_decrees::delete_final_assignment_decree),
+                        .get_named("academic.student.final_assignment.transaction.final_assignment_decrees.show", final_assignment_decrees::show)
+                        .put_named("academic.student.final_assignment.transaction.final_assignment_decrees.update", final_assignment_decrees::update)
+                        .delete_named("academic.student.final_assignment.transaction.final_assignment_decrees.delete", final_assignment_decrees::delete),
                 ),
         )
         .push(
             Router::with_path("prerequisites")
-                .get_named("academic.student.final_assignment.transaction.prerequisites.list_prerequisites", prerequisites::list_prerequisites)
-                .post_named("academic.student.final_assignment.transaction.prerequisites.create_prerequisite", prerequisites::create_prerequisite)
+                .get_named("academic.student.final_assignment.transaction.prerequisites.index", prerequisites::index)
+                .post_named("academic.student.final_assignment.transaction.prerequisites.store", prerequisites::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.student.final_assignment.transaction.prerequisites.options_prerequisites", prerequisites::options_prerequisites),
+                        .post_named("academic.student.final_assignment.transaction.prerequisites.option_select", prerequisites::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.student.final_assignment.transaction.prerequisites.get_prerequisite", prerequisites::get_prerequisite)
-                        .put_named("academic.student.final_assignment.transaction.prerequisites.update_prerequisite", prerequisites::update_prerequisite)
-                        .delete_named("academic.student.final_assignment.transaction.prerequisites.delete_prerequisite", prerequisites::delete_prerequisite),
+                        .get_named("academic.student.final_assignment.transaction.prerequisites.show", prerequisites::show)
+                        .put_named("academic.student.final_assignment.transaction.prerequisites.update", prerequisites::update)
+                        .delete_named("academic.student.final_assignment.transaction.prerequisites.delete", prerequisites::delete),
                 ),
         )
         .push(
             Router::with_path("schedules")
-                .get_named("academic.student.final_assignment.transaction.schedules.list_schedules", schedules::list_schedules)
-                .post_named("academic.student.final_assignment.transaction.schedules.create_schedule", schedules::create_schedule)
+                .get_named("academic.student.final_assignment.transaction.schedules.index", schedules::index)
+                .post_named("academic.student.final_assignment.transaction.schedules.store", schedules::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.student.final_assignment.transaction.schedules.options_schedules", schedules::options_schedules),
+                        .post_named("academic.student.final_assignment.transaction.schedules.option_select", schedules::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.student.final_assignment.transaction.schedules.get_schedule", schedules::get_schedule)
-                        .put_named("academic.student.final_assignment.transaction.schedules.update_schedule", schedules::update_schedule)
-                        .delete_named("academic.student.final_assignment.transaction.schedules.delete_schedule", schedules::delete_schedule),
+                        .get_named("academic.student.final_assignment.transaction.schedules.show", schedules::show)
+                        .put_named("academic.student.final_assignment.transaction.schedules.update", schedules::update)
+                        .delete_named("academic.student.final_assignment.transaction.schedules.delete", schedules::delete),
                 ),
         )
         .push(
             Router::with_path("submissions")
-                .get_named("academic.student.final_assignment.transaction.submissions.list_submissions", submissions::list_submissions)
-                .post_named("academic.student.final_assignment.transaction.submissions.create_submission", submissions::create_submission)
+                .get_named("academic.student.final_assignment.transaction.submissions.index", submissions::index)
+                .post_named("academic.student.final_assignment.transaction.submissions.store", submissions::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.student.final_assignment.transaction.submissions.options_submissions", submissions::options_submissions),
+                        .post_named("academic.student.final_assignment.transaction.submissions.option_select", submissions::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.student.final_assignment.transaction.submissions.get_submission", submissions::get_submission)
-                        .put_named("academic.student.final_assignment.transaction.submissions.update_submission", submissions::update_submission)
-                        .delete_named("academic.student.final_assignment.transaction.submissions.delete_submission", submissions::delete_submission),
+                        .get_named("academic.student.final_assignment.transaction.submissions.show", submissions::show)
+                        .put_named("academic.student.final_assignment.transaction.submissions.update", submissions::update)
+                        .delete_named("academic.student.final_assignment.transaction.submissions.delete", submissions::delete),
                 ),
         )
 }

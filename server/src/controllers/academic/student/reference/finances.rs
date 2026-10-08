@@ -14,7 +14,7 @@ use crate::models::academic::student::reference::finances as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Student - Reference - Finance"), status_codes(200, 500))]
-pub async fn list_finances(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedReferenceResponse>, StatusError> {
@@ -69,7 +69,7 @@ pub async fn list_finances(
 }
 
 #[endpoint(tags("Academic - Student - Reference - Finance"), status_codes(200, 400, 404, 500))]
-pub async fn get_finance(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<ReferenceResponse>, StatusError> {
@@ -101,7 +101,7 @@ pub async fn get_finance(
 
     }))
 }#[endpoint(tags("Academic - Student - Reference - Finance"), status_codes(200, 400, 500))]
-pub async fn create_finance(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ReferenceResponse>, StatusError> {
@@ -149,7 +149,7 @@ pub async fn create_finance(
 }
 
 #[endpoint(tags("Academic - Student - Reference - Finance"), status_codes(200, 400, 404, 500))]
-pub async fn update_finance(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ReferenceResponse>, StatusError> {
@@ -205,7 +205,7 @@ pub async fn update_finance(
         }))
 }
 #[endpoint(tags("Academic - Student - Reference - Finance"), status_codes(200, 400, 404, 500))]
-pub async fn delete_finance(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -238,7 +238,7 @@ pub async fn delete_finance(
 }
 
 #[endpoint(tags("Academic - Student - Reference - Finance"), status_codes(200, 500))]
-pub async fn options_finances(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

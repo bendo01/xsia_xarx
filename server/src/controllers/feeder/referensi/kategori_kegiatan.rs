@@ -16,7 +16,7 @@ use crate::models::feeder::referensi::kategori_kegiatan as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Referensi - KategoriKegiatan"), status_codes(200, 500))]
-pub async fn list_kategori_kegiatan(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedKategoriKegiatanResponse>, StatusError> {
@@ -62,7 +62,7 @@ pub async fn list_kategori_kegiatan(
 }
 
 #[endpoint(tags("Feeder - Referensi - KategoriKegiatan"), status_codes(200, 400, 404, 500))]
-pub async fn get_kategori_kegiatan(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<KategoriKegiatanResponse>, StatusError> {
@@ -93,7 +93,7 @@ pub async fn get_kategori_kegiatan(
 
     }))
 }#[endpoint(tags("Feeder - Referensi - KategoriKegiatan"), status_codes(200, 400, 500))]
-pub async fn create_kategori_kegiatan(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<KategoriKegiatanResponse>, StatusError> {
@@ -139,7 +139,7 @@ pub async fn create_kategori_kegiatan(
 }
 
 #[endpoint(tags("Feeder - Referensi - KategoriKegiatan"), status_codes(200, 400, 404, 500))]
-pub async fn update_kategori_kegiatan(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<KategoriKegiatanResponse>, StatusError> {
@@ -191,7 +191,7 @@ pub async fn update_kategori_kegiatan(
         }))
 }
 #[endpoint(tags("Feeder - Referensi - KategoriKegiatan"), status_codes(200, 400, 404, 500))]
-pub async fn delete_kategori_kegiatan(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

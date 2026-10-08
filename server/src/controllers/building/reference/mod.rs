@@ -10,62 +10,62 @@ pub fn router() -> Router {
     Router::with_path("reference")
         .push(
             Router::with_path("categories")
-                .get_named("building.reference.categories.list_categories", categories::list_categories)
-                .post_named("building.reference.categories.create_categorie", categories::create_categorie)
+                .get_named("building.reference.categories.index", categories::index)
+                .post_named("building.reference.categories.store", categories::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("building.reference.categories.options_categories", categories::options_categories),
+                        .post_named("building.reference.categories.option_select", categories::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("building.reference.categories.get_categorie", categories::get_categorie)
-                        .put_named("building.reference.categories.update_categorie", categories::update_categorie)
-                        .delete_named("building.reference.categories.delete_categorie", categories::delete_categorie),
+                        .get_named("building.reference.categories.show", categories::show)
+                        .put_named("building.reference.categories.update", categories::update)
+                        .delete_named("building.reference.categories.delete", categories::delete),
                 ),
         )
         .push(
             Router::with_path("conditions")
-                .get_named("building.reference.conditions.list_conditions", conditions::list_conditions)
-                .post_named("building.reference.conditions.create_condition", conditions::create_condition)
+                .get_named("building.reference.conditions.index", conditions::index)
+                .post_named("building.reference.conditions.store", conditions::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("building.reference.conditions.options_conditions", conditions::options_conditions),
+                        .post_named("building.reference.conditions.option_select", conditions::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("building.reference.conditions.get_condition", conditions::get_condition)
-                        .put_named("building.reference.conditions.update_condition", conditions::update_condition)
-                        .delete_named("building.reference.conditions.delete_condition", conditions::delete_condition),
+                        .get_named("building.reference.conditions.show", conditions::show)
+                        .put_named("building.reference.conditions.update", conditions::update)
+                        .delete_named("building.reference.conditions.delete", conditions::delete),
                 ),
         )
         .push(
             Router::with_path("room-types")
-                .get_named("building.reference.room_types.list_room_types", room_types::list_room_types)
-                .post_named("building.reference.room_types.create_room_type", room_types::create_room_type)
+                .get_named("building.reference.room_types.index", room_types::index)
+                .post_named("building.reference.room_types.store", room_types::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("building.reference.room_types.options_room_types", room_types::options_room_types),
+                        .post_named("building.reference.room_types.option_select", room_types::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("building.reference.room_types.get_room_type", room_types::get_room_type)
-                        .put_named("building.reference.room_types.update_room_type", room_types::update_room_type)
-                        .delete_named("building.reference.room_types.delete_room_type", room_types::delete_room_type),
+                        .get_named("building.reference.room_types.show", room_types::show)
+                        .put_named("building.reference.room_types.update", room_types::update)
+                        .delete_named("building.reference.room_types.delete", room_types::delete),
                 ),
         )
         .push(
             Router::with_path("varieties")
-                .get_named("building.reference.varieties.list_varieties", varieties::list_varieties)
-                .post_named("building.reference.varieties.create_varietie", varieties::create_varietie)
+                .get_named("building.reference.varieties.index", varieties::index)
+                .post_named("building.reference.varieties.store", varieties::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("building.reference.varieties.options_varieties", varieties::options_varieties),
+                        .post_named("building.reference.varieties.option_select", varieties::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("building.reference.varieties.get_varietie", varieties::get_varietie)
-                        .put_named("building.reference.varieties.update_varietie", varieties::update_varietie)
-                        .delete_named("building.reference.varieties.delete_varietie", varieties::delete_varietie),
+                        .get_named("building.reference.varieties.show", varieties::show)
+                        .put_named("building.reference.varieties.update", varieties::update)
+                        .delete_named("building.reference.varieties.delete", varieties::delete),
                 ),
         )
 }

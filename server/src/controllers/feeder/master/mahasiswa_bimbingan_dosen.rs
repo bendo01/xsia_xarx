@@ -16,7 +16,7 @@ use crate::models::feeder::master::mahasiswa_bimbingan_dosen as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Master - MahasiswaBimbinganDosen"), status_codes(200, 500))]
-pub async fn list_mahasiswa_bimbingan_dosen(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedMahasiswaBimbinganDosenResponse>, StatusError> {
@@ -69,7 +69,7 @@ pub async fn list_mahasiswa_bimbingan_dosen(
 }
 
 #[endpoint(tags("Feeder - Master - MahasiswaBimbinganDosen"), status_codes(200, 400, 404, 500))]
-pub async fn get_mahasiswa_bimbingan_dosen(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<MahasiswaBimbinganDosenResponse>, StatusError> {
@@ -107,7 +107,7 @@ pub async fn get_mahasiswa_bimbingan_dosen(
 
     }))
 }#[endpoint(tags("Feeder - Master - MahasiswaBimbinganDosen"), status_codes(200, 400, 500))]
-pub async fn create_mahasiswa_bimbingan_dosen(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MahasiswaBimbinganDosenResponse>, StatusError> {
@@ -167,7 +167,7 @@ pub async fn create_mahasiswa_bimbingan_dosen(
 }
 
 #[endpoint(tags("Feeder - Master - MahasiswaBimbinganDosen"), status_codes(200, 400, 404, 500))]
-pub async fn update_mahasiswa_bimbingan_dosen(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MahasiswaBimbinganDosenResponse>, StatusError> {
@@ -247,7 +247,7 @@ pub async fn update_mahasiswa_bimbingan_dosen(
         }))
 }
 #[endpoint(tags("Feeder - Master - MahasiswaBimbinganDosen"), status_codes(200, 400, 404, 500))]
-pub async fn delete_mahasiswa_bimbingan_dosen(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

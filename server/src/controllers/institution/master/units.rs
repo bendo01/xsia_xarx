@@ -813,7 +813,7 @@ pub async fn load_unit_with_relations(
 }
 
 #[endpoint(tags("Institution - Master - Unit"), status_codes(200, 500))]
-pub async fn list_units(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedUnitResponse>, StatusError> {
@@ -887,7 +887,7 @@ pub async fn list_units(
 }
 
 #[endpoint(tags("Institution - Master - Unit"), status_codes(200, 400, 404, 500))]
-pub async fn get_unit(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<UnitResponse>, StatusError> {
@@ -930,7 +930,7 @@ pub async fn get_unit(
 }
 
 #[endpoint(tags("Institution - Master - Unit"), status_codes(200, 400, 500))]
-pub async fn create_unit(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<UnitResponse>, StatusError> {
@@ -992,7 +992,7 @@ pub async fn create_unit(
 }
 
 #[endpoint(tags("Institution - Master - Unit"), status_codes(200, 400, 404, 500))]
-pub async fn update_unit(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<UnitResponse>, StatusError> {
@@ -1076,7 +1076,7 @@ pub async fn update_unit(
         }))
 }
 #[endpoint(tags("Institution - Master - Unit"), status_codes(200, 400, 404, 500))]
-pub async fn delete_unit(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -1109,7 +1109,7 @@ pub async fn delete_unit(
 }
 
 #[endpoint(tags("Institution - Master - Unit"), status_codes(200, 500))]
-pub async fn options_units(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {
@@ -1158,7 +1158,7 @@ pub async fn options_units(
     Ok(Json(data))
 }
 
-pub use options_units as options_unit;
+pub use option_select as options_unit;
 
 /// Dashboard endpoint: returns unit with all data needed by the show page in a single response,
 /// including academic statistics, student yearly trends, course category distribution, and demographic sub-district distribution.

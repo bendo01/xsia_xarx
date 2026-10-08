@@ -12,56 +12,56 @@ pub fn router() -> Router {
     Router::with_path("master")
         .push(
             Router::with_path("concentrations")
-                .get_named("academic.course.master.concentrations.list_concentrations", concentrations::list_concentrations)
-                .post_named("academic.course.master.concentrations.create_concentration", concentrations::create_concentration)
+                .get_named("academic.course.master.concentrations.list_concentrations", concentrations::index)
+                .post_named("academic.course.master.concentrations.create_concentration", concentrations::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.course.master.concentrations.options_concentrations", concentrations::options_concentrations),
+                        .post_named("academic.course.master.concentrations.options_concentrations", concentrations::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.course.master.concentrations.get_concentration", concentrations::get_concentration)
-                        .put_named("academic.course.master.concentrations.update_concentration", concentrations::update_concentration)
-                        .delete_named("academic.course.master.concentrations.delete_concentration", concentrations::delete_concentration),
+                        .get_named("academic.course.master.concentrations.get_concentration", concentrations::show)
+                        .put_named("academic.course.master.concentrations.update_concentration", concentrations::update)
+                        .delete_named("academic.course.master.concentrations.delete_concentration", concentrations::delete),
                 ),
         )
         .push(
             Router::with_path("course-evaluation-plannings")
-                .get_named("academic.course.master.course_evaluation_plannings.list_course_evaluation_plannings", course_evaluation_plannings::list_course_evaluation_plannings)
-                .post_named("academic.course.master.course_evaluation_plannings.create_course_evaluation_planning", course_evaluation_plannings::create_course_evaluation_planning)
+                .get_named("academic.course.master.course_evaluation_plannings.list_course_evaluation_plannings", course_evaluation_plannings::index)
+                .post_named("academic.course.master.course_evaluation_plannings.create_course_evaluation_planning", course_evaluation_plannings::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.course.master.course_evaluation_plannings.options_course_evaluation_plannings", course_evaluation_plannings::options_course_evaluation_plannings),
+                        .post_named("academic.course.master.course_evaluation_plannings.options_course_evaluation_plannings", course_evaluation_plannings::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.course.master.course_evaluation_plannings.get_course_evaluation_planning", course_evaluation_plannings::get_course_evaluation_planning)
-                        .put_named("academic.course.master.course_evaluation_plannings.update_course_evaluation_planning", course_evaluation_plannings::update_course_evaluation_planning)
-                        .delete_named("academic.course.master.course_evaluation_plannings.delete_course_evaluation_planning", course_evaluation_plannings::delete_course_evaluation_planning),
+                        .get_named("academic.course.master.course_evaluation_plannings.get_course_evaluation_planning", course_evaluation_plannings::show)
+                        .put_named("academic.course.master.course_evaluation_plannings.update_course_evaluation_planning", course_evaluation_plannings::update)
+                        .delete_named("academic.course.master.course_evaluation_plannings.delete_course_evaluation_planning", course_evaluation_plannings::delete),
                 ),
         )
         .push(
             Router::with_path("course-learn-plannings")
-                .get_named("academic.course.master.course_learn_plannings.list_course_learn_plannings", course_learn_plannings::list_course_learn_plannings)
-                .post_named("academic.course.master.course_learn_plannings.create_course_learn_planning", course_learn_plannings::create_course_learn_planning)
+                .get_named("academic.course.master.course_learn_plannings.list_course_learn_plannings", course_learn_plannings::index)
+                .post_named("academic.course.master.course_learn_plannings.create_course_learn_planning", course_learn_plannings::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.course.master.course_learn_plannings.options_course_learn_plannings", course_learn_plannings::options_course_learn_plannings),
+                        .post_named("academic.course.master.course_learn_plannings.options_course_learn_plannings", course_learn_plannings::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.course.master.course_learn_plannings.get_course_learn_planning", course_learn_plannings::get_course_learn_planning)
-                        .put_named("academic.course.master.course_learn_plannings.update_course_learn_planning", course_learn_plannings::update_course_learn_planning)
-                        .delete_named("academic.course.master.course_learn_plannings.delete_course_learn_planning", course_learn_plannings::delete_course_learn_planning),
+                        .get_named("academic.course.master.course_learn_plannings.get_course_learn_planning", course_learn_plannings::show)
+                        .put_named("academic.course.master.course_learn_plannings.update_course_learn_planning", course_learn_plannings::update)
+                        .delete_named("academic.course.master.course_learn_plannings.delete_course_learn_planning", course_learn_plannings::delete),
                 ),
         )
         .push(
             Router::with_path("courses")
-                .get_named("academic.course.master.courses.list_courses", courses::list_courses)
-                .post_named("academic.course.master.courses.create_course", courses::create_course)
+                .get_named("academic.course.master.courses.list_courses", courses::index)
+                .post_named("academic.course.master.courses.create_course", courses::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.course.master.courses.options_courses", courses::options_courses),
+                        .post_named("academic.course.master.courses.options_courses", courses::option_select),
                 )
                 .push(
                     Router::with_path("unit/{unit_id}")
@@ -69,33 +69,33 @@ pub fn router() -> Router {
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.course.master.courses.get_course", courses::get_course)
-                        .put_named("academic.course.master.courses.update_course", courses::update_course)
-                        .delete_named("academic.course.master.courses.delete_course", courses::delete_course),
+                        .get_named("academic.course.master.courses.get_course", courses::show)
+                        .put_named("academic.course.master.courses.update_course", courses::update)
+                        .delete_named("academic.course.master.courses.delete_course", courses::delete),
                 ),
         )
         .push(
             Router::with_path("curriculum-details")
-                .get_named("academic.course.master.curriculum_details.list_curriculum_details", curriculum_details::list_curriculum_details)
-                .post_named("academic.course.master.curriculum_details.create_curriculum_detail", curriculum_details::create_curriculum_detail)
+                .get_named("academic.course.master.curriculum_details.list_curriculum_details", curriculum_details::index)
+                .post_named("academic.course.master.curriculum_details.create_curriculum_detail", curriculum_details::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.course.master.curriculum_details.options_curriculum_details", curriculum_details::options_curriculum_details),
+                        .post_named("academic.course.master.curriculum_details.options_curriculum_details", curriculum_details::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.course.master.curriculum_details.get_curriculum_detail", curriculum_details::get_curriculum_detail)
-                        .put_named("academic.course.master.curriculum_details.update_curriculum_detail", curriculum_details::update_curriculum_detail)
-                        .delete_named("academic.course.master.curriculum_details.delete_curriculum_detail", curriculum_details::delete_curriculum_detail),
+                        .get_named("academic.course.master.curriculum_details.get_curriculum_detail", curriculum_details::show)
+                        .put_named("academic.course.master.curriculum_details.update_curriculum_detail", curriculum_details::update)
+                        .delete_named("academic.course.master.curriculum_details.delete_curriculum_detail", curriculum_details::delete),
                 ),
         )
         .push(
             Router::with_path("curriculums")
-                .get_named("academic.course.master.curriculums.list_curriculums", curriculums::list_curriculums)
-                .post_named("academic.course.master.curriculums.create_curriculum", curriculums::create_curriculum)
+                .get_named("academic.course.master.curriculums.list_curriculums", curriculums::index)
+                .post_named("academic.course.master.curriculums.create_curriculum", curriculums::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.course.master.curriculums.options_curriculums", curriculums::options_curriculums),
+                        .post_named("academic.course.master.curriculums.options_curriculums", curriculums::option_select),
                 )
                 .push(
                     Router::with_path("unit/{unit_id}")
@@ -103,9 +103,9 @@ pub fn router() -> Router {
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.course.master.curriculums.get_curriculum", curriculums::get_curriculum)
-                        .put_named("academic.course.master.curriculums.update_curriculum", curriculums::update_curriculum)
-                        .delete_named("academic.course.master.curriculums.delete_curriculum", curriculums::delete_curriculum),
+                        .get_named("academic.course.master.curriculums.get_curriculum", curriculums::show)
+                        .put_named("academic.course.master.curriculums.update_curriculum", curriculums::update)
+                        .delete_named("academic.course.master.curriculums.delete_curriculum", curriculums::delete),
                 ),
         )
 }

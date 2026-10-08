@@ -16,7 +16,7 @@ use crate::models::feeder::rekapitulasi::indeks_prestasi_sementara_mahasiswa as 
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Rekapitulasi - IndeksPrestasiSementaraMahasiswa"), status_codes(200, 500))]
-pub async fn list_indeks_prestasi_sementara_mahasiswa(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedIndeksPrestasiSementaraMahasiswaResponse>, StatusError> {
@@ -65,7 +65,7 @@ pub async fn list_indeks_prestasi_sementara_mahasiswa(
 }
 
 #[endpoint(tags("Feeder - Rekapitulasi - IndeksPrestasiSementaraMahasiswa"), status_codes(200, 400, 404, 500))]
-pub async fn get_indeks_prestasi_sementara_mahasiswa(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<IndeksPrestasiSementaraMahasiswaResponse>, StatusError> {
@@ -99,7 +99,7 @@ pub async fn get_indeks_prestasi_sementara_mahasiswa(
 
     }))
 }#[endpoint(tags("Feeder - Rekapitulasi - IndeksPrestasiSementaraMahasiswa"), status_codes(200, 400, 500))]
-pub async fn create_indeks_prestasi_sementara_mahasiswa(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<IndeksPrestasiSementaraMahasiswaResponse>, StatusError> {
@@ -151,7 +151,7 @@ pub async fn create_indeks_prestasi_sementara_mahasiswa(
 }
 
 #[endpoint(tags("Feeder - Rekapitulasi - IndeksPrestasiSementaraMahasiswa"), status_codes(200, 400, 404, 500))]
-pub async fn update_indeks_prestasi_sementara_mahasiswa(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<IndeksPrestasiSementaraMahasiswaResponse>, StatusError> {
@@ -215,7 +215,7 @@ pub async fn update_indeks_prestasi_sementara_mahasiswa(
         }))
 }
 #[endpoint(tags("Feeder - Rekapitulasi - IndeksPrestasiSementaraMahasiswa"), status_codes(200, 400, 404, 500))]
-pub async fn delete_indeks_prestasi_sementara_mahasiswa(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

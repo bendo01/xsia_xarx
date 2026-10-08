@@ -16,7 +16,7 @@ use crate::models::feeder::referensi::jenis_evaluasi as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Referensi - JenisEvaluasi"), status_codes(200, 500))]
-pub async fn list_jenis_evaluasi(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedJenisEvaluasiResponse>, StatusError> {
@@ -62,7 +62,7 @@ pub async fn list_jenis_evaluasi(
 }
 
 #[endpoint(tags("Feeder - Referensi - JenisEvaluasi"), status_codes(200, 400, 404, 500))]
-pub async fn get_jenis_evaluasi(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<JenisEvaluasiResponse>, StatusError> {
@@ -93,7 +93,7 @@ pub async fn get_jenis_evaluasi(
 
     }))
 }#[endpoint(tags("Feeder - Referensi - JenisEvaluasi"), status_codes(200, 400, 500))]
-pub async fn create_jenis_evaluasi(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<JenisEvaluasiResponse>, StatusError> {
@@ -139,7 +139,7 @@ pub async fn create_jenis_evaluasi(
 }
 
 #[endpoint(tags("Feeder - Referensi - JenisEvaluasi"), status_codes(200, 400, 404, 500))]
-pub async fn update_jenis_evaluasi(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<JenisEvaluasiResponse>, StatusError> {
@@ -191,7 +191,7 @@ pub async fn update_jenis_evaluasi(
         }))
 }
 #[endpoint(tags("Feeder - Referensi - JenisEvaluasi"), status_codes(200, 400, 404, 500))]
-pub async fn delete_jenis_evaluasi(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

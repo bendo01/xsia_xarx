@@ -39,365 +39,365 @@ pub fn router() -> Router {
     Router::with_path("referensi")
         .push(
             Router::with_path("agama")
-                .get_named("feeder.referensi.agama.list_agama", agama::list_agama)
-                .post_named("feeder.referensi.agama.create_agama", agama::create_agama)
+                .get_named("feeder.referensi.agama.index", agama::index)
+                .post_named("feeder.referensi.agama.store", agama::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.agama.get_agama", agama::get_agama)
-                        .put_named("feeder.referensi.agama.update_agama", agama::update_agama)
-                        .delete_named("feeder.referensi.agama.delete_agama", agama::delete_agama),
+                        .get_named("feeder.referensi.agama.show", agama::show)
+                        .put_named("feeder.referensi.agama.update", agama::update)
+                        .delete_named("feeder.referensi.agama.delete", agama::delete),
                 ),
         )
         .push(
             Router::with_path("alat-transportasi")
-                .get_named("feeder.referensi.alat_transportasi.list_alat_transportasi", alat_transportasi::list_alat_transportasi)
-                .post_named("feeder.referensi.alat_transportasi.create_alat_transportasi", alat_transportasi::create_alat_transportasi)
+                .get_named("feeder.referensi.alat_transportasi.index", alat_transportasi::index)
+                .post_named("feeder.referensi.alat_transportasi.store", alat_transportasi::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.alat_transportasi.get_alat_transportasi", alat_transportasi::get_alat_transportasi)
-                        .put_named("feeder.referensi.alat_transportasi.update_alat_transportasi", alat_transportasi::update_alat_transportasi)
-                        .delete_named("feeder.referensi.alat_transportasi.delete_alat_transportasi", alat_transportasi::delete_alat_transportasi),
+                        .get_named("feeder.referensi.alat_transportasi.show", alat_transportasi::show)
+                        .put_named("feeder.referensi.alat_transportasi.update", alat_transportasi::update)
+                        .delete_named("feeder.referensi.alat_transportasi.delete", alat_transportasi::delete),
                 ),
         )
         .push(
             Router::with_path("bentuk-pendidikan")
-                .get_named("feeder.referensi.bentuk_pendidikan.list_bentuk_pendidikan", bentuk_pendidikan::list_bentuk_pendidikan)
-                .post_named("feeder.referensi.bentuk_pendidikan.create_bentuk_pendidikan", bentuk_pendidikan::create_bentuk_pendidikan)
+                .get_named("feeder.referensi.bentuk_pendidikan.index", bentuk_pendidikan::index)
+                .post_named("feeder.referensi.bentuk_pendidikan.store", bentuk_pendidikan::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.bentuk_pendidikan.get_bentuk_pendidikan", bentuk_pendidikan::get_bentuk_pendidikan)
-                        .put_named("feeder.referensi.bentuk_pendidikan.update_bentuk_pendidikan", bentuk_pendidikan::update_bentuk_pendidikan)
-                        .delete_named("feeder.referensi.bentuk_pendidikan.delete_bentuk_pendidikan", bentuk_pendidikan::delete_bentuk_pendidikan),
+                        .get_named("feeder.referensi.bentuk_pendidikan.show", bentuk_pendidikan::show)
+                        .put_named("feeder.referensi.bentuk_pendidikan.update", bentuk_pendidikan::update)
+                        .delete_named("feeder.referensi.bentuk_pendidikan.delete", bentuk_pendidikan::delete),
                 ),
         )
         .push(
             Router::with_path("ikatan-kerja-sumber-daya-manusia")
-                .get_named("feeder.referensi.ikatan_kerja_sumber_daya_manusia.list_ikatan_kerja_sumber_daya_manusia", ikatan_kerja_sumber_daya_manusia::list_ikatan_kerja_sumber_daya_manusia)
-                .post_named("feeder.referensi.ikatan_kerja_sumber_daya_manusia.create_ikatan_kerja_sumber_daya_manusia", ikatan_kerja_sumber_daya_manusia::create_ikatan_kerja_sumber_daya_manusia)
+                .get_named("feeder.referensi.ikatan_kerja_sumber_daya_manusia.index", ikatan_kerja_sumber_daya_manusia::index)
+                .post_named("feeder.referensi.ikatan_kerja_sumber_daya_manusia.store", ikatan_kerja_sumber_daya_manusia::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.ikatan_kerja_sumber_daya_manusia.get_ikatan_kerja_sumber_daya_manusia", ikatan_kerja_sumber_daya_manusia::get_ikatan_kerja_sumber_daya_manusia)
-                        .put_named("feeder.referensi.ikatan_kerja_sumber_daya_manusia.update_ikatan_kerja_sumber_daya_manusia", ikatan_kerja_sumber_daya_manusia::update_ikatan_kerja_sumber_daya_manusia)
-                        .delete_named("feeder.referensi.ikatan_kerja_sumber_daya_manusia.delete_ikatan_kerja_sumber_daya_manusia", ikatan_kerja_sumber_daya_manusia::delete_ikatan_kerja_sumber_daya_manusia),
+                        .get_named("feeder.referensi.ikatan_kerja_sumber_daya_manusia.show", ikatan_kerja_sumber_daya_manusia::show)
+                        .put_named("feeder.referensi.ikatan_kerja_sumber_daya_manusia.update", ikatan_kerja_sumber_daya_manusia::update)
+                        .delete_named("feeder.referensi.ikatan_kerja_sumber_daya_manusia.delete", ikatan_kerja_sumber_daya_manusia::delete),
                 ),
         )
         .push(
             Router::with_path("jabatan-fungsional")
-                .get_named("feeder.referensi.jabatan_fungsional.list_jabatan_fungsional", jabatan_fungsional::list_jabatan_fungsional)
-                .post_named("feeder.referensi.jabatan_fungsional.create_jabatan_fungsional", jabatan_fungsional::create_jabatan_fungsional)
+                .get_named("feeder.referensi.jabatan_fungsional.index", jabatan_fungsional::index)
+                .post_named("feeder.referensi.jabatan_fungsional.store", jabatan_fungsional::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.jabatan_fungsional.get_jabatan_fungsional", jabatan_fungsional::get_jabatan_fungsional)
-                        .put_named("feeder.referensi.jabatan_fungsional.update_jabatan_fungsional", jabatan_fungsional::update_jabatan_fungsional)
-                        .delete_named("feeder.referensi.jabatan_fungsional.delete_jabatan_fungsional", jabatan_fungsional::delete_jabatan_fungsional),
+                        .get_named("feeder.referensi.jabatan_fungsional.show", jabatan_fungsional::show)
+                        .put_named("feeder.referensi.jabatan_fungsional.update", jabatan_fungsional::update)
+                        .delete_named("feeder.referensi.jabatan_fungsional.delete", jabatan_fungsional::delete),
                 ),
         )
         .push(
             Router::with_path("jalur-masuk")
-                .get_named("feeder.referensi.jalur_masuk.list_jalur_masuk", jalur_masuk::list_jalur_masuk)
-                .post_named("feeder.referensi.jalur_masuk.create_jalur_masuk", jalur_masuk::create_jalur_masuk)
+                .get_named("feeder.referensi.jalur_masuk.index", jalur_masuk::index)
+                .post_named("feeder.referensi.jalur_masuk.store", jalur_masuk::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.jalur_masuk.get_jalur_masuk", jalur_masuk::get_jalur_masuk)
-                        .put_named("feeder.referensi.jalur_masuk.update_jalur_masuk", jalur_masuk::update_jalur_masuk)
-                        .delete_named("feeder.referensi.jalur_masuk.delete_jalur_masuk", jalur_masuk::delete_jalur_masuk),
+                        .get_named("feeder.referensi.jalur_masuk.show", jalur_masuk::show)
+                        .put_named("feeder.referensi.jalur_masuk.update", jalur_masuk::update)
+                        .delete_named("feeder.referensi.jalur_masuk.delete", jalur_masuk::delete),
                 ),
         )
         .push(
             Router::with_path("jenis-aktifitas-mahasiswa")
-                .get_named("feeder.referensi.jenis_aktifitas_mahasiswa.list_jenis_aktifitas_mahasiswa", jenis_aktifitas_mahasiswa::list_jenis_aktifitas_mahasiswa)
-                .post_named("feeder.referensi.jenis_aktifitas_mahasiswa.create_jenis_aktifitas_mahasiswa", jenis_aktifitas_mahasiswa::create_jenis_aktifitas_mahasiswa)
+                .get_named("feeder.referensi.jenis_aktifitas_mahasiswa.index", jenis_aktifitas_mahasiswa::index)
+                .post_named("feeder.referensi.jenis_aktifitas_mahasiswa.store", jenis_aktifitas_mahasiswa::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.jenis_aktifitas_mahasiswa.get_jenis_aktifitas_mahasiswa", jenis_aktifitas_mahasiswa::get_jenis_aktifitas_mahasiswa)
-                        .put_named("feeder.referensi.jenis_aktifitas_mahasiswa.update_jenis_aktifitas_mahasiswa", jenis_aktifitas_mahasiswa::update_jenis_aktifitas_mahasiswa)
-                        .delete_named("feeder.referensi.jenis_aktifitas_mahasiswa.delete_jenis_aktifitas_mahasiswa", jenis_aktifitas_mahasiswa::delete_jenis_aktifitas_mahasiswa),
+                        .get_named("feeder.referensi.jenis_aktifitas_mahasiswa.show", jenis_aktifitas_mahasiswa::show)
+                        .put_named("feeder.referensi.jenis_aktifitas_mahasiswa.update", jenis_aktifitas_mahasiswa::update)
+                        .delete_named("feeder.referensi.jenis_aktifitas_mahasiswa.delete", jenis_aktifitas_mahasiswa::delete),
                 ),
         )
         .push(
             Router::with_path("jenis-evaluasi")
-                .get_named("feeder.referensi.jenis_evaluasi.list_jenis_evaluasi", jenis_evaluasi::list_jenis_evaluasi)
-                .post_named("feeder.referensi.jenis_evaluasi.create_jenis_evaluasi", jenis_evaluasi::create_jenis_evaluasi)
+                .get_named("feeder.referensi.jenis_evaluasi.index", jenis_evaluasi::index)
+                .post_named("feeder.referensi.jenis_evaluasi.store", jenis_evaluasi::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.jenis_evaluasi.get_jenis_evaluasi", jenis_evaluasi::get_jenis_evaluasi)
-                        .put_named("feeder.referensi.jenis_evaluasi.update_jenis_evaluasi", jenis_evaluasi::update_jenis_evaluasi)
-                        .delete_named("feeder.referensi.jenis_evaluasi.delete_jenis_evaluasi", jenis_evaluasi::delete_jenis_evaluasi),
+                        .get_named("feeder.referensi.jenis_evaluasi.show", jenis_evaluasi::show)
+                        .put_named("feeder.referensi.jenis_evaluasi.update", jenis_evaluasi::update)
+                        .delete_named("feeder.referensi.jenis_evaluasi.delete", jenis_evaluasi::delete),
                 ),
         )
         .push(
             Router::with_path("jenis-keluar")
-                .get_named("feeder.referensi.jenis_keluar.list_jenis_keluar", jenis_keluar::list_jenis_keluar)
-                .post_named("feeder.referensi.jenis_keluar.create_jenis_keluar", jenis_keluar::create_jenis_keluar)
+                .get_named("feeder.referensi.jenis_keluar.index", jenis_keluar::index)
+                .post_named("feeder.referensi.jenis_keluar.store", jenis_keluar::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.jenis_keluar.get_jenis_keluar", jenis_keluar::get_jenis_keluar)
-                        .put_named("feeder.referensi.jenis_keluar.update_jenis_keluar", jenis_keluar::update_jenis_keluar)
-                        .delete_named("feeder.referensi.jenis_keluar.delete_jenis_keluar", jenis_keluar::delete_jenis_keluar),
+                        .get_named("feeder.referensi.jenis_keluar.show", jenis_keluar::show)
+                        .put_named("feeder.referensi.jenis_keluar.update", jenis_keluar::update)
+                        .delete_named("feeder.referensi.jenis_keluar.delete", jenis_keluar::delete),
                 ),
         )
         .push(
             Router::with_path("jenis-pendaftaran")
-                .get_named("feeder.referensi.jenis_pendaftaran.list_jenis_pendaftaran", jenis_pendaftaran::list_jenis_pendaftaran)
-                .post_named("feeder.referensi.jenis_pendaftaran.create_jenis_pendaftaran", jenis_pendaftaran::create_jenis_pendaftaran)
+                .get_named("feeder.referensi.jenis_pendaftaran.index", jenis_pendaftaran::index)
+                .post_named("feeder.referensi.jenis_pendaftaran.store", jenis_pendaftaran::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.jenis_pendaftaran.get_jenis_pendaftaran", jenis_pendaftaran::get_jenis_pendaftaran)
-                        .put_named("feeder.referensi.jenis_pendaftaran.update_jenis_pendaftaran", jenis_pendaftaran::update_jenis_pendaftaran)
-                        .delete_named("feeder.referensi.jenis_pendaftaran.delete_jenis_pendaftaran", jenis_pendaftaran::delete_jenis_pendaftaran),
+                        .get_named("feeder.referensi.jenis_pendaftaran.show", jenis_pendaftaran::show)
+                        .put_named("feeder.referensi.jenis_pendaftaran.update", jenis_pendaftaran::update)
+                        .delete_named("feeder.referensi.jenis_pendaftaran.delete", jenis_pendaftaran::delete),
                 ),
         )
         .push(
             Router::with_path("jenis-prestasi")
-                .get_named("feeder.referensi.jenis_prestasi.list_jenis_prestasi", jenis_prestasi::list_jenis_prestasi)
-                .post_named("feeder.referensi.jenis_prestasi.create_jenis_prestasi", jenis_prestasi::create_jenis_prestasi)
+                .get_named("feeder.referensi.jenis_prestasi.index", jenis_prestasi::index)
+                .post_named("feeder.referensi.jenis_prestasi.store", jenis_prestasi::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.jenis_prestasi.get_jenis_prestasi", jenis_prestasi::get_jenis_prestasi)
-                        .put_named("feeder.referensi.jenis_prestasi.update_jenis_prestasi", jenis_prestasi::update_jenis_prestasi)
-                        .delete_named("feeder.referensi.jenis_prestasi.delete_jenis_prestasi", jenis_prestasi::delete_jenis_prestasi),
+                        .get_named("feeder.referensi.jenis_prestasi.show", jenis_prestasi::show)
+                        .put_named("feeder.referensi.jenis_prestasi.update", jenis_prestasi::update)
+                        .delete_named("feeder.referensi.jenis_prestasi.delete", jenis_prestasi::delete),
                 ),
         )
         .push(
             Router::with_path("jenis-satuan-manajemen-sumberdaya")
-                .get_named("feeder.referensi.jenis_satuan_manajemen_sumberdaya.list_jenis_satuan_manajemen_sumberdaya", jenis_satuan_manajemen_sumberdaya::list_jenis_satuan_manajemen_sumberdaya)
-                .post_named("feeder.referensi.jenis_satuan_manajemen_sumberdaya.create_jenis_satuan_manajemen_sumberdaya", jenis_satuan_manajemen_sumberdaya::create_jenis_satuan_manajemen_sumberdaya)
+                .get_named("feeder.referensi.jenis_satuan_manajemen_sumberdaya.index", jenis_satuan_manajemen_sumberdaya::index)
+                .post_named("feeder.referensi.jenis_satuan_manajemen_sumberdaya.store", jenis_satuan_manajemen_sumberdaya::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.jenis_satuan_manajemen_sumberdaya.get_jenis_satuan_manajemen_sumberdaya", jenis_satuan_manajemen_sumberdaya::get_jenis_satuan_manajemen_sumberdaya)
-                        .put_named("feeder.referensi.jenis_satuan_manajemen_sumberdaya.update_jenis_satuan_manajemen_sumberdaya", jenis_satuan_manajemen_sumberdaya::update_jenis_satuan_manajemen_sumberdaya)
-                        .delete_named("feeder.referensi.jenis_satuan_manajemen_sumberdaya.delete_jenis_satuan_manajemen_sumberdaya", jenis_satuan_manajemen_sumberdaya::delete_jenis_satuan_manajemen_sumberdaya),
+                        .get_named("feeder.referensi.jenis_satuan_manajemen_sumberdaya.show", jenis_satuan_manajemen_sumberdaya::show)
+                        .put_named("feeder.referensi.jenis_satuan_manajemen_sumberdaya.update", jenis_satuan_manajemen_sumberdaya::update)
+                        .delete_named("feeder.referensi.jenis_satuan_manajemen_sumberdaya.delete", jenis_satuan_manajemen_sumberdaya::delete),
                 ),
         )
         .push(
             Router::with_path("jenis-sertifikasi")
-                .get_named("feeder.referensi.jenis_sertifikasi.list_jenis_sertifikasi", jenis_sertifikasi::list_jenis_sertifikasi)
-                .post_named("feeder.referensi.jenis_sertifikasi.create_jenis_sertifikasi", jenis_sertifikasi::create_jenis_sertifikasi)
+                .get_named("feeder.referensi.jenis_sertifikasi.index", jenis_sertifikasi::index)
+                .post_named("feeder.referensi.jenis_sertifikasi.store", jenis_sertifikasi::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.jenis_sertifikasi.get_jenis_sertifikasi", jenis_sertifikasi::get_jenis_sertifikasi)
-                        .put_named("feeder.referensi.jenis_sertifikasi.update_jenis_sertifikasi", jenis_sertifikasi::update_jenis_sertifikasi)
-                        .delete_named("feeder.referensi.jenis_sertifikasi.delete_jenis_sertifikasi", jenis_sertifikasi::delete_jenis_sertifikasi),
+                        .get_named("feeder.referensi.jenis_sertifikasi.show", jenis_sertifikasi::show)
+                        .put_named("feeder.referensi.jenis_sertifikasi.update", jenis_sertifikasi::update)
+                        .delete_named("feeder.referensi.jenis_sertifikasi.delete", jenis_sertifikasi::delete),
                 ),
         )
         .push(
             Router::with_path("jenis-substansi")
-                .get_named("feeder.referensi.jenis_substansi.list_jenis_substansi", jenis_substansi::list_jenis_substansi)
-                .post_named("feeder.referensi.jenis_substansi.create_jenis_substansi", jenis_substansi::create_jenis_substansi)
+                .get_named("feeder.referensi.jenis_substansi.index", jenis_substansi::index)
+                .post_named("feeder.referensi.jenis_substansi.store", jenis_substansi::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.jenis_substansi.get_jenis_substansi", jenis_substansi::get_jenis_substansi)
-                        .put_named("feeder.referensi.jenis_substansi.update_jenis_substansi", jenis_substansi::update_jenis_substansi)
-                        .delete_named("feeder.referensi.jenis_substansi.delete_jenis_substansi", jenis_substansi::delete_jenis_substansi),
+                        .get_named("feeder.referensi.jenis_substansi.show", jenis_substansi::show)
+                        .put_named("feeder.referensi.jenis_substansi.update", jenis_substansi::update)
+                        .delete_named("feeder.referensi.jenis_substansi.delete", jenis_substansi::delete),
                 ),
         )
         .push(
             Router::with_path("jenis-tinggal")
-                .get_named("feeder.referensi.jenis_tinggal.list_jenis_tinggal", jenis_tinggal::list_jenis_tinggal)
-                .post_named("feeder.referensi.jenis_tinggal.create_jenis_tinggal", jenis_tinggal::create_jenis_tinggal)
+                .get_named("feeder.referensi.jenis_tinggal.index", jenis_tinggal::index)
+                .post_named("feeder.referensi.jenis_tinggal.store", jenis_tinggal::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.jenis_tinggal.get_jenis_tinggal", jenis_tinggal::get_jenis_tinggal)
-                        .put_named("feeder.referensi.jenis_tinggal.update_jenis_tinggal", jenis_tinggal::update_jenis_tinggal)
-                        .delete_named("feeder.referensi.jenis_tinggal.delete_jenis_tinggal", jenis_tinggal::delete_jenis_tinggal),
+                        .get_named("feeder.referensi.jenis_tinggal.show", jenis_tinggal::show)
+                        .put_named("feeder.referensi.jenis_tinggal.update", jenis_tinggal::update)
+                        .delete_named("feeder.referensi.jenis_tinggal.delete", jenis_tinggal::delete),
                 ),
         )
         .push(
             Router::with_path("jenjang-pendidikan")
-                .get_named("feeder.referensi.jenjang_pendidikan.list_jenjang_pendidikan", jenjang_pendidikan::list_jenjang_pendidikan)
-                .post_named("feeder.referensi.jenjang_pendidikan.create_jenjang_pendidikan", jenjang_pendidikan::create_jenjang_pendidikan)
+                .get_named("feeder.referensi.jenjang_pendidikan.index", jenjang_pendidikan::index)
+                .post_named("feeder.referensi.jenjang_pendidikan.store", jenjang_pendidikan::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.jenjang_pendidikan.get_jenjang_pendidikan", jenjang_pendidikan::get_jenjang_pendidikan)
-                        .put_named("feeder.referensi.jenjang_pendidikan.update_jenjang_pendidikan", jenjang_pendidikan::update_jenjang_pendidikan)
-                        .delete_named("feeder.referensi.jenjang_pendidikan.delete_jenjang_pendidikan", jenjang_pendidikan::delete_jenjang_pendidikan),
+                        .get_named("feeder.referensi.jenjang_pendidikan.show", jenjang_pendidikan::show)
+                        .put_named("feeder.referensi.jenjang_pendidikan.update", jenjang_pendidikan::update)
+                        .delete_named("feeder.referensi.jenjang_pendidikan.delete", jenjang_pendidikan::delete),
                 ),
         )
         .push(
             Router::with_path("kategori-kegiatan")
-                .get_named("feeder.referensi.kategori_kegiatan.list_kategori_kegiatan", kategori_kegiatan::list_kategori_kegiatan)
-                .post_named("feeder.referensi.kategori_kegiatan.create_kategori_kegiatan", kategori_kegiatan::create_kategori_kegiatan)
+                .get_named("feeder.referensi.kategori_kegiatan.index", kategori_kegiatan::index)
+                .post_named("feeder.referensi.kategori_kegiatan.store", kategori_kegiatan::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.kategori_kegiatan.get_kategori_kegiatan", kategori_kegiatan::get_kategori_kegiatan)
-                        .put_named("feeder.referensi.kategori_kegiatan.update_kategori_kegiatan", kategori_kegiatan::update_kategori_kegiatan)
-                        .delete_named("feeder.referensi.kategori_kegiatan.delete_kategori_kegiatan", kategori_kegiatan::delete_kategori_kegiatan),
+                        .get_named("feeder.referensi.kategori_kegiatan.show", kategori_kegiatan::show)
+                        .put_named("feeder.referensi.kategori_kegiatan.update", kategori_kegiatan::update)
+                        .delete_named("feeder.referensi.kategori_kegiatan.delete", kategori_kegiatan::delete),
                 ),
         )
         .push(
             Router::with_path("kebutuhan-khusus")
-                .get_named("feeder.referensi.kebutuhan_khusus.list_kebutuhan_khusus", kebutuhan_khusus::list_kebutuhan_khusus)
-                .post_named("feeder.referensi.kebutuhan_khusus.create_kebutuhan_khusu", kebutuhan_khusus::create_kebutuhan_khusu)
+                .get_named("feeder.referensi.kebutuhan_khusus.index", kebutuhan_khusus::index)
+                .post_named("feeder.referensi.kebutuhan_khusus.store", kebutuhan_khusus::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.kebutuhan_khusus.get_kebutuhan_khusu", kebutuhan_khusus::get_kebutuhan_khusu)
-                        .put_named("feeder.referensi.kebutuhan_khusus.update_kebutuhan_khusu", kebutuhan_khusus::update_kebutuhan_khusu)
-                        .delete_named("feeder.referensi.kebutuhan_khusus.delete_kebutuhan_khusu", kebutuhan_khusus::delete_kebutuhan_khusu),
+                        .get_named("feeder.referensi.kebutuhan_khusus.show", kebutuhan_khusus::show)
+                        .put_named("feeder.referensi.kebutuhan_khusus.update", kebutuhan_khusus::update)
+                        .delete_named("feeder.referensi.kebutuhan_khusus.delete", kebutuhan_khusus::delete),
                 ),
         )
         .push(
             Router::with_path("lembaga-pengangkat")
-                .get_named("feeder.referensi.lembaga_pengangkat.list_lembaga_pengangkat", lembaga_pengangkat::list_lembaga_pengangkat)
-                .post_named("feeder.referensi.lembaga_pengangkat.create_lembaga_pengangkat", lembaga_pengangkat::create_lembaga_pengangkat)
+                .get_named("feeder.referensi.lembaga_pengangkat.index", lembaga_pengangkat::index)
+                .post_named("feeder.referensi.lembaga_pengangkat.store", lembaga_pengangkat::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.lembaga_pengangkat.get_lembaga_pengangkat", lembaga_pengangkat::get_lembaga_pengangkat)
-                        .put_named("feeder.referensi.lembaga_pengangkat.update_lembaga_pengangkat", lembaga_pengangkat::update_lembaga_pengangkat)
-                        .delete_named("feeder.referensi.lembaga_pengangkat.delete_lembaga_pengangkat", lembaga_pengangkat::delete_lembaga_pengangkat),
+                        .get_named("feeder.referensi.lembaga_pengangkat.show", lembaga_pengangkat::show)
+                        .put_named("feeder.referensi.lembaga_pengangkat.update", lembaga_pengangkat::update)
+                        .delete_named("feeder.referensi.lembaga_pengangkat.delete", lembaga_pengangkat::delete),
                 ),
         )
         .push(
             Router::with_path("level-wilayah")
-                .get_named("feeder.referensi.level_wilayah.list_level_wilayah", level_wilayah::list_level_wilayah)
-                .post_named("feeder.referensi.level_wilayah.create_level_wilayah", level_wilayah::create_level_wilayah)
+                .get_named("feeder.referensi.level_wilayah.index", level_wilayah::index)
+                .post_named("feeder.referensi.level_wilayah.store", level_wilayah::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.level_wilayah.get_level_wilayah", level_wilayah::get_level_wilayah)
-                        .put_named("feeder.referensi.level_wilayah.update_level_wilayah", level_wilayah::update_level_wilayah)
-                        .delete_named("feeder.referensi.level_wilayah.delete_level_wilayah", level_wilayah::delete_level_wilayah),
+                        .get_named("feeder.referensi.level_wilayah.show", level_wilayah::show)
+                        .put_named("feeder.referensi.level_wilayah.update", level_wilayah::update)
+                        .delete_named("feeder.referensi.level_wilayah.delete", level_wilayah::delete),
                 ),
         )
         .push(
             Router::with_path("negara")
-                .get_named("feeder.referensi.negara.list_negara", negara::list_negara)
-                .post_named("feeder.referensi.negara.create_negara", negara::create_negara)
+                .get_named("feeder.referensi.negara.index", negara::index)
+                .post_named("feeder.referensi.negara.store", negara::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.negara.get_negara", negara::get_negara)
-                        .put_named("feeder.referensi.negara.update_negara", negara::update_negara)
-                        .delete_named("feeder.referensi.negara.delete_negara", negara::delete_negara),
+                        .get_named("feeder.referensi.negara.show", negara::show)
+                        .put_named("feeder.referensi.negara.update", negara::update)
+                        .delete_named("feeder.referensi.negara.delete", negara::delete),
                 ),
         )
         .push(
             Router::with_path("pangkat-golongan")
-                .get_named("feeder.referensi.pangkat_golongan.list_pangkat_golongan", pangkat_golongan::list_pangkat_golongan)
-                .post_named("feeder.referensi.pangkat_golongan.create_pangkat_golongan", pangkat_golongan::create_pangkat_golongan)
+                .get_named("feeder.referensi.pangkat_golongan.index", pangkat_golongan::index)
+                .post_named("feeder.referensi.pangkat_golongan.store", pangkat_golongan::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.pangkat_golongan.get_pangkat_golongan", pangkat_golongan::get_pangkat_golongan)
-                        .put_named("feeder.referensi.pangkat_golongan.update_pangkat_golongan", pangkat_golongan::update_pangkat_golongan)
-                        .delete_named("feeder.referensi.pangkat_golongan.delete_pangkat_golongan", pangkat_golongan::delete_pangkat_golongan),
+                        .get_named("feeder.referensi.pangkat_golongan.show", pangkat_golongan::show)
+                        .put_named("feeder.referensi.pangkat_golongan.update", pangkat_golongan::update)
+                        .delete_named("feeder.referensi.pangkat_golongan.delete", pangkat_golongan::delete),
                 ),
         )
         .push(
             Router::with_path("pekerjaan")
-                .get_named("feeder.referensi.pekerjaan.list_pekerjaan", pekerjaan::list_pekerjaan)
-                .post_named("feeder.referensi.pekerjaan.create_pekerjaan", pekerjaan::create_pekerjaan)
+                .get_named("feeder.referensi.pekerjaan.index", pekerjaan::index)
+                .post_named("feeder.referensi.pekerjaan.store", pekerjaan::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.pekerjaan.get_pekerjaan", pekerjaan::get_pekerjaan)
-                        .put_named("feeder.referensi.pekerjaan.update_pekerjaan", pekerjaan::update_pekerjaan)
-                        .delete_named("feeder.referensi.pekerjaan.delete_pekerjaan", pekerjaan::delete_pekerjaan),
+                        .get_named("feeder.referensi.pekerjaan.show", pekerjaan::show)
+                        .put_named("feeder.referensi.pekerjaan.update", pekerjaan::update)
+                        .delete_named("feeder.referensi.pekerjaan.delete", pekerjaan::delete),
                 ),
         )
         .push(
             Router::with_path("pembiayaan")
-                .get_named("feeder.referensi.pembiayaan.list_pembiayaan", pembiayaan::list_pembiayaan)
-                .post_named("feeder.referensi.pembiayaan.create_pembiayaan", pembiayaan::create_pembiayaan)
+                .get_named("feeder.referensi.pembiayaan.index", pembiayaan::index)
+                .post_named("feeder.referensi.pembiayaan.store", pembiayaan::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.pembiayaan.get_pembiayaan", pembiayaan::get_pembiayaan)
-                        .put_named("feeder.referensi.pembiayaan.update_pembiayaan", pembiayaan::update_pembiayaan)
-                        .delete_named("feeder.referensi.pembiayaan.delete_pembiayaan", pembiayaan::delete_pembiayaan),
+                        .get_named("feeder.referensi.pembiayaan.show", pembiayaan::show)
+                        .put_named("feeder.referensi.pembiayaan.update", pembiayaan::update)
+                        .delete_named("feeder.referensi.pembiayaan.delete", pembiayaan::delete),
                 ),
         )
         .push(
             Router::with_path("penghasilan")
-                .get_named("feeder.referensi.penghasilan.list_penghasilan", penghasilan::list_penghasilan)
-                .post_named("feeder.referensi.penghasilan.create_penghasilan", penghasilan::create_penghasilan)
+                .get_named("feeder.referensi.penghasilan.index", penghasilan::index)
+                .post_named("feeder.referensi.penghasilan.store", penghasilan::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.penghasilan.get_penghasilan", penghasilan::get_penghasilan)
-                        .put_named("feeder.referensi.penghasilan.update_penghasilan", penghasilan::update_penghasilan)
-                        .delete_named("feeder.referensi.penghasilan.delete_penghasilan", penghasilan::delete_penghasilan),
+                        .get_named("feeder.referensi.penghasilan.show", penghasilan::show)
+                        .put_named("feeder.referensi.penghasilan.update", penghasilan::update)
+                        .delete_named("feeder.referensi.penghasilan.delete", penghasilan::delete),
                 ),
         )
         .push(
             Router::with_path("periode-lampau")
-                .get_named("feeder.referensi.periode_lampau.list_periode_lampau", periode_lampau::list_periode_lampau)
-                .post_named("feeder.referensi.periode_lampau.create_periode_lampau", periode_lampau::create_periode_lampau)
+                .get_named("feeder.referensi.periode_lampau.index", periode_lampau::index)
+                .post_named("feeder.referensi.periode_lampau.store", periode_lampau::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.periode_lampau.get_periode_lampau", periode_lampau::get_periode_lampau)
-                        .put_named("feeder.referensi.periode_lampau.update_periode_lampau", periode_lampau::update_periode_lampau)
-                        .delete_named("feeder.referensi.periode_lampau.delete_periode_lampau", periode_lampau::delete_periode_lampau),
+                        .get_named("feeder.referensi.periode_lampau.show", periode_lampau::show)
+                        .put_named("feeder.referensi.periode_lampau.update", periode_lampau::update)
+                        .delete_named("feeder.referensi.periode_lampau.delete", periode_lampau::delete),
                 ),
         )
         .push(
             Router::with_path("semester")
-                .get_named("feeder.referensi.semester.list_semester", semester::list_semester)
-                .post_named("feeder.referensi.semester.create_semester", semester::create_semester)
+                .get_named("feeder.referensi.semester.index", semester::index)
+                .post_named("feeder.referensi.semester.store", semester::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.semester.get_semester", semester::get_semester)
-                        .put_named("feeder.referensi.semester.update_semester", semester::update_semester)
-                        .delete_named("feeder.referensi.semester.delete_semester", semester::delete_semester),
+                        .get_named("feeder.referensi.semester.show", semester::show)
+                        .put_named("feeder.referensi.semester.update", semester::update)
+                        .delete_named("feeder.referensi.semester.delete", semester::delete),
                 ),
         )
         .push(
             Router::with_path("status-keaktifan-pegawai")
-                .get_named("feeder.referensi.status_keaktifan_pegawai.list_status_keaktifan_pegawai", status_keaktifan_pegawai::list_status_keaktifan_pegawai)
-                .post_named("feeder.referensi.status_keaktifan_pegawai.create_status_keaktifan_pegawai", status_keaktifan_pegawai::create_status_keaktifan_pegawai)
+                .get_named("feeder.referensi.status_keaktifan_pegawai.index", status_keaktifan_pegawai::index)
+                .post_named("feeder.referensi.status_keaktifan_pegawai.store", status_keaktifan_pegawai::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.status_keaktifan_pegawai.get_status_keaktifan_pegawai", status_keaktifan_pegawai::get_status_keaktifan_pegawai)
-                        .put_named("feeder.referensi.status_keaktifan_pegawai.update_status_keaktifan_pegawai", status_keaktifan_pegawai::update_status_keaktifan_pegawai)
-                        .delete_named("feeder.referensi.status_keaktifan_pegawai.delete_status_keaktifan_pegawai", status_keaktifan_pegawai::delete_status_keaktifan_pegawai),
+                        .get_named("feeder.referensi.status_keaktifan_pegawai.show", status_keaktifan_pegawai::show)
+                        .put_named("feeder.referensi.status_keaktifan_pegawai.update", status_keaktifan_pegawai::update)
+                        .delete_named("feeder.referensi.status_keaktifan_pegawai.delete", status_keaktifan_pegawai::delete),
                 ),
         )
         .push(
             Router::with_path("status-kepegawaian")
-                .get_named("feeder.referensi.status_kepegawaian.list_status_kepegawaian", status_kepegawaian::list_status_kepegawaian)
-                .post_named("feeder.referensi.status_kepegawaian.create_status_kepegawaian", status_kepegawaian::create_status_kepegawaian)
+                .get_named("feeder.referensi.status_kepegawaian.index", status_kepegawaian::index)
+                .post_named("feeder.referensi.status_kepegawaian.store", status_kepegawaian::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.status_kepegawaian.get_status_kepegawaian", status_kepegawaian::get_status_kepegawaian)
-                        .put_named("feeder.referensi.status_kepegawaian.update_status_kepegawaian", status_kepegawaian::update_status_kepegawaian)
-                        .delete_named("feeder.referensi.status_kepegawaian.delete_status_kepegawaian", status_kepegawaian::delete_status_kepegawaian),
+                        .get_named("feeder.referensi.status_kepegawaian.show", status_kepegawaian::show)
+                        .put_named("feeder.referensi.status_kepegawaian.update", status_kepegawaian::update)
+                        .delete_named("feeder.referensi.status_kepegawaian.delete", status_kepegawaian::delete),
                 ),
         )
         .push(
             Router::with_path("status-mahasiswa")
-                .get_named("feeder.referensi.status_mahasiswa.list_status_mahasiswa", status_mahasiswa::list_status_mahasiswa)
-                .post_named("feeder.referensi.status_mahasiswa.create_status_mahasiswa", status_mahasiswa::create_status_mahasiswa)
+                .get_named("feeder.referensi.status_mahasiswa.index", status_mahasiswa::index)
+                .post_named("feeder.referensi.status_mahasiswa.store", status_mahasiswa::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.status_mahasiswa.get_status_mahasiswa", status_mahasiswa::get_status_mahasiswa)
-                        .put_named("feeder.referensi.status_mahasiswa.update_status_mahasiswa", status_mahasiswa::update_status_mahasiswa)
-                        .delete_named("feeder.referensi.status_mahasiswa.delete_status_mahasiswa", status_mahasiswa::delete_status_mahasiswa),
+                        .get_named("feeder.referensi.status_mahasiswa.show", status_mahasiswa::show)
+                        .put_named("feeder.referensi.status_mahasiswa.update", status_mahasiswa::update)
+                        .delete_named("feeder.referensi.status_mahasiswa.delete", status_mahasiswa::delete),
                 ),
         )
         .push(
             Router::with_path("tahun-ajaran")
-                .get_named("feeder.referensi.tahun_ajaran.list_tahun_ajaran", tahun_ajaran::list_tahun_ajaran)
-                .post_named("feeder.referensi.tahun_ajaran.create_tahun_ajaran", tahun_ajaran::create_tahun_ajaran)
+                .get_named("feeder.referensi.tahun_ajaran.index", tahun_ajaran::index)
+                .post_named("feeder.referensi.tahun_ajaran.store", tahun_ajaran::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.tahun_ajaran.get_tahun_ajaran", tahun_ajaran::get_tahun_ajaran)
-                        .put_named("feeder.referensi.tahun_ajaran.update_tahun_ajaran", tahun_ajaran::update_tahun_ajaran)
-                        .delete_named("feeder.referensi.tahun_ajaran.delete_tahun_ajaran", tahun_ajaran::delete_tahun_ajaran),
+                        .get_named("feeder.referensi.tahun_ajaran.show", tahun_ajaran::show)
+                        .put_named("feeder.referensi.tahun_ajaran.update", tahun_ajaran::update)
+                        .delete_named("feeder.referensi.tahun_ajaran.delete", tahun_ajaran::delete),
                 ),
         )
         .push(
             Router::with_path("tingkat-prestasi")
-                .get_named("feeder.referensi.tingkat_prestasi.list_tingkat_prestasi", tingkat_prestasi::list_tingkat_prestasi)
-                .post_named("feeder.referensi.tingkat_prestasi.create_tingkat_prestasi", tingkat_prestasi::create_tingkat_prestasi)
+                .get_named("feeder.referensi.tingkat_prestasi.index", tingkat_prestasi::index)
+                .post_named("feeder.referensi.tingkat_prestasi.store", tingkat_prestasi::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.tingkat_prestasi.get_tingkat_prestasi", tingkat_prestasi::get_tingkat_prestasi)
-                        .put_named("feeder.referensi.tingkat_prestasi.update_tingkat_prestasi", tingkat_prestasi::update_tingkat_prestasi)
-                        .delete_named("feeder.referensi.tingkat_prestasi.delete_tingkat_prestasi", tingkat_prestasi::delete_tingkat_prestasi),
+                        .get_named("feeder.referensi.tingkat_prestasi.show", tingkat_prestasi::show)
+                        .put_named("feeder.referensi.tingkat_prestasi.update", tingkat_prestasi::update)
+                        .delete_named("feeder.referensi.tingkat_prestasi.delete", tingkat_prestasi::delete),
                 ),
         )
         .push(
             Router::with_path("wilayah")
-                .get_named("feeder.referensi.wilayah.list_wilayah", wilayah::list_wilayah)
-                .post_named("feeder.referensi.wilayah.create_wilayah", wilayah::create_wilayah)
+                .get_named("feeder.referensi.wilayah.index", wilayah::index)
+                .post_named("feeder.referensi.wilayah.store", wilayah::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("feeder.referensi.wilayah.get_wilayah", wilayah::get_wilayah)
-                        .put_named("feeder.referensi.wilayah.update_wilayah", wilayah::update_wilayah)
-                        .delete_named("feeder.referensi.wilayah.delete_wilayah", wilayah::delete_wilayah),
+                        .get_named("feeder.referensi.wilayah.show", wilayah::show)
+                        .put_named("feeder.referensi.wilayah.update", wilayah::update)
+                        .delete_named("feeder.referensi.wilayah.delete", wilayah::delete),
                 ),
         )
 }

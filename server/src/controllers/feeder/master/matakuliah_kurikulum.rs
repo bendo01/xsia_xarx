@@ -16,7 +16,7 @@ use crate::models::feeder::master::matakuliah_kurikulum as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Master - MatakuliahKurikulum"), status_codes(200, 500))]
-pub async fn list_matakuliah_kurikulum(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedMatakuliahKurikulumResponse>, StatusError> {
@@ -78,7 +78,7 @@ pub async fn list_matakuliah_kurikulum(
 }
 
 #[endpoint(tags("Feeder - Master - MatakuliahKurikulum"), status_codes(200, 400, 404, 500))]
-pub async fn get_matakuliah_kurikulum(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<MatakuliahKurikulumResponse>, StatusError> {
@@ -125,7 +125,7 @@ pub async fn get_matakuliah_kurikulum(
 
     }))
 }#[endpoint(tags("Feeder - Master - MatakuliahKurikulum"), status_codes(200, 400, 500))]
-pub async fn create_matakuliah_kurikulum(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MatakuliahKurikulumResponse>, StatusError> {
@@ -203,7 +203,7 @@ pub async fn create_matakuliah_kurikulum(
 }
 
 #[endpoint(tags("Feeder - Master - MatakuliahKurikulum"), status_codes(200, 400, 404, 500))]
-pub async fn update_matakuliah_kurikulum(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MatakuliahKurikulumResponse>, StatusError> {
@@ -319,7 +319,7 @@ pub async fn update_matakuliah_kurikulum(
         }))
 }
 #[endpoint(tags("Feeder - Master - MatakuliahKurikulum"), status_codes(200, 400, 404, 500))]
-pub async fn delete_matakuliah_kurikulum(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

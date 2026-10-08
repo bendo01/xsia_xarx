@@ -16,7 +16,7 @@ use crate::models::location::countries as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Location -  - Country"), status_codes(200, 500))]
-pub async fn list_countries(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedCountryResponse>, StatusError> {
@@ -77,7 +77,7 @@ pub async fn list_countries(
 }
 
 #[endpoint(tags("Location -  - Country"), status_codes(200, 400, 404, 500))]
-pub async fn get_countrie(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<CountryResponse>, StatusError> {
@@ -115,7 +115,7 @@ pub async fn get_countrie(
 
     }))
 }#[endpoint(tags("Location -  - Country"), status_codes(200, 400, 500))]
-pub async fn create_countrie(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<CountryResponse>, StatusError> {
@@ -175,7 +175,7 @@ pub async fn create_countrie(
 }
 
 #[endpoint(tags("Location -  - Country"), status_codes(200, 400, 404, 500))]
-pub async fn update_countrie(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<CountryResponse>, StatusError> {
@@ -255,7 +255,7 @@ pub async fn update_countrie(
         }))
 }
 #[endpoint(tags("Location -  - Country"), status_codes(200, 400, 404, 500))]
-pub async fn delete_countrie(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -288,7 +288,7 @@ pub async fn delete_countrie(
 }
 
 #[endpoint(tags("Location -  - Country"), status_codes(200, 500))]
-pub async fn options_countries(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

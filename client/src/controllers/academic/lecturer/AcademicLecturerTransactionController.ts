@@ -97,7 +97,7 @@ async function ensureReferencesLoaded() {
 }
 
 /**
- * Fetch lecturer by ID from academic_lecturer_master.lecturers using get_lecturer endpoint (GET /api/v1/academic/lecturer/master/lecturers/:id)
+ * Fetch lecturer by ID from academic_lecturer_master.lecturers using lecturers::show endpoint (GET /api/v1/academic/lecturer/master/lecturers/:id)
  * which eagerly loads all belongs_to and has_many relations in one request.
  */
 export async function getLecturerById(lecturerId: string): Promise<AcademicLecturerMasterLecturer | null> {

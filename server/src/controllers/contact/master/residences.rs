@@ -16,7 +16,7 @@ use crate::models::contact::master::residences as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Contact - Master - Residence"), status_codes(200, 500))]
-pub async fn list_residences(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedResidenceResponse>, StatusError> {
@@ -73,7 +73,7 @@ pub async fn list_residences(
 }
 
 #[endpoint(tags("Contact - Master - Residence"), status_codes(200, 400, 404, 500))]
-pub async fn get_residence(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<ResidenceResponse>, StatusError> {
@@ -115,7 +115,7 @@ pub async fn get_residence(
 
     }))
 }#[endpoint(tags("Contact - Master - Residence"), status_codes(200, 400, 500))]
-pub async fn create_residence(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ResidenceResponse>, StatusError> {
@@ -183,7 +183,7 @@ pub async fn create_residence(
 }
 
 #[endpoint(tags("Contact - Master - Residence"), status_codes(200, 400, 404, 500))]
-pub async fn update_residence(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ResidenceResponse>, StatusError> {
@@ -279,7 +279,7 @@ pub async fn update_residence(
         }))
 }
 #[endpoint(tags("Contact - Master - Residence"), status_codes(200, 400, 404, 500))]
-pub async fn delete_residence(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -312,7 +312,7 @@ pub async fn delete_residence(
 }
 
 #[endpoint(tags("Contact - Master - Residence"), status_codes(200, 500))]
-pub async fn options_residences(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

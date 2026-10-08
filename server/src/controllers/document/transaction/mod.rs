@@ -7,17 +7,17 @@ pub fn router() -> Router {
     Router::with_path("transaction")
         .push(
             Router::with_path("archives")
-                .get_named("document.transaction.archives.list_archives", archives::list_archives)
-                .post_named("document.transaction.archives.create_archive", archives::create_archive)
+                .get_named("document.transaction.archives.index", archives::index)
+                .post_named("document.transaction.archives.store", archives::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("document.transaction.archives.options_archives", archives::options_archives),
+                        .post_named("document.transaction.archives.option_select", archives::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("document.transaction.archives.get_archive", archives::get_archive)
-                        .put_named("document.transaction.archives.update_archive", archives::update_archive)
-                        .delete_named("document.transaction.archives.delete_archive", archives::delete_archive),
+                        .get_named("document.transaction.archives.show", archives::show)
+                        .put_named("document.transaction.archives.update", archives::update)
+                        .delete_named("document.transaction.archives.delete", archives::delete),
                 ),
         )
 }

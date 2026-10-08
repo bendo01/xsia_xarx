@@ -14,7 +14,7 @@ use crate::models::person::reference::marital_status as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Person - Reference - MaritalStatus"), status_codes(200, 500))]
-pub async fn list_marital_status(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedReferenceResponse>, StatusError> {
@@ -69,7 +69,7 @@ pub async fn list_marital_status(
 }
 
 #[endpoint(tags("Person - Reference - MaritalStatus"), status_codes(200, 400, 404, 500))]
-pub async fn get_marital_statu(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<ReferenceResponse>, StatusError> {
@@ -101,7 +101,7 @@ pub async fn get_marital_statu(
 
     }))
 }#[endpoint(tags("Person - Reference - MaritalStatus"), status_codes(200, 400, 500))]
-pub async fn create_marital_statu(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ReferenceResponse>, StatusError> {
@@ -149,7 +149,7 @@ pub async fn create_marital_statu(
 }
 
 #[endpoint(tags("Person - Reference - MaritalStatus"), status_codes(200, 400, 404, 500))]
-pub async fn update_marital_statu(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ReferenceResponse>, StatusError> {
@@ -205,7 +205,7 @@ pub async fn update_marital_statu(
         }))
 }
 #[endpoint(tags("Person - Reference - MaritalStatus"), status_codes(200, 400, 404, 500))]
-pub async fn delete_marital_statu(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -238,7 +238,7 @@ pub async fn delete_marital_statu(
 }
 
 #[endpoint(tags("Person - Reference - MaritalStatus"), status_codes(200, 500))]
-pub async fn options_marital_status(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

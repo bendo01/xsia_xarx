@@ -16,7 +16,7 @@ use crate::models::location::regions as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Location -  - Region"), status_codes(200, 500))]
-pub async fn list_regions(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedRegionResponse>, StatusError> {
@@ -73,7 +73,7 @@ pub async fn list_regions(
 }
 
 #[endpoint(tags("Location -  - Region"), status_codes(200, 400, 404, 500))]
-pub async fn get_region(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<RegionResponse>, StatusError> {
@@ -107,7 +107,7 @@ pub async fn get_region(
 
     }))
 }#[endpoint(tags("Location -  - Region"), status_codes(200, 400, 500))]
-pub async fn create_region(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<RegionResponse>, StatusError> {
@@ -159,7 +159,7 @@ pub async fn create_region(
 }
 
 #[endpoint(tags("Location -  - Region"), status_codes(200, 400, 404, 500))]
-pub async fn update_region(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<RegionResponse>, StatusError> {
@@ -223,7 +223,7 @@ pub async fn update_region(
         }))
 }
 #[endpoint(tags("Location -  - Region"), status_codes(200, 400, 404, 500))]
-pub async fn delete_region(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -256,7 +256,7 @@ pub async fn delete_region(
 }
 
 #[endpoint(tags("Location -  - Region"), status_codes(200, 500))]
-pub async fn options_regions(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

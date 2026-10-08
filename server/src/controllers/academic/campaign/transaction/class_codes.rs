@@ -16,7 +16,7 @@ use crate::models::academic::campaign::transaction::class_codes as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Campaign - Transaction - ClassCode"), status_codes(200, 500))]
-pub async fn list_class_codes(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedClassCodeResponse>, StatusError> {
@@ -96,7 +96,7 @@ pub async fn list_class_codes(
 }
 
 #[endpoint(tags("Academic - Campaign - Transaction - ClassCode"), status_codes(200, 400, 404, 500))]
-pub async fn get_class_code(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<ClassCodeResponse>, StatusError> {
@@ -133,7 +133,7 @@ pub async fn get_class_code(
 
     }))
 }#[endpoint(tags("Academic - Campaign - Transaction - ClassCode"), status_codes(200, 400, 500))]
-pub async fn create_class_code(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ClassCodeResponse>, StatusError> {
@@ -191,7 +191,7 @@ pub async fn create_class_code(
 }
 
 #[endpoint(tags("Academic - Campaign - Transaction - ClassCode"), status_codes(200, 400, 404, 500))]
-pub async fn update_class_code(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ClassCodeResponse>, StatusError> {
@@ -267,7 +267,7 @@ pub async fn update_class_code(
         }))
 }
 #[endpoint(tags("Academic - Campaign - Transaction - ClassCode"), status_codes(200, 400, 404, 500))]
-pub async fn delete_class_code(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -300,7 +300,7 @@ pub async fn delete_class_code(
 }
 
 #[endpoint(tags("Academic - Campaign - Transaction - ClassCode"), status_codes(200, 500))]
-pub async fn options_class_codes(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

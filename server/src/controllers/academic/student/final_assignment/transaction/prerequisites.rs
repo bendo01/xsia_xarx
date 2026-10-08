@@ -20,7 +20,7 @@ use crate::middleware::auth::auth_user_id;
 use crate::services::auth::data_scope::DataScope;
 
 #[endpoint(tags("Academic - Student - Final_Assignment - Transaction - Prerequisite"), status_codes(200, 500))]
-pub async fn list_prerequisites(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedPrerequisiteResponse>, StatusError> {
@@ -74,7 +74,7 @@ pub async fn list_prerequisites(
 }
 
 #[endpoint(tags("Academic - Student - Final_Assignment - Transaction - Prerequisite"), status_codes(200, 400, 404, 500))]
-pub async fn get_prerequisite(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PrerequisiteResponse>, StatusError> {
@@ -113,7 +113,7 @@ pub async fn get_prerequisite(
 
     }))
 }#[endpoint(tags("Academic - Student - Final_Assignment - Transaction - Prerequisite"), status_codes(200, 400, 500))]
-pub async fn create_prerequisite(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<PrerequisiteResponse>, StatusError> {
@@ -177,7 +177,7 @@ pub async fn create_prerequisite(
 }
 
 #[endpoint(tags("Academic - Student - Final_Assignment - Transaction - Prerequisite"), status_codes(200, 400, 404, 500))]
-pub async fn update_prerequisite(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<PrerequisiteResponse>, StatusError> {
@@ -261,7 +261,7 @@ pub async fn update_prerequisite(
         }))
 }
 #[endpoint(tags("Academic - Student - Final_Assignment - Transaction - Prerequisite"), status_codes(200, 400, 404, 500))]
-pub async fn delete_prerequisite(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -295,7 +295,7 @@ pub async fn delete_prerequisite(
 }
 
 #[endpoint(tags("Academic - Student - Final_Assignment - Transaction - Prerequisite"), status_codes(200, 500))]
-pub async fn options_prerequisites(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

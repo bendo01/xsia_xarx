@@ -17,7 +17,7 @@ use crate::models::academic::campaign::transaction::activities as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Campaign - Transaction - Activity"), status_codes(200, 500))]
-pub async fn list_activities(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedActivityResponse>, StatusError> {
@@ -138,7 +138,7 @@ pub async fn list_activities(
 }
 
 #[endpoint(tags("Academic - Campaign - Transaction - Activity"), status_codes(200, 400, 404, 500))]
-pub async fn get_activitie(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<ActivityResponse>, StatusError> {
@@ -198,7 +198,7 @@ pub async fn get_activitie(
             academic_year_name,
     }))
 }#[endpoint(tags("Academic - Campaign - Transaction - Activity"), status_codes(200, 400, 500))]
-pub async fn create_activitie(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ActivityResponse>, StatusError> {
@@ -273,7 +273,7 @@ pub async fn create_activitie(
 }
 
 #[endpoint(tags("Academic - Campaign - Transaction - Activity"), status_codes(200, 400, 404, 500))]
-pub async fn update_activitie(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ActivityResponse>, StatusError> {
@@ -382,7 +382,7 @@ pub async fn update_activitie(
         }))
 }
 #[endpoint(tags("Academic - Campaign - Transaction - Activity"), status_codes(200, 400, 404, 500))]
-pub async fn delete_activitie(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -415,7 +415,7 @@ pub async fn delete_activitie(
 }
 
 #[endpoint(tags("Academic - Campaign - Transaction - Activity"), status_codes(200, 500))]
-pub async fn options_activities(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

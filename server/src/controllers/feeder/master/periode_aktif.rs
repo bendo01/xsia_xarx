@@ -16,7 +16,7 @@ use crate::models::feeder::master::periode_aktif as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Master - PeriodeAktif"), status_codes(200, 500))]
-pub async fn list_periode_aktif(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedPeriodeAktifResponse>, StatusError> {
@@ -67,7 +67,7 @@ pub async fn list_periode_aktif(
 }
 
 #[endpoint(tags("Feeder - Master - PeriodeAktif"), status_codes(200, 400, 404, 500))]
-pub async fn get_periode_aktif(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PeriodeAktifResponse>, StatusError> {
@@ -103,7 +103,7 @@ pub async fn get_periode_aktif(
 
     }))
 }#[endpoint(tags("Feeder - Master - PeriodeAktif"), status_codes(200, 400, 500))]
-pub async fn create_periode_aktif(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<PeriodeAktifResponse>, StatusError> {
@@ -159,7 +159,7 @@ pub async fn create_periode_aktif(
 }
 
 #[endpoint(tags("Feeder - Master - PeriodeAktif"), status_codes(200, 400, 404, 500))]
-pub async fn update_periode_aktif(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<PeriodeAktifResponse>, StatusError> {
@@ -231,7 +231,7 @@ pub async fn update_periode_aktif(
         }))
 }
 #[endpoint(tags("Feeder - Master - PeriodeAktif"), status_codes(200, 400, 404, 500))]
-pub async fn delete_periode_aktif(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

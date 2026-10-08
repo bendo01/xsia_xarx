@@ -16,7 +16,7 @@ use crate::models::feeder::referensi::bentuk_pendidikan as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Referensi - BentukPendidikan"), status_codes(200, 500))]
-pub async fn list_bentuk_pendidikan(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedBentukPendidikanResponse>, StatusError> {
@@ -62,7 +62,7 @@ pub async fn list_bentuk_pendidikan(
 }
 
 #[endpoint(tags("Feeder - Referensi - BentukPendidikan"), status_codes(200, 400, 404, 500))]
-pub async fn get_bentuk_pendidikan(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<BentukPendidikanResponse>, StatusError> {
@@ -93,7 +93,7 @@ pub async fn get_bentuk_pendidikan(
 
     }))
 }#[endpoint(tags("Feeder - Referensi - BentukPendidikan"), status_codes(200, 400, 500))]
-pub async fn create_bentuk_pendidikan(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<BentukPendidikanResponse>, StatusError> {
@@ -139,7 +139,7 @@ pub async fn create_bentuk_pendidikan(
 }
 
 #[endpoint(tags("Feeder - Referensi - BentukPendidikan"), status_codes(200, 400, 404, 500))]
-pub async fn update_bentuk_pendidikan(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<BentukPendidikanResponse>, StatusError> {
@@ -191,7 +191,7 @@ pub async fn update_bentuk_pendidikan(
         }))
 }
 #[endpoint(tags("Feeder - Referensi - BentukPendidikan"), status_codes(200, 400, 404, 500))]
-pub async fn delete_bentuk_pendidikan(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

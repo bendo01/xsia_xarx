@@ -344,7 +344,7 @@ pub fn map_model_to_response(
 }
 
 #[endpoint(tags("Academic - Student - Campaign - DetailActivity"), status_codes(200, 500))]
-pub async fn list_detail_activities(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedDetailActivityResponse>, StatusError> {
@@ -398,7 +398,7 @@ pub async fn list_detail_activities(
 }
 
 #[endpoint(tags("Academic - Student - Campaign - DetailActivity"), status_codes(200, 400, 404, 500))]
-pub async fn get_detail_activitie(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<DetailActivityResponse>, StatusError> {
@@ -431,7 +431,7 @@ pub async fn get_detail_activitie(
 }
 
 #[endpoint(tags("Academic - Student - Campaign - DetailActivity"), status_codes(200, 400, 500))]
-pub async fn create_detail_activitie(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<DetailActivityResponse>, StatusError> {
@@ -489,7 +489,7 @@ pub async fn create_detail_activitie(
 }
 
 #[endpoint(tags("Academic - Student - Campaign - DetailActivity"), status_codes(200, 400, 404, 500))]
-pub async fn update_detail_activitie(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<DetailActivityResponse>, StatusError> {
@@ -571,7 +571,7 @@ pub async fn update_detail_activitie(
         )))
 }
 #[endpoint(tags("Academic - Student - Campaign - DetailActivity"), status_codes(200, 400, 404, 500))]
-pub async fn delete_detail_activitie(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -605,7 +605,7 @@ pub async fn delete_detail_activitie(
 }
 
 #[endpoint(tags("Academic - Student - Campaign - DetailActivity"), status_codes(200, 500))]
-pub async fn options_detail_activities(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

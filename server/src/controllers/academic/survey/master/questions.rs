@@ -16,7 +16,7 @@ use crate::models::academic::survey::master::questions as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Survey - Master - Question"), status_codes(200, 500))]
-pub async fn list_questions(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedQuestionResponse>, StatusError> {
@@ -74,7 +74,7 @@ pub async fn list_questions(
 }
 
 #[endpoint(tags("Academic - Survey - Master - Question"), status_codes(200, 400, 404, 500))]
-pub async fn get_question(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<QuestionResponse>, StatusError> {
@@ -109,7 +109,7 @@ pub async fn get_question(
 
     }))
 }#[endpoint(tags("Academic - Survey - Master - Question"), status_codes(200, 400, 500))]
-pub async fn create_question(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<QuestionResponse>, StatusError> {
@@ -163,7 +163,7 @@ pub async fn create_question(
 }
 
 #[endpoint(tags("Academic - Survey - Master - Question"), status_codes(200, 400, 404, 500))]
-pub async fn update_question(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<QuestionResponse>, StatusError> {
@@ -231,7 +231,7 @@ pub async fn update_question(
         }))
 }
 #[endpoint(tags("Academic - Survey - Master - Question"), status_codes(200, 400, 404, 500))]
-pub async fn delete_question(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -264,7 +264,7 @@ pub async fn delete_question(
 }
 
 #[endpoint(tags("Academic - Survey - Master - Question"), status_codes(200, 500))]
-pub async fn options_questions(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

@@ -21,7 +21,7 @@ use crate::middleware::auth::auth_user_id;
 use crate::services::auth::data_scope::DataScope;
 
 #[endpoint(tags("Academic - Student - Campaign - StudentActivity"), status_codes(200, 500))]
-pub async fn list_student_activities(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedStudentActivityResponse>, StatusError> {
@@ -848,7 +848,7 @@ pub async fn find_student_activity_response_by_id(
 }
 
 #[endpoint(tags("Academic - Student - Campaign - StudentActivity"), status_codes(200, 400, 404, 500))]
-pub async fn get_student_activitie(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<StudentActivityResponse>, StatusError> {
@@ -872,7 +872,7 @@ pub async fn get_student_activitie(
 }
 
 #[endpoint(tags("Academic - Student - Campaign - StudentActivity"), status_codes(200, 400, 500))]
-pub async fn create_student_activitie(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<StudentActivityResponse>, StatusError> {
@@ -927,7 +927,7 @@ pub async fn create_student_activitie(
 }
 
 #[endpoint(tags("Academic - Student - Campaign - StudentActivity"), status_codes(200, 400, 404, 500))]
-pub async fn update_student_activitie(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<StudentActivityResponse>, StatusError> {
@@ -1012,7 +1012,7 @@ pub async fn update_student_activitie(
         Ok(Json(res))
 }
 #[endpoint(tags("Academic - Student - Campaign - StudentActivity"), status_codes(200, 400, 404, 500))]
-pub async fn delete_student_activitie(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -1128,7 +1128,7 @@ pub async fn print_activity_result(
 }
 
 #[endpoint(tags("Academic - Student - Campaign - StudentActivity"), status_codes(200, 500))]
-pub async fn options_student_activities(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

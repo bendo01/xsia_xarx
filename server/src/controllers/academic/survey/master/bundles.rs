@@ -16,7 +16,7 @@ use crate::models::academic::survey::master::bundles as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Survey - Master - Bundle"), status_codes(200, 500))]
-pub async fn list_bundles(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedBundleResponse>, StatusError> {
@@ -75,7 +75,7 @@ pub async fn list_bundles(
 }
 
 #[endpoint(tags("Academic - Survey - Master - Bundle"), status_codes(200, 400, 404, 500))]
-pub async fn get_bundle(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<BundleResponse>, StatusError> {
@@ -111,7 +111,7 @@ pub async fn get_bundle(
 
     }))
 }#[endpoint(tags("Academic - Survey - Master - Bundle"), status_codes(200, 400, 500))]
-pub async fn create_bundle(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<BundleResponse>, StatusError> {
@@ -167,7 +167,7 @@ pub async fn create_bundle(
 }
 
 #[endpoint(tags("Academic - Survey - Master - Bundle"), status_codes(200, 400, 404, 500))]
-pub async fn update_bundle(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<BundleResponse>, StatusError> {
@@ -239,7 +239,7 @@ pub async fn update_bundle(
         }))
 }
 #[endpoint(tags("Academic - Survey - Master - Bundle"), status_codes(200, 400, 404, 500))]
-pub async fn delete_bundle(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -272,7 +272,7 @@ pub async fn delete_bundle(
 }
 
 #[endpoint(tags("Academic - Survey - Master - Bundle"), status_codes(200, 500))]
-pub async fn options_bundles(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

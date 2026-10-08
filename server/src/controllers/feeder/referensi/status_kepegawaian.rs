@@ -16,7 +16,7 @@ use crate::models::feeder::referensi::status_kepegawaian as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Referensi - StatusKepegawaian"), status_codes(200, 500))]
-pub async fn list_status_kepegawaian(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedStatusKepegawaianResponse>, StatusError> {
@@ -62,7 +62,7 @@ pub async fn list_status_kepegawaian(
 }
 
 #[endpoint(tags("Feeder - Referensi - StatusKepegawaian"), status_codes(200, 400, 404, 500))]
-pub async fn get_status_kepegawaian(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<StatusKepegawaianResponse>, StatusError> {
@@ -93,7 +93,7 @@ pub async fn get_status_kepegawaian(
 
     }))
 }#[endpoint(tags("Feeder - Referensi - StatusKepegawaian"), status_codes(200, 400, 500))]
-pub async fn create_status_kepegawaian(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<StatusKepegawaianResponse>, StatusError> {
@@ -139,7 +139,7 @@ pub async fn create_status_kepegawaian(
 }
 
 #[endpoint(tags("Feeder - Referensi - StatusKepegawaian"), status_codes(200, 400, 404, 500))]
-pub async fn update_status_kepegawaian(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<StatusKepegawaianResponse>, StatusError> {
@@ -191,7 +191,7 @@ pub async fn update_status_kepegawaian(
         }))
 }
 #[endpoint(tags("Feeder - Referensi - StatusKepegawaian"), status_codes(200, 400, 404, 500))]
-pub async fn delete_status_kepegawaian(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

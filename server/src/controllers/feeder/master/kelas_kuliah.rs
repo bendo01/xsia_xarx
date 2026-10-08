@@ -16,7 +16,7 @@ use crate::models::feeder::master::kelas_kuliah as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Master - KelasKuliah"), status_codes(200, 500))]
-pub async fn list_kelas_kuliah(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedKelasKuliahResponse>, StatusError> {
@@ -86,7 +86,7 @@ pub async fn list_kelas_kuliah(
 }
 
 #[endpoint(tags("Feeder - Master - KelasKuliah"), status_codes(200, 400, 404, 500))]
-pub async fn get_kelas_kuliah(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<KelasKuliahResponse>, StatusError> {
@@ -141,7 +141,7 @@ pub async fn get_kelas_kuliah(
 
     }))
 }#[endpoint(tags("Feeder - Master - KelasKuliah"), status_codes(200, 400, 500))]
-pub async fn create_kelas_kuliah(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<KelasKuliahResponse>, StatusError> {
@@ -235,7 +235,7 @@ pub async fn create_kelas_kuliah(
 }
 
 #[endpoint(tags("Feeder - Master - KelasKuliah"), status_codes(200, 400, 404, 500))]
-pub async fn update_kelas_kuliah(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<KelasKuliahResponse>, StatusError> {
@@ -383,7 +383,7 @@ pub async fn update_kelas_kuliah(
         }))
 }
 #[endpoint(tags("Feeder - Master - KelasKuliah"), status_codes(200, 400, 404, 500))]
-pub async fn delete_kelas_kuliah(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

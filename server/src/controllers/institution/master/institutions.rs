@@ -18,7 +18,7 @@ use crate::models::institution::master::institutions as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Institution - Master - Institution"), status_codes(200, 500))]
-pub async fn list_institutions(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedInstitutionResponse>, StatusError> {
@@ -175,7 +175,7 @@ pub async fn list_institutions(
 }
 
 #[endpoint(tags("Institution - Master - Institution"), status_codes(200, 400, 404, 500))]
-pub async fn get_institution(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<InstitutionDetailResponse>, StatusError> {
@@ -493,7 +493,7 @@ pub async fn get_institution(
     }))
 }
 #[endpoint(tags("Institution - Master - Institution"), status_codes(200, 400, 500))]
-pub async fn create_institution(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<InstitutionResponse>, StatusError> {
@@ -555,7 +555,7 @@ pub async fn create_institution(
 }
 
 #[endpoint(tags("Institution - Master - Institution"), status_codes(200, 400, 404, 500))]
-pub async fn update_institution(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<InstitutionResponse>, StatusError> {
@@ -639,7 +639,7 @@ pub async fn update_institution(
         }))
 }
 #[endpoint(tags("Institution - Master - Institution"), status_codes(200, 400, 404, 500))]
-pub async fn delete_institution(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -672,7 +672,7 @@ pub async fn delete_institution(
 }
 
 #[endpoint(tags("Institution - Master - Institution"), status_codes(200, 500))]
-pub async fn options_institutions(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

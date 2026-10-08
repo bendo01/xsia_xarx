@@ -14,7 +14,7 @@ use crate::models::academic::campaign::reference::implementations as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Campaign - Reference - Implementation"), status_codes(200, 500))]
-pub async fn list_implementations(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedReferenceResponse>, StatusError> {
@@ -69,7 +69,7 @@ pub async fn list_implementations(
 }
 
 #[endpoint(tags("Academic - Campaign - Reference - Implementation"), status_codes(200, 400, 404, 500))]
-pub async fn get_implementation(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<ReferenceResponse>, StatusError> {
@@ -101,7 +101,7 @@ pub async fn get_implementation(
 
     }))
 }#[endpoint(tags("Academic - Campaign - Reference - Implementation"), status_codes(200, 400, 500))]
-pub async fn create_implementation(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ReferenceResponse>, StatusError> {
@@ -149,7 +149,7 @@ pub async fn create_implementation(
 }
 
 #[endpoint(tags("Academic - Campaign - Reference - Implementation"), status_codes(200, 400, 404, 500))]
-pub async fn update_implementation(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ReferenceResponse>, StatusError> {
@@ -205,7 +205,7 @@ pub async fn update_implementation(
         }))
 }
 #[endpoint(tags("Academic - Campaign - Reference - Implementation"), status_codes(200, 400, 404, 500))]
-pub async fn delete_implementation(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -238,7 +238,7 @@ pub async fn delete_implementation(
 }
 
 #[endpoint(tags("Academic - Campaign - Reference - Implementation"), status_codes(200, 500))]
-pub async fn options_implementations(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

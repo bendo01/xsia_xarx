@@ -16,7 +16,7 @@ use crate::models::feeder::referensi::jalur_masuk as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Referensi - JalurMasuk"), status_codes(200, 500))]
-pub async fn list_jalur_masuk(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedJalurMasukResponse>, StatusError> {
@@ -62,7 +62,7 @@ pub async fn list_jalur_masuk(
 }
 
 #[endpoint(tags("Feeder - Referensi - JalurMasuk"), status_codes(200, 400, 404, 500))]
-pub async fn get_jalur_masuk(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<JalurMasukResponse>, StatusError> {
@@ -93,7 +93,7 @@ pub async fn get_jalur_masuk(
 
     }))
 }#[endpoint(tags("Feeder - Referensi - JalurMasuk"), status_codes(200, 400, 500))]
-pub async fn create_jalur_masuk(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<JalurMasukResponse>, StatusError> {
@@ -139,7 +139,7 @@ pub async fn create_jalur_masuk(
 }
 
 #[endpoint(tags("Feeder - Referensi - JalurMasuk"), status_codes(200, 400, 404, 500))]
-pub async fn update_jalur_masuk(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<JalurMasukResponse>, StatusError> {
@@ -191,7 +191,7 @@ pub async fn update_jalur_masuk(
         }))
 }
 #[endpoint(tags("Feeder - Referensi - JalurMasuk"), status_codes(200, 400, 404, 500))]
-pub async fn delete_jalur_masuk(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

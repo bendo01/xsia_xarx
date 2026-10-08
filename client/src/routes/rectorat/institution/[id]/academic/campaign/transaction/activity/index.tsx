@@ -88,7 +88,7 @@ export default function RectoratInstitutionActivityIndex() {
         return '019759fd-36e8-4f43-80ed-4f687a48145d';
     };
 
-    // Load filter options (Units via options_units filtered by PRODI unit type, and Academic Years via options_academic_years)
+    // Load filter options (Units via units::option_select filtered by PRODI unit type, and Academic Years via academic_years::option_select)
     const loadFilterOptions = async (instId: string) => {
         try {
             const prodiUnitTypeId = await resolveProdiUnitTypeId();

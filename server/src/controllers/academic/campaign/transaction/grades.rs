@@ -16,7 +16,7 @@ use crate::models::academic::campaign::transaction::grades as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Campaign - Transaction - Grade"), status_codes(200, 500))]
-pub async fn list_grades(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedGradeResponse>, StatusError> {
@@ -99,7 +99,7 @@ pub async fn list_grades(
 }
 
 #[endpoint(tags("Academic - Campaign - Transaction - Grade"), status_codes(200, 400, 404, 500))]
-pub async fn get_grade(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<GradeResponse>, StatusError> {
@@ -138,7 +138,7 @@ pub async fn get_grade(
 
     }))
 }#[endpoint(tags("Academic - Campaign - Transaction - Grade"), status_codes(200, 400, 500))]
-pub async fn create_grade(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<GradeResponse>, StatusError> {
@@ -200,7 +200,7 @@ pub async fn create_grade(
 }
 
 #[endpoint(tags("Academic - Campaign - Transaction - Grade"), status_codes(200, 400, 404, 500))]
-pub async fn update_grade(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<GradeResponse>, StatusError> {
@@ -284,7 +284,7 @@ pub async fn update_grade(
         }))
 }
 #[endpoint(tags("Academic - Campaign - Transaction - Grade"), status_codes(200, 400, 404, 500))]
-pub async fn delete_grade(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -368,7 +368,7 @@ pub async fn get_grades_by_unit(
 }
 
 #[endpoint(tags("Academic - Campaign - Transaction - Grade"), status_codes(200, 500))]
-pub async fn options_grades(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

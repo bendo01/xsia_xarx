@@ -138,7 +138,7 @@ describe('Lecturer Individual Show Page - Preloaded Relations', () => {
         vi.restoreAllMocks();
     });
 
-    it('uses get_lecturer by ID directly and consumes preloaded relations without query by individual_id or sub-queries', async () => {
+    it('uses lecturers::show by ID directly and consumes preloaded relations without query by individual_id or sub-queries', async () => {
         render(() => (
             <Router>
                 <Route path="/" component={() => <LecturerIndividualShowPage />} />
@@ -160,7 +160,7 @@ describe('Lecturer Individual Show Page - Preloaded Relations', () => {
         expect(individualSpy).toHaveBeenCalledTimes(1);
         expect(individualSpy).toHaveBeenCalledWith('ind-123');
 
-        // Verify get_lecturer (GET /api/v1/academic/lecturer/master/lecturers/:id) was called
+        // Verify lecturers::show (GET /api/v1/academic/lecturer/master/lecturers/:id) was called
         expect(getLecturerByIdSpy).toHaveBeenCalledTimes(1);
         expect(getLecturerByIdSpy).toHaveBeenCalledWith('lec-456');
 

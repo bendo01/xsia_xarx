@@ -16,7 +16,7 @@ use crate::models::academic::campaign::transaction::schedules as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Campaign - Transaction - Schedule"), status_codes(200, 500))]
-pub async fn list_schedules(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedScheduleResponse>, StatusError> {
@@ -70,7 +70,7 @@ pub async fn list_schedules(
 }
 
 #[endpoint(tags("Academic - Campaign - Transaction - Schedule"), status_codes(200, 400, 404, 500))]
-pub async fn get_schedule(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<ScheduleResponse>, StatusError> {
@@ -105,7 +105,7 @@ pub async fn get_schedule(
 
     }))
 }#[endpoint(tags("Academic - Campaign - Transaction - Schedule"), status_codes(200, 400, 500))]
-pub async fn create_schedule(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ScheduleResponse>, StatusError> {
@@ -159,7 +159,7 @@ pub async fn create_schedule(
 }
 
 #[endpoint(tags("Academic - Campaign - Transaction - Schedule"), status_codes(200, 400, 404, 500))]
-pub async fn update_schedule(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<ScheduleResponse>, StatusError> {
@@ -227,7 +227,7 @@ pub async fn update_schedule(
         }))
 }
 #[endpoint(tags("Academic - Campaign - Transaction - Schedule"), status_codes(200, 400, 404, 500))]
-pub async fn delete_schedule(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -260,7 +260,7 @@ pub async fn delete_schedule(
 }
 
 #[endpoint(tags("Academic - Campaign - Transaction - Schedule"), status_codes(200, 500))]
-pub async fn options_schedules(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

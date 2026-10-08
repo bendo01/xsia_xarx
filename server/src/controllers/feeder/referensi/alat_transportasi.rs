@@ -16,7 +16,7 @@ use crate::models::feeder::referensi::alat_transportasi as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Feeder - Referensi - AlatTransportasi"), status_codes(200, 500))]
-pub async fn list_alat_transportasi(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedAlatTransportasiResponse>, StatusError> {
@@ -62,7 +62,7 @@ pub async fn list_alat_transportasi(
 }
 
 #[endpoint(tags("Feeder - Referensi - AlatTransportasi"), status_codes(200, 400, 404, 500))]
-pub async fn get_alat_transportasi(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<AlatTransportasiResponse>, StatusError> {
@@ -93,7 +93,7 @@ pub async fn get_alat_transportasi(
 
     }))
 }#[endpoint(tags("Feeder - Referensi - AlatTransportasi"), status_codes(200, 400, 500))]
-pub async fn create_alat_transportasi(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<AlatTransportasiResponse>, StatusError> {
@@ -139,7 +139,7 @@ pub async fn create_alat_transportasi(
 }
 
 #[endpoint(tags("Feeder - Referensi - AlatTransportasi"), status_codes(200, 400, 404, 500))]
-pub async fn update_alat_transportasi(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<AlatTransportasiResponse>, StatusError> {
@@ -191,7 +191,7 @@ pub async fn update_alat_transportasi(
         }))
 }
 #[endpoint(tags("Feeder - Referensi - AlatTransportasi"), status_codes(200, 400, 404, 500))]
-pub async fn delete_alat_transportasi(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {

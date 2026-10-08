@@ -16,7 +16,7 @@ use crate::models::literate::educations as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Literate -  - Education"), status_codes(200, 500))]
-pub async fn list_educations(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedEducationResponse>, StatusError> {
@@ -76,7 +76,7 @@ pub async fn list_educations(
 }
 
 #[endpoint(tags("Literate -  - Education"), status_codes(200, 400, 404, 500))]
-pub async fn get_education(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<EducationResponse>, StatusError> {
@@ -113,7 +113,7 @@ pub async fn get_education(
 
     }))
 }#[endpoint(tags("Literate -  - Education"), status_codes(200, 400, 500))]
-pub async fn create_education(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<EducationResponse>, StatusError> {
@@ -171,7 +171,7 @@ pub async fn create_education(
 }
 
 #[endpoint(tags("Literate -  - Education"), status_codes(200, 400, 404, 500))]
-pub async fn update_education(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<EducationResponse>, StatusError> {
@@ -247,7 +247,7 @@ pub async fn update_education(
         }))
 }
 #[endpoint(tags("Literate -  - Education"), status_codes(200, 400, 404, 500))]
-pub async fn delete_education(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -280,7 +280,7 @@ pub async fn delete_education(
 }
 
 #[endpoint(tags("Literate -  - Education"), status_codes(200, 500))]
-pub async fn options_educations(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {

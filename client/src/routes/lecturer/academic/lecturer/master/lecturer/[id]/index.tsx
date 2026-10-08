@@ -75,7 +75,7 @@ export default function LecturerIndividualShowPage() {
                 let resolvedLecturer: AcademicLecturerMasterLecturer | null = null;
 
                 if (lecturerId) {
-                    // Call get_lecturer (GET /api/v1/academic/lecturer/master/lecturers/:id)
+                    // Call lecturers::show (GET /api/v1/academic/lecturer/master/lecturers/:id)
                     // which eagerly loads all belongs_to and has_many relations
                     resolvedLecturer = await getLecturerById(lecturerId);
                 } else if (indId) {
@@ -88,7 +88,7 @@ export default function LecturerIndividualShowPage() {
                 if (resolvedLecturer?.id) {
                     const activeLecturerId = resolvedLecturer.id;
 
-                    // If relations are preloaded directly from get_lecturer endpoint,
+                    // If relations are preloaded directly from lecturers::show endpoint,
                     // populate state directly without making multiple separate network requests
                     if (resolvedLecturer.homebases || resolvedLecturer.academic_ranks || resolvedLecturer.assigned_teaches) {
                         const hbs = (resolvedLecturer.homebases || []).slice().sort((a, b) => {

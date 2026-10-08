@@ -16,7 +16,7 @@ use crate::models::academic::course::master::courses as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
 #[endpoint(tags("Academic - Course - Master - Course"), status_codes(200, 500))]
-pub async fn list_courses(
+pub async fn index(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<PaginatedCourseResponse>, StatusError> {
@@ -124,7 +124,7 @@ pub async fn list_courses(
 }
 
 #[endpoint(tags("Academic - Course - Master - Course"), status_codes(200, 400, 404, 500))]
-pub async fn get_course(
+pub async fn show(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<CourseResponse>, StatusError> {
@@ -175,7 +175,7 @@ pub async fn get_course(
 
     }))
 }#[endpoint(tags("Academic - Course - Master - Course"), status_codes(200, 400, 500))]
-pub async fn create_course(
+pub async fn store(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<CourseResponse>, StatusError> {
@@ -261,7 +261,7 @@ pub async fn create_course(
 }
 
 #[endpoint(tags("Academic - Course - Master - Course"), status_codes(200, 400, 404, 500))]
-pub async fn update_course(
+pub async fn update(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<CourseResponse>, StatusError> {
@@ -393,7 +393,7 @@ pub async fn update_course(
         }))
 }
 #[endpoint(tags("Academic - Course - Master - Course"), status_codes(200, 400, 404, 500))]
-pub async fn delete_course(
+pub async fn delete(
         req: &mut Request,
         depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -451,7 +451,7 @@ pub async fn get_courses_by_unit(
 }
 
 #[endpoint(tags("Academic - Course - Master - Course"), status_codes(200, 500))]
-pub async fn options_courses(
+pub async fn option_select(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<Vec<OptionItem>>, StatusError> {
