@@ -8,10 +8,10 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::building::master::rooms::{
-    CreateRoomRequest, RoomQuery, RoomResponse, PaginatedRoomResponse,
-    UpdateRoomRequest,
+    CreateRoomRequest, RoomQuery, RoomResponse, PaginatedRoomResponse, UpdateRoomRequest,
+    RoomOptionRequest,
 };
-use crate::dtos::common::reference::MessageResponse;
+use crate::dtos::common::reference::{MessageResponse, OptionItem};
 use crate::models::building::master::rooms as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
@@ -281,4 +281,54 @@ pub async fn delete_room(
         Ok(Json(MessageResponse {
             message: "Room deleted successfully".to_string(),
         }))
+}
+
+#[endpoint(tags("Building - Master - Room"), status_codes(200, 500))]
+pub async fn options_rooms(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<Vec<OptionItem>>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let payload: RoomOptionRequest = req
+        .parse_json()
+        .await
+        .ok()
+        .or_else(|| req.parse_queries().ok())
+        .unwrap_or_default();
+
+    let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
+
+    if let Some(ref search) = payload.search {
+        let search_trimmed = search.trim();
+        if !search_trimmed.is_empty() {
+            select = select.filter(entity_mod::Column::Name.contains(search_trimmed));
+        }
+    }
+
+    if let Some(building_id) = payload.building_id {
+        select = select.filter(entity_mod::Column::BuildingId.eq(building_id));
+    }
+
+    if let Some(unit_id) = payload.unit_id {
+        select = select.filter(entity_mod::Column::UnitId.eq(unit_id));
+    }
+
+    let items = select
+        .order_by_asc(entity_mod::Column::Name)
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let data = items
+        .into_iter()
+        .map(|item| OptionItem {
+            id: item.id,
+            name: item.name,
+        })
+        .collect();
+
+    Ok(Json(data))
 }

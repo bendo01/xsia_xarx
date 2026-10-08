@@ -10,6 +10,10 @@ pub fn router() -> Router {
                 .get_named("academic.lecturer.master.lecturers.list_lecturers", lecturers::list_lecturers)
                 .post_named("academic.lecturer.master.lecturers.create_lecturer", lecturers::create_lecturer)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.lecturer.master.lecturers.options_lecturers", lecturers::options_lecturers),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.lecturer.master.lecturers.get_lecturer", lecturers::get_lecturer)
                         .put_named("academic.lecturer.master.lecturers.update_lecturer", lecturers::update_lecturer)

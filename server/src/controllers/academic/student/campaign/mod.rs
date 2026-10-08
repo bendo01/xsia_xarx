@@ -24,6 +24,10 @@ pub fn router() -> Router {
                 .get_named("academic.student.campaign.detail_activities.list_detail_activities", detail_activities::list_detail_activities)
                 .post_named("academic.student.campaign.detail_activities.create_detail_activitie", detail_activities::create_detail_activitie)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.student.campaign.detail_activities.options_detail_activities", detail_activities::options_detail_activities),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.student.campaign.detail_activities.get_detail_activitie", detail_activities::get_detail_activitie)
                         .put_named("academic.student.campaign.detail_activities.update_detail_activitie", detail_activities::update_detail_activitie)

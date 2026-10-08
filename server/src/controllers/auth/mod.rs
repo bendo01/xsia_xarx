@@ -14,6 +14,10 @@ pub fn router() -> Router {
                 .get_named("auth.permission.list_permission", permission::list_permission)
                 .post_named("auth.permission.create_permission", permission::create_permission)
                 .push(
+                    Router::with_path("options")
+                        .post_named("auth.permission.options_permission", permission::options_permission),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("auth.permission.get_permission", permission::get_permission)
                         .put_named("auth.permission.update_permission", permission::update_permission)
@@ -44,6 +48,10 @@ pub fn router() -> Router {
         .push(
             Router::with_path("user")
                 .get_named("auth.user.list_user", user::list_user)
+                .push(
+                    Router::with_path("options")
+                        .post_named("auth.user.options_user", user::options_user),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("auth.user.get_user", user::get_user)
@@ -76,6 +84,10 @@ pub fn router() -> Router {
             Router::with_path("role")
                 .get_named("auth.role.list_role", role::list_role)
                 .post_named("auth.role.create_role", role::create_role)
+                .push(
+                    Router::with_path("options")
+                        .post_named("auth.role.options_role", role::options_role),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("auth.role.get_role", role::get_role)

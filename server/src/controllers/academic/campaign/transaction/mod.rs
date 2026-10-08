@@ -41,6 +41,10 @@ pub fn router() -> Router {
                 .get_named("academic.campaign.transaction.calendars.list_calendars", calendars::list_calendars)
                 .post_named("academic.campaign.transaction.calendars.create_calendar", calendars::create_calendar)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.campaign.transaction.calendars.options_calendars", calendars::options_calendars),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.campaign.transaction.calendars.get_calendar", calendars::get_calendar)
                         .put_named("academic.campaign.transaction.calendars.update_calendar", calendars::update_calendar)
@@ -52,6 +56,10 @@ pub fn router() -> Router {
                 .get_named("academic.campaign.transaction.class_codes.list_class_codes", class_codes::list_class_codes)
                 .post_named("academic.campaign.transaction.class_codes.create_class_code", class_codes::create_class_code)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.campaign.transaction.class_codes.options_class_codes", class_codes::options_class_codes),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.campaign.transaction.class_codes.get_class_code", class_codes::get_class_code)
                         .put_named("academic.campaign.transaction.class_codes.update_class_code", class_codes::update_class_code)
@@ -62,6 +70,10 @@ pub fn router() -> Router {
             Router::with_path("grades")
                 .get_named("academic.campaign.transaction.grades.list_grades", grades::list_grades)
                 .post_named("academic.campaign.transaction.grades.create_grade", grades::create_grade)
+                .push(
+                    Router::with_path("options")
+                        .post_named("academic.campaign.transaction.grades.options_grades", grades::options_grades),
+                )
                 .push(
                     Router::with_path("unit/{unit_id}")
                         .get_named("academic.campaign.transaction.grades.get_grades_by_unit", grades::get_grades_by_unit),
@@ -121,6 +133,10 @@ pub fn router() -> Router {
             Router::with_path("teaches")
                 .get_named("academic.campaign.transaction.teaches.list_teaches", teaches::list_teaches)
                 .post_named("academic.campaign.transaction.teaches.create_teache", teaches::create_teache)
+                .push(
+                    Router::with_path("options")
+                        .post_named("academic.campaign.transaction.teaches.options_teaches", teaches::options_teaches),
+                )
                 .push(
                     Router::with_path("lecturer/{id}")
                         .get_named("academic.campaign.transaction.teaches.get_teaches_by_lecturer", teaches::get_teaches_by_lecturer),

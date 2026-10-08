@@ -104,3 +104,10 @@ pub struct PaginatedStaffResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct StaffOptionRequest {
+    pub search: Option<String>,
+    pub unit_id: Option<Uuid>,
+    pub employee_id: Option<Uuid>,
+}

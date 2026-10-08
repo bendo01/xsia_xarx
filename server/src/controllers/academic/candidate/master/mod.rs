@@ -23,6 +23,10 @@ pub fn router() -> Router {
                 .get_named("academic.candidate.master.candidates.list_candidates", candidates::list_candidates)
                 .post_named("academic.candidate.master.candidates.create_candidate", candidates::create_candidate)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.candidate.master.candidates.options_candidates", candidates::options_candidates),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.candidate.master.candidates.get_candidate", candidates::get_candidate)
                         .put_named("academic.candidate.master.candidates.update_candidate", candidates::update_candidate)
@@ -33,6 +37,10 @@ pub fn router() -> Router {
             Router::with_path("exam-classes")
                 .get_named("academic.candidate.master.exam_classes.list_exam_classes", exam_classes::list_exam_classes)
                 .post_named("academic.candidate.master.exam_classes.create_exam_classe", exam_classes::create_exam_classe)
+                .push(
+                    Router::with_path("options")
+                        .post_named("academic.candidate.master.exam_classes.options_exam_classes", exam_classes::options_exam_classes),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("academic.candidate.master.exam_classes.get_exam_classe", exam_classes::get_exam_classe)

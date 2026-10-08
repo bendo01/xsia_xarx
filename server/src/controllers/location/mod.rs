@@ -32,6 +32,10 @@ pub fn router() -> Router {
                 .get_named("location.countries.list_countries", countries::list_countries)
                 .post_named("location.countries.create_countrie", countries::create_countrie)
                 .push(
+                    Router::with_path("options")
+                        .post_named("location.countries.options_countries", countries::options_countries),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("location.countries.get_countrie", countries::get_countrie)
                         .put_named("location.countries.update_countrie", countries::update_countrie)

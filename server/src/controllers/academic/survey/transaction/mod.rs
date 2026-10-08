@@ -11,6 +11,10 @@ pub fn router() -> Router {
                 .get_named("academic.survey.transaction.conducts.list_conducts", conducts::list_conducts)
                 .post_named("academic.survey.transaction.conducts.create_conduct", conducts::create_conduct)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.survey.transaction.conducts.options_conducts", conducts::options_conducts),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.survey.transaction.conducts.get_conduct", conducts::get_conduct)
                         .put_named("academic.survey.transaction.conducts.update_conduct", conducts::update_conduct)

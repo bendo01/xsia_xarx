@@ -61,3 +61,10 @@ pub struct PaginatedBundleResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct BundleOptionRequest {
+    pub search: Option<String>,
+    pub institution_id: Option<Uuid>,
+    pub bundle_category_id: Option<Uuid>,
+}

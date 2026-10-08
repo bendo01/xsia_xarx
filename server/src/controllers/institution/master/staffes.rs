@@ -1,17 +1,17 @@
 use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
-    PaginatorTrait, QueryFilter, QueryOrder, Set, TransactionTrait,
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel, PaginatorTrait,
+    QueryFilter, QueryOrder, Set, TransactionTrait, QuerySelect,
 };
 use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::institution::master::staffes::{
-    CreateStaffRequest, StaffQuery, StaffResponse, PaginatedStaffResponse,
-    UpdateStaffRequest,
+    CreateStaffRequest, StaffQuery, StaffResponse, PaginatedStaffResponse, UpdateStaffRequest,
+    StaffOptionRequest,
 };
-use crate::dtos::common::reference::MessageResponse;
+use crate::dtos::common::reference::{MessageResponse, OptionItem};
 use crate::models::institution::master::staffes as entity_mod;
 use crate::middleware::auth::auth_user_id;
 use crate::services::auth::staff_role::sync_staff_role;
@@ -324,6 +324,57 @@ pub async fn get_staffes_by_unit(
     let data = crate::dtos::institution::master::staffes::list_staffes_by_unit(db, unit_id)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    Ok(Json(data))
+}
+
+#[endpoint(tags("Institution - Master - Staff"), status_codes(200, 500))]
+pub async fn options_staffes(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<Vec<OptionItem>>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let payload: StaffOptionRequest = req
+        .parse_json()
+        .await
+        .ok()
+        .or_else(|| req.parse_queries().ok())
+        .unwrap_or_default();
+
+    let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
+
+    if let Some(ref search) = payload.search {
+        let search_trimmed = search.trim();
+        if !search_trimmed.is_empty() {
+            select = select.filter(entity_mod::Column::Name.contains(search_trimmed));
+        }
+    }
+
+    if let Some(unit_id) = payload.unit_id {
+        select = select.filter(entity_mod::Column::UnitId.eq(unit_id));
+    }
+
+    if let Some(employee_id) = payload.employee_id {
+        select = select.filter(entity_mod::Column::EmployeeId.eq(employee_id));
+    }
+
+    let items = select
+        .order_by_asc(entity_mod::Column::Name)
+        .limit(100)
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let data = items
+        .into_iter()
+        .map(|item| OptionItem {
+            id: item.id,
+            name: item.name.unwrap_or_default(),
+        })
+        .collect();
 
     Ok(Json(data))
 }

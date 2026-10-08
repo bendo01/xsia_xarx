@@ -79,3 +79,9 @@ pub struct PaginatedExamClassResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct ExamClassOptionRequest {
+    pub search: Option<String>,
+    pub phase_id: Option<Uuid>,
+}

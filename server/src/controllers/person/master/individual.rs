@@ -4,7 +4,7 @@ use sea_orm::sea_query::Expr;
 use sea_orm::sea_query::extension::postgres::PgExpr;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, EntityTrait, IntoActiveModel,
-    ModelTrait, PaginatorTrait, QueryFilter, QueryOrder, Set,
+    ModelTrait, PaginatorTrait, QueryFilter, QueryOrder, Set, QuerySelect,
 };
 use uuid::Uuid;
 use validator::Validate;
@@ -14,7 +14,7 @@ use crate::dtos::academic::lecturer::master::lecturers::LecturerResponse;
 use crate::dtos::academic::prior_learning_recognition::transaction::evaluators::EvaluatorResponse;
 use crate::dtos::academic::student::master::students::StudentResponse;
 use crate::dtos::auth::user::UserResponse;
-use crate::dtos::common::reference::{MessageResponse, ReferenceResponse};
+use crate::dtos::common::reference::{MessageResponse, ReferenceResponse, OptionItem, OptionRequest};
 use crate::dtos::institution::master::employees::EmployeeResponse;
 use crate::dtos::literate::educations::EducationResponse;
 use crate::dtos::person::master::biodata::BiodataResponse;
@@ -953,4 +953,47 @@ pub async fn delete_individual(
     Ok(Json(MessageResponse {
         message: "Individual deleted successfully".to_string(),
     }))
+}
+
+#[endpoint(tags("Person - Master - Individual"), status_codes(200, 500))]
+pub async fn options_individual(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<Vec<OptionItem>>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let payload: OptionRequest = req
+        .parse_json()
+        .await
+        .ok()
+        .or_else(|| req.parse_queries().ok())
+        .unwrap_or_default();
+
+    let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
+
+    if let Some(ref search) = payload.search {
+        let search_trimmed = search.trim();
+        if !search_trimmed.is_empty() {
+            select = select.filter(entity_mod::Column::Name.contains(search_trimmed));
+        }
+    }
+
+    let items = select
+        .order_by_asc(entity_mod::Column::Name)
+        .limit(100)
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let data = items
+        .into_iter()
+        .map(|item| OptionItem {
+            id: item.id,
+            name: item.name,
+        })
+        .collect();
+
+    Ok(Json(data))
 }

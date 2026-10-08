@@ -66,3 +66,9 @@ pub struct PaginatedArchiveResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct ArchiveOptionRequest {
+    pub search: Option<String>,
+    pub archive_type_id: Option<Uuid>,
+}

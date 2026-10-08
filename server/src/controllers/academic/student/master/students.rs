@@ -13,8 +13,9 @@ use validator::Validate;
 use crate::dtos::academic::student::master::students::{
     CreateStudentRequest, DistinctAcademicYearQuery, DistinctAcademicYearResponse,
     PaginatedStudentResponse, StudentQuery, StudentResponse, UpdateStudentRequest,
+    StudentOptionRequest,
 };
-use crate::dtos::common::reference::MessageResponse;
+use crate::dtos::common::reference::{MessageResponse, OptionItem};
 use crate::models::academic::student::master::students as entity_mod;
 use crate::middleware::auth::auth_user_id;
 use crate::services::auth::data_scope::DataScope;
@@ -1074,6 +1075,57 @@ pub async fn get_students_by_unit(
         .into_iter()
         .collect();
     let data: Vec<StudentResponse> = all_in_unit.into_iter().filter(|student| visible_ids.contains(&student.id)).collect();
+
+    Ok(Json(data))
+}
+
+#[endpoint(tags("Academic - Student - Master - Student"), status_codes(200, 500))]
+pub async fn options_students(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<Vec<OptionItem>>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let payload: StudentOptionRequest = req
+        .parse_json()
+        .await
+        .ok()
+        .or_else(|| req.parse_queries().ok())
+        .unwrap_or_default();
+
+    let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
+
+    if let Some(ref search) = payload.search {
+        let search_trimmed = search.trim();
+        if !search_trimmed.is_empty() {
+            select = select.filter(entity_mod::Column::Name.contains(search_trimmed));
+        }
+    }
+
+    if let Some(unit_id) = payload.unit_id {
+        select = select.filter(entity_mod::Column::UnitId.eq(unit_id));
+    }
+
+    if let Some(academic_year_id) = payload.academic_year_id {
+        select = select.filter(entity_mod::Column::AcademicYearId.eq(academic_year_id));
+    }
+
+    let items = select
+        .order_by_asc(entity_mod::Column::Name)
+        .limit(100)
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let data = items
+        .into_iter()
+        .map(|item| OptionItem {
+            id: item.id,
+            name: item.name,
+        })
+        .collect();
 
     Ok(Json(data))
 }

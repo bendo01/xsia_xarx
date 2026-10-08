@@ -57,3 +57,9 @@ pub struct PaginatedConductResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct ConductOptionRequest {
+    pub search: Option<String>,
+    pub bundle_id: Option<Uuid>,
+}

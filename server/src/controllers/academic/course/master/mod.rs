@@ -15,6 +15,10 @@ pub fn router() -> Router {
                 .get_named("academic.course.master.concentrations.list_concentrations", concentrations::list_concentrations)
                 .post_named("academic.course.master.concentrations.create_concentration", concentrations::create_concentration)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.course.master.concentrations.options_concentrations", concentrations::options_concentrations),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.course.master.concentrations.get_concentration", concentrations::get_concentration)
                         .put_named("academic.course.master.concentrations.update_concentration", concentrations::update_concentration)
@@ -25,6 +29,10 @@ pub fn router() -> Router {
             Router::with_path("course-evaluation-plannings")
                 .get_named("academic.course.master.course_evaluation_plannings.list_course_evaluation_plannings", course_evaluation_plannings::list_course_evaluation_plannings)
                 .post_named("academic.course.master.course_evaluation_plannings.create_course_evaluation_planning", course_evaluation_plannings::create_course_evaluation_planning)
+                .push(
+                    Router::with_path("options")
+                        .post_named("academic.course.master.course_evaluation_plannings.options_course_evaluation_plannings", course_evaluation_plannings::options_course_evaluation_plannings),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("academic.course.master.course_evaluation_plannings.get_course_evaluation_planning", course_evaluation_plannings::get_course_evaluation_planning)
@@ -48,6 +56,10 @@ pub fn router() -> Router {
                 .get_named("academic.course.master.courses.list_courses", courses::list_courses)
                 .post_named("academic.course.master.courses.create_course", courses::create_course)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.course.master.courses.options_courses", courses::options_courses),
+                )
+                .push(
                     Router::with_path("unit/{unit_id}")
                         .get_named("academic.course.master.courses.get_courses_by_unit", courses::get_courses_by_unit),
                 )
@@ -63,6 +75,10 @@ pub fn router() -> Router {
                 .get_named("academic.course.master.curriculum_details.list_curriculum_details", curriculum_details::list_curriculum_details)
                 .post_named("academic.course.master.curriculum_details.create_curriculum_detail", curriculum_details::create_curriculum_detail)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.course.master.curriculum_details.options_curriculum_details", curriculum_details::options_curriculum_details),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.course.master.curriculum_details.get_curriculum_detail", curriculum_details::get_curriculum_detail)
                         .put_named("academic.course.master.curriculum_details.update_curriculum_detail", curriculum_details::update_curriculum_detail)
@@ -73,6 +89,10 @@ pub fn router() -> Router {
             Router::with_path("curriculums")
                 .get_named("academic.course.master.curriculums.list_curriculums", curriculums::list_curriculums)
                 .post_named("academic.course.master.curriculums.create_curriculum", curriculums::create_curriculum)
+                .push(
+                    Router::with_path("options")
+                        .post_named("academic.course.master.curriculums.options_curriculums", curriculums::options_curriculums),
+                )
                 .push(
                     Router::with_path("unit/{unit_id}")
                         .get_named("academic.course.master.curriculums.get_curriculums_by_unit", curriculums::get_curriculums_by_unit),

@@ -11,6 +11,10 @@ pub fn router() -> Router {
                 .get_named("building.master.buildings.list_buildings", buildings::list_buildings)
                 .post_named("building.master.buildings.create_building", buildings::create_building)
                 .push(
+                    Router::with_path("options")
+                        .post_named("building.master.buildings.options_buildings", buildings::options_buildings),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("building.master.buildings.get_building", buildings::get_building)
                         .put_named("building.master.buildings.update_building", buildings::update_building)
@@ -21,6 +25,10 @@ pub fn router() -> Router {
             Router::with_path("rooms")
                 .get_named("building.master.rooms.list_rooms", rooms::list_rooms)
                 .post_named("building.master.rooms.create_room", rooms::create_room)
+                .push(
+                    Router::with_path("options")
+                        .post_named("building.master.rooms.options_rooms", rooms::options_rooms),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("building.master.rooms.get_room", rooms::get_room)

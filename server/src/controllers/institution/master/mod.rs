@@ -13,6 +13,10 @@ pub fn router() -> Router {
                 .get_named("institution.master.employees.list_employees", employees::list_employees)
                 .post_named("institution.master.employees.create_employee", employees::create_employee)
                 .push(
+                    Router::with_path("options")
+                        .post_named("institution.master.employees.options_employees", employees::options_employees),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("institution.master.employees.get_employee", employees::get_employee)
                         .put_named("institution.master.employees.update_employee", employees::update_employee)
@@ -24,6 +28,10 @@ pub fn router() -> Router {
                 .get_named("institution.master.institutions.list_institutions", institutions::list_institutions)
                 .post_named("institution.master.institutions.create_institution", institutions::create_institution)
                 .push(
+                    Router::with_path("options")
+                        .post_named("institution.master.institutions.options_institutions", institutions::options_institutions),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("institution.master.institutions.get_institution", institutions::get_institution)
                         .put_named("institution.master.institutions.update_institution", institutions::update_institution)
@@ -34,6 +42,10 @@ pub fn router() -> Router {
             Router::with_path("staffes")
                 .get_named("institution.master.staffes.list_staffes", staffes::list_staffes)
                 .post_named("institution.master.staffes.create_staffe", staffes::create_staffe)
+                .push(
+                    Router::with_path("options")
+                        .post_named("institution.master.staffes.options_staffes", staffes::options_staffes),
+                )
                 .push(
                     Router::with_path("unit/{unit_id}")
                         .get_named("institution.master.staffes.get_staffes_by_unit", staffes::get_staffes_by_unit),

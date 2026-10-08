@@ -10,6 +10,10 @@ pub fn router() -> Router {
                 .get_named("document.transaction.archives.list_archives", archives::list_archives)
                 .post_named("document.transaction.archives.create_archive", archives::create_archive)
                 .push(
+                    Router::with_path("options")
+                        .post_named("document.transaction.archives.options_archives", archives::options_archives),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("document.transaction.archives.get_archive", archives::get_archive)
                         .put_named("document.transaction.archives.update_archive", archives::update_archive)

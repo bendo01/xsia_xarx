@@ -85,3 +85,10 @@ pub struct PaginatedDetailActivityResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct DetailActivityOptionRequest {
+    pub search: Option<String>,
+    pub activity_id: Option<Uuid>,
+    pub course_id: Option<Uuid>,
+}

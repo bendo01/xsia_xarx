@@ -134,3 +134,10 @@ pub struct PaginatedCurriculumResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct CurriculumOptionRequest {
+    pub search: Option<String>,
+    pub unit_id: Option<Uuid>,
+    pub academic_year_id: Option<Uuid>,
+}

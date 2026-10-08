@@ -14,6 +14,10 @@ pub fn router() -> Router {
                 .get_named("literate.categories.list_categories", categories::list_categories)
                 .post_named("literate.categories.create_categorie", categories::create_categorie)
                 .push(
+                    Router::with_path("options")
+                        .post_named("literate.categories.options_categories", categories::options_categories),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("literate.categories.get_categorie", categories::get_categorie)
                         .put_named("literate.categories.update_categorie", categories::update_categorie)
@@ -41,6 +45,10 @@ pub fn router() -> Router {
                 .get_named("literate.groups.list_groups", groups::list_groups)
                 .post_named("literate.groups.create_group", groups::create_group)
                 .push(
+                    Router::with_path("options")
+                        .post_named("literate.groups.options_groups", groups::options_groups),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("literate.groups.get_group", groups::get_group)
                         .put_named("literate.groups.update_group", groups::update_group)
@@ -52,6 +60,10 @@ pub fn router() -> Router {
                 .get_named("literate.levels.list_levels", levels::list_levels)
                 .post_named("literate.levels.create_level", levels::create_level)
                 .push(
+                    Router::with_path("options")
+                        .post_named("literate.levels.options_levels", levels::options_levels),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("literate.levels.get_level", levels::get_level)
                         .put_named("literate.levels.update_level", levels::update_level)
@@ -62,6 +74,10 @@ pub fn router() -> Router {
             Router::with_path("varieties")
                 .get_named("literate.varieties.list_varieties", varieties::list_varieties)
                 .post_named("literate.varieties.create_varietie", varieties::create_varietie)
+                .push(
+                    Router::with_path("options")
+                        .post_named("literate.varieties.options_varieties", varieties::options_varieties),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("literate.varieties.get_varietie", varieties::get_varietie)

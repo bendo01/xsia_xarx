@@ -338,3 +338,10 @@ pub struct DistinctAcademicYearResponse {
     pub feeder_name: Option<String>,
     pub is_active: Option<bool>,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct StudentOptionRequest {
+    pub search: Option<String>,
+    pub unit_id: Option<Uuid>,
+    pub academic_year_id: Option<Uuid>,
+}

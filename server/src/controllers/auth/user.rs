@@ -1,8 +1,8 @@
 use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
-    PaginatorTrait, QueryFilter, QueryOrder, Set,
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel, PaginatorTrait,
+    QueryFilter, QueryOrder, Set, QuerySelect,
 };
 use uuid::Uuid;
 use validator::Validate;
@@ -13,7 +13,7 @@ use crate::dtos::auth::user::{
     ForgotPasswordRequest, ResetPasswordRequest, ResendVerificationRequest,
     AccountAcquisitionRequest, AccountAcquisitionResponse, ForgotPasswordResponse,
 };
-use crate::dtos::common::reference::MessageResponse;
+use crate::dtos::common::reference::{MessageResponse, OptionItem, OptionRequest};
 use crate::models::auth::user as entity_mod;
 use crate::models::auth::role as role_entity;
 use crate::config::jwt::{create_token, JwtConfig};
@@ -1462,3 +1462,45 @@ pub async fn account_acquisition(
     }))
 }
 
+#[endpoint(tags("Auth -  - User"), status_codes(200, 500))]
+pub async fn options_user(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<Vec<OptionItem>>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let payload: OptionRequest = req
+        .parse_json()
+        .await
+        .ok()
+        .or_else(|| req.parse_queries().ok())
+        .unwrap_or_default();
+
+    let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
+
+    if let Some(ref search) = payload.search {
+        let search_trimmed = search.trim();
+        if !search_trimmed.is_empty() {
+            select = select.filter(entity_mod::Column::Name.contains(search_trimmed));
+        }
+    }
+
+    let items = select
+        .order_by_asc(entity_mod::Column::Name)
+        .limit(100)
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let data = items
+        .into_iter()
+        .map(|item| OptionItem {
+            id: item.id,
+            name: item.name,
+        })
+        .collect();
+
+    Ok(Json(data))
+}

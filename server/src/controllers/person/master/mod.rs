@@ -22,6 +22,10 @@ pub fn router() -> Router {
                 .get_named("person.master.individual.list_individual", individual::list_individual)
                 .post_named("person.master.individual.create_individual", individual::create_individual)
                 .push(
+                    Router::with_path("options")
+                        .post_named("person.master.individual.options_individual", individual::options_individual),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("person.master.individual.get_individual", individual::get_individual)
                         .put_named("person.master.individual.update_individual", individual::update_individual)

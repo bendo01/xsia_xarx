@@ -48,3 +48,10 @@ pub struct PaginatedCalendarResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct CalendarOptionRequest {
+    pub search: Option<String>,
+    pub academic_year_id: Option<Uuid>,
+    pub institution_id: Option<Uuid>,
+}

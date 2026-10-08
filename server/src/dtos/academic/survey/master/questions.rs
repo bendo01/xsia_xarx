@@ -58,3 +58,9 @@ pub struct PaginatedQuestionResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct QuestionOptionRequest {
+    pub search: Option<String>,
+    pub institution_id: Option<Uuid>,
+}

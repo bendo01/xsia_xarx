@@ -8,10 +8,10 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::dtos::auth::role::{
-    CreateRoleRequest, RoleQuery, RoleResponse, PaginatedRoleResponse,
-    UpdateRoleRequest,
+    CreateRoleRequest, RoleQuery, RoleResponse, PaginatedRoleResponse, UpdateRoleRequest,
+    RoleOptionRequest,
 };
-use crate::dtos::common::reference::MessageResponse;
+use crate::dtos::common::reference::{MessageResponse, OptionItem};
 use crate::models::auth::role as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
@@ -252,4 +252,50 @@ pub async fn delete_role(
     Ok(Json(MessageResponse {
         message: "Role deleted successfully".to_string(),
     }))
+}
+
+#[endpoint(tags("Auth - Role"), status_codes(200, 500))]
+pub async fn options_role(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<Vec<OptionItem>>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let payload: RoleOptionRequest = req
+        .parse_json()
+        .await
+        .ok()
+        .or_else(|| req.parse_queries().ok())
+        .unwrap_or_default();
+
+    let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
+
+    if let Some(ref search) = payload.search {
+        let search_trimmed = search.trim();
+        if !search_trimmed.is_empty() {
+            select = select.filter(entity_mod::Column::Name.contains(search_trimmed));
+        }
+    }
+
+    if let Some(user_id) = payload.user_id {
+        select = select.filter(entity_mod::Column::UserId.eq(user_id));
+    }
+
+    let items = select
+        .order_by_asc(entity_mod::Column::Name)
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let data = items
+        .into_iter()
+        .map(|item| OptionItem {
+            id: item.id,
+            name: item.name,
+        })
+        .collect();
+
+    Ok(Json(data))
 }

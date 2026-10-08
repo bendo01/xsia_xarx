@@ -58,6 +58,10 @@ pub fn router() -> Router {
                 .get_named("academic.prior_learning_recognition.transaction.recognitions.list_recognitions", recognitions::list_recognitions)
                 .post_named("academic.prior_learning_recognition.transaction.recognitions.create_recognition", recognitions::create_recognition)
                 .push(
+                    Router::with_path("options")
+                        .post_named("academic.prior_learning_recognition.transaction.recognitions.options_recognitions", recognitions::options_recognitions),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("academic.prior_learning_recognition.transaction.recognitions.get_recognition", recognitions::get_recognition)
                         .put_named("academic.prior_learning_recognition.transaction.recognitions.update_recognition", recognitions::update_recognition)
