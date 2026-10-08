@@ -210,7 +210,7 @@ export default function RectoratGradeDetail() {
                     <Show when={!isLoading() && grade()}>
                         {/* Header Banner */}
                         <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 sm:p-8 border border-neutral-200/80 dark:border-neutral-800 shadow-sm relative overflow-hidden backdrop-blur-xs">
-                            <div class="absolute -right-20 -top-20 w-72 h-72 bg-gradient-to-br from-emerald-500/10 via-amber-500/10 to-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+                            <div class="absolute -right-20 -top-20 w-72 h-72 bg-linear-to-br from-emerald-500/10 via-amber-500/10 to-blue-500/10 rounded-full blur-3xl pointer-events-none" />
                             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
                                 <div class="space-y-3">
                                     <div class="flex flex-wrap items-center gap-2">

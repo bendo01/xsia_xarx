@@ -1182,52 +1182,31 @@ export default function AcademicCampaignTransactionTeachPage() {
                     </div>
 
                     {/* Pagination Bar */}
-                    <div class="px-4 py-3 bg-neutral-50 dark:bg-neutral-900/80 border-t border-neutral-200 dark:border-neutral-700 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono">
-                        <div class="text-neutral-500 dark:text-neutral-400 text-center sm:text-left">
-                            Showing <span class="font-bold text-neutral-800 dark:text-white">{startIndex() + (totalData() > 0 ? 1 : 0)}</span> to{' '}
-                            <span class="font-bold text-neutral-800 dark:text-white">{endIndex()}</span> of{' '}
-                            <span class="font-bold text-neutral-800 dark:text-white">{totalData()}</span> total classes
-                        </div>
-
-                        <div class="flex items-center gap-1">
+                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-3">
+                        <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                            Showing <span class="font-semibold text-neutral-900 dark:text-white">{startIndex() + (totalData() > 0 ? 1 : 0)}</span>–<span class="font-semibold text-neutral-900 dark:text-white">{endIndex()}</span> of <span class="font-semibold text-neutral-900 dark:text-white">{totalData().toLocaleString()}</span> classes
+                        </p>
+                        <nav class="inline-flex -space-x-px rounded-lg overflow-hidden shadow-sm" aria-label="Pagination">
                             <button
                                 type="button"
-                                disabled={currentPage() <= 1}
-                                onClick={() => setCurrentPage(1)}
-                                class="px-2 py-1 text-xs border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 transition-colors"
-                            >
-                                First
-                            </button>
-                            <button
-                                type="button"
-                                disabled={currentPage() <= 1}
+                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                                disabled={currentPage() <= 1 || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                                class="px-2.5 py-1 text-xs border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 transition-colors"
                             >
-                                Prev
+                                Previous
                             </button>
-
-                            <span class="px-3 py-1 bg-blue-600 text-white font-bold border border-blue-600">
+                            <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border-y border-neutral-300 dark:border-neutral-600">
                                 {currentPage()} / {totalPages()}
                             </span>
-
                             <button
                                 type="button"
-                                disabled={currentPage() >= totalPages()}
+                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                                disabled={currentPage() >= totalPages() || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
-                                class="px-2.5 py-1 text-xs border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 transition-colors"
                             >
                                 Next
                             </button>
-                            <button
-                                type="button"
-                                disabled={currentPage() >= totalPages()}
-                                onClick={() => setCurrentPage(totalPages())}
-                                class="px-2 py-1 text-xs border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 transition-colors"
-                            >
-                                Last
-                            </button>
-                        </div>
+                        </nav>
                     </div>
                 </div>
             </main>

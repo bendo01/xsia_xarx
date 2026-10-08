@@ -493,39 +493,31 @@ export default function AuthRolePage() {
                 </div>
 
                 {/* Pagination Footer */}
-                <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/80 px-4 py-3 sm:px-6 gap-3 sm:gap-0">
-                    <div class="text-sm text-neutral-700 dark:text-neutral-300 text-center sm:text-left">
-                        Showing <span class="font-medium">{totalData() > 0 ? startIndex() + 1 : 0}</span> to <span class="font-medium">{endIndex()}</span> of <span class="font-medium">{totalData()}</span> results
-                    </div>
-                    <div class="flex justify-center">
-                        <nav class="inline-flex -space-x-px shadow-2xs" aria-label="Pagination">
-                            <button
-                                type="button"
-                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-                                disabled={currentPage() <= 1 || isLoading()}
-                                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                            >
-                                <span class="sr-only">Previous</span>
-                                <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                            <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-blue-600 border border-blue-600">
-                                {currentPage()} / {totalPages()}
-                            </span>
-                            <button
-                                type="button"
-                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-                                disabled={currentPage() >= totalPages() || isLoading()}
-                                onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
-                            >
-                                <span class="sr-only">Next</span>
-                                <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                        </nav>
-                    </div>
+                <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-3">
+                    <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                        Showing <span class="font-semibold text-neutral-900 dark:text-white">{totalData() > 0 ? startIndex() + 1 : 0}</span>–<span class="font-semibold text-neutral-900 dark:text-white">{endIndex()}</span> of <span class="font-semibold text-neutral-900 dark:text-white">{totalData().toLocaleString()}</span> results
+                    </p>
+                    <nav class="inline-flex -space-x-px rounded-lg overflow-hidden shadow-sm" aria-label="Pagination">
+                        <button
+                            type="button"
+                            class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                            disabled={currentPage() <= 1 || isLoading()}
+                            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                        >
+                            Previous
+                        </button>
+                        <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border-y border-neutral-300 dark:border-neutral-600">
+                            {currentPage()} / {totalPages()}
+                        </span>
+                        <button
+                            type="button"
+                            class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                            disabled={currentPage() >= totalPages() || isLoading()}
+                            onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
+                        >
+                            Next
+                        </button>
+                    </nav>
                 </div>
             </div>
 
