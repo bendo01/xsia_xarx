@@ -13,7 +13,9 @@ import { toast } from '~/components/toast/Toaster';
 export default function RouteGuard(props: { children: JSX.Element }) {
     const location = useLocation();
     const navigate = useNavigate();
-    const isPublic = isServer || !location.pathname || location.pathname === '/' || location.pathname.startsWith('/authentification');
+    // Must evaluate identically on server and client to avoid hydration mismatch;
+    // protected routes render the fallback during SSR and are checked on mount.
+    const isPublic = !location.pathname || location.pathname === '/' || location.pathname.startsWith('/authentification');
     const [isChecking, setIsChecking] = createSignal(!isPublic);
     const [isAllowed, setIsAllowed] = createSignal(isPublic);
     let lastToastPath = '';

@@ -1,14 +1,14 @@
 import { createSignal, onMount, createEffect, Show } from 'solid-js';
-import { useSearchParams } from '@solidjs/router';
+import { useParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { masterApiShow, masterApiUpdate } from '~/controllers/master/masterApiController';
 
 export default function MasterEditPage() {
     const apiPath = "academic/student/master/students";
-    const basePath = "/academic/student/master/student";
-    const [searchParams] = useSearchParams();
-    const [selectedId, setSelectedId] = createSignal<string>((searchParams.id as string) || '');
+    const basePath = "/administrator/academic/student/master/student";
+    const params = useParams();
+    const [selectedId, setSelectedId] = createSignal<string>((params.id as string) || '');
     const [code, setCode] = createSignal('');
     const [name, setName] = createSignal('');
     const [description, setDescription] = createSignal('');
@@ -38,12 +38,12 @@ export default function MasterEditPage() {
     };
 
     onMount(() => {
-        const id = (searchParams.id as string) || '';
+        const id = (params.id as string) || '';
         fetchExisting(id);
     });
 
     createEffect(() => {
-        const id = searchParams.id as string;
+        const id = params.id as string;
         if (id && id !== selectedId()) {
             setSelectedId(id);
             fetchExisting(id);

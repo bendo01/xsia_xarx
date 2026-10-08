@@ -632,7 +632,7 @@ export default function RectoratStudentIndex() {
                                                 <tr class="hover:bg-neutral-50/80 dark:hover:bg-neutral-800/40 transition-colors group">
                                                     <td class="px-6 py-4">
                                                         <div class="flex items-center gap-3">
-                                                            <div class="size-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-sm shrink-0">
+                                                            <div class="size-9 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-sm shrink-0">
                                                                 {initials(item.name)}
                                                             </div>
                                                             <div class="min-w-0">
@@ -653,7 +653,7 @@ export default function RectoratStudentIndex() {
                                                             when={item.unit_name}
                                                             fallback={<span class="text-neutral-400 dark:text-neutral-600">-</span>}
                                                         >
-                                                            <p class="text-sm font-medium text-neutral-800 dark:text-neutral-200 truncate max-w-[200px]">{item.unit_name}</p>
+                                                            <p class="text-sm font-medium text-neutral-800 dark:text-neutral-200 truncate max-w-50">{item.unit_name}</p>
                                                             <Show when={item.unit_code}>
                                                                 <p class="text-xs font-mono text-neutral-500 dark:text-neutral-400">{item.unit_code}</p>
                                                             </Show>

@@ -1,11 +1,13 @@
-import { createSignal, createEffect, For, Show } from 'solid-js';
+import { createSignal, createEffect, onMount, onCleanup, For, Show } from 'solid-js';
+import SlimSelect from 'slim-select';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { masterApiIndex, masterApiDelete } from '~/controllers/master/masterApiController';
+import { listAcademicYears, listStudentStatuses } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
 
 export default function MasterIndexPage() {
     const apiPath = "academic/student/master/students";
-    const basePath = "/academic/student/master/student";
+    const basePath = "/administrator/academic/student/master/student";
     const [items, setItems] = createSignal<any[]>([]);
     const [isLoading, setIsLoading] = createSignal(true);
     const [currentPage, setCurrentPage] = createSignal(1);
@@ -14,6 +16,13 @@ export default function MasterIndexPage() {
     const [sortParam, setSortParam] = createSignal('name-asc');
     const [totalData, setTotalData] = createSignal(0);
     const [totalPages, setTotalPages] = createSignal(1);
+
+    let institutionSelectRef!: HTMLSelectElement;
+    const [academicYears, setAcademicYears] = createSignal<any[]>([]);
+    const [statuses, setStatuses] = createSignal<any[]>([]);
+    const [institutionId, setInstitutionId] = createSignal('');
+    const [academicYearId, setAcademicYearId] = createSignal('');
+    const [statusId, setStatusId] = createSignal('');
 
     let deleteDialogRef!: HTMLDialogElement;
     const [selectedItem, setSelectedItem] = createSignal<any | null>(null);
@@ -29,6 +38,9 @@ export default function MasterIndexPage() {
                 search: searchQuery(),
                 sort_by: field,
                 sort_dir: dir || 'asc',
+                institution_id: institutionId(),
+                academic_year_id: academicYearId(),
+                status_id: statusId(),
             });
 
             if (response && Array.isArray(response.data)) {
@@ -56,7 +68,62 @@ export default function MasterIndexPage() {
         itemsPerPage();
         searchQuery();
         sortParam();
+        institutionId();
+        academicYearId();
+        statusId();
         fetchData();
+    });
+
+    onMount(async () => {
+        const slimInstitution = new SlimSelect({
+            select: institutionSelectRef,
+            settings: {
+                allowDeselect: true,
+                placeholderText: 'All Institutions',
+                searchPlaceholder: 'Search institution...',
+                searchingText: 'Searching...',
+                timeoutDelay: 300,
+            },
+            events: {
+                search: async (searchValue) => {
+                    const res = await masterApiIndex('institution/master/institutions', {
+                        page: 1,
+                        per_page: 50,
+                        search: searchValue.trim(),
+                        sort_by: 'name',
+                        sort_dir: 'asc',
+                    });
+                    return (res?.data || []).map((inst: any) => ({
+                        text: inst.name || '-',
+                        value: inst.id,
+                    }));
+                },
+                afterChange: (newVal) => {
+                    setInstitutionId(newVal[0]?.value || '');
+                    setCurrentPage(1);
+                },
+            },
+        });
+        onCleanup(() => slimInstitution.destroy());
+
+        try {
+            const [instRes, yList, sList] = await Promise.all([
+                masterApiIndex('institution/master/institutions', { page: 1, per_page: 200, sort_by: 'name', sort_dir: 'asc' }),
+                listAcademicYears(),
+                listStudentStatuses(),
+            ]);
+            slimInstitution.setData([
+                { placeholder: true, text: 'All Institutions' },
+                ...(instRes?.data || []).map((inst: any) => ({
+                    text: inst.name || '-',
+                    value: inst.id,
+                })),
+            ]);
+            setAcademicYears(yList);
+            setStatuses(sList);
+        } catch (error) {
+            console.error('Error loading filter references:', error);
+        }
     });
 
     let searchTimeout: any;
@@ -200,6 +267,42 @@ export default function MasterIndexPage() {
                     </div>
                 </div>
 
+                <div class="flex flex-col md:flex-row items-center gap-3">
+                    <div class="w-full md:w-1/3">
+                        <select id="select-institution" ref={institutionSelectRef}>
+                            <option data-placeholder="true">All Institutions</option>
+                        </select>
+                    </div>
+
+                    <select
+                        class="w-full md:w-1/3 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                        value={academicYearId()}
+                        onChange={(e) => {
+                            setAcademicYearId((e.target as HTMLSelectElement).value);
+                            setCurrentPage(1);
+                        }}
+                    >
+                        <option value="">All Academic Years</option>
+                        <For each={academicYears()}>
+                            {(yr) => <option value={yr.id}>{yr.name}{yr.code ? ` (${yr.code})` : ''}</option>}
+                        </For>
+                    </select>
+
+                    <select
+                        class="w-full md:w-1/3 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                        value={statusId()}
+                        onChange={(e) => {
+                            setStatusId((e.target as HTMLSelectElement).value);
+                            setCurrentPage(1);
+                        }}
+                    >
+                        <option value="">All Statuses</option>
+                        <For each={statuses()}>
+                            {(st) => <option value={st.id}>{st.name}</option>}
+                        </For>
+                    </select>
+                </div>
+
                 <div class="border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-2xs overflow-hidden">
                     <div class="block md:hidden divide-y divide-neutral-200 dark:divide-neutral-700">
                         <Show
@@ -242,7 +345,7 @@ export default function MasterIndexPage() {
                                             <div class="flex items-start justify-between gap-3">
                                                 <div class="flex-1 min-w-0">
                                                     <a
-                                                        href={`${basePath}/show?id=${item.id || item.uuid}`}
+                                                        href={`${basePath}/${item.id || item.uuid}`}
                                                         class="font-semibold text-sm text-blue-600 dark:text-blue-400 hover:underline block truncate"
                                                     >
                                                         {getItemTitle(item)}
@@ -257,7 +360,7 @@ export default function MasterIndexPage() {
 
                                             <div class="flex items-center justify-end gap-1.5 pt-2 border-t border-neutral-100 dark:border-neutral-700/60">
                                                 <a
-                                                    href={`${basePath}/show?id=${item.id || item.uuid}`}
+                                                    href={`${basePath}/${item.id || item.uuid}`}
                                                     class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                     title="View Details"
                                                 >
@@ -266,7 +369,7 @@ export default function MasterIndexPage() {
                                                     </svg>
                                                 </a>
                                                 <a
-                                                    href={`${basePath}/edit?id=${item.id || item.uuid}`}
+                                                    href={`${basePath}/${item.id || item.uuid}/edit`}
                                                     class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                     title="Edit Record"
                                                 >
@@ -349,7 +452,7 @@ export default function MasterIndexPage() {
                                                     </td>
                                                     <td class="px-4 py-3">
                                                         <a
-                                                            href={`${basePath}/show?id=${item.id || item.uuid}`}
+                                                            href={`${basePath}/${item.id || item.uuid}`}
                                                             class="font-semibold text-blue-600 dark:text-blue-400 hover:underline block"
                                                         >
                                                             {getItemTitle(item)}
@@ -366,7 +469,7 @@ export default function MasterIndexPage() {
                                                     <td class="px-4 py-3 text-right">
                                                         <div class="flex items-center justify-end gap-1.5">
                                                             <a
-                                                                href={`${basePath}/show?id=${item.id || item.uuid}`}
+                                                                href={`${basePath}/${item.id || item.uuid}`}
                                                                 class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                                 title="View Details"
                                                             >
@@ -375,7 +478,7 @@ export default function MasterIndexPage() {
                                                                 </svg>
                                                             </a>
                                                             <a
-                                                                href={`${basePath}/edit?id=${item.id || item.uuid}`}
+                                                                href={`${basePath}/${item.id || item.uuid}/edit`}
                                                                 class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                                 title="Edit Record"
                                                             >

@@ -7,10 +7,14 @@
 
 .dark {
   --ss-bg-color: #262626;
-  --ss-font-color: #e5e5e5;
+  --ss-font-color: #ffffff;
   --ss-border-color: #404040;
   --ss-disabled-color: #525252;
   --ss-placeholder-color: #a3a3a3;
+}
+
+.dark .ss-content .ss-search input {
+  color: #ffffff;
 }
 
 /* Quill Dark Mode Overrides */
