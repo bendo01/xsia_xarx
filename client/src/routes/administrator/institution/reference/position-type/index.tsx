@@ -348,6 +348,7 @@ export default function InstitutionReferencePositionTypePage() {
                                                     <td class="px-6 py-4 text-right flex justify-end gap-2">
                                                         <div class="h-8 w-8 bg-neutral-200 dark:bg-neutral-700"></div>
                                                         <div class="h-8 w-8 bg-neutral-200 dark:bg-neutral-700"></div>
+                                                        <div class="h-8 w-8 bg-neutral-200 dark:bg-neutral-700"></div>
                                                     </td>
                                                 </tr>
                                             )}
@@ -392,6 +393,17 @@ export default function InstitutionReferencePositionTypePage() {
                                                     </td>
                                                     <td class="px-6 py-4 text-right">
                                                         <div class="flex justify-end gap-1">
+                                                            <a
+                                                                href={`/administrator/institution/reference/position-type/${item.id}`}
+                                                                class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-blue-600 hover:border-blue-500 hover:bg-blue-50 dark:text-neutral-300 dark:hover:text-blue-400 dark:hover:border-blue-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
+                                                                title="View Details"
+                                                                aria-label={`View ${item.name}`}
+                                                            >
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                                                                    <circle cx="12" cy="12" r="3" />
+                                                                </svg>
+                                                            </a>
                                                             <button
                                                                 type="button"
                                                                 onClick={() => openEditModal(item)}
@@ -478,6 +490,12 @@ export default function InstitutionReferencePositionTypePage() {
                                                 {item.created_at ? new Date(item.created_at).toLocaleDateString() : ''}
                                             </span>
                                             <div class="flex gap-2">
+                                                <a
+                                                    href={`/administrator/institution/reference/position-type/${item.id}`}
+                                                    class="px-3 py-1 text-xs font-medium text-neutral-700 bg-white hover:bg-blue-50 hover:text-blue-600 hover:border-blue-500 dark:text-neutral-300 dark:bg-neutral-800 dark:hover:text-blue-400 dark:hover:border-blue-500 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
+                                                >
+                                                    View
+                                                </a>
                                                 <button
                                                     type="button"
                                                     onClick={() => openEditModal(item)}

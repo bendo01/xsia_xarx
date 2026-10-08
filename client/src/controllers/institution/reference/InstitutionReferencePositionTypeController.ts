@@ -3,6 +3,7 @@ import type { TypePaginationForm, TypeInputEntityReferenceForm } from "../../../
 import type { UpsertDeleteMessage } from "../../../models/common/reference/ModelCommonReference";
 import type { ModelCommonReferencePaginationResponse } from "../../../models/pagination/ModelPagination";
 import type { ModelSelectItem } from "../../../models/common/select/ModelSelectItem";
+import type { InstitutionReferencePositionType } from "../../../models/institution/reference/PositionType";
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0.1:5800/api/v1/").replace(/\/+$/, "");
 const path = "institution/reference/position-type";
@@ -74,6 +75,25 @@ export async function InstitutionReferencePositionTypeIndex(pagination: TypePagi
             },
             data: [],
         };
+    }
+}
+
+export async function InstitutionReferencePositionTypeShow(id: string): Promise<InstitutionReferencePositionType | null> {
+    try {
+        const response = await fetch(`${getBaseUrl()}/${path}/${encodeURIComponent(id)}`, {
+            method: "GET",
+            headers: getHeaders(),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const resJson = await response.json();
+        return (resJson.data ?? resJson) as InstitutionReferencePositionType;
+    } catch (error) {
+        console.error("Error fetching position type reference detail:", error);
+        return null;
     }
 }
 
