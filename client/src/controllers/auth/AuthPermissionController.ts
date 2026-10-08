@@ -29,6 +29,7 @@ export async function AuthPermissionControllerIndex(
         if (props.per_page) params.append('page_size', props.per_page.toString());
         if (props.search) params.append('name', props.search);
         if (props.name) params.append('name', props.name);
+        if (props.is_open === true || props.is_open === false) params.append('is_open', String(props.is_open));
 
         const res = await fetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
             method: 'GET',

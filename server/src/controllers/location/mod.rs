@@ -17,6 +17,10 @@ pub fn router() -> Router {
                 .get_named("location.continents.list_continents", continents::list_continents)
                 .post_named("location.continents.create_continent", continents::create_continent)
                 .push(
+                    Router::with_path("options")
+                        .post_named("location.continents.options_continents", continents::options_continents),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("location.continents.get_continent", continents::get_continent)
                         .put_named("location.continents.update_continent", continents::update_continent)
@@ -39,6 +43,10 @@ pub fn router() -> Router {
                 .get_named("location.provinces.list_provinces", provinces::list_provinces)
                 .post_named("location.provinces.create_province", provinces::create_province)
                 .push(
+                    Router::with_path("options")
+                        .post_named("location.provinces.options_provinces", provinces::options_provinces),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("location.provinces.get_province", provinces::get_province)
                         .put_named("location.provinces.update_province", provinces::update_province)
@@ -49,6 +57,10 @@ pub fn router() -> Router {
             Router::with_path("regencies")
                 .get_named("location.regencies.list_regencies", regencies::list_regencies)
                 .post_named("location.regencies.create_regencie", regencies::create_regencie)
+                .push(
+                    Router::with_path("options")
+                        .post_named("location.regencies.options_regencies", regencies::options_regencies),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("location.regencies.get_regencie", regencies::get_regencie)
@@ -61,6 +73,10 @@ pub fn router() -> Router {
                 .get_named("location.regency_types.list_regency_types", regency_types::list_regency_types)
                 .post_named("location.regency_types.create_regency_type", regency_types::create_regency_type)
                 .push(
+                    Router::with_path("options")
+                        .post_named("location.regency_types.options_regency_types", regency_types::options_regency_types),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("location.regency_types.get_regency_type", regency_types::get_regency_type)
                         .put_named("location.regency_types.update_regency_type", regency_types::update_regency_type)
@@ -71,6 +87,10 @@ pub fn router() -> Router {
             Router::with_path("regions")
                 .get_named("location.regions.list_regions", regions::list_regions)
                 .post_named("location.regions.create_region", regions::create_region)
+                .push(
+                    Router::with_path("options")
+                        .post_named("location.regions.options_regions", regions::options_regions),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("location.regions.get_region", regions::get_region)
@@ -83,6 +103,10 @@ pub fn router() -> Router {
                 .get_named("location.sub_districts.list_sub_districts", sub_districts::list_sub_districts)
                 .post_named("location.sub_districts.create_sub_district", sub_districts::create_sub_district)
                 .push(
+                    Router::with_path("options")
+                        .post_named("location.sub_districts.options_sub_districts", sub_districts::options_sub_districts),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("location.sub_districts.get_sub_district", sub_districts::get_sub_district)
                         .put_named("location.sub_districts.update_sub_district", sub_districts::update_sub_district)
@@ -93,6 +117,10 @@ pub fn router() -> Router {
             Router::with_path("villages")
                 .get_named("location.villages.list_villages", villages::list_villages)
                 .post_named("location.villages.create_village", villages::create_village)
+                .push(
+                    Router::with_path("options")
+                        .post_named("location.villages.options_villages", villages::options_villages),
+                )
                 .push(
                     Router::with_path("{id}")
                         .get_named("location.villages.get_village", villages::get_village)

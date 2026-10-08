@@ -91,3 +91,9 @@ pub struct PaginatedProvinceResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct ProvinceOptionRequest {
+    pub search: Option<String>,
+    pub country_id: Option<Uuid>,
+}

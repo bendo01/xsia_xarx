@@ -88,3 +88,9 @@ pub struct PaginatedSubDistrictResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct SubDistrictOptionRequest {
+    pub search: Option<String>,
+    pub regency_id: Option<Uuid>,
+}

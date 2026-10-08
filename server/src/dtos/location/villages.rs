@@ -79,3 +79,9 @@ pub struct PaginatedVillageResponse {
     pub page_size: u64,
     pub total_pages: u64,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct VillageOptionRequest {
+    pub search: Option<String>,
+    pub sub_district_id: Option<Uuid>,
+}

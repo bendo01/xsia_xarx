@@ -15,6 +15,7 @@ export default function AuthPermissionPage() {
     const [itemsPerPage, setItemsPerPage] = createSignal(10);
     const [searchQuery, setSearchQuery] = createSignal('');
     const [sortParam, setSortParam] = createSignal('name-asc');
+    const [openFilter, setOpenFilter] = createSignal<'' | 'true' | 'false'>('');
     const [totalData, setTotalData] = createSignal(0);
     const [totalPages, setTotalPages] = createSignal(1);
 
@@ -41,6 +42,60 @@ export default function AuthPermissionPage() {
     // Selected item for Delete
     const [selectedItem, setSelectedItem] = createSignal<Permission | null>(null);
 
+    // Permission ids with an is_open update in flight
+    const [togglingIds, setTogglingIds] = createSignal<Record<string, boolean>>({});
+
+    const toggleIsOpen = async (item: Permission) => {
+        if (togglingIds()[item.id]) return;
+        const nextOpen = !item.is_open;
+        if (nextOpen && !window.confirm(`Make "${item.name}" open? Anyone, including users who are not logged in, will be able to call this route.`)) {
+            return;
+        }
+        setTogglingIds((prev) => ({ ...prev, [item.id]: true }));
+        try {
+            const res = await AuthPermissionControllerUpsert({
+                id: item.id,
+                name: item.name,
+                uri: item.uri ?? null,
+                is_open: nextOpen,
+            });
+            if (res.is_error) {
+                toast.danger(res.message);
+                return;
+            }
+            setItems((prev) => prev.map((p) => (p.id === item.id ? { ...p, is_open: nextOpen } : p)));
+            toast.success(`${item.name} is now ${nextOpen ? 'open' : 'restricted'}`, 2000);
+        } finally {
+            setTogglingIds((prev) => {
+                const next = { ...prev };
+                delete next[item.id];
+                return next;
+            });
+        }
+    };
+
+    const OpenToggle = (props: { item: Permission }) => (
+        <button
+            type="button"
+            role="switch"
+            aria-checked={Boolean(props.item.is_open)}
+            aria-label={`Toggle open access for ${props.item.name}`}
+            title={props.item.is_open ? 'Open: no login or role required' : 'Restricted: requires a granted role'}
+            disabled={Boolean(togglingIds()[props.item.id])}
+            onClick={() => toggleIsOpen(props.item)}
+            class="relative inline-flex h-5 w-9 shrink-0 items-center border transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-wait"
+            classList={{
+                'bg-amber-500 border-amber-500': Boolean(props.item.is_open),
+                'bg-neutral-200 dark:bg-neutral-700 border-neutral-300 dark:border-neutral-600': !props.item.is_open,
+            }}
+        >
+            <span
+                class="inline-block size-3.5 bg-white shadow-sm transition-transform"
+                classList={{ 'translate-x-4.5': Boolean(props.item.is_open), 'translate-x-0.5': !props.item.is_open }}
+            />
+        </button>
+    );
+
     const fetchData = async () => {
         setIsLoading(true);
         try {
@@ -49,6 +104,7 @@ export default function AuthPermissionPage() {
                 page: currentPage(),
                 per_page: itemsPerPage(),
                 search: searchQuery(),
+                is_open: openFilter() === '' ? undefined : openFilter() === 'true',
                 sort_by: field,
                 sort_dir: dir || 'asc',
             });
@@ -85,6 +141,7 @@ export default function AuthPermissionPage() {
         itemsPerPage();
         searchQuery();
         sortParam();
+        openFilter();
         fetchData();
     });
 
@@ -254,7 +311,7 @@ export default function AuthPermissionPage() {
 
             {/* Search & Filter Controls */}
             <div class="px-3 mb-4 flex flex-col md:flex-row items-center gap-3 w-full">
-                <div class="w-full md:w-2/3">
+                <div class="w-full md:w-1/2">
                     <label class="block text-xs font-semibold uppercase text-neutral-500 dark:text-neutral-400 mb-1">
                         Search Filter
                     </label>
@@ -274,8 +331,26 @@ export default function AuthPermissionPage() {
                     </div>
                 </div>
 
-                <div class="w-full md:w-1/3 flex gap-2">
-                    <div class="w-1/2">
+                <div class="w-full md:w-1/2 flex gap-2">
+                    <div class="w-1/3">
+                        <label class="block text-xs font-semibold uppercase text-neutral-500 dark:text-neutral-400 mb-1">
+                            Open
+                        </label>
+                        <select
+                            class="block w-full p-2 text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                            value={openFilter()}
+                            onChange={(e) => {
+                                setOpenFilter((e.target as HTMLSelectElement).value as '' | 'true' | 'false');
+                                setCurrentPage(1);
+                            }}
+                            id="select-open-permission"
+                        >
+                            <option value="">All</option>
+                            <option value="true">Open</option>
+                            <option value="false">Restricted</option>
+                        </select>
+                    </div>
+                    <div class="w-1/3">
                         <label class="block text-xs font-semibold uppercase text-neutral-500 dark:text-neutral-400 mb-1">
                             Sort By
                         </label>
@@ -289,7 +364,7 @@ export default function AuthPermissionPage() {
                             <option value="name-desc">Name (Z-A)</option>
                         </select>
                     </div>
-                    <div class="w-1/2">
+                    <div class="w-1/3">
                         <label class="block text-xs font-semibold uppercase text-neutral-500 dark:text-neutral-400 mb-1">
                             Per Page
                         </label>
@@ -317,6 +392,7 @@ export default function AuthPermissionPage() {
                             <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
                                 <tr>
                                     <th scope="col" class="px-6 py-3.5 font-semibold tracking-wider">Permission Name</th>
+                                    <th scope="col" class="px-6 py-3.5 font-semibold tracking-wider">Open</th>
                                     <th scope="col" class="px-6 py-3.5 font-semibold tracking-wider">Created At</th>
                                     <th scope="col" class="px-6 py-3.5 font-semibold tracking-wider text-right">Actions</th>
                                 </tr>
@@ -329,6 +405,7 @@ export default function AuthPermissionPage() {
                                             {() => (
                                                 <tr class="animate-pulse hover:bg-neutral-50 dark:hover:bg-neutral-800/50">
                                                     <td class="px-6 py-4"><div class="h-5 w-48 bg-neutral-200 dark:bg-neutral-700"></div></td>
+                                                    <td class="px-6 py-4"><div class="h-5 w-9 bg-neutral-200 dark:bg-neutral-700"></div></td>
                                                     <td class="px-6 py-4"><div class="h-4 w-24 bg-neutral-200 dark:bg-neutral-700"></div></td>
                                                     <td class="px-6 py-4 text-right flex justify-end gap-2">
                                                         <div class="h-8 w-8 bg-neutral-200 dark:bg-neutral-700"></div>
@@ -343,7 +420,7 @@ export default function AuthPermissionPage() {
                                         when={items().length > 0}
                                         fallback={
                                             <tr>
-                                                <td colspan="3" class="px-6 py-12 text-center text-neutral-500 dark:text-neutral-400">
+                                                <td colspan="4" class="px-6 py-12 text-center text-neutral-500 dark:text-neutral-400">
                                                     <div class="flex flex-col items-center justify-center space-y-2">
                                                         <svg class="size-8 text-neutral-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -365,6 +442,9 @@ export default function AuthPermissionPage() {
                                                             </span>
                                                         </div>
                                                         <div class="text-xs text-neutral-500 dark:text-neutral-400 font-mono mt-0.5">{item.id}</div>
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        <OpenToggle item={item} />
                                                     </td>
                                                     <td class="px-6 py-4 text-xs text-neutral-500 dark:text-neutral-400">
                                                         {item.created_at ? new Date(item.created_at).toLocaleDateString() : '-'}
@@ -451,7 +531,12 @@ export default function AuthPermissionPage() {
                                         <div>
                                             <p class="text-xs text-neutral-500 dark:text-neutral-400 font-mono truncate">{item.id}</p>
                                         </div>
-                                        <div class="flex justify-end gap-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
+                                        <div class="flex justify-between items-center gap-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
+                                            <label class="inline-flex items-center gap-2 text-xs text-neutral-600 dark:text-neutral-400">
+                                                <OpenToggle item={item} />
+                                                Open
+                                            </label>
+                                            <div class="flex gap-2">
                                             <button
                                                 type="button"
                                                 onClick={() => openEditModal(item)}
@@ -466,6 +551,7 @@ export default function AuthPermissionPage() {
                                             >
                                                 Delete
                                             </button>
+                                            </div>
                                         </div>
                                     </div>
                                 )}
@@ -692,7 +778,7 @@ export default function AuthPermissionPage() {
                         </div>
                     </div>
 
-                    <p class="text-sm text-neutral-600 dark:text-neutral-300 bg-neutral-50 dark:bg-neutral-800/60 p-3 rounded-xs border border-neutral-200 dark:border-neutral-700 mb-4 font-mono text-xs">
+                    <p class="text-sm text-neutral-600 dark:text-neutral-300 bg-neutral-50 dark:bg-neutral-800/60 p-3 rounded-xs border border-neutral-200 dark:border-neutral-700 mb-4 font-mono">
                         {selectedItem()?.name}
                     </p>
 

@@ -34,6 +34,10 @@ pub async fn list_permission(
         select = select.filter(entity_mod::Column::Name.contains(name));
     }
 
+    if let Some(is_open) = query.is_open {
+        select = select.filter(entity_mod::Column::IsOpen.eq(is_open));
+    }
+
     let paginator = select
         .order_by_asc(entity_mod::Column::Name)
         .paginate(db, page_size);

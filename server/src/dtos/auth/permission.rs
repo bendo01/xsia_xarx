@@ -10,6 +10,7 @@ pub struct PermissionQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
     pub name: Option<String>,
+    pub is_open: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
