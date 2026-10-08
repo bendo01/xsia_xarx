@@ -1,21 +1,21 @@
-import { createSignal, onMount, createEffect, Show, For } from 'solid-js';
+import { createSignal, onMount, createEffect, Show } from 'solid-js';
 import { useParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import PermissionToggleList from '~/components/auth/PermissionToggleList';
 import { toast } from '~/components/toast/Toaster';
-import type { InstitutionReferencePositionType } from '~/models/institution/reference/PositionType';
-import { InstitutionReferencePositionTypeShow } from '~/controllers/institution/reference/InstitutionReferencePositionTypeController';
+import type { Role } from '~/models/auth/Role';
+import { AuthRoleControllerShow } from '~/controllers/auth/AuthRoleController';
 import {
-    AuthPermissionPositionTypeControllerByPositionType,
-    AuthPermissionPositionTypeControllerCreate,
-    AuthPermissionPositionTypeControllerDelete,
-} from '~/controllers/auth/AuthPermissionPositionTypeController';
+    AuthPermissionRoleControllerByRole,
+    AuthPermissionRoleControllerUpsert,
+    AuthPermissionRoleControllerDelete,
+} from '~/controllers/auth/AuthPermissionRoleController';
 
-export default function InstitutionReferencePositionTypeDetailPage() {
-    const basePath = '/administrator/institution/reference/position-type';
+export default function AuthRoleDetailPage() {
+    const basePath = '/administrator/auth/role';
     const params = useParams();
     const [isLoading, setIsLoading] = createSignal(true);
-    const [record, setRecord] = createSignal<InstitutionReferencePositionType | null>(null);
+    const [record, setRecord] = createSignal<Role | null>(null);
     const [selectedId, setSelectedId] = createSignal<string>((params.id as string) || '');
 
     const fetchDetail = async (id: string) => {
@@ -26,17 +26,17 @@ export default function InstitutionReferencePositionTypeDetailPage() {
         }
         setIsLoading(true);
         try {
-            const data = await InstitutionReferencePositionTypeShow(id);
-            if (data && data.id) {
-                setRecord(data);
+            const role = await AuthRoleControllerShow(id);
+            if (role && role.id) {
+                setRecord(role);
             } else {
                 setRecord(null);
-                toast.danger('Position type record not found.');
+                toast.danger('Role record not found.');
             }
         } catch (error) {
-            console.error('Error fetching position type detail:', error);
+            console.error('Error fetching role detail:', error);
             setRecord(null);
-            toast.danger('Failed to load position type record from server.');
+            toast.danger('Failed to load role record from server.');
         } finally {
             setIsLoading(false);
         }
@@ -73,16 +73,14 @@ export default function InstitutionReferencePositionTypeDetailPage() {
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
                             <a href="/" class="hover:text-blue-600 transition-colors shrink-0">Home</a>
                             <span class="shrink-0">/</span>
-                            <span class="shrink-0">Institution</span>
+                            <span class="shrink-0">Auth</span>
                             <span class="shrink-0">/</span>
-                            <span class="shrink-0">Reference</span>
-                            <span class="shrink-0">/</span>
-                            <a href={basePath} class="hover:text-blue-600 transition-colors shrink-0">Position Type</a>
+                            <a href={basePath} class="hover:text-blue-600 transition-colors shrink-0">Role</a>
                             <span class="shrink-0">/</span>
                             <span class="font-medium text-neutral-900 dark:text-white shrink-0">Detail</span>
                         </nav>
                         <h1 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono truncate">
-                            Position Type Details
+                            Role Permissions
                         </h1>
                     </div>
 
@@ -119,7 +117,7 @@ export default function InstitutionReferencePositionTypeDetailPage() {
                             when={record()}
                             fallback={
                                 <div class="py-12 text-center text-neutral-500">
-                                    <p class="text-base font-semibold">No position type details found.</p>
+                                    <p class="text-base font-semibold">No role details found.</p>
                                     <p class="text-xs mt-1">Check if the ID parameter in the URL is valid.</p>
                                 </div>
                             }
@@ -128,17 +126,14 @@ export default function InstitutionReferencePositionTypeDetailPage() {
                                 {/* Title and Badge Banner */}
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-100 dark:border-neutral-700 pb-4">
                                     <div class="min-w-0">
-                                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 block mb-0.5">Position Type Name</span>
+                                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 block mb-0.5">Role Name</span>
                                         <h2 class="text-lg sm:text-xl font-bold text-neutral-900 dark:text-white font-mono break-all sm:break-normal">
                                             {record()?.name || '-'}
                                         </h2>
                                     </div>
                                     <div class="flex flex-wrap items-center gap-2 shrink-0">
                                         <span class="px-2.5 py-1 text-xs font-mono font-semibold bg-neutral-100 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-700">
-                                            Code: {record()?.code ?? '-'}
-                                        </span>
-                                        <span class="px-2.5 py-1 text-xs font-mono font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/80">
-                                            {record()?.alphabet_code || (record() as any)?.alphabetic_code || '-'}
+                                            {record()?.roleable_type || '-'}
                                         </span>
                                     </div>
                                 </div>
@@ -168,65 +163,17 @@ export default function InstitutionReferencePositionTypeDetailPage() {
                                     </div>
                                 </div>
 
-                                {/* All Entity Attributes: Dual Desktop Table & Mobile Card View */}
-                                <div class="mt-6">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <h3 class="text-sm font-bold font-mono text-neutral-900 dark:text-white">All Entity Attributes</h3>
-                                        <span class="text-[11px] font-mono text-neutral-500 dark:text-neutral-400">
-                                            {Object.keys(record() || {}).length} fields
-                                        </span>
-                                    </div>
-
-                                    {/* Desktop Table View (>= 768px) */}
-                                    <div class="hidden md:block border border-neutral-200 dark:border-neutral-700 overflow-hidden">
-                                        <table class="w-full text-xs text-left">
-                                            <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
-                                                <For each={Object.entries(record() || {})}>
-                                                    {([key, val]) => (
-                                                        <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-700/30">
-                                                            <td class="px-4 py-2.5 font-mono font-semibold text-neutral-600 dark:text-neutral-400 w-1/3 bg-neutral-50 dark:bg-neutral-900/30">
-                                                                {key}
-                                                            </td>
-                                                            <td class="px-4 py-2.5 font-mono text-neutral-900 dark:text-white break-all">
-                                                                {typeof val === 'object' && val !== null ? JSON.stringify(val) : String(val ?? '-')}
-                                                            </td>
-                                                        </tr>
-                                                    )}
-                                                </For>
-                                            </tbody>
-                                        </table>
-                                    </div>
-
-                                    {/* Mobile Cards View (< 768px) */}
-                                    <div class="block md:hidden divide-y divide-neutral-200 dark:divide-neutral-700 border border-neutral-200 dark:border-neutral-700 bg-neutral-50/40 dark:bg-neutral-900/30">
-                                        <For each={Object.entries(record() || {})}>
-                                            {([key, val]) => (
-                                                <div class="p-3 space-y-1">
-                                                    <div class="text-[11px] font-mono font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                                                        {key}
-                                                    </div>
-                                                    <div class="text-xs font-mono text-neutral-900 dark:text-white break-all">
-                                                        {typeof val === 'object' && val !== null ? JSON.stringify(val, null, 2) : String(val ?? '-')}
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </For>
-                                    </div>
-                                </div>
-
-                                {/* Permissions granted to every role with this position type */}
+                                {/* Role-specific permissions; position type permissions are managed on the position type page */}
                                 <div class="mt-6 space-y-2">
                                     <p class="text-[11px] font-mono text-neutral-500 dark:text-neutral-400">
-                                        Permissions below apply to every role assigned this position type.
+                                        Permissions below apply to this role only. Permissions granted to the role's position type also apply.
                                     </p>
                                     <PermissionToggleList
                                         ownerId={record()!.id}
-                                        title="Position Type Permissions"
-                                        loadLinks={AuthPermissionPositionTypeControllerByPositionType}
-                                        assign={(positionTypeId, permissionId) =>
-                                            AuthPermissionPositionTypeControllerCreate({ position_type_id: positionTypeId, permission_id: permissionId })
-                                        }
-                                        revoke={(id) => AuthPermissionPositionTypeControllerDelete({ id })}
+                                        title="Role Permissions"
+                                        loadLinks={AuthPermissionRoleControllerByRole}
+                                        assign={(roleId, permissionId) => AuthPermissionRoleControllerUpsert({ role_id: roleId, permission_id: permissionId })}
+                                        revoke={(id) => AuthPermissionRoleControllerDelete({ id })}
                                     />
                                 </div>
                             </div>

@@ -384,6 +384,17 @@ export default function AuthRolePage() {
                                                     </td>
                                                     <td class="px-6 py-4 text-right">
                                                         <div class="flex justify-end gap-1">
+                                                            <a
+                                                                href={`/administrator/auth/role/${item.id}`}
+                                                                class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-blue-600 hover:border-blue-500 hover:bg-blue-50 dark:text-neutral-300 dark:hover:text-blue-400 dark:hover:border-blue-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
+                                                                title="Manage Permissions"
+                                                                aria-label={`Manage permissions of ${item.name}`}
+                                                            >
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                                                                    <circle cx="12" cy="12" r="3" />
+                                                                </svg>
+                                                            </a>
                                                             <button
                                                                 type="button"
                                                                 onClick={() => openEditModal(item)}
@@ -469,6 +480,12 @@ export default function AuthRolePage() {
                                                 {item.roleable_type || ''}
                                             </span>
                                             <div class="flex gap-2">
+                                                <a
+                                                    href={`/administrator/auth/role/${item.id}`}
+                                                    class="px-3 py-1 text-xs font-medium text-neutral-700 bg-white hover:text-blue-600 hover:border-blue-500 dark:text-neutral-300 dark:bg-neutral-800 dark:hover:text-blue-400 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
+                                                >
+                                                    Permissions
+                                                </a>
                                                 <button
                                                     type="button"
                                                     onClick={() => openEditModal(item)}

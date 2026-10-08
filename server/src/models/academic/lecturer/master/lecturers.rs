@@ -72,7 +72,7 @@ impl Linked for LecturerToRole {
             .from(crate::models::auth::role::Column::RoleableId)
             .to(Column::Id)
             .on_condition(|_left, _right| {
-                crate::models::auth::role::Column::RoleableType.eq("Lecturer").into()
+                crate::models::auth::role::Column::RoleableType.eq("App\\Models\\Academic\\Lecturer\\Master\\Lecturer").into()
             })
             .into();
         vec![rel.rev()]

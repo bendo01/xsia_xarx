@@ -1,7 +1,7 @@
 use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, EntityTrait, IntoActiveModel,
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
     PaginatorTrait, QueryFilter, QueryOrder, Set,
 };
 use uuid::Uuid;
@@ -865,6 +865,22 @@ pub async fn forgot_password(
                 }
             }
 
+            // Give the user a role for every staff appointment with a position type
+            let staff_appointments = crate::models::institution::master::staffes::Entity::find()
+                .inner_join(crate::models::institution::master::employees::Entity)
+                .filter(crate::models::institution::master::employees::Column::IndividualId.eq(individual_id))
+                .filter(crate::models::institution::master::employees::Column::DeletedAt.is_null())
+                .filter(crate::models::institution::master::staffes::Column::DeletedAt.is_null())
+                .filter(crate::models::institution::master::staffes::Column::PositionTypeId.is_not_null())
+                .all(db)
+                .await
+                .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+            for staff in &staff_appointments {
+                crate::services::auth::staff_role::sync_staff_role(db, staff, auth_user_id(depot))
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+            }
+
             // Find Phone Type with code 1
             let phone_type = crate::models::contact::reference::phone_types::Entity::find()
                 .filter(crate::models::contact::reference::phone_types::Column::Code.eq(1))
@@ -1106,15 +1122,13 @@ pub async fn set_current_role(
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
         .ok_or_else(|| StatusError::not_found().brief("User not found"))?;
 
-    // Check if user has admin privileges
+    // Administrators (by position type) may switch into any role
     let user_roles_check = fetch_user_roles(db, current_user_id).await;
-    let is_admin = user_roles_check.iter().any(|r| {
-        let name = r.name.to_lowercase();
-        let name_clean = name.replace([' ', '-', '_'], "");
-        name_clean == "superadmin" || name_clean == "admin" || name_clean == "administrator" || name.contains("admin")
-    });
+    let is_admin = user_roles_check
+        .iter()
+        .any(|r| r.position_type_id == Some(crate::middleware::rbac::ADMINISTRATOR_POSITION_TYPE_ID));
 
-    // Verify role belongs to user or is shared or user is admin
+    // Verify role belongs to the user, unless the user is an administrator
     let role_query = role_entity::Entity::find_by_id(role_id)
         .filter(role_entity::Column::DeletedAt.is_null());
 
@@ -1122,11 +1136,7 @@ pub async fn set_current_role(
         role_query.one(db).await
     } else {
         role_query
-            .filter(
-                Condition::any()
-                    .add(role_entity::Column::UserId.eq(current_user_id))
-                    .add(role_entity::Column::UserId.is_null())
-            )
+            .filter(role_entity::Column::UserId.eq(current_user_id))
             .one(db)
             .await
     }

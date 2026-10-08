@@ -1,9 +1,12 @@
+use std::collections::BTreeSet;
+use std::sync::{LazyLock, Mutex};
+
 use salvo::http::Method;
 use salvo::prelude::*;
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QueryOrder};
 use uuid::Uuid;
 
-use crate::models::auth::{permission, permission_role, role, user};
+use crate::models::auth::{permission, permission_position_type, permission_role, role, user};
 
 // ── 1. Route Name Middleware & Extension Trait ───────────────────────────────
 
@@ -22,6 +25,14 @@ impl Handler for RouteName {
         depot.insert("route_name", self.0);
         ctrl.call_next(req, depot, res).await;
     }
+}
+
+// Every route name passed to `named()`, collected while routers are built
+static REGISTERED_ROUTE_NAMES: LazyLock<Mutex<BTreeSet<&'static str>>> = LazyLock::new(|| Mutex::new(BTreeSet::new()));
+
+/// Route names registered so far; build the routers (e.g. `controllers::api_routers()`) before calling
+pub fn registered_route_names() -> Vec<&'static str> {
+    REGISTERED_ROUTE_NAMES.lock().map(|names| names.iter().copied().collect()).unwrap_or_default()
 }
 
 pub trait NamedRouterExt {
@@ -46,6 +57,9 @@ pub trait NamedRouterExt {
 
 impl NamedRouterExt for Router {
     fn named(self, name: &'static str) -> Self {
+        if let Ok(mut names) = REGISTERED_ROUTE_NAMES.lock() {
+            names.insert(name);
+        }
         self.hoop(RouteName(name)).hoop(RbacGuard)
     }
 
@@ -71,6 +85,13 @@ impl NamedRouterExt for Router {
 }
 
 // ── 2. RBAC Guard Middleware ──────────────────────────────────────────────────
+
+/// Position type whose roles bypass every permission check
+pub const ADMINISTRATOR_POSITION_TYPE_ID: Uuid = uuid::uuid!("bf76efdc-2c2e-41ec-8115-b1bc13182983");
+
+pub fn is_administrator(role: &role::Model) -> bool {
+    role.position_type_id == Some(ADMINISTRATOR_POSITION_TYPE_ID)
+}
 
 pub struct RbacGuard;
 
@@ -151,8 +172,9 @@ impl Handler for RbacGuard {
             }
         };
 
-        // 3. Fetch user's roles (by user_id and active current_role_id)
-        let mut user_roles: Vec<role::Model> = role::Entity::find()
+        // 3. Resolve the single active role. Permissions are never merged across a user's roles,
+        //    so a user holding both Dosen and Mahasiswa only gets the rights of the role they selected.
+        let owned_roles: Vec<role::Model> = role::Entity::find()
             .filter(role::Column::UserId.eq(user_id))
             .filter(role::Column::DeletedAt.is_null())
             .order_by_asc(role::Column::CreatedAt)
@@ -160,28 +182,26 @@ impl Handler for RbacGuard {
             .await
             .unwrap_or_default();
 
-        if let Some(active_rid) = current_user.current_role_id
-            && !active_rid.is_nil()
-            && !user_roles.iter().any(|r| r.id == active_rid)
-            && let Ok(Some(active_role)) = role::Entity::find_by_id(active_rid)
-                .filter(role::Column::DeletedAt.is_null())
-                .one(&db)
-                .await {
-                    user_roles.push(active_role);
-        }
+        let active_role = match current_user.current_role_id.filter(|id| !id.is_nil()) {
+            Some(active_rid) => owned_roles.iter().find(|r| r.id == active_rid).cloned(),
+            None if owned_roles.len() == 1 => owned_roles.first().cloned(),
+            None => None,
+        };
 
-        // Check if user has an admin / superadmin role (bypass)
-        let is_admin = user_roles.iter().any(|r| {
-            let name = r.name.to_lowercase();
-            let name_clean = name.replace([' ', '-', '_'], "");
-            name_clean == "superadmin"
-                || name_clean == "admin"
-                || name_clean == "administrator"
-                || name.contains("admin")
-                || name.contains("administrator")
-        });
+        let Some(active_role) = active_role else {
+            res.render(StatusError::forbidden().brief(if owned_roles.is_empty() {
+                "Access denied: user has no role"
+            } else {
+                "Access denied: select an active role first"
+            }));
+            ctrl.skip_rest();
+            return;
+        };
 
-        if is_admin {
+        depot.insert("active_role", active_role.clone());
+
+        // Administrator bypass is bound to the position type, never to the role name
+        if is_administrator(&active_role) {
             ctrl.call_next(req, depot, res).await;
             return;
         }
@@ -202,148 +222,41 @@ impl Handler for RbacGuard {
         let action_permission = format!("{}.{}", route_name, action);
         let wildcard_permission = format!("{}.*", route_name);
 
-        // Check role-based capabilities across all user roles
-        let mut is_student = user_roles.iter().any(|r| {
-            let name = r.name.to_lowercase();
-            let roleable = r.roleable_type.as_deref().unwrap_or_default().to_lowercase();
-            name.contains("student")
-                || name.contains("mahasiswa")
-                || name.contains("siswa")
-                || name.contains("mhs")
-                || roleable == "student"
-                || roleable == "mahasiswa"
-        });
-
-        // Also check if user is linked to a student record via individual_id
-        if !is_student
-            && !current_user.individual_id.is_nil()
-            && let Ok(Some(_)) = crate::models::academic::student::master::students::Entity::find()
-                .filter(crate::models::academic::student::master::students::Column::IndividualId.eq(current_user.individual_id))
-                .filter(crate::models::academic::student::master::students::Column::DeletedAt.is_null())
-                .one(&db)
-                .await {
-                    is_student = true;
-        }
-
-        let mut is_lecturer = user_roles.iter().any(|r| {
-            let name = r.name.to_lowercase();
-            let roleable = r.roleable_type.as_deref().unwrap_or_default().to_lowercase();
-            name.contains("lecturer")
-                || name.contains("dosen")
-                || name.contains("pengajar")
-                || name.contains("guru")
-                || roleable == "lecturer"
-                || roleable == "dosen"
-        });
-
-        // Also check if user is linked to a lecturer record via individual_id
-        if !is_lecturer
-            && !current_user.individual_id.is_nil()
-            && let Ok(Some(_)) = crate::models::academic::lecturer::master::lecturers::Entity::find()
-                .filter(crate::models::academic::lecturer::master::lecturers::Column::IndividualId.eq(current_user.individual_id))
-                .filter(crate::models::academic::lecturer::master::lecturers::Column::DeletedAt.is_null())
-                .one(&db)
-                .await {
-                    is_lecturer = true;
-        }
-
-        let is_department = user_roles.iter().any(|r| {
-            let name = r.name.to_lowercase();
-            let roleable = r.roleable_type.as_deref().unwrap_or_default().to_lowercase();
-            name.contains("prodi")
-                || name.contains("jurusan")
-                || name.contains("department")
-                || name.contains("baak")
-                || name.contains("course")
-                || roleable == "staff"
-                || roleable == "department"
-        });
-
-        let allowed_by_role_capability = if is_student {
-            // Administrative student roster management endpoints are restricted to department staff & admins
-            let is_admin_student_management = route_name == "academic.student.master.students.list_students"
-                || route_name == "academic.student.master.students.create_student"
-                || route_name == "academic.student.master.students.update_student"
-                || route_name == "academic.student.master.students.delete_student";
-
-            if is_admin_student_management {
-                false
-            } else {
-                // Student role can access personal student routes and read catalog data
-                route_name.starts_with("academic.student.")
-                    || (action == "read" && (
-                        route_name.starts_with("academic.")
-                        || route_name.starts_with("institution.")
-                        || route_name.starts_with("building.")
-                        || route_name.starts_with("location.")
-                        || route_name.starts_with("person.")
-                        || route_name.starts_with("common.")
-                    ))
-                    || route_name.starts_with("person.master.individual")
-                    || route_name.starts_with("person.master.biodata")
-                    || route_name.starts_with("auth.user")
+        // 5. Permissions granted directly to the active role
+        let mut permissions: Vec<permission::Model> = match permission_role::Entity::find()
+            .filter(permission_role::Column::RoleId.eq(active_role.id))
+            .filter(permission_role::Column::DeletedAt.is_null())
+            .find_also_related(permission::Entity)
+            .filter(permission::Column::DeletedAt.is_null())
+            .all(&db)
+            .await
+        {
+            Ok(list) => list.into_iter().filter_map(|(_, p)| p).collect(),
+            Err(e) => {
+                res.render(StatusError::internal_server_error().brief(e.to_string()));
+                ctrl.skip_rest();
+                return;
             }
-        } else if is_lecturer {
-            // Lecturer role can access lecturer routes, teaching & grading management, and read catalog / student records
-            route_name.starts_with("academic.lecturer.")
-                || route_name.starts_with("academic.campaign.transaction.teach_evaluations.")
-                || route_name.starts_with("academic.campaign.transaction.teaches.")
-                || route_name.starts_with("academic.campaign.transaction.teach_lecturers.")
-                || route_name.starts_with("academic.student.campaign.detail_activities.")
-                || route_name.starts_with("academic.student.campaign.detail_activity_evaluation_components.")
-                || (action == "read" && (
-                    route_name.starts_with("academic.")
-                    || route_name.starts_with("institution.")
-                    || route_name.starts_with("building.")
-                    || route_name.starts_with("location.")
-                    || route_name.starts_with("person.")
-                    || route_name.starts_with("common.")
-                ))
-                || route_name.starts_with("person.master.individual")
-                || route_name.starts_with("person.master.biodata")
-                || route_name.starts_with("auth.user")
-        } else if is_department {
-            // Department role can access academic routes and read catalog / records
-            route_name.starts_with("academic.")
-                || route_name.starts_with("institution.")
-                || route_name.starts_with("building.")
-                || route_name.starts_with("location.")
-                || (action == "read" && (
-                    route_name.starts_with("person.")
-                    || route_name.starts_with("common.")
-                ))
-                || route_name.starts_with("person.master.individual")
-                || route_name.starts_with("auth.user")
-        } else {
-            false
         };
 
-        if allowed_by_role_capability {
-            ctrl.call_next(req, depot, res).await;
-            return;
-        }
-
-        // 5. Query user role permissions across all assigned roles
-        let role_ids: Vec<Uuid> = user_roles.iter().map(|r| r.id).collect();
-        let permissions: Vec<permission::Model> = if role_ids.is_empty() {
-            Vec::new()
-        } else {
-            match permission_role::Entity::find()
-                .filter(permission_role::Column::RoleId.is_in(role_ids))
-                .filter(permission_role::Column::DeletedAt.is_null())
+        // 6. Permissions granted to the active role's position type
+        if let Some(position_type_id) = active_role.position_type_id {
+            match permission_position_type::Entity::find()
+                .filter(permission_position_type::Column::PositionTypeId.eq(position_type_id))
+                .filter(permission_position_type::Column::DeletedAt.is_null())
                 .find_also_related(permission::Entity)
                 .filter(permission::Column::DeletedAt.is_null())
                 .all(&db)
                 .await
             {
-                Ok(list) => list.into_iter().filter_map(|(_, p)| p).collect(),
+                Ok(list) => permissions.extend(list.into_iter().filter_map(|(_, p)| p)),
                 Err(e) => {
                     res.render(StatusError::internal_server_error().brief(e.to_string()));
                     ctrl.skip_rest();
                     return;
                 }
             }
-        };
+        }
 
         let has_permission = permissions.iter().any(|p| {
             p.name == "*"

@@ -181,3 +181,24 @@ export async function AuthPermissionControllerList(): Promise<{
         };
     }
 }
+
+export async function AuthPermissionControllerAll(): Promise<Permission[]> {
+    const pageSize = 1000;
+    const all: Permission[] = [];
+    let page = 1;
+    let totalPages = 1;
+    do {
+        const res = await fetch(`${getBaseUrl()}/${path}?page=${page}&page_size=${pageSize}`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const resJson = await res.json();
+        all.push(...(Array.isArray(resJson.data) ? resJson.data : []));
+        totalPages = resJson.total_pages || 1;
+        page++;
+    } while (page <= totalPages);
+    return all;
+}

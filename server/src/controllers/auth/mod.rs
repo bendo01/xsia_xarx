@@ -2,6 +2,7 @@ use salvo::prelude::*;
 use crate::middleware::rbac::NamedRouterExt;
 
 pub mod permission;
+pub mod permission_position_type;
 pub mod permission_role;
 pub mod role;
 pub mod user;
@@ -28,6 +29,16 @@ pub fn router() -> Router {
                         .get_named("auth.permission_role.get_permission_role", permission_role::get_permission_role)
                         .put_named("auth.permission_role.update_permission_role", permission_role::update_permission_role)
                         .delete_named("auth.permission_role.delete_permission_role", permission_role::delete_permission_role),
+                ),
+        )
+        .push(
+            Router::with_path("permission-position-type")
+                .get_named("auth.permission_position_type.list_permission_position_type", permission_position_type::list_permission_position_type)
+                .post_named("auth.permission_position_type.create_permission_position_type", permission_position_type::create_permission_position_type)
+                .push(
+                    Router::with_path("{id}")
+                        .get_named("auth.permission_position_type.get_permission_position_type", permission_position_type::get_permission_position_type)
+                        .delete_named("auth.permission_position_type.delete_permission_position_type", permission_position_type::delete_permission_position_type),
                 ),
         )
         .push(

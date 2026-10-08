@@ -41,7 +41,7 @@ impl Linked for RoleToStaff {
             .from(Column::RoleableId)
             .to(crate::models::institution::master::staffes::Column::Id)
             .on_condition(|_left, _right| {
-                Column::RoleableType.eq("Staff").into()
+                Column::RoleableType.eq("App\\Models\\Institution\\Master\\Staff").into()
             })
             .into();
         vec![rel]
@@ -61,7 +61,7 @@ impl Linked for RoleToLecturer {
             .from(Column::RoleableId)
             .to(crate::models::academic::lecturer::master::lecturers::Column::Id)
             .on_condition(|_left, _right| {
-                Column::RoleableType.eq("Lecturer").into()
+                Column::RoleableType.eq("App\\Models\\Academic\\Lecturer\\Master\\Lecturer").into()
             })
             .into();
         vec![rel]
@@ -81,7 +81,7 @@ impl Linked for RoleToCandidate {
             .from(Column::RoleableId)
             .to(crate::models::academic::candidate::master::candidates::Column::Id)
             .on_condition(|_left, _right| {
-                Column::RoleableType.eq("Candidate").into()
+                Column::RoleableType.eq("App\\Models\\Academic\\Candidate\\Master\\Candidate").into()
             })
             .into();
         vec![rel]
@@ -101,7 +101,7 @@ impl Linked for RoleToStudent {
             .from(Column::RoleableId)
             .to(crate::models::academic::student::master::students::Column::Id)
             .on_condition(|_left, _right| {
-                Column::RoleableType.eq("Student").into()
+                Column::RoleableType.eq("App\\Models\\Academic\\Student\\Master\\Student").into()
             })
             .into();
         vec![rel]

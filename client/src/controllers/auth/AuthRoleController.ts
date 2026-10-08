@@ -73,6 +73,23 @@ export async function AuthRoleControllerIndex(
     }
 }
 
+export async function AuthRoleControllerShow(id: string): Promise<Role | null> {
+    try {
+        const res = await fetch(`${getBaseUrl()}/${path}/${encodeURIComponent(id)}`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const resJson = await res.json();
+        return (resJson.data ?? resJson) as Role;
+    } catch (e) {
+        console.error('Error in AuthRoleControllerShow:', e);
+        return null;
+    }
+}
+
 export async function AuthRoleControllerUpsert(
     form: {
         id?: string | null;

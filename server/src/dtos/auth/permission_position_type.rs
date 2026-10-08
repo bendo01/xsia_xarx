@@ -6,17 +6,17 @@ use chrono::NaiveDateTime;
 
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
-pub struct PermissionRoleQuery {
+pub struct PermissionPositionTypeQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
-    pub role_id: Option<Uuid>,
+    pub position_type_id: Option<Uuid>,
     pub permission_id: Option<Uuid>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PermissionRoleResponse {
+pub struct PermissionPositionTypeResponse {
     pub id: Uuid,
-    pub role_id: Uuid,
+    pub position_type_id: Uuid,
     pub permission_id: Uuid,
     pub created_at: Option<NaiveDateTime>,
     pub updated_at: Option<NaiveDateTime>,
@@ -27,20 +27,14 @@ pub struct PermissionRoleResponse {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct CreatePermissionRoleRequest {
-    pub role_id: Uuid,
+pub struct CreatePermissionPositionTypeRequest {
+    pub position_type_id: Uuid,
     pub permission_id: Uuid,
 }
 
-#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
-pub struct UpdatePermissionRoleRequest {
-    pub role_id: Option<Uuid>,
-    pub permission_id: Option<Uuid>,
-}
-
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
-pub struct PaginatedPermissionRoleResponse {
-    pub data: Vec<PermissionRoleResponse>,
+pub struct PaginatedPermissionPositionTypeResponse {
+    pub data: Vec<PermissionPositionTypeResponse>,
     pub total: u64,
     pub page: u64,
     pub page_size: u64,

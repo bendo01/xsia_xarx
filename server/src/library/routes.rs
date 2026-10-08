@@ -3165,6 +3165,30 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "auth.permission_role.delete_permission_role",
         },
         RouteDefinition {
+            url: "/api/v1/permission-position-type",
+            method: "GET",
+            handler: "permission_position_type::list_permission_position_type",
+            name: "auth.permission_position_type.list_permission_position_type",
+        },
+        RouteDefinition {
+            url: "/api/v1/permission-position-type",
+            method: "POST",
+            handler: "permission_position_type::create_permission_position_type",
+            name: "auth.permission_position_type.create_permission_position_type",
+        },
+        RouteDefinition {
+            url: "/api/v1/permission-position-type/{id}",
+            method: "GET",
+            handler: "permission_position_type::get_permission_position_type",
+            name: "auth.permission_position_type.get_permission_position_type",
+        },
+        RouteDefinition {
+            url: "/api/v1/permission-position-type/{id}",
+            method: "DELETE",
+            handler: "permission_position_type::delete_permission_position_type",
+            name: "auth.permission_position_type.delete_permission_position_type",
+        },
+        RouteDefinition {
             url: "/api/v1/user",
             method: "GET",
             handler: "user::list_user",

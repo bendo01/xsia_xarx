@@ -21,6 +21,8 @@ pub struct Model {
     pub roles: HasMany<super::role::Entity>,
     #[sea_orm(has_many)]
     pub permission_role: HasMany<crate::models::auth::permission_role::Entity>,
+    #[sea_orm(has_many)]
+    pub permission_position_type: HasMany<crate::models::auth::permission_position_type::Entity>,
 }
 
 

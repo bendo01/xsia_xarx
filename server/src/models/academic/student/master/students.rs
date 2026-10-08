@@ -85,7 +85,7 @@ impl Linked for StudentToRole {
             .from(crate::models::auth::role::Column::RoleableId)
             .to(Column::Id)
             .on_condition(|_left, _right| {
-                crate::models::auth::role::Column::RoleableType.eq("Student").into()
+                crate::models::auth::role::Column::RoleableType.eq("App\\Models\\Academic\\Student\\Master\\Student").into()
             })
             .into();
         vec![rel.rev()]

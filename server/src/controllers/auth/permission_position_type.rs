@@ -7,31 +7,30 @@ use sea_orm::{
 use uuid::Uuid;
 use validator::Validate;
 
-use crate::dtos::auth::permission_role::{
-    CreatePermissionRoleRequest, PermissionRoleQuery, PermissionRoleResponse, PaginatedPermissionRoleResponse,
-    UpdatePermissionRoleRequest,
+use crate::dtos::auth::permission_position_type::{
+    CreatePermissionPositionTypeRequest, PermissionPositionTypeQuery, PermissionPositionTypeResponse, PaginatedPermissionPositionTypeResponse,
 };
 use crate::dtos::common::reference::MessageResponse;
-use crate::models::auth::permission_role as entity_mod;
+use crate::models::auth::permission_position_type as entity_mod;
 use crate::middleware::auth::auth_user_id;
 
-#[endpoint(tags("Auth - PermissionRole"), status_codes(200, 500))]
-pub async fn list_permission_role(
+#[endpoint(tags("Auth - PermissionPositionType"), status_codes(200, 500))]
+pub async fn list_permission_position_type(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<PaginatedPermissionRoleResponse>, StatusError> {
+) -> Result<Json<PaginatedPermissionPositionTypeResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
 
-    let query: PermissionRoleQuery = req.parse_queries().unwrap_or_default();
+    let query: PermissionPositionTypeQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
     let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
 
-    if let Some(role_id) = query.role_id {
-        select = select.filter(entity_mod::Column::RoleId.eq(role_id));
+    if let Some(position_type_id) = query.position_type_id {
+        select = select.filter(entity_mod::Column::PositionTypeId.eq(position_type_id));
     }
     if let Some(permission_id) = query.permission_id {
         select = select.filter(entity_mod::Column::PermissionId.eq(permission_id));
@@ -46,9 +45,9 @@ pub async fn list_permission_role(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let data = items.into_iter().map(|item| PermissionRoleResponse {
+    let data = items.into_iter().map(|item| PermissionPositionTypeResponse {
         id: item.id,
-        role_id: item.role_id,
+        position_type_id: item.position_type_id,
         permission_id: item.permission_id,
         created_at: Some(item.created_at),
         updated_at: Some(item.updated_at),
@@ -58,7 +57,7 @@ pub async fn list_permission_role(
         updated_by: item.updated_by,
     }).collect();
 
-    Ok(Json(PaginatedPermissionRoleResponse {
+    Ok(Json(PaginatedPermissionPositionTypeResponse {
         data,
         total,
         page,
@@ -67,11 +66,11 @@ pub async fn list_permission_role(
     }))
 }
 
-#[endpoint(tags("Auth - PermissionRole"), status_codes(200, 400, 404, 500))]
-pub async fn get_permission_role(
+#[endpoint(tags("Auth - PermissionPositionType"), status_codes(200, 400, 404, 500))]
+pub async fn get_permission_position_type(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<PermissionRoleResponse>, StatusError> {
+) -> Result<Json<PermissionPositionTypeResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
@@ -84,11 +83,11 @@ pub async fn get_permission_role(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("PermissionRole not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("PermissionPositionType not found"))?;
 
-    Ok(Json(PermissionRoleResponse {
+    Ok(Json(PermissionPositionTypeResponse {
         id: item.id,
-        role_id: item.role_id,
+        position_type_id: item.position_type_id,
         permission_id: item.permission_id,
         created_at: Some(item.created_at),
         updated_at: Some(item.updated_at),
@@ -99,16 +98,16 @@ pub async fn get_permission_role(
     }))
 }
 
-#[endpoint(tags("Auth - PermissionRole"), status_codes(200, 400, 500))]
-pub async fn create_permission_role(
+#[endpoint(tags("Auth - PermissionPositionType"), status_codes(200, 400, 500))]
+pub async fn create_permission_position_type(
     req: &mut Request,
     depot: &mut Depot,
-) -> Result<Json<PermissionRoleResponse>, StatusError> {
+) -> Result<Json<PermissionPositionTypeResponse>, StatusError> {
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
 
-    let payload: CreatePermissionRoleRequest = req.parse_json().await.map_err(|e| {
+    let payload: CreatePermissionPositionTypeRequest = req.parse_json().await.map_err(|e| {
         StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
     })?;
 
@@ -117,15 +116,15 @@ pub async fn create_permission_role(
     // Assigning an already-assigned permission is a no-op: return the existing link
     if let Some(item) = entity_mod::Entity::find()
         .filter(entity_mod::Column::DeletedAt.is_null())
-        .filter(entity_mod::Column::RoleId.eq(payload.role_id))
+        .filter(entity_mod::Column::PositionTypeId.eq(payload.position_type_id))
         .filter(entity_mod::Column::PermissionId.eq(payload.permission_id))
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
     {
-        return Ok(Json(PermissionRoleResponse {
+        return Ok(Json(PermissionPositionTypeResponse {
             id: item.id,
-            role_id: item.role_id,
+            position_type_id: item.position_type_id,
             permission_id: item.permission_id,
             created_at: Some(item.created_at),
             updated_at: Some(item.updated_at),
@@ -141,7 +140,7 @@ pub async fn create_permission_role(
 
     let active_model = entity_mod::ActiveModel {
         id: Set(new_id),
-        role_id: Set(payload.role_id),
+        position_type_id: Set(payload.position_type_id),
         permission_id: Set(payload.permission_id),
         created_at: Set(now),
         updated_at: Set(now),
@@ -153,9 +152,9 @@ pub async fn create_permission_role(
 
     let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    Ok(Json(PermissionRoleResponse {
+    Ok(Json(PermissionPositionTypeResponse {
         id: item.id,
-        role_id: item.role_id,
+        position_type_id: item.position_type_id,
         permission_id: item.permission_id,
         created_at: Some(item.created_at),
         updated_at: Some(item.updated_at),
@@ -166,60 +165,8 @@ pub async fn create_permission_role(
     }))
 }
 
-#[endpoint(tags("Auth - PermissionRole"), status_codes(200, 400, 404, 500))]
-pub async fn update_permission_role(
-    req: &mut Request,
-    depot: &mut Depot,
-) -> Result<Json<PermissionRoleResponse>, StatusError> {
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
-
-    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
-    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
-
-    let payload: UpdatePermissionRoleRequest = req.parse_json().await.map_err(|e| {
-        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
-    })?;
-
-    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
-
-    let existing = entity_mod::Entity::find_by_id(id)
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .one(db)
-        .await
-        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("PermissionRole not found"))?;
-
-    let now = Utc::now().naive_utc();
-    let mut active_model = existing.into_active_model();
-
-    if let Some(role_id) = payload.role_id {
-        active_model.role_id = Set(role_id);
-    }
-    if let Some(permission_id) = payload.permission_id {
-        active_model.permission_id = Set(permission_id);
-    }
-    active_model.updated_at = Set(now);
-    active_model.updated_by = Set(auth_user_id(depot));
-
-    let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
-
-    Ok(Json(PermissionRoleResponse {
-        id: item.id,
-        role_id: item.role_id,
-        permission_id: item.permission_id,
-        created_at: Some(item.created_at),
-        updated_at: Some(item.updated_at),
-        deleted_at: item.deleted_at,
-        sync_at: item.sync_at,
-        created_by: item.created_by,
-        updated_by: item.updated_by,
-    }))
-}
-
-#[endpoint(tags("Auth - PermissionRole"), status_codes(200, 400, 404, 500))]
-pub async fn delete_permission_role(
+#[endpoint(tags("Auth - PermissionPositionType"), status_codes(200, 400, 404, 500))]
+pub async fn delete_permission_position_type(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<MessageResponse>, StatusError> {
@@ -235,7 +182,7 @@ pub async fn delete_permission_role(
         .one(db)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
-        .ok_or_else(|| StatusError::not_found().brief("PermissionRole not found"))?;
+        .ok_or_else(|| StatusError::not_found().brief("PermissionPositionType not found"))?;
 
     let now = Utc::now().naive_utc();
     let mut active_model = existing.into_active_model();
@@ -247,6 +194,6 @@ pub async fn delete_permission_role(
     active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
     Ok(Json(MessageResponse {
-        message: "PermissionRole deleted successfully".to_string(),
+        message: "PermissionPositionType deleted successfully".to_string(),
     }))
 }

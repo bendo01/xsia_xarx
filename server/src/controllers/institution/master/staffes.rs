@@ -2,7 +2,7 @@ use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
-    PaginatorTrait, QueryFilter, QueryOrder, Set,
+    PaginatorTrait, QueryFilter, QueryOrder, Set, TransactionTrait,
 };
 use uuid::Uuid;
 use validator::Validate;
@@ -14,6 +14,7 @@ use crate::dtos::institution::master::staffes::{
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::institution::master::staffes as entity_mod;
 use crate::middleware::auth::auth_user_id;
+use crate::services::auth::staff_role::sync_staff_role;
 
 #[endpoint(tags("Institution - Master - Staff"), status_codes(200, 500))]
 pub async fn list_staffes(
@@ -157,7 +158,10 @@ pub async fn create_staffe(
         updated_by: Set(auth_user_id(depot)),
     };
 
-        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let txn = db.begin().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(&txn).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        sync_staff_role(&txn, &item, auth_user_id(depot)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        txn.commit().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(StaffResponse {
             id: item.id,
@@ -238,7 +242,10 @@ pub async fn update_staffe(
     active_model.updated_at = Set(Some(now));
     active_model.updated_by = Set(auth_user_id(depot));
 
-        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let txn = db.begin().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(&txn).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        sync_staff_role(&txn, &item, auth_user_id(depot)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        txn.commit().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(StaffResponse {
             id: item.id,
@@ -286,7 +293,10 @@ pub async fn delete_staffe(
         active_model.updated_at = Set(Some(now));
         active_model.updated_by = Set(auth_user_id(depot));
 
-        active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let txn = db.begin().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(&txn).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        sync_staff_role(&txn, &item, auth_user_id(depot)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        txn.commit().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
             message: "Staff deleted successfully".to_string(),

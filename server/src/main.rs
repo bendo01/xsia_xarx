@@ -119,17 +119,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let api_router = Router::with_path("api/v1")
         .hoop(InjectDb(db))
         .hoop(InjectPgmq(queue))
-        .push(controllers::person::router())
-        .push(controllers::literate::router())
-        .push(controllers::location::router())
-        .push(controllers::institution::router())
-        .push(controllers::building::router())
-        .push(controllers::contact::router())
-        .push(controllers::document::router())
-        .push(controllers::academic::router())
-        .push(controllers::feeder::router())
-        .push(controllers::auth::router())
-        .push(controllers::realtime::router());
+        .append(&mut controllers::api_routers());
 
     let doc = OpenApi::new("API", "1.0.0").merge_router(&api_router);
 

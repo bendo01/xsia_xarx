@@ -148,6 +148,12 @@ pub fn get_system_permissions() -> Vec<PermissionDefinition> {
             description: "Manage permission role bindings",
         },
         PermissionDefinition {
+            name: "auth.permission_position_type",
+            uri: "api/v1/permission-position-type",
+            is_open: false,
+            description: "Manage permission position type bindings",
+        },
+        PermissionDefinition {
             name: "auth.role",
             uri: "api/v1/role",
             is_open: false,

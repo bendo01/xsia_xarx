@@ -142,3 +142,29 @@ export async function AuthPermissionRoleControllerDelete(
         };
     }
 }
+
+export async function AuthPermissionRoleControllerByRole(roleId: string): Promise<PermissionRole[]> {
+    const pageSize = 1000;
+    const all: PermissionRole[] = [];
+    let page = 1;
+    let totalPages = 1;
+    do {
+        const params = new URLSearchParams({
+            page: page.toString(),
+            page_size: pageSize.toString(),
+            role_id: roleId,
+        });
+        const res = await fetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const resJson = await res.json();
+        all.push(...(Array.isArray(resJson.data) ? resJson.data : []));
+        totalPages = resJson.total_pages || 1;
+        page++;
+    } while (page <= totalPages);
+    return all;
+}

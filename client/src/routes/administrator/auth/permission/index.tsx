@@ -119,7 +119,7 @@ export default function AuthPermissionPage() {
         createDialogRef.close();
     };
 
-    const openEditModal = (item: Permission & { uri?: string; is_open?: boolean }) => {
+    const openEditModal = (item: Permission) => {
         setFormData({
             id: item.id,
             name: item.name || '',
