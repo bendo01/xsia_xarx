@@ -11,78 +11,78 @@ pub fn router() -> Router {
     Router::with_path("")
         .push(
             Router::with_path("categories")
-                .get_named("literate.categories.list_categories", categories::index)
-                .post_named("literate.categories.create_categorie", categories::store)
+                .get_named("literate.categories.index", categories::index)
+                .post_named("literate.categories.store", categories::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("literate.categories.options_categories", categories::option_select),
+                        .post_named("literate.categories.option_select", categories::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("literate.categories.get_categorie", categories::show)
-                        .put_named("literate.categories.update_categorie", categories::update)
-                        .delete_named("literate.categories.delete_categorie", categories::delete),
+                        .get_named("literate.categories.show", categories::show)
+                        .put_named("literate.categories.update", categories::update)
+                        .delete_named("literate.categories.delete", categories::delete),
                 ),
         )
         .push(
             Router::with_path("educations")
-                .get_named("literate.educations.list_educations", educations::index)
-                .post_named("literate.educations.create_education", educations::store)
+                .get_named("literate.educations.index", educations::index)
+                .post_named("literate.educations.store", educations::store)
                 .push(
                     Router::with_path("options")
-                        .get_named("literate.educations.options_educations_get", educations::option_select)
-                        .post_named("literate.educations.options_educations", educations::option_select),
+                        .get_named("literate.educations.option_select_get", educations::option_select)
+                        .post_named("literate.educations.option_select", educations::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("literate.educations.get_education", educations::show)
-                        .put_named("literate.educations.update_education", educations::update)
-                        .delete_named("literate.educations.delete_education", educations::delete),
+                        .get_named("literate.educations.show", educations::show)
+                        .put_named("literate.educations.update", educations::update)
+                        .delete_named("literate.educations.delete", educations::delete),
                 ),
         )
         .push(
             Router::with_path("groups")
-                .get_named("literate.groups.list_groups", groups::index)
-                .post_named("literate.groups.create_group", groups::store)
+                .get_named("literate.groups.index", groups::index)
+                .post_named("literate.groups.store", groups::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("literate.groups.options_groups", groups::option_select),
+                        .post_named("literate.groups.option_select", groups::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("literate.groups.get_group", groups::show)
-                        .put_named("literate.groups.update_group", groups::update)
-                        .delete_named("literate.groups.delete_group", groups::delete),
+                        .get_named("literate.groups.show", groups::show)
+                        .put_named("literate.groups.update", groups::update)
+                        .delete_named("literate.groups.delete", groups::delete),
                 ),
         )
         .push(
             Router::with_path("levels")
-                .get_named("literate.levels.list_levels", levels::index)
-                .post_named("literate.levels.create_level", levels::store)
+                .get_named("literate.levels.index", levels::index)
+                .post_named("literate.levels.store", levels::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("literate.levels.options_levels", levels::option_select),
+                        .post_named("literate.levels.option_select", levels::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("literate.levels.get_level", levels::show)
-                        .put_named("literate.levels.update_level", levels::update)
-                        .delete_named("literate.levels.delete_level", levels::delete),
+                        .get_named("literate.levels.show", levels::show)
+                        .put_named("literate.levels.update", levels::update)
+                        .delete_named("literate.levels.delete", levels::delete),
                 ),
         )
         .push(
             Router::with_path("varieties")
-                .get_named("literate.varieties.list_varieties", varieties::index)
-                .post_named("literate.varieties.create_varietie", varieties::store)
+                .get_named("literate.varieties.index", varieties::index)
+                .post_named("literate.varieties.store", varieties::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("literate.varieties.options_varieties", varieties::option_select),
+                        .post_named("literate.varieties.option_select", varieties::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("literate.varieties.get_varietie", varieties::show)
-                        .put_named("literate.varieties.update_varietie", varieties::update)
-                        .delete_named("literate.varieties.delete_varietie", varieties::delete),
+                        .get_named("literate.varieties.show", varieties::show)
+                        .put_named("literate.varieties.update", varieties::update)
+                        .delete_named("literate.varieties.delete", varieties::delete),
                 ),
         )
 }

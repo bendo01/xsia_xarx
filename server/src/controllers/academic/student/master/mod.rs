@@ -8,26 +8,26 @@ pub fn router() -> Router {
     Router::with_path("master")
         .push(
             Router::with_path("images")
-                .get_named("academic.student.master.images.list_images", images::index)
-                .post_named("academic.student.master.images.create_image", images::store)
+                .get_named("academic.student.master.images.index", images::index)
+                .post_named("academic.student.master.images.store", images::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.student.master.images.options_images", images::option_select),
+                        .post_named("academic.student.master.images.option_select", images::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.student.master.images.get_image", images::show)
-                        .put_named("academic.student.master.images.update_image", images::update)
-                        .delete_named("academic.student.master.images.delete_image", images::delete),
+                        .get_named("academic.student.master.images.show", images::show)
+                        .put_named("academic.student.master.images.update", images::update)
+                        .delete_named("academic.student.master.images.delete", images::delete),
                 ),
         )
         .push(
             Router::with_path("students")
-                .get_named("academic.student.master.students.list_students", students::index)
-                .post_named("academic.student.master.students.create_student", students::store)
+                .get_named("academic.student.master.students.index", students::index)
+                .post_named("academic.student.master.students.store", students::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.student.master.students.options_students", students::option_select),
+                        .post_named("academic.student.master.students.option_select", students::option_select),
                 )
                 .push(
                     Router::with_path("academic-years")
@@ -39,9 +39,9 @@ pub fn router() -> Router {
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.student.master.students.get_student", students::show)
-                        .put_named("academic.student.master.students.update_student", students::update)
-                        .delete_named("academic.student.master.students.delete_student", students::delete),
+                        .get_named("academic.student.master.students.show", students::show)
+                        .put_named("academic.student.master.students.update", students::update)
+                        .delete_named("academic.student.master.students.delete", students::delete),
                 ),
         )
 }

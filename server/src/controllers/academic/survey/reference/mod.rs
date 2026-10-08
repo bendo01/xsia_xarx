@@ -8,32 +8,32 @@ pub fn router() -> Router {
     Router::with_path("reference")
         .push(
             Router::with_path("bundle-categories")
-                .get_named("academic.survey.reference.bundle_categories.list_bundle_categories", bundle_categories::index)
-                .post_named("academic.survey.reference.bundle_categories.create_bundle_categorie", bundle_categories::store)
+                .get_named("academic.survey.reference.bundle_categories.index", bundle_categories::index)
+                .post_named("academic.survey.reference.bundle_categories.store", bundle_categories::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.survey.reference.bundle_categories.options_bundle_categories", bundle_categories::option_select),
+                        .post_named("academic.survey.reference.bundle_categories.option_select", bundle_categories::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.survey.reference.bundle_categories.get_bundle_categorie", bundle_categories::show)
-                        .put_named("academic.survey.reference.bundle_categories.update_bundle_categorie", bundle_categories::update)
-                        .delete_named("academic.survey.reference.bundle_categories.delete_bundle_categorie", bundle_categories::delete),
+                        .get_named("academic.survey.reference.bundle_categories.show", bundle_categories::show)
+                        .put_named("academic.survey.reference.bundle_categories.update", bundle_categories::update)
+                        .delete_named("academic.survey.reference.bundle_categories.delete", bundle_categories::delete),
                 ),
         )
         .push(
             Router::with_path("question-varieties")
-                .get_named("academic.survey.reference.question_varieties.list_question_varieties", question_varieties::index)
-                .post_named("academic.survey.reference.question_varieties.create_question_varietie", question_varieties::store)
+                .get_named("academic.survey.reference.question_varieties.index", question_varieties::index)
+                .post_named("academic.survey.reference.question_varieties.store", question_varieties::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.survey.reference.question_varieties.options_question_varieties", question_varieties::option_select),
+                        .post_named("academic.survey.reference.question_varieties.option_select", question_varieties::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.survey.reference.question_varieties.get_question_varietie", question_varieties::show)
-                        .put_named("academic.survey.reference.question_varieties.update_question_varietie", question_varieties::update)
-                        .delete_named("academic.survey.reference.question_varieties.delete_question_varietie", question_varieties::delete),
+                        .get_named("academic.survey.reference.question_varieties.show", question_varieties::show)
+                        .put_named("academic.survey.reference.question_varieties.update", question_varieties::update)
+                        .delete_named("academic.survey.reference.question_varieties.delete", question_varieties::delete),
                 ),
         )
 }

@@ -64,7 +64,7 @@ pub fn router() -> Router {
                 .push(
                     Router::with_path("options")
                         .post_named("institution.master.units.option_select", units::option_select)
-                        .get_named("institution.master.units.options_units_get", units::option_select),
+                        .get_named("institution.master.units.option_select_get", units::option_select),
                 )
                 .push(
                     Router::with_path("{unit_id}/dashboard")

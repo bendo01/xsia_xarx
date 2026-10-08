@@ -7,17 +7,17 @@ pub fn router() -> Router {
     Router::with_path("master")
         .push(
             Router::with_path("lecturers")
-                .get_named("academic.lecturer.master.lecturers.list_lecturers", lecturers::index)
-                .post_named("academic.lecturer.master.lecturers.create_lecturer", lecturers::store)
+                .get_named("academic.lecturer.master.lecturers.index", lecturers::index)
+                .post_named("academic.lecturer.master.lecturers.store", lecturers::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.lecturer.master.lecturers.options_lecturers", lecturers::option_select),
+                        .post_named("academic.lecturer.master.lecturers.option_select", lecturers::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.lecturer.master.lecturers.get_lecturer", lecturers::show)
-                        .put_named("academic.lecturer.master.lecturers.update_lecturer", lecturers::update)
-                        .delete_named("academic.lecturer.master.lecturers.delete_lecturer", lecturers::delete)
+                        .get_named("academic.lecturer.master.lecturers.show", lecturers::show)
+                        .put_named("academic.lecturer.master.lecturers.update", lecturers::update)
+                        .delete_named("academic.lecturer.master.lecturers.delete", lecturers::delete)
                         .push(
                             Router::with_path("chart")
                                 .get_named("academic.lecturer.master.lecturers.get_teach_credit_chart", lecturers::get_teach_credit_chart),

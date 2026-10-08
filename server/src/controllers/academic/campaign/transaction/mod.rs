@@ -16,67 +16,67 @@ pub fn router() -> Router {
     Router::with_path("transaction")
         .push(
             Router::with_path("activities")
-                .get_named("academic.campaign.transaction.activities.list_activities", activities::index)
-                .post_named("academic.campaign.transaction.activities.create_activitie", activities::store)
+                .get_named("academic.campaign.transaction.activities.index", activities::index)
+                .post_named("academic.campaign.transaction.activities.store", activities::store)
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.campaign.transaction.activities.get_activitie", activities::show)
-                        .put_named("academic.campaign.transaction.activities.update_activitie", activities::update)
-                        .delete_named("academic.campaign.transaction.activities.delete_activitie", activities::delete),
+                        .get_named("academic.campaign.transaction.activities.show", activities::show)
+                        .put_named("academic.campaign.transaction.activities.update", activities::update)
+                        .delete_named("academic.campaign.transaction.activities.delete", activities::delete),
                 ),
         )
         .push(
             Router::with_path("calendar-details")
-                .get_named("academic.campaign.transaction.calendar_details.list_calendar_details", calendar_details::index)
-                .post_named("academic.campaign.transaction.calendar_details.create_calendar_detail", calendar_details::store)
+                .get_named("academic.campaign.transaction.calendar_details.index", calendar_details::index)
+                .post_named("academic.campaign.transaction.calendar_details.store", calendar_details::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.campaign.transaction.calendar_details.options_calendar_details", calendar_details::option_select),
+                        .post_named("academic.campaign.transaction.calendar_details.option_select", calendar_details::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.campaign.transaction.calendar_details.get_calendar_detail", calendar_details::show)
-                        .put_named("academic.campaign.transaction.calendar_details.update_calendar_detail", calendar_details::update)
-                        .delete_named("academic.campaign.transaction.calendar_details.delete_calendar_detail", calendar_details::delete),
+                        .get_named("academic.campaign.transaction.calendar_details.show", calendar_details::show)
+                        .put_named("academic.campaign.transaction.calendar_details.update", calendar_details::update)
+                        .delete_named("academic.campaign.transaction.calendar_details.delete", calendar_details::delete),
                 ),
         )
         .push(
             Router::with_path("calendars")
-                .get_named("academic.campaign.transaction.calendars.list_calendars", calendars::index)
-                .post_named("academic.campaign.transaction.calendars.create_calendar", calendars::store)
+                .get_named("academic.campaign.transaction.calendars.index", calendars::index)
+                .post_named("academic.campaign.transaction.calendars.store", calendars::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.campaign.transaction.calendars.options_calendars", calendars::option_select),
+                        .post_named("academic.campaign.transaction.calendars.option_select", calendars::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.campaign.transaction.calendars.get_calendar", calendars::show)
-                        .put_named("academic.campaign.transaction.calendars.update_calendar", calendars::update)
-                        .delete_named("academic.campaign.transaction.calendars.delete_calendar", calendars::delete),
+                        .get_named("academic.campaign.transaction.calendars.show", calendars::show)
+                        .put_named("academic.campaign.transaction.calendars.update", calendars::update)
+                        .delete_named("academic.campaign.transaction.calendars.delete", calendars::delete),
                 ),
         )
         .push(
             Router::with_path("class-codes")
-                .get_named("academic.campaign.transaction.class_codes.list_class_codes", class_codes::index)
-                .post_named("academic.campaign.transaction.class_codes.create_class_code", class_codes::store)
+                .get_named("academic.campaign.transaction.class_codes.index", class_codes::index)
+                .post_named("academic.campaign.transaction.class_codes.store", class_codes::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.campaign.transaction.class_codes.options_class_codes", class_codes::option_select),
+                        .post_named("academic.campaign.transaction.class_codes.option_select", class_codes::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.campaign.transaction.class_codes.get_class_code", class_codes::show)
-                        .put_named("academic.campaign.transaction.class_codes.update_class_code", class_codes::update)
-                        .delete_named("academic.campaign.transaction.class_codes.delete_class_code", class_codes::delete),
+                        .get_named("academic.campaign.transaction.class_codes.show", class_codes::show)
+                        .put_named("academic.campaign.transaction.class_codes.update", class_codes::update)
+                        .delete_named("academic.campaign.transaction.class_codes.delete", class_codes::delete),
                 ),
         )
         .push(
             Router::with_path("grades")
-                .get_named("academic.campaign.transaction.grades.list_grades", grades::index)
-                .post_named("academic.campaign.transaction.grades.create_grade", grades::store)
+                .get_named("academic.campaign.transaction.grades.index", grades::index)
+                .post_named("academic.campaign.transaction.grades.store", grades::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.campaign.transaction.grades.options_grades", grades::option_select),
+                        .post_named("academic.campaign.transaction.grades.option_select", grades::option_select),
                 )
                 .push(
                     Router::with_path("unit/{unit_id}")
@@ -84,78 +84,78 @@ pub fn router() -> Router {
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.campaign.transaction.grades.get_grade", grades::show)
-                        .put_named("academic.campaign.transaction.grades.update_grade", grades::update)
-                        .delete_named("academic.campaign.transaction.grades.delete_grade", grades::delete),
+                        .get_named("academic.campaign.transaction.grades.show", grades::show)
+                        .put_named("academic.campaign.transaction.grades.update", grades::update)
+                        .delete_named("academic.campaign.transaction.grades.delete", grades::delete),
                 ),
         )
         .push(
             Router::with_path("schedules")
-                .get_named("academic.campaign.transaction.schedules.list_schedules", schedules::index)
-                .post_named("academic.campaign.transaction.schedules.create_schedule", schedules::store)
+                .get_named("academic.campaign.transaction.schedules.index", schedules::index)
+                .post_named("academic.campaign.transaction.schedules.store", schedules::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.campaign.transaction.schedules.options_schedules", schedules::option_select),
+                        .post_named("academic.campaign.transaction.schedules.option_select", schedules::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.campaign.transaction.schedules.get_schedule", schedules::show)
-                        .put_named("academic.campaign.transaction.schedules.update_schedule", schedules::update)
-                        .delete_named("academic.campaign.transaction.schedules.delete_schedule", schedules::delete),
+                        .get_named("academic.campaign.transaction.schedules.show", schedules::show)
+                        .put_named("academic.campaign.transaction.schedules.update", schedules::update)
+                        .delete_named("academic.campaign.transaction.schedules.delete", schedules::delete),
                 ),
         )
         .push(
             Router::with_path("teach-decrees")
-                .get_named("academic.campaign.transaction.teach_decrees.list_teach_decrees", teach_decrees::index)
-                .post_named("academic.campaign.transaction.teach_decrees.create_teach_decree", teach_decrees::store)
+                .get_named("academic.campaign.transaction.teach_decrees.index", teach_decrees::index)
+                .post_named("academic.campaign.transaction.teach_decrees.store", teach_decrees::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.campaign.transaction.teach_decrees.options_teach_decrees", teach_decrees::option_select),
+                        .post_named("academic.campaign.transaction.teach_decrees.option_select", teach_decrees::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.campaign.transaction.teach_decrees.get_teach_decree", teach_decrees::show)
-                        .put_named("academic.campaign.transaction.teach_decrees.update_teach_decree", teach_decrees::update)
-                        .delete_named("academic.campaign.transaction.teach_decrees.delete_teach_decree", teach_decrees::delete),
+                        .get_named("academic.campaign.transaction.teach_decrees.show", teach_decrees::show)
+                        .put_named("academic.campaign.transaction.teach_decrees.update", teach_decrees::update)
+                        .delete_named("academic.campaign.transaction.teach_decrees.delete", teach_decrees::delete),
                 ),
         )
         .push(
             Router::with_path("teach-evaluations")
-                .get_named("academic.campaign.transaction.teach_evaluations.list_teach_evaluations", teach_evaluations::index)
-                .post_named("academic.campaign.transaction.teach_evaluations.create_teach_evaluation", teach_evaluations::store)
+                .get_named("academic.campaign.transaction.teach_evaluations.index", teach_evaluations::index)
+                .post_named("academic.campaign.transaction.teach_evaluations.store", teach_evaluations::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.campaign.transaction.teach_evaluations.options_teach_evaluations", teach_evaluations::option_select),
+                        .post_named("academic.campaign.transaction.teach_evaluations.option_select", teach_evaluations::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.campaign.transaction.teach_evaluations.get_teach_evaluation", teach_evaluations::show)
-                        .put_named("academic.campaign.transaction.teach_evaluations.update_teach_evaluation", teach_evaluations::update)
-                        .delete_named("academic.campaign.transaction.teach_evaluations.delete_teach_evaluation", teach_evaluations::delete),
+                        .get_named("academic.campaign.transaction.teach_evaluations.show", teach_evaluations::show)
+                        .put_named("academic.campaign.transaction.teach_evaluations.update", teach_evaluations::update)
+                        .delete_named("academic.campaign.transaction.teach_evaluations.delete", teach_evaluations::delete),
                 ),
         )
         .push(
             Router::with_path("teach-lecturers")
-                .get_named("academic.campaign.transaction.teach_lecturers.list_teach_lecturers", teach_lecturers::index)
-                .post_named("academic.campaign.transaction.teach_lecturers.create_teach_lecturer", teach_lecturers::store)
+                .get_named("academic.campaign.transaction.teach_lecturers.index", teach_lecturers::index)
+                .post_named("academic.campaign.transaction.teach_lecturers.store", teach_lecturers::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.campaign.transaction.teach_lecturers.options_teach_lecturers", teach_lecturers::option_select),
+                        .post_named("academic.campaign.transaction.teach_lecturers.option_select", teach_lecturers::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.campaign.transaction.teach_lecturers.get_teach_lecturer", teach_lecturers::show)
-                        .put_named("academic.campaign.transaction.teach_lecturers.update_teach_lecturer", teach_lecturers::update)
-                        .delete_named("academic.campaign.transaction.teach_lecturers.delete_teach_lecturer", teach_lecturers::delete),
+                        .get_named("academic.campaign.transaction.teach_lecturers.show", teach_lecturers::show)
+                        .put_named("academic.campaign.transaction.teach_lecturers.update", teach_lecturers::update)
+                        .delete_named("academic.campaign.transaction.teach_lecturers.delete", teach_lecturers::delete),
                 ),
         )
         .push(
             Router::with_path("teaches")
-                .get_named("academic.campaign.transaction.teaches.list_teaches", teaches::index)
-                .post_named("academic.campaign.transaction.teaches.create_teache", teaches::store)
+                .get_named("academic.campaign.transaction.teaches.index", teaches::index)
+                .post_named("academic.campaign.transaction.teaches.store", teaches::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.campaign.transaction.teaches.options_teaches", teaches::option_select),
+                        .post_named("academic.campaign.transaction.teaches.option_select", teaches::option_select),
                 )
                 .push(
                     Router::with_path("lecturer/{id}")
@@ -163,9 +163,9 @@ pub fn router() -> Router {
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.campaign.transaction.teaches.get_teache", teaches::show)
-                        .put_named("academic.campaign.transaction.teaches.update_teache", teaches::update)
-                        .delete_named("academic.campaign.transaction.teaches.delete_teache", teaches::delete),
+                        .get_named("academic.campaign.transaction.teaches.show", teaches::show)
+                        .put_named("academic.campaign.transaction.teaches.update", teaches::update)
+                        .delete_named("academic.campaign.transaction.teaches.delete", teaches::delete),
                 ),
         )
 }

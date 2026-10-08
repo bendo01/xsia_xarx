@@ -11,60 +11,60 @@ pub fn router() -> Router {
     Router::with_path("")
         .push(
             Router::with_path("permission")
-                .get_named("auth.permission.list_permission", permission::index)
-                .post_named("auth.permission.create_permission", permission::store)
+                .get_named("auth.permission.index", permission::index)
+                .post_named("auth.permission.store", permission::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("auth.permission.options_permission", permission::option_select),
+                        .post_named("auth.permission.option_select", permission::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("auth.permission.get_permission", permission::show)
-                        .put_named("auth.permission.update_permission", permission::update)
-                        .delete_named("auth.permission.delete_permission", permission::delete),
+                        .get_named("auth.permission.show", permission::show)
+                        .put_named("auth.permission.update", permission::update)
+                        .delete_named("auth.permission.delete", permission::delete),
                 ),
         )
         .push(
             Router::with_path("permission-role")
-                .get_named("auth.permission_role.list_permission_role", permission_role::index)
-                .post_named("auth.permission_role.create_permission_role", permission_role::store)
+                .get_named("auth.permission_role.index", permission_role::index)
+                .post_named("auth.permission_role.store", permission_role::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("auth.permission_role.options_permission_role", permission_role::option_select),
+                        .post_named("auth.permission_role.option_select", permission_role::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("auth.permission_role.get_permission_role", permission_role::show)
-                        .put_named("auth.permission_role.update_permission_role", permission_role::update)
-                        .delete_named("auth.permission_role.delete_permission_role", permission_role::delete),
+                        .get_named("auth.permission_role.show", permission_role::show)
+                        .put_named("auth.permission_role.update", permission_role::update)
+                        .delete_named("auth.permission_role.delete", permission_role::delete),
                 ),
         )
         .push(
             Router::with_path("permission-position-type")
-                .get_named("auth.permission_position_type.list_permission_position_type", permission_position_type::index)
-                .post_named("auth.permission_position_type.create_permission_position_type", permission_position_type::store)
+                .get_named("auth.permission_position_type.index", permission_position_type::index)
+                .post_named("auth.permission_position_type.store", permission_position_type::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("auth.permission_position_type.options_permission_position_type", permission_position_type::option_select),
+                        .post_named("auth.permission_position_type.option_select", permission_position_type::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("auth.permission_position_type.get_permission_position_type", permission_position_type::show)
-                        .delete_named("auth.permission_position_type.delete_permission_position_type", permission_position_type::delete),
+                        .get_named("auth.permission_position_type.show", permission_position_type::show)
+                        .delete_named("auth.permission_position_type.delete", permission_position_type::delete),
                 ),
         )
         .push(
             Router::with_path("user")
-                .get_named("auth.user.list_user", user::index)
+                .get_named("auth.user.index", user::index)
                 .push(
                     Router::with_path("options")
-                        .post_named("auth.user.options_user", user::option_select),
+                        .post_named("auth.user.option_select", user::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("auth.user.get_user", user::show)
-                        .put_named("auth.user.update_user", user::update)
-                        .delete_named("auth.user.delete_user", user::delete),
+                        .get_named("auth.user.show", user::show)
+                        .put_named("auth.user.update", user::update)
+                        .delete_named("auth.user.delete", user::delete),
                 ),
         )
         // Public Auth Endpoints
@@ -90,17 +90,17 @@ pub fn router() -> Router {
         )
         .push(
             Router::with_path("role")
-                .get_named("auth.role.list_role", role::index)
-                .post_named("auth.role.create_role", role::store)
+                .get_named("auth.role.index", role::index)
+                .post_named("auth.role.store", role::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("auth.role.options_role", role::option_select),
+                        .post_named("auth.role.option_select", role::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("auth.role.get_role", role::show)
-                        .put_named("auth.role.update_role", role::update)
-                        .delete_named("auth.role.delete_role", role::delete),
+                        .get_named("auth.role.show", role::show)
+                        .put_named("auth.role.update", role::update)
+                        .delete_named("auth.role.delete", role::delete),
                 ),
         )
 }

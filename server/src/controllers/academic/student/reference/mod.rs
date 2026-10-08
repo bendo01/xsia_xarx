@@ -11,78 +11,78 @@ pub fn router() -> Router {
     Router::with_path("reference")
         .push(
             Router::with_path("finances")
-                .get_named("academic.student.reference.finances.list_finances", finances::index)
-                .post_named("academic.student.reference.finances.create_finance", finances::store)
+                .get_named("academic.student.reference.finances.index", finances::index)
+                .post_named("academic.student.reference.finances.store", finances::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.student.reference.finances.options_finances", finances::option_select),
+                        .post_named("academic.student.reference.finances.option_select", finances::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.student.reference.finances.get_finance", finances::show)
-                        .put_named("academic.student.reference.finances.update_finance", finances::update)
-                        .delete_named("academic.student.reference.finances.delete_finance", finances::delete),
+                        .get_named("academic.student.reference.finances.show", finances::show)
+                        .put_named("academic.student.reference.finances.update", finances::update)
+                        .delete_named("academic.student.reference.finances.delete", finances::delete),
                 ),
         )
         .push(
             Router::with_path("registrations")
-                .get_named("academic.student.reference.registrations.list_registrations", registrations::index)
-                .post_named("academic.student.reference.registrations.create_registration", registrations::store)
+                .get_named("academic.student.reference.registrations.index", registrations::index)
+                .post_named("academic.student.reference.registrations.store", registrations::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.student.reference.registrations.options_registrations", registrations::option_select),
+                        .post_named("academic.student.reference.registrations.option_select", registrations::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.student.reference.registrations.get_registration", registrations::show)
-                        .put_named("academic.student.reference.registrations.update_registration", registrations::update)
-                        .delete_named("academic.student.reference.registrations.delete_registration", registrations::delete),
+                        .get_named("academic.student.reference.registrations.show", registrations::show)
+                        .put_named("academic.student.reference.registrations.update", registrations::update)
+                        .delete_named("academic.student.reference.registrations.delete", registrations::delete),
                 ),
         )
         .push(
             Router::with_path("resign-statuses")
-                .get_named("academic.student.reference.resign_statuses.list_resign_statuses", resign_statuses::index)
-                .post_named("academic.student.reference.resign_statuses.create_resign_statuse", resign_statuses::store)
+                .get_named("academic.student.reference.resign_statuses.index", resign_statuses::index)
+                .post_named("academic.student.reference.resign_statuses.store", resign_statuses::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.student.reference.resign_statuses.options_resign_statuses", resign_statuses::option_select),
+                        .post_named("academic.student.reference.resign_statuses.option_select", resign_statuses::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.student.reference.resign_statuses.get_resign_statuse", resign_statuses::show)
-                        .put_named("academic.student.reference.resign_statuses.update_resign_statuse", resign_statuses::update)
-                        .delete_named("academic.student.reference.resign_statuses.delete_resign_statuse", resign_statuses::delete),
+                        .get_named("academic.student.reference.resign_statuses.show", resign_statuses::show)
+                        .put_named("academic.student.reference.resign_statuses.update", resign_statuses::update)
+                        .delete_named("academic.student.reference.resign_statuses.delete", resign_statuses::delete),
                 ),
         )
         .push(
             Router::with_path("selection-types")
-                .get_named("academic.student.reference.selection_types.list_selection_types", selection_types::index)
-                .post_named("academic.student.reference.selection_types.create_selection_type", selection_types::store)
+                .get_named("academic.student.reference.selection_types.index", selection_types::index)
+                .post_named("academic.student.reference.selection_types.store", selection_types::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.student.reference.selection_types.options_selection_types", selection_types::option_select),
+                        .post_named("academic.student.reference.selection_types.option_select", selection_types::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.student.reference.selection_types.get_selection_type", selection_types::show)
-                        .put_named("academic.student.reference.selection_types.update_selection_type", selection_types::update)
-                        .delete_named("academic.student.reference.selection_types.delete_selection_type", selection_types::delete),
+                        .get_named("academic.student.reference.selection_types.show", selection_types::show)
+                        .put_named("academic.student.reference.selection_types.update", selection_types::update)
+                        .delete_named("academic.student.reference.selection_types.delete", selection_types::delete),
                 ),
         )
         .push(
             Router::with_path("statuses")
-                .get_named("academic.student.reference.statuses.list_statuses", statuses::index)
-                .post_named("academic.student.reference.statuses.create_statuse", statuses::store)
+                .get_named("academic.student.reference.statuses.index", statuses::index)
+                .post_named("academic.student.reference.statuses.store", statuses::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.student.reference.statuses.options_statuses", statuses::option_select)
-                        .get_named("academic.student.reference.statuses.options_statuses_get", statuses::option_select),
+                        .post_named("academic.student.reference.statuses.option_select", statuses::option_select)
+                        .get_named("academic.student.reference.statuses.option_select_get", statuses::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.student.reference.statuses.get_statuse", statuses::show)
-                        .put_named("academic.student.reference.statuses.update_statuse", statuses::update)
-                        .delete_named("academic.student.reference.statuses.delete_statuse", statuses::delete),
+                        .get_named("academic.student.reference.statuses.show", statuses::show)
+                        .put_named("academic.student.reference.statuses.update", statuses::update)
+                        .delete_named("academic.student.reference.statuses.delete", statuses::delete),
                 ),
         )
 }

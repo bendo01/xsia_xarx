@@ -10,56 +10,56 @@ pub fn router() -> Router {
     Router::with_path("campaign")
         .push(
             Router::with_path("convertions")
-                .get_named("academic.student.campaign.convertions.list_convertions", convertions::index)
-                .post_named("academic.student.campaign.convertions.create_convertion", convertions::store)
+                .get_named("academic.student.campaign.convertions.index", convertions::index)
+                .post_named("academic.student.campaign.convertions.store", convertions::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.student.campaign.convertions.options_convertions", convertions::option_select),
+                        .post_named("academic.student.campaign.convertions.option_select", convertions::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.student.campaign.convertions.get_convertion", convertions::show)
-                        .put_named("academic.student.campaign.convertions.update_convertion", convertions::update)
-                        .delete_named("academic.student.campaign.convertions.delete_convertion", convertions::delete),
+                        .get_named("academic.student.campaign.convertions.show", convertions::show)
+                        .put_named("academic.student.campaign.convertions.update", convertions::update)
+                        .delete_named("academic.student.campaign.convertions.delete", convertions::delete),
                 ),
         )
         .push(
             Router::with_path("detail-activities")
-                .get_named("academic.student.campaign.detail_activities.list_detail_activities", detail_activities::index)
-                .post_named("academic.student.campaign.detail_activities.create_detail_activitie", detail_activities::store)
+                .get_named("academic.student.campaign.detail_activities.index", detail_activities::index)
+                .post_named("academic.student.campaign.detail_activities.store", detail_activities::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.student.campaign.detail_activities.options_detail_activities", detail_activities::option_select),
+                        .post_named("academic.student.campaign.detail_activities.option_select", detail_activities::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.student.campaign.detail_activities.get_detail_activitie", detail_activities::show)
-                        .put_named("academic.student.campaign.detail_activities.update_detail_activitie", detail_activities::update)
-                        .delete_named("academic.student.campaign.detail_activities.delete_detail_activitie", detail_activities::delete),
+                        .get_named("academic.student.campaign.detail_activities.show", detail_activities::show)
+                        .put_named("academic.student.campaign.detail_activities.update", detail_activities::update)
+                        .delete_named("academic.student.campaign.detail_activities.delete", detail_activities::delete),
                 ),
         )
         .push(
             Router::with_path("detail-activity-evaluation-components")
-                .get_named("academic.student.campaign.detail_activity_evaluation_components.list_detail_activity_evaluation_components", detail_activity_evaluation_components::index)
-                .post_named("academic.student.campaign.detail_activity_evaluation_components.create_detail_activity_evaluation_component", detail_activity_evaluation_components::store)
+                .get_named("academic.student.campaign.detail_activity_evaluation_components.index", detail_activity_evaluation_components::index)
+                .post_named("academic.student.campaign.detail_activity_evaluation_components.store", detail_activity_evaluation_components::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.student.campaign.detail_activity_evaluation_components.options_detail_activity_evaluation_components", detail_activity_evaluation_components::option_select),
+                        .post_named("academic.student.campaign.detail_activity_evaluation_components.option_select", detail_activity_evaluation_components::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.student.campaign.detail_activity_evaluation_components.get_detail_activity_evaluation_component", detail_activity_evaluation_components::show)
-                        .put_named("academic.student.campaign.detail_activity_evaluation_components.update_detail_activity_evaluation_component", detail_activity_evaluation_components::update)
-                        .delete_named("academic.student.campaign.detail_activity_evaluation_components.delete_detail_activity_evaluation_component", detail_activity_evaluation_components::delete),
+                        .get_named("academic.student.campaign.detail_activity_evaluation_components.show", detail_activity_evaluation_components::show)
+                        .put_named("academic.student.campaign.detail_activity_evaluation_components.update", detail_activity_evaluation_components::update)
+                        .delete_named("academic.student.campaign.detail_activity_evaluation_components.delete", detail_activity_evaluation_components::delete),
                 ),
         )
         .push(
             Router::with_path("student-activities")
-                .get_named("academic.student.campaign.student_activities.list_student_activities", student_activities::index)
-                .post_named("academic.student.campaign.student_activities.create_student_activitie", student_activities::store)
+                .get_named("academic.student.campaign.student_activities.index", student_activities::index)
+                .post_named("academic.student.campaign.student_activities.store", student_activities::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.student.campaign.student_activities.options_student_activities", student_activities::option_select),
+                        .post_named("academic.student.campaign.student_activities.option_select", student_activities::option_select),
                 )
                 .push(
                     Router::with_path("print_activity_plan/{id}")
@@ -71,9 +71,9 @@ pub fn router() -> Router {
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.student.campaign.student_activities.get_student_activitie", student_activities::show)
-                        .put_named("academic.student.campaign.student_activities.update_student_activitie", student_activities::update)
-                        .delete_named("academic.student.campaign.student_activities.delete_student_activitie", student_activities::delete),
+                        .get_named("academic.student.campaign.student_activities.show", student_activities::show)
+                        .put_named("academic.student.campaign.student_activities.update", student_activities::update)
+                        .delete_named("academic.student.campaign.student_activities.delete", student_activities::delete),
                 ),
         )
 }

@@ -215,7 +215,7 @@ impl Handler for RbacGuard {
             _ => "other",
         };
 
-        if route_name.contains(".options_") {
+        if route_name.ends_with(".option_select") {
             action = "read";
         }
 

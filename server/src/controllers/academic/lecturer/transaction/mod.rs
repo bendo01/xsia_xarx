@@ -9,47 +9,47 @@ pub fn router() -> Router {
     Router::with_path("transaction")
         .push(
             Router::with_path("academic-groups")
-                .get_named("academic.lecturer.transaction.academic_groups.list_academic_groups", academic_groups::index)
-                .post_named("academic.lecturer.transaction.academic_groups.create_academic_group", academic_groups::store)
+                .get_named("academic.lecturer.transaction.academic_groups.index", academic_groups::index)
+                .post_named("academic.lecturer.transaction.academic_groups.store", academic_groups::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.lecturer.transaction.academic_groups.options_academic_groups", academic_groups::option_select),
+                        .post_named("academic.lecturer.transaction.academic_groups.option_select", academic_groups::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.lecturer.transaction.academic_groups.get_academic_group", academic_groups::show)
-                        .put_named("academic.lecturer.transaction.academic_groups.update_academic_group", academic_groups::update)
-                        .delete_named("academic.lecturer.transaction.academic_groups.delete_academic_group", academic_groups::delete),
+                        .get_named("academic.lecturer.transaction.academic_groups.show", academic_groups::show)
+                        .put_named("academic.lecturer.transaction.academic_groups.update", academic_groups::update)
+                        .delete_named("academic.lecturer.transaction.academic_groups.delete", academic_groups::delete),
                 ),
         )
         .push(
             Router::with_path("academic-ranks")
-                .get_named("academic.lecturer.transaction.academic_ranks.list_academic_ranks", academic_ranks::index)
-                .post_named("academic.lecturer.transaction.academic_ranks.create_academic_rank", academic_ranks::store)
+                .get_named("academic.lecturer.transaction.academic_ranks.index", academic_ranks::index)
+                .post_named("academic.lecturer.transaction.academic_ranks.store", academic_ranks::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.lecturer.transaction.academic_ranks.options_academic_ranks", academic_ranks::option_select),
+                        .post_named("academic.lecturer.transaction.academic_ranks.option_select", academic_ranks::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.lecturer.transaction.academic_ranks.get_academic_rank", academic_ranks::show)
-                        .put_named("academic.lecturer.transaction.academic_ranks.update_academic_rank", academic_ranks::update)
-                        .delete_named("academic.lecturer.transaction.academic_ranks.delete_academic_rank", academic_ranks::delete),
+                        .get_named("academic.lecturer.transaction.academic_ranks.show", academic_ranks::show)
+                        .put_named("academic.lecturer.transaction.academic_ranks.update", academic_ranks::update)
+                        .delete_named("academic.lecturer.transaction.academic_ranks.delete", academic_ranks::delete),
                 ),
         )
         .push(
             Router::with_path("homebases")
-                .get_named("academic.lecturer.transaction.homebases.list_homebases", homebases::index)
-                .post_named("academic.lecturer.transaction.homebases.create_homebase", homebases::store)
+                .get_named("academic.lecturer.transaction.homebases.index", homebases::index)
+                .post_named("academic.lecturer.transaction.homebases.store", homebases::store)
                 .push(
                     Router::with_path("options")
-                        .post_named("academic.lecturer.transaction.homebases.options_homebases", homebases::option_select),
+                        .post_named("academic.lecturer.transaction.homebases.option_select", homebases::option_select),
                 )
                 .push(
                     Router::with_path("{id}")
-                        .get_named("academic.lecturer.transaction.homebases.get_homebase", homebases::show)
-                        .put_named("academic.lecturer.transaction.homebases.update_homebase", homebases::update)
-                        .delete_named("academic.lecturer.transaction.homebases.delete_homebase", homebases::delete),
+                        .get_named("academic.lecturer.transaction.homebases.show", homebases::show)
+                        .put_named("academic.lecturer.transaction.homebases.update", homebases::update)
+                        .delete_named("academic.lecturer.transaction.homebases.delete", homebases::delete),
                 ),
         )
 }
