@@ -2,7 +2,7 @@ use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel, PaginatorTrait,
-    QueryFilter, QueryOrder, Set, QuerySelect,
+    QueryFilter, QueryOrder, Set,
 };
 use uuid::Uuid;
 use validator::Validate;
