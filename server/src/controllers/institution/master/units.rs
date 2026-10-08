@@ -1181,6 +1181,12 @@ pub async fn get_unit_dashboard(
         .ok_or_else(|| StatusError::bad_request().brief("Missing parameter unit_id"))?;
     let unit_id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
+    // The dashboard aggregates student data, so it follows the student data scope
+    let scope = crate::services::auth::data_scope::DataScope::resolve(db, depot).await?;
+    if !scope.allows_unit(unit_id) {
+        return Err(StatusError::not_found().brief("Unit not found"));
+    }
+
     // 1. Fetch unit
     let unit_item = entity_mod::Entity::find_by_id(unit_id)
         .filter(entity_mod::Column::DeletedAt.is_null())

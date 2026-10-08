@@ -3,7 +3,7 @@ use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, EntityTrait, IntoActiveModel,
-    PaginatorTrait, QueryFilter, QueryOrder, Set,
+    PaginatorTrait, QueryFilter, QueryOrder, Set, TransactionTrait,
 };
 use sea_orm::sea_query::{extension::postgres::PgExpr, Expr};
 use uuid::Uuid;
@@ -18,6 +18,7 @@ use crate::models::academic::student::campaign::student_activities as entity_mod
 use crate::services::pdf::institution_092010::student::activity::plan::activity_plan as Institution092010StudentActivityPlan;
 use crate::services::pdf::institution_092010::student::activity::result::activity_result as Institution092010StudentActivityResult;
 use crate::middleware::auth::auth_user_id;
+use crate::services::auth::data_scope::DataScope;
 
 #[endpoint(tags("Academic - Student - Campaign - StudentActivity"), status_codes(200, 500))]
 pub async fn list_student_activities(
@@ -27,12 +28,13 @@ pub async fn list_student_activities(
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
+    let scope = DataScope::resolve(db, depot).await?;
 
     let query: StudentActivityQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
-    let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
+    let mut select = scope.apply(entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null()));
 
     let search_term = query.search.as_ref().or(query.q.as_ref());
     if let Some(search) = search_term {
@@ -853,9 +855,14 @@ pub async fn get_student_activitie(
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
+    let scope = DataScope::resolve(db, depot).await?;
 
     let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
     let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+
+    if !scope.is_visible::<entity_mod::Entity, _>(db, id).await? {
+        return Err(StatusError::not_found().brief("StudentActivity not found"));
+    }
 
     let res = find_student_activity_response_by_id(db, id)
         .await?
@@ -872,6 +879,7 @@ pub async fn create_student_activitie(
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
+        let scope = DataScope::resolve(db, depot).await?;
 
         let payload: CreateStudentActivityRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
@@ -906,7 +914,10 @@ pub async fn create_student_activitie(
         finance_fee: Set(payload.finance_fee),
     };
 
-        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let txn = db.begin().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(&txn).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        scope.ensure_visible::<entity_mod::Entity, _>(&txn, item.id).await?;
+        txn.commit().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         let res = find_student_activity_response_by_id(db, item.id)
             .await?
@@ -923,6 +934,7 @@ pub async fn update_student_activitie(
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
+        let scope = DataScope::resolve(db, depot).await?;
 
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
@@ -933,7 +945,7 @@ pub async fn update_student_activitie(
 
         payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-        let existing = entity_mod::Entity::find_by_id(id)
+        let existing = scope.apply(entity_mod::Entity::find_by_id(id))
             .filter(entity_mod::Column::DeletedAt.is_null())
             .one(db)
             .await
@@ -988,7 +1000,10 @@ pub async fn update_student_activitie(
     active_model.updated_at = Set(Some(now));
     active_model.updated_by = Set(auth_user_id(depot));
 
-        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let txn = db.begin().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(&txn).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        scope.ensure_visible::<entity_mod::Entity, _>(&txn, item.id).await?;
+        txn.commit().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         let res = find_student_activity_response_by_id(db, item.id)
             .await?
@@ -1004,11 +1019,12 @@ pub async fn delete_student_activitie(
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
+        let scope = DataScope::resolve(db, depot).await?;
 
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-        let existing = entity_mod::Entity::find_by_id(id)
+        let existing = scope.apply(entity_mod::Entity::find_by_id(id))
             .filter(entity_mod::Column::DeletedAt.is_null())
             .one(db)
             .await
@@ -1038,6 +1054,7 @@ pub async fn print_activity_plan(
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
+    let scope = DataScope::resolve(db, depot).await?;
 
     let id_str = req
         .param::<String>("id")
@@ -1045,6 +1062,10 @@ pub async fn print_activity_plan(
         .ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
     let id = Uuid::parse_str(&id_str)
         .map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+
+    if !scope.is_visible::<entity_mod::Entity, _>(db, id).await? {
+        return Err(StatusError::not_found().brief("StudentActivity not found"));
+    }
 
     let pdf_data = match Institution092010StudentActivityPlan::generate_pdf(db, id).await {
         Ok(data) => data,
@@ -1074,6 +1095,7 @@ pub async fn print_activity_result(
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
+    let scope = DataScope::resolve(db, depot).await?;
 
     let id_str = req
         .param::<String>("id")
@@ -1081,6 +1103,10 @@ pub async fn print_activity_result(
         .ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
     let id = Uuid::parse_str(&id_str)
         .map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+
+    if !scope.is_visible::<entity_mod::Entity, _>(db, id).await? {
+        return Err(StatusError::not_found().brief("StudentActivity not found"));
+    }
 
     let pdf_data = match Institution092010StudentActivityResult::generate_pdf(db, id).await {
         Ok(data) => data,

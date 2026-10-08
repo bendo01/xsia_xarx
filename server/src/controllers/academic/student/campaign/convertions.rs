@@ -2,7 +2,7 @@ use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
-    PaginatorTrait, QueryFilter, QueryOrder, Set,
+    PaginatorTrait, QueryFilter, QueryOrder, Set, TransactionTrait,
 };
 use uuid::Uuid;
 use validator::Validate;
@@ -14,6 +14,7 @@ use crate::dtos::academic::student::campaign::convertions::{
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::student::campaign::convertions as entity_mod;
 use crate::middleware::auth::auth_user_id;
+use crate::services::auth::data_scope::DataScope;
 
 #[endpoint(tags("Academic - Student - Campaign - Convertion"), status_codes(200, 500))]
 pub async fn list_convertions(
@@ -23,12 +24,13 @@ pub async fn list_convertions(
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
+    let scope = DataScope::resolve(db, depot).await?;
 
     let query: ConvertionQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
-    let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
+    let mut select = scope.apply(entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null()));
 
     if let Some(ref name) = query.name {
         select = select.filter(entity_mod::Column::Name.contains(name));
@@ -86,11 +88,12 @@ pub async fn get_convertion(
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
+    let scope = DataScope::resolve(db, depot).await?;
 
     let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
     let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let item = entity_mod::Entity::find_by_id(id)
+    let item = scope.apply(entity_mod::Entity::find_by_id(id))
         .filter(entity_mod::Column::DeletedAt.is_null())
         .one(db)
         .await
@@ -130,6 +133,7 @@ pub async fn create_convertion(
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
+        let scope = DataScope::resolve(db, depot).await?;
 
         let payload: CreateConvertionRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
@@ -165,7 +169,10 @@ pub async fn create_convertion(
         origin_grade: Set(payload.origin_grade),
     };
 
-        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let txn = db.begin().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(&txn).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        scope.ensure_visible::<entity_mod::Entity, _>(&txn, item.id).await?;
+        txn.commit().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(ConvertionResponse {
             id: item.id,
@@ -202,6 +209,7 @@ pub async fn update_convertion(
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
+        let scope = DataScope::resolve(db, depot).await?;
 
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
@@ -212,7 +220,7 @@ pub async fn update_convertion(
 
         payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-        let existing = entity_mod::Entity::find_by_id(id)
+        let existing = scope.apply(entity_mod::Entity::find_by_id(id))
             .filter(entity_mod::Column::DeletedAt.is_null())
             .one(db)
             .await
@@ -270,7 +278,10 @@ pub async fn update_convertion(
     active_model.updated_at = Set(Some(now));
     active_model.updated_by = Set(auth_user_id(depot));
 
-        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let txn = db.begin().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(&txn).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        scope.ensure_visible::<entity_mod::Entity, _>(&txn, item.id).await?;
+        txn.commit().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(ConvertionResponse {
             id: item.id,
@@ -306,11 +317,12 @@ pub async fn delete_convertion(
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
+        let scope = DataScope::resolve(db, depot).await?;
 
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-        let existing = entity_mod::Entity::find_by_id(id)
+        let existing = scope.apply(entity_mod::Entity::find_by_id(id))
             .filter(entity_mod::Column::DeletedAt.is_null())
             .one(db)
             .await

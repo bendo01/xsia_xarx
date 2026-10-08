@@ -3,7 +3,7 @@ use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel, LoaderTrait,
-    PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, Set,
+    PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, Set, TransactionTrait,
 };
 use uuid::Uuid;
 use validator::Validate;
@@ -20,6 +20,7 @@ use crate::dtos::academic::campaign::transaction::grades::GradeResponse;
 use crate::dtos::common::reference::{MessageResponse, ReferenceResponse};
 use crate::models::academic::campaign::transaction::teaches as entity_mod;
 use crate::middleware::auth::auth_user_id;
+use crate::services::auth::data_scope::DataScope;
 
 #[endpoint(tags("Academic - Campaign - Transaction - Teach"), status_codes(200, 500))]
 pub async fn list_teaches(
@@ -29,12 +30,13 @@ pub async fn list_teaches(
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
+    let scope = DataScope::resolve(db, depot).await?;
 
     let query: TeachQuery = req.parse_queries().unwrap_or_default();
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
-    let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
+    let mut select = scope.apply(entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null()));
 
     if let Some(ref name) = query.name {
         select = select.filter(entity_mod::Column::Name.contains(name));
@@ -310,11 +312,12 @@ pub async fn get_teache(
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
+    let scope = DataScope::resolve(db, depot).await?;
 
     let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
     let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let item = entity_mod::Entity::find_by_id(id)
+    let item = scope.apply(entity_mod::Entity::find_by_id(id))
         .filter(entity_mod::Column::DeletedAt.is_null())
         .one(db)
         .await
@@ -817,6 +820,7 @@ pub async fn create_teache(
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
+        let scope = DataScope::resolve(db, depot).await?;
 
         let payload: CreateTeachRequest = req.parse_json().await.map_err(|e| {
             StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
@@ -854,7 +858,10 @@ pub async fn create_teache(
         feeder_id: Set(payload.feeder_id),
     };
 
-        let item = active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let txn = db.begin().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.insert(&txn).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        scope.ensure_visible::<entity_mod::Entity, _>(&txn, item.id).await?;
+        txn.commit().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(TeachResponse {
             id: item.id,
@@ -906,6 +913,7 @@ pub async fn update_teache(
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
+        let scope = DataScope::resolve(db, depot).await?;
 
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
@@ -916,7 +924,7 @@ pub async fn update_teache(
 
         payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
-        let existing = entity_mod::Entity::find_by_id(id)
+        let existing = scope.apply(entity_mod::Entity::find_by_id(id))
             .filter(entity_mod::Column::DeletedAt.is_null())
             .one(db)
             .await
@@ -980,7 +988,10 @@ pub async fn update_teache(
     active_model.updated_at = Set(Some(now));
     active_model.updated_by = Set(auth_user_id(depot));
 
-        let item = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let txn = db.begin().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        let item = active_model.update(&txn).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        scope.ensure_visible::<entity_mod::Entity, _>(&txn, item.id).await?;
+        txn.commit().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         let enrolled_count = crate::models::academic::student::campaign::detail_activities::Entity::find()
             .filter(crate::models::academic::student::campaign::detail_activities::Column::TeachId.eq(item.id))
@@ -1038,11 +1049,12 @@ pub async fn delete_teache(
         let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
             StatusError::internal_server_error().brief("Database connection missing")
         })?;
+        let scope = DataScope::resolve(db, depot).await?;
 
         let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
         let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-        let existing = entity_mod::Entity::find_by_id(id)
+        let existing = scope.apply(entity_mod::Entity::find_by_id(id))
             .filter(entity_mod::Column::DeletedAt.is_null())
             .one(db)
             .await
@@ -1071,6 +1083,7 @@ pub async fn get_teaches_by_lecturer(
     let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
+    let scope = DataScope::resolve(db, depot).await?;
 
     let id_str = req
         .param::<String>("id")
@@ -1116,7 +1129,7 @@ pub async fn get_teaches_by_lecturer(
     let teach_ids: Vec<Uuid> = teach_lecturers.iter().map(|tl| tl.teach_id).collect();
 
     // 2. Fetch teaches
-    let teaches = entity_mod::Entity::find()
+    let teaches = scope.apply(entity_mod::Entity::find())
         .filter(entity_mod::Column::Id.is_in(teach_ids))
         .filter(entity_mod::Column::DeletedAt.is_null())
         .all(db)

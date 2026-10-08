@@ -17,6 +17,7 @@ use crate::dtos::academic::student::master::students::{
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::academic::student::master::students as entity_mod;
 use crate::middleware::auth::auth_user_id;
+use crate::services::auth::data_scope::DataScope;
 
 struct UnitInfo {
     code: Option<String>,
@@ -172,7 +173,9 @@ pub async fn list_students(
     let page = query.page.unwrap_or(1);
     let page_size = query.page_size.unwrap_or(10);
 
-    let mut select = entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null());
+    // Requested unit / institution filters below only narrow this scope, never widen it
+    let scope = DataScope::resolve(db, depot).await?;
+    let mut select = scope.apply(entity_mod::Entity::find().filter(entity_mod::Column::DeletedAt.is_null()));
 
     let search_term = query.search.as_ref().or(query.q.as_ref());
     if let Some(search) = search_term {
@@ -356,9 +359,12 @@ pub async fn list_distinct_academic_years(
 
     let query: DistinctAcademicYearQuery = req.parse_queries().unwrap_or_default();
 
-    let mut select = entity_mod::Entity::find()
-        .filter(entity_mod::Column::DeletedAt.is_null())
-        .filter(entity_mod::Column::AcademicYearId.ne(Uuid::nil()));
+    let scope = DataScope::resolve(db, depot).await?;
+    let mut select = scope.apply(
+        entity_mod::Entity::find()
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .filter(entity_mod::Column::AcademicYearId.ne(Uuid::nil())),
+    );
 
     if let Some(unit_id) = query.unit_id {
         select = select.filter(entity_mod::Column::UnitId.eq(unit_id));
@@ -814,6 +820,10 @@ pub async fn get_student(
     let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
     let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
+    let scope = DataScope::resolve(db, depot).await?;
+    if !scope.is_visible::<entity_mod::Entity, _>(db, id).await? {
+        return Err(StatusError::not_found().brief("Student not found"));
+    }
     let res = find_student_response_by_id(db, id)
         .await?
         .ok_or_else(|| StatusError::not_found().brief("Student not found"))?;
@@ -821,7 +831,7 @@ pub async fn get_student(
     Ok(Json(res))
 }
 
-#[endpoint(tags("Academic - Student - Master - Student"), status_codes(200, 400, 500))]
+#[endpoint(tags("Academic - Student - Master - Student"), status_codes(200, 400, 403, 500))]
 pub async fn create_student(
         req: &mut Request,
         depot: &mut Depot,
@@ -835,6 +845,11 @@ pub async fn create_student(
         })?;
 
         payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+
+        let scope = DataScope::resolve(db, depot).await?;
+        if !scope.allows_unit(payload.unit_id) {
+            return Err(StatusError::forbidden().brief("Cannot create a student outside your unit"));
+        }
 
         let now = Utc::now().naive_utc();
         let new_id = Uuid::new_v4();
@@ -878,7 +893,7 @@ pub async fn create_student(
         Ok(Json(res))
 }
 
-#[endpoint(tags("Academic - Student - Master - Student"), status_codes(200, 400, 404, 500))]
+#[endpoint(tags("Academic - Student - Master - Student"), status_codes(200, 400, 403, 404, 500))]
 pub async fn update_student(
         req: &mut Request,
         depot: &mut Depot,
@@ -902,6 +917,17 @@ pub async fn update_student(
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
             .ok_or_else(|| StatusError::not_found().brief("Student not found"))?;
+
+        let scope = DataScope::resolve(db, depot).await?;
+        if !scope.is_visible::<entity_mod::Entity, _>(db, existing.id).await? {
+            return Err(StatusError::not_found().brief("Student not found"));
+        }
+        if let Some(unit_id) = payload.unit_id
+            && unit_id != existing.unit_id
+            && !scope.allows_unit(unit_id)
+        {
+            return Err(StatusError::forbidden().brief("Cannot move a student outside your unit"));
+        }
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -996,6 +1022,11 @@ pub async fn delete_student(
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
             .ok_or_else(|| StatusError::not_found().brief("Student not found"))?;
 
+        let scope = DataScope::resolve(db, depot).await?;
+        if !scope.is_visible::<entity_mod::Entity, _>(db, existing.id).await? {
+            return Err(StatusError::not_found().brief("Student not found"));
+        }
+
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
 
@@ -1028,9 +1059,21 @@ pub async fn get_students_by_unit(
     let unit_id = Uuid::parse_str(&id_str)
         .map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
-    let data = crate::dtos::academic::student::master::students::list_students_by_unit(db, unit_id)
+    let scope = DataScope::resolve(db, depot).await?;
+    let all_in_unit = crate::dtos::academic::student::master::students::list_students_by_unit(db, unit_id)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+    let visible_ids: std::collections::HashSet<Uuid> = scope
+        .apply(entity_mod::Entity::find().filter(entity_mod::Column::UnitId.eq(unit_id)))
+        .select_only()
+        .column(entity_mod::Column::Id)
+        .into_tuple::<Uuid>()
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .into_iter()
+        .collect();
+    let data: Vec<StudentResponse> = all_in_unit.into_iter().filter(|student| visible_ids.contains(&student.id)).collect();
 
     Ok(Json(data))
 }
