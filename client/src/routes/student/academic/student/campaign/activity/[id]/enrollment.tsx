@@ -2,38 +2,38 @@ import { createSignal, onMount, createEffect, For, Show } from 'solid-js';
 import { useParams, useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
-import { 
-    listTeaches, 
-    listCourses, 
+import {
+    listTeaches,
+    listCourses,
     getCourseById,
-    listTeachDecrees, 
-    listClassCodes, 
+    listTeachDecrees,
+    listClassCodes,
     getClassCodeById,
-    listTeachLecturers, 
-    listLecturers, 
-    listSchedules, 
-    listRooms, 
-    TeachItem 
+    listTeachLecturers,
+    listLecturers,
+    listSchedules,
+    listRooms,
+    TeachItem
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachController';
-import { 
-    listDetailActivities, 
-    createDetailActivity, 
-    deleteDetailActivity, 
-    DetailActivityItem 
+import {
+    listDetailActivities,
+    createDetailActivity,
+    deleteDetailActivity,
+    DetailActivityItem
 } from '~/controllers/academic/student/campaign/AcademicStudentCampaignDetailActivityController';
-import { 
-    listStudentActivities, 
+import {
+    listStudentActivities,
     getStudentActivityById,
-    StudentActivityItem 
+    StudentActivityItem
 } from '~/controllers/academic/student/campaign/AcademicStudentCampaignActivityController';
-import { 
-    getActivityById, 
-    CampaignActivityItem 
+import {
+    getActivityById,
+    CampaignActivityItem
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionActivityController';
-import { 
-    getStudentById, 
-    listStudents, 
-    StudentMasterItem 
+import {
+    getStudentById,
+    listStudents,
+    StudentMasterItem
 } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
 import { getActiveStudentId } from '~/lib/authStore';
 
@@ -202,8 +202,8 @@ export default function StudentCourseEnrollmentPage() {
             // - academic_campaign_transaction.teaches.activity_id = student_activity.unit_activity_id (or decree.activity_id = student_activity.unit_activity_id)
             // - academic_campaign_transaction.teaches unit matching student.unit_id
             const filteredRawTeaches = allTeaches.filter((t: TeachItem) => {
-                const matchesActivity = 
-                    t.activity_id === targetActivityId || 
+                const matchesActivity =
+                    t.activity_id === targetActivityId ||
                     (t.teach_decree_id && relevantDecreeIds.has(t.teach_decree_id));
 
                 if (!matchesActivity) return false;
@@ -243,7 +243,7 @@ export default function StudentCourseEnrollmentPage() {
             const enrichedTeaches: TeachItem[] = filteredRawTeaches.map((t: TeachItem) => {
                 const course = courseMap.get(t.course_id);
                 const classCode = classCodeMap.get(t.class_code_id);
-                
+
                 const assignedTeachLecturers = allTeachLecturers.filter((tl: any) => tl.teach_id === t.id);
                 const lecturerNames = assignedTeachLecturers.map((tl: any) => {
                     const lec = allLecturers.find((l: any) => l.id === tl.lecturer_id);
@@ -428,15 +428,15 @@ export default function StudentCourseEnrollmentPage() {
 
     const filteredTeaches = () => {
         return availableTeaches().filter(t => {
-            const matchesSearch = 
+            const matchesSearch =
                 !searchQuery() ||
                 (t.course_name || '').toLowerCase().includes(searchQuery().toLowerCase()) ||
                 (t.course_code || '').toLowerCase().includes(searchQuery().toLowerCase()) ||
                 (t.class_name || '').toLowerCase().includes(searchQuery().toLowerCase()) ||
                 (t.lecturer_name || '').toLowerCase().includes(searchQuery().toLowerCase());
 
-            const matchesCredit = 
-                selectedCreditFilter() === 'all' || 
+            const matchesCredit =
+                selectedCreditFilter() === 'all' ||
                 String(t.credits) === selectedCreditFilter();
 
             return matchesSearch && matchesCredit;
@@ -484,7 +484,7 @@ export default function StudentCourseEnrollmentPage() {
                     </Show>
 
                     {/* Header Card with SKS Allowance Calculator */}
-                    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-950 rounded-xs p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-blue-500/20">
+                    <div class="bg-linier-to-r from-slate-900 via-indigo-950 to-blue-950 rounded-xs p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-blue-500/20">
                         <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-blue-500/10 rounded-xs blur-3xl pointer-events-none"></div>
 
                         <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -878,7 +878,7 @@ export default function StudentCourseEnrollmentPage() {
             {/* Confirmation Modal for Unenroll / Drop */}
             <Show when={targetToDrop()}>
                 {(item) => (
-                    <div 
+                    <div
                         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-950/60 backdrop-blur-xs animate-in fade-in duration-150"
                         onClick={(e) => {
                             if (e.target === e.currentTarget) closeDropModal();

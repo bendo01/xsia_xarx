@@ -240,10 +240,10 @@ export default function LecturerTeachGradePage() {
                 }
 
                 // Student name & NIM resolution
-                const resolvedName = da.student_name 
+                const resolvedName = da.student_name
                     || (da.name && !da.name.startsWith('DetailAktifitasPerkuliahan') ? da.name : null)
                     || `Mahasiswa ${rows.length + 1}`;
-                const resolvedCode = da.student_nim 
+                const resolvedCode = da.student_nim
                     || (da.curiculum_detail_sequence ? `NIM: ${da.curiculum_detail_sequence}` : `ID: ${da.id.substring(0, 8)}`);
 
                 rows.push({
@@ -729,7 +729,7 @@ export default function LecturerTeachGradePage() {
                                     type="button"
                                     onClick={handleSaveAll}
                                     disabled={isSavingAll()}
-                                    class="px-5 py-2.5 rounded-xs bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs shadow-md shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all inline-flex items-center gap-2"
+                                    class="px-5 py-2.5 rounded-xs bg-linier-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs shadow-md shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all inline-flex items-center gap-2"
                                 >
                                     <Show when={isSavingAll()} fallback={<span>💾 Simpan Semua Nilai</span>}>
                                         <div class="size-3.5 border-2 border-white border-t-transparent rounded-xs animate-spin"></div>
@@ -1045,8 +1045,8 @@ export default function LecturerTeachGradePage() {
 
                                         return (
                                             <div class={`p-4 rounded-xs border transition-all ${
-                                                student.is_dirty 
-                                                    ? 'bg-amber-50/50 dark:bg-amber-950/20 border-amber-300 dark:border-amber-800 shadow-xs' 
+                                                student.is_dirty
+                                                    ? 'bg-amber-50/50 dark:bg-amber-950/20 border-amber-300 dark:border-amber-800 shadow-xs'
                                                     : 'bg-white dark:bg-neutral-800/80 border-neutral-200 dark:border-neutral-700 shadow-2xs'
                                             } space-y-3.5`}>
                                                 {/* Header: Student Identity & Lock Status */}

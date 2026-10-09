@@ -175,3 +175,24 @@ DELETE FROM academic_student_campaign.detail_activities WHERE teach_id = '019c05
 ```sh
 docker exec openwa-api cat /app/data/.api-key
 ```
+
+
+create ui for candidate admission
+[@candidate-addmission-form.tsx](file:///home/bendo01/Projects/xsia_xarx/client/src/routes/authentification/candidate-addmission-form.tsx) 
+[@candidates.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/models/academic/candidate/master/candidates.rs) 
+[@candidates.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/controllers/academic/candidate/master/candidates.rs) 
+[@individual.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/models/person/master/individual.rs) 
+
+when candidate will fill 
+
+[@candidates.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/models/academic/candidate/master/candidates.rs) 
+[@individual.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/models/person/master/individual.rs) 
+[@user.rs](file:///home/bendo01/Projects/xsia_xarx/server/src/models/auth/user.rs) 
+
+after successfully fill required data
+candidate will given a role `candidate`
+candidate will be redirect to 
+
+[@index.tsx](file:///home/bendo01/Projects/xsia_xarx/client/src/routes/candidate/academic/candidate/master/candidate/[id]/index.tsx) 
+
+which is a dashboard for candidate, that dashboard will

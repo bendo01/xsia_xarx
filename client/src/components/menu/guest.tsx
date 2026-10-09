@@ -123,6 +123,41 @@ export default function MenuGuest() {
             </li>
             */}
 
+            {/* Candidate Admission */}
+            <li class="pt-3 pb-1">
+                <span class="px-2.5 text-[11px] font-bold tracking-wider text-neutral-400 dark:text-neutral-500 uppercase font-mono">
+                    {t('menu.guest.candidateAdmission')}
+                </span>
+            </li>
+            <li>
+                <A
+                    href="/authentification/candidate-addmission-procedure"
+                    activeClass="bg-amber-600/15 text-amber-600 dark:text-amber-400 font-semibold"
+                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-amber-50 dark:hover:bg-neutral-800 hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
+                >
+                    <svg class="size-4 shrink-0 text-amber-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                    </svg>
+                    <span>{t('menu.guest.candidateAdmissionProcedure')}</span>
+                </A>
+            </li>
+            <li>
+                <A
+                    href="/authentification/candidate-addmission-form"
+                    activeClass="bg-emerald-600/15 text-emerald-600 dark:text-emerald-400 font-semibold"
+                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-emerald-50 dark:hover:bg-neutral-800 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                >
+                    <svg class="size-4 shrink-0 text-emerald-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="12" y1="18" x2="12" y2="12" />
+                        <line x1="9" y1="15" x2="15" y2="15" />
+                    </svg>
+                    <span>{t('menu.guest.candidateAdmissionForm')}</span>
+                </A>
+            </li>
+
             {/* Information */}
             {/* 
             <li class="pt-3 pb-1">

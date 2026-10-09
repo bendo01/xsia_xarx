@@ -52,7 +52,8 @@ pub struct Model {
     #[sea_orm(belongs_to, from = "income_id", to = "id")]
     pub income: BelongsTo<crate::models::person::reference::income::Entity>,
     #[sea_orm(belongs_to, from = "identification_type_id", to = "id")]
-    pub identification_type: BelongsTo<crate::models::person::reference::identification_type::Entity>,
+    pub identification_type:
+        BelongsTo<crate::models::person::reference::identification_type::Entity>,
     #[sea_orm(belongs_to, from = "marital_status_id", to = "id")]
     pub marital_status: BelongsTo<crate::models::person::reference::marital_status::Entity>,
     #[sea_orm(belongs_to, from = "profession_id", to = "id")]
@@ -64,6 +65,8 @@ pub struct Model {
     #[sea_orm(has_one)]
     pub biodata: HasOne<super::biodata::Entity>,
     #[sea_orm(has_one)]
+    pub family_card: HasOne<super::family_card::Entity>,
+    #[sea_orm(has_one)]
     pub user: HasOne<crate::models::auth::user::Entity>,
     #[sea_orm(has_one)]
     pub lecturer: HasOne<crate::models::academic::lecturer::master::lecturers::Entity>,
@@ -72,11 +75,12 @@ pub struct Model {
     #[sea_orm(has_many)]
     pub candidates: HasMany<crate::models::academic::candidate::master::candidates::Entity>,
     #[sea_orm(has_many)]
-    pub evaluators: HasMany<crate::models::academic::prior_learning_recognition::transaction::evaluators::Entity>,
+    pub evaluators: HasMany<
+        crate::models::academic::prior_learning_recognition::transaction::evaluators::Entity,
+    >,
     #[sea_orm(has_many)]
     pub students: HasMany<crate::models::academic::student::master::students::Entity>,
 }
-
 
 impl ActiveModelBehavior for ActiveModel {}
 
@@ -87,13 +91,16 @@ impl Linked for IndividualToArchive {
     type ToEntity = crate::models::document::transaction::archives::Entity;
 
     fn link(&self) -> Vec<RelationDef> {
-        let rel: RelationDef = crate::models::document::transaction::archives::Entity::belongs_to(Entity)
-            .from(crate::models::document::transaction::archives::Column::ArchiveableId)
-            .to(Column::Id)
-            .on_condition(|_left, _right| {
-                crate::models::document::transaction::archives::Column::ArchiveableType.eq("Individual").into()
-            })
-            .into();
+        let rel: RelationDef =
+            crate::models::document::transaction::archives::Entity::belongs_to(Entity)
+                .from(crate::models::document::transaction::archives::Column::ArchiveableId)
+                .to(Column::Id)
+                .on_condition(|_left, _right| {
+                    crate::models::document::transaction::archives::Column::ArchiveableType
+                        .eq("Individual")
+                        .into()
+                })
+                .into();
         vec![rel.rev()]
     }
 }

@@ -204,8 +204,12 @@ export function getDashboardPathForRole(
             return indId ? `/student/person/master/individual/${indId}` : '/student/person/master/individual/[id]';
         case 'lecturer':
             return indId ? `/lecturer/person/master/individual/${indId}/show` : '/lecturer/person/master/individual/[id]/show';
-        case 'candidate':
-            return '/candidate/academic/candidate/master/candidate';
+        case 'candidate': {
+            const candidateRole = roleItem?.roleable_id ? roleItem : getStoredRoles().find(r => r.roleable_type?.includes('Candidate') && r.roleable_id);
+            return candidateRole?.roleable_id
+                ? `/candidate/academic/candidate/master/candidate/${candidateRole.roleable_id}`
+                : '/candidate/academic/candidate/master/candidate';
+        }
         case 'rectorat': {
             // Prefer dynamically resolved institution_id stored on roleItem,
             // then fall back to activeInstitutionIdSignal or storage, then env var or university default.

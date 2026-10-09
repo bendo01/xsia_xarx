@@ -6,9 +6,9 @@ import { getStorageItem } from '~/lib/storage';
 import { GetCurrentUser } from '~/controllers/auth/AuthUser';
 import { PersonMasterIndividualControllerShow } from '~/controllers/person/master/PersonMasterIndividualController';
 import { masterApiShow } from '~/controllers/master/masterApiController';
-import { 
-    getLecturerAssignedTeaches, 
-    LecturerAssignedTeachItem 
+import {
+    getLecturerAssignedTeaches,
+    LecturerAssignedTeachItem
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachController';
 import type { AcademicLecturerMasterLecturer } from '~/models/academic/lecturer/master/Lecturer';
 import type { YearlyCreditTrend } from '~/components/chart/teach_credit_chart';
@@ -31,8 +31,8 @@ export default function LecturerTeachIndexPage() {
 
             // 1. First check if active role has roleable_id pointing to lecturer
             const roles = getStoredRoles();
-            const lecturerRole = roles.find(r => 
-                normalizeRoleName(r.name) === 'lecturer' || 
+            const lecturerRole = roles.find(r =>
+                normalizeRoleName(r.name) === 'lecturer' ||
                 r.roleable_type?.toLowerCase().includes('lecturer')
             );
             const directRoleLecturerId = lecturerRole?.roleable_id || '';
@@ -117,7 +117,7 @@ export default function LecturerTeachIndexPage() {
         const yearFilter = selectedAcademicYearFilter();
 
         const filtered = assignedTeaches().filter(item => {
-            const matchesQuery = !query || 
+            const matchesQuery = !query ||
                 (item.course_name && item.course_name.toLowerCase().includes(query)) ||
                 (item.course_code && item.course_code.toLowerCase().includes(query)) ||
                 (item.class_name && item.class_name.toLowerCase().includes(query)) ||
@@ -126,7 +126,7 @@ export default function LecturerTeachIndexPage() {
                 (item.activity_name && item.activity_name.toLowerCase().includes(query)) ||
                 (item.academic_year_name && item.academic_year_name.toLowerCase().includes(query));
 
-            const matchesYear = yearFilter === 'all' || 
+            const matchesYear = yearFilter === 'all' ||
                 item.academic_year_id === yearFilter;
 
             return matchesQuery && matchesYear;
@@ -237,7 +237,7 @@ export default function LecturerTeachIndexPage() {
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
                 {/* Header Banner */}
-                <div class="bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 rounded-xs p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-indigo-500/20">
+                <div class="bg-linier-to-r from-indigo-900 via-purple-900 to-slate-900 rounded-xs p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-indigo-500/20">
                     <div class="absolute -right-16 -top-16 w-80 h-80 bg-indigo-500/10 rounded-xs blur-3xl pointer-events-none"></div>
 
                     <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -481,7 +481,7 @@ export default function LecturerTeachIndexPage() {
                                     No Teaching Classes Found
                                 </h3>
                                 <p class="text-xs text-neutral-500 dark:text-neutral-400 max-w-sm mx-auto">
-                                    {searchQuery() 
+                                    {searchQuery()
                                         ? `No classes matching "${searchQuery()}". Try clearing search filters.`
                                         : 'You have not been assigned to any semester teaching classes yet.'}
                                 </p>
@@ -502,7 +502,7 @@ export default function LecturerTeachIndexPage() {
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 <For each={filteredTeaches()}>
                                     {(item) => {
-                                        const progressPercent = () => item.planning > 0 
+                                        const progressPercent = () => item.planning > 0
                                             ? Math.min(100, Math.round((item.realization / item.planning) * 100))
                                             : 0;
 
@@ -552,8 +552,8 @@ export default function LecturerTeachIndexPage() {
                                                             </span>
                                                         </div>
                                                         <div class="w-full h-2 rounded-xs bg-neutral-200 dark:bg-neutral-700 overflow-hidden">
-                                                            <div 
-                                                                class="h-full rounded-xs bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500"
+                                                            <div
+                                                                class="h-full rounded-xs bg-linier-to-r from-indigo-500 to-purple-500 transition-all duration-500"
                                                                 style={{ width: `${progressPercent()}%` }}
                                                             ></div>
                                                         </div>
@@ -637,7 +637,7 @@ export default function LecturerTeachIndexPage() {
                                                                     {item.realization} / {item.planning || 16}
                                                                 </span>
                                                                 <div class="w-24 h-1.5 rounded-xs bg-neutral-200 dark:bg-neutral-700 overflow-hidden">
-                                                                    <div 
+                                                                    <div
                                                                         class="h-full rounded-xs bg-indigo-600"
                                                                         style={{ width: `${item.planning > 0 ? Math.min(100, Math.round((item.realization / item.planning) * 100)) : 0}%` }}
                                                                     ></div>

@@ -359,7 +359,7 @@ export default function RectoratLecturerDetail() {
                 </Show>
 
                 {/* Profile Header Hero Card */}
-                <div class="bg-gradient-to-r from-violet-900 via-indigo-900 to-slate-900 rounded-xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-violet-500/20">
+                <div class="bg-linier-to-r from-violet-900 via-indigo-900 to-slate-900 rounded-xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-violet-500/20">
                     <div class="absolute -right-16 -top-16 w-80 h-80 bg-violet-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
                     <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">

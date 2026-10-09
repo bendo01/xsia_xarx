@@ -122,6 +122,9 @@ export const en: TranslationSchema = {
             publicInfo: 'Public Information',
             institutionProfile: 'Institution Profile',
             admissionsPmb: 'Admissions & PMB Info',
+            candidateAdmission: 'New Student Admission',
+            candidateAdmissionProcedure: 'Admission Procedure',
+            candidateAdmissionForm: 'Admission Form',
         },
         student: {
             dashboardProfile: 'Dashboard & Profile',

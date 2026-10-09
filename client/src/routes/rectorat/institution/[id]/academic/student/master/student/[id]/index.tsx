@@ -468,7 +468,7 @@ export default function RectoratStudentDetail() {
 
                         {/* Header Banner */}
                         <div class="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-sm overflow-hidden">
-                            <div class="h-2 w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500" />
+                            <div class="h-2 w-full bg-linier-to-r from-blue-500 via-indigo-500 to-cyan-500" />
                             <div class="p-6 sm:p-8">
                                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                                     <div class="flex items-center gap-5">
@@ -605,7 +605,7 @@ export default function RectoratStudentDetail() {
                                         Grafik perkembangan indeks prestasi (IPS & IPK) dan beban kredit SKS mahasiswa berbasis Apache ECharts.
                                     </p>
                                 </div>
-                                {/* 
+                                {/*
                                 <div class="flex items-center gap-2">
                                     <span class="px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-mono text-[11px] font-semibold border border-blue-200 dark:border-blue-800">
                                         Apache ECharts

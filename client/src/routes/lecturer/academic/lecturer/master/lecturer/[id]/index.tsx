@@ -277,7 +277,7 @@ export default function LecturerIndividualShowPage() {
                 <PopupBlockedAlert />
 
                 {/* Profile Header Hero Card */}
-                <div class="bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 rounded-xs p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-indigo-500/20">
+                <div class="bg-linier-to-r from-indigo-900 via-purple-900 to-slate-900 rounded-xs p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-indigo-500/20">
                     <div class="absolute -right-16 -top-16 w-80 h-80 bg-indigo-500/10 rounded-xs blur-3xl pointer-events-none"></div>
 
                     <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -518,7 +518,7 @@ export default function LecturerIndividualShowPage() {
                             </div>
 
                             {/* Teaching Quick Link */}
-                            <div class="p-6 rounded-xs bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/40 dark:to-blue-950/40 border border-indigo-200/80 dark:border-indigo-800/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div class="p-6 rounded-xs bg-linier-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/40 dark:to-blue-950/40 border border-indigo-200/80 dark:border-indigo-800/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                                 <div class="space-y-1">
                                     <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
                                         Teaching & Class Management

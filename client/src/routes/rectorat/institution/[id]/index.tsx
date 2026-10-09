@@ -304,7 +304,7 @@ export default function RectoratInstitutionDashboard() {
                             </span>
                         </div>
                         <div class="h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
-                            <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-300"
+                            <div class="h-full bg-linier-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-300"
                                 style={{ width: totalToLoad() > 0 ? `${(loadedCount() / totalToLoad()) * 100}%` : '0%' }} />
                         </div>
                         <div class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 animate-pulse">

@@ -122,6 +122,9 @@ export const id: TranslationSchema = {
             publicInfo: 'Informasi Publik',
             institutionProfile: 'Profil Institusi',
             admissionsPmb: 'Informasi PMB & Penerimaan',
+            candidateAdmission: 'Pendaftaran Mahasiswa Baru',
+            candidateAdmissionProcedure: 'Prosedur Pendaftaran',
+            candidateAdmissionForm: 'Formulir Pendaftaran',
         },
         student: {
             dashboardProfile: 'Dasbor & Profil',

@@ -194,10 +194,10 @@ export default function Home() {
             <main class="flex-1 relative overflow-hidden">
                 {/* Ambient glowing background shapes */}
                 <div class="absolute inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
-                    <div class="absolute -top-[20%] -left-[10%] w-[65%] h-[65%] bg-[#0f3460]/40 rounded-full blur-[140px] opacity-70"></div>
-                    <div class="absolute top-[40%] -right-[15%] w-[60%] h-[60%] bg-[#0d9488]/20 rounded-full blur-[150px] opacity-60"></div>
-                    <div class="absolute -bottom-[20%] left-[20%] w-[55%] h-[55%] bg-[#3b82f6]/20 rounded-full blur-[140px] opacity-50"></div>
-                    <div class="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] opacity-40"></div>
+                    <div class="absolute top-[-20%] left-[-10%] w-[65%] h-[65%] bg-[#0f3460]/40 rounded-full blur-[140px] opacity-70"></div>
+                    <div class="absolute top-[40%] right-[-15%] w-[60%] h-[60%] bg-[#0d9488]/20 rounded-full blur-[150px] opacity-60"></div>
+                    <div class="absolute bottom-[-20%] left-[20%] w-[55%] h-[55%] bg-[#3b82f6]/20 rounded-full blur-[140px] opacity-50"></div>
+                    <div class="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [bg-size:24px_24px] opacity-40"></div>
                 </div>
 
                 <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
@@ -256,7 +256,18 @@ export default function Home() {
                                 </svg>
                                 <span>Permohonan Akun</span>
                             </A>
-                            {/* 
+
+                            <A
+                                href="/authentification/candidate-addmission-procedure"
+                                class="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xs bg-slate-800/80 hover:bg-slate-700/80 border border-amber-500/40 hover:border-amber-400/70 text-neutral-200 text-sm font-semibold transition-all hover:-translate-y-0.5"
+                            >
+                                <svg class="size-4 shrink-0 text-amber-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                                    <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                                </svg>
+                                <span>Pendaftaran Mahasiswa Baru</span>
+                            </A>
+                            {/*
                             <A
                                 href="/authentification/login"
                                 class="inline-flex items-center justify-center gap-2 px-4 py-3.5 rounded-xs text-neutral-400 hover:text-white hover:bg-white/5 text-xs font-medium transition-colors"
@@ -272,6 +283,33 @@ export default function Home() {
                             */}
                         </div>
                     </header>
+
+                    {/* Candidate Admission Banner */}
+                    <section class="mb-12 bg-linier-to-r from-amber-950/40 via-slate-900/60 to-emerald-950/40 border border-amber-500/25 rounded-xs p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div class="space-y-2 max-w-2xl">
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xs bg-amber-500/10 text-amber-300 text-xs font-mono font-bold uppercase border border-amber-500/30">
+                                Penerimaan Mahasiswa Baru
+                            </div>
+                            <h2 class="text-xl sm:text-2xl font-bold text-white">Ingin mendaftar sebagai calon mahasiswa baru?</h2>
+                            <p class="text-sm text-neutral-300 leading-relaxed">
+                                Pelajari dokumen yang perlu disiapkan dan cara mengisi formulir pendaftaran, lalu buat akun pendaftaran Anda secara daring.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-3 shrink-0">
+                            <A
+                                href="/authentification/candidate-addmission-procedure"
+                                class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xs bg-slate-800 hover:bg-slate-700 text-neutral-200 border border-slate-700 hover:border-slate-600 text-xs font-semibold transition-all"
+                            >
+                                Baca Prosedur Pendaftaran
+                            </A>
+                            <A
+                                href="/authentification/candidate-addmission-form"
+                                class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xs bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-md shadow-emerald-900/40 transition-all"
+                            >
+                                Isi Formulir Pendaftaran
+                            </A>
+                        </div>
+                    </section>
 
                     {/* Interactive Filter Pills */}
                     <div class="flex items-center justify-center mb-10 overflow-x-auto pb-2">
@@ -420,7 +458,7 @@ export default function Home() {
                     </div>
 
                     {/* Comparison Box: Session vs JWT
-                    <section class="bg-gradient-to-r from-emerald-950/30 via-slate-900/60 to-blue-950/30 border border-emerald-500/20 rounded-xs p-6 sm:p-8 mb-16">
+                    <section class="bg-linier-to-r from-emerald-950/30 via-slate-900/60 to-blue-950/30 border border-emerald-500/20 rounded-xs p-6 sm:p-8 mb-16">
                         <div class="max-w-3xl">
                             <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xs bg-emerald-500/10 text-emerald-400 text-xs font-mono font-bold uppercase mb-2 border border-emerald-500/20">
                                 Rekomendasi Keamanan

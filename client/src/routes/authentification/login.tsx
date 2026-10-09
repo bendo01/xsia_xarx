@@ -39,7 +39,7 @@ export default function Login() {
                 if (response.code === 200) {
                     const userName = response.user?.name || "User";
                     toast.success(t('auth.login.welcomeBack', { name: userName }));
-                    
+
                     if (typeof window !== 'undefined' && rememberMe()) {
                         localStorage.setItem('remember_email', value.email);
                     } else if (typeof window !== 'undefined') {
@@ -104,7 +104,7 @@ export default function Login() {
             vy: number;
             l: number;
             splashHeight: number;
-            
+
             constructor() {
                 this.x = Math.random() * width;
                 this.y = Math.random() * -height;
@@ -139,7 +139,7 @@ export default function Login() {
             y: number;
             r: number;
             a: number;
-            
+
             constructor(x: number, y: number) {
                 this.x = x;
                 this.y = y;
@@ -169,12 +169,12 @@ export default function Login() {
         const animate = () => {
             if (!ctx) return;
             ctx.clearRect(0, 0, width, height);
-            
+
             drops.forEach(drop => {
                 drop.update();
                 drop.draw();
             });
-            
+
             splashes = splashes.filter(s => s.a > 0);
             splashes.forEach(splash => {
                 splash.update();
@@ -197,11 +197,11 @@ export default function Login() {
             {/* Background Gradients */}
             <div class="absolute inset-0 w-full h-full pointer-events-none z-0">
                 {/* Top Left Deep Blue */}
-                <div class="absolute -top-[20%] -left-[10%] w-[70%] h-[70%] bg-[#0f3460] rounded-xs mix-blend-screen filter blur-[100px] opacity-80"></div>
+                <div class="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-[#0f3460] rounded-xs mix-blend-screen filter blur-[100px] opacity-80"></div>
                 {/* Bottom Left Deep Red */}
-                <div class="absolute -bottom-[20%] -left-[10%] w-[60%] h-[60%] bg-[#e94560] rounded-xs mix-blend-multiply filter blur-[120px] opacity-90"></div>
+                <div class="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-[#e94560] rounded-xs mix-blend-multiply filter blur-[120px] opacity-90"></div>
                 {/* Bottom Right Bright Orange */}
-                <div class="absolute -bottom-[20%] -right-[10%] w-[70%] h-[70%] bg-[#f9a826] rounded-xs mix-blend-screen filter blur-[120px] opacity-70"></div>
+                <div class="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] bg-[#f9a826] rounded-xs mix-blend-screen filter blur-[120px] opacity-70"></div>
 
                 {/* Custom SVG Wave for deep ambience */}
                 <svg class="absolute bottom-0 w-full h-[80%] opacity-40 mix-blend-overlay" preserveAspectRatio="none" viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg">
@@ -277,9 +277,9 @@ export default function Login() {
                             <line x1="12" y1="16" x2="12.01" y2="16" />
                         </svg>
                         <span class="flex-1 leading-snug">{errorMessage()}</span>
-                        <button 
-                            type="button" 
-                            onClick={() => setErrorMessage(null)} 
+                        <button
+                            type="button"
+                            onClick={() => setErrorMessage(null)}
                             class="text-red-400 hover:text-white transition-colors"
                             aria-label="Dismiss error"
                         >
@@ -292,12 +292,12 @@ export default function Login() {
                 </Show>
 
                 {/* Login Form */}
-                <form 
+                <form
                     onSubmit={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         form.handleSubmit();
-                    }} 
+                    }}
                     class="w-full space-y-4 mb-6"
                 >
                     {/* Email Input Field */}
@@ -408,7 +408,7 @@ export default function Login() {
                             <button
                                 type="submit"
                                 disabled={!canSubmit() || isLoading()}
-                                class="w-full mt-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 px-4 rounded-xs border border-white/10 transition-all duration-300 shadow-[0_4px_20px_rgba(58,118,240,0.35)] hover:shadow-[0_6px_25px_rgba(58,118,240,0.5)] active:scale-[0.99] text-xs tracking-[0.12em] uppercase disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                class="w-full mt-5 bg-linier-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 px-4 rounded-xs border border-white/10 transition-all duration-300 shadow-[0_4px_20px_rgba(58,118,240,0.35)] hover:shadow-[0_6px_25px_rgba(58,118,240,0.5)] active:scale-[0.99] text-xs tracking-[0.12em] uppercase disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 <Show when={isLoading()} fallback={
                                     <>

@@ -122,6 +122,9 @@ export interface TranslationSchema {
             publicInfo: string;
             institutionProfile: string;
             admissionsPmb: string;
+            candidateAdmission: string;
+            candidateAdmissionProcedure: string;
+            candidateAdmissionForm: string;
         };
         student: {
             dashboardProfile: string;

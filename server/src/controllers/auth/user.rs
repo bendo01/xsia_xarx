@@ -370,7 +370,7 @@ pub async fn delete(
 // Authentication Endpoints
 // ==============================================
 
-fn generate_random_token(length: usize) -> String {
+pub(crate) fn generate_random_token(length: usize) -> String {
     thread_rng()
         .sample_iter(&Alphanumeric)
         .take(length)
@@ -378,7 +378,7 @@ fn generate_random_token(length: usize) -> String {
         .collect()
 }
 
-fn hash_password(password: &str) -> Result<String, StatusError> {
+pub(crate) fn hash_password(password: &str) -> Result<String, StatusError> {
     let salt = SaltString::generate(&mut OsRng);
     let argon2 = Argon2::default();
     let password_hash = argon2

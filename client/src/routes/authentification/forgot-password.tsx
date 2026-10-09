@@ -170,9 +170,9 @@ export default function ForgotPasswordRequest() {
         <div class="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-[#0A0F1D] px-4 py-8 select-none">
             {/* Ambient Background Gradient Spheres */}
             <div class="absolute inset-0 w-full h-full pointer-events-none z-0">
-                <div class="absolute -top-[15%] -left-[10%] w-[65%] h-[65%] bg-[#0d9488]/30 rounded-xs mix-blend-screen filter blur-[120px] opacity-70"></div>
-                <div class="absolute -bottom-[20%] -left-[10%] w-[60%] h-[60%] bg-[#3b82f6]/25 rounded-xs mix-blend-screen filter blur-[120px] opacity-60"></div>
-                <div class="absolute -bottom-[15%] -right-[10%] w-[65%] h-[65%] bg-[#10b981]/25 rounded-xs mix-blend-screen filter blur-[120px] opacity-60"></div>
+                <div class="absolute top-[-15%] left-[-10%] w-[65%] h-[65%] bg-[#0d9488]/30 rounded-xs mix-blend-screen filter blur-[120px] opacity-70"></div>
+                <div class="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-[#3b82f6]/25 rounded-xs mix-blend-screen filter blur-[120px] opacity-60"></div>
+                <div class="absolute bottom-[-15%] right-[-10%] w-[65%] h-[65%] bg-[#10b981]/25 rounded-xs mix-blend-screen filter blur-[120px] opacity-60"></div>
                 <canvas ref={canvasRef} class="absolute inset-0 w-full h-full opacity-70"></canvas>
             </div>
 
@@ -285,7 +285,7 @@ export default function ForgotPasswordRequest() {
                             <button
                                 type="submit"
                                 disabled={!canSubmit() || isLoading()}
-                                class="w-full mt-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-3.5 px-4 rounded-xs border border-emerald-400/20 transition-all duration-300 shadow-[0_4px_20px_rgba(16,185,129,0.3)] hover:shadow-[0_6px_25px_rgba(16,185,129,0.45)] active:scale-[0.99] text-xs tracking-[0.12em] uppercase disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                class="w-full mt-4 bg-linier-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-3.5 px-4 rounded-xs border border-emerald-400/20 transition-all duration-300 shadow-[0_4px_20px_rgba(16,185,129,0.3)] hover:shadow-[0_6px_25px_rgba(16,185,129,0.45)] active:scale-[0.99] text-xs tracking-[0.12em] uppercase disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 <Show when={isLoading()} fallback={
                                     <>
