@@ -25,6 +25,7 @@ pub fn get_tasks() -> Vec<Box<dyn Task>> {
         Box::new(sync_permissions::SyncPermissionsTask),
         Box::new(route_list::RouteListTask),
         Box::new(utilities::generate_permission_from_route::GeneratePermissionFromRouteTask),
+        Box::new(utilities::generate_permission_from_client::GeneratePermissionFromClientTask),
         Box::new(utilities::hash_password::HashPasswordTask),
         Box::new(utilities::sync_staff_roles::SyncStaffRolesTask),
         Box::new(utilities::sync_student_roles::SyncStudentRolesTask),

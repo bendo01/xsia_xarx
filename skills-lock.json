@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "rust": {
+      "source": "plurigrid/asi",
+      "sourceType": "github",
+      "skillPath": "skills/rust/SKILL.md",
+      "computedHash": "c64f021143fef943cdaaa5c259feec7534f2daf3ee476eafa5707cef13dc74dc"
+    }
+  }
+}

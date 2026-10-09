@@ -115,7 +115,7 @@ export async function getLoggedInStaffUnit(preferredUnitId?: string): Promise<Lo
 
         if (indId && indId !== '00000000-0000-0000-0000-000000000000') {
             try {
-                const indRes = await masterApiShow<any>('person/master/individuals', indId);
+                const indRes = await masterApiShow<any>('person/master/individual', indId);
                 if (indRes.data?.employees && Array.isArray(indRes.data.employees)) {
                     for (const emp of indRes.data.employees) {
                         if (emp.staffes && Array.isArray(emp.staffes) && emp.staffes.length > 0) {

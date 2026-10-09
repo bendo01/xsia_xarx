@@ -171,7 +171,7 @@ export default function CourseDepartmentLecturerMasterPage() {
         try {
             const [uList, sList] = await Promise.all([
                 listStudyUnits(),
-                masterApiIndex('common/reference/references', { group: 'LecturerStatus' }).then((r: any) => r.data || []),
+                masterApiIndex('academic/lecturer/reference/statuses', { page: 1, per_page: 500 }).then((r: any) => r.data || []),
             ]);
 
             setUnits(uList);

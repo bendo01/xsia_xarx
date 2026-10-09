@@ -175,7 +175,7 @@ export async function getLecturerHomebases(lecturerId: string): Promise<{
                     } catch {}
                     if (!unitName) {
                         try {
-                            const feederRes = await masterApiShow('academic/feeder/master/program-studi', h.unit_id);
+                            const feederRes = await masterApiShow('feeder/master/program-studi', h.unit_id);
                             if (feederRes.data?.name || feederRes.data?.nama_program_studi) {
                                 unitName = feederRes.data.nama_program_studi || feederRes.data.name;
                                 unitNameCache.set(h.unit_id, unitName!);

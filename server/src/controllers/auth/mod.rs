@@ -75,6 +75,7 @@ pub fn router() -> Router {
         .push(Router::with_path("forgot-password").post(user::forgot_password))
         .push(Router::with_path("reset-password").post(user::reset_password))
         .push(Router::with_path("resend-verification-token").post(user::resend_verification_token))
+        .push(Router::with_path("account_acquisition").post(user::account_acquisition))
         // Protected Auth Endpoints
         .push(
             Router::with_path("current")

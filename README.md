@@ -949,6 +949,12 @@ SELECT pgmq.create('healthcheck'); SELECT pgmq.drop_queue('healthcheck');
 
 ---
 
+## Fix Role
+
+```sh
+cargo run -- task generate:permission-from-client --prune
+```
+
 ## 📄 License
 
 **Personal License** — Copyright © 2026 Benny L.E.P. All rights reserved.
