@@ -264,7 +264,7 @@ export default function Login() {
                     {t('auth.login.subtitle')}
                 </p>
 
-                <p class="text-center text-white/80 text-sm font-normal leading-relaxed mb-6 px-2 max-w-[380px]">
+                <p class="text-center text-white/80 text-sm font-normal leading-relaxed mb-6 px-2 max-w-95">
                     {t('auth.login.description')}
                 </p>
 

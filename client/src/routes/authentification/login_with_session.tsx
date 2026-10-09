@@ -37,7 +37,7 @@ export default function LoginWithSession() {
 
                 if (response.code === 200) {
                     const userName = response.user?.name || "User";
-                    toast.success(t('auth.session.sessionStarted', { name: userName }));
+                    toast.success(t('auth.sessionLogin.sessionStarted', { name: userName }));
 
                     // Process roles and determine target dashboard
                     const targetDashboard = await processLoginSuccess(response, true);
@@ -47,7 +47,7 @@ export default function LoginWithSession() {
                         navigate(targetDashboard, { replace: true });
                     }, 400);
                 } else {
-                    const msg = response.message || t('auth.session.invalidSession');
+                    const msg = response.message || t('auth.sessionLogin.invalidSession');
                     setErrorMessage(msg);
                     toast.danger(msg);
                 }
@@ -233,7 +233,7 @@ export default function LoginWithSession() {
                         <line x1="12" y1="8" x2="12.01" y2="8" />
                     </svg>
                     <span>
-                        {t('auth.session.notice')}
+                        {t('auth.sessionLogin.notice')}
                     </span>
                 </div>
 
@@ -370,7 +370,7 @@ export default function LoginWithSession() {
                             >
                                 <Show when={isLoading()} fallback={
                                     <>
-                                        <span>{t('auth.session.startSessionButton')}</span>
+                                        <span>{t('auth.sessionLogin.startSessionButton')}</span>
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M5 12h14" />
                                             <path d="m12 5 7 7-7 7" />
@@ -382,7 +382,7 @@ export default function LoginWithSession() {
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
-                                        <span>{t('auth.session.startingSession')}</span>
+                                        <span>{t('auth.sessionLogin.startingSession')}</span>
                                     </>
                                 )}</Show>
                             </button>
@@ -397,7 +397,7 @@ export default function LoginWithSession() {
                         <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="m15 18-6-6 6-6" />
                         </svg>
-                        {t('auth.session.standardLogin')}
+                        {t('auth.sessionLogin.backToJwt')}
                     </A>
                     */}
                     <A href="/" class="hover:text-white transition-colors">

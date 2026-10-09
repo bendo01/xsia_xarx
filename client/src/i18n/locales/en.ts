@@ -104,6 +104,8 @@ export const en: TranslationSchema = {
             subtitle: 'Stateful Authentication',
             description: 'Establish a secure server-managed HTTP session for desktop and administrative operations.',
             startSessionButton: 'Start Secure Session',
+            startingSession: 'Starting Session...',
+            notice: 'Session login uses a secure server-managed cookie. Your session ends when you sign out or it expires.',
             sessionStarted: 'Session started! Welcome back, {{name}}.',
             backToJwt: 'Return to standard JWT login',
             invalidSession: 'Invalid session credentials.',

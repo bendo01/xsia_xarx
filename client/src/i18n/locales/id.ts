@@ -104,6 +104,8 @@ export const id: TranslationSchema = {
             subtitle: 'Autentikasi Berbasis Sesi',
             description: 'Buka sesi HTTP aman yang dikelola server untuk operasi desktop dan operasional administratif.',
             startSessionButton: 'Mulai Sesi Aman',
+            startingSession: 'Memulai Sesi...',
+            notice: 'Login sesi menggunakan cookie aman yang dikelola server. Sesi berakhir saat Anda keluar atau kedaluwarsa.',
             sessionStarted: 'Sesi aktif! Selamat datang kembali, {{name}}.',
             backToJwt: 'Kembali ke login standar (JWT)',
             invalidSession: 'Kredensial sesi tidak valid.',

@@ -104,6 +104,8 @@ export interface TranslationSchema {
             subtitle: string;
             description: string;
             startSessionButton: string;
+            startingSession: string;
+            notice: string;
             sessionStarted: string;
             backToJwt: string;
             invalidSession: string;
