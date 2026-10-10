@@ -8,6 +8,11 @@ pub struct EmailConfig {
     pub smtp_password: Option<String>,
     pub from_email: String,
     pub from_name: String,
+    /// Base URL of the web client, used to build links inside emails
+    pub app_url: String,
+    pub system_name: String,
+    pub institution_name: String,
+    pub institution_address: String,
 }
 
 impl Default for EmailConfig {
@@ -19,6 +24,10 @@ impl Default for EmailConfig {
             smtp_password: None,
             from_email: "noreply@xsia-xarx.com".to_string(),
             from_name: "Xsia Xarx".to_string(),
+            app_url: "http://localhost:3000".to_string(),
+            system_name: "Sistem Informasi Akademik".to_string(),
+            institution_name: "".to_string(),
+            institution_address: "".to_string(),
         }
     }
 }
@@ -38,6 +47,12 @@ impl EmailConfig {
             smtp_password: env::var("SMTP_PASSWORD").ok(),
             from_email: env::var("SMTP_FROM_EMAIL").unwrap_or(default_config.from_email),
             from_name: env::var("SMTP_FROM_NAME").unwrap_or(default_config.from_name),
+            app_url: env::var("APP_FRONTEND_URL")
+                .map(|v| v.trim_end_matches('/').to_string())
+                .unwrap_or(default_config.app_url),
+            system_name: env::var("APP_SYSTEM_NAME").unwrap_or(default_config.system_name),
+            institution_name: env::var("INSTITUTION_NAME").unwrap_or(default_config.institution_name),
+            institution_address: env::var("INSTITUTION_ADDRESS").unwrap_or(default_config.institution_address),
         }
     }
 }

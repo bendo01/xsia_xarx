@@ -17,7 +17,7 @@ use crate::dtos::common::reference::{MessageResponse, OptionItem, OptionRequest}
 use crate::models::auth::user as entity_mod;
 use crate::models::auth::role as role_entity;
 use crate::config::jwt::{create_token, JwtConfig};
-use crate::jobs::email::{self, EmailJob};
+use crate::jobs::email;
 use pgmq::PGMQueueExt;
 use argon2::{
     password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
@@ -424,6 +424,7 @@ pub async fn register(
     }
 
     let hashed_password = hash_password(&payload.password)?;
+    let payload_name = payload.name.clone();
     let verification_token = Uuid::new_v4().to_string();
     let now = Utc::now().naive_utc();
     let new_id = Uuid::new_v4();
@@ -437,7 +438,7 @@ pub async fn register(
         email: Set(payload.email.clone()),
         password: Set(hashed_password),
         api_key: Set(api_key),
-        name: Set(payload.name),
+        name: Set(payload_name.clone()),
         individual_id: Set(individual_id),
         is_active: Set(false),
         current_role_id: Set(None),
@@ -458,11 +459,8 @@ pub async fn register(
     active_model.insert(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
     // Send verification email via queue
-    let job = EmailJob {
-        to: payload.email.clone(),
-        subject: "Welcome! Please verify your email".to_string(),
-        body: format!("Please verify your email by entering the following token:\n{}", verification_token),
-    };
+    let job = crate::mailers::auth::verify_email(&payload_name, &payload.email, &verification_token)
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
     email::enqueue_email(queue, &job).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -920,7 +918,8 @@ pub async fn forgot_password(
         }
 
         let reset_token = Uuid::new_v4().to_string();
-        
+        let user_name = existing.name.clone();
+
         let mut active_model = existing.into_active_model();
         active_model.reset_token = Set(Some(reset_token.clone()));
         active_model.reset_sent_at = Set(Some(now));
@@ -930,11 +929,8 @@ pub async fn forgot_password(
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-        let job = EmailJob {
-            to: payload.email.clone(),
-            subject: "Password Reset Request".to_string(),
-            body: format!("You requested a password reset. Use the following token to reset your password:\n{}", reset_token),
-        };
+        let job = crate::mailers::auth::reset_password(&user_name, &payload.email, &reset_token)
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         email::enqueue_email(queue, &job).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -1010,11 +1006,8 @@ pub async fn reset_password(
     let updated_user = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
     // Send email notification
-    let job = EmailJob {
-        to: updated_user.email.clone(),
-        subject: "Password Reset Successful".to_string(),
-        body: "Your password has been successfully reset. If you did not perform this action, please contact support immediately.".to_string(),
-    };
+    let job = crate::mailers::auth::password_reset_success(&updated_user.name, &updated_user.email)
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
     email::enqueue_email(queue, &job).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
     // Get phone number to create WA link
@@ -1238,11 +1231,8 @@ pub async fn resend_verification_token(
         let updated_user = active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         let wa_text = format!("Please verify your email by entering the following token:\n{}", verification_token);
-        let job = EmailJob {
-            to: payload.email.clone(),
-            subject: "Verify your email".to_string(),
-            body: wa_text.clone(),
-        };
+        let job = crate::mailers::auth::verify_email(&updated_user.name, &payload.email, &verification_token)
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         email::enqueue_email(queue, &job).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
@@ -1436,11 +1426,8 @@ pub async fn account_acquisition(
     }
 
     // 9. Send email and open WA
-    let job = EmailJob {
-        to: payload.email.clone(),
-        subject: "Account Acquisition Successful".to_string(),
-        body: "Your account has been successfully created. You can now login.".to_string(),
-    };
+    let job = crate::mailers::auth::account_created(&individual.name, &payload.email)
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
     email::enqueue_email(queue, &job).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 

@@ -7,6 +7,7 @@ pub mod models;
 pub mod config;
 pub mod jobs;
 pub mod library;
+pub mod mailers;
 pub mod middleware;
 pub mod tasks;
 pub mod services;

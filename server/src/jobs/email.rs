@@ -1,4 +1,5 @@
 use std::time::Duration;
+use lettre::message::MultiPart;
 use lettre::{Message, SmtpTransport, Transport, transport::smtp::authentication::Credentials};
 use pgmq::errors::PgmqError;
 use pgmq::PGMQueueExt;
@@ -13,12 +14,15 @@ pub struct EmailJob {
     pub to: String,
     pub subject: String,
     pub body: String,
+    /// Optional HTML version; when present the email is sent as multipart/alternative with `body` as the plain-text fallback
+    #[serde(default)]
+    pub html_body: Option<String>,
 }
 
 pub async fn send_email(job: &EmailJob) -> Result<(), std::io::Error> {
     let email_config = EmailConfig::from_env();
 
-    let email = Message::builder()
+    let builder = Message::builder()
         .from(
             format!("{} <{}>", email_config.from_name, email_config.from_email)
                 .parse()
@@ -28,9 +32,13 @@ pub async fn send_email(job: &EmailJob) -> Result<(), std::io::Error> {
             .to
             .parse()
             .map_err(|e: lettre::address::AddressError| std::io::Error::other(e.to_string()))?)
-        .subject(&job.subject)
-        .body(job.body.clone())
-        .map_err(|e| std::io::Error::other(e.to_string()))?;
+        .subject(&job.subject);
+
+    let email = match &job.html_body {
+        Some(html) => builder.multipart(MultiPart::alternative_plain_html(job.body.clone(), html.clone())),
+        None => builder.body(job.body.clone()),
+    }
+    .map_err(|e| std::io::Error::other(e.to_string()))?;
 
     let creds = if let Some(password) = email_config.smtp_password {
         Some(Credentials::new(email_config.smtp_user.clone(), password))
