@@ -130,6 +130,10 @@ export default function RectoratEmployeeCreate() {
     const [lookupResults, setLookupResults] = createSignal<IndividualLookupItem[]>([]);
     const [isSearching, setIsSearching] = createSignal(false);
     const [selected, setSelected] = createSignal<IndividualLookupItem | null>(null);
+    // Login account for a selected individual that has none
+    const [accountEmail, setAccountEmail] = createSignal('');
+    const [accountPassword, setAccountPassword] = createSignal('');
+    const needsAccount = () => !!selected() && !selected()!.user_id;
     let lookupTimeout: ReturnType<typeof setTimeout> | undefined;
     let lookupSeq = 0;
     onCleanup(() => clearTimeout(lookupTimeout));
@@ -236,6 +240,9 @@ export default function RectoratEmployeeCreate() {
                 return;
             }
             payload = { ...base, individual_id: ind.id };
+            if (needsAccount()) {
+                payload.new_account = { email: accountEmail().trim(), password: accountPassword() };
+            }
         } else {
             const f = form();
             if (!f.gender_id || !f.religion_id) {
@@ -279,7 +286,7 @@ export default function RectoratEmployeeCreate() {
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
             <TopBar />
 
-            <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 max-w-5xl">
+            <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
 
                 {/* Page Header */}
                 <div class="flex flex-col md:flex-row md:items-end md:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-6 gap-4">
@@ -397,6 +404,17 @@ export default function RectoratEmployeeCreate() {
                                 </Show>
                             </div>
                         </div>
+
+                        <Show when={needsAccount()}>
+                            <Section title="Akun Login" description="Individu ini belum memiliki akun. Buat akun agar pegawai dapat login dan diberi peran.">
+                                <Field label="Email" required>
+                                    <input type="email" class={inputClass} required autocomplete="off" value={accountEmail()} onInput={(e) => setAccountEmail(e.currentTarget.value)} />
+                                </Field>
+                                <Field label="Kata Sandi" required>
+                                    <input type="password" class={inputClass} required minLength={8} autocomplete="new-password" value={accountPassword()} onInput={(e) => setAccountPassword(e.currentTarget.value)} />
+                                </Field>
+                            </Section>
+                        </Show>
                     </Show>
 
                     {/* New Individual */}
@@ -471,7 +489,7 @@ export default function RectoratEmployeeCreate() {
                             <input id="employee-code" class={`${inputClass} font-mono`} required value={code()} onInput={(e) => setCode(e.currentTarget.value)} />
                         </Field>
                         <Field label="Status">
-                            <label class="inline-flex items-center gap-2 h-[42px] text-sm cursor-pointer">
+                            <label class="inline-flex items-center gap-2 h-[10.5] text-sm cursor-pointer">
                                 <input type="checkbox" class="size-4 accent-indigo-600" checked={isActive()} onChange={(e) => setIsActive(e.currentTarget.checked)} />
                                 Aktif
                             </label>

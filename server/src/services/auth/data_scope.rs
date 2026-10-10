@@ -6,6 +6,7 @@ use sea_orm::sea_query::{Query, SelectStatement, UnionType};
 use sea_orm::{ColumnTrait, Condition, ConnectionTrait, EntityTrait, QueryFilter, Select};
 use uuid::Uuid;
 
+use crate::middleware::auth::auth_user_id;
 use crate::middleware::rbac::is_administrator;
 use crate::models::academic::campaign::transaction::{class_codes, teach_lecturers, teaches};
 use crate::models::academic::student::adviser::{counsellors, decrees};
@@ -211,6 +212,24 @@ fn advisee_ids(lecturer_id: Uuid) -> SelectStatement {
         .and_where(counsellors::Column::DeletedAt.is_null())
         .union(UnionType::Distinct, final_assignment)
         .to_owned()
+}
+
+/// Whether `student_id` is the student behind one of the signed-in user's own roles. A user may read
+/// their own student record whatever role is active, e.g. the role switcher labelling a student role
+/// while a rectorate role of another institution is active.
+pub async fn is_own_student<C: ConnectionTrait>(db: &C, depot: &Depot, student_id: Uuid) -> Result<bool, StatusError> {
+    let Some(user_id) = auth_user_id(depot) else {
+        return Ok(false);
+    };
+    let own_role = role::Entity::find()
+        .filter(role::Column::UserId.eq(user_id))
+        .filter(role::Column::RoleableType.eq(STUDENT_ROLEABLE_TYPE))
+        .filter(role::Column::RoleableId.eq(student_id))
+        .filter(role::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(internal)?;
+    Ok(own_role.is_some())
 }
 
 fn internal(e: sea_orm::DbErr) -> StatusError {

@@ -94,7 +94,8 @@ function normalizePath(rendered) {
     return p;
 }
 
-function methodOf(optionsNode, scope) {
+// A method that is a parameter of the enclosing helper becomes a marker, filled in at its call sites
+function methodOf(optionsNode, scope, params) {
     let node = optionsNode;
     if (node && ts.isIdentifier(node)) node = scope.get(node.text);
     if (!node) return 'GET';
@@ -103,9 +104,12 @@ function methodOf(optionsNode, scope) {
         if (ts.isPropertyAssignment(prop) && prop.name.getText().replace(/['"]/g, '') === 'method') {
             const v = prop.initializer;
             if (ts.isStringLiteral(v) || ts.isNoSubstitutionTemplateLiteral(v)) return v.text.toUpperCase();
+            if (ts.isIdentifier(v) && params.has(v.text)) return paramMarker(params.get(v.text));
             return null;
         }
-        if (ts.isShorthandPropertyAssignment(prop) && prop.name.text === 'method') return null;
+        if (ts.isShorthandPropertyAssignment(prop) && prop.name.text === 'method') {
+            return params.has('method') ? paramMarker(params.get('method')) : null;
+        }
     }
     return 'GET';
 }
@@ -230,8 +234,8 @@ function analyze(file) {
                         (ts.isPropertyAccessExpression(callee) && callee.name.text === 'fetch' && ['window', 'globalThis'].includes(callee.expression.getText()));
                     if (isFetch && n.arguments.length) {
                         const urls = renderUrls(n.arguments[0], ctx);
-                        const method = methodOf(n.arguments[1], scope);
-                        if (!urls.length || method === null || !HTTP_METHODS.has(method)) {
+                        const method = methodOf(n.arguments[1], scope, params);
+                        if (!urls.length || method === null || !(HTTP_METHODS.has(method) || isTemplate(method))) {
                             decl.unresolved.push({ where, expression: n.getText().slice(0, 160) });
                         } else {
                             decl.fetches.push({ method, urls, where });
@@ -270,7 +274,18 @@ function resolveLocal(mod, localName) {
     return imp && imp.name !== '*' ? resolveExport(imp.file, imp.name) : null;
 }
 
-const isTemplate = (url) => url.includes('{@');
+const isTemplate = (pattern) => pattern.includes('{@');
+
+// Replace every {@i} marker in `pattern` with each alternative rendered for the caller's i-th argument
+function fillMarkers(pattern, args, transform = (a) => a) {
+    let outs = [pattern];
+    for (const m of pattern.matchAll(/\{@(\d+)\}/g)) {
+        const alts = (args[Number(m[1])] ?? []).map(transform);
+        const fill = alts.length ? alts : ['{}'];
+        outs = outs.flatMap((o) => fill.map((a) => o.split(m[0]).join(a))).slice(0, MAX_ALTERNATIVES);
+    }
+    return outs;
+}
 
 // Requests a declaration makes, as { method, url, where }; urls may still contain {@i} markers for its own params
 const requestCache = new Map();
@@ -285,14 +300,11 @@ function requestsOf(mod, name) {
         const target = resolveLocal(mod, call.callee);
         if (!target) continue;
         for (const r of requestsOf(target.mod, target.name)) {
-            if (!isTemplate(r.url)) continue; // concrete requests are counted when the callee itself is reached
-            let urls = [r.url];
-            for (const m of r.url.matchAll(/\{@(\d+)\}/g)) {
-                const alts = call.args[Number(m[1])] ?? [];
-                const fill = alts.length ? alts : ['{}'];
-                urls = urls.flatMap((u) => fill.map((a) => u.split(m[0]).join(a))).slice(0, MAX_ALTERNATIVES);
-            }
-            for (const url of urls) out.push({ method: r.method, url, where: `${call.where} -> ${r.where}` });
+            // Concrete requests are counted when the callee itself is reached
+            if (!isTemplate(r.url) && !isTemplate(r.method)) continue;
+            const urls = fillMarkers(r.url, call.args);
+            const methods = fillMarkers(r.method, call.args, (a) => a.toUpperCase());
+            for (const method of methods) for (const url of urls) out.push({ method, url, where: `${call.where} -> ${r.where}` });
         }
     }
     requestCache.set(key, out);
@@ -340,9 +352,9 @@ function collectArea(rootFiles) {
             if (!decl) continue;
             for (const r of requestsOf(mod, n)) {
                 // Templates are resolved at their call sites; only concrete paths are kept
-                if (isTemplate(r.url)) continue;
+                if (isTemplate(r.url) || isTemplate(r.method)) continue;
                 const p = normalizePath(r.url);
-                if (!p || p.split('/')[0] === '{}') {
+                if (!p || p.split('/')[0] === '{}' || !HTTP_METHODS.has(r.method)) {
                     unresolved.set(r.where, { where: r.where, expression: `${r.method} ${r.url}` });
                     continue;
                 }

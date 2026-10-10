@@ -130,7 +130,7 @@ pub struct RegisterEmployeeNewIndividual {
     pub village_id: Option<Uuid>,
 }
 
-/// Exactly one of `individual_id` (existing individual + user) or `new_individual` must be set
+/// Exactly one of `individual_id` (existing individual, plus `new_account` when it has no user) or `new_individual` must be set
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
 pub struct RegisterEmployeeRequest {
     pub institution_id: Uuid,
@@ -140,6 +140,17 @@ pub struct RegisterEmployeeRequest {
     pub decree_date: Option<NaiveDate>,
     pub is_active: bool,
     pub individual_id: Option<Uuid>,
+    /// Login account for an existing individual that has none; required in that case
+    #[validate(nested)]
+    pub new_account: Option<RegisterEmployeeNewAccount>,
     #[validate(nested)]
     pub new_individual: Option<RegisterEmployeeNewIndividual>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
+pub struct RegisterEmployeeNewAccount {
+    #[validate(email(message = "Email is invalid"))]
+    pub email: String,
+    #[validate(length(min = 8, message = "Password must be at least 8 characters"))]
+    pub password: String,
 }

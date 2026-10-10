@@ -31,6 +31,55 @@ fn internal(e: impl ToString) -> StatusError {
     StatusError::internal_server_error().brief(e.to_string())
 }
 
+/// Creates the (verified, active) login account of an individual; rejects an email already in use
+async fn create_user_account<C: sea_orm::ConnectionTrait>(
+    db: &C,
+    individual_id: Uuid,
+    name: &str,
+    email: &str,
+    password: &str,
+    actor: Option<Uuid>,
+) -> Result<(), StatusError> {
+    let email_taken = user::Entity::find()
+        .filter(user::Column::Email.eq(email))
+        .filter(user::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(internal)?;
+    if email_taken.is_some() {
+        return Err(StatusError::bad_request().brief("Email sudah digunakan oleh akun lain"));
+    }
+
+    let now = Utc::now().naive_utc();
+    user::ActiveModel {
+        id: Set(Uuid::now_v7()),
+        pid: Set(Uuid::new_v4()),
+        email: Set(email.to_string()),
+        password: Set(hash_password(password)?),
+        api_key: Set(generate_random_token(32)),
+        name: Set(name.to_string()),
+        individual_id: Set(individual_id),
+        is_active: Set(true),
+        current_role_id: Set(None),
+        reset_token: Set(None),
+        reset_sent_at: Set(None),
+        email_verification_token: Set(None),
+        email_verification_sent_at: Set(None),
+        email_verified_at: Set(Some(now)),
+        magic_link_token: Set(None),
+        magic_link_expiration: Set(None),
+        created_at: Set(now),
+        updated_at: Set(now),
+        deleted_at: Set(None),
+        created_by: Set(actor),
+        updated_by: Set(actor),
+    }
+    .insert(db)
+    .await
+    .map_err(internal)?;
+    Ok(())
+}
+
 pub async fn load_employee_with_relations(
     item: &entity_mod::Model,
     db: &DatabaseConnection,
@@ -605,6 +654,27 @@ pub async fn register(
                 .await
                 .map_err(internal)?
                 .ok_or_else(|| StatusError::not_found().brief("Data individu tidak ditemukan"))?;
+
+            let has_account = user::Entity::find()
+                .filter(user::Column::IndividualId.eq(ind.id))
+                .filter(user::Column::DeletedAt.is_null())
+                .one(&txn)
+                .await
+                .map_err(internal)?
+                .is_some();
+            match (has_account, payload.new_account) {
+                (false, Some(account)) => {
+                    let email = account.email.trim().to_lowercase();
+                    create_user_account(&txn, ind.id, &ind.name, &email, &account.password, actor).await?;
+                }
+                (false, None) => {
+                    return Err(StatusError::bad_request().brief("Individu ini belum memiliki akun, isi email dan password akun baru"));
+                }
+                (true, Some(_)) => {
+                    return Err(StatusError::bad_request().brief("Individu ini sudah memiliki akun"));
+                }
+                (true, None) => {}
+            }
             (ind.id, ind.name)
         }
         (None, Some(new)) => {
@@ -620,16 +690,6 @@ pub async fn register(
                 .map_err(internal)?;
             if nik_taken.is_some() {
                 return Err(StatusError::bad_request().brief("NIK sudah terdaftar, gunakan opsi individu yang sudah ada"));
-            }
-
-            let email_taken = user::Entity::find()
-                .filter(user::Column::Email.eq(&email))
-                .filter(user::Column::DeletedAt.is_null())
-                .one(&txn)
-                .await
-                .map_err(internal)?;
-            if email_taken.is_some() {
-                return Err(StatusError::bad_request().brief("Email sudah digunakan oleh akun lain"));
             }
 
             let individual_id = Uuid::now_v7();
@@ -653,32 +713,7 @@ pub async fn register(
             .await
             .map_err(internal)?;
 
-            user::ActiveModel {
-                id: Set(Uuid::now_v7()),
-                pid: Set(Uuid::new_v4()),
-                email: Set(email.clone()),
-                password: Set(hash_password(&new.password)?),
-                api_key: Set(generate_random_token(32)),
-                name: Set(name.clone()),
-                individual_id: Set(individual_id),
-                is_active: Set(true),
-                current_role_id: Set(None),
-                reset_token: Set(None),
-                reset_sent_at: Set(None),
-                email_verification_token: Set(None),
-                email_verification_sent_at: Set(None),
-                email_verified_at: Set(Some(now)),
-                magic_link_token: Set(None),
-                magic_link_expiration: Set(None),
-                created_at: Set(now),
-                updated_at: Set(now),
-                deleted_at: Set(None),
-                created_by: Set(actor),
-                updated_by: Set(actor),
-            }
-            .insert(&txn)
-            .await
-            .map_err(internal)?;
+            create_user_account(&txn, individual_id, &name, &email, &new.password, actor).await?;
 
             phones::ActiveModel {
                 id: Set(Uuid::now_v7()),

@@ -18,7 +18,7 @@ use crate::dtos::academic::student::master::students::{
 use crate::dtos::common::reference::{MessageResponse, OptionItem};
 use crate::models::academic::student::master::students as entity_mod;
 use crate::middleware::auth::auth_user_id;
-use crate::services::auth::data_scope::DataScope;
+use crate::services::auth::data_scope::{DataScope, is_own_student};
 
 struct UnitInfo {
     code: Option<String>,
@@ -911,7 +911,7 @@ pub async fn show(
     let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
 
     let scope = DataScope::resolve(db, depot).await?;
-    if !scope.is_visible::<entity_mod::Entity, _>(db, id).await? {
+    if !scope.is_visible::<entity_mod::Entity, _>(db, id).await? && !is_own_student(db, depot, id).await? {
         return Err(StatusError::not_found().brief("Student not found"));
     }
     let res = find_student_response_by_id(db, id)

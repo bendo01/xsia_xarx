@@ -450,6 +450,7 @@ cargo run -- task
 | `EstimateRiwayatSertifikasiDosen` | Fetch and process GetRiwayatSertifikasiDosen data from Feeder Dikti | `cargo run -- task EstimateRiwayatSertifikasiDosen` |
 | `EstimateTranskripMahasiswa` | Fetch and process GetTranskripMahasiswa data from Feeder Dikti | `cargo run -- task EstimateTranskripMahasiswa` |
 | `example` | An example task that prints a message | `cargo run -- task example arg1 arg2` |
+| `generate:permission-from-client` | Grants each position type the permissions its client area (`client/src/routes/<area>`) requests | `cargo run -- task generate:permission-from-client --dry-run` |
 | `hash:password` | Hashes input string/password using Argon2id and Bcrypt from arguments | `cargo run -- task hash:password "MySecretPass123"` |
 | `route:list` | Lists all system routes with their URL path, HTTP method, handler function, and route name | `cargo run -- task route:list` |
 | `sync:student-roles` | Synchronizes student roles into the auth.roles table | `cargo run -- task sync:student-roles` |
@@ -516,6 +517,104 @@ cargo run -- task sync_permissions
 # or
 cargo run -- task sync:permissions
 ```
+
+##### 🛡️ Generate Permissions from Client (`generate:permission-from-client`)
+
+Traces which API endpoints each client area (`client/src/routes/<area>`) calls, using `client/scripts/extract-api-usage.mjs`. It then grants the matching route permissions to the position types that work in that area. Administrator is skipped because it bypasses RBAC.
+
+Run it from `server/`, because the client is found at `../client` by default. It needs `node` on your `PATH` and a configured database connection.
+
+```bash
+# Preview the changes without writing anything
+cargo run -- task generate:permission-from-client --dry-run
+
+# Apply the grants
+cargo run -- task generate:permission-from-client
+
+# Limit to a single area
+cargo run -- task generate:permission-from-client --area rectorat --dry-run
+
+# Also revoke grants the client no longer needs (preview first!)
+cargo run -- task generate:permission-from-client --prune --dry-run
+cargo run -- task generate:permission-from-client --prune
+
+# Reuse a previously captured usage JSON instead of running the Node script
+(cd ../client && node scripts/extract-api-usage.mjs) > /tmp/usage.json
+cargo run -- task generate:permission-from-client --input /tmp/usage.json --dry-run
+```
+
+| Flag | Effect |
+|---|---|
+| `--dry-run` / `-n` | Show the changes without writing them to the database |
+| `--prune` | Revoke existing grants the client no longer needs |
+| `--area <name>` | Process only one area folder. An unknown name fails with an error. |
+| `--client <dir>` | Use a different client directory (default `../client`) |
+| `--input <json>` | Read usage from a JSON file instead of running `extract-api-usage.mjs` |
+
+**Re-run after adding routes or pages.** Grants are not applied automatically. When a client page starts calling a new backend route, a non-administrator role gets `403 Forbidden` until this task is re-run. The 403 response names the permission it was looking for:
+
+```text
+Access denied: role lacks permission 'institution.master.employees.register' or 'institution.master.employees.register.create'
+```
+
+The fix is usually to re-run the task for that area (dry-run first):
+
+```bash
+cargo run -- task generate:permission-from-client --area rectorat --dry-run
+cargo run -- task generate:permission-from-client --area rectorat
+```
+
+**What the extractor can trace.** `extract-api-usage.mjs` reads the code without running it. It follows each page's imports down to its `fetch()` calls. A call is traced when:
+
+- its URL is built from string literals, template strings, constants, or parameters of a helper function, and
+- its HTTP method is a literal (`method: 'PUT'`), is left out (meaning `GET`), or is a helper parameter that each call site passes as a literal:
+
+```ts
+async function requestJson<T>(method: string, path: string, body?: unknown) {
+    return fetch(`${getBaseApiUrl()}/${path}`, { method, headers: getAuthHeaders(), body: JSON.stringify(body) });
+}
+requestJson('PUT', `institution/master/employees/${encodeURIComponent(id)}`, payload); // -> PUT institution/master/employees/{}
+```
+
+Any call the extractor can't trace is printed as `[WARN] <area>: N fetch call(s) could not be traced`, and the task grants nothing for it. To list these calls, run the script and inspect `unresolved`:
+
+```bash
+(cd ../client && node scripts/extract-api-usage.mjs) | jq '.areas.rectorat.unresolved'
+```
+
+`[NO ROUTE]` lines are client requests that match no backend route, usually a wrong path or HTTP method in the client.
+
+**Checking a role by hand.** To see which permission a role is missing, log in, switch to the role, and call the endpoint directly. The backend listens on `127.0.0.1:5800`.
+
+```bash
+B=http://127.0.0.1:5800/api/v1
+T=$(curl -s $B/login -H 'Content-Type: application/json' \
+      -d '{"email":"<email>","password":"<password>"}' | jq -r .token)
+# List your roles (id | name | position type)
+curl -s $B/login -H 'Content-Type: application/json' \
+      -d '{"email":"<email>","password":"<password>"}' | jq -r '.user.roles[] | "\(.id) | \(.name) | \(.position_type_id)"'
+curl -s -X POST $B/user/set_current_role/<role_id> -H "Authorization: Bearer $T"
+curl -s -X POST $B/institution/master/employees/register -H "Authorization: Bearer $T" \
+      -H 'Content-Type: application/json' -d '{}'
+```
+
+**403 vs. 404: route permissions and data scope.** Two separate checks apply to every request:
+
+| Check | Decides | Where | Failure |
+|---|---|---|---|
+| Route permission (RBAC) | *Which endpoints* the active role can call | `server/src/middleware/rbac.rs`, granted by this task | `403 Access denied: role lacks permission '…'` |
+| Data scope | *Which records* those endpoints return | `server/src/services/auth/data_scope.rs` (`DataScope`) | Lists leave the record out; `show` returns `404 … not found` |
+
+The data scope is based on the **active** role:
+
+- **Administrator:** sees everything.
+- **Staff:** study program or department staff see their own unit, faculty staff see their unit and every unit below it, and everyone else (rectorate, bureaus, foundation…) sees every unit of their institution.
+- **Student:** sees only their own records.
+- **Lecturer:** sees students in the classes they teach, plus the students they advise.
+
+Re-running `generate:permission-from-client` doesn't fix a 404 like this, because the endpoint is allowed and only the record is out of scope. Check which unit or institution the record belongs to and compare it with the active role's scope.
+
+One exception: `GET academic/student/master/students/{id}` also returns a student who is the `roleable` of one of the signed-in user's **own** roles, whatever role is active (`is_own_student()` in `data_scope.rs`). The role switcher needs this: `enrichUserRolesWithStudentCodes()` in `client/src/lib/authStore.ts` looks up each student role's code and unit. Without the exception, a user with a Rektorat role in one institution and Mahasiswa roles in another got 404s on every page. Other students outside the scope are still hidden, and list, update and delete still use the active role's scope only.
 
 ##### 📥 Feeder Master Data Estimation Orchestrator (`EstimateGetAllMasterData`)
 

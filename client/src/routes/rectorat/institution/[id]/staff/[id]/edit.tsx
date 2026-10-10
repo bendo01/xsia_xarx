@@ -202,7 +202,7 @@ export default function RectoratStaffEdit() {
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
             <TopBar />
 
-            <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 max-w-5xl">
+            <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
 
                 {/* Page Header */}
                 <div class="flex flex-col md:flex-row md:items-end md:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-6 gap-4">

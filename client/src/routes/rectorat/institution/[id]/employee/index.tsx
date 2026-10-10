@@ -141,15 +141,15 @@ export default function RectoratEmployeesIndex() {
 
                     {/* Summary Stats */}
                     <div class="flex items-center gap-3 shrink-0">
-                        <div class="text-center px-4 py-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm min-w-[80px]">
+                        <div class="text-center px-4 py-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm min-w-20">
                             <p class="text-2xl font-black text-neutral-900 dark:text-white">{totalData()}</p>
                             <p class="text-[11px] text-neutral-500 dark:text-neutral-400 font-medium uppercase tracking-wide">Total</p>
                         </div>
-                        <div class="text-center px-4 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 shadow-sm min-w-[80px]">
+                        <div class="text-center px-4 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 shadow-sm min-w-20">
                             <p class="text-2xl font-black text-emerald-700 dark:text-emerald-400">{activeCount()}</p>
                             <p class="text-[11px] text-emerald-600 dark:text-emerald-500 font-medium uppercase tracking-wide">Aktif</p>
                         </div>
-                        <div class="text-center px-4 py-2.5 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 shadow-sm min-w-[80px]">
+                        <div class="text-center px-4 py-2.5 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 shadow-sm min-w-20">
                             <p class="text-2xl font-black text-red-700 dark:text-red-400">{inactiveCount()}</p>
                             <p class="text-[11px] text-red-600 dark:text-red-500 font-medium uppercase tracking-wide">Non-Aktif</p>
                         </div>
