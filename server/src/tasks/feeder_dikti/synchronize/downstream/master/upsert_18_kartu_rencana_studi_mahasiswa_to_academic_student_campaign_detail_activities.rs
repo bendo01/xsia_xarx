@@ -50,6 +50,7 @@ enum UpsertAction {
     Updated,
 }
 
+#[allow(clippy::too_many_arguments)]
 async fn upsert_detail_activity(
     txn: &DatabaseTransaction,
     record: &FeederKartuRencanaStudi::Model,

@@ -115,6 +115,7 @@ async fn get_or_create_class_code(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 async fn upsert_teach(
     txn: &DatabaseTransaction,
     record: &FeederNilaiPerkuliahanKelas::Model,

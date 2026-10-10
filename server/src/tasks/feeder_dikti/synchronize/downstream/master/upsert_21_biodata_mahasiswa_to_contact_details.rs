@@ -431,43 +431,37 @@ impl Task for SyncBiodataMahasiswaToContactDetails {
                 let txn = db.begin().await?;
 
                 // 1. Telepon
-                if let Some(ref tel) = record.telepon {
-                    if let Some(cleaned_tel) = clean_phone(tel) {
-                        if let Ok(action) = upsert_contact_phone(&txn, individual.id, &cleaned_tel, cache.default_phone_type_id).await {
+                if let Some(ref tel) = record.telepon
+                    && let Some(cleaned_tel) = clean_phone(tel)
+                        && let Ok(action) = upsert_contact_phone(&txn, individual.id, &cleaned_tel, cache.default_phone_type_id).await {
                             match action {
                                 UpsertAction::Inserted => phones_inserted += 1,
                                 UpsertAction::Updated => phones_updated += 1,
                             }
                         }
-                    }
-                }
 
                 // 2. Handphone
-                if let Some(ref hp) = record.handphone {
-                    if let Some(cleaned_hp) = clean_phone(hp) {
+                if let Some(ref hp) = record.handphone
+                    && let Some(cleaned_hp) = clean_phone(hp) {
                         let tel_cleaned = record.telepon.as_deref().and_then(clean_phone);
-                        if tel_cleaned.as_deref() != Some(&cleaned_hp) {
-                            if let Ok(action) = upsert_contact_phone(&txn, individual.id, &cleaned_hp, cache.default_phone_type_id).await {
+                        if tel_cleaned.as_deref() != Some(&cleaned_hp)
+                            && let Ok(action) = upsert_contact_phone(&txn, individual.id, &cleaned_hp, cache.default_phone_type_id).await {
                                 match action {
                                     UpsertAction::Inserted => phones_inserted += 1,
                                     UpsertAction::Updated => phones_updated += 1,
                                 }
                             }
-                        }
                     }
-                }
 
                 // 3. Email
-                if let Some(ref em) = record.email {
-                    if let Some(cleaned_em) = clean_email(em) {
-                        if let Ok(action) = upsert_contact_email(&txn, individual.id, &cleaned_em, cache.default_email_type_id).await {
+                if let Some(ref em) = record.email
+                    && let Some(cleaned_em) = clean_email(em)
+                        && let Ok(action) = upsert_contact_email(&txn, individual.id, &cleaned_em, cache.default_email_type_id).await {
                             match action {
                                 UpsertAction::Inserted => emails_inserted += 1,
                                 UpsertAction::Updated => emails_updated += 1,
                             }
                         }
-                    }
-                }
 
                 // 4. Residence
                 let street = record.jalan.as_deref().map(|s| s.trim()).filter(|s| !s.is_empty()).unwrap_or("-");

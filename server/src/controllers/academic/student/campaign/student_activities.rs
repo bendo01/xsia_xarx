@@ -182,7 +182,7 @@ pub async fn index(
     };
 
     let mut all_unit_ids: Vec<Uuid> = items.iter().filter_map(|item| item.unit_id).collect();
-    for (_, (_, _, u_id)) in &students_map {
+    for (_, _, u_id) in students_map.values() {
         if *u_id != Uuid::nil() && !all_unit_ids.iter().any(|id| id == u_id) {
             all_unit_ids.push(*u_id);
         }
@@ -830,8 +830,8 @@ pub async fn find_student_activity_response_by_id(
         None => return Ok(None),
     };
 
-    if student_id != Uuid::nil() {
-        if let Ok(Some(std)) = crate::controllers::academic::student::master::students::find_student_response_by_id_ext(db, student_id, false).await {
+    if student_id != Uuid::nil()
+        && let Ok(Some(std)) = crate::controllers::academic::student::master::students::find_student_response_by_id_ext(db, student_id, false).await {
             res.student_name = Some(std.name.clone());
             res.student_code = Some(std.code.clone());
             if res.unit.is_none() && std.unit.is_some() {
@@ -842,7 +842,6 @@ pub async fn find_student_activity_response_by_id(
             }
             res.student = Some(std);
         }
-    }
 
     Ok(Some(res))
 }

@@ -194,16 +194,14 @@ async fn upsert_student(
         }
     }
 
-    if existing.is_none() {
-        if let Some(id_r) = reg_id {
-            if !id_r.is_nil() {
+    if existing.is_none()
+        && let Some(id_r) = reg_id
+            && !id_r.is_nil() {
                 existing = AcademicStudent::Entity::find()
                     .filter(AcademicStudent::Column::IdRegistrasiMahasiswa.eq(id_r))
                     .one(txn)
                     .await?;
             }
-        }
-    }
 
     if existing.is_none() && !nim.is_empty() && nim != "UNKNOWN" {
         existing = AcademicStudent::Entity::find()
@@ -426,11 +424,10 @@ impl Task for SyncBiodataMahasiswaToAcademicStudentMasterStudent {
                 default_status_id = s.id;
             }
         }
-        if default_status_id.is_nil() {
-            if let Some(s) = statuses_by_name.values().next() {
+        if default_status_id.is_nil()
+            && let Some(s) = statuses_by_name.values().next() {
                 default_status_id = s.id;
             }
-        }
 
         let registrations = AcademicStudentRegistration::Entity::find().all(db).await?;
         let mut registrations_by_code = HashMap::new();
@@ -443,11 +440,10 @@ impl Task for SyncBiodataMahasiswaToAcademicStudentMasterStudent {
                 }
             }
         }
-        if default_registration_id.is_nil() {
-            if let Some(r) = registrations_by_code.values().next() {
+        if default_registration_id.is_nil()
+            && let Some(r) = registrations_by_code.values().next() {
                 default_registration_id = r.id;
             }
-        }
 
         let resign_statuses = AcademicStudentResignStatus::Entity::find().all(db).await?;
         let mut resign_statuses_by_code = HashMap::new();
@@ -474,11 +470,10 @@ impl Task for SyncBiodataMahasiswaToAcademicStudentMasterStudent {
         let mut units_by_feeder_id = HashMap::new();
         let mut default_unit_id = Uuid::nil();
         for u in units {
-            if let Some(fid) = u.feeder_id {
-                if !fid.is_nil() {
+            if let Some(fid) = u.feeder_id
+                && !fid.is_nil() {
                     units_by_feeder_id.insert(fid, u.clone());
                 }
-            }
             if default_unit_id.is_nil() {
                 default_unit_id = u.id;
             }

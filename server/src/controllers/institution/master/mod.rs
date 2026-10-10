@@ -17,6 +17,14 @@ pub fn router() -> Router {
                         .post_named("institution.master.employees.option_select", employees::option_select),
                 )
                 .push(
+                    Router::with_path("individual-lookup")
+                        .post_named("institution.master.employees.individual_lookup", employees::individual_lookup),
+                )
+                .push(
+                    Router::with_path("register")
+                        .post_named("institution.master.employees.register", employees::register),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("institution.master.employees.show", employees::show)
                         .put_named("institution.master.employees.update", employees::update)

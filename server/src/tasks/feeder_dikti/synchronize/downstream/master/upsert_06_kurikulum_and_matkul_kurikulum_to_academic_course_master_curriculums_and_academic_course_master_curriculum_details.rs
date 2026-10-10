@@ -54,8 +54,8 @@ async fn upsert_curriculum(
             .await?;
     }
 
-    if existing.is_none() {
-        if let Some(ref name) = record.nama_kurikulum {
+    if existing.is_none()
+        && let Some(ref name) = record.nama_kurikulum {
             existing = AcademicCurriculum::Entity::find()
                 .filter(AcademicCurriculum::Column::UnitId.eq(unit.id))
                 .filter(AcademicCurriculum::Column::AcademicYearId.eq(academic_year.id))
@@ -63,7 +63,6 @@ async fn upsert_curriculum(
                 .one(txn)
                 .await?;
         }
-    }
 
     let name = record.nama_kurikulum.clone().unwrap_or_default();
     let total_credit = record.jumlah_sks_lulus.map(|v| v as f64);

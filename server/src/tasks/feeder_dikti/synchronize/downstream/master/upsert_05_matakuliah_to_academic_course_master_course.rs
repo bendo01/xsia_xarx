@@ -49,8 +49,8 @@ async fn upsert_course(
             .await?;
     }
 
-    if existing.is_none() {
-        if let Some(ref code) = record.kode_mata_kuliah {
+    if existing.is_none()
+        && let Some(ref code) = record.kode_mata_kuliah {
             let trimmed = code.trim();
             if !trimmed.is_empty() {
                 existing = AcademicCourse::Entity::find()
@@ -60,7 +60,6 @@ async fn upsert_course(
                     .await?;
             }
         }
-    }
 
     let code = record.kode_mata_kuliah.clone().unwrap_or_default();
     let name = record.nama_mata_kuliah.clone().unwrap_or_default();
@@ -139,11 +138,10 @@ async fn upsert_course(
         if variety_id != Uuid::nil() {
             active.variety_id = Set(variety_id);
         }
-        if let Some(gid) = group_id {
-            if gid != Uuid::nil() {
+        if let Some(gid) = group_id
+            && gid != Uuid::nil() {
                 active.group_id = Set(Some(gid));
             }
-        }
 
         let updated = active.update(txn).await?;
         Ok((updated, UpsertAction::Updated))

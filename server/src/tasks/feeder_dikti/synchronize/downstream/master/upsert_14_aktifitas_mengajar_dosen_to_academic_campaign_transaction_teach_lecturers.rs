@@ -37,6 +37,7 @@ enum UpsertAction {
     Updated,
 }
 
+#[allow(clippy::too_many_arguments)]
 async fn upsert_teach_lecturer(
     txn: &DatabaseTransaction,
     record: &FeederAktifitas::Model,

@@ -80,11 +80,10 @@ impl SyncAllMasterData {
 
     fn matches_step(task_idx: usize, task_name: &str, query: &str) -> bool {
         let q = query.trim().to_lowercase();
-        if let Ok(num) = q.parse::<usize>() {
-            if num == task_idx {
+        if let Ok(num) = q.parse::<usize>()
+            && num == task_idx {
                 return true;
             }
-        }
         let step_str = format!("{:02}", task_idx);
         if q == step_str {
             return true;

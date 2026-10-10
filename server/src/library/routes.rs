@@ -6561,6 +6561,18 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "institution.master.employees.store",
         },
         RouteDefinition {
+            url: "/api/v1/institution/master/employees/individual-lookup",
+            method: "POST",
+            handler: "employees::individual_lookup",
+            name: "institution.master.employees.individual_lookup",
+        },
+        RouteDefinition {
+            url: "/api/v1/institution/master/employees/register",
+            method: "POST",
+            handler: "employees::register",
+            name: "institution.master.employees.register",
+        },
+        RouteDefinition {
             url: "/api/v1/institution/master/employees/{id}",
             method: "GET",
             handler: "employees::show",

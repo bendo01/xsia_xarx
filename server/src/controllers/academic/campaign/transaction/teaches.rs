@@ -678,7 +678,7 @@ pub async fn show(
             evaluation_types: Some(evaluation_types),
             class_code: class_codes.into_iter().next().flatten().as_ref().map(|c| crate::dtos::academic::campaign::transaction::class_codes::ClassCodeResponse {
                 id: c.id,
-                code: c.code.clone(),
+                code: c.code,
                 alphabet_code: c.alphabet_code.clone(),
                 name: c.name.clone(),
                 activity_id: c.activity_id,
@@ -753,7 +753,7 @@ pub async fn show(
             }),
             curriculum_detail: curriculum_details.into_iter().next().flatten().as_ref().map(|c| crate::dtos::academic::course::master::curriculum_details::CurriculumDetailResponse {
                 id: c.id,
-                code: c.code.clone(),
+                code: c.code,
                 curriculum_id: c.curriculum_id,
                 semester_id: c.semester_id,
                 course_id: c.course_id,
@@ -786,7 +786,7 @@ pub async fn show(
             }),
             encounter_category: encounter_categories.into_iter().next().flatten().as_ref().map(|c| crate::dtos::common::reference::ReferenceResponse {
                 id: c.id,
-                code: c.code.clone(),
+                code: c.code,
                 alphabet_code: c.alphabet_code.clone(),
                 name: c.name.clone(),
                 created_at: c.created_at.unwrap_or_default(),
@@ -798,7 +798,7 @@ pub async fn show(
             }),
             scope: scopes.into_iter().next().flatten().as_ref().map(|c| crate::dtos::common::reference::ReferenceResponse {
                 id: c.id,
-                code: c.code.clone(),
+                code: c.code,
                 alphabet_code: c.alphabet_code.clone(),
                 name: c.name.clone(),
                 created_at: c.created_at.unwrap_or_default(),

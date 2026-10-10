@@ -184,8 +184,8 @@ async fn upsert_lecturer(
             .await?;
     }
 
-    if existing.is_none() {
-        if let Some(ref nidn_str) = dosen.nidn {
+    if existing.is_none()
+        && let Some(ref nidn_str) = dosen.nidn {
             let n = nidn_str.trim();
             if !n.is_empty() {
                 existing = AcademicLecturer::Entity::find()
@@ -194,7 +194,6 @@ async fn upsert_lecturer(
                     .await?;
             }
         }
-    }
 
     // Determine Code
     let lecturer_code = dosen

@@ -79,3 +79,67 @@ pub struct EmployeeOptionRequest {
     pub search: Option<String>,
     pub institution_id: Option<Uuid>,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct EmployeeIndividualLookupRequest {
+    pub search: Option<String>,
+    pub institution_id: Option<Uuid>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct EmployeeIndividualLookupItem {
+    pub id: Uuid,
+    pub code: String,
+    pub name: String,
+    pub front_title: Option<String>,
+    pub last_title: Option<String>,
+    pub birth_place: String,
+    pub birth_date: NaiveDate,
+    pub user_id: Option<Uuid>,
+    pub user_email: Option<String>,
+    /// Already registered as an employee of the requested institution
+    pub is_employee: bool,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
+pub struct RegisterEmployeeNewIndividual {
+    #[validate(length(min = 1, max = 32, message = "NIK is required"))]
+    pub code: String,
+    #[validate(length(min = 1, max = 255, message = "Name is required"))]
+    pub name: String,
+    pub front_title: Option<String>,
+    pub last_title: Option<String>,
+    #[validate(length(min = 1, max = 255, message = "Birth place is required"))]
+    pub birth_place: String,
+    pub birth_date: NaiveDate,
+    pub gender_id: Uuid,
+    pub religion_id: Uuid,
+    #[validate(email(message = "Email is invalid"))]
+    pub email: String,
+    #[validate(length(min = 8, message = "Password must be at least 8 characters"))]
+    pub password: String,
+    #[validate(length(min = 8, max = 20, message = "Phone number is invalid"))]
+    pub phone_number: String,
+    #[validate(length(min = 1, message = "Street is required"))]
+    pub street: String,
+    pub citizens_association: i32,
+    pub neighborhood_association: i32,
+    pub province_id: Option<Uuid>,
+    pub regency_id: Option<Uuid>,
+    pub sub_district_id: Option<Uuid>,
+    pub village_id: Option<Uuid>,
+}
+
+/// Exactly one of `individual_id` (existing individual + user) or `new_individual` must be set
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
+pub struct RegisterEmployeeRequest {
+    pub institution_id: Uuid,
+    #[validate(length(min = 1, max = 64, message = "Employee code is required"))]
+    pub code: String,
+    pub decree_number: Option<String>,
+    pub decree_date: Option<NaiveDate>,
+    pub is_active: bool,
+    pub individual_id: Option<Uuid>,
+    #[validate(nested)]
+    pub new_individual: Option<RegisterEmployeeNewIndividual>,
+}
