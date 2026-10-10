@@ -34,12 +34,14 @@ async fn load_relations_for_students(
     HashMap<Uuid, String>,
     HashMap<Uuid, String>,
     HashMap<Uuid, String>,
+    HashMap<Uuid, String>,
 ), StatusError> {
     let unit_ids: Vec<Uuid> = items.iter().map(|i| i.unit_id).filter(|id| *id != Uuid::nil()).collect();
     let status_ids: Vec<Uuid> = items.iter().map(|i| i.status_id).filter(|id| *id != Uuid::nil()).collect();
     let academic_year_ids: Vec<Uuid> = items.iter().map(|i| i.academic_year_id).filter(|id| *id != Uuid::nil()).collect();
     let curriculum_ids: Vec<Uuid> = items.iter().map(|i| i.curriculum_id).filter(|id| *id != Uuid::nil()).collect();
     let selection_type_ids: Vec<Uuid> = items.iter().map(|i| i.selection_type_id).filter(|id| *id != Uuid::nil()).collect();
+    let registration_ids: Vec<Uuid> = items.iter().map(|i| i.registration_id).filter(|id| *id != Uuid::nil()).collect();
 
     let units_map: HashMap<Uuid, UnitInfo> = if unit_ids.is_empty() {
         HashMap::new()
@@ -111,7 +113,21 @@ async fn load_relations_for_students(
             .collect()
     };
 
-    Ok((units_map, statuses_map, academic_years_map, curriculums_map, selection_types_map))
+    let registrations_map: HashMap<Uuid, String> = if registration_ids.is_empty() {
+        HashMap::new()
+    } else {
+        crate::models::academic::student::reference::registrations::Entity::find()
+            .filter(crate::models::academic::student::reference::registrations::Column::Id.is_in(registration_ids))
+            .filter(crate::models::academic::student::reference::registrations::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .into_iter()
+            .map(|r| (r.id, r.name))
+            .collect()
+    };
+
+    Ok((units_map, statuses_map, academic_years_map, curriculums_map, selection_types_map, registrations_map))
 }
 
 fn to_response(
@@ -121,6 +137,7 @@ fn to_response(
     academic_years_map: &HashMap<Uuid, String>,
     curriculums_map: &HashMap<Uuid, String>,
     selection_types_map: &HashMap<Uuid, String>,
+    registrations_map: &HashMap<Uuid, String>,
 ) -> StudentResponse {
     let unit = units_map.get(&item.unit_id);
     StudentResponse {
@@ -157,6 +174,7 @@ fn to_response(
         academic_year_name: academic_years_map.get(&item.academic_year_id).cloned(),
         curriculum_name: curriculums_map.get(&item.curriculum_id).cloned(),
         selection_type_name: selection_types_map.get(&item.selection_type_id).cloned(),
+        registration_name: registrations_map.get(&item.registration_id).cloned(),
         ..Default::default()
     }
 }
@@ -344,7 +362,7 @@ pub async fn index(
 
     let items = paginator.fetch_page(page.saturating_sub(1)).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
-    let (units_map, statuses_map, academic_years_map, curriculums_map, selection_types_map) =
+    let (units_map, statuses_map, academic_years_map, curriculums_map, selection_types_map, registrations_map) =
         load_relations_for_students(db, &items).await?;
 
     let data = items.into_iter().map(|item| {
@@ -355,6 +373,7 @@ pub async fn index(
             &academic_years_map,
             &curriculums_map,
             &selection_types_map,
+            &registrations_map,
         )
     }).collect();
 
@@ -862,6 +881,7 @@ pub async fn find_student_response_by_id_ext(
         academic_year_name,
         curriculum_name,
         selection_type_name,
+        registration_name: registration.as_ref().map(|r| r.name.clone()),
         selection_type,
         individual,
         status,

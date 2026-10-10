@@ -50,6 +50,7 @@ export interface StudentMasterItem {
     unit_code?: string;
     status_name?: string;
     selection_type_name?: string;
+    registration_name?: string;
     curriculum_name?: string;
     academic_year_name?: string;
     // Relations

@@ -196,3 +196,8 @@ candidate will be redirect to
 [@index.tsx](file:///home/bendo01/Projects/xsia_xarx/client/src/routes/candidate/academic/candidate/master/candidate/[id]/index.tsx) 
 
 which is a dashboard for candidate, that dashboard will
+
+## fix database
+```sql
+UPDATE institution_master.staffes SET end_date = NULL WHERE id IN ('2772caf8-8ca1-45b4-9dbb-6e3bf97e4e4a','a4c957e8-2f99-4111-85e3-cdd4d1fb5daf');
+```

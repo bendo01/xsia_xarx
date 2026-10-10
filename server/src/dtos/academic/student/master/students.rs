@@ -186,6 +186,7 @@ pub struct StudentResponse {
     pub academic_year_name: Option<String>,
     pub curriculum_name: Option<String>,
     pub selection_type_name: Option<String>,
+    pub registration_name: Option<String>,
 
     // Belongs to relations
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -254,6 +255,7 @@ impl Default for StudentResponse {
             academic_year_name: None,
             curriculum_name: None,
             selection_type_name: None,
+            registration_name: None,
             selection_type: None,
             individual: None,
             status: None,

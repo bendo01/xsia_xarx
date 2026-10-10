@@ -377,6 +377,20 @@ export default function MasterIndexPage() {
                                                             {getItemCode(item)}
                                                         </span>
                                                     </div>
+                                                    <dl class="grid grid-cols-3 gap-2 mt-2 text-xs">
+                                                        <div>
+                                                            <dt class="text-neutral-500 dark:text-neutral-400">Academic Year</dt>
+                                                            <dd class="text-neutral-800 dark:text-neutral-200">{item.academic_year_name || '-'}</dd>
+                                                        </div>
+                                                        <div>
+                                                            <dt class="text-neutral-500 dark:text-neutral-400">Status</dt>
+                                                            <dd class="text-neutral-800 dark:text-neutral-200">{item.status_name || '-'}</dd>
+                                                        </div>
+                                                        <div>
+                                                            <dt class="text-neutral-500 dark:text-neutral-400">Registration</dt>
+                                                            <dd class="text-neutral-800 dark:text-neutral-200">{item.registration_name || '-'}</dd>
+                                                        </div>
+                                                    </dl>
                                                 </div>
                                             </div>
 
@@ -426,7 +440,9 @@ export default function MasterIndexPage() {
                                 <tr>
                                     <th class="px-4 py-3.5 w-36">Code / ID</th>
                                     <th class="px-4 py-3.5">Name / Title</th>
-                                    <th class="px-4 py-3.5">Details</th>
+                                    <th class="px-4 py-3.5">Academic Year</th>
+                                    <th class="px-4 py-3.5">Status</th>
+                                    <th class="px-4 py-3.5">Registration</th>
                                     <th class="px-4 py-3.5 text-right">Actions</th>
                                 </tr>
                             </thead>
@@ -439,7 +455,9 @@ export default function MasterIndexPage() {
                                                 <tr class="animate-pulse">
                                                     <td class="px-4 py-3"><div class="h-4 w-24 bg-neutral-200 dark:bg-neutral-700"></div></td>
                                                     <td class="px-4 py-3"><div class="h-4 w-48 bg-neutral-200 dark:bg-neutral-700"></div></td>
-                                                    <td class="px-4 py-3"><div class="h-4 w-32 bg-neutral-200 dark:bg-neutral-700"></div></td>
+                                                    <td class="px-4 py-3"><div class="h-4 w-24 bg-neutral-200 dark:bg-neutral-700"></div></td>
+                                                    <td class="px-4 py-3"><div class="h-4 w-20 bg-neutral-200 dark:bg-neutral-700"></div></td>
+                                                    <td class="px-4 py-3"><div class="h-4 w-28 bg-neutral-200 dark:bg-neutral-700"></div></td>
                                                     <td class="px-4 py-3 text-right"><div class="h-6 w-16 bg-neutral-200 dark:bg-neutral-700 ml-auto"></div></td>
                                                 </tr>
                                             )}
@@ -450,7 +468,7 @@ export default function MasterIndexPage() {
                                         when={items().length > 0}
                                         fallback={
                                             <tr>
-                                                <td colspan="4" class="px-4 py-12 text-center text-neutral-500 dark:text-neutral-400">
+                                                <td colspan="6" class="px-4 py-12 text-center text-neutral-500 dark:text-neutral-400">
                                                     <div class="flex flex-col items-center justify-center gap-2">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="size-8 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                                             <circle cx="12" cy="12" r="10" />
@@ -483,10 +501,14 @@ export default function MasterIndexPage() {
                                                             {item.id || item.uuid}
                                                         </span>
                                                     </td>
-                                                    <td class="px-4 py-3 text-neutral-600 dark:text-neutral-300">
-                                                        <span class="text-xs">
-                                                            {item.description || item.keterangan || item.email || item.phone || item.url || '-'}
-                                                        </span>
+                                                    <td class="px-4 py-3 text-xs text-neutral-600 dark:text-neutral-300 whitespace-nowrap">
+                                                        {item.academic_year_name || '-'}
+                                                    </td>
+                                                    <td class="px-4 py-3 text-xs text-neutral-600 dark:text-neutral-300 whitespace-nowrap">
+                                                        {item.status_name || '-'}
+                                                    </td>
+                                                    <td class="px-4 py-3 text-xs text-neutral-600 dark:text-neutral-300 whitespace-nowrap">
+                                                        {item.registration_name || '-'}
                                                     </td>
                                                     <td class="px-4 py-3 text-right">
                                                         <div class="flex items-center justify-end gap-1.5">
