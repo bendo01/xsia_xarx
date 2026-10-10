@@ -189,10 +189,10 @@ export default function RectoratInstitutionDashboard() {
         const dark = isDark();
         return {
             tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-            grid: { left: 16, right: 16, top: 10, bottom: 60, containLabel: true },
-            xAxis: { type: 'category', data: sorted.map((d) => d.unitCode || d.unitName), axisLabel: { rotate: 30, fontSize: 11, color: dark ? '#a3a3a3' : '#525252' }, axisLine: { lineStyle: { color: dark ? '#404040' : '#e5e5e5' } } },
-            yAxis: { type: 'value', name: 'Mahasiswa', nameTextStyle: { fontSize: 11, color: dark ? '#a3a3a3' : '#737373' }, axisLabel: { color: dark ? '#a3a3a3' : '#525252' }, splitLine: { lineStyle: { color: dark ? '#262626' : '#f5f5f5' } } },
-            series: [{ type: 'bar', barMaxWidth: 50, label: { show: true, position: 'top', fontSize: 11, fontWeight: 'bold', color: dark ? '#e5e5e5' : '#171717' }, data: sorted.map((d) => ({ value: d.totalStudents ?? 0, itemStyle: { borderRadius: [6, 6, 0, 0], color: d.is_active ? { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#3b82f6' }, { offset: 1, color: '#1d4ed8' }] } : { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#a3a3a3' }, { offset: 1, color: '#737373' }] } } })) }],
+            grid: { left: 16, right: 40, top: 10, bottom: 40, containLabel: true },
+            yAxis: { type: 'category', inverse: true, data: sorted.map((d) => d.unitCode || d.unitName), axisLabel: { fontSize: 11, color: dark ? '#a3a3a3' : '#525252' }, axisLine: { lineStyle: { color: dark ? '#404040' : '#e5e5e5' } } },
+            xAxis: { type: 'value', name: 'Mahasiswa', nameLocation: 'middle', nameGap: 28, nameTextStyle: { fontSize: 11, color: dark ? '#a3a3a3' : '#737373' }, axisLabel: { color: dark ? '#a3a3a3' : '#525252' }, splitLine: { lineStyle: { color: dark ? '#262626' : '#f5f5f5' } } },
+            series: [{ type: 'bar', barMaxWidth: 28, label: { show: true, position: 'right', fontSize: 11, fontWeight: 'bold', color: dark ? '#e5e5e5' : '#171717' }, data: sorted.map((d) => ({ value: d.totalStudents ?? 0, itemStyle: { borderRadius: [0, 6, 6, 0], color: d.is_active ? { type: 'linear', x: 0, y: 0, x2: 1, y2: 0, colorStops: [{ offset: 0, color: '#3b82f6' }, { offset: 1, color: '#1d4ed8' }] } : { type: 'linear', x: 0, y: 0, x2: 1, y2: 0, colorStops: [{ offset: 0, color: '#a3a3a3' }, { offset: 1, color: '#737373' }] } } })) }],
         };
     });
 
@@ -204,10 +204,10 @@ export default function RectoratInstitutionDashboard() {
         const colors = ['#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe', '#ede9fe', '#7c3aed', '#6d28d9'];
         return {
             tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-            grid: { left: 16, right: 16, top: 10, bottom: 60, containLabel: true },
-            xAxis: { type: 'category', data: sorted.map((d) => d.unitCode || d.unitName), axisLabel: { rotate: 30, fontSize: 11, color: dark ? '#a3a3a3' : '#525252' }, axisLine: { lineStyle: { color: dark ? '#404040' : '#e5e5e5' } } },
-            yAxis: { type: 'value', name: 'Matakuliah', nameTextStyle: { fontSize: 11, color: dark ? '#a3a3a3' : '#737373' }, axisLabel: { color: dark ? '#a3a3a3' : '#525252' }, splitLine: { lineStyle: { color: dark ? '#262626' : '#f5f5f5' } } },
-            series: [{ type: 'bar', barMaxWidth: 50, label: { show: true, position: 'top', fontSize: 11, fontWeight: 'bold', color: dark ? '#e5e5e5' : '#171717' }, data: sorted.map((d, i) => ({ value: d.matakuliah?.total_matakuliah ?? 0, itemStyle: { borderRadius: [6, 6, 0, 0], color: colors[i % colors.length] } })) }],
+            grid: { left: 16, right: 40, top: 10, bottom: 40, containLabel: true },
+            yAxis: { type: 'category', inverse: true, data: sorted.map((d) => d.unitCode || d.unitName), axisLabel: { fontSize: 11, color: dark ? '#a3a3a3' : '#525252' }, axisLine: { lineStyle: { color: dark ? '#404040' : '#e5e5e5' } } },
+            xAxis: { type: 'value', name: 'Matakuliah', nameLocation: 'middle', nameGap: 28, nameTextStyle: { fontSize: 11, color: dark ? '#a3a3a3' : '#737373' }, axisLabel: { color: dark ? '#a3a3a3' : '#525252' }, splitLine: { lineStyle: { color: dark ? '#262626' : '#f5f5f5' } } },
+            series: [{ type: 'bar', barMaxWidth: 28, label: { show: true, position: 'right', fontSize: 11, fontWeight: 'bold', color: dark ? '#e5e5e5' : '#171717' }, data: sorted.map((d, i) => ({ value: d.matakuliah?.total_matakuliah ?? 0, itemStyle: { borderRadius: [0, 6, 6, 0], color: colors[i % colors.length] } })) }],
         };
     });
 
@@ -230,10 +230,10 @@ export default function RectoratInstitutionDashboard() {
         const dark = isDark();
         return {
             tooltip: { trigger: 'axis', formatter: (p: any) => `${p[0].name}<br/>IPK: <b>${(+p[0].value).toFixed(2)}</b>` },
-            grid: { left: 16, right: 16, top: 10, bottom: 60, containLabel: true },
-            xAxis: { type: 'category', data: sorted.map((d) => d.unitCode || d.unitName), axisLabel: { rotate: 30, fontSize: 11, color: dark ? '#a3a3a3' : '#525252' }, axisLine: { lineStyle: { color: dark ? '#404040' : '#e5e5e5' } } },
-            yAxis: { type: 'value', min: 0, max: 4, name: 'IPK', nameTextStyle: { fontSize: 11, color: dark ? '#a3a3a3' : '#737373' }, axisLabel: { color: dark ? '#a3a3a3' : '#525252' }, splitLine: { lineStyle: { color: dark ? '#262626' : '#f5f5f5' } } },
-            series: [{ type: 'bar', barMaxWidth: 50, label: { show: true, position: 'top', fontSize: 11, fontWeight: 'bold', formatter: (p: any) => (+p.value).toFixed(2), color: dark ? '#e5e5e5' : '#171717' }, markLine: { data: [{ yAxis: 3.0, name: 'Min Baik', lineStyle: { color: '#f59e0b', type: 'dashed' }, label: { show: true, formatter: 'Min 3.0' } }] }, data: sorted.map((d) => ({ value: +(d.latestGpa ?? 0).toFixed(2), itemStyle: { borderRadius: [6, 6, 0, 0], color: (d.latestGpa ?? 0) >= 3.5 ? { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#10b981' }, { offset: 1, color: '#059669' }] } : (d.latestGpa ?? 0) >= 3.0 ? { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#f59e0b' }, { offset: 1, color: '#d97706' }] } : { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#ef4444' }, { offset: 1, color: '#dc2626' }] } } })) }],
+            grid: { left: 16, right: 40, top: 10, bottom: 40, containLabel: true },
+            yAxis: { type: 'category', inverse: true, data: sorted.map((d) => d.unitCode || d.unitName), axisLabel: { fontSize: 11, color: dark ? '#a3a3a3' : '#525252' }, axisLine: { lineStyle: { color: dark ? '#404040' : '#e5e5e5' } } },
+            xAxis: { type: 'value', min: 0, max: 4, name: 'IPK', nameLocation: 'middle', nameGap: 28, nameTextStyle: { fontSize: 11, color: dark ? '#a3a3a3' : '#737373' }, axisLabel: { color: dark ? '#a3a3a3' : '#525252' }, splitLine: { lineStyle: { color: dark ? '#262626' : '#f5f5f5' } } },
+            series: [{ type: 'bar', barMaxWidth: 28, label: { show: true, position: 'right', fontSize: 11, fontWeight: 'bold', formatter: (p: any) => (+p.value).toFixed(2), color: dark ? '#e5e5e5' : '#171717' }, markLine: { data: [{ xAxis: 3.0, name: 'Min Baik', lineStyle: { color: '#f59e0b', type: 'dashed' }, label: { show: true, formatter: 'Min 3.0' } }] }, data: sorted.map((d) => ({ value: +(d.latestGpa ?? 0).toFixed(2), itemStyle: { borderRadius: [0, 6, 6, 0], color: (d.latestGpa ?? 0) >= 3.5 ? { type: 'linear', x: 0, y: 0, x2: 1, y2: 0, colorStops: [{ offset: 0, color: '#10b981' }, { offset: 1, color: '#059669' }] } : (d.latestGpa ?? 0) >= 3.0 ? { type: 'linear', x: 0, y: 0, x2: 1, y2: 0, colorStops: [{ offset: 0, color: '#f59e0b' }, { offset: 1, color: '#d97706' }] } : { type: 'linear', x: 0, y: 0, x2: 1, y2: 0, colorStops: [{ offset: 0, color: '#ef4444' }, { offset: 1, color: '#dc2626' }] } } })) }],
         };
     });
 
