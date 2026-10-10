@@ -212,6 +212,8 @@ pub struct StudentResponse {
     // Has many relations
     #[serde(skip_serializing_if = "Option::is_none")]
     pub student_activities: Option<Vec<crate::dtos::academic::student::campaign::student_activities::StudentActivityResponse>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub convertions: Option<Vec<crate::dtos::academic::student::campaign::convertions::ConvertionResponse>>,
 }
 
 impl Default for StudentResponse {
@@ -262,6 +264,7 @@ impl Default for StudentResponse {
             class_code: None,
             finance: None,
             student_activities: None,
+            convertions: None,
         }
     }
 }

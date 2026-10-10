@@ -760,6 +760,56 @@ pub async fn find_student_response_by_id_ext(
         None
     };
 
+    // 13. Has many: convertions (only for transfer registrations:
+    //     Pindahan, Pindahan Alih Bentuk, RPL Transfer SKS, RPL Perolehan SKS, Alih Jenjang)
+    const TRANSFER_REGISTRATION_KEYWORDS: [&str; 4] =
+        ["pindahan", "rpl transfer sks", "rpl perolehan sks", "alih jenjang"];
+    let is_transfer = registration.as_ref().is_some_and(|r| {
+        let name = r.name.to_lowercase();
+        TRANSFER_REGISTRATION_KEYWORDS
+            .iter()
+            .any(|kw| str::contains(&name, kw))
+    });
+    let convertions = if is_transfer {
+        Some(
+            crate::models::academic::student::campaign::convertions::Entity::find()
+                .filter(crate::models::academic::student::campaign::convertions::Column::StudentId.eq(item.id))
+                .filter(crate::models::academic::student::campaign::convertions::Column::DeletedAt.is_null())
+                .order_by_asc(crate::models::academic::student::campaign::convertions::Column::TransferCode)
+                .all(db)
+                .await
+                .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                .into_iter()
+                .map(|c| crate::dtos::academic::student::campaign::convertions::ConvertionResponse {
+                    id: c.id,
+                    student_id: c.student_id,
+                    course_id: c.course_id,
+                    grade_id: c.grade_id,
+                    transfer_code: c.transfer_code,
+                    transfer_name: c.transfer_name,
+                    transfer_credit: c.transfer_credit,
+                    transfer_grade: c.transfer_grade,
+                    is_lock: c.is_lock,
+                    created_at: c.created_at,
+                    updated_at: c.updated_at,
+                    deleted_at: c.deleted_at,
+                    sync_at: c.sync_at,
+                    created_by: c.created_by,
+                    updated_by: c.updated_by,
+                    feeder_id: c.feeder_id,
+                    name: c.name,
+                    academic_year_id: c.academic_year_id,
+                    origin_code: c.origin_code,
+                    origin_name: c.origin_name,
+                    origin_credit: c.origin_credit,
+                    origin_grade: c.origin_grade,
+                })
+                .collect(),
+        )
+    } else {
+        None
+    };
+
     Ok(Some(StudentResponse {
         id: item.id,
         code: item.code,
@@ -806,6 +856,7 @@ pub async fn find_student_response_by_id_ext(
         class_code,
         finance,
         student_activities,
+        convertions,
     }))
 }
 
