@@ -20,6 +20,7 @@ import {
     listStudentAcademicYears,
     StudentMasterItem
 } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
+import { getRegistrationOptions } from '~/controllers/academic/student/reference/AcademicStudentReferenceRegistrationController';
 import type { InstitutionMasterStaff } from '~/models/institution/master/Staff';
 import { getLoggedInStaffUnit, LoggedInStaffUnitResult } from '~/lib/staffHelper';
 
@@ -32,6 +33,7 @@ export default function CourseDepartmentStudentMasterPage() {
     const [academicYears, setAcademicYears] = createSignal<any[]>([]);
     const [unitAcademicYears, setUnitAcademicYears] = createSignal<any[]>([]);
     const [statuses, setStatuses] = createSignal<any[]>([]);
+    const [registrations, setRegistrations] = createSignal<any[]>([]);
     const [isLoading, setIsLoading] = createSignal(true);
     const [isResolvingUnit, setIsResolvingUnit] = createSignal(true);
 
@@ -45,6 +47,7 @@ export default function CourseDepartmentStudentMasterPage() {
     const [searchCode, setSearchCode] = createSignal<string>('');
     const [selectedAcademicYearId, setSelectedAcademicYearId] = createSignal<string>('');
     const [selectedStatusId, setSelectedStatusId] = createSignal<string>('');
+    const [selectedRegistrationId, setSelectedRegistrationId] = createSignal<string>('');
 
     // Sorting state (default: code ascending)
     const [sortParam, setSortParam] = createSignal<string>((searchParams.sort as string) || 'code-asc');
@@ -173,18 +176,20 @@ export default function CourseDepartmentStudentMasterPage() {
         return '';
     };
 
-    // Load reference options (units, academic years, statuses)
+    // Load reference options (units, academic years, statuses, registrations)
     const loadReferences = async () => {
         try {
-            const [uList, yList, sList] = await Promise.all([
+            const [uList, yList, sList, rList] = await Promise.all([
                 listStudyUnits(),
                 listAcademicYears(),
                 listStudentStatuses(),
+                getRegistrationOptions(),
             ]);
 
             setUnits(uList);
             setAcademicYears(yList);
             setStatuses(sList);
+            setRegistrations(rList);
 
             // Resolve initial department unit from staff data
             const resolvedUnit = await resolveDepartmentUnitId(uList);
@@ -261,6 +266,7 @@ export default function CourseDepartmentStudentMasterPage() {
                 code: searchCode().trim() || undefined,
                 academic_year_id: selectedAcademicYearId() || undefined,
                 status_id: selectedStatusId() || undefined,
+                registration_id: selectedRegistrationId() || undefined,
                 sort_by: sortField || 'code',
                 sort_dir: sortDir || 'asc',
             });
@@ -292,6 +298,7 @@ export default function CourseDepartmentStudentMasterPage() {
         const ps = pageSize();
         const yId = selectedAcademicYearId();
         const stId = selectedStatusId();
+        const rgId = selectedRegistrationId();
         const sp = sortParam();
 
         if (uId && !isResolvingUnit()) {
@@ -347,6 +354,7 @@ export default function CourseDepartmentStudentMasterPage() {
         setSearchCode('');
         setSelectedAcademicYearId('');
         setSelectedStatusId('');
+        setSelectedRegistrationId('');
         setSortParam('code-asc');
         setPage(1);
         fetchStudents();
@@ -359,6 +367,7 @@ export default function CourseDepartmentStudentMasterPage() {
             searchCode().trim() ||
             selectedAcademicYearId() ||
             selectedStatusId() ||
+            selectedRegistrationId() ||
             sortParam() !== 'code-asc'
         );
     });
@@ -403,7 +412,7 @@ export default function CourseDepartmentStudentMasterPage() {
                     <div class="bg-white dark:bg-neutral-800 rounded-xs p-4 border border-neutral-200/70 dark:border-neutral-700 shadow-2xs flex items-center justify-between">
                         <div class="space-y-0.5">
                             <span class="text-[11px] font-mono font-medium text-neutral-400 uppercase tracking-wider">Current Unit</span>
-                            <div class="text-sm font-bold text-neutral-800 dark:text-neutral-200 truncate max-w-[180px]" title={activeUnitData()?.name || activeUnitData()?.nama || staffResult()?.unit?.name}>
+                            <div class="text-sm font-bold text-neutral-800 dark:text-neutral-200 truncate max-w-45" title={activeUnitData()?.name || activeUnitData()?.nama || staffResult()?.unit?.name}>
                                 {activeUnitData()?.name || activeUnitData()?.nama || staffResult()?.unit?.name || 'Program Studi'}
                             </div>
                         </div>
@@ -458,7 +467,7 @@ export default function CourseDepartmentStudentMasterPage() {
                         </Show>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                         {/* Search by Name */}
                         <div class="space-y-1">
                             <label class="text-[11px] font-mono font-semibold text-neutral-500 uppercase">
@@ -539,6 +548,27 @@ export default function CourseDepartmentStudentMasterPage() {
                                             {st.name} {st.code ? `(${st.code})` : ''}
                                         </option>
                                     )}
+                                </For>
+                            </select>
+                        </div>
+
+                        {/* Filter by Registration */}
+                        <div class="space-y-1">
+                            <label class="text-[11px] font-mono font-semibold text-neutral-500 uppercase">
+                                Registration Type
+                            </label>
+                            <select
+                                value={selectedRegistrationId()}
+                                onChange={(e) => {
+                                    setSelectedRegistrationId(e.currentTarget.value);
+                                    setPage(1);
+                                    fetchStudents();
+                                }}
+                                class="w-full px-3 py-2 text-xs rounded-xs bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-hidden focus:border-teal-500 transition-colors"
+                            >
+                                <option value="">All Registration Types</option>
+                                <For each={registrations()}>
+                                    {(rg) => <option value={rg.id}>{rg.name}</option>}
                                 </For>
                             </select>
                         </div>
@@ -652,7 +682,7 @@ export default function CourseDepartmentStudentMasterPage() {
                                         {/* Card Header: Avatar, Name, NIM & Status */}
                                         <div class="flex items-start justify-between gap-3">
                                             <div class="flex items-start gap-3 min-w-0">
-                                                <div class="size-9 rounded-xs bg-gradient-to-br from-teal-500 to-cyan-600 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-2xs mt-0.5">
+                                                <div class="size-9 rounded-xs bg-linier-to-br from-teal-500 to-cyan-600 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-2xs mt-0.5">
                                                     {(std.name || 'S').slice(0, 1).toUpperCase()}
                                                 </div>
                                                 <div class="min-w-0 space-y-1">
@@ -844,7 +874,7 @@ export default function CourseDepartmentStudentMasterPage() {
                                                 {/* Full Name */}
                                                 <td class="py-3 px-4">
                                                     <div class="flex items-center gap-2.5">
-                                                        <div class="size-7 rounded-xs bg-gradient-to-br from-teal-500 to-cyan-600 text-white font-bold text-[10px] flex items-center justify-center shrink-0 shadow-2xs">
+                                                        <div class="size-7 rounded-xs bg-linier-to-br from-teal-500 to-cyan-600 text-white font-bold text-[10px] flex items-center justify-center shrink-0 shadow-2xs">
                                                             {(std.name || 'S').slice(0, 1).toUpperCase()}
                                                         </div>
                                                         <span class="font-bold text-neutral-900 dark:text-white">

@@ -80,6 +80,8 @@ export async function listStudents(queryParams?: {
     academic_year_ids?: string;
     status_id?: string;
     status_ids?: string;
+    registration_id?: string;
+    registration_ids?: string;
     sort_by?: string;
     sort_dir?: string;
     order_by?: string;
@@ -105,6 +107,8 @@ export async function listStudents(queryParams?: {
         if (queryParams?.academic_year_ids) params.set('academic_year_ids', queryParams.academic_year_ids);
         if (queryParams?.status_id) params.set('status_id', queryParams.status_id);
         if (queryParams?.status_ids) params.set('status_ids', queryParams.status_ids);
+        if (queryParams?.registration_id) params.set('registration_id', queryParams.registration_id);
+        if (queryParams?.registration_ids) params.set('registration_ids', queryParams.registration_ids);
         if (queryParams?.sort_by) params.set('sort_by', queryParams.sort_by);
         if (queryParams?.sort_dir) params.set('sort_dir', queryParams.sort_dir);
         if (queryParams?.order_by) params.set('order_by', queryParams.order_by);

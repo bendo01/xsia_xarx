@@ -267,6 +267,24 @@ pub async fn index(
         }
     }
 
+    let mut registration_filter_uuids = Vec::new();
+    if let Some(raw_registrations) = query.registration_ids.as_deref().or(query.registration_id.as_deref()) {
+        for val in raw_registrations.split(',') {
+            let val_trimmed = val.trim();
+            if !val_trimmed.is_empty()
+                && let Ok(u) = Uuid::parse_str(val_trimmed) {
+                    registration_filter_uuids.push(u);
+                }
+        }
+    }
+    if !registration_filter_uuids.is_empty() {
+        if registration_filter_uuids.len() == 1 {
+            select = select.filter(entity_mod::Column::RegistrationId.eq(registration_filter_uuids[0]));
+        } else {
+            select = select.filter(entity_mod::Column::RegistrationId.is_in(registration_filter_uuids));
+        }
+    }
+
     let sort_by = query
         .sort_by
         .as_deref()

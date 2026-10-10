@@ -17,13 +17,12 @@ import { getLoggedInStaffUnit } from '~/lib/staffHelper';
 export default function MasterIndexPage() {
     const apiPath = "academic/course/master/courses";
     const basePath = "/course-department/academic/course/master/course";
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
 
     // Data states
     const [items, setItems] = createSignal<any[]>([]);
     const [isLoading, setIsLoading] = createSignal(true);
     const [isResolvingUnit, setIsResolvingUnit] = createSignal(true);
-    const [units, setUnits] = createSignal<any[]>([]);
     const [selectedUnitId, setSelectedUnitId] = createSignal<string>('');
     const [activeUnitData, setActiveUnitData] = createSignal<any | null>(null);
     const [varietiesMap, setVarietiesMap] = createSignal<Record<string, string>>({});
@@ -167,7 +166,6 @@ export default function MasterIndexPage() {
             setGroupsMap(gMap);
 
             const list = unitsRes?.data || [];
-            setUnits(list);
 
             const staffResult = await getLoggedInStaffUnit((searchParams.unit_id as string) || (searchParams.id as string) || '');
             let resolvedUnitId = staffResult.unitId;
@@ -265,14 +263,6 @@ export default function MasterIndexPage() {
         }, 300);
     };
 
-    const handleUnitChange = (uId: string) => {
-        setSelectedUnitId(uId);
-        setSearchParams({ unit_id: uId });
-        const found = units().find((u: any) => u.id === uId);
-        setActiveUnitData(found || null);
-        setCurrentPage(1);
-    };
-
     const openDeleteModal = (item: any) => {
         setSelectedItem(item);
         deleteDialogRef?.showModal();
@@ -356,7 +346,7 @@ export default function MasterIndexPage() {
                     </div>
                 </div>
 
-                {/* Department Info & Unit Selector Banner */}
+                {/* Department Info Banner */}
                 <Show when={!isResolvingUnit()}>
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
                         <div class="flex items-center gap-3">
@@ -372,25 +362,6 @@ export default function MasterIndexPage() {
                                 </div>
                             </div>
                         </div>
-
-                        <Show when={units().length > 1}>
-                            <div class="w-full sm:w-auto flex items-center gap-2">
-                                <label class="text-xs text-neutral-500 dark:text-neutral-400 whitespace-nowrap font-medium">Department:</label>
-                                <select
-                                    class="p-2 text-xs text-neutral-900 border border-neutral-300 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white font-medium"
-                                    value={selectedUnitId()}
-                                    onChange={(e) => handleUnitChange((e.target as HTMLSelectElement).value)}
-                                >
-                                    <For each={units()}>
-                                        {(u) => (
-                                            <option value={u.id}>
-                                                {u.code ? `[${u.code}] ` : ''}{u.name}
-                                            </option>
-                                        )}
-                                    </For>
-                                </select>
-                            </div>
-                        </Show>
                     </div>
                 </Show>
 

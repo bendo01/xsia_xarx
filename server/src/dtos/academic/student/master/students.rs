@@ -142,6 +142,8 @@ pub struct StudentQuery {
     pub academic_year_ids: Option<String>,
     pub status_id: Option<String>,
     pub status_ids: Option<String>,
+    pub registration_id: Option<String>,
+    pub registration_ids: Option<String>,
     pub sort_by: Option<String>,
     pub sort_dir: Option<String>,
     pub order_by: Option<String>,

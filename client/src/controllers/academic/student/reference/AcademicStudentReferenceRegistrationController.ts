@@ -148,3 +148,22 @@ export async function AcademicStudentReferenceControllerRegistrationDelete(
         };
     }
 }
+
+export async function getRegistrationOptions(): Promise<Array<{ id: string; name: string }>> {
+    try {
+        const res = await fetch(`${getBaseUrl()}/${path}/options`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({}),
+        });
+        if (!res.ok) {
+            console.warn(`Failed to load registration options: HTTP ${res.status}`, await res.text().catch(() => ''));
+            return [];
+        }
+        const data = await res.json();
+        return Array.isArray(data) ? data : (data.data || []);
+    } catch (e) {
+        console.warn('Failed to load registration options:', e);
+        return [];
+    }
+}

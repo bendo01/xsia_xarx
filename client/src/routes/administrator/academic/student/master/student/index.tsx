@@ -4,6 +4,7 @@ import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { masterApiIndex, masterApiDelete } from '~/controllers/master/masterApiController';
 import { listAcademicYears, listStudentStatuses } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
+import { getRegistrationOptions } from '~/controllers/academic/student/reference/AcademicStudentReferenceRegistrationController';
 
 export default function MasterIndexPage() {
     const apiPath = "academic/student/master/students";
@@ -23,6 +24,8 @@ export default function MasterIndexPage() {
     const [institutionId, setInstitutionId] = createSignal('');
     const [academicYearId, setAcademicYearId] = createSignal('');
     const [statusId, setStatusId] = createSignal('');
+    const [registrations, setRegistrations] = createSignal<any[]>([]);
+    const [registrationId, setRegistrationId] = createSignal('');
 
     let deleteDialogRef!: HTMLDialogElement;
     const [selectedItem, setSelectedItem] = createSignal<any | null>(null);
@@ -41,6 +44,7 @@ export default function MasterIndexPage() {
                 institution_id: institutionId(),
                 academic_year_id: academicYearId(),
                 status_id: statusId(),
+                registration_id: registrationId(),
             });
 
             if (response && Array.isArray(response.data)) {
@@ -71,6 +75,7 @@ export default function MasterIndexPage() {
         institutionId();
         academicYearId();
         statusId();
+        registrationId();
         fetchData();
     });
 
@@ -99,7 +104,8 @@ export default function MasterIndexPage() {
                     }));
                 },
                 afterChange: (newVal) => {
-                    setInstitutionId(newVal[0]?.value || '');
+                    const picked = newVal[0];
+                    setInstitutionId(picked && !picked.placeholder ? picked.value : '');
                     setCurrentPage(1);
                 },
             },
@@ -107,13 +113,14 @@ export default function MasterIndexPage() {
         onCleanup(() => slimInstitution.destroy());
 
         try {
-            const [instRes, yList, sList] = await Promise.all([
+            const [instRes, yList, sList, rList] = await Promise.all([
                 masterApiIndex('institution/master/institutions', { page: 1, per_page: 200, sort_by: 'name', sort_dir: 'asc' }),
                 listAcademicYears(),
                 listStudentStatuses(),
+                getRegistrationOptions(),
             ]);
             slimInstitution.setData([
-                { placeholder: true, text: 'All Institutions' },
+                { placeholder: true, text: 'All Institutions', value: '' },
                 ...(instRes?.data || []).map((inst: any) => ({
                     text: inst.name || '-',
                     value: inst.id,
@@ -121,6 +128,7 @@ export default function MasterIndexPage() {
             ]);
             setAcademicYears(yList);
             setStatuses(sList);
+            setRegistrations(rList);
         } catch (error) {
             console.error('Error loading filter references:', error);
         }
@@ -268,14 +276,14 @@ export default function MasterIndexPage() {
                 </div>
 
                 <div class="flex flex-col md:flex-row items-center gap-3">
-                    <div class="w-full md:w-1/3">
+                    <div class="w-full md:w-1/4">
                         <select id="select-institution" ref={institutionSelectRef}>
-                            <option data-placeholder="true">All Institutions</option>
+                            <option data-placeholder="true" value="">All Institutions</option>
                         </select>
                     </div>
 
                     <select
-                        class="w-full md:w-1/3 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                        class="w-full md:w-1/4 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                         value={academicYearId()}
                         onChange={(e) => {
                             setAcademicYearId((e.target as HTMLSelectElement).value);
@@ -289,7 +297,7 @@ export default function MasterIndexPage() {
                     </select>
 
                     <select
-                        class="w-full md:w-1/3 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                        class="w-full md:w-1/4 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                         value={statusId()}
                         onChange={(e) => {
                             setStatusId((e.target as HTMLSelectElement).value);
@@ -299,6 +307,20 @@ export default function MasterIndexPage() {
                         <option value="">All Statuses</option>
                         <For each={statuses()}>
                             {(st) => <option value={st.id}>{st.name}</option>}
+                        </For>
+                    </select>
+
+                    <select
+                        class="w-full md:w-1/4 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                        value={registrationId()}
+                        onChange={(e) => {
+                            setRegistrationId((e.target as HTMLSelectElement).value);
+                            setCurrentPage(1);
+                        }}
+                    >
+                        <option value="">All Registrations</option>
+                        <For each={registrations()}>
+                            {(rg) => <option value={rg.id}>{rg.name}</option>}
                         </For>
                     </select>
                 </div>

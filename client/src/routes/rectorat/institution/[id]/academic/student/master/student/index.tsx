@@ -6,6 +6,7 @@ import { toast } from '~/components/toast/Toaster';
 import { resolveInstitutionFromStaffRole } from '~/lib/rectoratHelper';
 import { getAcademicYearOptions } from '~/controllers/academic/general/reference/AcademicGeneralReferenceAcademicYearController';
 import { getStatusOptions } from '~/controllers/academic/student/reference/AcademicStudentReferenceStatusController';
+import { getRegistrationOptions } from '~/controllers/academic/student/reference/AcademicStudentReferenceRegistrationController';
 
 interface StudentRow {
     id: string;
@@ -53,6 +54,8 @@ export default function RectoratStudentIndex() {
     const [selectedAcademicYears, setSelectedAcademicYears] = createSignal<string[]>([]);
     const [statuses, setStatuses] = createSignal<OptionItem[]>([]);
     const [selectedStatus, setSelectedStatus] = createSignal<string>('');
+    const [registrations, setRegistrations] = createSignal<OptionItem[]>([]);
+    const [selectedRegistration, setSelectedRegistration] = createSignal<string>('');
 
     // Sort state: 'code' | 'name', 'asc' | 'desc'
     const [sortBy, setSortBy] = createSignal<'code' | 'name'>('code');
@@ -66,12 +69,14 @@ export default function RectoratStudentIndex() {
     // Load reference options on mount
     onMount(async () => {
         try {
-            const [yearsData, statusData] = await Promise.all([
+            const [yearsData, statusData, registrationData] = await Promise.all([
                 getAcademicYearOptions(),
                 getStatusOptions(),
+                getRegistrationOptions(),
             ]);
             setAcademicYears(yearsData || []);
             setStatuses(statusData || []);
+            setRegistrations(registrationData || []);
         } catch (e) {
             console.warn('Failed to load filter options:', e);
         }
@@ -111,6 +116,7 @@ export default function RectoratStudentIndex() {
                 search: searchQuery() || undefined,
                 academic_year_ids: selectedAcademicYears().length > 0 ? selectedAcademicYears().join(',') : undefined,
                 status_id: selectedStatus() || undefined,
+                registration_id: selectedRegistration() || undefined,
                 sort_by: sortBy(),
                 sort_dir: sortDir(),
             });
@@ -137,6 +143,7 @@ export default function RectoratStudentIndex() {
         searchQuery();
         selectedAcademicYears();
         selectedStatus();
+        selectedRegistration();
         sortBy();
         sortDir();
         fetchData();
@@ -217,13 +224,14 @@ export default function RectoratStudentIndex() {
         if (searchInput) searchInput.value = '';
         setSelectedAcademicYears([]);
         setSelectedStatus('');
+        setSelectedRegistration('');
         setSortBy('code');
         setSortDir('asc');
         setCurrentPage(1);
     };
 
     const hasActiveFilters = () =>
-        Boolean(searchQuery()) || selectedAcademicYears().length > 0 || Boolean(selectedStatus());
+        Boolean(searchQuery()) || selectedAcademicYears().length > 0 || Boolean(selectedStatus()) || Boolean(selectedRegistration());
 
     return (
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
@@ -279,7 +287,7 @@ export default function RectoratStudentIndex() {
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
 
                         {/* Search Input using ILIKE */}
-                        <div class="md:col-span-5 relative">
+                        <div class="md:col-span-3 relative">
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-neutral-400">
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
@@ -414,6 +422,24 @@ export default function RectoratStudentIndex() {
                             </select>
                         </div>
 
+                        {/* Registration Filter Dropdown */}
+                        <div class="md:col-span-2">
+                            <select
+                                id="student-registration-filter"
+                                class="w-full py-2.5 px-3 text-xs border border-neutral-200 rounded-lg bg-neutral-50/50 hover:bg-white focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-neutral-800/60 dark:border-neutral-700 dark:focus:bg-neutral-800 dark:text-white transition-all shadow-xs cursor-pointer"
+                                value={selectedRegistration()}
+                                onChange={(e) => {
+                                    setSelectedRegistration((e.target as HTMLSelectElement).value);
+                                    setCurrentPage(1);
+                                }}
+                            >
+                                <option value="">Semua Jenis Pendaftaran</option>
+                                <For each={registrations()}>
+                                    {(rg) => <option value={rg.id}>{rg.name}</option>}
+                                </For>
+                            </select>
+                        </div>
+
                         {/* Sort Selector: by Code or Name */}
                         <div class="md:col-span-2">
                             <select
@@ -482,6 +508,22 @@ export default function RectoratStudentIndex() {
                                             setCurrentPage(1);
                                         }}
                                         class="hover:text-emerald-900 dark:hover:text-emerald-100 font-bold"
+                                    >
+                                        ✕
+                                    </button>
+                                </span>
+                            </Show>
+
+                            <Show when={selectedRegistration()}>
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 text-[11px] font-medium border border-amber-200 dark:border-amber-800/60">
+                                    <span>Pendaftaran: {registrations().find(r => r.id === selectedRegistration())?.name || selectedRegistration()}</span>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setSelectedRegistration('');
+                                            setCurrentPage(1);
+                                        }}
+                                        class="hover:text-amber-900 dark:hover:text-amber-100 font-bold"
                                     >
                                         ✕
                                     </button>
