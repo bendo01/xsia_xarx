@@ -7281,6 +7281,12 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "person.master.individual.store",
         },
         RouteDefinition {
+            url: "/api/v1/person/master/individual/statistics",
+            method: "GET",
+            handler: "individual::statistics",
+            name: "person.master.individual.statistics",
+        },
+        RouteDefinition {
             url: "/api/v1/person/master/individual/{id}",
             method: "GET",
             handler: "individual::show",

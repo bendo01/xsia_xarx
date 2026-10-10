@@ -1,12 +1,30 @@
-import { createSignal, onMount, For } from 'solid-js';
+import { createSignal, onMount, For, Show } from 'solid-js';
 import { A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { currentUserSignal, activeInstitutionNameSignal } from '~/lib/authStore';
 import { AuthUserControllerIndex } from '~/controllers/auth/AuthUserController';
 import { AuthRoleControllerIndex } from '~/controllers/auth/AuthRoleController';
 import { AuthPermissionControllerIndex } from '~/controllers/auth/AuthPermissionController';
-import { PersonMasterIndividualControllerIndex } from '~/controllers/person/master/PersonMasterIndividualController';
+import {
+    PersonMasterIndividualControllerIndex,
+    PersonMasterIndividualControllerStatistics,
+    type PersonMasterIndividualStatistics,
+} from '~/controllers/person/master/PersonMasterIndividualController';
 import { InstitutionMasterInstitutionControllerIndex } from '~/controllers/institution/master/InstitutionMasterInstitutionController';
+import ReferenceDistributionChart from '~/components/chart/reference_distribution_chart';
+
+// Reference distributions charted on the dashboard, in display order
+const PERSON_REFERENCE_CHARTS: { key: string; description: string; variant?: 'donut' | 'bar' | 'column' }[] = [
+    { key: 'gender', description: 'Individuals by gender.', variant: 'donut' },
+    { key: 'marital_status', description: 'Individuals by marital status.' },
+    { key: 'religion', description: 'Individuals by religion.' },
+    { key: 'age_classification', description: 'Individuals by age classification reference.' },
+    { key: 'education', description: 'Individuals by highest education level.', variant: 'bar' },
+    { key: 'identification_type', description: 'Individuals by identification document type.' },
+    { key: 'occupation', description: 'Individuals by occupation.', variant: 'bar' },
+    { key: 'profession', description: 'Individuals by profession.', variant: 'bar' },
+    { key: 'income', description: 'Individuals by income bracket.', variant: 'bar' },
+];
 
 export default function AdministratorDashboardPage() {
     const [stats, setStats] = createSignal({
@@ -17,11 +35,17 @@ export default function AdministratorDashboardPage() {
         institutions: 0,
     });
     const [isLoading, setIsLoading] = createSignal(true);
+    const [personStats, setPersonStats] = createSignal<PersonMasterIndividualStatistics | null>(null);
+    const [isPersonStatsLoading, setIsPersonStatsLoading] = createSignal(true);
 
     onMount(async () => {
         if (typeof document !== 'undefined') {
             document.title = 'Administrator Dashboard - XSIA XARX';
         }
+        PersonMasterIndividualControllerStatistics()
+            .then(setPersonStats)
+            .catch((e) => console.error('Error fetching individual statistics:', e))
+            .finally(() => setIsPersonStatsLoading(false));
         try {
             const [users, roles, permissions, individuals, institutions] = await Promise.allSettled([
                 AuthUserControllerIndex({ page: 1, per_page: 1 }),
@@ -52,6 +76,20 @@ export default function AdministratorDashboardPage() {
         { label: 'Individuals', value: stats().individuals, path: '/administrator/person/master/individual', color: 'text-emerald-600 dark:text-emerald-400' },
         { label: 'Institutions', value: stats().institutions, path: '/administrator/institution/master/institution', color: 'text-amber-600 dark:text-amber-400' },
     ];
+
+    const personSummaryCards = () => {
+        const s = personStats();
+        const total = s?.total ?? 0;
+        const share = (n: number) => (total > 0 ? `${((n / total) * 100).toFixed(1)}% of individuals` : '-');
+        return [
+            { label: 'Living Individuals', value: total - (s?.deceased ?? 0), note: share(total - (s?.deceased ?? 0)), color: 'text-emerald-600 dark:text-emerald-400' },
+            { label: 'Deceased', value: s?.deceased ?? 0, note: share(s?.deceased ?? 0), color: 'text-neutral-600 dark:text-neutral-300' },
+            { label: 'Special Needs', value: s?.special_need ?? 0, note: share(s?.special_need ?? 0), color: 'text-pink-600 dark:text-pink-400' },
+            { label: 'KPS Recipients', value: s?.social_protection_card_recipient ?? 0, note: share(s?.social_protection_card_recipient ?? 0), color: 'text-amber-600 dark:text-amber-400' },
+        ];
+    };
+
+    const distribution = (key: string) => personStats()?.distributions.find((d) => d.key === key);
 
     const modules = [
         {
@@ -182,6 +220,70 @@ export default function AdministratorDashboardPage() {
                         )}
                     </For>
                 </div>
+
+                <div>
+                    <h2 class="text-lg font-bold text-neutral-900 dark:text-white">Person Demographics</h2>
+                    <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                        Distribution of individual master records across person reference data.
+                    </p>
+                </div>
+
+                <Show
+                    when={!isPersonStatsLoading()}
+                    fallback={
+                        <div class="p-10 text-center text-xs font-mono text-neutral-400 dark:text-neutral-500 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700">
+                            Loading demographics...
+                        </div>
+                    }
+                >
+                    <Show
+                        when={personStats()}
+                        fallback={
+                            <div class="p-10 text-center text-xs font-mono text-neutral-400 dark:text-neutral-500 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700">
+                                Demographic statistics are unavailable.
+                            </div>
+                        }
+                    >
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                            <For each={personSummaryCards()}>
+                                {(card) => (
+                                    <div class="p-5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                                        <p class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                                            {card.label}
+                                        </p>
+                                        <p class={`mt-2 text-2xl font-bold font-mono ${card.color}`}>
+                                            {card.value.toLocaleString()}
+                                        </p>
+                                        <p class="mt-0.5 text-xs font-mono text-neutral-400 dark:text-neutral-500">{card.note}</p>
+                                    </div>
+                                )}
+                            </For>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                            <ReferenceDistributionChart
+                                title="Kelompok Umur"
+                                description="Living individuals by age computed from birth date."
+                                items={personStats()?.age_groups ?? []}
+                                variant="column"
+                            />
+                            <For each={PERSON_REFERENCE_CHARTS}>
+                                {(chart) => (
+                                    <Show when={distribution(chart.key)}>
+                                        {(dist) => (
+                                            <ReferenceDistributionChart
+                                                title={dist().label}
+                                                description={chart.description}
+                                                items={dist().items}
+                                                variant={chart.variant}
+                                            />
+                                        )}
+                                    </Show>
+                                )}
+                            </For>
+                        </div>
+                    </Show>
+                </Show>
 
                 <div>
                     <h2 class="text-lg font-bold text-neutral-900 dark:text-white">Modules</h2>

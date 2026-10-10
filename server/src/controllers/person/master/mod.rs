@@ -30,6 +30,10 @@ pub fn router() -> Router {
                         .post_named("person.master.individual.option_select", individual::option_select),
                 )
                 .push(
+                    Router::with_path("statistics")
+                        .get_named("person.master.individual.statistics", individual::statistics),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("person.master.individual.show", individual::show)
                         .put_named("person.master.individual.update", individual::update)

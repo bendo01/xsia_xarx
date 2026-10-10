@@ -121,3 +121,26 @@ pub struct IndividualDetailResponse {
     pub evaluators: Vec<crate::dtos::academic::prior_learning_recognition::transaction::evaluators::EvaluatorResponse>,
     pub students: Vec<crate::dtos::academic::student::master::students::StudentResponse>,
 }
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct IndividualStatisticItem {
+    pub name: String,
+    pub count: i64,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct IndividualStatisticDistribution {
+    pub key: String,
+    pub label: String,
+    pub items: Vec<IndividualStatisticItem>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct IndividualStatisticsResponse {
+    pub total: i64,
+    pub deceased: i64,
+    pub special_need: i64,
+    pub social_protection_card_recipient: i64,
+    pub distributions: Vec<IndividualStatisticDistribution>,
+    pub age_groups: Vec<IndividualStatisticItem>,
+}

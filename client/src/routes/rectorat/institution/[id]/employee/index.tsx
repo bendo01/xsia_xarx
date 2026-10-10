@@ -32,14 +32,14 @@ export default function RectoratEmployeesIndex() {
     const [totalData, setTotalData] = createSignal(0);
     const [filterActive, setFilterActive] = createSignal<'all' | 'active' | 'inactive'>('all');
 
-    const totalPages = createMemo(() => Math.ceil(totalData() / itemsPerPage()) || 1);
-
     const filteredItems = createMemo(() => {
         let data = allItems();
         if (filterActive() === 'active') data = data.filter(e => e.is_active === true);
-        if (filterActive() === 'inactive') data = data.filter(e => e.is_active === false);
+        if (filterActive() === 'inactive') data = data.filter(e => !e.is_active);
         return data;
     });
+
+    const totalPages = createMemo(() => Math.ceil(filteredItems().length / itemsPerPage()) || 1);
 
     const pagedItems = createMemo(() => {
         const start = (currentPage() - 1) * itemsPerPage();

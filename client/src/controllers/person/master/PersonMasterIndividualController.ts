@@ -297,3 +297,34 @@ export async function PersonMasterIndividualControllerList(params?: { search?: s
         };
     }
 }
+
+export interface PersonMasterIndividualStatisticItem {
+    name: string;
+    count: number;
+}
+
+export interface PersonMasterIndividualStatisticDistribution {
+    key: string;
+    label: string;
+    items: PersonMasterIndividualStatisticItem[];
+}
+
+export interface PersonMasterIndividualStatistics {
+    total: number;
+    deceased: number;
+    special_need: number;
+    social_protection_card_recipient: number;
+    distributions: PersonMasterIndividualStatisticDistribution[];
+    age_groups: PersonMasterIndividualStatisticItem[];
+}
+
+export async function PersonMasterIndividualControllerStatistics(): Promise<PersonMasterIndividualStatistics> {
+    const response = await fetch(`${getBaseUrl()}/${path}/statistics`, {
+        method: "GET",
+        headers: getHeaders(),
+    });
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return (await response.json()) as PersonMasterIndividualStatistics;
+}

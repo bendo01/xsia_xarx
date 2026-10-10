@@ -20,6 +20,7 @@ use crate::dtos::literate::educations::EducationResponse;
 use crate::dtos::person::master::biodata::BiodataResponse;
 use crate::dtos::person::master::individual::{
     CreateIndividualRequest, IndividualDetailResponse, IndividualQuery, IndividualResponse,
+    IndividualStatisticDistribution, IndividualStatisticItem, IndividualStatisticsResponse,
     PaginatedIndividualResponse, UpdateIndividualRequest,
 };
 use crate::middleware::auth::auth_user_id;
@@ -996,4 +997,129 @@ pub async fn option_select(
         .collect();
 
     Ok(Json(data))
+}
+
+/// Aggregated individual counts grouped by each person reference, for dashboard charts.
+#[endpoint(tags("Person - Master - Individual"), status_codes(200, 500))]
+pub async fn statistics(
+    depot: &mut Depot,
+) -> Result<Json<IndividualStatisticsResponse>, StatusError> {
+    use sea_orm::{ConnectionTrait, DbBackend, Statement};
+
+    let db = depot
+        .get_typed::<DatabaseConnection>()
+        .map_err(|_| StatusError::internal_server_error().brief("Database connection missing"))?;
+
+    let fetch_items = |sql: String| async move {
+        let rows = db
+            .query_all_raw(Statement::from_string(DbBackend::Postgres, sql))
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        Ok::<_, StatusError>(
+            rows.into_iter()
+                .map(|row| IndividualStatisticItem {
+                    name: row.try_get("", "name").unwrap_or_default(),
+                    count: row.try_get("", "count").unwrap_or(0),
+                })
+                .collect::<Vec<_>>(),
+        )
+    };
+
+    let summary = db
+        .query_one_raw(Statement::from_string(
+            DbBackend::Postgres,
+            r#"
+            SELECT
+                COUNT(*)::bigint AS total,
+                COUNT(*) FILTER (WHERE is_deceased)::bigint AS deceased,
+                COUNT(*) FILTER (WHERE is_special_need)::bigint AS special_need,
+                COUNT(*) FILTER (WHERE is_social_protection_card_recipient)::bigint AS social_protection_card_recipient
+            FROM person_master.individuals
+            WHERE deleted_at IS NULL
+            "#,
+        ))
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+    let summary_value = |col: &str| -> i64 {
+        summary
+            .as_ref()
+            .and_then(|row| row.try_get::<i64>("", col).ok())
+            .unwrap_or(0)
+    };
+
+    // (key, label, reference table, foreign key column) — static identifiers only, never user input
+    let references: [(&str, &str, &str, &str); 9] = [
+        ("gender", "Jenis Kelamin", "person_reference.genders", "gender_id"),
+        ("marital_status", "Status Pernikahan", "person_reference.marital_statuses", "marital_status_id"),
+        ("religion", "Agama", "person_reference.religions", "religion_id"),
+        ("education", "Pendidikan", "literate.educations", "education_id"),
+        ("occupation", "Pekerjaan", "person_reference.occupations", "occupation_id"),
+        ("profession", "Profesi", "person_reference.professions", "profession_id"),
+        ("income", "Penghasilan", "person_reference.incomes", "income_id"),
+        ("identification_type", "Jenis Identitas", "person_reference.identification_types", "identification_type_id"),
+        ("age_classification", "Klasifikasi Usia", "person_reference.age_classifications", "age_classification_id"),
+    ];
+
+    let mut distributions = Vec::with_capacity(references.len());
+    for (key, label, table, column) in references {
+        let sql = format!(
+            r#"
+            SELECT COALESCE(r.name, 'Tidak Diketahui') AS name, COUNT(*)::bigint AS count
+            FROM person_master.individuals i
+            LEFT JOIN {table} r ON r.id = i.{column} AND r.deleted_at IS NULL
+            WHERE i.deleted_at IS NULL
+            GROUP BY COALESCE(r.name, 'Tidak Diketahui')
+            ORDER BY count DESC, name ASC
+            "#
+        );
+        distributions.push(IndividualStatisticDistribution {
+            key: key.to_string(),
+            label: label.to_string(),
+            items: fetch_items(sql).await?,
+        });
+    }
+
+    let age_groups = fetch_items(
+        r#"
+        SELECT bucket AS name, COUNT(*)::bigint AS count
+        FROM (
+            SELECT CASE
+                WHEN age < 17 THEN '< 17'
+                WHEN age < 25 THEN '17-24'
+                WHEN age < 35 THEN '25-34'
+                WHEN age < 45 THEN '35-44'
+                WHEN age < 55 THEN '45-54'
+                WHEN age < 65 THEN '55-64'
+                ELSE '65+'
+            END AS bucket,
+            CASE
+                WHEN age < 17 THEN 0
+                WHEN age < 25 THEN 1
+                WHEN age < 35 THEN 2
+                WHEN age < 45 THEN 3
+                WHEN age < 55 THEN 4
+                WHEN age < 65 THEN 5
+                ELSE 6
+            END AS sort_order
+            FROM (
+                SELECT EXTRACT(YEAR FROM AGE(CURRENT_DATE, birth_date))::int AS age
+                FROM person_master.individuals
+                WHERE deleted_at IS NULL AND NOT is_deceased
+            ) ages
+        ) buckets
+        GROUP BY bucket, sort_order
+        ORDER BY sort_order
+        "#
+        .to_string(),
+    )
+    .await?;
+
+    Ok(Json(IndividualStatisticsResponse {
+        total: summary_value("total"),
+        deceased: summary_value("deceased"),
+        special_need: summary_value("special_need"),
+        social_protection_card_recipient: summary_value("social_protection_card_recipient"),
+        distributions,
+        age_groups,
+    }))
 }
