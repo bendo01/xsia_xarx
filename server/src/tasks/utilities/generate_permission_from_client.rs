@@ -253,7 +253,8 @@ impl Task for GeneratePermissionFromClientTask {
 
     fn description(&self) -> &str {
         "Grants each position type the permissions its client area (client/src/routes/<area>) requests \
-         (--dry-run to preview, --prune to revoke grants the client no longer needs, --input <json> / --client <dir>)"
+         (--dry-run to preview, --prune to revoke grants the client no longer needs, --area <name> to limit to one area, \
+         --input <json> / --client <dir>)"
     }
 
     async fn run(
@@ -263,6 +264,16 @@ impl Task for GeneratePermissionFromClientTask {
     ) -> Result<(), Box<dyn std::error::Error>> {
         let dry_run = args.iter().any(|a| a == "--dry-run" || a == "-n");
         let prune = args.iter().any(|a| a == "--prune");
+        let only_area = args
+            .iter()
+            .position(|a| a == "--area")
+            .and_then(|i| args.get(i + 1))
+            .map(String::as_str);
+        if let Some(area) = only_area
+            && !AREA_POSITION_TYPES.iter().any(|(a, _)| *a == area)
+        {
+            return Err(format!("unknown --area {}", area).into());
+        }
         let usage = load_usage(args)?;
 
         let router = Router::with_path("api/v1").append(&mut crate::controllers::api_routers());
@@ -271,6 +282,9 @@ impl Task for GeneratePermissionFromClientTask {
         let mut area_names: BTreeMap<&str, BTreeSet<&'static str>> = BTreeMap::new();
         let mut unmatched: BTreeSet<String> = BTreeSet::new();
         for (area, area_usage) in &usage.areas {
+            if only_area.is_some_and(|only| only != area && !SHARED_AREAS.contains(&area.as_str())) {
+                continue;
+            }
             if !area_usage.unresolved.is_empty() && area != "administrator" {
                 println!(
                     "  [WARN]      {}: {} fetch call(s) could not be traced, see extract-api-usage.mjs output",
@@ -308,6 +322,9 @@ impl Task for GeneratePermissionFromClientTask {
         // Position type -> required permission names
         let mut wanted: BTreeMap<Uuid, (&str, BTreeSet<&'static str>)> = BTreeMap::new();
         for (area, position_types) in AREA_POSITION_TYPES {
+            if only_area.is_some_and(|only| only != *area) {
+                continue;
+            }
             let names: BTreeSet<&'static str> = area_names
                 .get(area)
                 .into_iter()
