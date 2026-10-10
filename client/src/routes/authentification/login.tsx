@@ -408,7 +408,7 @@ export default function Login() {
                             <button
                                 type="submit"
                                 disabled={!canSubmit() || isLoading()}
-                                class="w-full mt-5 bg-linier-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 px-4 rounded-xs border border-white/10 transition-all duration-300 shadow-[0_4px_20px_rgba(58,118,240,0.35)] hover:shadow-[0_6px_25px_rgba(58,118,240,0.5)] active:scale-[0.99] text-xs tracking-[0.12em] uppercase disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                class="w-full mt-5 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 px-4 rounded-xs border border-white/10 transition-all duration-300 shadow-[0_4px_20px_rgba(58,118,240,0.35)] hover:shadow-[0_6px_25px_rgba(58,118,240,0.5)] active:scale-[0.99] text-xs tracking-[0.12em] uppercase disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 <Show when={isLoading()} fallback={
                                     <>

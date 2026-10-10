@@ -444,10 +444,10 @@ export default function StudentCourseEnrollmentPage() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col">
             <TopBar />
 
-            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Not Found State if Activity ID is missing/invalid */}
                 <Show when={!isLoading() && !activeActivity()}>
                     <div class="bg-white dark:bg-neutral-800 rounded-xs p-10 border border-neutral-200 dark:border-neutral-700 shadow-2xs text-center space-y-4 max-w-xl mx-auto my-12">
@@ -462,7 +462,7 @@ export default function StudentCourseEnrollmentPage() {
                         </div>
                         <A
                             href="/student/academic/student/campaign/activity"
-                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xs text-xs font-bold transition-colors shadow-xs"
+                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xs text-xs font-bold transition-colors shadow-xs"
                         >
                             ← Kembali ke Aktivitas Semester
                         </A>
@@ -484,19 +484,18 @@ export default function StudentCourseEnrollmentPage() {
                     </Show>
 
                     {/* Header Card with SKS Allowance Calculator */}
-                    <div class="bg-linier-to-r from-slate-900 via-indigo-950 to-blue-950 rounded-xs p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-blue-500/20">
-                        <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-blue-500/10 rounded-xs blur-3xl pointer-events-none"></div>
+                    <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs relative overflow-hidden">
 
                         <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                             <div class="space-y-2">
                                 <div class="flex items-center gap-3">
                                     <A
                                         href="/student/academic/student/campaign/activity"
-                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xs bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-semibold transition-colors"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xs bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 border border-neutral-200 dark:border-neutral-600 text-neutral-900 dark:text-white text-xs font-semibold transition-colors"
                                     >
                                         ← Back to Activities
                                     </A>
-                                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-xs bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-mono font-semibold">
+                                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-xs bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 text-emerald-700 dark:text-emerald-300 text-xs font-mono font-semibold">
                                         <span class="size-2 rounded-xs bg-emerald-400 animate-pulse"></span>
                                         <span>KRS Course Enrollment Gateway</span>
                                     </div>
@@ -504,20 +503,20 @@ export default function StudentCourseEnrollmentPage() {
                                 <h1 class="text-2xl sm:text-3xl font-black tracking-tight">
                                     Semester Course Enrollment (KRS)
                                 </h1>
-                                <p class="text-neutral-300 text-xs sm:text-sm max-w-xl">
+                                <p class="text-neutral-600 dark:text-neutral-300 text-xs sm:text-sm max-w-xl">
                                     Select and enroll into class offerings from the academic catalog for {activeActivity()?.name || 'Academic Semester'}.
                                 </p>
                             </div>
 
                         {/* Realtime SKS Meter */}
-                        <div class="p-5 bg-white/10 backdrop-blur-md rounded-xs border border-white/15 min-w-[280px] space-y-3">
+                        <div class="p-5 bg-neutral-100 dark:bg-neutral-700 backdrop-blur-md rounded-xs border border-neutral-200 dark:border-neutral-600 min-w-[280px] space-y-3">
                             <div class="flex justify-between items-center text-xs font-mono">
-                                <span class="text-neutral-300">Credit Load (SKS):</span>
-                                <span class="font-bold text-white text-sm">{totalCurrentSKS()} / {maxAllowedSKS} SKS</span>
+                                <span class="text-neutral-600 dark:text-neutral-300">Credit Load (SKS):</span>
+                                <span class="font-bold text-neutral-900 dark:text-white text-sm">{totalCurrentSKS()} / {maxAllowedSKS} SKS</span>
                             </div>
 
                             {/* Progress bar */}
-                            <div class="w-full h-2.5 bg-black/40 rounded-xs overflow-hidden">
+                            <div class="w-full h-2.5 bg-neutral-50 dark:bg-neutral-900/60 rounded-xs overflow-hidden">
                                 <div
                                     class={`h-full transition-all duration-500 rounded-xs ${
                                         totalCurrentSKS() >= maxAllowedSKS
@@ -528,9 +527,9 @@ export default function StudentCourseEnrollmentPage() {
                                 ></div>
                             </div>
 
-                            <div class="flex justify-between items-center text-[11px] text-neutral-300">
+                            <div class="flex justify-between items-center text-[11px] text-neutral-600 dark:text-neutral-300">
                                 <span>Remaining Allowance:</span>
-                                <span class="font-bold text-emerald-300">{remainingSKS()} SKS</span>
+                                <span class="font-bold text-emerald-700 dark:text-emerald-300">{remainingSKS()} SKS</span>
                             </div>
                         </div>
                     </div>
@@ -554,7 +553,7 @@ export default function StudentCourseEnrollmentPage() {
                         <div class="flex items-center gap-2">
                             <A
                                 href={`/student/academic/student/campaign/activity/${activeActivity()?.id || ''}/show`}
-                                class="px-4 py-2 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 hover:bg-indigo-100 rounded-xs text-xs font-bold transition-colors"
+                                class="px-4 py-2 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 rounded-xs text-xs font-bold transition-colors"
                             >
                                 View Study Plan (KRS Detail) →
                             </A>

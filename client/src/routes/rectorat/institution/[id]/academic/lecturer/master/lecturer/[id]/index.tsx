@@ -359,7 +359,7 @@ export default function RectoratLecturerDetail() {
                 </Show>
 
                 {/* Profile Header Hero Card */}
-                <div class="bg-linier-to-r from-violet-900 via-indigo-900 to-slate-900 rounded-xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-violet-500/20">
+                <div class="bg-linear-to-r from-violet-900 via-indigo-900 to-slate-900 rounded-xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-violet-500/20">
                     <div class="absolute -right-16 -top-16 w-80 h-80 bg-violet-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
                     <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -369,7 +369,7 @@ export default function RectoratLecturerDetail() {
                                 <Show
                                     when={individualData()?.picture?.location}
                                     fallback={
-                                        <div class="size-20 sm:size-24 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white font-black text-3xl flex items-center justify-center shadow-lg border-2 border-violet-400/30">
+                                        <div class="size-20 sm:size-24 rounded-full bg-linear-to-br from-violet-500 to-purple-600 text-white font-black text-3xl flex items-center justify-center shadow-lg border-2 border-violet-400/30">
                                             {(ind()?.name || lecturerMaster()?.name || 'D').charAt(0).toUpperCase()}
                                         </div>
                                     }

@@ -197,19 +197,26 @@ export default function StudentCampaignActivityIndexPage() {
     const semesterSKS = () => latestAct()?.total_credit ?? 0;
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col">
             <TopBar />
 
-            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Header Card */}
-                <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                <div class="border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div class="space-y-2">
                             <div class="flex flex-wrap items-center gap-2">
-                                <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-xs bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-xs font-mono font-semibold border border-indigo-200 dark:border-indigo-800/80">
-                                    <span class="size-1.5 rounded-xs bg-indigo-500"></span>
-                                    <span>Academic Student Campaign Activities</span>
-                                </div>
+                                <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                                    <span>Student</span>
+                                    <span>/</span>
+                                    <span>Academic</span>
+                                    <span>/</span>
+                                    <span>Student</span>
+                                    <span>/</span>
+                                    <span>Campaign</span>
+                                    <span>/</span>
+                                    <span class="font-medium text-neutral-900 dark:text-white">Activity</span>
+                                </nav>
                                 <Show when={activeStudent()}>
                                     <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-bold border border-blue-200 dark:border-blue-800">
                                         <span>NIM: {activeStudent()?.code}</span>
@@ -219,11 +226,11 @@ export default function StudentCampaignActivityIndexPage() {
                                 </Show>
                             </div>
 
-                            <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900 dark:text-white">
+                            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
                                 Academic Activities & Semester Records
                             </h1>
-                            <p class="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 max-w-2xl">
-                                Track semester activity campaigns, Study Plan Cards (KRS), academic evaluations (KHS), and cumulative progression from <span class="font-mono text-indigo-600 dark:text-indigo-400">academic_student_campaign.student_activities</span>.
+                            <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5 max-w-2xl">
+                                Track semester activity campaigns, Study Plan Cards (KRS), academic evaluations (KHS), and cumulative progression from <span class="font-mono text-blue-600 dark:text-blue-400">academic_student_campaign.student_activities</span>.
                             </p>
                         </div>
 
@@ -234,10 +241,10 @@ export default function StudentCampaignActivityIndexPage() {
                                 <span class="text-xl font-black text-blue-900 dark:text-blue-200">{currentIPK()}</span>
                                 <span class="text-[10px] text-blue-500/80 font-mono block">IPS: {semesterIPS()}</span>
                             </div>
-                            <div class="p-3.5 px-5 rounded-xs bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800/80 text-center">
-                                <span class="text-[10px] font-mono uppercase tracking-wider text-indigo-600 dark:text-indigo-400 block">Credits Taken (SKS)</span>
-                                <span class="text-xl font-black text-indigo-900 dark:text-indigo-200">{totalSKS()} <span class="text-xs font-normal">SKS</span></span>
-                                <span class="text-[10px] text-indigo-500/80 font-mono block">Sem: {semesterSKS()} SKS</span>
+                            <div class="p-3.5 px-5 rounded-xs bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/80 text-center">
+                                <span class="text-[10px] font-mono uppercase tracking-wider text-blue-600 dark:text-blue-400 block">Credits Taken (SKS)</span>
+                                <span class="text-xl font-black text-blue-900 dark:text-blue-200">{totalSKS()} <span class="text-xs font-normal">SKS</span></span>
+                                <span class="text-[10px] text-blue-500/80 font-mono block">Sem: {semesterSKS()} SKS</span>
                             </div>
                         </div>
                     </div>
@@ -291,7 +298,7 @@ export default function StudentCampaignActivityIndexPage() {
                 <div class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
                     <Show when={!isLoading()} fallback={
                         <div class="py-16 flex flex-col items-center justify-center gap-3 text-neutral-400">
-                            <div class="size-8 border-3 border-indigo-500 border-t-transparent rounded-xs animate-spin"></div>
+                            <div class="size-8 border-3 border-blue-500 border-t-transparent rounded-xs animate-spin"></div>
                             <p class="text-xs font-mono">Loading academic semester activities from server...</p>
                         </div>
                     }>
@@ -321,7 +328,7 @@ export default function StudentCampaignActivityIndexPage() {
                                             <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900/30 transition-colors">
                                                 <td class="py-4 px-4 font-bold text-neutral-900 dark:text-white">
                                                     <div class="flex items-center gap-2.5">
-                                                        <div class="size-8 rounded-xs bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold flex items-center justify-center">
+                                                        <div class="size-8 rounded-xs bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold flex items-center justify-center">
                                                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/></svg>
                                                         </div>
                                                         <div>
@@ -343,7 +350,7 @@ export default function StudentCampaignActivityIndexPage() {
                                                     {(act.cumulative_index ?? 0).toFixed(2)}
                                                 </td>
 
-                                                <td class="py-4 px-4 text-center font-mono font-extrabold text-indigo-600 dark:text-indigo-400">
+                                                <td class="py-4 px-4 text-center font-mono font-extrabold text-blue-600 dark:text-blue-400">
                                                     {(act.grand_cumulative_index ?? act.cumulative_index ?? 0).toFixed(2)}
                                                 </td>
 
@@ -390,7 +397,7 @@ export default function StudentCampaignActivityIndexPage() {
                                                         </button>
                                                         <A
                                                             href={`/student/academic/student/campaign/activity/${act.id}/show`}
-                                                            class="px-3 py-1.5 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 rounded-xs text-xs font-bold transition-colors"
+                                                            class="px-3 py-1.5 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-xs text-xs font-bold transition-colors"
                                                         >
                                                             Details
                                                         </A>
@@ -423,7 +430,7 @@ export default function StudentCampaignActivityIndexPage() {
                                         {/* Header Row: Icon + Title + ID & Status Badge */}
                                         <div class="flex items-start justify-between gap-2">
                                             <div class="flex items-start gap-2.5">
-                                                <div class="size-8 rounded-xs bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold flex items-center justify-center shrink-0 mt-0.5">
+                                                <div class="size-8 rounded-xs bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold flex items-center justify-center shrink-0 mt-0.5">
                                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/></svg>
                                                 </div>
                                                 <div>
@@ -471,7 +478,7 @@ export default function StudentCampaignActivityIndexPage() {
 
                                             <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
                                                 <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">IPK</span>
-                                                <span class="font-mono font-bold text-xs text-indigo-600 dark:text-indigo-400">
+                                                <span class="font-mono font-bold text-xs text-blue-600 dark:text-blue-400">
                                                     {(act.grand_cumulative_index ?? act.cumulative_index ?? 0).toFixed(2)}
                                                 </span>
                                             </div>
@@ -507,7 +514,7 @@ export default function StudentCampaignActivityIndexPage() {
                                             </button>
                                             <A
                                                 href={`/student/academic/student/campaign/activity/${act.id}/show`}
-                                                class="flex-1 py-2 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 rounded-xs text-xs font-bold text-center transition-colors"
+                                                class="flex-1 py-2 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-xs text-xs font-bold text-center transition-colors"
                                             >
                                                 Details
                                             </A>

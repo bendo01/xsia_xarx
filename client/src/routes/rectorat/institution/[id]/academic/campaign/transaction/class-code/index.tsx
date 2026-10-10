@@ -235,7 +235,7 @@ export default function RectoratInstitutionClassCodeIndex() {
                     </nav>
 
                     <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 sm:p-8 border border-neutral-200/80 dark:border-neutral-800 shadow-sm relative overflow-hidden backdrop-blur-xs">
-                        <div class="absolute -right-16 -top-16 w-64 h-64 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+                        <div class="absolute -right-16 -top-16 w-64 h-64 bg-linear-to-br from-indigo-500/10 to-purple-500/10 rounded-full blur-3xl pointer-events-none" />
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 relative z-10">
                             <div class="space-y-1.5 sm:space-y-2">
                                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-2xs sm:text-xs font-semibold uppercase tracking-wider border border-indigo-200 dark:border-indigo-800/80">

@@ -213,7 +213,7 @@ export default function RectoratTeachDetail() {
 
                     {/* Hero Header Card */}
                     <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 sm:p-8 border border-neutral-200/80 dark:border-neutral-800 shadow-sm relative overflow-hidden backdrop-blur-xs">
-                        <div class="absolute -right-16 -top-16 w-72 h-72 bg-gradient-to-br from-blue-500/10 via-indigo-500/10 to-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+                        <div class="absolute -right-16 -top-16 w-72 h-72 bg-linear-to-br from-blue-500/10 via-indigo-500/10 to-teal-500/10 rounded-full blur-3xl pointer-events-none" />
 
                         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
                             <div class="space-y-3">

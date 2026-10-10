@@ -6,24 +6,24 @@ export default function LecturerTeachAttendancePage() {
     const teachId = () => params.id || '';
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col">
             <TopBar />
 
-            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-                <div class="flex flex-wrap items-center justify-between gap-4 pb-2 border-b border-neutral-200 dark:border-neutral-800">
-                    <div class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
-                        <A href="/lecturer/dashboard" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-neutral-200 dark:border-neutral-800">
+                    <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
+                        <A href="/lecturer/dashboard" class="hover:text-blue-600 transition-colors">
                             Dashboard
                         </A>
                         <span>/</span>
-                        <A href="/lecturer/academic/campaign/transaction/teach" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                        <A href="/lecturer/academic/campaign/transaction/teach" class="hover:text-blue-600 transition-colors">
                             Pengajaran
                         </A>
                         <span>/</span>
-                        <span class="font-bold text-neutral-900 dark:text-white">
+                        <span class="font-medium text-neutral-900 dark:text-white">
                             Presensi & Roster
                         </span>
-                    </div>
+                    </nav>
 
                     <div class="flex items-center gap-2">
                         <A
@@ -37,7 +37,7 @@ export default function LecturerTeachAttendancePage() {
                         </A>
                         <A
                             href={`/lecturer/academic/campaign/transaction/teach/${teachId()}/grade`}
-                            class="px-3 py-1.5 rounded-xs bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-xs font-semibold transition-colors inline-flex items-center gap-1.5"
+                            class="px-3 py-1.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 text-xs font-semibold transition-colors inline-flex items-center gap-1.5"
                         >
                             Nilai Mahasiswa →
                         </A>
@@ -45,7 +45,7 @@ export default function LecturerTeachAttendancePage() {
                 </div>
 
                 <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-                    <h1 class="text-2xl font-black text-neutral-900 dark:text-white">
+                    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
                         Class Detail & Attendance Roster
                     </h1>
                 </div>

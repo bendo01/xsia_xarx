@@ -269,16 +269,15 @@ export default function LecturerIndividualShowPage() {
     const currentContractName = () => latestHomebase()?.contract_name || '';
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col">
             <TopBar />
 
-            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
                 {/* Pop-up blocker detection alert for PDF generation */}
                 <PopupBlockedAlert />
 
                 {/* Profile Header Hero Card */}
-                <div class="bg-linier-to-r from-indigo-900 via-purple-900 to-slate-900 rounded-xs p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-indigo-500/20">
-                    <div class="absolute -right-16 -top-16 w-80 h-80 bg-indigo-500/10 rounded-xs blur-3xl pointer-events-none"></div>
+                <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs relative overflow-hidden">
 
                     <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         {/* Avatar & Main Info */}
@@ -287,7 +286,7 @@ export default function LecturerIndividualShowPage() {
                                 <Show
                                     when={individualData()?.picture?.location}
                                     fallback={
-                                        <div class="size-20 sm:size-24 rounded-xs bg-indigo-600 text-white font-black text-3xl flex items-center justify-center shadow-lg border-2 border-indigo-400/30">
+                                        <div class="size-20 sm:size-24 rounded-xs bg-blue-600 text-white font-black text-3xl flex items-center justify-center shadow-lg border-2 border-blue-200 dark:border-blue-800/80">
                                             {(ind()?.name || user()?.name || 'L').charAt(0).toUpperCase()}
                                         </div>
                                     }
@@ -295,23 +294,23 @@ export default function LecturerIndividualShowPage() {
                                     <img
                                         src={individualData()!.picture!.location}
                                         alt={formattedFullName()}
-                                        class="size-20 sm:size-24 rounded-xs object-cover shadow-lg border-2 border-indigo-400/30"
+                                        class="size-20 sm:size-24 rounded-xs object-cover shadow-lg border-2 border-blue-200 dark:border-blue-800/80"
                                     />
                                 </Show>
-                                <span class="absolute -bottom-1 -right-1 size-5 bg-emerald-500 border-2 border-indigo-900 rounded-xs" title="Active Lecturer"></span>
+                                <span class="absolute -bottom-1 -right-1 size-5 bg-emerald-500 border-2 border-white dark:border-neutral-800 rounded-xs" title="Active Lecturer"></span>
                             </div>
 
                             <div class="text-center sm:text-start space-y-1">
-                                <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-xs bg-indigo-500/20 text-indigo-200 text-xs font-mono font-semibold border border-indigo-400/30">
+                                <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold border border-blue-200 dark:border-blue-800/80">
                                     <span>{nidnOrNuptkBadge()}</span>
                                 </div>
-                                <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                                <h1 class="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white tracking-tight">
                                     {formattedFullName()}
                                 </h1>
-                                <p class="text-xs sm:text-sm text-indigo-200/80 font-medium">
+                                <p class="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 font-medium">
                                     {currentUnitName()} • {currentRankName()}{currentGroupName() ? ` (${currentGroupName()})` : ''}
                                 </p>
-                                <p class="text-xs text-indigo-300/60 font-mono">
+                                <p class="text-xs text-neutral-400 font-mono">
                                     {user()?.email || individualData()?.user?.email || 'lecturer@tritunas.ac.id'}
                                 </p>
                             </div>
@@ -321,7 +320,7 @@ export default function LecturerIndividualShowPage() {
                         <div class="flex items-center justify-center gap-3">
                             <A
                                 href="/lecturer/academic/campaign/transaction/teach"
-                                class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xs text-xs flex items-center gap-2 shadow-md transition-colors"
+                                class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xs text-xs flex items-center gap-2 shadow-md transition-colors"
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
@@ -339,7 +338,7 @@ export default function LecturerIndividualShowPage() {
                         type="button"
                         onClick={() => setActiveTab('overview')}
                         class={`px-4 py-2.5 text-xs font-bold rounded-xs transition-all border-b-2 -mb-px flex items-center gap-2 ${activeTab() === 'overview'
-                            ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 bg-white dark:bg-neutral-800'
+                            ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-neutral-800'
                             : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
                             }`}
                     >
@@ -350,7 +349,7 @@ export default function LecturerIndividualShowPage() {
                         type="button"
                         onClick={() => setActiveTab('biodata')}
                         class={`px-4 py-2.5 text-xs font-bold rounded-xs transition-all border-b-2 -mb-px flex items-center gap-2 ${activeTab() === 'biodata'
-                            ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 bg-white dark:bg-neutral-800'
+                            ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-neutral-800'
                             : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
                             }`}
                     >
@@ -361,7 +360,7 @@ export default function LecturerIndividualShowPage() {
                         type="button"
                         onClick={() => setActiveTab('academic')}
                         class={`px-4 py-2.5 text-xs font-bold rounded-xs transition-all border-b-2 -mb-px flex items-center gap-2 ${activeTab() === 'academic'
-                            ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 bg-white dark:bg-neutral-800'
+                            ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-neutral-800'
                             : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
                             }`}
                     >
@@ -389,7 +388,7 @@ export default function LecturerIndividualShowPage() {
                                         <h3 class="text-xs font-bold font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
                                             Faculty Appointment
                                         </h3>
-                                        <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 font-mono">
+                                        <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-mono">
                                             {currentStatusName()}
                                         </span>
                                     </div>
@@ -464,7 +463,7 @@ export default function LecturerIndividualShowPage() {
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div class="space-y-1">
                                         <div class="flex items-center gap-2">
-                                            <div class="size-7 rounded-xs bg-indigo-100 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+                                            <div class="size-7 rounded-xs bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
                                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" />
                                                 </svg>
@@ -479,7 +478,7 @@ export default function LecturerIndividualShowPage() {
                                     </div>
                                     <Show when={yearlyCreditTrends().length > 0}>
                                         <div class="flex items-center gap-2">
-                                            <span class="px-2.5 py-1 rounded-xs bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-mono text-[11px] font-semibold border border-indigo-200/80 dark:border-indigo-800/60">
+                                            <span class="px-2.5 py-1 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-mono text-[11px] font-semibold border border-blue-200/80 dark:border-blue-800/60">
                                                 {yearlyCreditTrends().length} Periode Akademik
                                             </span>
                                         </div>
@@ -518,7 +517,7 @@ export default function LecturerIndividualShowPage() {
                             </div>
 
                             {/* Teaching Quick Link */}
-                            <div class="p-6 rounded-xs bg-linier-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/40 dark:to-blue-950/40 border border-indigo-200/80 dark:border-indigo-800/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div class="p-6 rounded-xs bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40 border border-blue-200/80 dark:border-blue-800/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                                 <div class="space-y-1">
                                     <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
                                         Teaching & Class Management
@@ -529,7 +528,7 @@ export default function LecturerIndividualShowPage() {
                                 </div>
                                 <A
                                     href="/lecturer/academic/campaign/transaction/teach"
-                                    class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xs text-xs inline-flex items-center gap-2 transition-colors shrink-0"
+                                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xs text-xs inline-flex items-center gap-2 transition-colors shrink-0"
                                 >
                                     <span>Go to Teaching Portal →</span>
                                 </A>
@@ -604,7 +603,7 @@ export default function LecturerIndividualShowPage() {
                                             Higher education teaching credentials, homebase assignment, and functional ranks.
                                         </p>
                                     </div>
-                                    <span class="px-2.5 py-1 rounded-xs text-xs font-mono font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 self-start sm:self-auto">
+                                    <span class="px-2.5 py-1 rounded-xs text-xs font-mono font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 self-start sm:self-auto">
                                         {currentStatusName()}
                                     </span>
                                 </div>
@@ -655,7 +654,7 @@ export default function LecturerIndividualShowPage() {
                                 <div class="p-6 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-4 shadow-2xs">
                                     <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
                                         <div class="flex items-center gap-2">
-                                            <div class="size-8 rounded-xs bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs">
+                                            <div class="size-8 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
                                                 HB
                                             </div>
                                             <div>
@@ -732,7 +731,7 @@ export default function LecturerIndividualShowPage() {
                                                             <div class="flex items-center gap-2">
                                                                 <span class="font-bold text-neutral-900 dark:text-white">{rk.rank_name || 'Jabatan Fungsional'}</span>
                                                                 <Show when={idx() === 0}>
-                                                                    <span class="px-1.5 py-0.2 rounded-xs text-[9px] font-bold bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300">Latest</span>
+                                                                    <span class="px-1.5 py-0.2 rounded-xs text-[9px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">Latest</span>
                                                                 </Show>
                                                             </div>
                                                             <span class="text-[10px] text-neutral-500 font-mono">SK: {rk.decree_number || '-'} {rk.decree_date ? `(${rk.decree_date})` : ''}</span>

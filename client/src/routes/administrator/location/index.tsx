@@ -122,14 +122,20 @@ export default function LocationOverviewPage() {
     ];
 
     return (
-        <>
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
             <TopBar />
-            <div class="px-4 py-6 mx-auto space-y-6">
-                <div>
-                    <h1 class="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white tracking-tight">
+
+            <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+                <div class="border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                    <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                        <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">Administrator</a>
+                        <span>/</span>
+                        <span class="font-medium text-neutral-900 dark:text-white">Location</span>
+                    </nav>
+                    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
                         Location Management Hub
                     </h1>
-                    <p class="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+                    <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
                         Hierarchical administrative and geospatial master datasets connected to the backend database.
                     </p>
                 </div>
@@ -139,7 +145,7 @@ export default function LocationOverviewPage() {
                         {(mod) => (
                             <A
                                 href={mod.path}
-                                class="group relative flex flex-col justify-between p-5 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 hover:border-blue-500 dark:hover:border-blue-500 shadow-2xs hover:shadow-md transition-all"
+                                class="group relative flex flex-col justify-between p-5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 hover:border-blue-500 dark:hover:border-blue-500 shadow-2xs hover:shadow-md transition-all"
                             >
                                 <div>
                                     <div class="flex items-center justify-between">
@@ -165,6 +171,6 @@ export default function LocationOverviewPage() {
                     </For>
                 </div>
             </div>
-        </>
+        </div>
     );
 }

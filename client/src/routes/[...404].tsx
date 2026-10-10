@@ -76,8 +76,8 @@ export default function NotFound() {
       <main class="flex-1 flex flex-col items-center justify-center relative overflow-hidden px-4 py-12 sm:py-16">
         {/* Ambient background decoration */}
         <div class="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-          <div class="absolute -top-40 -left-40 size-96 rounded-xs bg-gradient-to-br from-blue-500/10 to-indigo-500/0 dark:from-blue-500/15 blur-3xl" />
-          <div class="absolute -bottom-40 -right-40 size-96 rounded-xs bg-gradient-to-tl from-amber-500/10 to-purple-500/0 dark:from-amber-500/15 blur-3xl" />
+          <div class="absolute -top-40 -left-40 size-96 rounded-xs bg-linear-to-br from-blue-500/10 to-indigo-500/0 dark:from-blue-500/15 blur-3xl" />
+          <div class="absolute -bottom-40 -right-40 size-96 rounded-xs bg-linear-to-tl from-amber-500/10 to-purple-500/0 dark:from-amber-500/15 blur-3xl" />
           <div class="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#262626_1px,transparent_1px)] [background-size:16px_16px] opacity-60" />
         </div>
 
@@ -93,7 +93,7 @@ export default function NotFound() {
 
           {/* Hero 404 Graphic */}
           <div class="relative flex items-center justify-center my-2">
-            <h1 class="text-8xl sm:text-9xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-neutral-900 via-neutral-700 to-neutral-400 dark:from-white dark:via-neutral-200 dark:to-neutral-600 select-none">
+            <h1 class="text-8xl sm:text-9xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-neutral-900 via-neutral-700 to-neutral-400 dark:from-white dark:via-neutral-200 dark:to-neutral-600 select-none">
               404
             </h1>
             <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10 dark:opacity-20">

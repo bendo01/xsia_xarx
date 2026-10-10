@@ -285,7 +285,7 @@ export default function Home() {
                     </header>
 
                     {/* Candidate Admission Banner */}
-                    <section class="mb-12 bg-linier-to-r from-amber-950/40 via-slate-900/60 to-emerald-950/40 border border-amber-500/25 rounded-xs p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <section class="mb-12 bg-linear-to-r from-amber-950/40 via-slate-900/60 to-emerald-950/40 border border-amber-500/25 rounded-xs p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div class="space-y-2 max-w-2xl">
                             <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xs bg-amber-500/10 text-amber-300 text-xs font-mono font-bold uppercase border border-amber-500/30">
                                 Penerimaan Mahasiswa Baru
@@ -458,7 +458,7 @@ export default function Home() {
                     </div>
 
                     {/* Comparison Box: Session vs JWT
-                    <section class="bg-linier-to-r from-emerald-950/30 via-slate-900/60 to-blue-950/30 border border-emerald-500/20 rounded-xs p-6 sm:p-8 mb-16">
+                    <section class="bg-linear-to-r from-emerald-950/30 via-slate-900/60 to-blue-950/30 border border-emerald-500/20 rounded-xs p-6 sm:p-8 mb-16">
                         <div class="max-w-3xl">
                             <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xs bg-emerald-500/10 text-emerald-400 text-xs font-mono font-bold uppercase mb-2 border border-emerald-500/20">
                                 Rekomendasi Keamanan

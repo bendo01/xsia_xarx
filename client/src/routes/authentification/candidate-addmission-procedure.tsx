@@ -403,7 +403,7 @@ export default function CandidateAdmissionProcedure() {
                     </section>
 
                     {/* Closing CTA */}
-                    <section class="bg-linier-to-r from-emerald-950/40 via-slate-900/60 to-blue-950/40 border border-emerald-500/20 rounded-xs p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <section class="bg-linear-to-r from-emerald-950/40 via-slate-900/60 to-blue-950/40 border border-emerald-500/20 rounded-xs p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div>
                             <h2 class="text-xl font-bold text-white mb-1">Dokumen Anda sudah siap?</h2>
                             <p class="text-sm text-neutral-300">Mulai pendaftaran sekarang. Proses pengisian formulir hanya membutuhkan beberapa menit.</p>

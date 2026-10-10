@@ -578,7 +578,7 @@ export default function CourseDepartmentLecturerMasterPage() {
                                         {/* Card Header: Avatar, Name, NIDN & Status */}
                                         <div class="flex items-start justify-between gap-3">
                                             <div class="flex items-start gap-3 min-w-0">
-                                                <div class="size-9 rounded-xs bg-gradient-to-br from-teal-500 to-cyan-600 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-2xs mt-0.5">
+                                                <div class="size-9 rounded-xs bg-linear-to-br from-teal-500 to-cyan-600 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-2xs mt-0.5">
                                                     {(std.lecturer_name || '-' || 'S').slice(0, 1).toUpperCase()}
                                                 </div>
                                                 <div class="min-w-0 space-y-1">
@@ -770,7 +770,7 @@ export default function CourseDepartmentLecturerMasterPage() {
                                                 {/* Full Name */}
                                                 <td class="py-3 px-4">
                                                     <div class="flex items-center gap-2.5">
-                                                        <div class="size-7 rounded-xs bg-gradient-to-br from-teal-500 to-cyan-600 text-white font-bold text-[10px] flex items-center justify-center shrink-0 shadow-2xs">
+                                                        <div class="size-7 rounded-xs bg-linear-to-br from-teal-500 to-cyan-600 text-white font-bold text-[10px] flex items-center justify-center shrink-0 shadow-2xs">
                                                             {(std.lecturer_name || '-' || 'S').slice(0, 1).toUpperCase()}
                                                         </div>
                                                         <span class="font-bold text-neutral-900 dark:text-white">

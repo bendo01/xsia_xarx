@@ -232,253 +232,259 @@ export default function AuthPermissionRolePage() {
     const endIndex = () => Math.min(startIndex() + items().length, totalData());
 
     return (
-        <>
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
             <TopBar />
 
-            {/* Page Header */}
-            <div class="sm:flex sm:items-center sm:justify-between mb-4 px-3 pt-4">
-                <div>
-                    <h1 class="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white tracking-tight">
-                        Permission-Role Assignment / Hak Akses Peran
-                    </h1>
-                    <p class="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-                        Associate and manage access permissions granted to each security role.
-                    </p>
-                </div>
-                <div class="mt-4 sm:mt-0 flex items-center gap-2 justify-end">
-                    <button
-                        type="button"
-                        onClick={openCreateModal}
-                        class="inline-flex items-center gap-x-2 px-3.5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-hidden focus:ring-2 focus:ring-blue-500 rounded-xs shadow-xs transition-colors cursor-pointer"
-                        id="btn-add-permission-role"
-                    >
-                        <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M5 12h14" />
-                            <path d="M12 5v14" />
-                        </svg>
-                        <span>Assign Permission to Role</span>
-                    </button>
-                </div>
-            </div>
-
-            {/* Controls */}
-            <div class="px-3 mb-4 flex justify-end w-full">
-                <div class="w-48">
-                    <label class="block text-xs font-semibold uppercase text-neutral-500 dark:text-neutral-400 mb-1">
-                        Per Page
-                    </label>
-                    <select
-                        class="block w-full p-2 text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
-                        value={itemsPerPage()}
-                        onChange={handleItemsPerPageChange}
-                        id="select-per-page-permission-role"
-                    >
-                        <option value={10}>10</option>
-                        <option value={25}>25</option>
-                        <option value={50}>50</option>
-                        <option value={100}>100</option>
-                    </select>
-                </div>
-            </div>
-
-            {/* Content Table Container */}
-            <div class="lg:mx-3 border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 shadow-2xs">
-                {/* Desktop Table View */}
-                <div class="hidden md:flex md:flex-col">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-left whitespace-nowrap">
-                            <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3.5 font-semibold tracking-wider">Role</th>
-                                    <th scope="col" class="px-6 py-3.5 font-semibold tracking-wider">Granted Permission</th>
-                                    <th scope="col" class="px-6 py-3.5 font-semibold tracking-wider">Created At</th>
-                                    <th scope="col" class="px-6 py-3.5 font-semibold tracking-wider text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
-                                <Show
-                                    when={!isLoading()}
-                                    fallback={
-                                        <For each={Array.from({ length: 3 })}>
-                                            {() => (
-                                                <tr class="animate-pulse hover:bg-neutral-50 dark:hover:bg-neutral-800/50">
-                                                    <td class="px-6 py-4"><div class="h-5 w-32 bg-neutral-200 dark:bg-neutral-700"></div></td>
-                                                    <td class="px-6 py-4"><div class="h-5 w-48 bg-neutral-200 dark:bg-neutral-700"></div></td>
-                                                    <td class="px-6 py-4"><div class="h-4 w-24 bg-neutral-200 dark:bg-neutral-700"></div></td>
-                                                    <td class="px-6 py-4 text-right flex justify-end gap-2">
-                                                        <div class="h-8 w-8 bg-neutral-200 dark:bg-neutral-700"></div>
-                                                        <div class="h-8 w-8 bg-neutral-200 dark:bg-neutral-700"></div>
-                                                    </td>
-                                                </tr>
-                                            )}
-                                        </For>
-                                    }
-                                >
-                                    <Show
-                                        when={items().length > 0}
-                                        fallback={
-                                            <tr>
-                                                <td colspan="4" class="px-6 py-12 text-center text-neutral-500 dark:text-neutral-400">
-                                                    <div class="flex flex-col items-center justify-center space-y-2">
-                                                        <svg class="size-8 text-neutral-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                                        </svg>
-                                                        <p class="text-sm font-medium">No permission-role mappings found</p>
-                                                        <p class="text-xs">Click "Assign Permission to Role" to add a new assignment.</p>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        }
-                                    >
-                                        <For each={items()}>
-                                            {(item) => (
-                                                <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-800/60 transition-colors">
-                                                    <td class="px-6 py-4">
-                                                        <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                                                            {getRoleName(item.role_id)}
-                                                        </span>
-                                                    </td>
-                                                    <td class="px-6 py-4">
-                                                        <span class="inline-flex items-center px-2 py-0.5 text-xs font-mono font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                                                            {getPermissionName(item.permission_id)}
-                                                        </span>
-                                                    </td>
-                                                    <td class="px-6 py-4 text-xs text-neutral-500 dark:text-neutral-400">
-                                                        {item.created_at ? new Date(item.created_at).toLocaleDateString() : '-'}
-                                                    </td>
-                                                    <td class="px-6 py-4 text-right">
-                                                        <div class="flex justify-end gap-1">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => openEditModal(item)}
-                                                                class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
-                                                                title="Edit Record"
-                                                                aria-label={`Edit assignment`}
-                                                            >
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                                    <path d="M12 20h9" />
-                                                                    <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
-                                                                </svg>
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => openDeleteModal(item)}
-                                                                class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-red-600 hover:border-red-500 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:border-red-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
-                                                                title="Delete Record"
-                                                                aria-label={`Delete assignment`}
-                                                            >
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                                    <path d="M3 6h18" />
-                                                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                                                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                                                                    <line x1="10" y1="11" x2="10" y2="17" />
-                                                                    <line x1="14" y1="11" x2="14" y2="17" />
-                                                                </svg>
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            )}
-                                        </For>
-                                    </Show>
-                                </Show>
-                            </tbody>
-                        </table>
+            <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+                {/* Page Header */}
+                <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                    <div>
+                        <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                            <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">Administrator</a>
+                            <span>/</span>
+                            <span>Auth</span>
+                            <span>/</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">Permission Role</span>
+                        </nav>
+                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
+                            Permission-Role Assignment / Hak Akses Peran
+                        </h1>
+                        <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
+                            Associate and manage access permissions granted to each security role.
+                        </p>
+                    </div>
+                    <div class="mt-4 sm:mt-0 flex items-center gap-2 justify-end">
+                        <button
+                            type="button"
+                            onClick={openCreateModal}
+                            class="inline-flex items-center gap-x-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-hidden focus:ring-2 focus:ring-blue-500 rounded-xs shadow-xs transition-colors cursor-pointer"
+                            id="btn-add-permission-role"
+                        >
+                            <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M5 12h14" />
+                                <path d="M12 5v14" />
+                            </svg>
+                            <span>Assign Permission to Role</span>
+                        </button>
                     </div>
                 </div>
 
-                {/* Mobile Card View */}
-                <div class="md:hidden divide-y divide-neutral-200 dark:divide-neutral-700">
-                    <Show
-                        when={!isLoading()}
-                        fallback={
-                            <For each={Array.from({ length: 2 })}>
-                                {() => (
-                                    <div class="p-4 space-y-3 animate-pulse">
-                                        <div class="h-4 w-1/3 bg-neutral-200 dark:bg-neutral-700"></div>
-                                        <div class="h-4 w-2/3 bg-neutral-200 dark:bg-neutral-700"></div>
-                                        <div class="flex justify-end gap-2 pt-2">
-                                            <div class="h-8 w-16 bg-neutral-200 dark:bg-neutral-700"></div>
-                                            <div class="h-8 w-16 bg-neutral-200 dark:bg-neutral-700"></div>
-                                        </div>
-                                    </div>
-                                )}
-                            </For>
-                        }
-                    >
-                        <Show
-                            when={items().length > 0}
-                            fallback={
-                                <div class="p-8 text-center text-neutral-500 dark:text-neutral-400">
-                                    No permission-role mappings found.
-                                </div>
-                            }
+                {/* Controls */}
+                <div class="px-3 mb-4 flex justify-end w-full">
+                    <div class="w-48">
+                        <select
+                            class="block w-full p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                            value={itemsPerPage()}
+                            onChange={handleItemsPerPageChange}
+                            id="select-per-page-permission-role"
                         >
-                            <For each={items()}>
-                                {(item) => (
-                                    <div class="p-4 space-y-2">
-                                        <div class="flex items-center justify-between">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                                                {getRoleName(item.role_id)}
-                                            </span>
-                                            <span class="text-xs text-neutral-500 dark:text-neutral-400 font-mono">
-                                                {item.created_at ? new Date(item.created_at).toLocaleDateString() : ''}
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <span class="inline-flex items-center px-2 py-0.5 text-xs font-mono font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                                                {getPermissionName(item.permission_id)}
-                                            </span>
-                                        </div>
-                                        <div class="flex justify-end gap-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
-                                            <button
-                                                type="button"
-                                                onClick={() => openEditModal(item)}
-                                                class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-yellow-50 hover:text-yellow-600 hover:border-yellow-500 dark:text-blue-400 dark:bg-blue-950/50 dark:hover:text-yellow-400 dark:hover:border-yellow-500 border border-blue-200 dark:border-blue-800 transition-colors cursor-pointer"
-                                            >
-                                                Edit
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => openDeleteModal(item)}
-                                                class="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-50 hover:text-red-600 hover:border-red-500 dark:text-red-400 dark:bg-red-950/50 dark:hover:text-red-400 dark:hover:border-red-500 border border-red-200 dark:border-red-800 transition-colors cursor-pointer"
-                                            >
-                                                Delete
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-                            </For>
-                        </Show>
-                    </Show>
+                            <option value={10}>10 / page</option>
+                            <option value={25}>25 / page</option>
+                            <option value={50}>50 / page</option>
+                            <option value={100}>100 / page</option>
+                        </select>
+                    </div>
                 </div>
 
-                {/* Pagination Footer */}
-                <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-3">
-                    <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                        Showing <span class="font-semibold text-neutral-900 dark:text-white">{totalData() > 0 ? startIndex() + 1 : 0}</span>–<span class="font-semibold text-neutral-900 dark:text-white">{endIndex()}</span> of <span class="font-semibold text-neutral-900 dark:text-white">{totalData().toLocaleString()}</span> results
-                    </p>
-                    <nav class="inline-flex -space-x-px rounded-lg overflow-hidden shadow-sm" aria-label="Pagination">
-                        <button
-                            type="button"
-                            class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                            disabled={currentPage() <= 1 || isLoading()}
-                            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                {/* Content Table Container */}
+                <div class="border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-2xs overflow-hidden">
+                    {/* Desktop Table View */}
+                    <div class="hidden md:flex md:flex-col">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs sm:text-sm text-left whitespace-nowrap">
+                                <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
+                                    <tr>
+                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider">Role</th>
+                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider">Granted Permission</th>
+                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider">Created At</th>
+                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
+                                    <Show
+                                        when={!isLoading()}
+                                        fallback={
+                                            <For each={Array.from({ length: 3 })}>
+                                                {() => (
+                                                    <tr class="animate-pulse hover:bg-neutral-50 dark:hover:bg-neutral-700/50">
+                                                        <td class="px-4 py-3"><div class="h-5 w-32 bg-neutral-200 dark:bg-neutral-700"></div></td>
+                                                        <td class="px-4 py-3"><div class="h-5 w-48 bg-neutral-200 dark:bg-neutral-700"></div></td>
+                                                        <td class="px-4 py-3"><div class="h-4 w-24 bg-neutral-200 dark:bg-neutral-700"></div></td>
+                                                        <td class="px-4 py-3 text-right flex justify-end gap-2">
+                                                            <div class="h-8 w-8 bg-neutral-200 dark:bg-neutral-700"></div>
+                                                            <div class="h-8 w-8 bg-neutral-200 dark:bg-neutral-700"></div>
+                                                        </td>
+                                                    </tr>
+                                                )}
+                                            </For>
+                                        }
+                                    >
+                                        <Show
+                                            when={items().length > 0}
+                                            fallback={
+                                                <tr>
+                                                    <td colspan="4" class="px-4 py-12 text-center text-neutral-500 dark:text-neutral-400">
+                                                        <div class="flex flex-col items-center justify-center space-y-2">
+                                                            <svg class="size-8 text-neutral-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                                            </svg>
+                                                            <p class="text-sm font-medium">No permission-role mappings found</p>
+                                                            <p class="text-xs">Click "Assign Permission to Role" to add a new assignment.</p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        >
+                                            <For each={items()}>
+                                                {(item) => (
+                                                    <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-800/60 transition-colors">
+                                                        <td class="px-4 py-3">
+                                                            <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                                                {getRoleName(item.role_id)}
+                                                            </span>
+                                                        </td>
+                                                        <td class="px-4 py-3">
+                                                            <span class="inline-flex items-center px-2 py-0.5 text-xs font-mono font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                                                                {getPermissionName(item.permission_id)}
+                                                            </span>
+                                                        </td>
+                                                        <td class="px-4 py-3 text-xs text-neutral-500 dark:text-neutral-400">
+                                                            {item.created_at ? new Date(item.created_at).toLocaleDateString() : '-'}
+                                                        </td>
+                                                        <td class="px-4 py-3 text-right">
+                                                            <div class="flex justify-end gap-1">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => openEditModal(item)}
+                                                                    class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
+                                                                    title="Edit Record"
+                                                                    aria-label={`Edit assignment`}
+                                                                >
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                        <path d="M12 20h9" />
+                                                                        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                                                                    </svg>
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => openDeleteModal(item)}
+                                                                    class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-red-600 hover:border-red-500 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:border-red-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
+                                                                    title="Delete Record"
+                                                                    aria-label={`Delete assignment`}
+                                                                >
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                        <path d="M3 6h18" />
+                                                                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                                                        <line x1="10" y1="11" x2="10" y2="17" />
+                                                                        <line x1="14" y1="11" x2="14" y2="17" />
+                                                                    </svg>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                )}
+                                            </For>
+                                        </Show>
+                                    </Show>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {/* Mobile Card View */}
+                    <div class="md:hidden divide-y divide-neutral-200 dark:divide-neutral-700">
+                        <Show
+                            when={!isLoading()}
+                            fallback={
+                                <For each={Array.from({ length: 2 })}>
+                                    {() => (
+                                        <div class="p-4 space-y-3 animate-pulse">
+                                            <div class="h-4 w-1/3 bg-neutral-200 dark:bg-neutral-700"></div>
+                                            <div class="h-4 w-2/3 bg-neutral-200 dark:bg-neutral-700"></div>
+                                            <div class="flex justify-end gap-2 pt-2">
+                                                <div class="h-8 w-16 bg-neutral-200 dark:bg-neutral-700"></div>
+                                                <div class="h-8 w-16 bg-neutral-200 dark:bg-neutral-700"></div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </For>
+                            }
                         >
-                            Previous
-                        </button>
-                        <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border-y border-neutral-300 dark:border-neutral-600">
-                            {currentPage()} / {totalPages()}
-                        </span>
-                        <button
-                            type="button"
-                            class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                            disabled={currentPage() >= totalPages() || isLoading()}
-                            onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
-                        >
-                            Next
-                        </button>
-                    </nav>
+                            <Show
+                                when={items().length > 0}
+                                fallback={
+                                    <div class="p-8 text-center text-neutral-500 dark:text-neutral-400">
+                                        No permission-role mappings found.
+                                    </div>
+                                }
+                            >
+                                <For each={items()}>
+                                    {(item) => (
+                                        <div class="p-4 space-y-2">
+                                            <div class="flex items-center justify-between">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                                    {getRoleName(item.role_id)}
+                                                </span>
+                                                <span class="text-xs text-neutral-500 dark:text-neutral-400 font-mono">
+                                                    {item.created_at ? new Date(item.created_at).toLocaleDateString() : ''}
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <span class="inline-flex items-center px-2 py-0.5 text-xs font-mono font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                                                    {getPermissionName(item.permission_id)}
+                                                </span>
+                                            </div>
+                                            <div class="flex justify-end gap-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => openEditModal(item)}
+                                                    class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-yellow-50 hover:text-yellow-600 hover:border-yellow-500 dark:text-blue-400 dark:bg-blue-950/50 dark:hover:text-yellow-400 dark:hover:border-yellow-500 border border-blue-200 dark:border-blue-800 transition-colors cursor-pointer"
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => openDeleteModal(item)}
+                                                    class="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-50 hover:text-red-600 hover:border-red-500 dark:text-red-400 dark:bg-red-950/50 dark:hover:text-red-400 dark:hover:border-red-500 border border-red-200 dark:border-red-800 transition-colors cursor-pointer"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </For>
+                            </Show>
+                        </Show>
+                    </div>
+
+                    {/* Pagination Footer */}
+                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/80 px-4 py-3 sm:px-6 gap-3 sm:gap-0">
+                        <p class="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300">
+                            Showing <span class="font-medium">{totalData() > 0 ? startIndex() + 1 : 0}</span> to <span class="font-medium">{endIndex()}</span> of <span class="font-medium">{totalData().toLocaleString()}</span> results
+                        </p>
+                        <nav class="inline-flex -space-x-px shadow-2xs" aria-label="Pagination">
+                            <button
+                                type="button"
+                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 cursor-pointer"
+                                disabled={currentPage() <= 1 || isLoading()}
+                                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                            >
+                                Previous
+                            </button>
+                            <span class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 border border-blue-600">
+                                {currentPage()} / {totalPages()}
+                            </span>
+                            <button
+                                type="button"
+                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 cursor-pointer"
+                                disabled={currentPage() >= totalPages() || isLoading()}
+                                onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
+                            >
+                                Next
+                            </button>
+                        </nav>
+                    </div>
                 </div>
             </div>
 
@@ -716,6 +722,6 @@ export default function AuthPermissionRolePage() {
                     </div>
                 </div>
             </dialog>
-        </>
+        </div>
     );
 }

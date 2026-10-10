@@ -435,321 +435,321 @@ export default function LocationSubDistrictPage() {
     const endIndex = () => Math.min(startIndex() + items().length, totalData());
 
     return (
-        <>
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
             <TopBar />
 
-            {/* Page Header */}
-            <div class="sm:flex sm:items-center sm:justify-between mb-4 px-3 pt-4">
-                <div>
-                    <h1 class="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white tracking-tight">
-                        Sub-District / Kecamatan
-                    </h1>
-                    <p class="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-                        Manage third-level administrative subdivisions with complete location hierarchy (Regency, Province, Country).
-                    </p>
-                </div>
-                <div class="mt-4 sm:mt-0 flex items-center gap-2 justify-end">
-                    <button
-                        type="button"
-                        onClick={openCreateModal}
-                        class="inline-flex items-center gap-x-2 px-3.5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-hidden focus:ring-2 focus:ring-blue-500 rounded-xs shadow-xs transition-colors cursor-pointer"
-                        id="btn-add-location-sub-district"
-                    >
-                        <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M5 12h14" />
-                            <path d="M12 5v14" />
-                        </svg>
-                        <span>Add Sub-District</span>
-                    </button>
-                </div>
-            </div>
-
-            {/* Search & Filter Controls */}
-            <div class="px-3 mb-4 flex flex-col md:flex-row items-center gap-3 w-full">
-                <div class="w-full md:w-2/3">
-                    <label class="block text-xs font-semibold uppercase text-neutral-500 dark:text-neutral-400 mb-1">
-                        Search Filter
-                    </label>
-                    <div class="relative w-full">
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <svg class="w-4 h-4 text-neutral-500 dark:text-neutral-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+            <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+                {/* Page Header */}
+                <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                    <div>
+                        <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                            <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">Administrator</a>
+                            <span>/</span>
+                            <span>Location</span>
+                            <span>/</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">Sub District</span>
+                        </nav>
+                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
+                            Sub-District / Kecamatan
+                        </h1>
+                        <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
+                            Manage third-level administrative subdivisions with complete location hierarchy (Regency, Province, Country).
+                        </p>
+                    </div>
+                    <div class="mt-4 sm:mt-0 flex items-center gap-2 justify-end">
+                        <button
+                            type="button"
+                            onClick={openCreateModal}
+                            class="inline-flex items-center gap-x-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-hidden focus:ring-2 focus:ring-blue-500 rounded-xs shadow-xs transition-colors cursor-pointer"
+                            id="btn-add-location-sub-district"
+                        >
+                            <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M5 12h14" />
+                                <path d="M12 5v14" />
                             </svg>
+                            <span>Add Sub-District</span>
+                        </button>
+                    </div>
+                </div>
+
+                {/* Search & Filter Controls */}
+                <div class="flex flex-col md:flex-row items-center gap-3">
+                    <div class="w-full md:w-2/3">
+                        <div class="relative w-full">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg class="w-4 h-4 text-neutral-500 dark:text-neutral-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                                </svg>
+                            </div>
+                            <input
+                                type="text"
+                                class="block w-full p-2.5 pl-10 text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:placeholder-neutral-400 dark:text-white transition-colors"
+                                placeholder="Search by sub-district / kecamatan name (e.g. Coblong, Sumur Bandung)..."
+                                onInput={handleSearch}
+                                id="input-search-location-sub-district"
+                            />
                         </div>
-                        <input
-                            type="text"
-                            class="block w-full p-2.5 pl-10 text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:placeholder-neutral-400 dark:text-white transition-colors"
-                            placeholder="Search by sub-district / kecamatan name (e.g. Coblong, Sumur Bandung)..."
-                            onInput={handleSearch}
-                            id="input-search-location-sub-district"
-                        />
+                    </div>
+
+                    <div class="w-full md:w-1/3 flex gap-2">
+                        <div class="w-1/2">
+                            <select
+                                class="block w-full p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                                value={sortParam()}
+                                onChange={(e) => setSortParam((e.target as HTMLSelectElement).value)}
+                                id="select-sort-location-sub-district"
+                            >
+                                <option value="name-asc">Name (A-Z)</option>
+                                <option value="name-desc">Name (Z-A)</option>
+                                <option value="code-asc">Code (Ascending)</option>
+                                <option value="code-desc">Code (Descending)</option>
+                            </select>
+                        </div>
+                        <div class="w-1/2">
+                            <select
+                                class="block w-full p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                                value={itemsPerPage()}
+                                onChange={handleItemsPerPageChange}
+                                id="select-per-page-location-sub-district"
+                            >
+                                <option value={10}>10 / page</option>
+                                <option value={25}>25 / page</option>
+                                <option value={50}>50 / page</option>
+                                <option value={100}>100 / page</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
-                <div class="w-full md:w-1/3 flex gap-2">
-                    <div class="w-1/2">
-                        <label class="block text-xs font-semibold uppercase text-neutral-500 dark:text-neutral-400 mb-1">
-                            Sort By
-                        </label>
-                        <select
-                            class="block w-full p-2 text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
-                            value={sortParam()}
-                            onChange={(e) => setSortParam((e.target as HTMLSelectElement).value)}
-                            id="select-sort-location-sub-district"
-                        >
-                            <option value="name-asc">Name (A-Z)</option>
-                            <option value="name-desc">Name (Z-A)</option>
-                            <option value="code-asc">Code (Ascending)</option>
-                            <option value="code-desc">Code (Descending)</option>
-                        </select>
-                    </div>
-                    <div class="w-1/2">
-                        <label class="block text-xs font-semibold uppercase text-neutral-500 dark:text-neutral-400 mb-1">
-                            Per Page
-                        </label>
-                        <select
-                            class="block w-full p-2 text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
-                            value={itemsPerPage()}
-                            onChange={handleItemsPerPageChange}
-                            id="select-per-page-location-sub-district"
-                        >
-                            <option value={10}>10</option>
-                            <option value={25}>25</option>
-                            <option value={50}>50</option>
-                            <option value={100}>100</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            {/* Content Table Container */}
-            <div class="lg:mx-3 border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 shadow-2xs">
-                {/* Desktop Table View */}
-                <div class="hidden md:flex md:flex-col">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-left whitespace-nowrap">
-                            <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
-                                <tr>
-                                    <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider w-28">Code</th>
-                                    <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">Sub-District Name</th>
-                                    <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">Regency / City</th>
-                                    <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">Province</th>
-                                    <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">Country</th>
-                                    <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">Dikti Code</th>
-                                    <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
-                                <Show
-                                    when={!isLoading()}
-                                    fallback={
-                                        <For each={Array.from({ length: 3 })}>
-                                            {() => (
-                                                <tr class="animate-pulse hover:bg-neutral-50 dark:hover:bg-neutral-800/50">
-                                                    <td class="px-5 py-4"><div class="h-5 w-20 bg-neutral-200 dark:bg-neutral-700"></div></td>
-                                                    <td class="px-5 py-4"><div class="h-5 w-32 bg-neutral-200 dark:bg-neutral-700"></div></td>
-                                                    <td class="px-5 py-4"><div class="h-5 w-24 bg-neutral-200 dark:bg-neutral-700"></div></td>
-                                                    <td class="px-5 py-4"><div class="h-5 w-24 bg-neutral-200 dark:bg-neutral-700"></div></td>
-                                                    <td class="px-5 py-4"><div class="h-5 w-20 bg-neutral-200 dark:bg-neutral-700"></div></td>
-                                                    <td class="px-5 py-4"><div class="h-4 w-16 bg-neutral-200 dark:bg-neutral-700"></div></td>
-                                                    <td class="px-5 py-4 text-right flex justify-end gap-2">
-                                                        <div class="h-8 w-8 bg-neutral-200 dark:bg-neutral-700"></div>
-                                                        <div class="h-8 w-8 bg-neutral-200 dark:bg-neutral-700"></div>
-                                                    </td>
-                                                </tr>
-                                            )}
-                                        </For>
-                                    }
-                                >
+                {/* Content Table Container */}
+                <div class="border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-2xs overflow-hidden">
+                    {/* Desktop Table View */}
+                    <div class="hidden md:flex md:flex-col">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs sm:text-sm text-left whitespace-nowrap">
+                                <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
+                                    <tr>
+                                        <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider w-28">Code</th>
+                                        <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">Sub-District Name</th>
+                                        <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">Regency / City</th>
+                                        <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">Province</th>
+                                        <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">Country</th>
+                                        <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">Dikti Code</th>
+                                        <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
                                     <Show
-                                        when={items().length > 0}
+                                        when={!isLoading()}
                                         fallback={
-                                            <tr>
-                                                <td colspan="7" class="px-6 py-12 text-center text-neutral-500 dark:text-neutral-400">
-                                                    <div class="flex flex-col items-center justify-center space-y-2">
-                                                        <svg class="size-8 text-neutral-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                                                        </svg>
-                                                        <p class="text-sm font-medium">No sub-district records found</p>
-                                                        <p class="text-xs">Click "Add Sub-District" to add a new record.</p>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                            <For each={Array.from({ length: 3 })}>
+                                                {() => (
+                                                    <tr class="animate-pulse hover:bg-neutral-50 dark:hover:bg-neutral-700/50">
+                                                        <td class="px-5 py-4"><div class="h-5 w-20 bg-neutral-200 dark:bg-neutral-700"></div></td>
+                                                        <td class="px-5 py-4"><div class="h-5 w-32 bg-neutral-200 dark:bg-neutral-700"></div></td>
+                                                        <td class="px-5 py-4"><div class="h-5 w-24 bg-neutral-200 dark:bg-neutral-700"></div></td>
+                                                        <td class="px-5 py-4"><div class="h-5 w-24 bg-neutral-200 dark:bg-neutral-700"></div></td>
+                                                        <td class="px-5 py-4"><div class="h-5 w-20 bg-neutral-200 dark:bg-neutral-700"></div></td>
+                                                        <td class="px-5 py-4"><div class="h-4 w-16 bg-neutral-200 dark:bg-neutral-700"></div></td>
+                                                        <td class="px-5 py-4 text-right flex justify-end gap-2">
+                                                            <div class="h-8 w-8 bg-neutral-200 dark:bg-neutral-700"></div>
+                                                            <div class="h-8 w-8 bg-neutral-200 dark:bg-neutral-700"></div>
+                                                        </td>
+                                                    </tr>
+                                                )}
+                                            </For>
                                         }
                                     >
-                                        <For each={items()}>
-                                            {(item) => (
-                                                <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-800/60 transition-colors">
-                                                    <td class="px-5 py-4 font-mono font-medium text-neutral-900 dark:text-white">
-                                                        <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200">
-                                                            {item.code}
-                                                        </span>
-                                                    </td>
-                                                    <td class="px-5 py-4">
-                                                        <div class="font-medium text-neutral-900 dark:text-white">{item.name}</div>
-                                                        <div class="text-xs text-neutral-500 dark:text-neutral-400 font-mono">{item.id}</div>
-                                                    </td>
-                                                    <td class="px-5 py-4 text-xs font-medium text-neutral-800 dark:text-neutral-200">
-                                                        {getRegencyName(item.regency_id)}
-                                                    </td>
-                                                    <td class="px-5 py-4 text-xs text-neutral-600 dark:text-neutral-300">
-                                                        {getProvinceName(item.regency_id)}
-                                                    </td>
-                                                    <td class="px-5 py-4 text-xs text-neutral-600 dark:text-neutral-300">
-                                                        {getCountryName(item.regency_id)}
-                                                    </td>
-                                                    <td class="px-5 py-4 text-xs font-mono text-neutral-500 dark:text-neutral-400">
-                                                        {item.dikti_code || '-'}
-                                                    </td>
-                                                    <td class="px-5 py-4 text-right">
-                                                        <div class="flex justify-end gap-1">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => openEditModal(item)}
-                                                                class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
-                                                                title="Edit Record"
-                                                                aria-label={`Edit ${item.name}`}
-                                                            >
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                                    <path d="M12 20h9" />
-                                                                    <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
-                                                                </svg>
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => openDeleteModal(item)}
-                                                                class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-red-600 hover:border-red-500 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:border-red-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
-                                                                title="Delete Record"
-                                                                aria-label={`Delete ${item.name}`}
-                                                            >
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                                    <path d="M3 6h18" />
-                                                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                                                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                                                                    <line x1="10" y1="11" x2="10" y2="17" />
-                                                                    <line x1="14" y1="11" x2="14" y2="17" />
-                                                                </svg>
-                                                            </button>
+                                        <Show
+                                            when={items().length > 0}
+                                            fallback={
+                                                <tr>
+                                                    <td colspan="7" class="px-4 py-12 text-center text-neutral-500 dark:text-neutral-400">
+                                                        <div class="flex flex-col items-center justify-center space-y-2">
+                                                            <svg class="size-8 text-neutral-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                                                            </svg>
+                                                            <p class="text-sm font-medium">No sub-district records found</p>
+                                                            <p class="text-xs">Click "Add Sub-District" to add a new record.</p>
                                                         </div>
                                                     </td>
                                                 </tr>
-                                            )}
-                                        </For>
+                                            }
+                                        >
+                                            <For each={items()}>
+                                                {(item) => (
+                                                    <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-800/60 transition-colors">
+                                                        <td class="px-5 py-4 font-mono font-medium text-neutral-900 dark:text-white">
+                                                            <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200">
+                                                                {item.code}
+                                                            </span>
+                                                        </td>
+                                                        <td class="px-5 py-4">
+                                                            <div class="font-medium text-neutral-900 dark:text-white">{item.name}</div>
+                                                            <div class="text-xs text-neutral-500 dark:text-neutral-400 font-mono">{item.id}</div>
+                                                        </td>
+                                                        <td class="px-5 py-4 text-xs font-medium text-neutral-800 dark:text-neutral-200">
+                                                            {getRegencyName(item.regency_id)}
+                                                        </td>
+                                                        <td class="px-5 py-4 text-xs text-neutral-600 dark:text-neutral-300">
+                                                            {getProvinceName(item.regency_id)}
+                                                        </td>
+                                                        <td class="px-5 py-4 text-xs text-neutral-600 dark:text-neutral-300">
+                                                            {getCountryName(item.regency_id)}
+                                                        </td>
+                                                        <td class="px-5 py-4 text-xs font-mono text-neutral-500 dark:text-neutral-400">
+                                                            {item.dikti_code || '-'}
+                                                        </td>
+                                                        <td class="px-5 py-4 text-right">
+                                                            <div class="flex justify-end gap-1">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => openEditModal(item)}
+                                                                    class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
+                                                                    title="Edit Record"
+                                                                    aria-label={`Edit ${item.name}`}
+                                                                >
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                        <path d="M12 20h9" />
+                                                                        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                                                                    </svg>
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => openDeleteModal(item)}
+                                                                    class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-red-600 hover:border-red-500 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:border-red-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
+                                                                    title="Delete Record"
+                                                                    aria-label={`Delete ${item.name}`}
+                                                                >
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                        <path d="M3 6h18" />
+                                                                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                                                        <line x1="10" y1="11" x2="10" y2="17" />
+                                                                        <line x1="14" y1="11" x2="14" y2="17" />
+                                                                    </svg>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                )}
+                                            </For>
+                                        </Show>
                                     </Show>
-                                </Show>
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
 
-                {/* Mobile Card View */}
-                <div class="md:hidden divide-y divide-neutral-200 dark:divide-neutral-700">
-                    <Show
-                        when={!isLoading()}
-                        fallback={
-                            <For each={Array.from({ length: 2 })}>
-                                {() => (
-                                    <div class="p-4 space-y-3 animate-pulse">
-                                        <div class="h-4 w-1/3 bg-neutral-200 dark:bg-neutral-700"></div>
-                                        <div class="h-4 w-2/3 bg-neutral-200 dark:bg-neutral-700"></div>
-                                        <div class="flex justify-end gap-2 pt-2">
-                                            <div class="h-8 w-16 bg-neutral-200 dark:bg-neutral-700"></div>
-                                            <div class="h-8 w-16 bg-neutral-200 dark:bg-neutral-700"></div>
-                                        </div>
-                                    </div>
-                                )}
-                            </For>
-                        }
-                    >
+                    {/* Mobile Card View */}
+                    <div class="md:hidden divide-y divide-neutral-200 dark:divide-neutral-700">
                         <Show
-                            when={items().length > 0}
+                            when={!isLoading()}
                             fallback={
-                                <div class="p-8 text-center text-neutral-500 dark:text-neutral-400">
-                                    No sub-district records found.
-                                </div>
+                                <For each={Array.from({ length: 2 })}>
+                                    {() => (
+                                        <div class="p-4 space-y-3 animate-pulse">
+                                            <div class="h-4 w-1/3 bg-neutral-200 dark:bg-neutral-700"></div>
+                                            <div class="h-4 w-2/3 bg-neutral-200 dark:bg-neutral-700"></div>
+                                            <div class="flex justify-end gap-2 pt-2">
+                                                <div class="h-8 w-16 bg-neutral-200 dark:bg-neutral-700"></div>
+                                                <div class="h-8 w-16 bg-neutral-200 dark:bg-neutral-700"></div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </For>
                             }
                         >
-                            <For each={items()}>
-                                {(item) => (
-                                    <div class="p-4 space-y-2.5">
-                                        <div class="flex items-center justify-between">
-                                            <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 font-mono">
-                                                Code: {item.code}
-                                            </span>
-                                            <span class="text-xs font-mono text-neutral-500 dark:text-neutral-400">
-                                                Dikti: {item.dikti_code || '-'}
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <h3 class="font-medium text-neutral-900 dark:text-white">{item.name}</h3>
-                                            <p class="text-xs text-neutral-500 dark:text-neutral-400 font-mono truncate">{item.id}</p>
-                                        </div>
-
-                                        {/* Location Hierarchy Grid */}
-                                        <div class="grid grid-cols-3 gap-2 text-xs py-2 bg-neutral-50 dark:bg-neutral-800/40 px-2.5 border border-neutral-200/60 dark:border-neutral-700/60">
-                                            <div>
-                                                <span class="text-neutral-500 dark:text-neutral-400 block text-[10px] uppercase font-semibold">Regency / City</span>
-                                                <span class="text-neutral-800 dark:text-neutral-200 font-medium">{getRegencyName(item.regency_id)}</span>
-                                            </div>
-                                            <div>
-                                                <span class="text-neutral-500 dark:text-neutral-400 block text-[10px] uppercase font-semibold">Province</span>
-                                                <span class="text-neutral-800 dark:text-neutral-200">{getProvinceName(item.regency_id)}</span>
-                                            </div>
-                                            <div>
-                                                <span class="text-neutral-500 dark:text-neutral-400 block text-[10px] uppercase font-semibold">Country</span>
-                                                <span class="text-neutral-800 dark:text-neutral-200">{getCountryName(item.regency_id)}</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="flex justify-end items-center gap-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
-                                            <button
-                                                type="button"
-                                                onClick={() => openEditModal(item)}
-                                                class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-yellow-50 hover:text-yellow-600 hover:border-yellow-500 dark:text-blue-400 dark:bg-blue-950/50 dark:hover:text-yellow-400 dark:hover:border-yellow-500 border border-blue-200 dark:border-blue-800 transition-colors cursor-pointer"
-                                            >
-                                                Edit
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => openDeleteModal(item)}
-                                                class="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-50 hover:text-red-600 hover:border-red-500 dark:text-red-400 dark:bg-red-950/50 dark:hover:text-red-400 dark:hover:border-red-500 border border-red-200 dark:border-red-800 transition-colors cursor-pointer"
-                                            >
-                                                Delete
-                                            </button>
-                                        </div>
+                            <Show
+                                when={items().length > 0}
+                                fallback={
+                                    <div class="p-8 text-center text-neutral-500 dark:text-neutral-400">
+                                        No sub-district records found.
                                     </div>
-                                )}
-                            </For>
-                        </Show>
-                    </Show>
-                </div>
+                                }
+                            >
+                                <For each={items()}>
+                                    {(item) => (
+                                        <div class="p-4 space-y-2.5">
+                                            <div class="flex items-center justify-between">
+                                                <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 font-mono">
+                                                    Code: {item.code}
+                                                </span>
+                                                <span class="text-xs font-mono text-neutral-500 dark:text-neutral-400">
+                                                    Dikti: {item.dikti_code || '-'}
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <h3 class="font-medium text-neutral-900 dark:text-white">{item.name}</h3>
+                                                <p class="text-xs text-neutral-500 dark:text-neutral-400 font-mono truncate">{item.id}</p>
+                                            </div>
 
-                {/* Pagination Footer */}
-                <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-3">
-                    <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                        Showing <span class="font-semibold text-neutral-900 dark:text-white">{totalData() > 0 ? startIndex() + 1 : 0}</span>–<span class="font-semibold text-neutral-900 dark:text-white">{endIndex()}</span> of <span class="font-semibold text-neutral-900 dark:text-white">{totalData().toLocaleString()}</span> results
-                    </p>
-                    <nav class="inline-flex -space-x-px rounded-lg overflow-hidden shadow-sm" aria-label="Pagination">
-                        <button
-                            type="button"
-                            class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                            disabled={currentPage() <= 1 || isLoading()}
-                            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                        >
-                            Previous
-                        </button>
-                        <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border-y border-neutral-300 dark:border-neutral-600">
-                            {currentPage()} / {totalPages()}
-                        </span>
-                        <button
-                            type="button"
-                            class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                            disabled={currentPage() >= totalPages() || isLoading()}
-                            onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
-                        >
-                            Next
-                        </button>
-                    </nav>
+                                            {/* Location Hierarchy Grid */}
+                                            <div class="grid grid-cols-3 gap-2 text-xs py-2 bg-neutral-50 dark:bg-neutral-800/40 px-2.5 border border-neutral-200/60 dark:border-neutral-700/60">
+                                                <div>
+                                                    <span class="text-neutral-500 dark:text-neutral-400 block text-[10px] uppercase font-semibold">Regency / City</span>
+                                                    <span class="text-neutral-800 dark:text-neutral-200 font-medium">{getRegencyName(item.regency_id)}</span>
+                                                </div>
+                                                <div>
+                                                    <span class="text-neutral-500 dark:text-neutral-400 block text-[10px] uppercase font-semibold">Province</span>
+                                                    <span class="text-neutral-800 dark:text-neutral-200">{getProvinceName(item.regency_id)}</span>
+                                                </div>
+                                                <div>
+                                                    <span class="text-neutral-500 dark:text-neutral-400 block text-[10px] uppercase font-semibold">Country</span>
+                                                    <span class="text-neutral-800 dark:text-neutral-200">{getCountryName(item.regency_id)}</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex justify-end items-center gap-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => openEditModal(item)}
+                                                    class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-yellow-50 hover:text-yellow-600 hover:border-yellow-500 dark:text-blue-400 dark:bg-blue-950/50 dark:hover:text-yellow-400 dark:hover:border-yellow-500 border border-blue-200 dark:border-blue-800 transition-colors cursor-pointer"
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => openDeleteModal(item)}
+                                                    class="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-50 hover:text-red-600 hover:border-red-500 dark:text-red-400 dark:bg-red-950/50 dark:hover:text-red-400 dark:hover:border-red-500 border border-red-200 dark:border-red-800 transition-colors cursor-pointer"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </For>
+                            </Show>
+                        </Show>
+                    </div>
+
+                    {/* Pagination Footer */}
+                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/80 px-4 py-3 sm:px-6 gap-3 sm:gap-0">
+                        <p class="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300">
+                            Showing <span class="font-medium">{totalData() > 0 ? startIndex() + 1 : 0}</span> to <span class="font-medium">{endIndex()}</span> of <span class="font-medium">{totalData().toLocaleString()}</span> results
+                        </p>
+                        <nav class="inline-flex -space-x-px shadow-2xs" aria-label="Pagination">
+                            <button
+                                type="button"
+                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 cursor-pointer"
+                                disabled={currentPage() <= 1 || isLoading()}
+                                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                            >
+                                Previous
+                            </button>
+                            <span class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 border border-blue-600">
+                                {currentPage()} / {totalPages()}
+                            </span>
+                            <button
+                                type="button"
+                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 cursor-pointer"
+                                disabled={currentPage() >= totalPages() || isLoading()}
+                                onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
+                            >
+                                Next
+                            </button>
+                        </nav>
+                    </div>
                 </div>
             </div>
 
@@ -1101,6 +1101,6 @@ export default function LocationSubDistrictPage() {
                     </div>
                 </div>
             </dialog>
-        </>
+        </div>
     );
 }

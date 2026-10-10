@@ -557,41 +557,40 @@ export default function StudentDashboardProfilePage() {
     }
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col">
             <TopBar />
 
-            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
                 {/* Pop-up blocker detection alert for PDF generation */}
                 <PopupBlockedAlert />
 
                 {/* Profile Header Hero Card */}
-                <div class="bg-linier-to-r from-blue-900 via-indigo-900 to-slate-900 rounded-xs p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-blue-500/20">
-                    <div class="absolute -right-16 -top-16 w-80 h-80 bg-blue-500/10 rounded-xs blur-3xl pointer-events-none"></div>
+                <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs relative overflow-hidden">
 
                     <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         {/* Avatar & Main Info */}
                         <div class="flex flex-col sm:flex-row items-center sm:items-start gap-5">
                             <div class="relative">
-                                <div class="size-24 sm:size-28 rounded-xs bg-gradient-to-tr from-blue-500 to-indigo-500 p-1 shadow-lg">
+                                <div class="size-24 sm:size-28 rounded-xs bg-linear-to-tr from-blue-500 to-indigo-500 p-1 shadow-lg">
                                     <div class="w-full h-full rounded-xs bg-neutral-800 flex items-center justify-center text-white text-3xl font-black uppercase">
                                         {(fullName() || 'S').charAt(0)}
                                     </div>
                                 </div>
-                                <span class="absolute -bottom-2 -right-2 px-2.5 py-0.5 rounded-xs bg-emerald-500 text-[10px] font-bold tracking-wider uppercase text-white shadow-xs border-2 border-neutral-900">
+                                <span class="absolute -bottom-2 -right-2 px-2.5 py-0.5 rounded-xs bg-emerald-500 text-[10px] font-bold tracking-wider uppercase text-white shadow-xs border-2 border-white dark:border-neutral-800">
                                     {studentRecord()?.status_name || 'Active Student'}
                                 </span>
                             </div>
 
                             <div class="space-y-2 text-center sm:text-start">
                                 <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-xs bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-mono font-bold">
+                                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-xs bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/80 text-blue-600 dark:text-blue-400 text-xs font-mono font-bold">
                                         <span class="size-2 rounded-xs bg-blue-400 animate-pulse"></span>
                                         <span>NIM: {studentRecord()?.code || ind()?.code || '-'}</span>
                                     </div>
 
                                     {/* Multiple student identities badge */}
                                     <Show when={availableStudents().length > 1}>
-                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xs bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[11px] font-medium">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xs bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/80 text-amber-700 dark:text-amber-300 text-[11px] font-medium">
                                             <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
                                             </svg>
@@ -601,7 +600,7 @@ export default function StudentDashboardProfilePage() {
                                 </div>
 
                                 <h1 class="text-2xl sm:text-3xl font-black tracking-tight">{fullName()}</h1>
-                                <p class="text-neutral-300 text-xs sm:text-sm max-w-xl">
+                                <p class="text-neutral-600 dark:text-neutral-300 text-xs sm:text-sm max-w-xl">
                                     {studentRecord()?.unit_name || '-'} • Academic Batch {studentRecord()?.academic_year_name || studentRecord()?.registered?.substring(0, 4) || '-'}
                                 </p>
                             </div>
@@ -609,20 +608,20 @@ export default function StudentDashboardProfilePage() {
 
                         {/* Quick Stats Badges */}
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                            <div class="p-3.5 bg-white/10 backdrop-blur-md rounded-xs border border-white/15 text-center">
-                                <span class="block text-[11px] text-blue-200 font-mono uppercase tracking-wider">Cumulative GPA (IPK)</span>
-                                <span class="text-xl sm:text-2xl font-black text-white">{gpa()}</span>
-                                <span class="block text-[10px] text-blue-300/80 font-mono mt-0.5">IPS: {semesterGpa()}</span>
+                            <div class="p-3.5 bg-neutral-100 dark:bg-neutral-700 backdrop-blur-md rounded-xs border border-neutral-200 dark:border-neutral-600 text-center">
+                                <span class="block text-[11px] text-blue-700 dark:text-blue-300 font-mono uppercase tracking-wider">Cumulative GPA (IPK)</span>
+                                <span class="text-xl sm:text-2xl font-black text-neutral-900 dark:text-white">{gpa()}</span>
+                                <span class="block text-[10px] text-neutral-500 dark:text-neutral-400 font-mono mt-0.5">IPS: {semesterGpa()}</span>
                             </div>
-                            <div class="p-3.5 bg-white/10 backdrop-blur-md rounded-xs border border-white/15 text-center">
-                                <span class="block text-[11px] text-blue-200 font-mono uppercase tracking-wider">Total Credits (SKS)</span>
-                                <span class="text-xl sm:text-2xl font-black text-white">{totalCredits()} <span class="text-xs font-normal text-white/70">SKS</span></span>
-                                <span class="block text-[10px] text-blue-300/80 font-mono mt-0.5">Sem: {semesterCredits()} SKS</span>
+                            <div class="p-3.5 bg-neutral-100 dark:bg-neutral-700 backdrop-blur-md rounded-xs border border-neutral-200 dark:border-neutral-600 text-center">
+                                <span class="block text-[11px] text-blue-700 dark:text-blue-300 font-mono uppercase tracking-wider">Total Credits (SKS)</span>
+                                <span class="text-xl sm:text-2xl font-black text-neutral-900 dark:text-white">{totalCredits()} <span class="text-xs font-normal text-neutral-500 dark:text-neutral-400">SKS</span></span>
+                                <span class="block text-[10px] text-neutral-500 dark:text-neutral-400 font-mono mt-0.5">Sem: {semesterCredits()} SKS</span>
                             </div>
-                            <div class="p-3.5 bg-white/10 backdrop-blur-md rounded-xs border border-white/15 text-center col-span-2 sm:col-span-1 flex flex-col justify-center">
-                                <span class="block text-[11px] text-blue-200 font-mono uppercase tracking-wider">Academic Status</span>
-                                <span class="text-sm sm:text-base font-bold text-emerald-300">{studentRecord()?.status_name || 'Active'}</span>
-                                <span class="block text-[10px] text-neutral-300 font-mono mt-0.5 truncate">{studentRecord()?.academic_year_name || 'Reguler'}</span>
+                            <div class="p-3.5 bg-neutral-100 dark:bg-neutral-700 backdrop-blur-md rounded-xs border border-neutral-200 dark:border-neutral-600 text-center col-span-2 sm:col-span-1 flex flex-col justify-center">
+                                <span class="block text-[11px] text-blue-700 dark:text-blue-300 font-mono uppercase tracking-wider">Academic Status</span>
+                                <span class="text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-300">{studentRecord()?.status_name || 'Active'}</span>
+                                <span class="block text-[10px] text-neutral-600 dark:text-neutral-300 font-mono mt-0.5 truncate">{studentRecord()?.academic_year_name || 'Reguler'}</span>
                             </div>
                         </div>
                     </div>
@@ -764,14 +763,14 @@ export default function StudentDashboardProfilePage() {
 
                     <A
                         href="/student/academic/student/campaign/activity"
-                        class="p-5 bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs hover:shadow-md hover:border-indigo-500 dark:hover:border-indigo-500 transition-all flex items-center justify-between group"
+                        class="p-5 bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs hover:shadow-md hover:border-blue-500 dark:hover:border-blue-500 transition-all flex items-center justify-between group"
                     >
                         <div class="flex items-center gap-3.5">
-                            <div class="size-11 rounded-xs bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+                            <div class="size-11 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
                                 <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" /><path d="M6 6h10M6 10h10M6 14h6" /></svg>
                             </div>
                             <div>
-                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Semester Activities</h3>
+                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Semester Activities</h3>
                                 <p class="text-[11px] text-neutral-500 dark:text-neutral-400">View Study Plan & Grades (KHS)</p>
                             </div>
                         </div>
@@ -796,14 +795,14 @@ export default function StudentDashboardProfilePage() {
 
                     <A
                         href="/student/academic/student/master"
-                        class="p-5 bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs hover:shadow-md hover:border-teal-500 dark:hover:border-teal-500 transition-all flex items-center justify-between group"
+                        class="p-5 bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs hover:shadow-md hover:border-blue-500 dark:hover:border-blue-500 transition-all flex items-center justify-between group"
                     >
                         <div class="flex items-center gap-3.5">
-                            <div class="size-11 rounded-xs bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold">
+                            <div class="size-11 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
                                 <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" /></svg>
                             </div>
                             <div>
-                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">Admitted Students</h3>
+                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Admitted Students</h3>
                                 <p class="text-[11px] text-neutral-500 dark:text-neutral-400">Student Directory & Master</p>
                             </div>
                         </div>
@@ -939,7 +938,7 @@ export default function StudentDashboardProfilePage() {
                                             <div class="flex items-start justify-between gap-3">
                                                 <div>
                                                     <div class="flex items-center gap-2">
-                                                        <div class="size-7 rounded-xs bg-indigo-100 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+                                                        <div class="size-7 rounded-xs bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
                                                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
                                                         </div>
                                                         <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
@@ -954,7 +953,7 @@ export default function StudentDashboardProfilePage() {
                                                 {/* Legend */}
                                                 <div class="flex items-center gap-3 text-[11px] font-mono shrink-0">
                                                     <div class="flex items-center gap-1.5">
-                                                        <span class="size-2.5 rounded-xs bg-indigo-600"></span>
+                                                        <span class="size-2.5 rounded-xs bg-blue-600"></span>
                                                         <span class="text-neutral-700 dark:text-neutral-300 font-semibold">IPK</span>
                                                     </div>
                                                     <div class="flex items-center gap-1.5">
@@ -972,7 +971,7 @@ export default function StudentDashboardProfilePage() {
                                             }>
                                                 <Suspense fallback={
                                                     <div class="py-16 text-center flex flex-col items-center justify-center gap-2">
-                                                        <div class="size-6 border-2 border-indigo-600 border-t-transparent rounded-xs animate-spin"></div>
+                                                        <div class="size-6 border-2 border-blue-600 border-t-transparent rounded-xs animate-spin"></div>
                                                         <span class="text-xs font-mono text-neutral-400">Loading chart...</span>
                                                     </div>
                                                 }>
@@ -986,7 +985,7 @@ export default function StudentDashboardProfilePage() {
                                             <div class="flex items-start justify-between gap-3">
                                                 <div>
                                                     <div class="flex items-center gap-2">
-                                                        <div class="size-7 rounded-xs bg-teal-100 dark:bg-teal-950/80 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold">
+                                                        <div class="size-7 rounded-xs bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
                                                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
                                                         </div>
                                                         <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
@@ -999,7 +998,7 @@ export default function StudentDashboardProfilePage() {
                                                 </div>
                                                 <div class="flex items-center gap-3 text-[11px] font-mono shrink-0">
                                                     <div class="flex items-center gap-1.5">
-                                                        <span class="size-2.5 rounded-xs bg-teal-600"></span>
+                                                        <span class="size-2.5 rounded-xs bg-blue-600"></span>
                                                         <span class="text-neutral-700 dark:text-neutral-300 font-semibold">SKS Kumulatif</span>
                                                     </div>
                                                     <div class="flex items-center gap-1.5">
@@ -1119,7 +1118,7 @@ export default function StudentDashboardProfilePage() {
                                                                                     {slice.varietyName}
                                                                                 </span>
                                                                             </div>
-                                                                            <span class="font-mono font-extrabold text-indigo-600 dark:text-indigo-400 shrink-0">
+                                                                            <span class="font-mono font-extrabold text-blue-600 dark:text-blue-400 shrink-0">
                                                                                 IPK {slice.cumulativeIndex.toFixed(2)}
                                                                             </span>
                                                                         </div>
@@ -1186,7 +1185,7 @@ export default function StudentDashboardProfilePage() {
                                                                     <td class="py-3 px-3 text-center font-mono font-bold text-blue-600 dark:text-blue-400">
                                                                         {Number(getActIps(act)).toFixed(2)}
                                                                     </td>
-                                                                    <td class="py-3 px-3 text-center font-mono font-bold text-indigo-600 dark:text-indigo-400">
+                                                                    <td class="py-3 px-3 text-center font-mono font-bold text-blue-600 dark:text-blue-400">
                                                                         {Number(getActIpk(act)).toFixed(2)}
                                                                     </td>
                                                                     <td class="py-3 px-3 text-center">
@@ -1256,7 +1255,7 @@ export default function StudentDashboardProfilePage() {
                                                             {/* Card Header: Icon, Semester Title, ID, and Lock Badge */}
                                                             <div class="flex items-start justify-between gap-2">
                                                                 <div class="flex items-start gap-2.5">
-                                                                    <div class="size-8 rounded-xs bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold flex items-center justify-center shrink-0 mt-0.5">
+                                                                    <div class="size-8 rounded-xs bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold flex items-center justify-center shrink-0 mt-0.5">
                                                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" /></svg>
                                                                     </div>
                                                                     <div>
@@ -1299,7 +1298,7 @@ export default function StudentDashboardProfilePage() {
                                                                 </div>
                                                                 <div class="p-2 rounded-xs bg-white dark:bg-neutral-800/80 border border-neutral-200/60 dark:border-neutral-700/60">
                                                                     <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">IPK</span>
-                                                                    <span class="font-mono font-bold text-xs text-indigo-600 dark:text-indigo-400">
+                                                                    <span class="font-mono font-bold text-xs text-blue-600 dark:text-blue-400">
                                                                         {Number(getActIpk(act)).toFixed(2)}
                                                                     </span>
                                                                 </div>

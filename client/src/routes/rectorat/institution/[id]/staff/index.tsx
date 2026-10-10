@@ -338,7 +338,7 @@ export default function RectoratStaffIndex() {
                                                     </td>
                                                     <td class="px-6 py-4">
                                                         <div class="flex items-center gap-3">
-                                                            <div class="size-9 rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 flex items-center justify-center text-white text-xs font-bold shadow-sm shrink-0">
+                                                            <div class="size-9 rounded-full bg-linear-to-br from-teal-500 to-cyan-600 flex items-center justify-center text-white text-xs font-bold shadow-sm shrink-0">
                                                                 {initials(item)}
                                                             </div>
                                                             <div class="min-w-0">

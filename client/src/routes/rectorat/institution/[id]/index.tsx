@@ -263,7 +263,7 @@ export default function RectoratInstitutionDashboard() {
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 
                 {/* Hero Header */}
-                <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-800 via-blue-900 to-indigo-900 p-8 shadow-xl text-white">
+                <div class="relative overflow-hidden rounded-2xl bg-linear-to-br from-slate-800 via-blue-900 to-indigo-900 p-8 shadow-xl text-white">
                     <div class="absolute inset-0 overflow-hidden pointer-events-none">
                         <div class="absolute -top-12 -right-12 w-64 h-64 rounded-full bg-blue-500/10 blur-3xl" />
                         <div class="absolute bottom-0 left-20 w-48 h-48 rounded-full bg-indigo-500/10 blur-3xl" />
@@ -304,7 +304,7 @@ export default function RectoratInstitutionDashboard() {
                             </span>
                         </div>
                         <div class="h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
-                            <div class="h-full bg-linier-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-300"
+                            <div class="h-full bg-linear-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-300"
                                 style={{ width: totalToLoad() > 0 ? `${(loadedCount() / totalToLoad()) * 100}%` : '0%' }} />
                         </div>
                         <div class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 animate-pulse">
@@ -457,7 +457,7 @@ export default function RectoratInstitutionDashboard() {
                     <Show when={selectedDash()}>
                         {(dash) => (
                             <div id="prodi-detail" class="space-y-6">
-                                <div class="bg-gradient-to-br from-indigo-600 to-violet-700 rounded-2xl p-7 shadow-lg text-white relative overflow-hidden">
+                                <div class="bg-linear-to-br from-indigo-600 to-violet-700 rounded-2xl p-7 shadow-lg text-white relative overflow-hidden">
                                     <div class="absolute top-0 right-0 -mt-6 -mr-6 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none" />
                                     <div class="relative z-10 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                                         <div>

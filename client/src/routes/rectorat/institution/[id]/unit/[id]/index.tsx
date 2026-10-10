@@ -145,7 +145,7 @@ export default function RectoratUnitDetail() {
                         {(item) => (
                             <div class="space-y-6">
                                 {/* Hero Card */}
-                                <div class="bg-gradient-to-br from-blue-600 to-blue-800 dark:from-blue-900 dark:to-blue-950 rounded-2xl p-8 shadow-lg text-white relative overflow-hidden">
+                                <div class="bg-linear-to-br from-blue-600 to-blue-800 dark:from-blue-900 dark:to-blue-950 rounded-2xl p-8 shadow-lg text-white relative overflow-hidden">
                                     <div class="absolute top-0 right-0 -mt-4 -mr-4 w-32 h-32 bg-white opacity-10 rounded-full blur-2xl"></div>
                                     <div class="absolute bottom-0 left-10 mb-4 w-24 h-24 bg-blue-400 opacity-20 rounded-full blur-xl"></div>
 

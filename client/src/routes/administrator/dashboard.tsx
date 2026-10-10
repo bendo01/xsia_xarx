@@ -145,14 +145,20 @@ export default function AdministratorDashboardPage() {
     ];
 
     return (
-        <>
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
             <TopBar />
-            <div class="px-4 py-6 mx-auto space-y-6">
-                <div>
-                    <h1 class="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white tracking-tight">
+
+            <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+                <div class="border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                    <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                        <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">Administrator</a>
+                        <span>/</span>
+                        <span class="font-medium text-neutral-900 dark:text-white">Dashboard</span>
+                    </nav>
+                    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
                         Administrator Dashboard
                     </h1>
-                    <p class="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+                    <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
                         Welcome{currentUserSignal()?.name ? `, ${currentUserSignal()?.name}` : ''}.
                         {activeInstitutionNameSignal() ? ` ${activeInstitutionNameSignal()} — ` : ' '}
                         System-wide management of master, reference and transaction data.
@@ -164,7 +170,7 @@ export default function AdministratorDashboardPage() {
                         {(card) => (
                             <A
                                 href={card.path}
-                                class="group p-5 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 hover:border-blue-500 dark:hover:border-blue-500 shadow-2xs hover:shadow-md transition-all"
+                                class="group p-5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 hover:border-blue-500 dark:hover:border-blue-500 shadow-2xs hover:shadow-md transition-all"
                             >
                                 <p class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
                                     {card.label}
@@ -187,7 +193,7 @@ export default function AdministratorDashboardPage() {
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <For each={modules}>
                         {(mod) => (
-                            <div class="flex flex-col p-5 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                            <div class="flex flex-col p-5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
                                 <h3 class="font-bold text-neutral-900 dark:text-white">{mod.title}</h3>
                                 <p class="mt-1 text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
                                     {mod.description}
@@ -212,6 +218,6 @@ export default function AdministratorDashboardPage() {
                     </For>
                 </div>
             </div>
-        </>
+        </div>
     );
 }

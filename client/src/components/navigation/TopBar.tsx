@@ -350,7 +350,7 @@ export default function TopBar() {
                                     aria-expanded="false"
                                     aria-label={t('nav.accountDetails')}
                                 >
-                                    <div class="size-8 rounded-xs bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center font-bold text-xs uppercase shadow-xs">
+                                    <div class="size-8 rounded-xs bg-linear-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center font-bold text-xs uppercase shadow-xs">
                                         {userName().charAt(0) || 'U'}
                                     </div>
                                     <div class="flex flex-col flex-1 min-w-0">

@@ -2,24 +2,29 @@ import TopBar from '~/components/navigation/TopBar';
 
 export default function AcademicStudentCampaignConvertionPage() {
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col">
             <TopBar />
 
-            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-                <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div>
-                            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold mb-2 border border-blue-200 dark:border-blue-800/80">
-                                <span class="size-1.5 rounded-xs bg-blue-500"></span>
-                                <span>Academic / Student / Campaign</span>
-                            </div>
-                            <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                                Convertion
-                            </h1>
-                            <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1 font-mono">
-                                Route: <span class="text-blue-600 dark:text-blue-400">/academic/student/campaign/convertion</span>
-                            </p>
-                        </div>
+            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+                <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                    <div>
+                        <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                            <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">Administrator</a>
+                            <span>/</span>
+                            <span>Academic</span>
+                            <span>/</span>
+                            <span>Student</span>
+                            <span>/</span>
+                            <span>Campaign</span>
+                            <span>/</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">Convertion</span>
+                        </nav>
+                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
+                            Convertion
+                        </h1>
+                        <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
+                            Data management, registry entities, and operational records for Convertion.
+                        </p>
                     </div>
                 </div>
 

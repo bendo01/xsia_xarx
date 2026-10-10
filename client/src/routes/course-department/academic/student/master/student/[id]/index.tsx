@@ -150,7 +150,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
                     <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                             <div class="flex items-center gap-5">
-                                <div class="size-16 sm:size-20 rounded-xs bg-gradient-to-tr from-teal-500 to-cyan-600 text-white font-black text-2xl flex items-center justify-center shadow-md">
+                                <div class="size-16 sm:size-20 rounded-xs bg-linear-to-tr from-teal-500 to-cyan-600 text-white font-black text-2xl flex items-center justify-center shadow-md">
                                     {(student()?.name || 'S').charAt(0).toUpperCase()}
                                 </div>
                                 <div class="space-y-1">

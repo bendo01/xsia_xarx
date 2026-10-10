@@ -232,25 +232,24 @@ export default function LecturerTeachIndexPage() {
     });
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col">
             <TopBar />
 
-            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
                 {/* Header Banner */}
-                <div class="bg-linier-to-r from-indigo-900 via-purple-900 to-slate-900 rounded-xs p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-indigo-500/20">
-                    <div class="absolute -right-16 -top-16 w-80 h-80 bg-indigo-500/10 rounded-xs blur-3xl pointer-events-none"></div>
+                <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs relative overflow-hidden">
 
                     <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div class="space-y-2">
-                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-xs bg-indigo-500/20 text-indigo-200 text-xs font-mono font-semibold border border-indigo-400/30">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold border border-blue-200 dark:border-blue-800/80">
                                 <span>NIDN: {lecturerNidn()}</span>
                                 <span>•</span>
                                 <span>Semester Teaching Portal</span>
                             </div>
-                            <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                            <h1 class="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white tracking-tight">
                                 Assigned Teaching Classes
                             </h1>
-                            <p class="text-xs sm:text-sm text-indigo-200/80 max-w-2xl font-medium">
+                            <p class="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 max-w-2xl font-medium">
                                 Direct course assignments, classroom codes, planned session hours, and student rosters for {lecturerName()}.
                             </p>
                         </div>
@@ -259,7 +258,7 @@ export default function LecturerTeachIndexPage() {
                             <button
                                 type="button"
                                 onClick={loadLecturerTeaches}
-                                class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xs text-xs flex items-center gap-2 shadow-md transition-colors"
+                                class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xs text-xs flex items-center gap-2 shadow-md transition-colors"
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
@@ -268,7 +267,7 @@ export default function LecturerTeachIndexPage() {
                             </button>
                             <A
                                 href={user()?.individual_id || getStorageItem('individual_id') ? `/lecturer/person/master/individual/${user()?.individual_id || getStorageItem('individual_id')}/show` : '/lecturer/person/master/individual/[id]/show'}
-                                class="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xs text-xs flex items-center gap-2 border border-white/20 transition-colors"
+                                class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 text-neutral-900 dark:text-white font-semibold rounded-xs text-xs flex items-center gap-2 border border-neutral-200 dark:border-neutral-600 transition-colors"
                             >
                                 <span>Faculty Profile →</span>
                             </A>
@@ -282,7 +281,7 @@ export default function LecturerTeachIndexPage() {
                     <div class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold text-neutral-500 dark:text-neutral-400">Assigned Classes</span>
-                            <div class="size-7 rounded-xs bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs">
+                            <div class="size-7 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
                                 📚
                             </div>
                         </div>
@@ -341,7 +340,7 @@ export default function LecturerTeachIndexPage() {
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div class="space-y-1">
                             <div class="flex items-center gap-2">
-                                <div class="size-7 rounded-xs bg-indigo-100 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs">
+                                <div class="size-7 rounded-xs bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
                                     </svg>
@@ -363,8 +362,8 @@ export default function LecturerTeachIndexPage() {
                                     <span class="font-bold">{maxYearCreditItem()?.totalCredit} SKS ({maxYearCreditItem()?.yearName})</span>
                                 </div>
                             </Show>
-                            <div class="px-3 py-1.5 rounded-xs bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800/60 text-indigo-700 dark:text-indigo-300">
-                                <span class="text-[10px] text-indigo-500 block uppercase font-sans">Rata-Rata / Tahun:</span>
+                            <div class="px-3 py-1.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/60 text-blue-700 dark:text-blue-300">
+                                <span class="text-[10px] text-blue-500 block uppercase font-sans">Rata-Rata / Tahun:</span>
                                 <span class="font-bold">{avgCreditPerYear()} SKS</span>
                             </div>
                         </div>
@@ -383,7 +382,7 @@ export default function LecturerTeachIndexPage() {
                     >
                         <Suspense fallback={
                             <div class="py-12 text-center flex flex-col items-center justify-center gap-2">
-                                <div class="size-6 border-2 border-indigo-600 border-t-transparent rounded-xs animate-spin"></div>
+                                <div class="size-6 border-2 border-blue-600 border-t-transparent rounded-xs animate-spin"></div>
                                 <span class="text-xs font-mono text-neutral-400">Loading chart...</span>
                             </div>
                         }>
@@ -401,7 +400,7 @@ export default function LecturerTeachIndexPage() {
                             placeholder="Search course title, course code (e.g. TIF101), or class..."
                             value={searchQuery()}
                             onInput={(e) => setSearchQuery(e.currentTarget.value)}
-                            class="w-full pl-9 pr-4 py-2 bg-neutral-50 dark:bg-neutral-900/80 border border-neutral-200 dark:border-neutral-700 rounded-xs text-xs text-neutral-800 dark:text-neutral-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                            class="w-full pl-9 pr-4 py-2 bg-neutral-50 dark:bg-neutral-900/80 border border-neutral-200 dark:border-neutral-700 rounded-xs text-xs text-neutral-800 dark:text-neutral-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                         />
                         <svg class="size-4 text-neutral-400 absolute left-3 top-2.5 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
@@ -414,7 +413,7 @@ export default function LecturerTeachIndexPage() {
                         <select
                             value={selectedAcademicYearFilter()}
                             onChange={(e) => setSelectedAcademicYearFilter(e.currentTarget.value)}
-                            class="px-3 py-2 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xs text-xs text-neutral-700 dark:text-neutral-300 focus:outline-none focus:border-indigo-500 font-medium"
+                            class="px-3 py-2 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xs text-xs text-neutral-700 dark:text-neutral-300 focus:outline-none focus:border-blue-500 font-medium"
                         >
                             <option value="all">Semua Tahun Akademik</option>
                             <For each={distinctAcademicYears()}>
@@ -433,7 +432,7 @@ export default function LecturerTeachIndexPage() {
                                 onClick={() => setViewMode('grid')}
                                 class={`p-1.5 rounded-xs text-xs font-bold transition-all flex items-center gap-1 ${
                                     viewMode() === 'grid'
-                                        ? 'bg-white dark:bg-neutral-800 text-indigo-600 dark:text-indigo-400 shadow-xs'
+                                        ? 'bg-white dark:bg-neutral-800 text-blue-600 dark:text-blue-400 shadow-xs'
                                         : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
                                 }`}
                                 title="Grid View"
@@ -447,7 +446,7 @@ export default function LecturerTeachIndexPage() {
                                 onClick={() => setViewMode('table')}
                                 class={`p-1.5 rounded-xs text-xs font-bold transition-all flex items-center gap-1 ${
                                     viewMode() === 'table'
-                                        ? 'bg-white dark:bg-neutral-800 text-indigo-600 dark:text-indigo-400 shadow-xs'
+                                        ? 'bg-white dark:bg-neutral-800 text-blue-600 dark:text-blue-400 shadow-xs'
                                         : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
                                 }`}
                                 title="Table Roster View"
@@ -465,7 +464,7 @@ export default function LecturerTeachIndexPage() {
                     when={!isLoading()}
                     fallback={
                         <div class="py-24 text-center flex flex-col items-center justify-center gap-3">
-                            <div class="size-8 border-2 border-indigo-600 border-t-transparent rounded-xs animate-spin"></div>
+                            <div class="size-8 border-2 border-blue-600 border-t-transparent rounded-xs animate-spin"></div>
                             <span class="text-xs font-mono text-neutral-400">Loading assigned teaching classes...</span>
                         </div>
                     }
@@ -474,7 +473,7 @@ export default function LecturerTeachIndexPage() {
                         when={filteredTeaches().length > 0}
                         fallback={
                             <div class="p-12 text-center rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-3 shadow-2xs">
-                                <div class="size-14 mx-auto rounded-xs bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-2xl">
+                                <div class="size-14 mx-auto rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center text-2xl">
                                     📖
                                 </div>
                                 <h3 class="text-base font-bold text-neutral-900 dark:text-white">
@@ -511,7 +510,7 @@ export default function LecturerTeachIndexPage() {
                                                 <div class="space-y-3">
                                                     {/* Top Badges */}
                                                     <div class="flex items-center justify-between gap-2">
-                                                        <span class="px-2.5 py-1 rounded-xs text-xs font-mono font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                                                        <span class="px-2.5 py-1 rounded-xs text-xs font-mono font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                                                             {item.course_code || 'COURSE'}
                                                         </span>
                                                         <div class="flex items-center gap-1.5 flex-wrap">
@@ -531,7 +530,7 @@ export default function LecturerTeachIndexPage() {
 
                                                     {/* Course Title */}
                                                     <div>
-                                                        <h3 class="text-base font-bold text-neutral-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
+                                                        <h3 class="text-base font-bold text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
                                                             {item.course_name}
                                                         </h3>
                                                         <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 flex items-center gap-2">
@@ -553,7 +552,7 @@ export default function LecturerTeachIndexPage() {
                                                         </div>
                                                         <div class="w-full h-2 rounded-xs bg-neutral-200 dark:bg-neutral-700 overflow-hidden">
                                                             <div
-                                                                class="h-full rounded-xs bg-linier-to-r from-indigo-500 to-purple-500 transition-all duration-500"
+                                                                class="h-full rounded-xs bg-linear-to-r from-blue-500 to-indigo-500 transition-all duration-500"
                                                                 style={{ width: `${progressPercent()}%` }}
                                                             ></div>
                                                         </div>
@@ -568,7 +567,7 @@ export default function LecturerTeachIndexPage() {
                                                 <div class="pt-2 border-t border-neutral-100 dark:border-neutral-700/60 flex items-center justify-between gap-2">
                                                     <A
                                                         href={`/lecturer/academic/campaign/transaction/teach/${item.teach_id}/attendance`}
-                                                        class="flex-1 py-2 px-3 text-center bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/80 text-indigo-700 dark:text-indigo-300 font-semibold rounded-xs text-xs transition-colors"
+                                                        class="flex-1 py-2 px-3 text-center bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/80 text-blue-700 dark:text-blue-300 font-semibold rounded-xs text-xs transition-colors"
                                                     >
                                                         Roster & Presensi
                                                     </A>
@@ -609,7 +608,7 @@ export default function LecturerTeachIndexPage() {
                                                         <td class="px-6 py-4">
                                                             <div class="space-y-0.5">
                                                                 <div class="flex items-center gap-2">
-                                                                    <span class="font-mono text-[11px] font-bold text-indigo-600 dark:text-indigo-400">
+                                                                    <span class="font-mono text-[11px] font-bold text-blue-600 dark:text-blue-400">
                                                                         {item.course_code}
                                                                     </span>
                                                                     <Show when={item.academic_year_name}>
@@ -638,7 +637,7 @@ export default function LecturerTeachIndexPage() {
                                                                 </span>
                                                                 <div class="w-24 h-1.5 rounded-xs bg-neutral-200 dark:bg-neutral-700 overflow-hidden">
                                                                     <div
-                                                                        class="h-full rounded-xs bg-indigo-600"
+                                                                        class="h-full rounded-xs bg-blue-600"
                                                                         style={{ width: `${item.planning > 0 ? Math.min(100, Math.round((item.realization / item.planning) * 100)) : 0}%` }}
                                                                     ></div>
                                                                 </div>
@@ -658,7 +657,7 @@ export default function LecturerTeachIndexPage() {
                                                             <div class="inline-flex items-center gap-2">
                                                                 <A
                                                                     href={`/lecturer/academic/campaign/transaction/teach/${item.teach_id}/attendance`}
-                                                                    class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 font-semibold rounded-xs text-xs transition-colors"
+                                                                    class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900 text-blue-700 dark:text-blue-300 font-semibold rounded-xs text-xs transition-colors"
                                                                 >
                                                                     Presensi
                                                                 </A>

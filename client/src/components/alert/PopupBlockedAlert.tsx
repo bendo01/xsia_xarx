@@ -85,7 +85,7 @@ export default function PopupBlockedAlert() {
 
     return (
         <Show when={isBlocked() && !dismissed()}>
-            <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/5 dark:from-amber-950/40 dark:via-orange-950/30 dark:to-neutral-900 p-4 sm:p-5 shadow-sm backdrop-blur-xs transition-all animate-fadeIn">
+            <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-amber-500/30 bg-linear-to-r from-amber-500/10 via-orange-500/10 to-amber-500/5 dark:from-amber-950/40 dark:via-orange-950/30 dark:to-neutral-900 p-4 sm:p-5 shadow-sm backdrop-blur-xs transition-all animate-fadeIn">
                 <div class="flex flex-col sm:flex-row items-start justify-between gap-4">
                     {/* Left: Icon & Text Info */}
                     <div class="flex items-start gap-3.5">

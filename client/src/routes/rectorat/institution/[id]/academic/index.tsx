@@ -193,9 +193,9 @@ export default function RectoratAcademicHub() {
                                 class={`group relative flex flex-col p-6 rounded-2xl border ${section.border} ${section.bg} hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer overflow-hidden`}
                             >
                                 {/* Gradient orb decoration */}
-                                <div class={`absolute -top-6 -right-6 size-24 rounded-full bg-gradient-to-br ${section.gradient} opacity-10 group-hover:opacity-20 transition-opacity blur-xl`}></div>
+                                <div class={`absolute -top-6 -right-6 size-24 rounded-full bg-linear-to-br ${section.gradient} opacity-10 group-hover:opacity-20 transition-opacity blur-xl`}></div>
 
-                                <div class={`size-12 rounded-xl bg-gradient-to-br ${section.gradient} flex items-center justify-center text-white shadow-sm mb-4`}>
+                                <div class={`size-12 rounded-xl bg-linear-to-br ${section.gradient} flex items-center justify-center text-white shadow-sm mb-4`}>
                                     {section.icon}
                                 </div>
 
@@ -281,7 +281,7 @@ export default function RectoratAcademicHub() {
                                             const ini = () => (s.name ?? s.code ?? '?').split(' ').slice(0, 2).map((w: string) => w[0] ?? '').join('').toUpperCase();
                                             return (
                                                 <li class="flex items-center gap-3 px-6 py-3.5 hover:bg-neutral-50 dark:hover:bg-neutral-800/40 transition-colors">
-                                                    <div class="size-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-[10px] font-bold shrink-0">{ini()}</div>
+                                                    <div class="size-8 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-[10px] font-bold shrink-0">{ini()}</div>
                                                     <div class="flex-1 min-w-0">
                                                         <p class="text-sm font-semibold text-neutral-900 dark:text-white truncate">{s.name || '-'}</p>
                                                         <p class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">{s.code || '-'} {s.unit_name ? `· ${s.unit_name}` : ''}</p>
@@ -357,7 +357,7 @@ export default function RectoratAcademicHub() {
                                             const ini = () => fullName().split(' ').slice(0, 2).map((w: string) => w[0] ?? '').join('').toUpperCase();
                                             return (
                                                 <li class="flex items-center gap-3 px-6 py-3.5 hover:bg-neutral-50 dark:hover:bg-neutral-800/40 transition-colors">
-                                                    <div class="size-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-[10px] font-bold shrink-0">{ini()}</div>
+                                                    <div class="size-8 rounded-full bg-linear-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-[10px] font-bold shrink-0">{ini()}</div>
                                                     <div class="flex-1 min-w-0">
                                                         <p class="text-sm font-semibold text-neutral-900 dark:text-white truncate">{fullName()}</p>
                                                         <p class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">{lec.code || lec.nuptk || '-'}</p>

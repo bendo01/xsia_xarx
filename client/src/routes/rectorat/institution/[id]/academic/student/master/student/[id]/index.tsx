@@ -468,11 +468,11 @@ export default function RectoratStudentDetail() {
 
                         {/* Header Banner */}
                         <div class="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-sm overflow-hidden">
-                            <div class="h-2 w-full bg-linier-to-r from-blue-500 via-indigo-500 to-cyan-500" />
+                            <div class="h-2 w-full bg-linear-to-r from-blue-500 via-indigo-500 to-cyan-500" />
                             <div class="p-6 sm:p-8">
                                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                                     <div class="flex items-center gap-5">
-                                        <div class="size-16 sm:size-20 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-extrabold text-2xl flex items-center justify-center shadow-lg shrink-0 select-none">
+                                        <div class="size-16 sm:size-20 rounded-2xl bg-linear-to-tr from-blue-600 to-indigo-600 text-white font-extrabold text-2xl flex items-center justify-center shadow-lg shrink-0 select-none">
                                             {initials(student()?.name)}
                                         </div>
                                         <div class="space-y-1 min-w-0">

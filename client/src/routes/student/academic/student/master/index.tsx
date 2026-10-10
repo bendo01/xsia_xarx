@@ -102,22 +102,27 @@ export default function StudentMasterIndexPage() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col">
             <TopBar />
 
-            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Header Card */}
-                <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                <div class="border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div class="space-y-1">
-                            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-xs bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 text-xs font-mono font-semibold border border-teal-200 dark:border-teal-800/80">
-                                <span class="size-1.5 rounded-xs bg-teal-500"></span>
-                                <span>Academic Student Master</span>
-                            </div>
-                            <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900 dark:text-white">
+                            <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                                <span>Student</span>
+                                <span>/</span>
+                                <span>Academic</span>
+                                <span>/</span>
+                                <span>Student</span>
+                                <span>/</span>
+                                <span class="font-medium text-neutral-900 dark:text-white">Master</span>
+                            </nav>
+                            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
                                 Admitted Students Directory
                             </h1>
-                            <p class="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
+                            <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
                                 Comprehensive institutional registry of admitted students, academic credentials, and admission cohorts.
                             </p>
                         </div>
@@ -141,7 +146,7 @@ export default function StudentMasterIndexPage() {
                             placeholder="Search by student NIM or name..."
                             value={searchQuery()}
                             onInput={(e) => setSearchQuery(e.currentTarget.value)}
-                            class="w-full pl-9 pr-4 py-2 text-xs rounded-xs bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-hidden focus:border-teal-500"
+                            class="w-full pl-9 pr-4 py-2 text-xs rounded-xs bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-hidden focus:border-blue-500"
                         />
                         <svg class="size-4 absolute left-3 top-2.5 text-neutral-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                     </form>
@@ -157,7 +162,7 @@ export default function StudentMasterIndexPage() {
                 <div class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
                     <Show when={!isLoading()} fallback={
                         <div class="py-16 flex flex-col items-center justify-center gap-3 text-neutral-400">
-                            <div class="size-8 border-3 border-teal-500 border-t-transparent rounded-xs animate-spin"></div>
+                            <div class="size-8 border-3 border-blue-500 border-t-transparent rounded-xs animate-spin"></div>
                             <p class="text-xs font-mono">Loading admitted students from server...</p>
                         </div>
                     }>
@@ -221,7 +226,7 @@ export default function StudentMasterIndexPage() {
                                                 <td class="py-3.5 px-4 text-end">
                                                     <A
                                                         href={`/student/academic/student/master/student/${std.id}/show`}
-                                                        class="px-3 py-1.5 bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 hover:bg-teal-100 dark:hover:bg-teal-900 rounded-xs text-xs font-bold transition-colors"
+                                                        class="px-3 py-1.5 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-xs text-xs font-bold transition-colors"
                                                     >
                                                         View Detail →
                                                     </A>

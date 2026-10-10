@@ -303,16 +303,16 @@ export default function StudentCampaignActivityShowPage() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col">
             <TopBar />
 
-            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Header Card */}
                 <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div class="space-y-1">
-                            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-xs bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-xs font-mono font-semibold border border-indigo-200 dark:border-indigo-800/80">
-                                <span class="size-1.5 rounded-xs bg-indigo-500"></span>
+                            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold border border-blue-200 dark:border-blue-800/80">
+                                <span class="size-1.5 rounded-xs bg-blue-500"></span>
                                 <span>Academic Student Activity Detail</span>
                             </div>
                             <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900 dark:text-white">
@@ -350,12 +350,12 @@ export default function StudentCampaignActivityShowPage() {
                                 type="button"
                                 onClick={handlePrintKHS}
                                 disabled={isPrintingKHS()}
-                                class="px-4 py-2.5 bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/80 rounded-xs text-xs font-bold transition-colors flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="px-4 py-2.5 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/80 rounded-xs text-xs font-bold transition-colors flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                                 title="Print Study Result Card (KHS)"
                             >
                                 <Show
                                     when={!isPrintingKHS()}
-                                    fallback={<div class="size-4 border-2 border-indigo-400 border-t-transparent rounded-xs animate-spin"></div>}
+                                    fallback={<div class="size-4 border-2 border-blue-400 border-t-transparent rounded-xs animate-spin"></div>}
                                 >
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
                                 </Show>
@@ -398,7 +398,7 @@ export default function StudentCampaignActivityShowPage() {
                         </div>
                         <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
                             <span class="text-[10px] text-neutral-400 font-mono uppercase block">Semester GPA (IPS)</span>
-                            <span class="text-xl font-black text-indigo-600 dark:text-indigo-400">{calculatedIPS()}</span>
+                            <span class="text-xl font-black text-blue-600 dark:text-blue-400">{calculatedIPS()}</span>
                         </div>
                         <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
                             <span class="text-[10px] text-neutral-400 font-mono uppercase block">Cumulative GPA (IPK)</span>
@@ -420,7 +420,7 @@ export default function StudentCampaignActivityShowPage() {
 
                     <Show when={!isLoading()} fallback={
                         <div class="py-16 flex flex-col items-center justify-center gap-3 text-neutral-400">
-                            <div class="size-8 border-3 border-indigo-500 border-t-transparent rounded-xs animate-spin"></div>
+                            <div class="size-8 border-3 border-blue-500 border-t-transparent rounded-xs animate-spin"></div>
                             <p class="text-xs font-mono">{t('academic.loadingCourses')}</p>
                         </div>
                     }>
@@ -517,7 +517,7 @@ export default function StudentCampaignActivityShowPage() {
                                                 <span class="font-mono font-bold text-xs text-blue-600 dark:text-blue-400">
                                                     {c.course_code || '-'}
                                                 </span>
-                                                <span class="px-2 py-0.5 rounded-xs bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 font-mono text-[10px] font-bold">
+                                                <span class="px-2 py-0.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60 font-mono text-[10px] font-bold">
                                                     {c.credit ?? 0} {t('academic.sks')}
                                                 </span>
                                             </div>

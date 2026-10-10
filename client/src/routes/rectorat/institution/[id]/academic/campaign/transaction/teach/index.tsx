@@ -299,7 +299,7 @@ export default function RectoratInstitutionTeachIndex() {
                     </nav>
 
                     <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 sm:p-8 border border-neutral-200/80 dark:border-neutral-800 shadow-sm relative overflow-hidden backdrop-blur-xs">
-                        <div class="absolute -right-16 -top-16 w-64 h-64 bg-gradient-to-br from-indigo-500/10 via-blue-500/10 to-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+                        <div class="absolute -right-16 -top-16 w-64 h-64 bg-linear-to-br from-indigo-500/10 via-blue-500/10 to-teal-500/10 rounded-full blur-3xl pointer-events-none" />
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6 relative z-10">
                             <div class="space-y-2">
                                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-semibold uppercase tracking-wider border border-blue-200 dark:border-blue-800/80">

@@ -71,22 +71,27 @@ export default function StudentAdviserIndexPage() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col">
             <TopBar />
 
-            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Header Card */}
-                <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                <div class="border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div class="space-y-1">
-                            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-xs bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 text-xs font-mono font-semibold border border-amber-200 dark:border-amber-800/80">
-                                <span class="size-1.5 rounded-xs bg-amber-500"></span>
-                                <span>Academic Student Advising</span>
-                            </div>
-                            <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900 dark:text-white">
+                            <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                                <span>Student</span>
+                                <span>/</span>
+                                <span>Academic</span>
+                                <span>/</span>
+                                <span>Student</span>
+                                <span>/</span>
+                                <span class="font-medium text-neutral-900 dark:text-white">Adviser</span>
+                            </nav>
+                            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
                                 My Academic Advisers & Counsellors
                             </h1>
-                            <p class="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
+                            <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
                                 View your designated Academic Advisors (Dosen Pembimbing Akademik), Thesis Supervisors, and consultation assignments.
                             </p>
                         </div>

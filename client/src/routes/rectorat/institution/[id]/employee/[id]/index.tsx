@@ -259,10 +259,10 @@ export default function RectoratEmployeeDetail() {
                             {/* Profile Card */}
                             <div class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-sm overflow-hidden">
                                 {/* Header Gradient */}
-                                <div class="h-24 bg-gradient-to-br from-indigo-500 via-purple-600 to-indigo-700"></div>
+                                <div class="h-24 bg-linear-to-br from-indigo-500 via-purple-600 to-indigo-700"></div>
                                 {/* Avatar */}
                                 <div class="-mt-12 flex flex-col items-center pb-6 px-6">
-                                    <div class="size-24 rounded-full bg-gradient-to-br from-indigo-400 to-purple-600 border-4 border-white dark:border-neutral-900 flex items-center justify-center text-white text-2xl font-black shadow-lg">
+                                    <div class="size-24 rounded-full bg-linear-to-br from-indigo-400 to-purple-600 border-4 border-white dark:border-neutral-900 flex items-center justify-center text-white text-2xl font-black shadow-lg">
                                         {initials()}
                                     </div>
                                     <h2 class="mt-3 text-lg font-bold text-neutral-900 dark:text-white text-center leading-tight">
