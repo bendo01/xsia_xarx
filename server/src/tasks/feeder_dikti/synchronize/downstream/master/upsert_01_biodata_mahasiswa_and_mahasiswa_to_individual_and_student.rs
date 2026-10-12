@@ -23,6 +23,7 @@ use crate::models::person::reference::occupation as PersonOccupation;
 use crate::models::academic::student::master::students as AcademicStudent;
 use crate::models::academic::student::campaign::student_activities as AcademicStudentActivity;
 use crate::models::academic::student::campaign::detail_activities as AcademicDetailActivity;
+use crate::models::academic::student::campaign::convertions as AcademicConvertion;
 use crate::models::auth::role as AuthRole;
 use crate::models::academic::student::reference::statuses as AcademicStudentStatus;
 use crate::models::academic::student::reference::registrations as AcademicStudentRegistration;
@@ -163,8 +164,9 @@ async fn upsert_individual(
 const STUDENT_ROLEABLE_TYPE: &str = "App\\Models\\Academic\\Student\\Master\\Student";
 
 /// Soft delete a student whose NIM / feeder ids were swapped, together with its
-/// student_activities, detail_activities and student roles. Feeder link columns are
-/// cleared so downstream sync tasks re-create the data for the correct student.
+/// student_activities, detail_activities, convertions and student roles. Feeder link columns
+/// are cleared so downstream sync tasks re-create the data for the correct student, except
+/// convertions: upsert_17 matches them by feeder_id and reattaches them to the correct student.
 async fn retire_student(
     txn: &DatabaseTransaction,
     student: &AcademicStudent::Model,
@@ -197,6 +199,14 @@ async fn retire_student(
             .exec(txn)
             .await?;
     }
+
+    AcademicConvertion::Entity::update_many()
+        .col_expr(AcademicConvertion::Column::DeletedAt, Expr::value(now))
+        .col_expr(AcademicConvertion::Column::UpdatedAt, Expr::value(now))
+        .filter(AcademicConvertion::Column::StudentId.eq(student.id))
+        .filter(AcademicConvertion::Column::DeletedAt.is_null())
+        .exec(txn)
+        .await?;
 
     AuthRole::Entity::update_many()
         .col_expr(AuthRole::Column::DeletedAt, Expr::value(now))
