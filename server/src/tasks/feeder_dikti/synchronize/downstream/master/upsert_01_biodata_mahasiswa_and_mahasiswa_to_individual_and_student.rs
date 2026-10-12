@@ -3,9 +3,10 @@ use std::time::Duration;
 use indicatif::{ProgressBar, ProgressStyle};
 use salvo::async_trait;
 use sea_orm::{
-    ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, DatabaseTransaction,
-    EntityTrait, IntoActiveModel, PaginatorTrait, QueryFilter, QueryOrder, QuerySelect,
-    TransactionTrait,
+    ActiveModelTrait, ActiveValue::Set, ColumnTrait, Condition, DatabaseConnection,
+    DatabaseTransaction, EntityTrait, IntoActiveModel, PaginatorTrait, QueryFilter, QueryOrder,
+    QuerySelect, TransactionTrait,
+    sea_query::{Expr, ExprTrait, Func},
 };
 use uuid::Uuid;
 
@@ -20,6 +21,9 @@ use crate::models::person::reference::religion as PersonReligion;
 use crate::models::person::reference::identification_type as PersonIdentificationType;
 use crate::models::person::reference::occupation as PersonOccupation;
 use crate::models::academic::student::master::students as AcademicStudent;
+use crate::models::academic::student::campaign::student_activities as AcademicStudentActivity;
+use crate::models::academic::student::campaign::detail_activities as AcademicDetailActivity;
+use crate::models::auth::role as AuthRole;
 use crate::models::academic::student::reference::statuses as AcademicStudentStatus;
 use crate::models::academic::student::reference::registrations as AcademicStudentRegistration;
 use crate::models::academic::student::reference::resign_statuses as AcademicStudentResignStatus;
@@ -156,6 +160,63 @@ async fn upsert_individual(
     }
 }
 
+const STUDENT_ROLEABLE_TYPE: &str = "App\\Models\\Academic\\Student\\Master\\Student";
+
+/// Soft delete a student whose NIM / feeder ids were swapped, together with its
+/// student_activities, detail_activities and student roles. Feeder link columns are
+/// cleared so downstream sync tasks re-create the data for the correct student.
+async fn retire_student(
+    txn: &DatabaseTransaction,
+    student: &AcademicStudent::Model,
+    now: chrono::NaiveDateTime,
+) -> Result<(), sea_orm::DbErr> {
+    let activity_ids: Vec<Uuid> = AcademicStudentActivity::Entity::find()
+        .select_only()
+        .column(AcademicStudentActivity::Column::Id)
+        .filter(AcademicStudentActivity::Column::StudentId.eq(student.id))
+        .filter(AcademicStudentActivity::Column::DeletedAt.is_null())
+        .into_tuple()
+        .all(txn)
+        .await?;
+
+    if !activity_ids.is_empty() {
+        AcademicDetailActivity::Entity::update_many()
+            .col_expr(AcademicDetailActivity::Column::DeletedAt, Expr::value(now))
+            .col_expr(AcademicDetailActivity::Column::UpdatedAt, Expr::value(now))
+            .col_expr(AcademicDetailActivity::Column::FeederId, Expr::value(Option::<Uuid>::None))
+            .filter(AcademicDetailActivity::Column::ActivityId.is_in(activity_ids.clone()))
+            .filter(AcademicDetailActivity::Column::DeletedAt.is_null())
+            .exec(txn)
+            .await?;
+
+        AcademicStudentActivity::Entity::update_many()
+            .col_expr(AcademicStudentActivity::Column::DeletedAt, Expr::value(now))
+            .col_expr(AcademicStudentActivity::Column::UpdatedAt, Expr::value(now))
+            .col_expr(AcademicStudentActivity::Column::FeederId, Expr::value(Option::<Uuid>::None))
+            .filter(AcademicStudentActivity::Column::Id.is_in(activity_ids))
+            .exec(txn)
+            .await?;
+    }
+
+    AuthRole::Entity::update_many()
+        .col_expr(AuthRole::Column::DeletedAt, Expr::value(now))
+        .col_expr(AuthRole::Column::UpdatedAt, Expr::value(now))
+        .filter(AuthRole::Column::RoleableType.eq(STUDENT_ROLEABLE_TYPE))
+        .filter(AuthRole::Column::RoleableId.eq(student.id))
+        .filter(AuthRole::Column::DeletedAt.is_null())
+        .exec(txn)
+        .await?;
+
+    let mut active = student.clone().into_active_model();
+    active.id_mahasiswa = Set(None);
+    active.id_registrasi_mahasiswa = Set(None);
+    active.deleted_at = Set(Some(now));
+    active.updated_at = Set(Some(now));
+    active.update(txn).await?;
+
+    Ok(())
+}
+
 async fn upsert_student(
     txn: &DatabaseTransaction,
     individual: &PersonIndividual::Model,
@@ -163,68 +224,66 @@ async fn upsert_student(
     biodata: &FeederBiodataMahasiswa::Model,
     riwayat: Option<&FeederRiwayatPendidikan::Model>,
     refs: &ReferenceCache,
-) -> Result<(AcademicStudent::Model, UpsertAction), sea_orm::DbErr> {
+) -> Result<(AcademicStudent::Model, UpsertAction, u64), sea_orm::DbErr> {
     let now = chrono::Local::now().naive_local();
-    let mhs_id = mahasiswa.id_mahasiswa;
-    let reg_id = mahasiswa.id_registrasi_mahasiswa;
+    let mhs_id = mahasiswa.id_mahasiswa.filter(|id| !id.is_nil());
+    let reg_id = mahasiswa.id_registrasi_mahasiswa.filter(|id| !id.is_nil());
     let nim = mahasiswa.nim.as_deref().unwrap_or("").trim();
+    let nim_valid = !nim.is_empty() && nim != "UNKNOWN";
 
-    // 1. Find existing student
-    let mut existing: Option<AcademicStudent::Model> = None;
-
+    // 1. Collect every active student that shares an identity key with this feeder record
+    let mut condition = Condition::any().add(AcademicStudent::Column::IndividualId.eq(individual.id));
     if let Some(id_m) = mhs_id {
-        // Step 1: id_mahasiswa AND individual_id
-        let res = AcademicStudent::Entity::find()
-            .filter(AcademicStudent::Column::IdMahasiswa.eq(id_m))
-            .filter(AcademicStudent::Column::IndividualId.eq(individual.id))
-            .one(txn)
-            .await?;
-        if res.is_some() {
-            existing = res;
+        condition = condition.add(AcademicStudent::Column::IdMahasiswa.eq(id_m));
+    }
+    if let Some(id_r) = reg_id {
+        condition = condition.add(AcademicStudent::Column::IdRegistrasiMahasiswa.eq(id_r));
+    }
+    if nim_valid {
+        condition = condition.add(
+            Expr::expr(Func::lower(Expr::col(AcademicStudent::Column::Code))).eq(nim.to_lowercase()),
+        );
+    }
+    let candidates = AcademicStudent::Entity::find()
+        .filter(AcademicStudent::Column::DeletedAt.is_null())
+        .filter(condition)
+        .order_by_asc(AcademicStudent::Column::CreatedAt)
+        .all(txn)
+        .await?;
+
+    // 2. Keep the record that matches feeder (same individual and same NIM),
+    //    retire records whose NIM / feeder ids were swapped to another person
+    let mut existing: Option<AcademicStudent::Model> = None;
+    let mut retired: u64 = 0;
+    for candidate in candidates {
+        let same_individual = candidate.individual_id == individual.id;
+        let same_code = nim_valid && candidate.code.trim().eq_ignore_ascii_case(nim);
+        let same_reg = reg_id.is_some() && candidate.id_registrasi_mahasiswa == reg_id;
+        let same_mhs = mhs_id.is_some() && candidate.id_mahasiswa == mhs_id;
+
+        let is_keeper = same_individual && (same_code || (!nim_valid && (same_reg || same_mhs)));
+        let is_swapped = if same_individual {
+            // Same person but feeder now assigns this registration a different NIM.
+            // Records of another registration (different id_registrasi_mahasiswa) are left alone.
+            nim_valid
+                && !same_code
+                && (same_reg
+                    || (same_mhs && candidate.id_registrasi_mahasiswa.is_none_or(|r| Some(r) == reg_id)))
         } else {
-            // Step 2: id_mahasiswa only
-            let list = AcademicStudent::Entity::find()
-                .filter(AcademicStudent::Column::IdMahasiswa.eq(id_m))
-                .order_by_asc(AcademicStudent::Column::CreatedAt)
-                .all(txn)
-                .await?;
-            if !list.is_empty() {
-                existing = list.into_iter().next();
+            // Another person holds this NIM or these feeder ids
+            same_code || same_reg || same_mhs
+        };
+
+        if is_keeper {
+            let prefer = existing.as_ref().is_none_or(|e| {
+                e.id_registrasi_mahasiswa != reg_id && same_reg
+            });
+            if prefer {
+                existing = Some(candidate);
             }
-        }
-    }
-
-    if existing.is_none()
-        && let Some(id_r) = reg_id
-            && !id_r.is_nil() {
-                existing = AcademicStudent::Entity::find()
-                    .filter(AcademicStudent::Column::IdRegistrasiMahasiswa.eq(id_r))
-                    .one(txn)
-                    .await?;
-            }
-
-    if existing.is_none() && !nim.is_empty() && nim != "UNKNOWN" {
-        existing = AcademicStudent::Entity::find()
-            .filter(AcademicStudent::Column::IndividualId.eq(individual.id))
-            .filter(AcademicStudent::Column::Code.eq(nim))
-            .one(txn)
-            .await?;
-    }
-
-    if existing.is_none() && !nim.is_empty() && nim != "UNKNOWN" {
-        existing = AcademicStudent::Entity::find()
-            .filter(AcademicStudent::Column::Code.eq(nim))
-            .one(txn)
-            .await?;
-    }
-
-    if existing.is_none() {
-        let list = AcademicStudent::Entity::find()
-            .filter(AcademicStudent::Column::IndividualId.eq(individual.id))
-            .all(txn)
-            .await?;
-        if list.len() == 1 {
-            existing = list.into_iter().next();
+        } else if is_swapped {
+            retire_student(txn, &candidate, now).await?;
+            retired += 1;
         }
     }
 
@@ -308,14 +367,14 @@ async fn upsert_student(
         active.sync_at = Set(Some(now));
         active.updated_at = Set(Some(now));
 
-        if !nim.is_empty() && nim != "UNKNOWN" {
+        if nim_valid {
             active.code = Set(nim.to_string());
         }
 
         let updated = active.update(txn).await?;
-        Ok((updated, UpsertAction::Updated))
+        Ok((updated, UpsertAction::Updated, retired))
     } else {
-        let code = if !nim.is_empty() && nim != "UNKNOWN" {
+        let code = if nim_valid {
             nim.to_string()
         } else if let Some(ref nik_str) = biodata.nik {
             if !nik_str.is_empty() {
@@ -365,7 +424,7 @@ async fn upsert_student(
         };
 
         let inserted = new_student.insert(txn).await?;
-        Ok((inserted, UpsertAction::Inserted))
+        Ok((inserted, UpsertAction::Inserted, retired))
     }
 }
 
@@ -557,6 +616,7 @@ impl Task for SyncBiodataMahasiswaToAcademicStudentMasterStudent {
         let mut student_inserted: u64 = 0;
         let mut student_updated: u64 = 0;
         let mut student_skipped: u64 = 0;
+        let mut student_retired: u64 = 0;
         let mut errors: u64 = 0;
 
         let mut offset = 0;
@@ -623,7 +683,7 @@ impl Task for SyncBiodataMahasiswaToAcademicStudentMasterStudent {
                         student_skipped += 1;
                         if let Some(ref pb) = pb {
                             pb.set_message(format!(
-                                "indiv_ins: {individual_inserted} | indiv_upd: {individual_updated} | stud_ins: {student_inserted} | stud_upd: {student_updated} | stud_skip: {student_skipped} | errors: {errors}"
+                                "indiv_ins: {individual_inserted} | indiv_upd: {individual_updated} | stud_ins: {student_inserted} | stud_upd: {student_updated} | stud_skip: {student_skipped} | stud_retired: {student_retired} | errors: {errors}"
                             ));
                             pb.inc(1);
                         }
@@ -655,7 +715,7 @@ impl Task for SyncBiodataMahasiswaToAcademicStudentMasterStudent {
                         student_skipped += 1;
                         if let Some(ref pb) = pb {
                             pb.set_message(format!(
-                                "indiv_ins: {individual_inserted} | indiv_upd: {individual_updated} | stud_ins: {student_inserted} | stud_upd: {student_updated} | stud_skip: {student_skipped} | errors: {errors}"
+                                "indiv_ins: {individual_inserted} | indiv_upd: {individual_updated} | stud_ins: {student_inserted} | stud_upd: {student_updated} | stud_skip: {student_skipped} | stud_retired: {student_retired} | errors: {errors}"
                             ));
                             pb.inc(1);
                         }
@@ -670,7 +730,8 @@ impl Task for SyncBiodataMahasiswaToAcademicStudentMasterStudent {
 
                 // Upsert student
                 match upsert_student(&txn, &individual, &mahasiswa, &biodata, riwayat, &cache).await {
-                    Ok((_student, action)) => {
+                    Ok((_student, action, retired)) => {
+                        student_retired += retired;
                         match action {
                             UpsertAction::Inserted => student_inserted += 1,
                             UpsertAction::Updated => student_updated += 1,
@@ -689,7 +750,7 @@ impl Task for SyncBiodataMahasiswaToAcademicStudentMasterStudent {
 
                 if let Some(ref pb) = pb {
                     pb.set_message(format!(
-                        "indiv_ins: {individual_inserted} | indiv_upd: {individual_updated} | stud_ins: {student_inserted} | stud_upd: {student_updated} | stud_skip: {student_skipped} | errors: {errors}"
+                        "indiv_ins: {individual_inserted} | indiv_upd: {individual_updated} | stud_ins: {student_inserted} | stud_upd: {student_updated} | stud_skip: {student_skipped} | stud_retired: {student_retired} | errors: {errors}"
                     ));
                     pb.inc(1);
                 }
@@ -699,7 +760,7 @@ impl Task for SyncBiodataMahasiswaToAcademicStudentMasterStudent {
         }
 
         let summary = format!(
-            "Sync completed - indiv_ins: {individual_inserted} | indiv_upd: {individual_updated} | stud_ins: {student_inserted} | stud_upd: {student_updated} | stud_skip: {student_skipped} | errors: {errors}"
+            "Sync completed - indiv_ins: {individual_inserted} | indiv_upd: {individual_updated} | stud_ins: {student_inserted} | stud_upd: {student_updated} | stud_skip: {student_skipped} | stud_retired: {student_retired} | errors: {errors}"
         );
 
         if let Some(pb) = pb {

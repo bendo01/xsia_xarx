@@ -201,3 +201,25 @@ which is a dashboard for candidate, that dashboard will
 ```sql
 UPDATE institution_master.staffes SET end_date = NULL WHERE id IN ('2772caf8-8ca1-45b4-9dbb-6e3bf97e4e4a','a4c957e8-2f99-4111-85e3-cdd4d1fb5daf');
 ```
+
+
+sometimes there is update or code swap student data if there is one data from @file:server/src/models/feeder/master/biodata_mahasiswa.rs and @file:server/src/models/feeder/master/mahasiswa.rs to
+@file:server/src/models/person/master/individual.rs and server/src/models/academic/student/master/students.rs
+then 
+- soft delete @file:server/src/models/academic/student/campaign/detail_activities.rs , @file:server/src/models/academic/student/campaign/student_activities.rs , and @file:server/src/models/academic/student/master/students.rs
+- transfer data student from from @file:server/src/models/feeder/master/biodata_mahasiswa.rs and @file:server/src/models/feeder/master/mahasiswa.rs to
+@file:server/src/models/person/master/individual.rs and server/src/models/academic/student/master/students.rs
+
+example
+
+individual Name: Nurfadillah
+current student code :ARS2402047
+suppose student code :ARS2402045
+individual code :7302064105060005
+user Email:nurulfadillahatrij@gmail.com
+
+individual Name: NURFADILLA 
+current student code: Ars2402069
+suppose student code: Ars2402047
+individual code: 7303074102050004
+user Email: nurf11580@gmail.com
