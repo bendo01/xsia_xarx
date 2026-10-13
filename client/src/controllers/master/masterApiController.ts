@@ -123,6 +123,41 @@ export async function masterApiShow<T = any>(apiPath: string, id: string): Promi
     }
 }
 
+export interface MasterOptionItem {
+    id: string;
+    name: string;
+}
+
+/**
+ * Loads dropdown options from a resource's `POST <apiPath>/options` endpoint.
+ * The server caps results (100), so use RemoteSearchSelect for large tables.
+ */
+export async function masterApiOptions(apiPath: string, filters: Record<string, string | null | undefined> = {}): Promise<MasterOptionItem[]> {
+    try {
+        const url = `${getBaseApiUrl()}/${apiPath.replace(/^\/+/, "")}/options`;
+        const body: Record<string, string> = {};
+        Object.entries(filters).forEach(([key, value]) => {
+            if (value) body[key] = value;
+        });
+        const response = await fetch(url, {
+            method: "POST",
+            headers: getAuthHeaders(),
+            body: JSON.stringify(body),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error ${response.status}`);
+        }
+
+        const resJson = await response.json();
+        const rows = Array.isArray(resJson) ? resJson : Array.isArray(resJson.data) ? resJson.data : [];
+        return rows.map((row: any) => ({ id: String(row.id), name: String(row.name ?? row.label ?? row.id) }));
+    } catch (error: any) {
+        console.error(`Error fetching options for ${apiPath}:`, error);
+        return [];
+    }
+}
+
 export async function masterApiCreate<T = any>(apiPath: string, payload: any): Promise<{ data?: T; success: boolean; message: string; errors?: any }> {
     try {
         const url = `${getBaseApiUrl()}/${apiPath.replace(/^\/+/, "")}`;

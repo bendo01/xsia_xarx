@@ -45,6 +45,7 @@ pub struct CreateResidenceRequest {
     pub sub_district_id: Option<Uuid>,
     pub village_id: Option<Uuid>,
     pub residence_type_id: Option<Uuid>,
+    #[validate(custom(function = "crate::models::contact::master::owner_types::validate"))]
     pub residenceable_type: Option<String>,
     pub residenceable_id: Option<Uuid>,
     pub latitude: Option<f64>,
@@ -62,6 +63,7 @@ pub struct UpdateResidenceRequest {
     pub sub_district_id: Option<Uuid>,
     pub village_id: Option<Uuid>,
     pub residence_type_id: Option<Uuid>,
+    #[validate(custom(function = "crate::models::contact::master::owner_types::validate"))]
     pub residenceable_type: Option<String>,
     pub residenceable_id: Option<Uuid>,
     pub latitude: Option<f64>,

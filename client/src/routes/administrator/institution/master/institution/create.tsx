@@ -140,7 +140,7 @@ export default function InstitutionMasterInstitutionCreatePage() {
             if (!res.is_error) {
                 toast.success(res.message || 'Institution created successfully!');
                 setTimeout(() => {
-                    window.location.href = '/institution/master/institution';
+                    window.location.href = '/administrator/institution/master/institution';
                 }, 1000);
             } else {
                 toast.danger(res.message || 'Failed to create institution record.');
@@ -172,7 +172,7 @@ export default function InstitutionMasterInstitutionCreatePage() {
                         <span>/</span>
                         <span>Institution</span>
                         <span>/</span>
-                        <a href="/institution/master/institution" class="hover:text-blue-600 transition-colors">Master Institution</a>
+                        <a href="/administrator/institution/master/institution" class="hover:text-blue-600 transition-colors">Master Institution</a>
                         <span>/</span>
                         <span class="font-medium text-neutral-900 dark:text-white">Create</span>
                     </nav>
@@ -186,7 +186,7 @@ export default function InstitutionMasterInstitutionCreatePage() {
                             </p>
                         </div>
                         <a
-                            href="/institution/master/institution"
+                            href="/administrator/institution/master/institution"
                             class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
                         >
                             Cancel
@@ -418,7 +418,7 @@ export default function InstitutionMasterInstitutionCreatePage() {
                         {/* Submit Action Bar */}
                         <div class="flex items-center justify-end gap-3 pt-4 border-t border-neutral-200 dark:border-neutral-800">
                             <a
-                                href="/institution/master/institution"
+                                href="/administrator/institution/master/institution"
                                 class="px-5 py-2.5 text-xs sm:text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
                             >
                                 Cancel

@@ -24,3 +24,63 @@ pub struct Model {
 
 
 impl ActiveModelBehavior for ActiveModel {}
+
+// ── Polymorphic Linked: Phone → Individual ──
+
+pub struct PhoneToIndividual;
+
+impl Linked for PhoneToIndividual {
+    type FromEntity = Entity;
+    type ToEntity = crate::models::person::master::individual::Entity;
+
+    fn link(&self) -> Vec<RelationDef> {
+        let rel: RelationDef = Entity::belongs_to(crate::models::person::master::individual::Entity)
+            .from(Column::PhoneableId)
+            .to(crate::models::person::master::individual::Column::Id)
+            .on_condition(|_left, _right| {
+                Column::PhoneableType.eq(super::owner_types::INDIVIDUAL).into()
+            })
+            .into();
+        vec![rel]
+    }
+}
+
+// ── Polymorphic Linked: Phone → Institution ──
+
+pub struct PhoneToInstitution;
+
+impl Linked for PhoneToInstitution {
+    type FromEntity = Entity;
+    type ToEntity = crate::models::institution::master::institutions::Entity;
+
+    fn link(&self) -> Vec<RelationDef> {
+        let rel: RelationDef = Entity::belongs_to(crate::models::institution::master::institutions::Entity)
+            .from(Column::PhoneableId)
+            .to(crate::models::institution::master::institutions::Column::Id)
+            .on_condition(|_left, _right| {
+                Column::PhoneableType.eq(super::owner_types::INSTITUTION).into()
+            })
+            .into();
+        vec![rel]
+    }
+}
+
+// ── Polymorphic Linked: Phone → Unit ──
+
+pub struct PhoneToUnit;
+
+impl Linked for PhoneToUnit {
+    type FromEntity = Entity;
+    type ToEntity = crate::models::institution::master::units::Entity;
+
+    fn link(&self) -> Vec<RelationDef> {
+        let rel: RelationDef = Entity::belongs_to(crate::models::institution::master::units::Entity)
+            .from(Column::PhoneableId)
+            .to(crate::models::institution::master::units::Column::Id)
+            .on_condition(|_left, _right| {
+                Column::PhoneableType.eq(super::owner_types::UNIT).into()
+            })
+            .into();
+        vec![rel]
+    }
+}

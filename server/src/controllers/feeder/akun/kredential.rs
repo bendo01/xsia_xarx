@@ -13,7 +13,23 @@ use crate::dtos::feeder::akun::kredential::{
 };
 use crate::dtos::common::reference::MessageResponse;
 use crate::models::feeder::akun::kredential as entity_mod;
+use crate::library::crypto;
 use crate::middleware::auth::auth_user_id;
+
+fn validate_service_url(service_url: &str) -> Result<String, StatusError> {
+    let service_url = service_url.trim();
+    if service_url.is_empty() {
+        return Err(StatusError::bad_request().brief("service_url cannot be empty"));
+    }
+    if !(service_url.starts_with("http://") || service_url.starts_with("https://")) {
+        return Err(StatusError::bad_request().brief("service_url must start with http:// or https://"));
+    }
+    Ok(service_url.to_string())
+}
+
+fn encrypt_password(password: &str) -> Result<String, StatusError> {
+    crypto::encrypt(password).map_err(|e| StatusError::internal_server_error().brief(e.to_string()))
+}
 
 #[endpoint(tags("Feeder - Akun - Kredential"), status_codes(200, 500))]
 pub async fn index(
@@ -42,7 +58,7 @@ pub async fn index(
     let data = items.into_iter().map(|item| KredentialResponse {
             id: item.id,
             username: item.username.clone(),
-            password: item.password.clone(),
+            password: String::new(),
             institution_id: item.institution_id,
             service_url: item.service_url.clone(),
             created_at: item.created_at,
@@ -85,7 +101,7 @@ pub async fn show(
     Ok(Json(KredentialResponse {
             id: item.id,
             username: item.username.clone(),
-            password: item.password.clone(),
+            password: String::new(),
             institution_id: item.institution_id,
             service_url: item.service_url.clone(),
             created_at: item.created_at,
@@ -117,9 +133,9 @@ pub async fn store(
         let active_model = entity_mod::ActiveModel {
             id: Set(new_id),
         username: Set(payload.username),
-        password: Set(payload.password),
+        password: Set(encrypt_password(&payload.password)?),
         institution_id: Set(payload.institution_id),
-        service_url: Set(payload.service_url),
+        service_url: Set(validate_service_url(&payload.service_url)?),
         created_at: Set(Some(now)),
         updated_at: Set(Some(now)),
         deleted_at: Set(None),
@@ -133,7 +149,7 @@ pub async fn store(
         Ok(Json(KredentialResponse {
             id: item.id,
             username: item.username.clone(),
-            password: item.password.clone(),
+            password: String::new(),
             institution_id: item.institution_id,
             service_url: item.service_url.clone(),
             created_at: item.created_at,
@@ -177,14 +193,14 @@ pub async fn update(
     if let Some(username) = payload.username {
             active_model.username = Set(username);
         }
-    if let Some(password) = payload.password {
-            active_model.password = Set(password);
+    if let Some(password) = payload.password.filter(|p| !p.is_empty()) {
+            active_model.password = Set(encrypt_password(&password)?);
         }
     if let Some(institution_id) = payload.institution_id {
             active_model.institution_id = Set(institution_id);
         }
     if let Some(service_url) = payload.service_url {
-            active_model.service_url = Set(service_url);
+            active_model.service_url = Set(validate_service_url(&service_url)?);
         }
     active_model.updated_at = Set(Some(now));
     active_model.updated_by = Set(auth_user_id(depot));
@@ -194,7 +210,7 @@ pub async fn update(
         Ok(Json(KredentialResponse {
             id: item.id,
             username: item.username.clone(),
-            password: item.password.clone(),
+            password: String::new(),
             institution_id: item.institution_id,
             service_url: item.service_url.clone(),
             created_at: item.created_at,

@@ -24,3 +24,63 @@ pub struct Model {
 
 
 impl ActiveModelBehavior for ActiveModel {}
+
+// ── Polymorphic Linked: Website → Individual ──
+
+pub struct WebsiteToIndividual;
+
+impl Linked for WebsiteToIndividual {
+    type FromEntity = Entity;
+    type ToEntity = crate::models::person::master::individual::Entity;
+
+    fn link(&self) -> Vec<RelationDef> {
+        let rel: RelationDef = Entity::belongs_to(crate::models::person::master::individual::Entity)
+            .from(Column::WebsiteableId)
+            .to(crate::models::person::master::individual::Column::Id)
+            .on_condition(|_left, _right| {
+                Column::WebsiteableType.eq(super::owner_types::INDIVIDUAL).into()
+            })
+            .into();
+        vec![rel]
+    }
+}
+
+// ── Polymorphic Linked: Website → Institution ──
+
+pub struct WebsiteToInstitution;
+
+impl Linked for WebsiteToInstitution {
+    type FromEntity = Entity;
+    type ToEntity = crate::models::institution::master::institutions::Entity;
+
+    fn link(&self) -> Vec<RelationDef> {
+        let rel: RelationDef = Entity::belongs_to(crate::models::institution::master::institutions::Entity)
+            .from(Column::WebsiteableId)
+            .to(crate::models::institution::master::institutions::Column::Id)
+            .on_condition(|_left, _right| {
+                Column::WebsiteableType.eq(super::owner_types::INSTITUTION).into()
+            })
+            .into();
+        vec![rel]
+    }
+}
+
+// ── Polymorphic Linked: Website → Unit ──
+
+pub struct WebsiteToUnit;
+
+impl Linked for WebsiteToUnit {
+    type FromEntity = Entity;
+    type ToEntity = crate::models::institution::master::units::Entity;
+
+    fn link(&self) -> Vec<RelationDef> {
+        let rel: RelationDef = Entity::belongs_to(crate::models::institution::master::units::Entity)
+            .from(Column::WebsiteableId)
+            .to(crate::models::institution::master::units::Column::Id)
+            .on_condition(|_left, _right| {
+                Column::WebsiteableType.eq(super::owner_types::UNIT).into()
+            })
+            .into();
+        vec![rel]
+    }
+}

@@ -173,7 +173,7 @@ export default function PersonMasterIndividualCreatePage() {
             const res = await PersonMasterIndividualControllerUpsert(payload);
             if (!res.is_error) {
                 toast.success('Individual profile created successfully!');
-                window.location.href = '/person/master/individual';
+                window.location.href = '/administrator/person/master/individual';
             } else {
                 toast.danger(res.message || 'Failed to create individual profile.');
                 if (res.errors) {
@@ -219,7 +219,7 @@ export default function PersonMasterIndividualCreatePage() {
                             <span>/</span>
                             <span>Person</span>
                             <span>/</span>
-                            <a href="/person/master/individual" class="hover:text-blue-600 transition-colors">Master Individual</a>
+                            <a href="/administrator/person/master/individual" class="hover:text-blue-600 transition-colors">Master Individual</a>
                             <span>/</span>
                             <span class="font-medium text-neutral-900 dark:text-white">Create Individual</span>
                         </nav>
@@ -233,7 +233,7 @@ export default function PersonMasterIndividualCreatePage() {
 
                     <div class="mt-4 sm:mt-0">
                         <a
-                            href="/person/master/individual"
+                            href="/administrator/person/master/individual"
                             class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -680,7 +680,7 @@ export default function PersonMasterIndividualCreatePage() {
                     {/* Action Buttons */}
                     <div class="flex items-center justify-end gap-3 pt-4 border-t border-neutral-200 dark:border-neutral-800">
                         <a
-                            href="/person/master/individual"
+                            href="/administrator/person/master/individual"
                             class="px-5 py-2.5 text-xs sm:text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
                         >
                             Cancel

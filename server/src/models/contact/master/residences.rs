@@ -45,3 +45,63 @@ pub struct Model {
 
 
 impl ActiveModelBehavior for ActiveModel {}
+
+// ── Polymorphic Linked: Residence → Individual ──
+
+pub struct ResidenceToIndividual;
+
+impl Linked for ResidenceToIndividual {
+    type FromEntity = Entity;
+    type ToEntity = crate::models::person::master::individual::Entity;
+
+    fn link(&self) -> Vec<RelationDef> {
+        let rel: RelationDef = Entity::belongs_to(crate::models::person::master::individual::Entity)
+            .from(Column::ResidenceableId)
+            .to(crate::models::person::master::individual::Column::Id)
+            .on_condition(|_left, _right| {
+                Column::ResidenceableType.eq(super::owner_types::INDIVIDUAL).into()
+            })
+            .into();
+        vec![rel]
+    }
+}
+
+// ── Polymorphic Linked: Residence → Institution ──
+
+pub struct ResidenceToInstitution;
+
+impl Linked for ResidenceToInstitution {
+    type FromEntity = Entity;
+    type ToEntity = crate::models::institution::master::institutions::Entity;
+
+    fn link(&self) -> Vec<RelationDef> {
+        let rel: RelationDef = Entity::belongs_to(crate::models::institution::master::institutions::Entity)
+            .from(Column::ResidenceableId)
+            .to(crate::models::institution::master::institutions::Column::Id)
+            .on_condition(|_left, _right| {
+                Column::ResidenceableType.eq(super::owner_types::INSTITUTION).into()
+            })
+            .into();
+        vec![rel]
+    }
+}
+
+// ── Polymorphic Linked: Residence → Unit ──
+
+pub struct ResidenceToUnit;
+
+impl Linked for ResidenceToUnit {
+    type FromEntity = Entity;
+    type ToEntity = crate::models::institution::master::units::Entity;
+
+    fn link(&self) -> Vec<RelationDef> {
+        let rel: RelationDef = Entity::belongs_to(crate::models::institution::master::units::Entity)
+            .from(Column::ResidenceableId)
+            .to(crate::models::institution::master::units::Column::Id)
+            .on_condition(|_left, _right| {
+                Column::ResidenceableType.eq(super::owner_types::UNIT).into()
+            })
+            .into();
+        vec![rel]
+    }
+}

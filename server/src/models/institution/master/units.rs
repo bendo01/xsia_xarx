@@ -70,3 +70,91 @@ pub struct Model {
 
 
 impl ActiveModelBehavior for ActiveModel {}
+
+// ── Polymorphic Linked: Unit → Phones ──
+
+pub struct UnitToPhone;
+
+impl Linked for UnitToPhone {
+    type FromEntity = Entity;
+    type ToEntity = crate::models::contact::master::phones::Entity;
+
+    fn link(&self) -> Vec<RelationDef> {
+        let rel: RelationDef = crate::models::contact::master::phones::Entity::belongs_to(Entity)
+            .from(crate::models::contact::master::phones::Column::PhoneableId)
+            .to(Column::Id)
+            .on_condition(|_left, _right| {
+                crate::models::contact::master::phones::Column::PhoneableType
+                    .eq(crate::models::contact::master::owner_types::UNIT)
+                    .into()
+            })
+            .into();
+        vec![rel.rev()]
+    }
+}
+
+// ── Polymorphic Linked: Unit → Electronic Mails ──
+
+pub struct UnitToElectronicMail;
+
+impl Linked for UnitToElectronicMail {
+    type FromEntity = Entity;
+    type ToEntity = crate::models::contact::master::electronic_mails::Entity;
+
+    fn link(&self) -> Vec<RelationDef> {
+        let rel: RelationDef = crate::models::contact::master::electronic_mails::Entity::belongs_to(Entity)
+            .from(crate::models::contact::master::electronic_mails::Column::ElectronicMailableId)
+            .to(Column::Id)
+            .on_condition(|_left, _right| {
+                crate::models::contact::master::electronic_mails::Column::ElectronicMailableType
+                    .eq(crate::models::contact::master::owner_types::UNIT)
+                    .into()
+            })
+            .into();
+        vec![rel.rev()]
+    }
+}
+
+// ── Polymorphic Linked: Unit → Residences ──
+
+pub struct UnitToResidence;
+
+impl Linked for UnitToResidence {
+    type FromEntity = Entity;
+    type ToEntity = crate::models::contact::master::residences::Entity;
+
+    fn link(&self) -> Vec<RelationDef> {
+        let rel: RelationDef = crate::models::contact::master::residences::Entity::belongs_to(Entity)
+            .from(crate::models::contact::master::residences::Column::ResidenceableId)
+            .to(Column::Id)
+            .on_condition(|_left, _right| {
+                crate::models::contact::master::residences::Column::ResidenceableType
+                    .eq(crate::models::contact::master::owner_types::UNIT)
+                    .into()
+            })
+            .into();
+        vec![rel.rev()]
+    }
+}
+
+// ── Polymorphic Linked: Unit → Websites ──
+
+pub struct UnitToWebsite;
+
+impl Linked for UnitToWebsite {
+    type FromEntity = Entity;
+    type ToEntity = crate::models::contact::master::websites::Entity;
+
+    fn link(&self) -> Vec<RelationDef> {
+        let rel: RelationDef = crate::models::contact::master::websites::Entity::belongs_to(Entity)
+            .from(crate::models::contact::master::websites::Column::WebsiteableId)
+            .to(Column::Id)
+            .on_condition(|_left, _right| {
+                crate::models::contact::master::websites::Column::WebsiteableType
+                    .eq(crate::models::contact::master::owner_types::UNIT)
+                    .into()
+            })
+            .into();
+        vec![rel.rev()]
+    }
+}

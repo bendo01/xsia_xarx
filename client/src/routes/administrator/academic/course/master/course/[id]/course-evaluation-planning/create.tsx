@@ -1,11 +1,12 @@
 import { createSignal } from 'solid-js';
+import { useParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { masterApiCreate } from '~/controllers/master/masterApiController';
 
 export default function MasterCreatePage() {
     const apiPath = "academic/course/master/course-evaluation-plannings";
-    const basePath = "/academic/course/master/course-evaluation-planning";
+    const basePath = `/administrator/academic/course/master/course/${useParams().id}/course-evaluation-planning`;
     const [code, setCode] = createSignal('');
     const [name, setName] = createSignal('');
     const [description, setDescription] = createSignal('');

@@ -135,7 +135,7 @@ export default function PersonMasterIndividualIndexPage() {
 
                     <div class="mt-4 sm:mt-0 flex items-center gap-2">
                         <a
-                            href="/person/master/individual/create"
+                            href="/administrator/person/master/individual/create"
                             class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs shadow-xs transition-colors cursor-pointer"
                             id="btn-add-individual"
                         >
@@ -256,7 +256,7 @@ export default function PersonMasterIndividualIndexPage() {
                                                 </div>
                                                 <div class="flex-1 min-w-0">
                                                     <a
-                                                        href={`/person/master/individual/show?id=${item.individual.id}`}
+                                                        href={`/administrator/person/master/individual/${item.individual.id}`}
                                                         class="font-semibold text-sm text-blue-600 dark:text-blue-400 hover:underline block truncate"
                                                     >
                                                         {formatFullName(item.individual)}
@@ -295,7 +295,7 @@ export default function PersonMasterIndividualIndexPage() {
                                             <div class="flex items-center justify-end gap-1.5 pt-2 border-t border-neutral-100 dark:border-neutral-700/60">
                                                 {/* Show / View Details Button */}
                                                 <a
-                                                    href={`/person/master/individual/show?id=${item.individual.id}`}
+                                                    href={`/administrator/person/master/individual/${item.individual.id}`}
                                                     class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                     title="View Profile Details"
                                                 >
@@ -306,7 +306,7 @@ export default function PersonMasterIndividualIndexPage() {
 
                                                 {/* Edit Button */}
                                                 <a
-                                                    href={`/person/master/individual/edit?id=${item.individual.id}`}
+                                                    href={`/administrator/person/master/individual/edit?id=${item.individual.id}`}
                                                     class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                     title="Edit Record"
                                                 >
@@ -410,7 +410,7 @@ export default function PersonMasterIndividualIndexPage() {
                                                     {/* Name with Titles */}
                                                     <td class="px-4 py-3">
                                                         <a
-                                                            href={`/person/master/individual/show?id=${item.individual.id}`}
+                                                            href={`/administrator/person/master/individual/${item.individual.id}`}
                                                             class="font-semibold text-blue-600 dark:text-blue-400 hover:underline block"
                                                         >
                                                             {formatFullName(item.individual)}
@@ -436,7 +436,7 @@ export default function PersonMasterIndividualIndexPage() {
                                                         <div class="flex items-center justify-end gap-1.5">
                                                             {/* Show / View Details Button */}
                                                             <a
-                                                                href={`/person/master/individual/show?id=${item.individual.id}`}
+                                                                href={`/administrator/person/master/individual/${item.individual.id}`}
                                                                 class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                                 title="View Profile Details"
                                                             >
@@ -447,7 +447,7 @@ export default function PersonMasterIndividualIndexPage() {
 
                                                             {/* Edit Button */}
                                                             <a
-                                                                href={`/person/master/individual/edit?id=${item.individual.id}`}
+                                                                href={`/administrator/person/master/individual/edit?id=${item.individual.id}`}
                                                                 class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                                 title="Edit Record"
                                                             >

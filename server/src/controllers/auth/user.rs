@@ -892,7 +892,7 @@ pub async fn forgot_password(
             // Save phone number if not exists
             let phone_exists = crate::models::contact::master::phones::Entity::find()
                 .filter(crate::models::contact::master::phones::Column::PhoneNumber.eq(&phone_number))
-                .filter(crate::models::contact::master::phones::Column::PhoneableType.eq("App\\Models\\Person\\Master\\Individual"))
+                .filter(crate::models::contact::master::phones::Column::PhoneableType.eq(crate::models::contact::master::owner_types::INDIVIDUAL))
                 .filter(crate::models::contact::master::phones::Column::PhoneableId.eq(individual_id))
                 .filter(crate::models::contact::master::phones::Column::DeletedAt.is_null())
                 .one(db)
@@ -905,7 +905,7 @@ pub async fn forgot_password(
                     phone_number: Set(phone_number.clone()),
                     phone_type_id: Set(phone_type_id),
                     phoneable_id: Set(individual_id),
-                    phoneable_type: Set("App\\Models\\Person\\Master\\Individual".to_string()),
+                    phoneable_type: Set(crate::models::contact::master::owner_types::INDIVIDUAL.to_string()),
                     created_at: Set(Some(now)),
                     updated_at: Set(Some(now)),
                     deleted_at: Set(None),
@@ -1012,7 +1012,7 @@ pub async fn reset_password(
 
     // Get phone number to create WA link
     let phone = crate::models::contact::master::phones::Entity::find()
-        .filter(crate::models::contact::master::phones::Column::PhoneableType.eq("App\\Models\\Person\\Master\\Individual"))
+        .filter(crate::models::contact::master::phones::Column::PhoneableType.eq(crate::models::contact::master::owner_types::INDIVIDUAL))
         .filter(crate::models::contact::master::phones::Column::PhoneableId.eq(updated_user.individual_id))
         .filter(crate::models::contact::master::phones::Column::DeletedAt.is_null())
         .one(db)
@@ -1239,7 +1239,7 @@ pub async fn resend_verification_token(
         {
             let individual_id = updated_user.individual_id;
             let phone = crate::models::contact::master::phones::Entity::find()
-                .filter(crate::models::contact::master::phones::Column::PhoneableType.eq("App\\Models\\Person\\Master\\Individual"))
+                .filter(crate::models::contact::master::phones::Column::PhoneableType.eq(crate::models::contact::master::owner_types::INDIVIDUAL))
                 .filter(crate::models::contact::master::phones::Column::PhoneableId.eq(individual_id))
                 .filter(crate::models::contact::master::phones::Column::DeletedAt.is_null())
                 .one(db)
@@ -1401,7 +1401,7 @@ pub async fn account_acquisition(
     // 8. Save phone number if not exists
     let phone_exists = crate::models::contact::master::phones::Entity::find()
         .filter(crate::models::contact::master::phones::Column::PhoneNumber.eq(&payload.phone_number))
-        .filter(crate::models::contact::master::phones::Column::PhoneableType.eq("App\\Models\\Person\\Master\\Individual"))
+        .filter(crate::models::contact::master::phones::Column::PhoneableType.eq(crate::models::contact::master::owner_types::INDIVIDUAL))
         .filter(crate::models::contact::master::phones::Column::PhoneableId.eq(individual.id))
         .filter(crate::models::contact::master::phones::Column::DeletedAt.is_null())
         .one(db)
@@ -1414,7 +1414,7 @@ pub async fn account_acquisition(
             phone_number: Set(payload.phone_number.clone()),
             phone_type_id: Set(None),
             phoneable_id: Set(individual.id),
-            phoneable_type: Set("App\\Models\\Person\\Master\\Individual".to_string()),
+            phoneable_type: Set(crate::models::contact::master::owner_types::INDIVIDUAL.to_string()),
             created_at: Set(Some(now)),
             updated_at: Set(Some(now)),
             deleted_at: Set(None),

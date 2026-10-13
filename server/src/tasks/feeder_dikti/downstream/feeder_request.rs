@@ -1,6 +1,7 @@
 use crate::config::feeder::FeederConfig;
 use crate::services::feeder_dikti::requester::token::Token;
 use reqwest::Client;
+use sea_orm::ConnectionTrait;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::time::Duration;
@@ -70,11 +71,12 @@ pub struct ReturnDataScalar {
 }
 
 impl RequestData {
-    pub async fn get<T>(input: InputRequestData) -> Result<ReturnData<T>, Box<dyn std::error::Error + Send + Sync>>
+    pub async fn get<T, C>(db: &C, input: InputRequestData) -> Result<ReturnData<T>, Box<dyn std::error::Error + Send + Sync>>
     where
         T: for<'de> Deserialize<'de>,
+        C: ConnectionTrait,
     {
-        let config = FeederConfig::from_env();
+        let config = FeederConfig::load(db).await?;
         Self::get_with_config(&config, input).await
     }
 
@@ -114,10 +116,11 @@ impl RequestData {
         Ok(data)
     }
 
-    pub async fn get_scalar(
+    pub async fn get_scalar<C: ConnectionTrait>(
+        db: &C,
         input: InputRequestData,
     ) -> Result<ReturnDataScalar, Box<dyn std::error::Error + Send + Sync>> {
-        let config = FeederConfig::from_env();
+        let config = FeederConfig::load(db).await?;
         Self::get_scalar_with_config(&config, input).await
     }
 

@@ -31,6 +31,7 @@ pub struct CreateElectronicMailRequest {
     pub email_address: String,
     pub electronic_mail_type_id: Option<Uuid>,
     pub electronic_mailable_id: Uuid,
+    #[validate(custom(function = "crate::models::contact::master::owner_types::validate"))]
     pub electronic_mailable_type: String,
 }
 
@@ -39,6 +40,7 @@ pub struct UpdateElectronicMailRequest {
     pub email_address: Option<String>,
     pub electronic_mail_type_id: Option<Uuid>,
     pub electronic_mailable_id: Option<Uuid>,
+    #[validate(custom(function = "crate::models::contact::master::owner_types::validate"))]
     pub electronic_mailable_type: Option<String>,
 }
 

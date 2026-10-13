@@ -30,7 +30,7 @@ use crate::models::person::master::{family_card, family_card_member, individual}
 use crate::models::person::reference::relative_type;
 
 const CANDIDATE_ROLEABLE_TYPE: &str = "App\\Models\\Academic\\Candidate\\Master\\Candidate";
-const INDIVIDUAL_PHONEABLE_TYPE: &str = "App\\Models\\Person\\Master\\Individual";
+const INDIVIDUAL_PHONEABLE_TYPE: &str = crate::models::contact::master::owner_types::INDIVIDUAL;
 const CANDIDATE_POSITION_TYPE: &str = "Kandidat Mahasiswa";
 const STUDY_PROGRAM_UNIT_TYPE: &str = "Program Studi Perguruan Tinggi";
 

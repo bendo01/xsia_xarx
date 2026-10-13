@@ -31,6 +31,7 @@ pub struct CreateWebsiteRequest {
     pub website_url: String,
     pub website_type_id: Option<Uuid>,
     pub websiteable_id: Uuid,
+    #[validate(custom(function = "crate::models::contact::master::owner_types::validate"))]
     pub websiteable_type: String,
 }
 
@@ -39,6 +40,7 @@ pub struct UpdateWebsiteRequest {
     pub website_url: Option<String>,
     pub website_type_id: Option<Uuid>,
     pub websiteable_id: Option<Uuid>,
+    #[validate(custom(function = "crate::models::contact::master::owner_types::validate"))]
     pub websiteable_type: Option<String>,
 }
 

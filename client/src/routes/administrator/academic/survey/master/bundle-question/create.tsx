@@ -5,7 +5,7 @@ import { masterApiCreate } from '~/controllers/master/masterApiController';
 
 export default function MasterCreatePage() {
     const apiPath = "academic/survey/master/bundle-question";
-    const basePath = "/academic/survey/master/bundle-question";
+    const basePath = "/administrator/academic/survey/master/bundle-question";
     const [code, setCode] = createSignal('');
     const [name, setName] = createSignal('');
     const [description, setDescription] = createSignal('');

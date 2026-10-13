@@ -210,7 +210,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
 
                     <div class="mt-4 sm:mt-0 flex items-center gap-2">
                         <a
-                            href="/institution/master/institution/create"
+                            href="/administrator/institution/master/institution/create"
                             class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs shadow-xs transition-colors cursor-pointer"
                             id="btn-add-institution"
                         >
@@ -366,7 +366,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
                                             <div class="flex items-start justify-between gap-2">
                                                 <div class="min-w-0 flex-1">
                                                     <a
-                                                        href={`/institution/master/institution/show?id=${item.institution.id}`}
+                                                        href={`/administrator/institution/master/institution/${item.institution.id}`}
                                                         class="font-semibold text-sm text-blue-600 dark:text-blue-400 hover:underline block truncate"
                                                     >
                                                         {item.institution.name || '-'}
@@ -395,7 +395,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
                                             {/* Actions */}
                                             <div class="flex items-center justify-end gap-1.5 pt-2 border-t border-neutral-100 dark:border-neutral-700/60">
                                                 <a
-                                                    href={`/institution/master/institution/show?id=${item.institution.id}`}
+                                                    href={`/administrator/institution/master/institution/${item.institution.id}`}
                                                     class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                     title="View Profile Details"
                                                 >
@@ -405,7 +405,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
                                                 </a>
 
                                                 <a
-                                                    href={`/institution/master/institution/edit?id=${item.institution.id}`}
+                                                    href={`/administrator/institution/master/institution/edit?id=${item.institution.id}`}
                                                     class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                     title="Edit Record"
                                                 >
@@ -495,7 +495,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
                                                     {/* Name */}
                                                     <td class="px-4 py-3">
                                                         <a
-                                                            href={`/institution/master/institution/show?id=${item.institution.id}`}
+                                                            href={`/administrator/institution/master/institution/${item.institution.id}`}
                                                             class="font-semibold text-blue-600 dark:text-blue-400 hover:underline block"
                                                         >
                                                             {item.institution.name || '-'}
@@ -522,7 +522,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
                                                         <div class="flex items-center justify-end gap-1.5">
                                                             {/* Show / View Details Button */}
                                                             <a
-                                                                href={`/institution/master/institution/show?id=${item.institution.id}`}
+                                                                href={`/administrator/institution/master/institution/${item.institution.id}`}
                                                                 class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                                 title="View Profile Details"
                                                             >
@@ -533,7 +533,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
 
                                                             {/* Edit Button */}
                                                             <a
-                                                                href={`/institution/master/institution/edit?id=${item.institution.id}`}
+                                                                href={`/administrator/institution/master/institution/edit?id=${item.institution.id}`}
                                                                 class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                                 title="Edit Record"
                                                             >

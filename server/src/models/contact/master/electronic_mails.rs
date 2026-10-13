@@ -24,3 +24,63 @@ pub struct Model {
 
 
 impl ActiveModelBehavior for ActiveModel {}
+
+// ── Polymorphic Linked: Electronic Mail → Individual ──
+
+pub struct ElectronicMailToIndividual;
+
+impl Linked for ElectronicMailToIndividual {
+    type FromEntity = Entity;
+    type ToEntity = crate::models::person::master::individual::Entity;
+
+    fn link(&self) -> Vec<RelationDef> {
+        let rel: RelationDef = Entity::belongs_to(crate::models::person::master::individual::Entity)
+            .from(Column::ElectronicMailableId)
+            .to(crate::models::person::master::individual::Column::Id)
+            .on_condition(|_left, _right| {
+                Column::ElectronicMailableType.eq(super::owner_types::INDIVIDUAL).into()
+            })
+            .into();
+        vec![rel]
+    }
+}
+
+// ── Polymorphic Linked: Electronic Mail → Institution ──
+
+pub struct ElectronicMailToInstitution;
+
+impl Linked for ElectronicMailToInstitution {
+    type FromEntity = Entity;
+    type ToEntity = crate::models::institution::master::institutions::Entity;
+
+    fn link(&self) -> Vec<RelationDef> {
+        let rel: RelationDef = Entity::belongs_to(crate::models::institution::master::institutions::Entity)
+            .from(Column::ElectronicMailableId)
+            .to(crate::models::institution::master::institutions::Column::Id)
+            .on_condition(|_left, _right| {
+                Column::ElectronicMailableType.eq(super::owner_types::INSTITUTION).into()
+            })
+            .into();
+        vec![rel]
+    }
+}
+
+// ── Polymorphic Linked: Electronic Mail → Unit ──
+
+pub struct ElectronicMailToUnit;
+
+impl Linked for ElectronicMailToUnit {
+    type FromEntity = Entity;
+    type ToEntity = crate::models::institution::master::units::Entity;
+
+    fn link(&self) -> Vec<RelationDef> {
+        let rel: RelationDef = Entity::belongs_to(crate::models::institution::master::units::Entity)
+            .from(Column::ElectronicMailableId)
+            .to(crate::models::institution::master::units::Column::Id)
+            .on_condition(|_left, _right| {
+                Column::ElectronicMailableType.eq(super::owner_types::UNIT).into()
+            })
+            .into();
+        vec![rel]
+    }
+}

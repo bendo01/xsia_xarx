@@ -31,6 +31,7 @@ pub struct CreatePhoneRequest {
     pub phone_number: String,
     pub phone_type_id: Option<Uuid>,
     pub phoneable_id: Uuid,
+    #[validate(custom(function = "crate::models::contact::master::owner_types::validate"))]
     pub phoneable_type: String,
 }
 
@@ -39,6 +40,7 @@ pub struct UpdatePhoneRequest {
     pub phone_number: Option<String>,
     pub phone_type_id: Option<Uuid>,
     pub phoneable_id: Option<Uuid>,
+    #[validate(custom(function = "crate::models::contact::master::owner_types::validate"))]
     pub phoneable_type: Option<String>,
 }
 

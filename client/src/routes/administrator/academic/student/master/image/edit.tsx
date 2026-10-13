@@ -6,7 +6,7 @@ import { masterApiShow, masterApiUpdate } from '~/controllers/master/masterApiCo
 
 export default function MasterEditPage() {
     const apiPath = "academic/student/master/images";
-    const basePath = "/academic/student/master/image";
+    const basePath = "/administrator/academic/student/master/image";
     const [searchParams] = useSearchParams();
     const [selectedId, setSelectedId] = createSignal<string>((searchParams.id as string) || '');
     const [code, setCode] = createSignal('');

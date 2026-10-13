@@ -1,12 +1,12 @@
 import { createSignal, onMount, createEffect, Show } from 'solid-js';
-import { useSearchParams } from '@solidjs/router';
+import { useSearchParams, useParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { masterApiShow, masterApiUpdate } from '~/controllers/master/masterApiController';
 
 export default function MasterEditPage() {
     const apiPath = "academic/course/master/course-learn-plannings";
-    const basePath = "/academic/course/master/course-learn-planning";
+    const basePath = `/administrator/academic/course/master/course/${useParams().id}/course-learn-planning`;
     const [searchParams] = useSearchParams();
     const [selectedId, setSelectedId] = createSignal<string>((searchParams.id as string) || '');
     const [code, setCode] = createSignal('');

@@ -154,7 +154,8 @@ impl EstimateDetailKurikulum {
     ) -> Result<usize, Box<dyn std::error::Error + Send + Sync>> {
         println!("🔄 Fetching data for offset={}, limit={}", offset, limit);
 
-        let response = RequestData::get::<ModelInputDetailKurikulum>(
+        let response = RequestData::get::<ModelInputDetailKurikulum, _>(
+            db,
             InputRequestData {
                 act: API_ACTION.to_string(),
                 filter: if DEFAULT_FILTER.is_empty() { None } else { Some(DEFAULT_FILTER.to_string()) },

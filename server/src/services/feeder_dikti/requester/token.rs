@@ -1,4 +1,5 @@
 use reqwest::Client;
+use sea_orm::ConnectionTrait;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 
@@ -24,13 +25,14 @@ pub struct TokenResponse {
 }
 
 impl Token {
-    /// Fetches authentication token from the Feeder API using default environment configuration.
+    /// Fetches authentication token from the Feeder API using the stored credential
+    /// for `CURRENT_INSTITUTION_ID` (falling back to environment configuration).
     ///
     /// # Errors
     ///
     /// Returns an error if the HTTP request fails, times out, or the response cannot be parsed.
-    pub async fn get() -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
-        let config = FeederConfig::from_env();
+    pub async fn get<C: ConnectionTrait>(db: &C) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+        let config = FeederConfig::load(db).await?;
         Self::get_with_config(&config).await
     }
 

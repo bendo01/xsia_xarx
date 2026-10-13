@@ -5,7 +5,7 @@ import { masterApiIndex } from '~/controllers/master/masterApiController';
 
 export default function FeederMasterIndexPage() {
     const apiPath = "feeder/master/riwayat-pendidikan-mahasiswa";
-    const basePath = "/feeder/master/riwayat-pendidikan-mahasiswa";
+    const basePath = "/administrator/feeder/master/riwayat-pendidikan-mahasiswa";
     const [items, setItems] = createSignal<any[]>([]);
     const [isLoading, setIsLoading] = createSignal(true);
     const [currentPage, setCurrentPage] = createSignal(1);
@@ -184,7 +184,7 @@ export default function FeederMasterIndexPage() {
                                             <div class="flex items-start justify-between gap-3">
                                                 <div class="flex-1 min-w-0">
                                                     <a
-                                                        href={`${basePath}/show?id=${item.id || item.id_feeder || item.uuid}`}
+                                                        href={`${basePath}/${encodeURIComponent(item.id || item.id_feeder || item.uuid)}`}
                                                         class="font-semibold text-sm text-blue-600 dark:text-blue-400 hover:underline block truncate"
                                                     >
                                                         {getItemTitle(item)}
@@ -196,7 +196,7 @@ export default function FeederMasterIndexPage() {
                                                     </div>
                                                 </div>
                                                 <a
-                                                    href={`${basePath}/show?id=${item.id || item.id_feeder || item.uuid}`}
+                                                    href={`${basePath}/${encodeURIComponent(item.id || item.id_feeder || item.uuid)}`}
                                                     class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                     title="View Record"
                                                 >
@@ -264,7 +264,7 @@ export default function FeederMasterIndexPage() {
                                                     </td>
                                                     <td class="px-4 py-3">
                                                         <a
-                                                            href={`${basePath}/show?id=${item.id || item.id_feeder || item.uuid}`}
+                                                            href={`${basePath}/${encodeURIComponent(item.id || item.id_feeder || item.uuid)}`}
                                                             class="font-semibold text-blue-600 dark:text-blue-400 hover:underline block"
                                                         >
                                                             {getItemTitle(item)}
@@ -275,7 +275,7 @@ export default function FeederMasterIndexPage() {
                                                     </td>
                                                     <td class="px-4 py-3 text-right">
                                                         <a
-                                                            href={`${basePath}/show?id=${item.id || item.id_feeder || item.uuid}`}
+                                                            href={`${basePath}/${encodeURIComponent(item.id || item.id_feeder || item.uuid)}`}
                                                             class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 border border-neutral-200 dark:border-neutral-700 transition-colors"
                                                             title="View Details"
                                                         >
