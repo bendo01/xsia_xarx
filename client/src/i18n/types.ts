@@ -181,6 +181,25 @@ export interface TranslationSchema {
             gradingTypes: string;
         };
     };
+    errors: {
+        notFound: {
+            status: string;
+            title: string;
+            description: string;
+            target: string;
+            backToHome: string;
+            goBack: string;
+            referenceMaster: string;
+            popularDestinations: string;
+            quickNav: string;
+            helpText: string;
+            homeDesc: string;
+            dashboardDesc: string;
+            referenceCatalog: string;
+            catalogDesc: string;
+            signInDesc: string;
+        };
+    };
     notFound: {
         title: string;
         subtitle: string;

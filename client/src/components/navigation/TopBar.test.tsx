@@ -25,7 +25,10 @@ describe("TopBar Navigation Component (White-Box Component Tests)", () => {
 
     expect(screen.getByText("XSIA XARX")).toBeInTheDocument();
     expect(screen.getByText("Enterprise Portal")).toBeInTheDocument();
-    expect(screen.getByText("Sign In (JWT)")).toBeInTheDocument();
+    // Guest sign-in links were removed from the sidebar footer; guests see the guest-mode label
+    // and no account menu.
+    expect(screen.getByText("Guest Mode")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Account Details")).not.toBeInTheDocument();
     expect(screen.getByTestId("topbar-language-button")).toBeInTheDocument();
   });
 
@@ -39,7 +42,8 @@ describe("TopBar Navigation Component (White-Box Component Tests)", () => {
 
     expect(screen.getByText("XSIA XARX")).toBeInTheDocument();
     expect(screen.getByText("Portal Enterprise")).toBeInTheDocument();
-    expect(screen.getByText("Masuk Standar (JWT)")).toBeInTheDocument();
+    expect(screen.getByText("Mode Tamu")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Detail Akun")).not.toBeInTheDocument();
   });
 
   it("toggles locale when clicking the language switch button", () => {

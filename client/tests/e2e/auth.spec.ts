@@ -1,54 +1,46 @@
-import { test, expect } from "@playwright/test";
+import { test } from "@playwright/test";
+import { expect, gotoHydrated, mockBackend } from "./fixtures/roles";
 
 test.describe("Authentication Flow (Black-Box E2E Tests)", () => {
+  test.beforeEach(async ({ page }) => {
+    // Pin the UI language (it otherwise defaults to Indonesian)
+    await page.addInitScript(() => localStorage.setItem("app_locale", "en"));
+    await mockBackend(page);
+  });
+
   test("renders login page and all interactive controls", async ({ page }) => {
-    await page.goto("/authentification/login");
+    await gotoHydrated(page, "/authentification/login");
 
-    // Check header and branding titles
     await expect(page.locator("h1")).toContainText("Macro Workspace");
-    await expect(page.getByText("Enterprise Portal")).toBeVisible();
+    await expect(page.getByText("Enterprise Portal", { exact: true })).toBeVisible();
 
-    // Check input fields
-    const emailInput = page.locator('input[type="email"]');
-    const passwordInput = page.locator('input[type="password"]');
+    await expect(page.locator('input[type="email"]')).toBeVisible();
+    await expect(page.locator('input[type="password"]')).toBeVisible();
     const submitButton = page.locator('button[type="submit"]');
-
-    await expect(emailInput).toBeVisible();
-    await expect(passwordInput).toBeVisible();
     await expect(submitButton).toBeVisible();
-    await expect(submitButton).toContainText("SIGN IN");
+    await expect(submitButton).toContainText("Sign In to Portal");
   });
 
   test("interacts with form inputs and toggles remember checkbox", async ({ page }) => {
-    await page.goto("/authentification/login");
+    await gotoHydrated(page, "/authentification/login");
 
     const emailInput = page.locator('input[type="email"]');
     const passwordInput = page.locator('input[type="password"]');
 
-    // Fill in email
     await emailInput.fill("admin@xsia.edu");
-    expect(await emailInput.inputValue()).toBe("admin@xsia.edu");
+    await expect(emailInput).toHaveValue("admin@xsia.edu");
 
-    // Fill in password
     await passwordInput.fill("SuperSecretPassword123");
-    expect(await passwordInput.inputValue()).toBe("SuperSecretPassword123");
+    await expect(passwordInput).toHaveValue("SuperSecretPassword123");
 
-    // Toggle Remember Email checkbox
     const rememberCheckbox = page.locator('input[type="checkbox"]');
     await expect(rememberCheckbox).toBeChecked();
     await rememberCheckbox.uncheck();
-    expect(await rememberCheckbox.isChecked()).toBe(false);
-  });
-
-  test("redirects unauthenticated visitor from root to login", async ({ page }) => {
-    await page.goto("/");
-    await page.waitForURL("/authentification/login");
-    await expect(page).toHaveURL("/authentification/login");
-    await expect(page.locator("h1")).toContainText("Macro Workspace");
+    await expect(rememberCheckbox).not.toBeChecked();
   });
 
   test("renders session login page with security controls", async ({ page }) => {
-    await page.goto("/authentification/login_with_session");
+    await gotoHydrated(page, "/authentification/login_with_session");
 
     await expect(page.locator("h1")).toBeVisible();
     await expect(page.locator('input[type="email"]')).toBeVisible();

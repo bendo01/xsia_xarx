@@ -824,6 +824,15 @@ export async function processLoginSuccess(loginResponse: any, isSession: boolean
     setStorageItem('active_role', activeRole, isSession);
     setStorageItem('current_role', currentRoleId, isSession);
 
+    // Persist the active role's unit / institution (as setActiveRole does) so later redirects
+    // without a role item still resolve to this user's own dashboard.
+    if (activeRoleItem?.unit_id) {
+        setStorageItem('unit_id', activeRoleItem.unit_id, isSession);
+    }
+    if (activeRoleItem?.institution_id) {
+        setActiveInstitution(activeRoleItem.institution_id, isSession, activeRoleItem.institution_name);
+    }
+
     // 5. Update global reactive signals
     refreshAuthState();
 

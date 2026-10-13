@@ -1,10 +1,28 @@
-import { test, expect } from "@playwright/test";
+import { test } from "@playwright/test";
+import { expect, gotoHydrated, loginViaUi, mockBackend, ROLE_USERS } from "./fixtures/roles";
 
-test.describe("Home Route Redirection (Black-Box E2E Tests)", () => {
-  test("redirects unauthenticated user from root to login", async ({ page }) => {
+test.describe("Home Route (Black-Box E2E Tests)", () => {
+  test.beforeEach(async ({ page }) => {
+    await mockBackend(page);
+  });
+
+  test("shows the public landing page to unauthenticated visitors", async ({ page }) => {
+    await gotoHydrated(page, "/");
+    await expect(page).toHaveURL("/");
+    await expect(page.locator("h1").first()).toBeVisible();
+
+    const sessionLink = page.locator('a[href="/authentification/login_with_session"]').first();
+    await expect(sessionLink).toBeVisible();
+    await sessionLink.click();
+    await expect(page).toHaveURL("/authentification/login_with_session");
+  });
+
+  test("redirects a signed-in user from the landing page to their dashboard", async ({ page }) => {
+    const student = ROLE_USERS.find((u) => u.key === "student")!;
+    await loginViaUi(page, student);
+    await expect(page).toHaveURL(student.dashboard);
+
     await page.goto("/");
-    await page.waitForURL("/authentification/login");
-    await expect(page).toHaveURL("/authentification/login");
-    await expect(page.locator("h1")).toContainText("Macro Workspace");
+    await expect(page).toHaveURL(student.dashboard);
   });
 });

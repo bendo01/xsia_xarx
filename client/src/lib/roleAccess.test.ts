@@ -271,11 +271,12 @@ describe("Role Access Matrix (White-Box Unit Tests)", () => {
       expect(canAccessRoute("/administrator/auth/user").allowed).toBe(false);
     });
 
-    // KNOWN BUG: processLoginSuccess does not persist the active role's unit_id / institution_id,
-    // so the "unauthorized" redirect (which has no role item) falls back to a placeholder or default URL.
-    // These use it.fails so the suite stays green; flip them to it() once fixed.
-    it.fails("course_department denied after a real login is redirected to its own unit, not the [id] placeholder", async () => {
+    // processLoginSuccess must persist the active role's unit_id / institution_id: the "unauthorized"
+    // redirect has no role item and would otherwise fall back to a placeholder or default URL.
+    it("course_department denied after a real login is redirected to its own unit, not the [id] placeholder", async () => {
       const prodi = ROLE_FIXTURES.find((f) => f.key === "course_department")!;
+      // LoginUser stores the token and individual_id before processLoginSuccess runs
+      setStorageItem("token", "t");
       setStorageItem("individual_id", INDIVIDUAL_ID);
       await processLoginSuccess({
         token: "t",
@@ -286,8 +287,10 @@ describe("Role Access Matrix (White-Box Unit Tests)", () => {
       );
     });
 
-    it.fails("rectorat denied after a real login is redirected to its own institution, not the default", async () => {
+    it("rectorat denied after a real login is redirected to its own institution, not the default", async () => {
       const otherInst = "0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d";
+      // LoginUser stores the token and individual_id before processLoginSuccess runs
+      setStorageItem("token", "t");
       setStorageItem("individual_id", INDIVIDUAL_ID);
       await processLoginSuccess({
         token: "t",

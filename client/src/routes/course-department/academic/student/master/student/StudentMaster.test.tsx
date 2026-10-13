@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from "vite-plus/test"
 import { render, screen, waitFor } from "@solidjs/testing-library";
 import { Router, Route } from "@solidjs/router";
 import CourseDepartmentStudentMasterPage from "./index";
-import CourseDepartmentStudentMasterShowPage from "./[id]/show";
+import CourseDepartmentStudentMasterShowPage from "./[id]/index";
 
 const mockUnits = [
   { id: "94a676ce-06e6-4fd5-88c2-3122533f9ccb", code: "IF", name: "Informatika" },
