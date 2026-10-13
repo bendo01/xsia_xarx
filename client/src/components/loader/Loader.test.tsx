@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
 import { render, screen, fireEvent } from "@solidjs/testing-library";
 import { Spinner } from "./Spinner";
 import { Loader } from "./Loader";
@@ -46,13 +46,7 @@ describe("Loader Component Suite (White-Box Component Tests)", () => {
     });
 
     it("renders inline loader variant", () => {
-      render(() => (
-        <Loader
-          variant="inline"
-          message="Menyimpan..."
-          color="teal"
-        />
-      ));
+      render(() => <Loader variant="inline" message="Menyimpan..." color="teal" />);
 
       expect(screen.getByText("Menyimpan...")).toBeInTheDocument();
       const statusEl = screen.getByRole("status");
@@ -60,12 +54,7 @@ describe("Loader Component Suite (White-Box Component Tests)", () => {
     });
 
     it("renders overlay loader variant", () => {
-      render(() => (
-        <Loader
-          variant="overlay"
-          message="Memproses data..."
-        />
-      ));
+      render(() => <Loader variant="overlay" message="Memproses data..." />);
 
       expect(screen.getByText("Memproses data...")).toBeInTheDocument();
       const statusEl = screen.getByRole("status");
@@ -100,12 +89,7 @@ describe("Loader Component Suite (White-Box Component Tests)", () => {
 
     it("supports reset prop for ErrorBoundary compatibility", () => {
       const handleReset = vi.fn();
-      render(() => (
-        <ErrorFallback
-          error="String error format"
-          reset={handleReset}
-        />
-      ));
+      render(() => <ErrorFallback error="String error format" reset={handleReset} />);
 
       expect(screen.getByText("String error format")).toBeInTheDocument();
       const retryBtn = screen.getByRole("button", { name: /Coba Muat Ulang/i });
@@ -114,13 +98,7 @@ describe("Loader Component Suite (White-Box Component Tests)", () => {
     });
 
     it("renders banner variant for inline errors", () => {
-      render(() => (
-        <ErrorFallback
-          variant="banner"
-          title="Error"
-          error="Network timeout"
-        />
-      ));
+      render(() => <ErrorFallback variant="banner" title="Error" error="Network timeout" />);
 
       expect(screen.getByText(/Network timeout/)).toBeInTheDocument();
     });
@@ -140,11 +118,7 @@ describe("Loader Component Suite (White-Box Component Tests)", () => {
 
     it("renders error state when error is present", () => {
       render(() => (
-        <DataLoader
-          loading={false}
-          error="Gagal mengambil data"
-          errorTitle="Gagal"
-        >
+        <DataLoader loading={false} error="Gagal mengambil data" errorTitle="Gagal">
           <div>Konten Utama</div>
         </DataLoader>
       ));

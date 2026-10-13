@@ -1,8 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
-import { defineConfig, type Plugin } from "vite";
 import { solidStart } from "@solidjs/start/config";
 import tailwindcss from "@tailwindcss/vite";
+import solidPlugin from "vite-plugin-solid";
+import { defineConfig, lazyPlugins, type Plugin } from "vite-plus";
 
 function syncInstitutionAssets() {
   const publicLogoDir = path.resolve(import.meta.dirname, "public/img/logo");
@@ -64,20 +65,77 @@ function institutionAssetsPlugin(): Plugin {
   };
 }
 
-export default defineConfig({
-  envPrefix: ['VITE_', 'CURRENT_'],
-  plugins: [
-    institutionAssetsPlugin(),
-    solidStart({ devOverlay: false }),
-    tailwindcss(),
-  ],
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://127.0.0.1:5800',
-        changeOrigin: true,
+export default defineConfig(({ mode }) => {
+  // Vitest (`vp test`) loads this config in "test" mode: render components with plain
+  // vite-plugin-solid in jsdom instead of the SolidStart SSR/app pipeline.
+  const isTest = mode === "test";
+  const solidDist = (subpath: string) =>
+    path.resolve(import.meta.dirname, "node_modules/solid-js", subpath, "dist/dev.js");
+
+  return {
+    fmt: {},
+    lint: {
+      jsPlugins: [
+        "@shadcn/lint",
+        {
+          name: "vite-plus",
+          specifier: "vite-plus/oxlint-plugin",
+        },
+      ],
+      settings: {
+        shadcn: {
+          ui: "~/components",
+        },
+      },
+      options: {
+        typeAware: true,
+        typeCheck: true,
+      },
+      rules: {
+        "vite-plus/prefer-vite-plus-imports": "error",
       },
     },
-  },
+    test: {
+      // Vitest v4 compatibility: preserve mock call history.
+      // Remove after tests no longer rely on calls from setup or earlier tests.
+      // https://viteplus.dev/guide/vitest-v5#remove-unneeded-compatibility-settings
+      // https://vitest.dev/guide/migration/#clearmocks-is-enabled-by-default
+      clearMocks: false,
+      environment: "jsdom",
+      globals: true,
+      setupFiles: ["./vitest.setup.ts"],
+      include: ["src/**/*.{test,spec}.{ts,tsx}"],
+      exclude: ["tests/e2e/**", "node_modules/**"],
+      server: {
+        deps: {
+          inline: [/solid-js/, /@solidjs\/.*/, /solid-transition-group/],
+        },
+      },
+    },
+    envPrefix: ["VITE_", "CURRENT_"],
+    plugins: lazyPlugins(() =>
+      isTest
+        ? [solidPlugin()]
+        : [institutionAssetsPlugin(), solidStart({ devOverlay: false }), tailwindcss()],
+    ),
+    resolve: isTest
+      ? {
+          conditions: ["development", "browser"],
+          alias: {
+            "~": path.resolve(import.meta.dirname, "src"),
+            "solid-js/web": solidDist("web"),
+            "solid-js/store": solidDist("store"),
+            "solid-js": solidDist("."),
+          },
+        }
+      : undefined,
+    server: {
+      proxy: {
+        "/api": {
+          target: "http://127.0.0.1:5800",
+          changeOrigin: true,
+        },
+      },
+    },
+  };
 });
-

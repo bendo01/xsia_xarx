@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach } from "vite-plus/test";
 import { render, screen, fireEvent } from "@solidjs/testing-library";
 import { Router, Route } from "@solidjs/router";
 import TopBar from "./TopBar";
@@ -95,7 +95,11 @@ describe("TopBar Navigation Component (White-Box Component Tests)", () => {
     };
     const roles = [
       { id: "r-1", name: "Fakultas", institution_name: "UNIVERSITAS PANCASAKTI" },
-      { id: "r-2", name: "Rektorat", institution_name: "Institut Teknologi dan Kesehatan Tri Tunas Nasional" },
+      {
+        id: "r-2",
+        name: "Rektorat",
+        institution_name: "Institut Teknologi dan Kesehatan Tri Tunas Nasional",
+      },
     ];
 
     setStorageItem("token", "mock-valid-jwt-token");
@@ -113,7 +117,9 @@ describe("TopBar Navigation Component (White-Box Component Tests)", () => {
     expect(screen.getAllByText("Fakultas").length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText("UNIVERSITAS PANCASAKTI").length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText("Rektorat").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText("Institut Teknologi dan Kesehatan Tri Tunas Nasional").length).toBeGreaterThanOrEqual(1);
+    expect(
+      screen.getAllByText("Institut Teknologi dan Kesehatan Tri Tunas Nasional").length,
+    ).toBeGreaterThanOrEqual(1);
   });
 
   it("updates active institution name on TopBar when user changes role", async () => {
@@ -124,8 +130,18 @@ describe("TopBar Navigation Component (White-Box Component Tests)", () => {
       email: "prof@xsia.edu",
     };
     const roles = [
-      { id: "r-101", name: "Fakultas", institution_id: "inst-1", institution_name: "UNIVERSITAS PANCASAKTI" },
-      { id: "r-102", name: "Rektorat", institution_id: "inst-2", institution_name: "Institut Teknologi dan Kesehatan Tri Tunas Nasional" },
+      {
+        id: "r-101",
+        name: "Fakultas",
+        institution_id: "inst-1",
+        institution_name: "UNIVERSITAS PANCASAKTI",
+      },
+      {
+        id: "r-102",
+        name: "Rektorat",
+        institution_id: "inst-2",
+        institution_name: "Institut Teknologi dan Kesehatan Tri Tunas Nasional",
+      },
     ];
 
     setStorageItem("token", "mock-valid-jwt-token");
@@ -151,6 +167,8 @@ describe("TopBar Navigation Component (White-Box Component Tests)", () => {
     fireEvent.click(rektoratBtn!);
 
     // Active institution should now reflect Rektorat's institution
-    expect(screen.getAllByText("Institut Teknologi dan Kesehatan Tri Tunas Nasional").length).toBeGreaterThanOrEqual(1);
+    expect(
+      screen.getAllByText("Institut Teknologi dan Kesehatan Tri Tunas Nasional").length,
+    ).toBeGreaterThanOrEqual(1);
   });
 });

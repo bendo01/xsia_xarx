@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach } from "vite-plus/test";
 import { render, screen } from "@solidjs/testing-library";
 import { Toaster, toast } from "./Toaster";
 
