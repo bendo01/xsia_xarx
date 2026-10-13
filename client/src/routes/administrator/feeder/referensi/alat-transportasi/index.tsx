@@ -694,7 +694,7 @@ export default function FeederReferensiAlatTransportasiPage() {
                         </div>
                     </div>
 
-                    <p class="text-sm text-neutral-600 dark:text-neutral-300 bg-neutral-50 dark:bg-neutral-800/60 p-3 rounded-xs border border-neutral-200 dark:border-neutral-700 mb-4 font-mono text-xs">
+                    <p class="text-sm text-neutral-600 dark:text-neutral-300 bg-neutral-50 dark:bg-neutral-800/60 p-3 rounded-xs border border-neutral-200 dark:border-neutral-700 mb-4 font-mono">
                         {selectedItem()?.nama_alat_transportasi}
                     </p>
 

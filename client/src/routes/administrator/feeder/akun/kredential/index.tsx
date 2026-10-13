@@ -26,7 +26,7 @@ export default function FeederAkunKredentialPage() {
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-neutral-800 rounded-xs p-10 border border-neutral-200 dark:border-neutral-700 shadow-2xs flex flex-col items-center justify-center text-center min-h-[320px]">
+                <div class="bg-white dark:bg-neutral-800 rounded-xs p-10 border border-neutral-200 dark:border-neutral-700 shadow-2xs flex flex-col items-center justify-center text-center min-h-80">
                     <div class="size-14 rounded-xs bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/80 flex items-center justify-center text-blue-600 dark:text-blue-400 mb-4 shadow-xs">
                         <svg class="size-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect width="18" height="18" x="3" y="3" rx="2" />
