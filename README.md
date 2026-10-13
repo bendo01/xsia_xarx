@@ -31,6 +31,7 @@
   - [1. Backend Testing (`server/`)](#1-backend-testing-server)
   - [2. Frontend Testing (`client/`)](#2-frontend-testing-client)
   - [3. Frontend Production Build (`client/`)](#3-frontend-production-build-client)
+- [Production Deployment (Rocky Linux 10)](DEPLOYMENT.md)
 - [License](#-license)
 
 ---
@@ -1045,6 +1046,12 @@ SELECT pgmq.create('healthcheck'); SELECT pgmq.drop_queue('healthcheck');
 ```
 
 > ⚠️ **PGMQ fallback:** On startup the server calls `PGMQueueExt::init()`. If the `pgmq` extension is unavailable, it falls back to installing the PGMQ schema from embedded SQL (`install-sql-embedded` feature). Installing the native extension is still recommended for production.
+
+---
+
+## 🚀 Production Deployment
+
+See **[DEPLOYMENT.md](DEPLOYMENT.md)** for a step-by-step guide to launching on a Rocky Linux 10 server (PostgreSQL 18 + extensions, systemd services, Ferron with automatic Let's Encrypt, SELinux/firewalld, redeploy and backup scripts).
 
 ---
 
