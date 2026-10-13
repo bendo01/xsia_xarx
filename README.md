@@ -31,6 +31,7 @@
   - [1. Backend Testing (`server/`)](#1-backend-testing-server)
   - [2. Frontend Testing (`client/`)](#2-frontend-testing-client)
   - [3. Frontend Production Build (`client/`)](#3-frontend-production-build-client)
+- [Python Tools (autocrop & docling)](#-python-tools-autocrop--docling)
 - [Production Deployment (Rocky Linux 10)](DEPLOYMENT.md)
 - [License](#-license)
 
@@ -105,7 +106,7 @@ xsia_xarx/
 | :--- | :--- | :--- |
 | **Language & Runtime** | [Rust](https://www.rust-lang.org/) (2024 Edition) | Multi-threaded async engine on [Tokio](https://tokio.rs/) v1.45 |
 | **Web Framework** | [Salvo](https://salvo.rs/) (v0.95) | HTTP/HTTPS server with OpenAPI & Swagger UI generation |
-| **Database & ORM** | [SeaORM](https://www.sea-ql.org/SeaORM/) (v2.0) | PostgreSQL, RBAC, Schema Sync, `pgvector` |
+| **Database & ORM** | [SeaORM](https://www.sea-ql.org/SeaORM/) (v2.0) | PostgreSQL 18, RBAC, Schema Sync, `pgvector` |
 | **Task Queue & Scheduler** | [PGMQ](https://github.com/pgmq/pgmq) | Native PostgreSQL-backed background job queue & workers |
 | **Security & Auth** | JWT, Argon2, Bcrypt | Token signing, verification, secure password hashing |
 | **AI / Machine Learning** | Rig-core, Candle, Burn, `text-splitter` | Vector search, embeddings, model inferencing |
@@ -131,7 +132,7 @@ Before starting, ensure you have the following installed on your machine:
 
 - **Rust**: Version `1.97.1+` (or latest stable supporting edition 2024)
 - **Node.js**: `v24+` and **pnpm** (or `npm`/`yarn`/`bun`)
-- **PostgreSQL**: `v15+` with `pg_uuidv7`, `pgvector`, and `pgmq` extensions (see [Database Requirement](#4-database-requirement))
+- **PostgreSQL**: `v18` with `pg_uuidv7`, `pgvector`, and `pgmq` extensions (see [Database Requirement](#4-database-requirement))
 - **Redis**: `v7+` for background job execution
 - **SeaORM CLI**: Installed via Cargo:
 
@@ -144,6 +145,8 @@ Before starting, ensure you have the following installed on your machine:
   ```bash
   cargo install cargo-nextest --locked
   ```
+
+- **uv** + **autocrop** + **docling**: Python CLI tools for face-cropping photos and converting documents (see [Python Tools](#-python-tools-autocrop--docling))
 
 ---
 
@@ -983,7 +986,7 @@ bun run preview
 
 ### 4. Database Requirement
 
-The backend requires **PostgreSQL `v15+`** with these extensions installed on the server and enabled in **both** the main and test databases (`xsia_xarx`, `xsia_xarx_test`):
+The backend requires **PostgreSQL `v18`** with these extensions installed on the server and enabled in **both** the main and test databases (`xsia_xarx`, `xsia_xarx_test`):
 
 | Extension | `CREATE EXTENSION` name | Repository | Purpose |
 | :--- | :--- | :--- | :--- |
@@ -993,7 +996,9 @@ The backend requires **PostgreSQL `v15+`** with these extensions installed on th
 
 #### A. Install the Extensions (build from source)
 
-Make sure the PostgreSQL server development headers are installed first (e.g. `postgresql-server-dev-<version>` on Debian/Ubuntu, `postgresql<version>-devel` on Fedora/RHEL) and that `pg_config` is on your `PATH`.
+> ℹ️ PostgreSQL 18 has a built-in `uuidv7()` function, but the migrations call `uuid_generate_v7()`, so the **`pg_uuidv7` extension is still required**.
+
+Make sure the PostgreSQL server development headers are installed first (e.g. `postgresql-server-dev-18` on Debian/Ubuntu, `postgresql18-devel` on Fedora/RHEL/Rocky) and that PostgreSQL 18's `pg_config` is on your `PATH` (PGDG on RHEL/Rocky: `export PATH=/usr/pgsql-18/bin:$PATH`). Extensions built against another major version won't load in PostgreSQL 18.
 
 ```bash
 # 1. pg_uuidv7
@@ -1009,7 +1014,7 @@ git clone https://github.com/pgmq/pgmq.git
 cd pgmq/pgmq-extension && make && sudo make install && cd ../..
 ```
 
-> 💡 Prebuilt packages are also available for some platforms (e.g. `postgresql-<version>-pgvector` via the PGDG apt/yum repositories, or the `pg_uuidv7` release tarballs on GitHub). Check each repository's README for your OS.
+> 💡 Prebuilt packages are also available for some platforms (e.g. `postgresql-18-pgvector` on Debian/Ubuntu or `pgvector_18` on RHEL/Rocky via the PGDG repositories, or the `pg_uuidv7` release tarballs on GitHub). Check each repository's README for your OS.
 
 #### B. Enable the Extensions
 
@@ -1046,6 +1051,90 @@ SELECT pgmq.create('healthcheck'); SELECT pgmq.drop_queue('healthcheck');
 ```
 
 > ⚠️ **PGMQ fallback:** On startup the server calls `PGMQueueExt::init()`. If the `pgmq` extension is unavailable, it falls back to installing the PGMQ schema from embedded SQL (`install-sql-embedded` feature). Installing the native extension is still recommended for production.
+
+---
+
+## 🐍 Python Tools (autocrop & docling)
+
+Two Python command-line tools are installed with [uv](https://docs.astral.sh/uv/). Each one gets its own isolated virtual environment, so they don't touch the system Python.
+
+| Tool | Repository | Purpose |
+| :--- | :--- | :--- |
+| **autocrop** | [leblancfg/autocrop](https://github.com/leblancfg/autocrop) | Detects faces (OpenCV YuNet, bundled offline model) and crops/resizes photos, e.g. student and staff profile pictures |
+| **docling** | [docling-project/docling](https://github.com/docling-project/docling) | Converts PDF, DOCX, PPTX, XLSX, HTML and images (with OCR) to Markdown / JSON, e.g. for the `pgvector` embedding pipeline |
+
+Both need **Python 3.10+**. uv downloads a suitable Python automatically if the system doesn't have one.
+
+### 1. Install uv
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+# then open a new shell, or: source $HOME/.local/bin/env
+
+uv --version
+```
+
+### 2. Install autocrop
+
+```bash
+uv tool install autocrop
+
+autocrop --version
+```
+
+Usage:
+
+```bash
+# Crop to the default 500×500 px around the face
+autocrop portrait.jpg -o cropped.jpg
+
+# Custom size, with the face filling 50% of the image height
+autocrop portrait.jpg -o cropped.jpg -w 400 -H 600 --facePercent 50
+
+# Crop around the face but keep the original resolution
+autocrop portrait.jpg --no-resize > cropped.jpg
+```
+
+### 3. Install docling
+
+```bash
+# CPU-only (recommended for servers without an NVIDIA GPU, a much smaller download than CUDA PyTorch)
+uv tool install docling \
+  --extra-index-url https://download.pytorch.org/whl/cpu \
+  --index-strategy unsafe-best-match
+
+# With an NVIDIA GPU (CUDA PyTorch from PyPI)
+# uv tool install docling
+
+docling --version
+```
+
+Download the layout/OCR models ahead of time, so the first conversion doesn't stall and offline servers work:
+
+```bash
+docling-tools models download
+```
+
+Usage:
+
+```bash
+# Convert a PDF (local path or URL) to Markdown in the current directory
+docling https://arxiv.org/pdf/2206.01062
+
+# Choose the output format and directory
+docling document.pdf --to md --output ./converted
+docling document.pdf --to json --output ./converted
+```
+
+### 4. Upgrade / uninstall
+
+```bash
+uv tool list                 # installed tools
+uv tool upgrade --all        # upgrade autocrop and docling
+uv tool uninstall autocrop docling
+```
+
+> 💡 **On the production server**, install the tools as the account that runs the API (e.g. `sudo -u xsia -H bash -c '…'`). The executables land in that user's `~/.local/bin`. That folder isn't on the systemd service's `PATH`, so call them by absolute path or add `Environment=PATH=…` to the unit.
 
 ---
 
