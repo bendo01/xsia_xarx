@@ -1,4 +1,10 @@
-import { describe, it, expect, beforeEach } from "vite-plus/test";
+import { describe, it, expect, beforeEach, vi } from "vite-plus/test";
+
+// Keep institution lookups off the network; unit tests must not hit the real API.
+vi.mock("../controllers/master/masterApiController", () => ({
+  masterApiShow: vi.fn(async () => ({ data: null })),
+}));
+
 import {
   normalizeRoleName,
   getRoleDisplayName,

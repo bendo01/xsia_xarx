@@ -69,3 +69,12 @@ if (typeof window !== "undefined") {
     });
   } catch {}
 }
+
+// jsdom logs "Not implemented" for these APIs. Stub them with the same
+// return values jsdom produces so behavior is unchanged, minus the noise.
+if (typeof window !== "undefined") {
+  window.scrollTo = (() => {}) as typeof window.scrollTo;
+  window.open = (() => null) as typeof window.open;
+  HTMLCanvasElement.prototype.getContext = (() =>
+    null) as unknown as typeof HTMLCanvasElement.prototype.getContext;
+}
