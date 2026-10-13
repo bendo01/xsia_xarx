@@ -11,9 +11,9 @@ pub mod institution;
 pub mod literate;
 pub mod location;
 pub mod person;
+pub mod preference;
 
 use sea_orm_migration::prelude::*;
-
 
 pub struct Migrator;
 
