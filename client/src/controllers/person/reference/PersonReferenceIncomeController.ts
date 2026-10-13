@@ -29,7 +29,7 @@ export async function PersonReferenceControllerIncomeIndex(pagination: TypePagin
         if (pagination.per_page) queryParams.set("page_size", String(pagination.per_page));
         if (pagination.search) queryParams.set("name", pagination.search);
         if (pagination.name) queryParams.set("name", pagination.name);
-        if (pagination.code !== undefined && pagination.code !== null && !isNaN(pagination.code)) {
+        if (pagination.code !== undefined && pagination.code !== null && !isNaN(Number(pagination.code))) {
             queryParams.set("code", String(pagination.code));
         }
 

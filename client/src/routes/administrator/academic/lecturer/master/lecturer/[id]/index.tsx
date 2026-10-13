@@ -22,8 +22,6 @@ export default function AcademicLecturerMasterLecturerDetailPage() {
             const apiRes = await masterApiShow('academic/lecturer/master/lecturers', id);
             if (apiRes.data) {
                 setRecord(apiRes.data);
-            } else if (apiRes && !apiRes.is_error && apiRes.id) {
-                setRecord(apiRes);
             } else {
                 setRecord(null);
                 toast.danger('Lecturer record not found.');

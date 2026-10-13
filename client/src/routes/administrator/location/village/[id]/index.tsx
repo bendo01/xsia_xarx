@@ -22,8 +22,6 @@ export default function LocationVillageDetailPage() {
             const apiRes = await masterApiShow('villages', id);
             if (apiRes.data) {
                 setRecord(apiRes.data);
-            } else if (apiRes && !apiRes.is_error && apiRes.id) {
-                setRecord(apiRes);
             } else {
                 setRecord(null);
                 toast.danger('Village record not found.');

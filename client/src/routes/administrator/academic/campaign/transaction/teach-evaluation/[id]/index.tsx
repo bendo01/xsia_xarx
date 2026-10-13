@@ -28,8 +28,6 @@ export default function AcademicCampaignTransactionTeachEvaluationDetailPage() {
                 const apiRes = await masterApiShow('academic/campaign/transaction/teach-evaluations', id);
                 if (apiRes && apiRes.data) {
                     res = apiRes.data;
-                } else if (apiRes && !apiRes.is_error && apiRes.id) {
-                    res = apiRes;
                 }
             }
             if (res) {

@@ -107,7 +107,7 @@ export default function CandidateDashboardPage() {
         setIsLoading(true);
         setLoadError(null);
         const result = await admissionStatus(id);
-        if (result.ok && result.data) {
+        if (result.ok && result.data?.candidate) {
             applyStatus(result.data);
         } else {
             setLoadError(result.message || 'Gagal memuat data pendaftaran');
@@ -120,7 +120,7 @@ export default function CandidateDashboardPage() {
         setBusy(key);
         try {
             const result = await action();
-            if (result.ok && result.data) {
+            if (result.ok && result.data?.candidate) {
                 applyStatus(result.data);
                 toast.success(successMessage);
                 return true;

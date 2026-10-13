@@ -11,7 +11,11 @@ test.describe("Home Route (Black-Box E2E Tests)", () => {
     await expect(page).toHaveURL("/");
     await expect(page.locator("h1").first()).toBeVisible();
 
-    const sessionLink = page.locator('a[href="/authentification/login_with_session"]').first();
+    // The guest sidebar drawer holds a hidden copy of this link; use a visible one (hero CTA)
+    const sessionLink = page
+      .locator('a[href="/authentification/login_with_session"]')
+      .filter({ visible: true })
+      .first();
     await expect(sessionLink).toBeVisible();
     await sessionLink.click();
     await expect(page).toHaveURL("/authentification/login_with_session");

@@ -22,8 +22,6 @@ export default function AcademicCandidateMasterCandidateDetailPage() {
             const apiRes = await masterApiShow('academic/candidate/master/candidates', id);
             if (apiRes.data) {
                 setRecord(apiRes.data);
-            } else if (apiRes && !apiRes.is_error && apiRes.id) {
-                setRecord(apiRes);
             } else {
                 setRecord(null);
                 toast.danger('Candidate record not found.');

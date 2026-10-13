@@ -22,8 +22,6 @@ export default function LocationProvinceDetailPage() {
             const apiRes = await masterApiShow('provinces', id);
             if (apiRes.data) {
                 setRecord(apiRes.data);
-            } else if (apiRes && !apiRes.is_error && apiRes.id) {
-                setRecord(apiRes);
             } else {
                 setRecord(null);
                 toast.danger('Province record not found.');

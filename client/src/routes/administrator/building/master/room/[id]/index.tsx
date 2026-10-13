@@ -22,8 +22,6 @@ export default function BuildingMasterRoomDetailPage() {
             const apiRes = await masterApiShow('building/master/rooms', id);
             if (apiRes.data) {
                 setRecord(apiRes.data);
-            } else if (apiRes && !apiRes.is_error && apiRes.id) {
-                setRecord(apiRes);
             } else {
                 setRecord(null);
                 toast.danger('Room record not found.');

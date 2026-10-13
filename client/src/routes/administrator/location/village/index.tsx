@@ -170,10 +170,10 @@ export default function LocationVillagePage() {
     const loadOptions = async () => {
         try {
             const [subRes, regRes, provRes, countryRes] = await Promise.all([
-                LocationSubDistrictControllerIndex({ per_page: 1000 }),
-                LocationRegencyControllerIndex({ per_page: 1000 }),
-                LocationProvinceControllerIndex({ per_page: 1000 }),
-                LocationCountryControllerIndex({ per_page: 1000 }),
+                LocationSubDistrictControllerIndex({ page: 1, per_page: 1000 }),
+                LocationRegencyControllerIndex({ page: 1, per_page: 1000 }),
+                LocationProvinceControllerIndex({ page: 1, per_page: 1000 }),
+                LocationCountryControllerIndex({ page: 1, per_page: 1000 }),
             ]);
 
             if (subRes && subRes.data) {

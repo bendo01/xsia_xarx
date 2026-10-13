@@ -36,15 +36,22 @@ export default function LocationSubDistrictCreatePage() {
             toast.warning('Sub-district name is required');
             return;
         }
+        if (!code().trim()) {
+            toast.warning('Sub-district code is required');
+            return;
+        }
+        if (!regencyId()) {
+            toast.warning('Regency is required');
+            return;
+        }
 
         setIsSubmitting(true);
         try {
             const res = await LocationSubDistrictControllerUpsert({
-                code: code().trim() || null,
+                code: code().trim(),
                 name: name().trim(),
-                regency_id: regencyId() || null,
+                regency_id: regencyId(),
                 dikti_code: diktiCode().trim() || null,
-                epsbed_code: epsbedCode().trim() || null,
                 description: description().trim() || null,
             });
 

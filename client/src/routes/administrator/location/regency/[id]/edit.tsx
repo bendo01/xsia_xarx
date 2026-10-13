@@ -78,6 +78,14 @@ export default function LocationRegencyEditPage() {
             toast.warning('Regency name is required');
             return;
         }
+        if (!provinceId()) {
+            toast.warning('Province is required');
+            return;
+        }
+        if (!regencyTypeId()) {
+            toast.warning('Regency type is required');
+            return;
+        }
 
         setIsSubmitting(true);
         try {
@@ -85,8 +93,8 @@ export default function LocationRegencyEditPage() {
                 id: id(),
                 code: code().trim() || null,
                 name: name().trim(),
-                province_id: provinceId() || null,
-                regency_type_id: regencyTypeId() || null,
+                province_id: provinceId(),
+                regency_type_id: regencyTypeId(),
                 dikti_code: diktiCode().trim() || null,
                 epsbed_code: epsbedCode().trim() || null,
                 description: description().trim() || null,

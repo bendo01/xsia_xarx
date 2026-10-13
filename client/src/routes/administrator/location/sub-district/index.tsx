@@ -145,9 +145,9 @@ export default function LocationSubDistrictPage() {
     const loadOptions = async () => {
         try {
             const [regRes, provRes, countryRes] = await Promise.all([
-                LocationRegencyControllerIndex({ per_page: 1000 }),
-                LocationProvinceControllerIndex({ per_page: 1000 }),
-                LocationCountryControllerIndex({ per_page: 1000 }),
+                LocationRegencyControllerIndex({ page: 1, per_page: 1000 }),
+                LocationProvinceControllerIndex({ page: 1, per_page: 1000 }),
+                LocationCountryControllerIndex({ page: 1, per_page: 1000 }),
             ]);
 
             if (regRes && regRes.data) {

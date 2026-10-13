@@ -22,8 +22,6 @@ export default function InstitutionMasterStaffDetailPage() {
             const apiRes = await masterApiShow('institution/master/staffs', id);
             if (apiRes.data) {
                 setRecord(apiRes.data);
-            } else if (apiRes && !apiRes.is_error && apiRes.id) {
-                setRecord(apiRes);
             } else {
                 setRecord(null);
                 toast.danger('Staff record not found.');

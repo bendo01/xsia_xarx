@@ -126,9 +126,9 @@ export default function LocationRegencyPage() {
     const loadOptions = async () => {
         try {
             const [provRes, typeRes, countryRes] = await Promise.all([
-                LocationProvinceControllerIndex({ per_page: 1000 }),
+                LocationProvinceControllerIndex({ page: 1, per_page: 1000 }),
                 LocationRegencyTypeControllerList(),
-                LocationCountryControllerIndex({ per_page: 1000 }),
+                LocationCountryControllerIndex({ page: 1, per_page: 1000 }),
             ]);
 
             if (provRes && provRes.data) {

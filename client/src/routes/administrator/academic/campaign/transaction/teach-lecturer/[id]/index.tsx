@@ -42,8 +42,6 @@ export default function AcademicCampaignTransactionTeachLecturerDetailPage() {
             const apiRes = await masterApiShow('academic/campaign/transaction/teach-lecturers', id);
             if (apiRes && apiRes.data) {
                 setRecord(apiRes.data);
-            } else if (apiRes && !apiRes.is_error && apiRes.id) {
-                setRecord(apiRes);
             } else {
                 setRecord(null);
                 toast.danger('Teach lecturer record not found.');

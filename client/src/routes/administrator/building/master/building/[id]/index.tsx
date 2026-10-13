@@ -22,8 +22,6 @@ export default function BuildingMasterBuildingDetailPage() {
             const apiRes = await masterApiShow('building/master/buildings', id);
             if (apiRes.data) {
                 setRecord(apiRes.data);
-            } else if (apiRes && !apiRes.is_error && apiRes.id) {
-                setRecord(apiRes);
             } else {
                 setRecord(null);
                 toast.danger('Building record not found.');

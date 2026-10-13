@@ -22,8 +22,6 @@ export default function AcademicCourseMasterCourseDetailPage() {
             const apiRes = await masterApiShow('academic/course/master/courses', id);
             if (apiRes.data) {
                 setRecord(apiRes.data);
-            } else if (apiRes && !apiRes.is_error && apiRes.id) {
-                setRecord(apiRes);
             } else {
                 setRecord(null);
                 toast.danger('Course record not found.');

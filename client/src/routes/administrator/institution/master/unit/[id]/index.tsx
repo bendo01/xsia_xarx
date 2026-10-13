@@ -22,8 +22,6 @@ export default function InstitutionMasterUnitDetailPage() {
             const apiRes = await masterApiShow('institution/master/units', id);
             if (apiRes.data) {
                 setRecord(apiRes.data);
-            } else if (apiRes && !apiRes.is_error && apiRes.id) {
-                setRecord(apiRes);
             } else {
                 setRecord(null);
                 toast.danger('Unit record not found.');

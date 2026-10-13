@@ -233,7 +233,7 @@ export default function LecturerIndividualShowPage() {
         if (!item) return user()?.name || 'Faculty Lecturer';
         const front = item.front_title ? item.front_title.trim() : '';
         const last = item.last_title ? item.last_title.trim() : '';
-        const baseName = item.name.trim();
+        const baseName = (item.name ?? '').trim();
 
         if (front && last) return `${front} ${baseName}, ${last}`;
         if (front) return `${front} ${baseName}`;

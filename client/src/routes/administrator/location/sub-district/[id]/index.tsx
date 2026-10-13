@@ -22,8 +22,6 @@ export default function LocationSubDistrictDetailPage() {
             const apiRes = await masterApiShow('sub_districts', id);
             if (apiRes.data) {
                 setRecord(apiRes.data);
-            } else if (apiRes && !apiRes.is_error && apiRes.id) {
-                setRecord(apiRes);
             } else {
                 setRecord(null);
                 toast.danger('Sub-district record not found.');

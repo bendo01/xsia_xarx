@@ -22,8 +22,6 @@ export default function AcademicCandidateMasterExamClassDetailPage() {
             const apiRes = await masterApiShow('academic/candidate/master/exam-classes', id);
             if (apiRes.data) {
                 setRecord(apiRes.data);
-            } else if (apiRes && !apiRes.is_error && apiRes.id) {
-                setRecord(apiRes);
             } else {
                 setRecord(null);
                 toast.danger('Exam class record not found.');

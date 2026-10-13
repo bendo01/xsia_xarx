@@ -3,6 +3,7 @@ import { FileRoutes } from "@solidjs/start/router";
 import { Suspense, onMount } from "solid-js";
 import { Toaster } from "./components/toast/Toaster";
 import { refreshAuthState } from "./lib/authStore";
+import { syncLocaleFromClient } from "./i18n";
 import RouteGuard from "./components/auth/RouteGuard";
 import "./app.css";
 
@@ -11,6 +12,7 @@ export default function App() {
     <Router
       root={props => {
         onMount(() => {
+          syncLocaleFromClient();
           refreshAuthState();
         });
 

@@ -36,8 +36,17 @@ export function detectInitialLocale(): Locale {
     return 'id'; // Default to Indonesian
 }
 
-// Global reactive locale signal
-export const [currentLocale, setCurrentLocaleSignal] = createSignal<Locale>(detectInitialLocale());
+// Global reactive locale signal. Starts at the default so the client's first
+// render matches the server HTML; `syncLocaleFromClient` applies the stored
+// preference once hydration is done (hydration keeps server-rendered text).
+export const [currentLocale, setCurrentLocaleSignal] = createSignal<Locale>('id');
+
+/**
+ * Apply the stored/browser locale on the client. Call from `onMount`.
+ */
+export function syncLocaleFromClient(): void {
+    setCurrentLocaleSignal(detectInitialLocale());
+}
 
 /**
  * Get current active locale

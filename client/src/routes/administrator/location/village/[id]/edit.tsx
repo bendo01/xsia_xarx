@@ -75,18 +75,23 @@ export default function LocationVillageEditPage() {
             toast.warning('Village name is required');
             return;
         }
+        if (!code().trim()) {
+            toast.warning('Village code is required');
+            return;
+        }
+        if (!subDistrictId()) {
+            toast.warning('Sub-district is required');
+            return;
+        }
 
         setIsSubmitting(true);
         try {
             const res = await LocationVillageControllerUpsert({
                 id: id(),
-                code: code().trim() || null,
+                code: code().trim(),
                 name: name().trim(),
-                sub_district_id: subDistrictId() || null,
-                postal_code: postalCode().trim() || null,
+                sub_district_id: subDistrictId(),
                 dikti_code: diktiCode().trim() || null,
-                epsbed_code: epsbedCode().trim() || null,
-                description: description().trim() || null,
             });
 
             if (!res.is_error) {
