@@ -159,6 +159,17 @@ export default function RectoratStaffEdit() {
         }
     });
 
+    // The backend renames, moves or revokes the account's staff role to match the position type
+    const roleChangeNotice = () => {
+        const original = staff()?.position_type_id ?? '';
+        if (positionTypeId() === original) return '';
+        if (!positionTypeId()) return 'Jenis jabatan dikosongkan: peran akun pegawai untuk jabatan ini akan dicabut.';
+        const target = positionTypes().find((p) => p.id === positionTypeId())?.name ?? 'jenis jabatan baru';
+        return original
+            ? `Peran akun pegawai akan diubah menjadi "${target}".`
+            : `Akun pegawai akan mendapat peran "${target}".`;
+    };
+
     const employeeLabel = () => {
         const emp = employee();
         const ind = emp?.individual;
@@ -272,6 +283,9 @@ export default function RectoratStaffEdit() {
                             </Field>
                             <Field label="Jenis Jabatan">
                                 <OptionSelect value={positionTypeId()} options={positionTypes()} placeholder="Pilih jenis jabatan" onChange={setPositionTypeId} />
+                                <Show when={roleChangeNotice()}>
+                                    <p class="mt-1.5 text-xs text-amber-700 dark:text-amber-400">{roleChangeNotice()}</p>
+                                </Show>
                             </Field>
                             <Field label="Kode Staf">
                                 <input id="staff-code" class={`${inputClass} font-mono`} value={code()} onInput={(e) => setCode(e.currentTarget.value)} />

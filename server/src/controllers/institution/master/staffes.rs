@@ -228,7 +228,7 @@ pub async fn update(
             active_model.start_date = Set(Some(start_date));
         }
     if let Some(end_date) = payload.end_date {
-            active_model.end_date = Set(Some(end_date));
+            active_model.end_date = Set(end_date);
         }
     if let Some(employee_id) = payload.employee_id {
             active_model.employee_id = Set(employee_id);
@@ -237,7 +237,7 @@ pub async fn update(
             active_model.unit_id = Set(unit_id);
         }
     if let Some(position_type_id) = payload.position_type_id {
-            active_model.position_type_id = Set(Some(position_type_id));
+            active_model.position_type_id = Set(position_type_id);
         }
     active_model.updated_at = Set(Some(now));
     active_model.updated_by = Set(auth_user_id(depot));

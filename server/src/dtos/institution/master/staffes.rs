@@ -90,10 +90,25 @@ pub struct UpdateStaffRequest {
     pub decree_number: Option<String>,
     pub decree_date: Option<NaiveDate>,
     pub start_date: Option<NaiveDate>,
-    pub end_date: Option<NaiveDate>,
+    /// Absent keeps the end date, `null` clears it (reopens the appointment)
+    #[serde(default, deserialize_with = "nullable")]
+    #[salvo(schema(value_type = Option<NaiveDate>))]
+    pub end_date: Option<Option<NaiveDate>>,
     pub employee_id: Option<Uuid>,
     pub unit_id: Option<Uuid>,
-    pub position_type_id: Option<Uuid>,
+    /// Absent keeps the position type, `null` clears it (revokes the staff role)
+    #[serde(default, deserialize_with = "nullable")]
+    #[salvo(schema(value_type = Option<Uuid>))]
+    pub position_type_id: Option<Option<Uuid>>,
+}
+
+/// Tells an explicit `null` (`Some(None)`) apart from an absent field (`None`, via `#[serde(default)]`)
+fn nullable<'de, D, T>(deserializer: D) -> Result<Option<Option<T>>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+    T: Deserialize<'de>,
+{
+    Option::<T>::deserialize(deserializer).map(Some)
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
@@ -110,4 +125,27 @@ pub struct StaffOptionRequest {
     pub search: Option<String>,
     pub unit_id: Option<Uuid>,
     pub employee_id: Option<Uuid>,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn update_request_tells_null_apart_from_absent() {
+        let absent: UpdateStaffRequest = serde_json::from_str("{}").unwrap();
+        assert_eq!(absent.position_type_id, None);
+        assert_eq!(absent.end_date, None);
+
+        let cleared: UpdateStaffRequest =
+            serde_json::from_str(r#"{"position_type_id": null, "end_date": null}"#).unwrap();
+        assert_eq!(cleared.position_type_id, Some(None));
+        assert_eq!(cleared.end_date, Some(None));
+
+        let id = Uuid::now_v7();
+        let set: UpdateStaffRequest =
+            serde_json::from_str(&format!(r#"{{"position_type_id": "{id}", "end_date": "2026-12-31"}}"#)).unwrap();
+        assert_eq!(set.position_type_id, Some(Some(id)));
+        assert_eq!(set.end_date, Some(NaiveDate::from_ymd_opt(2026, 12, 31)));
+    }
 }
