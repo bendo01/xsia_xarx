@@ -199,8 +199,9 @@ FEEDER_PASSWORD="feeder_password"
 FEEDER_URL="http://feeder.example.ac.id/ws/live2.php"
 IS_PRODUCTION_MIDTRANS_PAYMENT=false
 
-# Inbound Webhooks (shared secret for POST /api/v1/webhook/mail-in-a-box; empty disables it)
-MIAB_WEBHOOK_SECRET="generate-with-openssl-rand-hex-32"
+# Inbound Webhooks (shared secrets; an empty value disables that endpoint)
+MIAB_WEBHOOK_SECRET="generate-with-openssl-rand-hex-32"   # POST /api/v1/webhook/mail-in-a-box
+OPENWA_WEBHOOK_SECRET="generate-with-openssl-rand-hex-32" # POST /api/v1/webhook/openwa
 ```
 
 ### Client Environment (`client/.env`)
@@ -288,7 +289,7 @@ The backend provides interactive OpenAPI documentation out of the box:
 - `/api/v1/contact` — Addresses, telephone, email, and social networks
 - `/api/v1/document` — Document archives and attachments
 - `/api/v1/literate` — Library and literary catalogs
-- `/api/v1/webhook` — Inbound webhooks from other servers ([Mail-in-a-Box](#-inbound-webhooks)), authenticated by shared secret instead of JWT
+- `/api/v1/webhook` — Inbound webhooks from other servers ([Mail-in-a-Box and OpenWA](#-inbound-webhooks)), authenticated by shared secret instead of JWT
 
 ---
 
@@ -369,6 +370,40 @@ curl -fsS -X POST https://your-xsia-host/api/v1/webhook/mail-in-a-box \
   -H "X-Webhook-Signature: sha256=$SIG" \
   --data-raw "$BODY"
 ```
+
+### OpenWA
+
+`POST /api/v1/webhook/openwa` receives events from the [OpenWA](https://github.com/rmyndharis/OpenWA) WhatsApp gateway and stores each one in `webhook.open_wa_events` (migration `m20261014_140000_schema_webhook_table_open_wa_events`).
+
+**Authentication.** Set `OPENWA_WEBHOOK_SECRET` on the server (at least 16 characters, which OpenWA requires); while it is empty the endpoint answers `503`. Register the webhook in OpenWA with the same value as its `secret`. OpenWA then signs every delivery with `X-OpenWA-Signature: sha256=<hex HMAC-SHA256 of the raw body>`, and a missing or wrong signature returns `401`. A webhook registered in OpenWA without a secret is unsigned and is always rejected.
+
+**Payload.** OpenWA's standard envelope:
+
+```json
+{
+  "event": "message.received",
+  "timestamp": "2026-02-02T10:00:00.000Z",
+  "sessionId": "my-session",
+  "idempotencyKey": "msg_my-session_3EB0ABC123_f1e2d3c4-...",
+  "deliveryId": "dlv_550e8400-e29b-41d4-a716-446655440000",
+  "data": {}
+}
+```
+
+`event`, `sessionId` and `idempotencyKey` are required. OpenWA keeps the `idempotencyKey` the same across retries, so a repeated key returns `200` with `"duplicate": true` and is not stored again. The whole request body is stored in the `payload` column. `timestamp` is stored as `occurred_at` (UTC).
+
+**Responses.** `200 {"id": "<uuid>", "duplicate": false}` on success, `400` for invalid JSON or fields, `401` for a bad signature, `503` when no secret is configured. OpenWA retries any non-2xx response with exponential backoff (3 attempts by default).
+
+**Registering the webhook.** In the OpenWA dashboard, or through its API with the operator key:
+
+```bash
+curl -fsS -X POST "$OPENWA_URL/api/sessions/$OPENWA_API_KEY_SESSION_ID/webhooks" \
+  -H "X-API-Key: $OPENWA_API_KEY_OPERATOR" \
+  -H "Content-Type: application/json" \
+  -d '{"url":"https://your-xsia-host/api/v1/webhook/openwa","events":["message.received","message.ack","session.status"],"secret":"'"$OPENWA_WEBHOOK_SECRET"'"}'
+```
+
+`OpenWaSender::register_webhook` in `server/src/services/messenger/openwa.rs` makes the same call from Rust. Use OpenWA's "test webhook" action to confirm delivery: it sends a signed `test` event, which is stored like any other.
 
 ---
 

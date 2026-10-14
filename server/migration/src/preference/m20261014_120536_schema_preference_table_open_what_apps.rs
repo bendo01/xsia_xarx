@@ -39,6 +39,16 @@ impl MigrationTrait for Migration {
                             .not_null(),
                     )
                     .col(
+                        ColumnDef::new("miab_webhook_secret")
+                            .string_len(255)
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new("openwa_webhook_secret")
+                            .string_len(255)
+                            .not_null(),
+                    )
+                    .col(
                         ColumnDef::new("is_active")
                             .boolean()
                             .not_null()

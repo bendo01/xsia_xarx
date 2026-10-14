@@ -1,1 +1,2 @@
 pub mod m20261014_130000_schema_webhook_table_mail_in_a_box_events;
+pub mod m20261014_140000_schema_webhook_table_open_wa_events;

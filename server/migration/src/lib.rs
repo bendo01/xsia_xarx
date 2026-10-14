@@ -272,6 +272,7 @@ impl MigratorTrait for Migrator {
             Box::new(preference::m20261014_120536_schema_preference_table_open_what_apps::Migration),
             Box::new(preference::m20261014_120817_schema_preference_table_applications::Migration),
             Box::new(webhook::m20261014_130000_schema_webhook_table_mail_in_a_box_events::Migration),
+            Box::new(webhook::m20261014_140000_schema_webhook_table_open_wa_events::Migration),
         ]
     }
 }

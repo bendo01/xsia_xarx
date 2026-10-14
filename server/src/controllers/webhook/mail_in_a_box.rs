@@ -1,8 +1,4 @@
 use chrono::Utc;
-use openssl::hash::MessageDigest;
-use openssl::memcmp;
-use openssl::pkey::PKey;
-use openssl::sign::Signer;
 use salvo::prelude::*;
 use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set};
 use uuid::Uuid;
@@ -12,23 +8,13 @@ use crate::config::mail_in_a_box::MailInABoxConfig;
 use crate::dtos::webhook::mail_in_a_box::{MailInABoxEventPayload, MailInABoxWebhookResponse};
 use crate::models::webhook::mail_in_a_box_event as entity_mod;
 
+use super::signature::{constant_time_eq, verify_hmac};
+pub use super::signature::sign;
+
 /// Header carrying `sha256=<hex HMAC-SHA256 of the raw body, keyed with the shared secret>`
 pub const SIGNATURE_HEADER: &str = "x-webhook-signature";
 /// Header carrying the shared secret itself, for senders that cannot compute an HMAC
 pub const SECRET_HEADER: &str = "x-webhook-secret";
-
-/// Lowercase hex HMAC-SHA256 of `body` keyed with `secret`
-pub fn sign(secret: &str, body: &[u8]) -> Result<String, openssl::error::ErrorStack> {
-    let key = PKey::hmac(secret.as_bytes())?;
-    let mut signer = Signer::new(MessageDigest::sha256(), &key)?;
-    signer.update(body)?;
-    let mac = signer.sign_to_vec()?;
-    Ok(mac.iter().map(|b| format!("{b:02x}")).collect())
-}
-
-fn constant_time_eq(a: &[u8], b: &[u8]) -> bool {
-    a.len() == b.len() && memcmp::eq(a, b)
-}
 
 /// Check the request against the shared secret: an HMAC signature header wins over a plain secret header
 pub fn verify(secret: &str, signature: Option<&str>, plain_secret: Option<&str>, body: &[u8]) -> bool {
@@ -37,12 +23,7 @@ pub fn verify(secret: &str, signature: Option<&str>, plain_secret: Option<&str>,
     }
 
     if let Some(signature) = signature {
-        let given = signature.trim();
-        let given = given.strip_prefix("sha256=").unwrap_or(given).to_ascii_lowercase();
-        return match sign(secret, body) {
-            Ok(expected) => constant_time_eq(given.as_bytes(), expected.as_bytes()),
-            Err(_) => false,
-        };
+        return verify_hmac(secret, signature, body);
     }
 
     match plain_secret {

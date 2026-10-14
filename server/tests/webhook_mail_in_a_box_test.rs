@@ -5,6 +5,7 @@ use sea_orm::{DatabaseBackend, DatabaseConnection, MockDatabase};
 use serde_json::json;
 use uuid::Uuid;
 use xsia_xarx::config::mail_in_a_box::MailInABoxConfig;
+use xsia_xarx::config::openwa::OpenwaConfig;
 use xsia_xarx::controllers::webhook::{self, mail_in_a_box};
 use xsia_xarx::dtos::webhook::mail_in_a_box::MailInABoxWebhookResponse;
 use xsia_xarx::models::webhook::mail_in_a_box_event;
@@ -23,7 +24,10 @@ impl Handler for InjectDb {
 }
 
 fn service(secret: &str, db: DatabaseConnection) -> Service {
-    let router = webhook::router_with_config(MailInABoxConfig { webhook_secret: secret.to_string() });
+    let router = webhook::router_with_config(
+        MailInABoxConfig { webhook_secret: secret.to_string() },
+        OpenwaConfig::default(),
+    );
     Service::new(router).hoop(InjectDb(db))
 }
 
