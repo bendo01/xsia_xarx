@@ -12,3 +12,4 @@ pub mod literate;
 pub mod location;
 pub mod payment;
 pub mod person;
+pub mod webhook;

@@ -24,6 +24,7 @@
   - [2. Frontend Setup (`client/`)](#2-frontend-setup-client)
 - [API Documentation & Swagger UI](#-api-documentation--swagger-ui)
 - [Real-time Communication & WebSockets](#-real-time-communication--websockets)
+- [Inbound Webhooks](#-inbound-webhooks)
 - [Database Migrations & Entity Generation](#-database-migrations--entity-generation)
 - [Background Workers & Task Runner](#-background-workers--task-runner)
   - [PDDikti Feeder Synchronization Hierarchy](#3-pddikti-feeder-downstream-master-synchronization-hierarchy)
@@ -197,6 +198,9 @@ FEEDER_USERNAME="feeder_username"
 FEEDER_PASSWORD="feeder_password"
 FEEDER_URL="http://feeder.example.ac.id/ws/live2.php"
 IS_PRODUCTION_MIDTRANS_PAYMENT=false
+
+# Inbound Webhooks (shared secret for POST /api/v1/webhook/mail-in-a-box; empty disables it)
+MIAB_WEBHOOK_SECRET="generate-with-openssl-rand-hex-32"
 ```
 
 ### Client Environment (`client/.env`)
@@ -284,6 +288,7 @@ The backend provides interactive OpenAPI documentation out of the box:
 - `/api/v1/contact` — Addresses, telephone, email, and social networks
 - `/api/v1/document` — Document archives and attachments
 - `/api/v1/literate` — Library and literary catalogs
+- `/api/v1/webhook` — Inbound webhooks from other servers ([Mail-in-a-Box](#-inbound-webhooks)), authenticated by shared secret instead of JWT
 
 ---
 
@@ -313,6 +318,57 @@ In addition to the HTTP and WebSocket endpoints, `cargo run` automatically spawn
 - **Worker Runtime**: Tokio background task (`tokio::spawn(email_worker.run())`)
 - **Queue Storage**: Redis (`REDIS_URL="redis://127.0.0.1:6379"`)
 - **Responsibilities**: Consumes and processes queued tasks (such as transactional SMTP emails) asynchronously without blocking HTTP requests.
+
+---
+
+## 🪝 Inbound Webhooks
+
+### Mail-in-a-Box
+
+`POST /api/v1/webhook/mail-in-a-box` receives events from a Mail-in-a-Box server and stores each one in `webhook.mail_in_a_box_events` (migration `m20261014_130000_schema_webhook_table_mail_in_a_box_events`). Mail-in-a-Box has no built-in webhook sender, so events are posted by a script on the box (a cron job, a Postfix/Dovecot hook, or a wrapper around the status checks).
+
+**Authentication.** Set `MIAB_WEBHOOK_SECRET` on the server; while it is empty the endpoint answers `503`. Each request must carry one of:
+
+| Header | Value |
+| :--- | :--- |
+| `X-Webhook-Signature` (preferred) | `sha256=` + hex HMAC-SHA256 of the raw request body, keyed with the secret |
+| `X-Webhook-Secret` | the secret itself (only over HTTPS) |
+
+If a signature header is present it is the one checked. A missing or wrong secret returns `401`.
+
+**Payload.**
+
+```json
+{
+  "event": "mail.bounced",
+  "id": "box-1697289600-42",
+  "occurred_at": "2026-10-14T12:00:00Z",
+  "hostname": "box.example.com",
+  "data": { "from": "noreply@example.com", "to": "user@example.org", "reason": "550 5.1.1 user unknown" }
+}
+```
+
+| Field | Required | Notes |
+| :--- | :--- | :--- |
+| `event` | yes | Dotted lowercase name, e.g. `mail.received`, `mail.sent`, `mail.bounced`, `mailbox.created`, `mailbox.deleted`, `alias.created`, `status_check.failed` |
+| `id` | no | Unique id from the sender. A repeated `id` returns `200` with `"duplicate": true` and is not stored again |
+| `occurred_at` | no | RFC 3339 timestamp, stored as UTC |
+| `hostname` | no | The box that sent the event |
+| `data` | no | Any JSON object; the whole request body is stored in the `payload` column |
+
+**Responses.** `200 {"id": "<uuid>", "duplicate": false}` on success, `400` for invalid JSON or fields, `401` for a bad secret, `503` when no secret is configured.
+
+**Sending from the box.**
+
+```bash
+SECRET="..."   # same value as MIAB_WEBHOOK_SECRET
+BODY='{"event":"status_check.failed","id":"'"$(hostname)-$(date +%s)"'","hostname":"'"$(hostname -f)"'","data":{"check":"dns"}}'
+SIG=$(printf '%s' "$BODY" | openssl dgst -sha256 -hmac "$SECRET" -r | cut -d' ' -f1)
+curl -fsS -X POST https://your-xsia-host/api/v1/webhook/mail-in-a-box \
+  -H "Content-Type: application/json" \
+  -H "X-Webhook-Signature: sha256=$SIG" \
+  --data-raw "$BODY"
+```
 
 ---
 
