@@ -6,11 +6,12 @@ use sea_orm::{
 };
 use uuid::Uuid;
 use std::collections::HashMap;
-use std::fs::OpenOptions;
-use std::io::Write;
 use chrono::Local;
+use serde_json::json;
 
 use crate::tasks::Task;
+
+use super::sync_log::SyncLog;
 
 use crate::models::feeder::master::aktifitas_mengajar_dosen as FeederAktifitas;
 use crate::models::academic::course::master::courses as AcademicCourse;
@@ -151,14 +152,8 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
             None
         };
 
-        // Create log file
-        let log_dir = "logs";
-        std::fs::create_dir_all(log_dir)?;
-        let log_file_path = format!("{}/sync_teach_lecturers_{}.log", log_dir, Local::now().format("%Y%m%d_%H%M%S"));
-        let mut log_file = OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(&log_file_path)?;
+        let mut sync_log = SyncLog::open("teach_lecturers", !show_progress)?;
+        sync_log.info("Starting synchronization of aktifitas_mengajar_dosen to teach_lecturers...")?;
 
         // Preload static references once before the processing loop
         let years = AcademicYear::Entity::find().all(db).await?;
@@ -225,7 +220,7 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
                 let txn = match db.begin().await {
                     Ok(t) => t,
                     Err(e) => {
-                        writeln!(log_file, "[ERROR] Record {}: failed to begin transaction: {}", record.id, e)?;
+                        sync_log.record_error(&record, &format!("Failed to begin transaction: {}", e))?;
                         errors += 1;
                         if let Some(ref pb) = pb {
                             pb.inc(1);
@@ -236,7 +231,12 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
 
                 // 1. Resolve unit and academic year from memory cache
                 let Some(id_prodi) = record.id_prodi else {
-                    writeln!(log_file, "[REFERENCE_NOT_FOUND] Record {}: id_prodi is null", record.id)?;
+                    sync_log.skip(
+                        &record,
+                        "missing_id_prodi",
+                        json!({}),
+                        "id_prodi is null",
+                    )?;
                     skipped += 1;
                     let _ = txn.rollback().await;
                     if let Some(ref pb) = pb {
@@ -245,7 +245,12 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
                     continue;
                 };
                 let Some(unit) = cache.units_by_feeder_id.get(&id_prodi) else {
-                    writeln!(log_file, "[REFERENCE_NOT_FOUND] Record {}: unit not found for id_prodi {}", record.id, id_prodi)?;
+                    sync_log.skip(
+                        &record,
+                        "unit_not_found",
+                        json!({"id_prodi": id_prodi}),
+                        &format!("Unit not found for id_prodi {}", id_prodi),
+                    )?;
                     skipped += 1;
                     let _ = txn.rollback().await;
                     if let Some(ref pb) = pb {
@@ -255,7 +260,12 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
                 };
 
                 let Some(ref id_periode) = record.id_periode else {
-                    writeln!(log_file, "[REFERENCE_NOT_FOUND] Record {}: id_periode is null", record.id)?;
+                    sync_log.skip(
+                        &record,
+                        "missing_id_periode",
+                        json!({}),
+                        "id_periode is null",
+                    )?;
                     skipped += 1;
                     let _ = txn.rollback().await;
                     if let Some(ref pb) = pb {
@@ -264,7 +274,12 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
                     continue;
                 };
                 let Some(academic_year) = cache.years_by_feeder_name.get(id_periode) else {
-                    writeln!(log_file, "[REFERENCE_NOT_FOUND] Record {}: academic_year not found for id_periode {}", record.id, id_periode)?;
+                    sync_log.skip(
+                        &record,
+                        "academic_year_not_found",
+                        json!({"id_periode": id_periode}),
+                        &format!("Academic year not found for id_periode {}", id_periode),
+                    )?;
                     skipped += 1;
                     let _ = txn.rollback().await;
                     if let Some(ref pb) = pb {
@@ -275,10 +290,14 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
 
                 // 2. Resolve activity from memory cache
                 let Some(activity) = cache.activities_by_unit_and_year.get(&(unit.id, academic_year.id)) else {
-                    writeln!(
-                        log_file,
-                        "[ACTIVITY_NOT_FOUND] Record {}: activity not found for unit {} and year {}",
-                        record.id, unit.id, academic_year.feeder_name
+                    sync_log.skip(
+                        &record,
+                        "activity_not_found",
+                        json!({"unit_id": unit.id, "academic_year_id": academic_year.id, "id_periode": academic_year.feeder_name}),
+                        &format!(
+                            "Activity not found for unit {} and year {}",
+                            unit.id, academic_year.feeder_name
+                        ),
                     )?;
                     skipped += 1;
                     let _ = txn.rollback().await;
@@ -290,7 +309,12 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
 
                 // 3. Resolve course
                 let Some(id_matkul) = record.id_matkul else {
-                    writeln!(log_file, "[COURSE_NOT_FOUND] Record {}: id_matkul is null", record.id)?;
+                    sync_log.skip(
+                        &record,
+                        "missing_id_matkul",
+                        json!({}),
+                        "id_matkul is null",
+                    )?;
                     skipped += 1;
                     let _ = txn.rollback().await;
                     if let Some(ref pb) = pb {
@@ -305,7 +329,12 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
                 {
                     Ok(Some(c)) => c,
                     Ok(None) => {
-                        writeln!(log_file, "[COURSE_NOT_FOUND] Record {}: course not found for id_matkul {}", record.id, id_matkul)?;
+                        sync_log.skip(
+                            &record,
+                            "course_not_found",
+                            json!({"id_matkul": id_matkul}),
+                            &format!("Course not found for id_matkul {}", id_matkul),
+                        )?;
                         skipped += 1;
                         let _ = txn.rollback().await;
                         if let Some(ref pb) = pb {
@@ -314,7 +343,7 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
                         continue;
                     }
                     Err(e) => {
-                        writeln!(log_file, "[ERROR] Record {}: error querying course: {}", record.id, e)?;
+                        sync_log.record_error(&record, &format!("Error querying course: {}", e))?;
                         errors += 1;
                         let _ = txn.rollback().await;
                         if let Some(ref pb) = pb {
@@ -334,17 +363,27 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
                     {
                         Ok(mut list) if !list.is_empty() => {
                             if list.len() > 1 {
-                                writeln!(
-                                    log_file,
-                                    "[DUPLICATE_LECTURER] Record {}: id_dosen {} has {} rows, selecting primary lecturer id {}",
-                                    record.id, id_dosen, list.len(), list[0].id
+                                sync_log.warn(
+                                    &record,
+                                    "duplicate_lecturer",
+                                    json!({
+                                        "id_dosen": id_dosen,
+                                        "lecturer_ids": list.iter().map(|l| l.id).collect::<Vec<_>>(),
+                                        "selected_lecturer_id": list[0].id,
+                                    }),
+                                    &format!(
+                                        "id_dosen {} has {} lecturer rows, selecting primary lecturer id {}",
+                                        id_dosen,
+                                        list.len(),
+                                        list[0].id
+                                    ),
                                 )?;
                             }
                             Some(list.remove(0))
                         }
                         Ok(_) => None,
                         Err(e) => {
-                            writeln!(log_file, "[ERROR] Record {}: error querying lecturer by id_dosen: {}", record.id, e)?;
+                            sync_log.record_error(&record, &format!("Error querying lecturer by id_dosen: {}", e))?;
                             errors += 1;
                             let _ = txn.rollback().await;
                             if let Some(ref pb) = pb {
@@ -369,10 +408,14 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
                             {
                                 Ok(mut list) if !list.is_empty() => list.remove(0),
                                 Ok(_) => {
-                                    writeln!(
-                                        log_file,
-                                        "[LECTURER_NOT_FOUND] Record {}: lecturer not found for id_dosen {:?} and id_registrasi_dosen {:?}",
-                                        record.id, record.id_dosen, record.id_registrasi_dosen
+                                    sync_log.skip(
+                                        &record,
+                                        "lecturer_not_found",
+                                        json!({"id_dosen": record.id_dosen, "id_registrasi_dosen": record.id_registrasi_dosen}),
+                                        &format!(
+                                            "Lecturer not found for id_dosen {:?} and id_registrasi_dosen {:?}",
+                                            record.id_dosen, record.id_registrasi_dosen
+                                        ),
                                     )?;
                                     skipped += 1;
                                     let _ = txn.rollback().await;
@@ -382,7 +425,7 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
                                     continue;
                                 }
                                 Err(e) => {
-                                    writeln!(log_file, "[ERROR] Record {}: error querying lecturer by id_reg: {}", record.id, e)?;
+                                    sync_log.record_error(&record, &format!("Error querying lecturer by id_reg: {}", e))?;
                                     errors += 1;
                                     let _ = txn.rollback().await;
                                     if let Some(ref pb) = pb {
@@ -392,7 +435,12 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
                                 }
                             }
                         } else {
-                            writeln!(log_file, "[LECTURER_NOT_FOUND] Record {}: lecturer id_dosen and id_reg are null", record.id)?;
+                            sync_log.skip(
+                                &record,
+                                "missing_lecturer_ids",
+                                json!({"id_dosen": record.id_dosen}),
+                                "Lecturer not found by id_dosen and id_registrasi_dosen is null",
+                            )?;
                             skipped += 1;
                             let _ = txn.rollback().await;
                             if let Some(ref pb) = pb {
@@ -413,7 +461,7 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
                     {
                         Ok(t) => t,
                         Err(e) => {
-                            writeln!(log_file, "[ERROR] Record {}: error querying direct teach: {}", record.id, e)?;
+                            sync_log.record_error(&record, &format!("Error querying direct teach: {}", e))?;
                             errors += 1;
                             let _ = txn.rollback().await;
                             if let Some(ref pb) = pb {
@@ -436,7 +484,7 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
                     {
                         Ok(list) => list.into_iter().map(|c| c.id).collect(),
                         Err(e) => {
-                            writeln!(log_file, "[ERROR] Record {}: error querying class codes: {}", record.id, e)?;
+                            sync_log.record_error(&record, &format!("Error querying class codes: {}", e))?;
                             errors += 1;
                             let _ = txn.rollback().await;
                             if let Some(ref pb) = pb {
@@ -456,7 +504,7 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
                         {
                             Ok(t) => teach_opt = t,
                             Err(e) => {
-                                writeln!(log_file, "[ERROR] Record {}: error querying fallback teach: {}", record.id, e)?;
+                                sync_log.record_error(&record, &format!("Error querying fallback teach: {}", e))?;
                                 errors += 1;
                                 let _ = txn.rollback().await;
                                 if let Some(ref pb) = pb {
@@ -470,10 +518,19 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
 
                 let Some(teach) = teach_opt else {
                     teach_not_found += 1;
-                    writeln!(
-                        log_file,
-                        "[TEACH_NOT_FOUND] id: {}, id_kelas: {:?}, nama_dosen: {:?}, nama_matkul: {:?}, nama_kelas: {:?}, id_periode: {:?}",
-                        record.id, record.id_kelas, record.nama_dosen, record.nama_mata_kuliah, record.nama_kelas_kuliah, record.id_periode
+                    sync_log.skip(
+                        &record,
+                        "teach_not_found",
+                        json!({
+                            "id_kelas": record.id_kelas,
+                            "nama_kelas_kuliah": record.nama_kelas_kuliah,
+                            "course_id": course.id,
+                            "activity_id": activity.id,
+                        }),
+                        &format!(
+                            "Teach not found for id_kelas {:?}, nama_dosen {:?}, nama_matkul {:?}, nama_kelas {:?}, id_periode {:?}",
+                            record.id_kelas, record.nama_dosen, record.nama_mata_kuliah, record.nama_kelas_kuliah, record.id_periode
+                        ),
                     )?;
                     let _ = txn.rollback().await;
                     if let Some(ref pb) = pb {
@@ -497,14 +554,14 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
                                 }
                             }
                             Err(e) => {
-                                writeln!(log_file, "[ERROR] Record {}: failed to commit transaction: {}", record.id, e)?;
+                                sync_log.record_error(&record, &format!("Failed to commit transaction: {}", e))?;
                                 errors += 1;
                             }
                         }
                     }
                     Err(e) => {
                         let _ = txn.rollback().await;
-                        writeln!(log_file, "[ERROR] Record {}: failed to upsert teach_lecturer: {}", record.id, e)?;
+                        sync_log.record_error(&record, &format!("Failed to upsert teach_lecturer: {}", e))?;
                         errors += 1;
                     }
                 }
@@ -521,13 +578,15 @@ impl Task for SyncAktifitasMengajarDosenToAcademicTransactionTeachLecturer {
         }
 
         let summary = format!(
-            "Sync completed - inserted: {inserted} | updated: {updated} | skipped: {skipped} | teach not found: {teach_not_found} | errors: {errors} (see {log_file_path})"
+            "Sync completed - inserted: {inserted} | updated: {updated} | skipped: {skipped} | teach not found: {teach_not_found} | errors: {errors} (see {} / {})",
+            sync_log.text_path, sync_log.json_path
         );
         if let Some(pb) = pb {
             pb.finish_with_message(summary);
         } else {
             println!("{summary}");
         }
+        sync_log.summary_with(inserted, updated, skipped, errors, &[("teach_not_found", teach_not_found)])?;
 
         Ok(())
     }

@@ -72,6 +72,32 @@ impl SyncLog {
         }))
     }
 
+    /// Non-fatal anomaly on a record that was still processed (e.g. duplicate reference rows).
+    pub fn warn<R: Serialize>(
+        &mut self,
+        record: &R,
+        reason: &str,
+        context: Value,
+        message: &str,
+    ) -> io::Result<()> {
+        let record_id = serde_json::to_value(record)
+            .ok()
+            .and_then(|r| r.get("id").cloned())
+            .unwrap_or(Value::Null);
+        self.write_text(&format!(
+            "WARNING: {} (record id: {})",
+            message,
+            record_id.as_str().unwrap_or("?")
+        ))?;
+        self.write_json(json!({
+            "level": "warn",
+            "reason": reason,
+            "message": message,
+            "record_id": record_id,
+            "context": context,
+        }))
+    }
+
     pub fn error(&mut self, message: &str) -> io::Result<()> {
         self.write_text(&format!("ERROR: {}", message))?;
         self.write_json(json!({ "level": "error", "message": message }))
@@ -94,19 +120,36 @@ impl SyncLog {
     }
 
     pub fn summary(&mut self, inserted: u64, updated: u64, skipped: u64, errors: u64) -> io::Result<()> {
-        let message = format!(
+        self.summary_with(inserted, updated, skipped, errors, &[])
+    }
+
+    /// Summary with extra task-specific counters appended (e.g. `teach_not_found`).
+    pub fn summary_with(
+        &mut self,
+        inserted: u64,
+        updated: u64,
+        skipped: u64,
+        errors: u64,
+        extra: &[(&str, u64)],
+    ) -> io::Result<()> {
+        let mut message = format!(
             "Summary: inserted: {}, updated: {}, skipped: {}, errors: {}",
             inserted, updated, skipped, errors
         );
-        self.write_text(&message)?;
-        self.write_json(json!({
+        let mut entry = json!({
             "level": "summary",
-            "message": message,
             "inserted": inserted,
             "updated": updated,
             "skipped": skipped,
             "errors": errors,
-        }))
+        });
+        for (key, count) in extra {
+            message.push_str(&format!(", {}: {}", key, count));
+            entry[*key] = json!(count);
+        }
+        entry["message"] = json!(message);
+        self.write_text(&message)?;
+        self.write_json(entry)
     }
 
     fn write_text(&mut self, message: &str) -> io::Result<()> {
