@@ -39,9 +39,10 @@ Replace `app.example.ac.id` / `api.example.ac.id` with your real domains everywh
 9. [Ferron reverse proxy + HTTPS](#9-ferron-reverse-proxy--https)
 10. [Firewall & SELinux](#10-firewall--selinux)
 11. [Verify](#11-verify)
-12. [Updating / redeploying](#12-updating--redeploying)
-13. [Backups](#13-backups)
-14. [Troubleshooting](#14-troubleshooting)
+12. [Inbound webhooks (Mail-in-a-Box & OpenWA)](#12-inbound-webhooks-mail-in-a-box--openwa)
+13. [Updating / redeploying](#13-updating--redeploying)
+14. [Backups](#14-backups)
+15. [Troubleshooting](#15-troubleshooting)
 
 ---
 
@@ -629,7 +630,119 @@ Then in a browser: log in, open a dashboard, generate a PDF (KRS/KHS) to confirm
 
 ---
 
-## 12. Updating / redeploying
+## 12. Inbound webhooks (Mail-in-a-Box & OpenWA)
+
+The API accepts two webhooks. Their tables (`webhook.mail_in_a_box_events`, `webhook.open_wa_events`) are created by `./migration up` in [6.D](#d-run-migrations-and-initial-tasks). Payload formats and response codes are documented in the README's *Inbound Webhooks* section.
+
+| Source | Endpoint | Secret (`server/.env`) | Auth header |
+| :--- | :--- | :--- | :--- |
+| Mail-in-a-Box | `https://api.example.ac.id/api/v1/webhook/mail-in-a-box` | `MIAB_WEBHOOK_SECRET` | `X-Webhook-Signature: sha256=<HMAC>` |
+| [OpenWA](https://github.com/rmyndharis/OpenWA) | `https://api.example.ac.id/api/v1/webhook/openwa` | `OPENWA_WEBHOOK_SECRET` (≥ 16 chars) | `X-OpenWA-Signature: sha256=<HMAC>` (sent by OpenWA) |
+
+Both endpoints answer `503` until their secret is set, and `401` for a missing or wrong signature. No Ferron change is needed: they're under `/api/v1`, which is already proxied.
+
+### A. Set the secrets
+
+```bash
+MIAB_SECRET="$(openssl rand -hex 32)";   echo "MIAB_WEBHOOK_SECRET=$MIAB_SECRET"     # store both safely
+OPENWA_SECRET="$(openssl rand -hex 32)"; echo "OPENWA_WEBHOOK_SECRET=$OPENWA_SECRET"
+
+sudo -u xsia tee -a /var/www/ferron/xsia_xarx/server/.env >/dev/null <<EOF
+
+# Inbound webhooks
+MIAB_WEBHOOK_SECRET="$MIAB_SECRET"
+OPENWA_WEBHOOK_SECRET="$OPENWA_SECRET"
+
+# OpenWA gateway (outgoing WhatsApp messages + webhook registration)
+OPENWA_URL="https://wa.example.ac.id"
+OPENWA_API_KEY_SESSION_ID="CHANGE_ME"
+OPENWA_API_KEY_OPERATOR="CHANGE_ME"
+EOF
+sudo systemctl restart xsia-api
+
+# Both should now return 401 (unsigned request), not 503
+for hook in mail-in-a-box openwa; do
+  curl -s -o /dev/null -w "$hook: %{http_code}\n" -X POST "https://api.example.ac.id/api/v1/webhook/$hook" \
+    -H 'Content-Type: application/json' -d '{}'
+done
+```
+
+### B. Mail-in-a-Box → xsia
+
+Mail-in-a-Box has no built-in webhook sender, so install a small signing script **on the Mail-in-a-Box server** and call it from cron or a hook:
+
+```bash
+# On the Mail-in-a-Box server, as root
+install -m 600 /dev/null /etc/xsia-webhook.env
+cat > /etc/xsia-webhook.env <<'EOF'
+XSIA_WEBHOOK_URL="https://api.example.ac.id/api/v1/webhook/mail-in-a-box"
+XSIA_WEBHOOK_SECRET="<same value as MIAB_WEBHOOK_SECRET>"
+EOF
+
+cat > /usr/local/bin/xsia-webhook <<'EOF'
+#!/usr/bin/env bash
+# Usage: xsia-webhook <event> [data-json]
+#   e.g. xsia-webhook status_check.failed '{"check":"dns"}'
+set -euo pipefail
+. /etc/xsia-webhook.env
+EVENT="$1"; DATA="${2:-{\}}"
+BODY=$(printf '{"event":"%s","id":"%s-%s-%s","occurred_at":"%s","hostname":"%s","data":%s}' \
+  "$EVENT" "$(hostname -s)" "$(date +%s%N)" "$RANDOM" "$(date -u +%FT%TZ)" "$(hostname -f)" "$DATA")
+SIG=$(printf '%s' "$BODY" | openssl dgst -sha256 -hmac "$XSIA_WEBHOOK_SECRET" -r | cut -d' ' -f1)
+curl -fsS --retry 3 -X POST "$XSIA_WEBHOOK_URL" \
+  -H "Content-Type: application/json" \
+  -H "X-Webhook-Signature: sha256=$SIG" \
+  --data-raw "$BODY"
+EOF
+chmod 755 /usr/local/bin/xsia-webhook
+
+xsia-webhook test.ping '{"note":"deployment test"}'     # → {"id":"…","duplicate":false}
+```
+
+Example cron job (`crontab -e` on the box) that reports a stopped mail service every 5 minutes:
+
+```cron
+*/5 * * * * for s in postfix dovecot; do systemctl is-active --quiet $s || /usr/local/bin/xsia-webhook status_check.failed "{\"service\":\"$s\"}"; done
+```
+
+> 🔒 Optional: accept this endpoint only from the mail server. Inside the `api.example.ac.id` block in `/etc/ferron/ferron.conf`:
+> ```kdl
+> location /api/v1/webhook/mail-in-a-box {
+>     allow "203.0.113.25"            // Mail-in-a-Box public IP
+>     proxy {
+>         upstream http://127.0.0.1:5800
+>     }
+> }
+> ```
+
+### C. OpenWA → xsia
+
+Register the webhook with the **same secret** as `OPENWA_WEBHOOK_SECRET`. Either use the OpenWA dashboard (session → Webhooks → add URL, events, secret), or its API:
+
+```bash
+set -a; . /var/www/ferron/xsia_xarx/server/.env; set +a      # loads OPENWA_* (run as root)
+
+curl -fsS -X POST "$OPENWA_URL/api/sessions/$OPENWA_API_KEY_SESSION_ID/webhooks" \
+  -H "X-API-Key: $OPENWA_API_KEY_OPERATOR" \
+  -H "Content-Type: application/json" \
+  -d '{"url":"https://api.example.ac.id/api/v1/webhook/openwa","events":["message.received","message.ack","session.status"],"secret":"'"$OPENWA_WEBHOOK_SECRET"'"}'
+```
+
+Then use OpenWA's **test webhook** action. It sends a signed `test` event that should be stored like any other. OpenWA retries non-2xx responses (3 attempts by default). A webhook registered without a secret is unsigned and always rejected with `401`.
+
+> ℹ️ If OpenWA runs on this same server, still use the public `https://api.example.ac.id/...` URL (or `http://127.0.0.1:5800/api/v1/webhook/openwa`). Don't point it at the frontend host.
+
+### D. Verify
+
+```bash
+sudo -u postgres psql -d xsia_xarx -c "SELECT event_type, hostname, occurred_at, created_at FROM webhook.mail_in_a_box_events ORDER BY created_at DESC LIMIT 5;"
+sudo -u postgres psql -d xsia_xarx -c "SELECT event_type, session_id, occurred_at, created_at FROM webhook.open_wa_events ORDER BY created_at DESC LIMIT 5;"
+journalctl -u xsia-api --since "10 min ago" | grep -i webhook
+```
+
+---
+
+## 13. Updating / redeploying
 
 > ⚠️ **Upgrading a server set up before Apache AGE was added?** Do [2.B](#b-build-pg_uuidv7-pgmq-and-apache-age-from-source) (AGE part) and the AGE lines of [2.C](#c-create-the-database-role-and-enable-extensions) once **before** running the deploy script, or `./migration up` fails on the `ai` migrations. Restart `xsia-api` after setting `session_preload_libraries`.
 
@@ -683,7 +796,7 @@ systemctl is-active xsia-api xsia-web
 
 ---
 
-## 13. Backups
+## 14. Backups
 
 ```bash
 sudo -u postgres mkdir -p /var/lib/pgsql/backups
@@ -701,7 +814,7 @@ Copy backups off the server (rsync / object storage) — a backup on the same di
 
 ---
 
-## 14. Troubleshooting
+## 15. Troubleshooting
 
 | Symptom | Likely cause / fix |
 | :--- | :--- |
@@ -714,6 +827,8 @@ Copy backups off the server (rsync / object storage) — a backup on the same di
 | `unhandled cypher(cstring) function call` | AGE isn't loaded in that connection — check `SHOW session_preload_libraries;` returns `age`, then restart `xsia-api` so the pool reconnects. |
 | `operator class "graphid_ops" does not exist` | `ag_catalog.create_graph()` called without `ag_catalog` on the `search_path`. |
 | `autocrop` / `docling: command not found` from the API | Not installed as `xsia`, or the unit lacks `Environment=PATH=/var/lib/xsia/.local/bin:…` (see [4.B](#b-autocrop--docling-via-uv)). Run `systemctl daemon-reload && systemctl restart xsia-api` after editing. |
+| Webhook returns `503` | `MIAB_WEBHOOK_SECRET` / `OPENWA_WEBHOOK_SECRET` empty in `server/.env`, or `xsia-api` not restarted after setting it ([12.A](#a-set-the-secrets)). |
+| Webhook returns `401` | Secret differs between sender and `server/.env`, the body was changed after signing (sign the exact bytes sent), or the OpenWA webhook was registered without a secret. |
 | `vp: command not found` during the client build | Dependencies not installed — run `bun install --frozen-lockfile` in `src/client` (Vite+ is a local dev dependency). |
 | Logos / signatures missing in PDFs, `No such file` | `WorkingDirectory` / `APP_DIRECTORY` not `/var/www/ferron/xsia_xarx/server`, or `public/` not copied. |
 | PDF endpoint hangs or errors | `CHROME_BIN` wrong or Chromium missing; test with `$CHROME_BIN --headless --dump-dom https://example.com`. |
