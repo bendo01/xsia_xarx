@@ -94,7 +94,7 @@ xsia_xarx/
     │   ├── app.tsx               # Root application shell
     │   └── app.css               # Global Tailwind CSS v4 styling
     ├── package.json              # Client scripts and dependencies
-    └── vite.config.ts            # Vite 8 & SolidStart build configuration
+    └── vite.config.ts            # Vite+ (Vite 8) & SolidStart build configuration
 ```
 
 ---
@@ -107,7 +107,7 @@ xsia_xarx/
 | :--- | :--- | :--- |
 | **Language & Runtime** | [Rust](https://www.rust-lang.org/) (2024 Edition) | Multi-threaded async engine on [Tokio](https://tokio.rs/) v1.45 |
 | **Web Framework** | [Salvo](https://salvo.rs/) (v0.95) | HTTP/HTTPS server with OpenAPI & Swagger UI generation |
-| **Database & ORM** | [SeaORM](https://www.sea-ql.org/SeaORM/) (v2.0) | PostgreSQL 18, RBAC, Schema Sync, `pgvector` |
+| **Database & ORM** | [SeaORM](https://www.sea-ql.org/SeaORM/) (v2.0) | PostgreSQL 18, RBAC, Schema Sync, `pgvector`, [Apache AGE](https://github.com/apache/age) |
 | **Task Queue & Scheduler** | [PGMQ](https://github.com/pgmq/pgmq) | Native PostgreSQL-backed background job queue & workers |
 | **Security & Auth** | JWT, Argon2, Bcrypt | Token signing, verification, secure password hashing |
 | **AI / Machine Learning** | Rig-core, Candle, Burn, `text-splitter` | Vector search, embeddings, model inferencing |
@@ -119,7 +119,7 @@ xsia_xarx/
 | Layer / Purpose | Technology | Details |
 | :--- | :--- | :--- |
 | **Framework** | [SolidJS](https://www.solidjs.com/) (v1.9) + [SolidStart](https://start.solidjs.com/) (v2.0) | Fine-grained reactivity, SSR/CSR, Nitro engine |
-| **Build Tool** | [Vite](https://vitejs.dev/) (v8.0) | Instant HMR, lightning-fast compilation |
+| **Build Tool** | [Vite+](https://github.com/voidzero-dev/vite-plus) (v1.1) | Unified `vp` toolchain on [Vite](https://vitejs.dev/) 8: dev server, build, lint & Vitest |
 | **Styling** | [Tailwind CSS v4](https://tailwindcss.com/) | Modern CSS engine via `@tailwindcss/vite` |
 | **Data & State Management** | TanStack Solid Form & Table | Robust form handling and virtualized data grids |
 | **Visualizations & Maps** | TanStack Charts, OpenLayers (`ol`) | Interactive charts and GIS mapping capabilities |
@@ -133,7 +133,8 @@ Before starting, ensure you have the following installed on your machine:
 
 - **Rust**: Version `1.97.1+` (or latest stable supporting edition 2024)
 - **Node.js**: `v24+` and **pnpm** (or `npm`/`yarn`/`bun`)
-- **PostgreSQL**: `v18` with `pg_uuidv7`, `pgvector`, and `pgmq` extensions (see [Database Requirement](#4-database-requirement))
+- **Vite+**: [voidzero-dev/vite-plus](https://github.com/voidzero-dev/vite-plus) — installed as a `client/` dev dependency; all frontend scripts run through its `vp` CLI
+- **PostgreSQL**: `v18` with [pg_uuidv7](https://github.com/fboulnois/pg_uuidv7), [pgvector](https://github.com/pgvector/pgvector), [pgmq](https://github.com/pgmq/pgmq), and [Apache AGE](https://github.com/apache/age) extensions (see [Database Requirement](#4-database-requirement))
 - **Redis**: `v7+` for background job execution
 - **SeaORM CLI**: Installed via Cargo:
 
@@ -266,6 +267,8 @@ CURRENT_INSTITUTION_CODE="092010"
    ```
 
    Open your browser at `http://localhost:3000` (or the port indicated in terminal).
+
+   > ℹ️ The `client/` scripts (`dev`, `build`, `preview`, `lint`, `test:*`) run through the [Vite+](https://github.com/voidzero-dev/vite-plus) `vp` CLI, and `vite` is aliased to `@voidzero-dev/vite-plus-core`. Installing dependencies is enough; you don't need a global `vp`.
 
 ---
 
@@ -1084,6 +1087,7 @@ The backend requires **PostgreSQL `v18`** with these extensions installed on the
 | **pg_uuidv7** | `pg_uuidv7` | [fboulnois/pg_uuidv7](https://github.com/fboulnois/pg_uuidv7) | Time-ordered UUIDv7 primary keys via `uuid_generate_v7()` |
 | **pgvector** | `vector` | [pgvector/pgvector](https://github.com/pgvector/pgvector) | `vector` column type & similarity search for AI embeddings |
 | **pgmq** | `pgmq` | [pgmq/pgmq](https://github.com/pgmq/pgmq) | PostgreSQL-native message queue for background jobs (e.g. email) |
+| **Apache AGE** | `age` | [apache/age](https://github.com/apache/age) | Graph database (openCypher) for the AI knowledge graph (`ai_graph`) |
 
 #### A. Install the Extensions (build from source)
 
@@ -1103,6 +1107,10 @@ cd pgvector && make && sudo make install && cd ..
 # 3. pgmq
 git clone https://github.com/pgmq/pgmq.git
 cd pgmq/pgmq-extension && make && sudo make install && cd ../..
+
+# 4. Apache AGE (needs bison & flex; one branch per PostgreSQL major version)
+git clone --branch release/PG18/1.8.0 https://github.com/apache/age.git
+cd age && make && sudo make install && cd ..
 ```
 
 > 💡 Prebuilt packages are also available for some platforms (e.g. `postgresql-18-pgvector` on Debian/Ubuntu or `pgvector_18` on RHEL/Rocky via the PGDG repositories, or the `pg_uuidv7` release tarballs on GitHub). Check each repository's README for your OS.
@@ -1115,6 +1123,7 @@ Run the following as a superuser on **each** database:
 CREATE EXTENSION IF NOT EXISTS pg_uuidv7;
 CREATE EXTENSION IF NOT EXISTS vector;
 CREATE EXTENSION IF NOT EXISTS pgmq;
+CREATE EXTENSION IF NOT EXISTS age;
 ```
 
 Or from the shell:
@@ -1124,21 +1133,25 @@ for DB in xsia_xarx xsia_xarx_test; do
   psql -U postgres -d "$DB" \
     -c "CREATE EXTENSION IF NOT EXISTS pg_uuidv7;" \
     -c "CREATE EXTENSION IF NOT EXISTS vector;" \
-    -c "CREATE EXTENSION IF NOT EXISTS pgmq;"
+    -c "CREATE EXTENSION IF NOT EXISTS pgmq;" \
+    -c "CREATE EXTENSION IF NOT EXISTS age;"
 done
 ```
+
+> ℹ️ The `ai` migration (`m20260228_145611_schema_ai_table_chunks`) also runs `CREATE EXTENSION IF NOT EXISTS age` / `vector` and creates the `ai_graph` graph, so the migration user needs permission to create extensions. AGE must be loaded in every session that runs Cypher queries. Non-superusers can't run `LOAD 'age'`, so set `ALTER DATABASE <db> SET session_preload_libraries = 'age';` as a superuser. If the database user isn't a superuser, also `GRANT USAGE ON SCHEMA ag_catalog` and `GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA ag_catalog` to it so the migration can create `ai_graph` (see `DEPLOYMENT.md` §2.C).
 
 #### C. Verify
 
 ```sql
 SELECT extname, extversion
 FROM pg_extension
-WHERE extname IN ('pg_uuidv7', 'vector', 'pgmq');
+WHERE extname IN ('pg_uuidv7', 'vector', 'pgmq', 'age');
 
 -- Quick smoke tests
 SELECT uuid_generate_v7();
 SELECT '[1,2,3]'::vector;
 SELECT pgmq.create('healthcheck'); SELECT pgmq.drop_queue('healthcheck');
+SELECT * FROM ag_catalog.ag_graph;
 ```
 
 > ⚠️ **PGMQ fallback:** On startup the server calls `PGMQueueExt::init()`. If the `pgmq` extension is unavailable, it falls back to installing the PGMQ schema from embedded SQL (`install-sql-embedded` feature). Installing the native extension is still recommended for production.

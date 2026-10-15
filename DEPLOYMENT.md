@@ -9,7 +9,7 @@ This guide deploys `xsia_xarx` to a single **Rocky Linux 10** server (x86_64):
                     │   └── api.example.ac.id  ──▶ Rust API (salvo)       127.0.0.1:5800 │
                     │                                   │                                │
                     │                                   └──▶ PostgreSQL 18 :5432         │
-                    │                                        (pg_uuidv7, pgvector, pgmq) │
+                    │                                   (pg_uuidv7, pgvector, pgmq, age) │
                     └────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -20,7 +20,7 @@ Replace `app.example.ac.id` / `api.example.ac.id` with your real domains everywh
 > ℹ️ **Facts about the app that shape this setup**
 > - The API binary **always binds `127.0.0.1:5800`** (hard-coded in `server/src/main.rs`; `SERVER_PORT` is ignored). It must sit behind a reverse proxy (Ferron here).
 > - The API reads `.env` from its **working directory** and resolves `public/...` paths (logos, signatures, uploads) **relative to it**. The systemd unit must set `WorkingDirectory` to the folder containing `.env` and `public/`.
-> - The PGMQ email worker runs inside the API process — no separate worker service is needed. Redis is **not** required (`REDIS_URL` is read but unused).
+> - The [PGMQ](https://github.com/pgmq/pgmq) email worker runs inside the API process — no separate worker service is needed. Redis is **not** required (`REDIS_URL` is read but unused).
 > - PDF generation uses headless Chrome/Chromium (`CHROME_BIN`).
 > - Client `VITE_*` / `CURRENT_*` variables are **baked in at build time**. Rebuild the client whenever they change.
 
@@ -97,13 +97,14 @@ sudo systemctl enable --now postgresql-18
 > ℹ️ **PostgreSQL 18 notes**
 > - PG 18 has a built-in `uuidv7()` function, but the migrations call `uuid_generate_v7()`, so the `pg_uuidv7` extension is **still required**.
 > - `initdb` turns on data checksums by default in 18. That's fine for a fresh cluster, but `pg_upgrade` from an older cluster without checksums needs `--no-data-checksums` at `initdb` time (or enable checksums on the old cluster first).
-> - If PGDG doesn't publish `pgvector_18` for EL-10 yet, build it from source the same way as the other two below.
+> - If PGDG doesn't publish `pgvector_18` for EL-10 yet, build it from source the same way as the others below.
 
-### B. Build `pg_uuidv7` and `pgmq` from source
+### B. Build `pg_uuidv7`, `pgmq`, and Apache AGE from source
 
-`pgvector` came from PGDG above; the other two are built against PGDG's `pg_config`:
+`pgvector` came from PGDG above; the others ([pg_uuidv7](https://github.com/fboulnois/pg_uuidv7), [pgmq](https://github.com/pgmq/pgmq) — PostgreSQL-native message queue used by the email worker) are built against PGDG's `pg_config`. [Apache AGE](https://github.com/apache/age) (graph database / openCypher, used for the AI knowledge graph `ai_graph`) also needs `bison` and `flex`:
 
 ```bash
+sudo dnf -y install bison flex
 export PATH=/usr/pgsql-18/bin:$PATH
 cd /tmp
 
@@ -112,6 +113,10 @@ git clone https://github.com/fboulnois/pg_uuidv7.git
 
 git clone https://github.com/pgmq/pgmq.git
 (cd pgmq/pgmq-extension && make && sudo PATH=$PATH make install)
+
+# AGE ships one branch per PostgreSQL major version — use the PG18 one
+git clone --branch release/PG18/1.8.0 https://github.com/apache/age.git
+(cd age && make && sudo PATH=$PATH make install)
 ```
 
 ### C. Create the database, role, and enable extensions
@@ -129,19 +134,28 @@ CREATE EXTENSION IF NOT EXISTS pgmq;
 GRANT ALL ON SCHEMA pgmq TO xsia;
 GRANT ALL ON ALL TABLES IN SCHEMA pgmq TO xsia;
 ALTER DEFAULT PRIVILEGES IN SCHEMA pgmq GRANT ALL ON TABLES TO xsia;
+CREATE EXTENSION IF NOT EXISTS age;
+GRANT USAGE ON SCHEMA ag_catalog TO xsia;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA ag_catalog TO xsia;
+ALTER DATABASE xsia_xarx SET session_preload_libraries = 'age';
 SQL
 ```
+
+> ℹ️ **Why the AGE grants?** The `ai` migration creates the `ai_graph` graph as the `xsia` role, and `xsia` is not a superuser:
+> - `create_graph()` registers the graph in `ag_catalog.ag_graph` / `ag_label`, so `xsia` needs `USAGE` on `ag_catalog` plus write access to its tables. The graph schema `ai_graph` is then owned by `xsia`.
+> - Non-superusers may not run `LOAD 'age'` (`access to library "age" is not allowed`). `session_preload_libraries` loads AGE into every new connection to `xsia_xarx` instead, which `cypher()` queries need. The setting only applies to **new** connections.
+> - `CREATE EXTENSION age` must be run by a superuser (above). The migration's own `CREATE EXTENSION IF NOT EXISTS` then just skips.
 
 Switch local TCP auth to passwords. In `/var/lib/pgsql/18/data/pg_hba.conf`, make sure the `host` lines for `127.0.0.1/32` and `::1/128` use `scram-sha-256` (not `ident`), then:
 
 ```bash
 sudo systemctl restart postgresql-18
-psql "postgres://xsia:$DB_PASS@127.0.0.1:5432/xsia_xarx" -c "SELECT uuid_generate_v7(), '[1,2,3]'::vector;"
+psql "postgres://xsia:$DB_PASS@127.0.0.1:5432/xsia_xarx" -c "SELECT uuid_generate_v7(), '[1,2,3]'::vector;" -c "SHOW session_preload_libraries;"
 ```
 
 PostgreSQL listens on `localhost` only by default — keep it that way.
 
-> 💡 **Restoring an existing database instead?** Create the role/database and extensions as above, then `pg_restore -U xsia -h 127.0.0.1 -d xsia_xarx your_dump.dump` and skip the initial seed steps.
+> 💡 **Restoring an existing database instead?** Create the role/database, extensions, and AGE grants as above, then `pg_restore -U xsia -h 127.0.0.1 -d xsia_xarx your_dump.dump` and skip the initial seed steps.
 
 ---
 
@@ -154,6 +168,7 @@ Install as the `xsia` user so builds don't run as root. (Alternatively, build on
 sudo -u xsia -H bash -c 'curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal'
 
 # Bun (client package manager, packageManager = bun@1.4.3)
+# Vite+ (`vp`) needs no global install — it's a client dev dependency installed by `bun install`
 sudo -u xsia -H bash -c 'curl -fsSL https://bun.sh/install | bash'
 
 # Node.js 24 (runtime for the SolidStart SSR server)
@@ -303,7 +318,7 @@ asxsia 'cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task'
 
 ### A. Make the build emit a runnable Node server (one-time code change)
 
-`package.json` starts production with `node .output/server/index.mjs`, but the current `vite.config.ts` does not register the Nitro plugin, so `vp build` only produces `dist/` (no standalone server). Add Nitro to the non-test plugin list in `client/vite.config.ts` and commit it:
+The client builds with [Vite+](https://github.com/voidzero-dev/vite-plus): every `client/package.json` script calls its `vp` CLI (`bun run build` → `vp build`), and `vite` is aliased to `@voidzero-dev/vite-plus-core`. `package.json` starts production with `node .output/server/index.mjs`, but the current `vite.config.ts` does not register the Nitro plugin, so `vp build` only produces `dist/` (no standalone server). Add Nitro to the non-test plugin list in `client/vite.config.ts` and commit it:
 
 ```ts
 import { nitro } from "nitro/vite";
@@ -338,7 +353,7 @@ EOF
 ### C. Build and install
 
 ```bash
-asxsia 'cd /var/www/ferron/xsia_xarx/src/client && bun install --frozen-lockfile && bun run build'
+asxsia 'cd /var/www/ferron/xsia_xarx/src/client && bun install --frozen-lockfile && bun run build'   # bun run build → vp build
 sudo -u xsia rm -rf /var/www/ferron/xsia_xarx/client/.output
 sudo -u xsia cp -a /var/www/ferron/xsia_xarx/src/client/.output /var/www/ferron/xsia_xarx/client/
 ```
@@ -578,6 +593,9 @@ curl -I  https://api.example.ac.id/api/v1/swagger-ui/    # through Ferron + TLS
 curl -I  https://app.example.ac.id/
 
 journalctl -u xsia-api --since "10 min ago" | grep -E "Database connection successful|PGMQ email worker started"
+
+# Apache AGE: the graph exists and cypher() works for the app role
+psql "postgres://xsia:CHANGE_ME@127.0.0.1:5432/xsia_xarx" -c "SET search_path = ag_catalog, public; SELECT * FROM cypher('ai_graph', \$\$ MATCH (n) RETURN count(n) \$\$) AS (c agtype);"
 ```
 
 Then in a browser: log in, open a dashboard, generate a PDF (KRS/KHS) to confirm Chromium works, and visit `/example/websocket` to confirm WebSocket/SSE pass through the proxy.
@@ -585,6 +603,8 @@ Then in a browser: log in, open a dashboard, generate a PDF (KRS/KHS) to confirm
 ---
 
 ## 12. Updating / redeploying
+
+> ⚠️ **Upgrading a server set up before Apache AGE was added?** Do [2.B](#b-build-pg_uuidv7-pgmq-and-apache-age-from-source) (AGE part) and the AGE lines of [2.C](#c-create-the-database-role-and-enable-extensions) once **before** running the deploy script, or `./migration up` fails on the `ai` migrations. Restart `xsia-api` after setting `session_preload_libraries`.
 
 Save as `/var/www/ferron/xsia_xarx/deploy.sh` (`chmod +x`), run with `sudo /var/www/ferron/xsia_xarx/deploy.sh`:
 
@@ -658,7 +678,12 @@ Copy backups off the server (rsync / object storage) — a backup on the same di
 | `502 Bad Gateway` from Ferron | Service down (`systemctl status xsia-api xsia-web`), the upstream port is wrong (old configs use `5150`; the API is on `5800`), or SELinux (see [step 10](#10-firewall--selinux)). |
 | No HTTPS certificate issued | DNS doesn't point at the server yet, port 80 is blocked, or `/var/cache/ferron-acme` isn't writable. Check `journalctl -u ferron`. |
 | API exits with `Failed to connect to PGMQ` | Wrong `DATABASE_URL`, `pg_hba.conf` still on `ident`, or role lacks rights on schema `pgmq`. |
-| `extension "pg_uuidv7" is not available` | Built against the wrong PostgreSQL — rebuild with `PATH=/usr/pgsql-18/bin:$PATH`. |
+| `extension "pg_uuidv7" is not available` (or `"age"`) | Built against the wrong PostgreSQL — rebuild with `PATH=/usr/pgsql-18/bin:$PATH` (for AGE, use the `release/PG18/…` branch). |
+| Migration fails: `permission denied for schema ag_catalog` / `for table ag_graph` | AGE grants missing — run the AGE lines of [2.C](#c-create-the-database-role-and-enable-extensions) as `postgres`. |
+| `access to library "age" is not allowed` | Something ran `LOAD 'age'` as `xsia` (non-superusers can't). Rely on `session_preload_libraries` from [2.C](#c-create-the-database-role-and-enable-extensions) instead. |
+| `unhandled cypher(cstring) function call` | AGE isn't loaded in that connection — check `SHOW session_preload_libraries;` returns `age`, then restart `xsia-api` so the pool reconnects. |
+| `operator class "graphid_ops" does not exist` | `ag_catalog.create_graph()` called without `ag_catalog` on the `search_path`. |
+| `vp: command not found` during the client build | Dependencies not installed — run `bun install --frozen-lockfile` in `src/client` (Vite+ is a local dev dependency). |
 | Logos / signatures missing in PDFs, `No such file` | `WorkingDirectory` / `APP_DIRECTORY` not `/var/www/ferron/xsia_xarx/server`, or `public/` not copied. |
 | PDF endpoint hangs or errors | `CHROME_BIN` wrong or Chromium missing; test with `$CHROME_BIN --headless --dump-dom https://example.com`. |
 | Frontend calls `127.0.0.1:5800` from the browser | `client/.env` missing at build time — `VITE_API_SERVER_URL` is baked in; fix and rebuild. |

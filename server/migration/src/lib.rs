@@ -2,6 +2,7 @@
 #![allow(clippy::wildcard_imports)]
 
 pub mod academic;
+pub mod ai;
 pub mod auth;
 pub mod building;
 pub mod contact;
@@ -114,6 +115,9 @@ impl MigratorTrait for Migrator {
             Box::new(academic::survey::reference::m20260806_134237_schema_academic_survey_reference_table_question_varieties::Migration),
             Box::new(academic::survey::transaction::m20260806_135725_schema_academic_survey_transaction_table_conducts::Migration),
             Box::new(academic::survey::transaction::m20260806_135731_schema_academic_survey_transaction_table_responds::Migration),
+            Box::new(ai::m20260228_145611_schema_ai_table_chunks::Migration),
+            Box::new(ai::m20260309_212227_schema_ai_table_conversations::Migration),
+            Box::new(ai::m20260309_212339_schema_ai_table_messages::Migration),
             Box::new(auth::m20260803_135500_schema_auth_table_users::Migration),
             Box::new(auth::m20260803_140041_schema_auth_table_verifications::Migration),
             Box::new(auth::m20260803_160025_schema_auth_table_permission_position_type::Migration),
