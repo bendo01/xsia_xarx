@@ -165,5 +165,11 @@ pub fn get_system_permissions() -> Vec<PermissionDefinition> {
             is_open: false,
             description: "Manage user accounts",
         },
+        PermissionDefinition {
+            name: "ai.chunks",
+            uri: "api/v1/ai/chunks",
+            is_open: false,
+            description: "Upload PDF knowledge documents as embedded chunks (administrators only)",
+        },
     ]
 }

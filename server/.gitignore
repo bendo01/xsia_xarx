@@ -23,3 +23,8 @@ public/img
 .model
 
 *.jsonl
+
+# Downloaded ML models (hf download ...)
+/models/
+# PDFs waiting for the embedding worker
+/storage/

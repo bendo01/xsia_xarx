@@ -5,6 +5,7 @@ use clap::{Parser, Subcommand};
 use xsia_xarx::{controllers, db};
 use xsia_xarx::config::database::DatabaseConfig;
 use xsia_xarx::jobs::email::{start_email_worker, init_email_queue};
+use xsia_xarx::jobs::embedding::embed::{init_pdf_embedding_queue, start_pdf_embedding_worker};
 use pgmq::PGMQueueExt;
 
 struct InjectDb(DatabaseConnection);
@@ -109,6 +110,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     start_email_worker(queue.clone());
     println!("PGMQ email worker started");
+
+    init_pdf_embedding_queue(&queue)
+        .await
+        .map_err(|e| std::io::Error::other(format!("Failed to initialize PDF embedding queue: {e}")))?;
+
+    start_pdf_embedding_worker(queue.clone(), db.clone());
+    println!("PGMQ PDF embedding worker started");
 
     let cors = salvo::cors::Cors::new()
         .allow_origin(salvo::cors::Any)
