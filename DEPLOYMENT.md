@@ -31,7 +31,7 @@ Replace `app.example.ac.id` / `api.example.ac.id` with your real domains everywh
 1. [Prepare the server](#1-prepare-the-server)
 2. [Install PostgreSQL 18 + extensions](#2-install-postgresql-18--extensions)
 3. [Install build toolchains (Rust, Bun)](#3-install-build-toolchains-rust-bun)
-4. [Install headless Chromium (PDF)](#4-install-headless-chromium-pdf)
+4. [Install headless Chromium (PDF) & Python tools](#4-install-headless-chromium-pdf--python-tools)
 5. [Get the code](#5-get-the-code)
 6. [Build & configure the backend](#6-build--configure-the-backend)
 7. [Build & configure the frontend](#7-build--configure-the-frontend)
@@ -177,13 +177,15 @@ sudo -u xsia -H bash -c 'curl -fsSL https://bun.sh/install | bash'
 Helper to run commands as `xsia` with the toolchains on `PATH` (used throughout this guide):
 
 ```bash
-asxsia() { sudo -u xsia -H bash -lc "export PATH=\$HOME/.cargo/bin:\$HOME/.bun/bin:\$PATH; $*"; }
+asxsia() { sudo -u xsia -H bash -lc "export PATH=\$HOME/.cargo/bin:\$HOME/.bun/bin:\$HOME/.local/bin:\$PATH; $*"; }
 asxsia 'cargo --version && bun --version'
 ```
 
 ---
 
-## 4. Install headless Chromium (PDF)
+## 4. Install headless Chromium (PDF) & Python tools
+
+### A. Headless Chromium
 
 ```bash
 sudo dnf -y install chromium-headless          # from EPEL 10 (if unavailable: sudo dnf -y install chromium, then CHROME_BIN=/usr/bin/chromium-browser)
@@ -196,6 +198,32 @@ Also install fonts so PDFs render correctly:
 ```bash
 sudo dnf -y install google-noto-sans-vf-fonts google-noto-serif-vf-fonts liberation-fonts dejavu-sans-fonts
 ```
+
+### B. autocrop & docling (via uv)
+
+Two Python CLI tools, each in its own isolated [uv](https://docs.astral.sh/uv/) environment (no system Python packages needed; uv fetches Python 3.10+ itself):
+
+| Tool | Repository | Purpose |
+| :--- | :--- | :--- |
+| **autocrop** | [leblancfg/autocrop](https://github.com/leblancfg/autocrop) | Face detection + crop/resize of profile photos (student & staff) |
+| **docling** | [docling-project/docling](https://github.com/docling-project/docling) | Converts PDF, DOCX, PPTX, XLSX, HTML and images (OCR) to Markdown / JSON for the `pgvector` embedding pipeline |
+
+Install as `xsia` so the API can run them. Executables land in `/var/lib/xsia/.local/bin`:
+
+```bash
+sudo -u xsia -H bash -c 'curl -LsSf https://astral.sh/uv/install.sh | sh'
+
+asxsia 'uv tool install autocrop'
+# CPU-only PyTorch: much smaller than the CUDA build. On an NVIDIA GPU server use plain `uv tool install docling`.
+asxsia 'uv tool install docling --extra-index-url https://download.pytorch.org/whl/cpu --index-strategy unsafe-best-match'
+
+# Pre-download docling's layout/OCR models (cached in /var/lib/xsia/.cache) so the first conversion doesn't stall
+asxsia 'docling-tools models download'
+
+asxsia 'autocrop --version && docling --version'
+```
+
+> ℹ️ `~/.local/bin` isn't on a systemd service's `PATH`. The API unit in [8.A](#a-api--etcsystemdsystemxsia-apiservice) adds it via `Environment=PATH=…`.
 
 ---
 
@@ -290,7 +318,7 @@ FEEDER_URL="http://feeder.example.ac.id/ws/live2.php"
 # Payment
 IS_PRODUCTION_MIDTRANS_PAYMENT=true
 
-# PDF rendering (path from step 4)
+# PDF rendering (path from step 4.A)
 CHROME_BIN="/usr/lib64/chromium-browser/headless_shell"
 EOF
 sudo chmod 600 /var/www/ferron/xsia_xarx/server/.env
@@ -375,6 +403,8 @@ Group=xsia
 WorkingDirectory=/var/www/ferron/xsia_xarx/server
 ExecStart=/var/www/ferron/xsia_xarx/server/xsia_xarx
 Environment=RUST_LOG=info
+# uv tools (autocrop, docling) from step 4.B
+Environment=PATH=/var/lib/xsia/.local/bin:/usr/local/bin:/usr/bin
 Restart=always
 RestartSec=5
 LimitNOFILE=65535
@@ -608,7 +638,7 @@ Save as `/var/www/ferron/xsia_xarx/deploy.sh` (`chmod +x`), run with `sudo /var/
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
-asxsia() { sudo -u xsia -H bash -lc "export PATH=\$HOME/.cargo/bin:\$HOME/.bun/bin:\$PATH; $*"; }
+asxsia() { sudo -u xsia -H bash -lc "export PATH=\$HOME/.cargo/bin:\$HOME/.bun/bin:\$HOME/.local/bin:\$PATH; $*"; }
 
 SRC=/var/www/ferron/xsia_xarx/src
 RUN=/var/www/ferron/xsia_xarx
@@ -621,6 +651,9 @@ asxsia "cd $SRC/server/migration && cargo build --release --locked"
 
 # Frontend
 asxsia "cd $SRC/client && bun install --frozen-lockfile && bun --bun run build"
+
+# Python tools (optional — upgrade autocrop / docling)
+# asxsia "uv tool upgrade --all"
 
 # Backup DB before migrating
 mkdir -p /var/lib/pgsql/backups
@@ -680,6 +713,7 @@ Copy backups off the server (rsync / object storage) — a backup on the same di
 | `access to library "age" is not allowed` | Something ran `LOAD 'age'` as `xsia` (non-superusers can't). Rely on `session_preload_libraries` from [2.C](#c-create-the-database-role-and-enable-extensions) instead. |
 | `unhandled cypher(cstring) function call` | AGE isn't loaded in that connection — check `SHOW session_preload_libraries;` returns `age`, then restart `xsia-api` so the pool reconnects. |
 | `operator class "graphid_ops" does not exist` | `ag_catalog.create_graph()` called without `ag_catalog` on the `search_path`. |
+| `autocrop` / `docling: command not found` from the API | Not installed as `xsia`, or the unit lacks `Environment=PATH=/var/lib/xsia/.local/bin:…` (see [4.B](#b-autocrop--docling-via-uv)). Run `systemctl daemon-reload && systemctl restart xsia-api` after editing. |
 | `vp: command not found` during the client build | Dependencies not installed — run `bun install --frozen-lockfile` in `src/client` (Vite+ is a local dev dependency). |
 | Logos / signatures missing in PDFs, `No such file` | `WorkingDirectory` / `APP_DIRECTORY` not `/var/www/ferron/xsia_xarx/server`, or `public/` not copied. |
 | PDF endpoint hangs or errors | `CHROME_BIN` wrong or Chromium missing; test with `$CHROME_BIN --headless --dump-dom https://example.com`. |
