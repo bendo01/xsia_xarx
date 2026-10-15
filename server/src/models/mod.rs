@@ -1,7 +1,7 @@
 pub mod academic;
+pub mod ai;
 pub mod auth;
 pub mod building;
-pub mod burn;
 pub mod chart;
 pub mod contact;
 pub mod document;
@@ -12,4 +12,5 @@ pub mod literate;
 pub mod location;
 pub mod payment;
 pub mod person;
+pub mod preference;
 pub mod webhook;
