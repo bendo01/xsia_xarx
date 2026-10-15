@@ -7,8 +7,6 @@ use sea_orm::{
     TransactionTrait,
 };
 use std::collections::HashMap;
-use std::fs::OpenOptions;
-use std::io::Write;
 use uuid::Uuid;
 
 use crate::models::{
@@ -23,7 +21,9 @@ use crate::models::{
     },
     feeder::master::nilai_transfer_pendidikan_mahasiswa as FeederNilaiTransfer,
 };
+use super::sync_log::SyncLog;
 use crate::tasks::Task;
+use serde_json::json;
 
 pub struct SyncNilaiTransferPendidikanMahasiswaToConvertions;
 
@@ -158,29 +158,9 @@ impl Task for SyncNilaiTransferPendidikanMahasiswaToConvertions {
             .iter()
             .any(|arg| arg == "--no-progress" || arg == "false");
 
-        let log_dir = "logs";
-        std::fs::create_dir_all(log_dir)?;
-        let log_file_path = format!(
-            "{}/sync_nilai_transfer_{}.log",
-            log_dir,
-            Local::now().format("%Y%m%d_%H%M%S")
-        );
-        let mut log_file = OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(&log_file_path)?;
+        let mut sync_log = SyncLog::open("nilai_transfer", !show_progress)?;
 
-        macro_rules! log_and_print {
-            ($($arg:tt)*) => {
-                let msg = format!($($arg)*);
-                writeln!(log_file, "[{}] {}", Local::now().format("%Y-%m-%d %H:%M:%S"), msg)?;
-                if !show_progress {
-                    println!("{}", msg);
-                }
-            };
-        }
-
-        log_and_print!("Starting synchronization of nilai_transfer_pendidikan_mahasiswa to convertions...");
+        sync_log.info("Starting synchronization of nilai_transfer_pendidikan_mahasiswa to convertions...")?;
 
         // Preload students
         let students = AcademicStudent::Entity::find()
@@ -189,7 +169,7 @@ impl Task for SyncNilaiTransferPendidikanMahasiswaToConvertions {
             .await?;
         let mut students_by_id_registrasi = HashMap::new();
         for s in students {
-            if let Some(reg_id) = s.id_registrasi_mahasiswa {
+            if let Some(reg_id) = s.id_registrasi_mahasiswa.filter(|id| !id.is_nil()) {
                 students_by_id_registrasi.insert(reg_id, s);
             }
         }
@@ -206,7 +186,7 @@ impl Task for SyncNilaiTransferPendidikanMahasiswaToConvertions {
         let mut courses_by_feeder_id = HashMap::new();
         let mut courses_by_code = HashMap::new();
         for c in courses {
-            if let Some(fid) = c.feeder_course_id {
+            if let Some(fid) = c.feeder_course_id.filter(|id| !id.is_nil()) {
                 courses_by_feeder_id.insert(fid, c.clone());
             }
             courses_by_code.insert(c.code.clone(), c);
@@ -267,20 +247,17 @@ impl Task for SyncNilaiTransferPendidikanMahasiswaToConvertions {
                 let txn = match db.begin().await {
                     Ok(tx) => tx,
                     Err(e) => {
-                        log_and_print!("ERROR: Failed to begin transaction: {}", e);
+                        sync_log.record_error(&record, &format!("Failed to begin transaction: {}", e))?;
                         errors += 1;
                         continue;
                     }
                 };
 
-                let id_registrasi = match record.id_registrasi_mahasiswa {
+                let id_registrasi = match record.id_registrasi_mahasiswa.filter(|id| !id.is_nil()) {
                     Some(id) => id,
                     None => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "SKIPPED: Missing id_registrasi_mahasiswa for record id: {}",
-                            record.id
-                        );
+                        sync_log.skip(&record, "missing_id_registrasi_mahasiswa", json!({}), "Missing or nil id_registrasi_mahasiswa")?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -293,11 +270,7 @@ impl Task for SyncNilaiTransferPendidikanMahasiswaToConvertions {
                     Some(s) => s,
                     None => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "SKIPPED: Student not found for id_registrasi_mahasiswa {} (record id: {})",
-                            id_registrasi,
-                            record.id
-                        );
+                        sync_log.skip(&record, "student_not_found", json!({"id_registrasi_mahasiswa": id_registrasi}), &format!("Student not found for id_registrasi_mahasiswa {}", id_registrasi))?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -306,7 +279,7 @@ impl Task for SyncNilaiTransferPendidikanMahasiswaToConvertions {
                     }
                 };
 
-                let course = if let Some(id_matkul) = record.id_matkul {
+                let course = if let Some(id_matkul) = record.id_matkul.filter(|id| !id.is_nil()) {
                     cache.courses_by_feeder_id.get(&id_matkul)
                 } else if let Some(ref code) = record.kode_matkul_diakui {
                     cache.courses_by_code.get(code)
@@ -318,12 +291,7 @@ impl Task for SyncNilaiTransferPendidikanMahasiswaToConvertions {
                     Some(c) => c,
                     None => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "SKIPPED: Course not found for id_matkul {:?} / kode_matkul_diakui {:?} (record id: {})",
-                            record.id_matkul,
-                            record.kode_matkul_diakui,
-                            record.id
-                        );
+                        sync_log.skip(&record, "course_not_found", json!({"id_matkul": record.id_matkul, "kode_matkul_diakui": record.kode_matkul_diakui}), &format!("Course not found for id_matkul {:?} / kode_matkul_diakui {:?}", record.id_matkul, record.kode_matkul_diakui))?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -360,11 +328,7 @@ impl Task for SyncNilaiTransferPendidikanMahasiswaToConvertions {
                 {
                     Ok((_, action)) => {
                         if let Err(e) = txn.commit().await {
-                            log_and_print!(
-                                "ERROR: Failed to commit transaction for record {}: {}",
-                                record.id,
-                                e
-                            );
+                            sync_log.record_error(&record, &format!("Failed to commit transaction: {}", e))?;
                             errors += 1;
                         } else {
                             match action {
@@ -375,11 +339,7 @@ impl Task for SyncNilaiTransferPendidikanMahasiswaToConvertions {
                     }
                     Err(e) => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "ERROR: Failed to upsert convertion for record {}: {}",
-                            record.id,
-                            e
-                        );
+                        sync_log.record_error(&record, &format!("Failed to upsert convertion: {}", e))?;
                         errors += 1;
                     }
                 }
@@ -399,17 +359,11 @@ impl Task for SyncNilaiTransferPendidikanMahasiswaToConvertions {
         if let Some(ref p) = pb {
             p.finish_with_message(format!(
                 "Sync completed - inserted: {} | updated: {} | skipped: {} | errors: {} (see {})",
-                inserted, updated, skipped, errors, log_file_path
+                inserted, updated, skipped, errors, sync_log.text_path
             ));
         }
 
-        log_and_print!(
-            "Summary: inserted: {}, updated: {}, skipped: {}, errors: {}",
-            inserted,
-            updated,
-            skipped,
-            errors
-        );
+        sync_log.summary(inserted, updated, skipped, errors)?;
 
         Ok(())
     }

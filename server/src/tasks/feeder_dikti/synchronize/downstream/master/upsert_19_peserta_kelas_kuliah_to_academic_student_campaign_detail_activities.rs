@@ -7,8 +7,6 @@ use sea_orm::{
     TransactionTrait,
 };
 use std::collections::HashMap;
-use std::fs::OpenOptions;
-use std::io::Write;
 use uuid::Uuid;
 
 use crate::models::{
@@ -29,7 +27,9 @@ use crate::models::{
     feeder::master::peserta_kelas_kuliah as FeederPesertaKelasKuliah,
     institution::master::{institutions as Institution, units as InstitutionUnit},
 };
+use super::sync_log::SyncLog;
 use crate::tasks::Task;
+use serde_json::json;
 
 pub struct SyncPesertaKelasKuliahToDetailActivities;
 
@@ -138,29 +138,9 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
             .iter()
             .any(|arg| arg == "--no-progress" || arg == "false");
 
-        let log_dir = "logs";
-        std::fs::create_dir_all(log_dir)?;
-        let log_file_path = format!(
-            "{}/sync_peserta_kelas_kuliah_{}.log",
-            log_dir,
-            Local::now().format("%Y%m%d_%H%M%S")
-        );
-        let mut log_file = OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(&log_file_path)?;
+        let mut sync_log = SyncLog::open("peserta_kelas_kuliah", !show_progress)?;
 
-        macro_rules! log_and_print {
-            ($($arg:tt)*) => {
-                let msg = format!($($arg)*);
-                writeln!(log_file, "[{}] {}", Local::now().format("%Y-%m-%d %H:%M:%S"), msg)?;
-                if !show_progress {
-                    println!("{}", msg);
-                }
-            };
-        }
-
-        log_and_print!("Starting synchronization of peserta_kelas_kuliah to detail_activities...");
+        sync_log.info("Starting synchronization of peserta_kelas_kuliah to detail_activities...")?;
 
         // Preload units
         let units = InstitutionUnit::Entity::find().all(db).await?;
@@ -201,7 +181,7 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
         let teaches = AcademicTeach::Entity::find().all(db).await?;
         let mut teaches_by_feeder_id = HashMap::new();
         for t in teaches {
-            if let Some(fid) = t.feeder_id {
+            if let Some(fid) = t.feeder_id.filter(|id| !id.is_nil()) {
                 teaches_by_feeder_id.insert(fid, t);
             }
         }
@@ -213,7 +193,7 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
             .await?;
         let mut students_by_id_registrasi = HashMap::new();
         for s in students {
-            if let Some(reg_id) = s.id_registrasi_mahasiswa {
+            if let Some(reg_id) = s.id_registrasi_mahasiswa.filter(|id| !id.is_nil()) {
                 students_by_id_registrasi.insert(reg_id, s);
             }
         }
@@ -276,20 +256,17 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                 let txn = match db.begin().await {
                     Ok(tx) => tx,
                     Err(e) => {
-                        log_and_print!("ERROR: Failed to begin transaction: {}", e);
+                        sync_log.record_error(&record, &format!("Failed to begin transaction: {}", e))?;
                         errors += 1;
                         continue;
                     }
                 };
 
-                let id_registrasi = match record.id_registrasi_mahasiswa {
+                let id_registrasi = match record.id_registrasi_mahasiswa.filter(|id| !id.is_nil()) {
                     Some(id) => id,
                     None => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "SKIPPED: Missing id_registrasi_mahasiswa for record id: {}",
-                            record.id
-                        );
+                        sync_log.skip(&record, "missing_id_registrasi_mahasiswa", json!({}), "Missing or nil id_registrasi_mahasiswa")?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -302,11 +279,7 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                     Some(s) => s,
                     None => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "SKIPPED: Student not found for id_registrasi_mahasiswa {} (record id: {})",
-                            id_registrasi,
-                            record.id
-                        );
+                        sync_log.skip(&record, "student_not_found", json!({"id_registrasi_mahasiswa": id_registrasi}), &format!("Student not found for id_registrasi_mahasiswa {}", id_registrasi))?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -315,14 +288,11 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                     }
                 };
 
-                let id_kelas_kuliah = match record.id_kelas_kuliah {
+                let id_kelas_kuliah = match record.id_kelas_kuliah.filter(|id| !id.is_nil()) {
                     Some(id) => id,
                     None => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "SKIPPED: Missing id_kelas_kuliah for record id: {}",
-                            record.id
-                        );
+                        sync_log.skip(&record, "missing_id_kelas_kuliah", json!({}), "Missing or nil id_kelas_kuliah")?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -335,11 +305,7 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                     Some(t) => t,
                     None => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "SKIPPED: Teach not found for feeder_id {} (record id: {})",
-                            id_kelas_kuliah,
-                            record.id
-                        );
+                        sync_log.skip(&record, "teach_not_found", json!({"id_kelas_kuliah": id_kelas_kuliah}), &format!("Teach not found for feeder_id {}", id_kelas_kuliah))?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -352,11 +318,7 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                     Some(id) => id,
                     None => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "SKIPPED: Teach has no activity_id for teach {} (record id: {})",
-                            teach.id,
-                            record.id
-                        );
+                        sync_log.skip(&record, "teach_missing_activity", json!({"teach_id": teach.id}), &format!("Teach has no activity_id for teach {}", teach.id))?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -369,11 +331,7 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                     Some(a) => a,
                     None => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "SKIPPED: Activity not found for id {} (record id: {})",
-                            activity_id,
-                            record.id
-                        );
+                        sync_log.skip(&record, "activity_not_found", json!({"activity_id": activity_id}), &format!("Activity not found for id {}", activity_id))?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -389,12 +347,7 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                     Some(sa) => sa,
                     None => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "SKIPPED: Student activity not found for student_id {} and unit_activity_id {} (record id: {})",
-                            student.id,
-                            activity.id,
-                            record.id
-                        );
+                        sync_log.skip(&record, "student_activity_not_found", json!({"student_id": student.id, "unit_activity_id": activity.id}), &format!("Student activity not found for student_id {} and unit_activity_id {}", student.id, activity.id))?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -407,11 +360,7 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                     Some(c) => c,
                     None => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "SKIPPED: Course not found for id {} (record id: {})",
-                            teach.course_id,
-                            record.id
-                        );
+                        sync_log.skip(&record, "course_not_found", json!({"course_id": teach.course_id}), &format!("Course not found for id {}", teach.course_id))?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -424,11 +373,7 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                     Some(u) => u,
                     None => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "SKIPPED: Unit not found for student unit_id {} (record id: {})",
-                            student.unit_id,
-                            record.id
-                        );
+                        sync_log.skip(&record, "unit_not_found", json!({"unit_id": student.unit_id}), &format!("Unit not found for student unit_id {}", student.unit_id))?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -443,11 +388,7 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                     Some(ay) => ay,
                     None => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "SKIPPED: Academic year not found for id {} (record id: {})",
-                            activity.academic_year_id,
-                            record.id
-                        );
+                        sync_log.skip(&record, "academic_year_not_found", json!({"academic_year_id": activity.academic_year_id}), &format!("Academic year not found for id {}", activity.academic_year_id))?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -471,11 +412,7 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                 {
                     Ok((_, action)) => {
                         if let Err(e) = txn.commit().await {
-                            log_and_print!(
-                                "ERROR: Failed to commit transaction for record {}: {}",
-                                record.id,
-                                e
-                            );
+                            sync_log.record_error(&record, &format!("Failed to commit transaction: {}", e))?;
                             errors += 1;
                         } else {
                             match action {
@@ -486,11 +423,7 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                     }
                     Err(e) => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "ERROR: Failed to upsert participant detail activity for record {}: {}",
-                            record.id,
-                            e
-                        );
+                        sync_log.record_error(&record, &format!("Failed to upsert participant detail activity: {}", e))?;
                         errors += 1;
                     }
                 }
@@ -510,17 +443,11 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
         if let Some(ref p) = pb {
             p.finish_with_message(format!(
                 "Sync completed - inserted: {} | updated: {} | skipped: {} | errors: {} (see {})",
-                inserted, updated, skipped, errors, log_file_path
+                inserted, updated, skipped, errors, sync_log.text_path
             ));
         }
 
-        log_and_print!(
-            "Summary: inserted: {}, updated: {}, skipped: {}, errors: {}",
-            inserted,
-            updated,
-            skipped,
-            errors
-        );
+        sync_log.summary(inserted, updated, skipped, errors)?;
 
         Ok(())
     }

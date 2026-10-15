@@ -7,8 +7,6 @@ use sea_orm::{
     TransactionTrait,
 };
 use std::collections::HashMap;
-use std::fs::OpenOptions;
-use std::io::Write;
 use uuid::Uuid;
 
 use crate::models::{
@@ -23,7 +21,9 @@ use crate::models::{
     },
     feeder::master::perkuliahan_mahasiswa as FeederPerkuliahanMahasiswa,
 };
+use super::sync_log::SyncLog;
 use crate::tasks::Task;
+use serde_json::json;
 
 pub struct SyncPerkuliahanMahasiswaToAcademicStudentActivities;
 
@@ -133,29 +133,9 @@ impl Task for SyncPerkuliahanMahasiswaToAcademicStudentActivities {
             .iter()
             .any(|arg| arg == "--no-progress" || arg == "false");
 
-        let log_dir = "logs";
-        std::fs::create_dir_all(log_dir)?;
-        let log_file_path = format!(
-            "{}/sync_perkuliahan_mahasiswa_{}.log",
-            log_dir,
-            Local::now().format("%Y%m%d_%H%M%S")
-        );
-        let mut log_file = OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(&log_file_path)?;
+        let mut sync_log = SyncLog::open("perkuliahan_mahasiswa", !show_progress)?;
 
-        macro_rules! log_and_print {
-            ($($arg:tt)*) => {
-                let msg = format!($($arg)*);
-                writeln!(log_file, "[{}] {}", Local::now().format("%Y-%m-%d %H:%M:%S"), msg)?;
-                if !show_progress {
-                    println!("{}", msg);
-                }
-            };
-        }
-
-        log_and_print!("Starting synchronization of perkuliahan_mahasiswa to student_activities...");
+        sync_log.info("Starting synchronization of perkuliahan_mahasiswa to student_activities...")?;
 
         // Preload students
         let students = AcademicStudent::Entity::find()
@@ -164,7 +144,7 @@ impl Task for SyncPerkuliahanMahasiswaToAcademicStudentActivities {
             .await?;
         let mut students_by_id_registrasi = HashMap::new();
         for s in students {
-            if let Some(reg_id) = s.id_registrasi_mahasiswa {
+            if let Some(reg_id) = s.id_registrasi_mahasiswa.filter(|id| !id.is_nil()) {
                 students_by_id_registrasi.insert(reg_id, s);
             }
         }
@@ -247,20 +227,17 @@ impl Task for SyncPerkuliahanMahasiswaToAcademicStudentActivities {
                 let txn = match db.begin().await {
                     Ok(tx) => tx,
                     Err(e) => {
-                        log_and_print!("ERROR: Failed to begin transaction: {}", e);
+                        sync_log.record_error(&record, &format!("Failed to begin transaction: {}", e))?;
                         errors += 1;
                         continue;
                     }
                 };
 
-                let id_registrasi = match record.id_registrasi_mahasiswa {
+                let id_registrasi = match record.id_registrasi_mahasiswa.filter(|id| !id.is_nil()) {
                     Some(id) => id,
                     None => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "SKIPPED: Missing id_registrasi_mahasiswa for record id: {}",
-                            record.id
-                        );
+                        sync_log.skip(&record, "missing_id_registrasi_mahasiswa", json!({}), "Missing or nil id_registrasi_mahasiswa")?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -273,11 +250,7 @@ impl Task for SyncPerkuliahanMahasiswaToAcademicStudentActivities {
                     Some(s) => s,
                     None => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "SKIPPED: Student not found for id_registrasi_mahasiswa {} (record id: {})",
-                            id_registrasi,
-                            record.id
-                        );
+                        sync_log.skip(&record, "student_not_found", json!({"id_registrasi_mahasiswa": id_registrasi}), &format!("Student not found for id_registrasi_mahasiswa {}", id_registrasi))?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -290,7 +263,7 @@ impl Task for SyncPerkuliahanMahasiswaToAcademicStudentActivities {
                     Some(s) => s,
                     None => {
                         let _ = txn.rollback().await;
-                        log_and_print!("SKIPPED: Missing id_semester for record id: {}", record.id);
+                        sync_log.skip(&record, "missing_id_semester", json!({}), "Missing id_semester")?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -303,11 +276,7 @@ impl Task for SyncPerkuliahanMahasiswaToAcademicStudentActivities {
                     Some(y) => y,
                     None => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "SKIPPED: Academic year not found for id_semester {} (record id: {})",
-                            id_semester,
-                            record.id
-                        );
+                        sync_log.skip(&record, "academic_year_not_found", json!({"id_semester": id_semester}), &format!("Academic year not found for id_semester {}", id_semester))?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -321,12 +290,7 @@ impl Task for SyncPerkuliahanMahasiswaToAcademicStudentActivities {
                         Some(ua) => ua,
                         None => {
                             let _ = txn.rollback().await;
-                            log_and_print!(
-                                "SKIPPED: Unit activity not found for unit_id {} and academic_year_id {} (record id: {})",
-                                student.unit_id,
-                                academic_year.id,
-                                record.id
-                            );
+                            sync_log.skip(&record, "unit_activity_not_found", json!({"unit_id": student.unit_id, "academic_year_id": academic_year.id}), &format!("Unit activity not found for unit_id {} and academic_year_id {}", student.unit_id, academic_year.id))?;
                             skipped += 1;
                             if let Some(ref p) = pb {
                                 p.inc(1);
@@ -362,11 +326,7 @@ impl Task for SyncPerkuliahanMahasiswaToAcademicStudentActivities {
                 {
                     Ok((_, action)) => {
                         if let Err(e) = txn.commit().await {
-                            log_and_print!(
-                                "ERROR: Failed to commit transaction for record {}: {}",
-                                record.id,
-                                e
-                            );
+                            sync_log.record_error(&record, &format!("Failed to commit transaction: {}", e))?;
                             errors += 1;
                         } else {
                             match action {
@@ -377,11 +337,7 @@ impl Task for SyncPerkuliahanMahasiswaToAcademicStudentActivities {
                     }
                     Err(e) => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "ERROR: Failed to upsert student activity for record {}: {}",
-                            record.id,
-                            e
-                        );
+                        sync_log.record_error(&record, &format!("Failed to upsert student activity: {}", e))?;
                         errors += 1;
                     }
                 }
@@ -401,17 +357,11 @@ impl Task for SyncPerkuliahanMahasiswaToAcademicStudentActivities {
         if let Some(ref p) = pb {
             p.finish_with_message(format!(
                 "Sync completed - inserted: {} | updated: {} | skipped: {} | errors: {} (see {})",
-                inserted, updated, skipped, errors, log_file_path
+                inserted, updated, skipped, errors, sync_log.text_path
             ));
         }
 
-        log_and_print!(
-            "Summary: inserted: {}, updated: {}, skipped: {}, errors: {}",
-            inserted,
-            updated,
-            skipped,
-            errors
-        );
+        sync_log.summary(inserted, updated, skipped, errors)?;
 
         Ok(())
     }

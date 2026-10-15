@@ -7,8 +7,6 @@ use sea_orm::{
     TransactionTrait,
 };
 use std::collections::HashMap;
-use std::fs::OpenOptions;
-use std::io::Write;
 use uuid::Uuid;
 
 use crate::models::{
@@ -20,7 +18,9 @@ use crate::models::{
     },
     feeder::master::komponen_evaluasi_kelas as FeederKomponenEvaluasiKelas,
 };
+use super::sync_log::SyncLog;
 use crate::tasks::Task;
+use serde_json::json;
 
 pub struct SyncKomponenEvaluasiKelasToTeachEvaluations;
 
@@ -115,29 +115,9 @@ impl Task for SyncKomponenEvaluasiKelasToTeachEvaluations {
             .iter()
             .any(|arg| arg == "--no-progress" || arg == "false");
 
-        let log_dir = "logs";
-        std::fs::create_dir_all(log_dir)?;
-        let log_file_path = format!(
-            "{}/sync_komponen_evaluasi_{}.log",
-            log_dir,
-            Local::now().format("%Y%m%d_%H%M%S")
-        );
-        let mut log_file = OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(&log_file_path)?;
+        let mut sync_log = SyncLog::open("komponen_evaluasi", !show_progress)?;
 
-        macro_rules! log_and_print {
-            ($($arg:tt)*) => {
-                let msg = format!($($arg)*);
-                writeln!(log_file, "[{}] {}", Local::now().format("%Y-%m-%d %H:%M:%S"), msg)?;
-                if !show_progress {
-                    println!("{}", msg);
-                }
-            };
-        }
-
-        log_and_print!("Starting synchronization of komponen_evaluasi_kelas to teach_evaluations...");
+        sync_log.info("Starting synchronization of komponen_evaluasi_kelas to teach_evaluations...")?;
 
         // Preload references
         let evaluation_types = AcademicEvaluationType::Entity::find().all(db).await?;
@@ -199,7 +179,7 @@ impl Task for SyncKomponenEvaluasiKelasToTeachEvaluations {
                 let txn = match db.begin().await {
                     Ok(tx) => tx,
                     Err(e) => {
-                        log_and_print!("ERROR: Failed to begin transaction: {}", e);
+                        sync_log.record_error(&record, &format!("Failed to begin transaction: {}", e))?;
                         errors += 1;
                         continue;
                     }
@@ -209,10 +189,7 @@ impl Task for SyncKomponenEvaluasiKelasToTeachEvaluations {
                     Some(c) => c,
                     None => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "SKIPPED: Missing id_jenis_evaluasi for record id: {}",
-                            record.id
-                        );
+                        sync_log.skip(&record, "missing_id_jenis_evaluasi", json!({}), "Missing id_jenis_evaluasi")?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -225,11 +202,7 @@ impl Task for SyncKomponenEvaluasiKelasToTeachEvaluations {
                     Some(et) => et,
                     None => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "SKIPPED: Evaluation type not found for code {} (record id: {})",
-                            jenis_evaluasi_code,
-                            record.id
-                        );
+                        sync_log.skip(&record, "evaluation_type_not_found", json!({"code": jenis_evaluasi_code}), &format!("Evaluation type not found for code {}", jenis_evaluasi_code))?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -242,10 +215,7 @@ impl Task for SyncKomponenEvaluasiKelasToTeachEvaluations {
                     Some(id) => id,
                     None => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "SKIPPED: Missing id_kelas_kuliah for record id: {}",
-                            record.id
-                        );
+                        sync_log.skip(&record, "missing_id_kelas_kuliah", json!({}), "Missing id_kelas_kuliah")?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -258,11 +228,7 @@ impl Task for SyncKomponenEvaluasiKelasToTeachEvaluations {
                     Some(t) => t,
                     None => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "SKIPPED: Teach class not found for feeder id {} (record id: {})",
-                            kelas_kuliah_id,
-                            record.id
-                        );
+                        sync_log.skip(&record, "teach_not_found", json!({"id_kelas_kuliah": kelas_kuliah_id}), &format!("Teach class not found for feeder id {}", kelas_kuliah_id))?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -274,11 +240,7 @@ impl Task for SyncKomponenEvaluasiKelasToTeachEvaluations {
                 match upsert_teach_evaluation(&txn, &record, teach, evaluation_type).await {
                     Ok((_, action)) => {
                         if let Err(e) = txn.commit().await {
-                            log_and_print!(
-                                "ERROR: Failed to commit transaction for record {}: {}",
-                                record.id,
-                                e
-                            );
+                            sync_log.record_error(&record, &format!("Failed to commit transaction: {}", e))?;
                             errors += 1;
                         } else {
                             match action {
@@ -289,11 +251,7 @@ impl Task for SyncKomponenEvaluasiKelasToTeachEvaluations {
                     }
                     Err(e) => {
                         let _ = txn.rollback().await;
-                        log_and_print!(
-                            "ERROR: Failed to upsert teach evaluation for record {}: {}",
-                            record.id,
-                            e
-                        );
+                        sync_log.record_error(&record, &format!("Failed to upsert teach evaluation: {}", e))?;
                         errors += 1;
                     }
                 }
@@ -313,17 +271,11 @@ impl Task for SyncKomponenEvaluasiKelasToTeachEvaluations {
         if let Some(ref p) = pb {
             p.finish_with_message(format!(
                 "Sync completed - inserted: {} | updated: {} | skipped: {} | errors: {} (see {})",
-                inserted, updated, skipped, errors, log_file_path
+                inserted, updated, skipped, errors, sync_log.text_path
             ));
         }
 
-        log_and_print!(
-            "Summary: inserted: {}, updated: {}, skipped: {}, errors: {}",
-            inserted,
-            updated,
-            skipped,
-            errors
-        );
+        sync_log.summary(inserted, updated, skipped, errors)?;
 
         Ok(())
     }
