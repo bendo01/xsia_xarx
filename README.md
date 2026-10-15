@@ -132,7 +132,7 @@ xsia_xarx/
 Before starting, ensure you have the following installed on your machine:
 
 - **Rust**: Version `1.97.1+` (or latest stable supporting edition 2024)
-- **Node.js**: `v24+` and **pnpm** (or `npm`/`yarn`/`bun`)
+- **Bun**: [`v1.4.3+`](https://github.com/oven-sh/bun) — package manager, script runner, and runtime for the client (replaces Node.js)
 - **Vite+**: [voidzero-dev/vite-plus](https://github.com/voidzero-dev/vite-plus) — installed as a `client/` dev dependency; all frontend scripts run through its `vp` CLI
 - **PostgreSQL**: `v18` with [pg_uuidv7](https://github.com/fboulnois/pg_uuidv7), [pgvector](https://github.com/pgvector/pgvector), [pgmq](https://github.com/pgmq/pgmq), and [Apache AGE](https://github.com/apache/age) extensions (see [Database Requirement](#4-database-requirement))
 - **Redis**: `v7+` for background job execution
@@ -256,19 +256,17 @@ CURRENT_INSTITUTION_CODE="092010"
 
    ```bash
    bun install
-   # or: pnpm install
    ```
 
 3. **Start the development server**:
 
    ```bash
    bun run dev
-   # or: pnpm dev
    ```
 
    Open your browser at `http://localhost:3000` (or the port indicated in terminal).
 
-   > ℹ️ The `client/` scripts (`dev`, `build`, `preview`, `lint`, `test:*`) run through the [Vite+](https://github.com/voidzero-dev/vite-plus) `vp` CLI, and `vite` is aliased to `@voidzero-dev/vite-plus-core`. Installing dependencies is enough; you don't need a global `vp`.
+   > ℹ️ The `client/` scripts (`dev`, `build`, `preview`, `lint`, `test:*`) run through the [Vite+](https://github.com/voidzero-dev/vite-plus) `vp` CLI, and `vite` is aliased to `@voidzero-dev/vite-plus-core`. Installing dependencies is enough; you don't need a global `vp`. `vp`'s shebang asks for `node`; with only Bun installed, run scripts as `bun --bun run <script>` so Bun executes it.
 
 ---
 
@@ -620,7 +618,7 @@ cargo run -- task sync:permissions
 
 Traces which API endpoints each client area (`client/src/routes/<area>`) calls, using `client/scripts/extract-api-usage.mjs`. It then grants the matching route permissions to the position types that work in that area. Administrator is skipped because it bypasses RBAC.
 
-Run it from `server/`, because the client is found at `../client` by default. It needs `node` on your `PATH` and a configured database connection.
+Run it from `server/`, because the client is found at `../client` by default. It needs `bun` on your `PATH` and a configured database connection.
 
 ```bash
 # Preview the changes without writing anything
@@ -636,8 +634,8 @@ cargo run -- task generate:permission-from-client --area rectorat --dry-run
 cargo run -- task generate:permission-from-client --prune --dry-run
 cargo run -- task generate:permission-from-client --prune
 
-# Reuse a previously captured usage JSON instead of running the Node script
-(cd ../client && node scripts/extract-api-usage.mjs) > /tmp/usage.json
+# Reuse a previously captured usage JSON instead of running the Bun script
+(cd ../client && bun scripts/extract-api-usage.mjs) > /tmp/usage.json
 cargo run -- task generate:permission-from-client --input /tmp/usage.json --dry-run
 ```
 
@@ -677,7 +675,7 @@ requestJson('PUT', `institution/master/employees/${encodeURIComponent(id)}`, pay
 Any call the extractor can't trace is printed as `[WARN] <area>: N fetch call(s) could not be traced`, and the task grants nothing for it. To list these calls, run the script and inspect `unresolved`:
 
 ```bash
-(cd ../client && node scripts/extract-api-usage.mjs) | jq '.areas.rectorat.unresolved'
+(cd ../client && bun scripts/extract-api-usage.mjs) | jq '.areas.rectorat.unresolved'
 ```
 
 `[NO ROUTE]` lines are client requests that match no backend route, usually a wrong path or HTTP method in the client.
@@ -993,11 +991,9 @@ cd client
 
 # Install project dependencies
 bun install
-# or: pnpm install
 
 # Install Playwright browser binaries (Chromium)
 bunx playwright install chromium
-# or: pnpm exec playwright install chromium
 ```
 
 #### A. White-Box Unit & Component Testing (Vitest)
@@ -1016,7 +1012,6 @@ cd client
 
 # Run all white-box unit & component tests
 bun run test:unit
-# or: pnpm test:unit
 
 # Run in watch mode during development
 bun run test:unit:watch
@@ -1041,7 +1036,6 @@ cd client
 
 # Run all black-box browser tests (Headless Chromium)
 bun run test:e2e
-# or: pnpm test:e2e
 
 # Run with a visible browser window (Headed mode)
 bun run test:e2e:headed
@@ -1057,7 +1051,6 @@ To run both White-Box (Vitest) and Black-Box (Playwright) suites together:
 ```bash
 cd client
 bun run test
-# or: pnpm test
 ```
 
 ---
@@ -1069,11 +1062,9 @@ cd client
 
 # Type-check and build production bundle using Bun
 bun run build
-# or: pnpm build
 
 # Preview production build locally
 bun run preview
-# or: pnpm preview
 ```
 
 ---

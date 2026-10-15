@@ -227,7 +227,7 @@ fn load_usage(args: &[String]) -> Result<ApiUsage, Box<dyn std::error::Error>> {
         let client_dir = PathBuf::from(flag("--client").unwrap_or_else(|| "../client".to_string()));
         let script = client_dir.join("scripts/extract-api-usage.mjs");
         println!("==> Tracing client API usage with {}", script.display());
-        let output = Command::new("node")
+        let output = Command::new("bun")
             .arg(&script)
             .current_dir(&client_dir)
             .output()?;

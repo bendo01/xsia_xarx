@@ -5,7 +5,7 @@ This guide deploys `xsia_xarx` to a single **Rocky Linux 10** server (x86_64):
 ```text
                     ┌────────────────────── Rocky Linux 10 server ───────────────────────┐
  Browser ──HTTPS──▶ │ Ferron :443 (auto Let's Encrypt)                                   │
-                    │   ├── app.example.ac.id  ──▶ SolidStart SSR (node)  127.0.0.1:3000 │
+                    │   ├── app.example.ac.id  ──▶ SolidStart SSR (bun)   127.0.0.1:3000 │
                     │   └── api.example.ac.id  ──▶ Rust API (salvo)       127.0.0.1:5800 │
                     │                                   │                                │
                     │                                   └──▶ PostgreSQL 18 :5432         │
@@ -30,7 +30,7 @@ Replace `app.example.ac.id` / `api.example.ac.id` with your real domains everywh
 
 1. [Prepare the server](#1-prepare-the-server)
 2. [Install PostgreSQL 18 + extensions](#2-install-postgresql-18--extensions)
-3. [Install build toolchains (Rust, Node, Bun)](#3-install-build-toolchains-rust-node-bun)
+3. [Install build toolchains (Rust, Bun)](#3-install-build-toolchains-rust-bun)
 4. [Install headless Chromium (PDF)](#4-install-headless-chromium-pdf)
 5. [Get the code](#5-get-the-code)
 6. [Build & configure the backend](#6-build--configure-the-backend)
@@ -159,7 +159,7 @@ PostgreSQL listens on `localhost` only by default — keep it that way.
 
 ---
 
-## 3. Install build toolchains (Rust, Node, Bun)
+## 3. Install build toolchains (Rust, Bun)
 
 Install as the `xsia` user so builds don't run as root. (Alternatively, build on a separate **Rocky Linux 10** machine and copy only the artifacts.)
 
@@ -167,21 +167,18 @@ Install as the `xsia` user so builds don't run as root. (Alternatively, build on
 # Rust (stable; the crate needs >= 1.97.1)
 sudo -u xsia -H bash -c 'curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal'
 
-# Bun (client package manager, packageManager = bun@1.4.3)
+# Bun — package manager, build runner, AND the runtime for the SolidStart SSR server (packageManager = bun@1.4.3)
 # Vite+ (`vp`) needs no global install — it's a client dev dependency installed by `bun install`
 sudo -u xsia -H bash -c 'curl -fsSL https://bun.sh/install | bash'
-
-# Node.js 24 (runtime for the SolidStart SSR server)
-curl -fsSL https://rpm.nodesource.com/setup_24.x | sudo bash -
-# (If NodeSource doesn't support EL 10 yet, use Rocky's AppStream: `sudo dnf -y install nodejs`, Node 22+ also runs the SSR server.)
-sudo dnf -y install nodejs
 ```
+
+> ℹ️ Node.js is **not** needed. [Bun](https://github.com/oven-sh/bun) runs the client build (`bun --bun run build` forces Bun to run `vp`, whose shebang asks for `node`), the SSR server (`bun .output/server/index.mjs`), and `client/scripts/extract-api-usage.mjs` for the `generate:permission-from-client` task.
 
 Helper to run commands as `xsia` with the toolchains on `PATH` (used throughout this guide):
 
 ```bash
 asxsia() { sudo -u xsia -H bash -lc "export PATH=\$HOME/.cargo/bin:\$HOME/.bun/bin:\$PATH; $*"; }
-asxsia 'cargo --version && bun --version && node --version'
+asxsia 'cargo --version && bun --version'
 ```
 
 ---
@@ -316,9 +313,9 @@ asxsia 'cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task'
 
 ## 7. Build & configure the frontend
 
-### A. Make the build emit a runnable Node server (one-time code change)
+### A. Make the build emit a runnable server (one-time code change)
 
-The client builds with [Vite+](https://github.com/voidzero-dev/vite-plus): every `client/package.json` script calls its `vp` CLI (`bun run build` → `vp build`), and `vite` is aliased to `@voidzero-dev/vite-plus-core`. `package.json` starts production with `node .output/server/index.mjs`, but the current `vite.config.ts` does not register the Nitro plugin, so `vp build` only produces `dist/` (no standalone server). Add Nitro to the non-test plugin list in `client/vite.config.ts` and commit it:
+The client builds with [Vite+](https://github.com/voidzero-dev/vite-plus): every `client/package.json` script calls its `vp` CLI (`bun run build` → `vp build`), and `vite` is aliased to `@voidzero-dev/vite-plus-core`. `package.json` starts production with `bun .output/server/index.mjs`, but the current `vite.config.ts` does not register the Nitro plugin, so `vp build` only produces `dist/` (no standalone server). Add Nitro to the non-test plugin list in `client/vite.config.ts` and commit it:
 
 ```ts
 import { nitro } from "nitro/vite";
@@ -330,7 +327,7 @@ plugins: lazyPlugins(() =>
 ),
 ```
 
-After this, `bun run build` writes `client/.output/` (verify locally: `bun run build && bun run start`).
+After this, `bun --bun run build` writes `client/.output/` (verify locally: `bun --bun run build && bun run start`). Nitro's default `node-server` output runs as-is on Bun.
 
 ### B. Production client `.env`
 
@@ -353,7 +350,7 @@ EOF
 ### C. Build and install
 
 ```bash
-asxsia 'cd /var/www/ferron/xsia_xarx/src/client && bun install --frozen-lockfile && bun run build'   # bun run build → vp build
+asxsia 'cd /var/www/ferron/xsia_xarx/src/client && bun install --frozen-lockfile && bun --bun run build'   # → vp build, run by Bun
 sudo -u xsia rm -rf /var/www/ferron/xsia_xarx/client/.output
 sudo -u xsia cp -a /var/www/ferron/xsia_xarx/src/client/.output /var/www/ferron/xsia_xarx/client/
 ```
@@ -406,7 +403,7 @@ Type=simple
 User=xsia
 Group=xsia
 WorkingDirectory=/var/www/ferron/xsia_xarx/client
-ExecStart=/usr/bin/node .output/server/index.mjs
+ExecStart=/var/lib/xsia/.bun/bin/bun .output/server/index.mjs
 Environment=NODE_ENV=production
 Environment=HOST=127.0.0.1
 Environment=PORT=3000
@@ -623,7 +620,7 @@ asxsia "cd $SRC/server && cargo build --release --locked"
 asxsia "cd $SRC/server/migration && cargo build --release --locked"
 
 # Frontend
-asxsia "cd $SRC/client && bun install --frozen-lockfile && bun run build"
+asxsia "cd $SRC/client && bun install --frozen-lockfile && bun --bun run build"
 
 # Backup DB before migrating
 mkdir -p /var/lib/pgsql/backups
