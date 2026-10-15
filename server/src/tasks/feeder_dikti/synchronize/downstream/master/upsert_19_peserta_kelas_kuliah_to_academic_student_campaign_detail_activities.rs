@@ -256,7 +256,10 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                 let txn = match db.begin().await {
                     Ok(tx) => tx,
                     Err(e) => {
-                        sync_log.record_error(&record, &format!("Failed to begin transaction: {}", e))?;
+                        sync_log.record_error(
+                            &record,
+                            &format!("Failed to begin transaction: {}", e),
+                        )?;
                         errors += 1;
                         continue;
                     }
@@ -266,7 +269,12 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                     Some(id) => id,
                     None => {
                         let _ = txn.rollback().await;
-                        sync_log.skip(&record, "missing_id_registrasi_mahasiswa", json!({}), "Missing or nil id_registrasi_mahasiswa")?;
+                        sync_log.skip(
+                            &record,
+                            "missing_id_registrasi_mahasiswa",
+                            json!({}),
+                            "Missing or nil id_registrasi_mahasiswa",
+                        )?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -279,7 +287,12 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                     Some(s) => s,
                     None => {
                         let _ = txn.rollback().await;
-                        sync_log.skip(&record, "student_not_found", json!({"id_registrasi_mahasiswa": id_registrasi}), &format!("Student not found for id_registrasi_mahasiswa {}", id_registrasi))?;
+                        sync_log.skip(
+                            &record,
+                            "student_not_found",
+                            json!({"id_registrasi_mahasiswa": id_registrasi}),
+                            &format!("Student not found for id_registrasi_mahasiswa {}", id_registrasi),
+                        )?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -292,7 +305,12 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                     Some(id) => id,
                     None => {
                         let _ = txn.rollback().await;
-                        sync_log.skip(&record, "missing_id_kelas_kuliah", json!({}), "Missing or nil id_kelas_kuliah")?;
+                        sync_log.skip(
+                            &record,
+                            "missing_id_kelas_kuliah",
+                            json!({}),
+                            "Missing or nil id_kelas_kuliah",
+                        )?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -305,7 +323,12 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                     Some(t) => t,
                     None => {
                         let _ = txn.rollback().await;
-                        sync_log.skip(&record, "teach_not_found", json!({"id_kelas_kuliah": id_kelas_kuliah}), &format!("Teach not found for feeder_id {}", id_kelas_kuliah))?;
+                        sync_log.skip(
+                            &record,
+                            "teach_not_found",
+                            json!({"id_kelas_kuliah": id_kelas_kuliah}),
+                            &format!("Teach not found for feeder_id {}", id_kelas_kuliah),
+                        )?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -318,7 +341,12 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                     Some(id) => id,
                     None => {
                         let _ = txn.rollback().await;
-                        sync_log.skip(&record, "teach_missing_activity", json!({"teach_id": teach.id}), &format!("Teach has no activity_id for teach {}", teach.id))?;
+                        sync_log.skip(
+                            &record,
+                            "teach_missing_activity",
+                            json!({"teach_id": teach.id}),
+                            &format!("Teach has no activity_id for teach {}", teach.id),
+                        )?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -331,7 +359,12 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                     Some(a) => a,
                     None => {
                         let _ = txn.rollback().await;
-                        sync_log.skip(&record, "activity_not_found", json!({"activity_id": activity_id}), &format!("Activity not found for id {}", activity_id))?;
+                        sync_log.skip(
+                            &record,
+                            "activity_not_found",
+                            json!({"activity_id": activity_id}),
+                            &format!("Activity not found for id {}", activity_id),
+                        )?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -347,7 +380,12 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                     Some(sa) => sa,
                     None => {
                         let _ = txn.rollback().await;
-                        sync_log.skip(&record, "student_activity_not_found", json!({"student_id": student.id, "unit_activity_id": activity.id}), &format!("Student activity not found for student_id {} and unit_activity_id {}", student.id, activity.id))?;
+                        sync_log.skip(
+                            &record,
+                            "student_activity_not_found",
+                            json!({"student_id": student.id, "unit_activity_id": activity.id}),
+                            &format!("Student activity not found for student_id {} and unit_activity_id {}", student.id, activity.id),
+                        )?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -360,7 +398,12 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                     Some(c) => c,
                     None => {
                         let _ = txn.rollback().await;
-                        sync_log.skip(&record, "course_not_found", json!({"course_id": teach.course_id}), &format!("Course not found for id {}", teach.course_id))?;
+                        sync_log.skip(
+                            &record,
+                            "course_not_found",
+                            json!({"course_id": teach.course_id}),
+                            &format!("Course not found for id {}", teach.course_id),
+                        )?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -373,7 +416,12 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                     Some(u) => u,
                     None => {
                         let _ = txn.rollback().await;
-                        sync_log.skip(&record, "unit_not_found", json!({"unit_id": student.unit_id}), &format!("Unit not found for student unit_id {}", student.unit_id))?;
+                        sync_log.skip(
+                            &record,
+                            "unit_not_found",
+                            json!({"unit_id": student.unit_id}),
+                            &format!("Unit not found for student unit_id {}", student.unit_id),
+                        )?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -388,7 +436,12 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                     Some(ay) => ay,
                     None => {
                         let _ = txn.rollback().await;
-                        sync_log.skip(&record, "academic_year_not_found", json!({"academic_year_id": activity.academic_year_id}), &format!("Academic year not found for id {}", activity.academic_year_id))?;
+                        sync_log.skip(
+                            &record,
+                            "academic_year_not_found",
+                            json!({"academic_year_id": activity.academic_year_id}),
+                            &format!("Academic year not found for id {}", activity.academic_year_id),
+                        )?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -412,7 +465,10 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                 {
                     Ok((_, action)) => {
                         if let Err(e) = txn.commit().await {
-                            sync_log.record_error(&record, &format!("Failed to commit transaction: {}", e))?;
+                            sync_log.record_error(
+                                &record,
+                                &format!("Failed to commit transaction: {}", e),
+                            )?;
                             errors += 1;
                         } else {
                             match action {
@@ -423,7 +479,10 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
                     }
                     Err(e) => {
                         let _ = txn.rollback().await;
-                        sync_log.record_error(&record, &format!("Failed to upsert participant detail activity: {}", e))?;
+                        sync_log.record_error(
+                            &record,
+                            &format!("Failed to upsert participant detail activity: {}", e),
+                        )?;
                         errors += 1;
                     }
                 }

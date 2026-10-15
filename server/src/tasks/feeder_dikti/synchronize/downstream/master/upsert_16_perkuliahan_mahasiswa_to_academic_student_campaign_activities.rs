@@ -227,7 +227,10 @@ impl Task for SyncPerkuliahanMahasiswaToAcademicStudentActivities {
                 let txn = match db.begin().await {
                     Ok(tx) => tx,
                     Err(e) => {
-                        sync_log.record_error(&record, &format!("Failed to begin transaction: {}", e))?;
+                        sync_log.record_error(
+                            &record,
+                            &format!("Failed to begin transaction: {}", e),
+                        )?;
                         errors += 1;
                         continue;
                     }
@@ -237,7 +240,12 @@ impl Task for SyncPerkuliahanMahasiswaToAcademicStudentActivities {
                     Some(id) => id,
                     None => {
                         let _ = txn.rollback().await;
-                        sync_log.skip(&record, "missing_id_registrasi_mahasiswa", json!({}), "Missing or nil id_registrasi_mahasiswa")?;
+                        sync_log.skip(
+                            &record,
+                            "missing_id_registrasi_mahasiswa",
+                            json!({}),
+                            "Missing or nil id_registrasi_mahasiswa",
+                        )?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -250,7 +258,12 @@ impl Task for SyncPerkuliahanMahasiswaToAcademicStudentActivities {
                     Some(s) => s,
                     None => {
                         let _ = txn.rollback().await;
-                        sync_log.skip(&record, "student_not_found", json!({"id_registrasi_mahasiswa": id_registrasi}), &format!("Student not found for id_registrasi_mahasiswa {}", id_registrasi))?;
+                        sync_log.skip(
+                            &record,
+                            "student_not_found",
+                            json!({"id_registrasi_mahasiswa": id_registrasi}),
+                            &format!("Student not found for id_registrasi_mahasiswa {}", id_registrasi),
+                        )?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -263,7 +276,12 @@ impl Task for SyncPerkuliahanMahasiswaToAcademicStudentActivities {
                     Some(s) => s,
                     None => {
                         let _ = txn.rollback().await;
-                        sync_log.skip(&record, "missing_id_semester", json!({}), "Missing id_semester")?;
+                        sync_log.skip(
+                            &record,
+                            "missing_id_semester",
+                            json!({}),
+                            "Missing id_semester",
+                        )?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -276,7 +294,12 @@ impl Task for SyncPerkuliahanMahasiswaToAcademicStudentActivities {
                     Some(y) => y,
                     None => {
                         let _ = txn.rollback().await;
-                        sync_log.skip(&record, "academic_year_not_found", json!({"id_semester": id_semester}), &format!("Academic year not found for id_semester {}", id_semester))?;
+                        sync_log.skip(
+                            &record,
+                            "academic_year_not_found",
+                            json!({"id_semester": id_semester}),
+                            &format!("Academic year not found for id_semester {}", id_semester),
+                        )?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -290,7 +313,12 @@ impl Task for SyncPerkuliahanMahasiswaToAcademicStudentActivities {
                         Some(ua) => ua,
                         None => {
                             let _ = txn.rollback().await;
-                            sync_log.skip(&record, "unit_activity_not_found", json!({"unit_id": student.unit_id, "academic_year_id": academic_year.id}), &format!("Unit activity not found for unit_id {} and academic_year_id {}", student.unit_id, academic_year.id))?;
+                            sync_log.skip(
+                                &record,
+                                "unit_activity_not_found",
+                                json!({"unit_id": student.unit_id, "academic_year_id": academic_year.id}),
+                                &format!("Unit activity not found for unit_id {} and academic_year_id {}", student.unit_id, academic_year.id),
+                            )?;
                             skipped += 1;
                             if let Some(ref p) = pb {
                                 p.inc(1);
@@ -326,7 +354,10 @@ impl Task for SyncPerkuliahanMahasiswaToAcademicStudentActivities {
                 {
                     Ok((_, action)) => {
                         if let Err(e) = txn.commit().await {
-                            sync_log.record_error(&record, &format!("Failed to commit transaction: {}", e))?;
+                            sync_log.record_error(
+                                &record,
+                                &format!("Failed to commit transaction: {}", e),
+                            )?;
                             errors += 1;
                         } else {
                             match action {
@@ -337,7 +368,10 @@ impl Task for SyncPerkuliahanMahasiswaToAcademicStudentActivities {
                     }
                     Err(e) => {
                         let _ = txn.rollback().await;
-                        sync_log.record_error(&record, &format!("Failed to upsert student activity: {}", e))?;
+                        sync_log.record_error(
+                            &record,
+                            &format!("Failed to upsert student activity: {}", e),
+                        )?;
                         errors += 1;
                     }
                 }

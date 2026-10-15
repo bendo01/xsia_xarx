@@ -179,7 +179,10 @@ impl Task for SyncKomponenEvaluasiKelasToTeachEvaluations {
                 let txn = match db.begin().await {
                     Ok(tx) => tx,
                     Err(e) => {
-                        sync_log.record_error(&record, &format!("Failed to begin transaction: {}", e))?;
+                        sync_log.record_error(
+                            &record,
+                            &format!("Failed to begin transaction: {}", e),
+                        )?;
                         errors += 1;
                         continue;
                     }
@@ -189,7 +192,12 @@ impl Task for SyncKomponenEvaluasiKelasToTeachEvaluations {
                     Some(c) => c,
                     None => {
                         let _ = txn.rollback().await;
-                        sync_log.skip(&record, "missing_id_jenis_evaluasi", json!({}), "Missing id_jenis_evaluasi")?;
+                        sync_log.skip(
+                            &record,
+                            "missing_id_jenis_evaluasi",
+                            json!({}),
+                            "Missing id_jenis_evaluasi",
+                        )?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -202,7 +210,12 @@ impl Task for SyncKomponenEvaluasiKelasToTeachEvaluations {
                     Some(et) => et,
                     None => {
                         let _ = txn.rollback().await;
-                        sync_log.skip(&record, "evaluation_type_not_found", json!({"code": jenis_evaluasi_code}), &format!("Evaluation type not found for code {}", jenis_evaluasi_code))?;
+                        sync_log.skip(
+                            &record,
+                            "evaluation_type_not_found",
+                            json!({"code": jenis_evaluasi_code}),
+                            &format!("Evaluation type not found for code {}", jenis_evaluasi_code),
+                        )?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -215,7 +228,12 @@ impl Task for SyncKomponenEvaluasiKelasToTeachEvaluations {
                     Some(id) => id,
                     None => {
                         let _ = txn.rollback().await;
-                        sync_log.skip(&record, "missing_id_kelas_kuliah", json!({}), "Missing id_kelas_kuliah")?;
+                        sync_log.skip(
+                            &record,
+                            "missing_id_kelas_kuliah",
+                            json!({}),
+                            "Missing id_kelas_kuliah",
+                        )?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -228,7 +246,12 @@ impl Task for SyncKomponenEvaluasiKelasToTeachEvaluations {
                     Some(t) => t,
                     None => {
                         let _ = txn.rollback().await;
-                        sync_log.skip(&record, "teach_not_found", json!({"id_kelas_kuliah": kelas_kuliah_id}), &format!("Teach class not found for feeder id {}", kelas_kuliah_id))?;
+                        sync_log.skip(
+                            &record,
+                            "teach_not_found",
+                            json!({"id_kelas_kuliah": kelas_kuliah_id}),
+                            &format!("Teach class not found for feeder id {}", kelas_kuliah_id),
+                        )?;
                         skipped += 1;
                         if let Some(ref p) = pb {
                             p.inc(1);
@@ -240,7 +263,10 @@ impl Task for SyncKomponenEvaluasiKelasToTeachEvaluations {
                 match upsert_teach_evaluation(&txn, &record, teach, evaluation_type).await {
                     Ok((_, action)) => {
                         if let Err(e) = txn.commit().await {
-                            sync_log.record_error(&record, &format!("Failed to commit transaction: {}", e))?;
+                            sync_log.record_error(
+                                &record,
+                                &format!("Failed to commit transaction: {}", e),
+                            )?;
                             errors += 1;
                         } else {
                             match action {
@@ -251,7 +277,10 @@ impl Task for SyncKomponenEvaluasiKelasToTeachEvaluations {
                     }
                     Err(e) => {
                         let _ = txn.rollback().await;
-                        sync_log.record_error(&record, &format!("Failed to upsert teach evaluation: {}", e))?;
+                        sync_log.record_error(
+                            &record,
+                            &format!("Failed to upsert teach evaluation: {}", e),
+                        )?;
                         errors += 1;
                     }
                 }
