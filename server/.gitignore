@@ -21,3 +21,5 @@ public/img
 .env
 .models
 .model
+
+*.jsonl
