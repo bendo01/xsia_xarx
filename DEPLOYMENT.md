@@ -20,7 +20,7 @@ Replace `app.example.ac.id` / `api.example.ac.id` with your real domains everywh
 > ℹ️ **Facts about the app that shape this setup**
 > - The API binary **always binds `127.0.0.1:5800`** (hard-coded in `server/src/main.rs`; `SERVER_PORT` is ignored). It must sit behind a reverse proxy (Ferron here).
 > - The API reads `.env` from its **working directory** and resolves `public/...` paths (logos, signatures, uploads) **relative to it**. The systemd unit must set `WorkingDirectory` to the folder containing `.env` and `public/`.
-> - The [PGMQ](https://github.com/pgmq/pgmq) email worker runs inside the API process — no separate worker service is needed. Redis is **not** required (`REDIS_URL` is read but unused).
+> - The [PGMQ](https://github.com/pgmq/pgmq) email worker runs inside the API process — no separate worker service is needed. Redis is **not** required.
 > - PDF generation uses headless Chrome/Chromium (`CHROME_BIN`).
 > - Client `VITE_*` / `CURRENT_*` variables are **baked in at build time**. Rebuild the client whenever they change.
 
@@ -276,7 +276,14 @@ echo /usr/local/lib64 | sudo tee /etc/ld.so.conf.d/local-lib64.conf && sudo ldco
 
 ### C. Production `.env`
 
-Create `/var/www/ferron/xsia_xarx/server/.env` (start from `server/.env.production.example`):
+Create `/var/www/ferron/xsia_xarx/server/.env`. Either generate it, which fills in every key the server reads with random `JWT_SECRET`, `APP_ENCRYPTION_KEY` and webhook secrets, then replace the `CHANGE_ME` values:
+
+```bash
+asxsia 'cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task utility:generate-env'   # no database needed
+sudo -u xsia ${EDITOR:-vi} /var/www/ferron/xsia_xarx/server/.env
+```
+
+Or write it by hand (start from `server/.env.production.example`):
 
 ```bash
 sudo -u xsia tee /var/www/ferron/xsia_xarx/server/.env >/dev/null <<'EOF'
@@ -297,11 +304,12 @@ JWT_SECRET="CHANGE_ME"
 JWT_EXPIRATION_HOURS=24
 
 # Institution & academic context
+# The institution comes from the stored Feeder credential (task utility:feeder-add-credential)
 CURRENT_ACADEMIC_YEAR_ID="5133cbba-7e54-4795-9bad-0caae06e0284"
 CURRENT_STUDENT_ADMISSION_ACADEMIC_YEAR_ID="5133cbba-7e54-4795-9bad-0caae06e0284"
-CURRENT_INSTITUTION_ID="ed7e8c02-451b-4548-aa81-26b8d0b7fdec"
-CURRENT_INSTITUTION_CODE="092010"
 
+# SMTP and Feeder: fallbacks only. Prefer storing them in the database (6.D);
+# a stored mail server / Feeder credential wins over these values.
 # SMTP
 SMTP_HOST="mail.example.ac.id"
 SMTP_PORT=587
@@ -333,6 +341,26 @@ asxsia 'cd /var/www/ferron/xsia_xarx/src/server && cp /var/www/ferron/xsia_xarx/
 
 # List all available tasks (e.g. feeder master-data sync)
 asxsia 'cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task'
+```
+
+Then store the integration settings in the database. Each task prompts for its values (passwords and keys are hidden and stored encrypted with `APP_ENCRYPTION_KEY`), so run them in an interactive terminal:
+
+```bash
+asxsia 'cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task utility:feeder-add-credential'       # Feeder login + current institution
+asxsia 'cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task utility:preference-add-mail-server'  # SMTP
+asxsia 'cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task utility:preference-add-openwa'       # OpenWA + both webhook secrets
+```
+
+| Task | Why it matters |
+| :--- | :--- |
+| `utility:feeder-add-credential` | **Required for Feeder.** The institution you enter becomes the server's *current institution*; there is no `.env` key for it any more. Store a credential for **one** institution only: with none, or with credentials for several, Feeder tasks stop with an error. |
+| `utility:preference-add-mail-server` | Without it, email uses the `SMTP_*` keys from `.env`. |
+| `utility:preference-add-openwa` | Without it, WhatsApp messages and the webhooks use the `OPENWA_*` / `*_WEBHOOK_SECRET` keys from `.env`. |
+
+Stored settings win over `.env` and are read when needed, so changing them later doesn't need a restart. Check which institution is current:
+
+```bash
+sudo -u postgres psql -d xsia_xarx -c "SELECT i.code, i.name FROM feeder_akun.kredential k JOIN institution_master.institutions i ON i.id = k.institution_id WHERE k.deleted_at IS NULL;"   # expect exactly one row
 ```
 
 ---
@@ -631,16 +659,18 @@ Then in a browser: log in, open a dashboard, generate a PDF (KRS/KHS) to confirm
 
 The API accepts two webhooks. Their tables (`webhook.mail_in_a_box_events`, `webhook.open_wa_events`) are created by `./migration up` in [6.D](#d-run-migrations-and-initial-tasks). Payload formats and response codes are documented in the README's *Inbound Webhooks* section.
 
-| Source | Endpoint | Secret (`server/.env`) | Auth header |
+| Source | Endpoint | Secret (database, or `server/.env` fallback) | Auth header |
 | :--- | :--- | :--- | :--- |
 | Mail-in-a-Box | `https://api.example.ac.id/api/v1/webhook/mail-in-a-box` | `MIAB_WEBHOOK_SECRET` | `X-Webhook-Signature: sha256=<HMAC>` |
 | [OpenWA](https://github.com/rmyndharis/OpenWA) | `https://api.example.ac.id/api/v1/webhook/openwa` | `OPENWA_WEBHOOK_SECRET` (≥ 16 chars) | `X-OpenWA-Signature: sha256=<HMAC>` (sent by OpenWA) |
 
-Both endpoints answer `503` until their secret is set, and `401` for a missing or wrong signature. No Ferron change is needed: they're under `/api/v1`, which is already proxied.
+Each request reads the secrets from the active OpenWA settings in the database (`preference.what_apps`, stored by `utility:preference-add-openwa`) and falls back to `server/.env` only when no active row exists. Both endpoints answer `503` until a secret is set, and `401` for a missing or wrong signature. No Ferron change is needed: they're under `/api/v1`, which is already proxied.
 
 ### A. Set the secrets
 
-Generate them with the `utility:preference-generate-webhook-secret` task. It prints both as `.env` lines and, if OpenWA settings were already added with `utility:preference-add-openwa`, also stores them encrypted in the database. Pass `miab` or `openwa` to generate only one:
+**Recommended: store them in the database.** `utility:preference-add-openwa` ([6.D](#d-run-migrations-and-initial-tasks)) asks for both secrets. To replace them later, run `utility:preference-generate-webhook-secret`: it updates the stored secrets directly and they take effect immediately, with no restart. Then update the senders ([12.B](#b-mail-in-a-box--xsia), [12.C](#c-openwa--xsia)).
+
+**Fallback: `server/.env`**, used only while no active OpenWA settings are stored. Generate them with the `utility:preference-generate-webhook-secret` task. It prints both as `.env` lines and, if OpenWA settings were already added with `utility:preference-add-openwa`, also stores them encrypted in the database. Pass `miab` or `openwa` to generate only one:
 
 ```bash
 asxsia 'cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task utility:preference-generate-webhook-secret'
@@ -655,7 +685,7 @@ openssl rand -hex 32     # MIAB_WEBHOOK_SECRET
 openssl rand -hex 32     # OPENWA_WEBHOOK_SECRET
 ```
 
-Either way, the API reads the secrets **only from `server/.env`**. Set them with the `set_env` helper below, which replaces a key that's already in `.env` and appends it otherwise. Don't just append (`tee -a`, `>>`) a second time: `.env` is loaded with the first occurrence of a key winning, so a duplicate line added later is silently ignored.
+To use the `.env` fallback, set them with the `set_env` helper below, which replaces a key that's already in `.env` and appends it otherwise. Don't just append (`tee -a`, `>>`) a second time: `.env` is loaded with the first occurrence of a key winning, so a duplicate line added later is silently ignored.
 
 ```bash
 ENV_FILE=/var/www/ferron/xsia_xarx/server/.env
@@ -917,8 +947,11 @@ Copy backups off the server (rsync / object storage) — a backup on the same di
 | `unhandled cypher(cstring) function call` | AGE isn't loaded in that connection — check `SHOW session_preload_libraries;` returns `age`, then restart `xsia-api` so the pool reconnects. |
 | `operator class "graphid_ops" does not exist` | `ag_catalog.create_graph()` called without `ag_catalog` on the `search_path`. |
 | `autocrop` / `docling: command not found` from the API | Not installed as `xsia`, or the unit lacks `Environment=PATH=/var/lib/xsia/.local/bin:…` (see [4.B](#b-autocrop--docling-via-uv)). Run `systemctl daemon-reload && systemctl restart xsia-api` after editing. |
-| Webhook returns `503` | `MIAB_WEBHOOK_SECRET` / `OPENWA_WEBHOOK_SECRET` empty in `server/.env`, or `xsia-api` not restarted after setting it ([12.A](#a-set-the-secrets)). |
-| Webhook returns `401` | Secret differs between sender and `server/.env`, the body was changed after signing (sign the exact bytes sent), or the OpenWA webhook was registered without a secret. |
+| Webhook returns `503` | No secret: no active OpenWA settings with a secret in the database, and `MIAB_WEBHOOK_SECRET` / `OPENWA_WEBHOOK_SECRET` empty in `server/.env` (or `xsia-api` not restarted after editing `.env`) ([12.A](#a-set-the-secrets)). |
+| Webhook returns `500` "Webhook settings unavailable" | The stored OpenWA settings can't be read: usually `APP_ENCRYPTION_KEY` changed since they were saved. Restore the old key, or re-save them with `utility:preference-add-openwa`. |
+| Feeder task: "No Feeder credential is stored…" | Run `utility:feeder-add-credential` ([6.D](#d-run-migrations-and-initial-tasks)); the current institution comes from it. |
+| Feeder task: "…more than one institution…" | `feeder_akun.kredential` holds credentials for several institutions. Soft-delete the ones that don't belong to this installation (set `deleted_at`). |
+| Webhook returns `401` | Secret differs between the sender and xsia (the database, or `server/.env` when nothing is stored), the body was changed after signing (sign the exact bytes sent), or the OpenWA webhook was registered without a secret. |
 | `vp: command not found` during the client build | Dependencies not installed — run `bun install --frozen-lockfile` in `src/client` (Vite+ is a local dev dependency). |
 | Logos / signatures missing in PDFs, `No such file` | `WorkingDirectory` / `APP_DIRECTORY` not `/var/www/ferron/xsia_xarx/server`, or `public/` not copied. |
 | PDF endpoint hangs or errors | `CHROME_BIN` wrong or Chromium missing; test with `$CHROME_BIN --headless --dump-dom https://example.com`. |

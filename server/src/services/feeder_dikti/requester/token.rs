@@ -26,7 +26,7 @@ pub struct TokenResponse {
 
 impl Token {
     /// Fetches authentication token from the Feeder API using the stored credential
-    /// for `CURRENT_INSTITUTION_ID` (falling back to environment configuration).
+    /// of the current institution (falling back to environment configuration).
     ///
     /// # Errors
     ///

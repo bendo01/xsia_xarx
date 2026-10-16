@@ -6,6 +6,7 @@ use sea_orm::{
 };
 use uuid::Uuid;
 
+use crate::config::institution::CurrentInstitution;
 use crate::models::feeder::akumulasi::estimasi as FeederAkumulasiEstimasi;
 use crate::tasks::feeder_dikti::downstream::feeder_request::{InputRequestData, RequestData};
 use crate::tasks::Task;
@@ -27,15 +28,8 @@ const DEFAULT_FILTER: &str = "";
 pub struct EstimateRiwayatPenelitianDosen;
 
 impl EstimateRiwayatPenelitianDosen {
-    fn get_institution_id() -> Result<Uuid, Box<dyn std::error::Error + Send + Sync>> {
-        if let Ok(id_str) = std::env::var("CURRENT_INSTITUTION_ID")
-
-            && let Ok(id) = Uuid::parse_str(&id_str) {
-
-                return Ok(id);
-
-        }
-        Err("CURRENT_INSTITUTION_ID is not set or invalid".into())
+    async fn get_institution_id(db: &DatabaseConnection) -> Result<Uuid, Box<dyn std::error::Error + Send + Sync>> {
+        Ok(CurrentInstitution::load(db).await?.id)
     }
 
     async fn find_progress_record(
@@ -230,7 +224,7 @@ impl Task for EstimateRiwayatPenelitianDosen {
     async fn run(&self, db: &DatabaseConnection, _args: &[String]) -> Result<(), Box<dyn std::error::Error>> {
         println!("Starting {} task", TASK_NAME);
 
-        let institution_id = Self::get_institution_id()
+        let institution_id = Self::get_institution_id(db).await
             .map_err(|e| Box::<dyn std::error::Error>::from(e.to_string()))?;
 
         let existing_record = Self::find_progress_record(db, institution_id)

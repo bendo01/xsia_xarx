@@ -19,6 +19,9 @@
 - [Tech Stack](#-tech-stack)
 - [Prerequisites](#-prerequisites)
 - [Environment Configuration](#-environment-configuration)
+  - [Server Environment (`server/.env`)](#server-environment-serverenv)
+  - [Settings Stored in the Database](#settings-stored-in-the-database)
+  - [Client Environment (`client/.env`)](#client-environment-clientenv)
 - [Quick Start](#-quick-start)
   - [1. Backend Setup (`server/`)](#1-backend-setup-server)
   - [2. Frontend Setup (`client/`)](#2-frontend-setup-client)
@@ -135,7 +138,6 @@ Before starting, ensure you have the following installed on your machine:
 - **Bun**: [`v1.4.3+`](https://github.com/oven-sh/bun) — package manager, script runner, and runtime for the client (replaces Node.js)
 - **Vite+**: [voidzero-dev/vite-plus](https://github.com/voidzero-dev/vite-plus) — installed as a `client/` dev dependency; all frontend scripts run through its `vp` CLI
 - **PostgreSQL**: `v18` with [pg_uuidv7](https://github.com/fboulnois/pg_uuidv7), [pgvector](https://github.com/pgvector/pgvector), [pgmq](https://github.com/pgmq/pgmq), and [Apache AGE](https://github.com/apache/age) extensions (see [Database Requirement](#4-database-requirement))
-- **Redis**: `v7+` for background job execution
 - **SeaORM CLI**: Installed via Cargo:
 
   ```bash
@@ -172,9 +174,6 @@ DB_IDLE_TIMEOUT=5000
 DB_MIN_CONNECTIONS=5
 DB_MAX_CONNECTIONS=50
 
-# Redis & Apalis Task Queue
-REDIS_URL="redis://127.0.0.1:6379"
-
 # Authentication & Security
 JWT_SECRET="your-super-secret-jwt-key"
 JWT_EXPIRATION_HOURS=24
@@ -184,10 +183,9 @@ JWT_EXPIRATION_HOURS=24
 APP_ENCRYPTION_KEY="generate-with-openssl-rand-base64-32"
 
 # Institution & Academic Context
+# The institution comes from the stored Feeder credential (task utility:feeder-add-credential)
 CURRENT_ACADEMIC_YEAR_ID="5133cbba-7e54-4795-9bad-0caae06e0284"
 CURRENT_STUDENT_ADMISSION_ACADEMIC_YEAR_ID="5133cbba-7e54-4795-9bad-0caae06e0284"
-CURRENT_INSTITUTION_ID="ed7e8c02-451b-4548-aa81-26b8d0b7fdec"
-CURRENT_INSTITUTION_CODE="092010"
 
 # SMTP Mailer Settings
 SMTP_HOST="mail.xsia.app"
@@ -196,16 +194,33 @@ SMTP_USER="no-reply@xsia.app"
 SMTP_PASSWORD="your-smtp-password"
 
 # External Integrations (PDDikti Feeder / Payment)
+# FEEDER_* and SMTP_* are fallbacks: a stored Feeder credential / mail server wins (see below)
 FEEDER_USERNAME="feeder_username"
 FEEDER_PASSWORD="feeder_password"
 FEEDER_URL="http://feeder.example.ac.id/ws/live2.php"
 IS_PRODUCTION_MIDTRANS_PAYMENT=false
 
-# Inbound Webhooks (shared secrets; an empty value disables that endpoint)
+# Inbound Webhooks (fallback; the active OpenWA settings in the database win)
 # Generate with: cargo run -- task utility:preference-generate-webhook-secret (or openssl rand -hex 32)
 MIAB_WEBHOOK_SECRET="generate-with-openssl-rand-hex-32"   # POST /api/v1/webhook/mail-in-a-box
 OPENWA_WEBHOOK_SECRET="generate-with-openssl-rand-hex-32" # POST /api/v1/webhook/openwa
 ```
+
+### Settings Stored in the Database
+
+Integration settings live in the database, with secrets encrypted by `APP_ENCRYPTION_KEY`. Store them with the CLI tasks below. The server reads them whenever it needs them, so a change applies without a restart. The matching `.env` keys are only a fallback, used when nothing is stored:
+
+| Setting | Stored by | Table | `.env` fallback |
+| :--- | :--- | :--- | :--- |
+| Mail server (SMTP host, port, TLS, sender, login) | `utility:preference-add-mail-server` | `preference.mail_servers` (active row) | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM_EMAIL`, `SMTP_FROM_NAME` |
+| OpenWA connection (URL, session ID, operator key) | `utility:preference-add-openwa` | `preference.what_apps` (active row) | `OPENWA_URL`, `OPENWA_API_KEY_SESSION_ID`, `OPENWA_API_KEY_OPERATOR` |
+| Webhook secrets | `utility:preference-add-openwa` or `utility:preference-generate-webhook-secret` | `preference.what_apps` (active row) | `MIAB_WEBHOOK_SECRET`, `OPENWA_WEBHOOK_SECRET` |
+| PDDikti Feeder login | `utility:feeder-add-credential` | `feeder_akun.kredential` | `FEEDER_URL`, `FEEDER_USERNAME`, `FEEDER_PASSWORD` |
+| Current institution | `utility:feeder-add-credential` | `feeder_akun.kredential` → `institution_master.institutions` | none |
+
+**Current institution.** The server serves one institution: the one the stored Feeder credential belongs to. The Feeder estimation and sync tasks need it. There is no `.env` key for it. `CURRENT_INSTITUTION_ID` and `CURRENT_INSTITUTION_CODE` in `server/.env` are no longer read; the client still reads its own copies from `client/.env`. If no credential is stored, Feeder tasks stop with *"No Feeder credential is stored…"*. If credentials exist for more than one institution, they stop with *"…more than one institution…"*; delete the credentials that don't belong to this installation.
+
+A stored row wins over `.env` as a whole: for example, with an active OpenWA row, all OpenWA values come from it and none from `.env`. If the row can't be decrypted (wrong `APP_ENCRYPTION_KEY`), the webhooks answer `500` and the error is logged.
 
 ### Client Environment (`client/.env`)
 
@@ -323,13 +338,13 @@ The frontend includes a built-in debugging and interactive real-time studio:
 - **Route**: [`/example/websocket`](client/src/routes/example/websocket.tsx)
 - **Features**: Live connection lifecycle manager, auto-reconnect, 5s automated heartbeat ping-pong with RTT latency measurement in ms, dual-mode text/JSON payload composer, and SSE event streaming listener.
 
-### 3. Background Job Execution (Apalis Email Worker)
+### 3. Background Job Execution (PGMQ Workers)
 
-In addition to the HTTP and WebSocket endpoints, `cargo run` automatically spawns an asynchronous **Apalis** background task worker:
+In addition to the HTTP and WebSocket endpoints, `cargo run` starts background workers inside the same process. Their queues are stored in PostgreSQL with the [pgmq](https://github.com/pgmq/pgmq) extension, so no Redis or separate worker service is needed:
 
-- **Worker Runtime**: Tokio background task (`tokio::spawn(email_worker.run())`)
-- **Queue Storage**: Redis (`REDIS_URL="redis://127.0.0.1:6379"`)
-- **Responsibilities**: Consumes and processes queued tasks (such as transactional SMTP emails) asynchronously without blocking HTTP requests.
+- **Worker Runtime**: Tokio background tasks started in `main.rs` (`start_email_worker`, `start_pdf_embedding_worker`)
+- **Queue Storage**: PostgreSQL / PGMQ (same `DATABASE_URL`)
+- **Responsibilities**: Sending transactional emails and embedding uploaded PDFs, without blocking HTTP requests. See [Background Workers](#-background-workers--task-runner) for the queues.
 
 ---
 
@@ -339,7 +354,7 @@ In addition to the HTTP and WebSocket endpoints, `cargo run` automatically spawn
 
 `POST /api/v1/webhook/mail-in-a-box` receives events from a Mail-in-a-Box server and stores each one in `webhook.mail_in_a_box_events` (migration `m20261014_130000_schema_webhook_table_mail_in_a_box_events`). Mail-in-a-Box has no built-in webhook sender, so events are posted by a script on the box (a cron job, a Postfix/Dovecot hook, or a wrapper around the status checks).
 
-**Authentication.** Set `MIAB_WEBHOOK_SECRET` on the server; while it is empty the endpoint answers `503`. Each request must carry one of:
+**Authentication.** Store the secret in the active OpenWA settings (`utility:preference-add-openwa`) or set `MIAB_WEBHOOK_SECRET` in `server/.env` (see [Settings Stored in the Database](#settings-stored-in-the-database)); while neither is set the endpoint answers `503`. Each request must carry one of:
 
 | Header | Value |
 | :--- | :--- |
@@ -388,7 +403,7 @@ curl -fsS -X POST https://your-xsia-host/api/v1/webhook/mail-in-a-box \
 
 `POST /api/v1/webhook/openwa` receives events from the [OpenWA](https://github.com/rmyndharis/OpenWA) WhatsApp gateway and stores each one in `webhook.open_wa_events` (migration `m20261014_140000_schema_webhook_table_open_wa_events`).
 
-**Authentication.** Set `OPENWA_WEBHOOK_SECRET` on the server (at least 16 characters, which OpenWA requires); while it is empty the endpoint answers `503`. Register the webhook in OpenWA with the same value as its `secret`. OpenWA then signs every delivery with `X-OpenWA-Signature: sha256=<hex HMAC-SHA256 of the raw body>`, and a missing or wrong signature returns `401`. A webhook registered in OpenWA without a secret is unsigned and is always rejected.
+**Authentication.** Store the secret in the active OpenWA settings (`utility:preference-add-openwa`) or set `OPENWA_WEBHOOK_SECRET` in `server/.env`; it must be at least 16 characters, which OpenWA requires. While neither is set the endpoint answers `503`. Register the webhook in OpenWA with the same value as its `secret`. OpenWA then signs every delivery with `X-OpenWA-Signature: sha256=<hex HMAC-SHA256 of the raw body>`, and a missing or wrong signature returns `401`. A webhook registered in OpenWA without a secret is unsigned and is always rejected.
 
 **Payload.** OpenWA's standard envelope:
 
@@ -464,12 +479,16 @@ sea-orm-cli generate entity \
 
 ## ⚡ Background Workers & Task Runner
 
-### Apalis Redis Background Workers
+### PGMQ Background Workers
 
-The server automatically initializes an **Apalis** background monitor on startup to process queued jobs (such as transactional emails via SMTP):
+On startup the server creates its [PGMQ](https://github.com/pgmq/pgmq) queues (if missing) and starts one worker per queue. The queues are tables in PostgreSQL, so a job survives an API restart:
 
-- **Worker Queue**: `xsia-xarx:email`
-- **Job Structure**: `EmailJob { to, subject, body }`
+| Queue | Job | Code | Retries |
+| :--- | :--- | :--- | :--- |
+| `email` | `EmailJob { to, subject, body, html_body }` | `server/src/jobs/email.rs` | Up to 5 reads, then archived |
+| `pdf_embedding` | `PdfEmbeddingJob` | `server/src/jobs/embedding/embed.rs` | Up to 3 attempts, then archived |
+
+Workers poll for up to 5 s at a time. A job that fails becomes visible again after its visibility timeout and is retried. Finished and given-up jobs move to PGMQ's archive table (`pgmq.a_<queue>`). The email worker uses the stored mail server (see [Settings Stored in the Database](#settings-stored-in-the-database)).
 
 ### CLI Task Runner
 
@@ -589,6 +608,7 @@ cargo run -- task
 | `SyncBiodataMahasiswaToContactDetails` | Upsert biodata_mahasiswa to contact_master phones, emails, and residences (Step 21) | `cargo run -- task SyncBiodataMahasiswaToContactDetails` |
 | `SyncBiodataDosenToContactDetails` | Upsert biodata_dosen to contact_master phones, emails, and residences (Step 22) | `cargo run -- task SyncBiodataDosenToContactDetails` |
 | `utility:feeder-add-credential` | Prompts for Feeder username, password, institution code and URL, then stores the credential (password encrypted) | `cargo run -- task utility:feeder-add-credential` |
+| `utility:generate-env` | Creates `.env` with every key the server reads (secrets generated), or adds only the missing keys to an existing one. Needs no database | `cargo run -- task utility:generate-env` |
 | `utility:generate-permission-from-client` | Grants each position type the permissions its client area (`client/src/routes/<area>`) requests | `cargo run -- task utility:generate-permission-from-client --dry-run` |
 | `utility:generate-permission-from-route` | Upserts every named controller route into auth.permissions and deletes permissions no route uses | `cargo run -- task utility:generate-permission-from-route --dry-run` |
 | `utility:hash-password` | Hashes input string/password using Argon2id and Bcrypt from arguments | `cargo run -- task utility:hash-password "MySecretPass123"` |
@@ -651,12 +671,14 @@ cargo run -- task utility:feeder-add-credential
 
 | Prompt | Notes |
 | :--- | :--- |
-| Institution code | Defaults to `CURRENT_INSTITUTION_CODE`. Must match an existing institution |
+| Institution code | Defaults to the institution of the credential already stored. Must match an existing institution |
 | Feeder username | Required |
 | Feeder password | Hidden input. Stored encrypted |
 | Feeder URL | Must start with `http://` or `https://`, e.g. `http://host:3003/ws/live2.php` |
 
 Each institution has one credential. If one already exists, it is updated; otherwise a new one is created.
+
+The credential also decides the **current institution** used by every Feeder task (see [Settings Stored in the Database](#settings-stored-in-the-database)). Store a credential for one institution only; with credentials for several, Feeder tasks refuse to run.
 
 ##### 📧 Add Mail Server (`utility:preference-add-mail-server`)
 
@@ -708,9 +730,25 @@ cargo run -- task utility:preference-generate-webhook-secret openwa   # only OPE
 
 The task prints the secrets as `.env` lines (`MIAB_WEBHOOK_SECRET="..."`, `OPENWA_WEBHOOK_SECRET="..."`) and stores them encrypted in the active OpenWA settings. If no active OpenWA settings exist, nothing is stored; run `utility:preference-add-openwa` first and paste the secrets there.
 
-The webhook endpoints read the secrets **only from `server/.env`**, so copy the printed lines there and restart the API. Every run replaces the old secrets: register the new OpenWA secret again and update `XSIA_WEBHOOK_SECRET` on the Mail-in-a-Box server, or their deliveries will get `401`. The secrets are printed in plain text, so don't run the task where output is logged.
+When the secrets are stored in the database they take effect immediately; the printed `.env` lines are only needed if you use the `.env` fallback (then restart the API). Every run replaces the old secrets: register the new OpenWA secret again and update `XSIA_WEBHOOK_SECRET` on the Mail-in-a-Box server, or their deliveries will get `401`. The secrets are printed in plain text, so don't run the task where output is logged.
 
 All four tasks need a configured database connection and `APP_ENCRYPTION_KEY` set in `server/.env`, since they encrypt the secrets before saving them.
+
+##### 🧾 Generate `.env` (`utility:generate-env`)
+
+Write a `server/.env` with every key the server reads, grouped and commented. Unlike the other tasks it needs no database connection, so it works on a fresh checkout:
+
+```bash
+cargo run -- task utility:generate-env                    # create server/.env, or add the keys it is missing
+cargo run -- task utility:generate-env --output .env.prod # another file
+cargo run -- task utility:generate-env --stdout           # print a fresh file, write nothing
+```
+
+- `JWT_SECRET`, `APP_ENCRYPTION_KEY`, `MIAB_WEBHOOK_SECRET` and `OPENWA_WEBHOOK_SECRET` get random values. The value you must set yourself (`DATABASE_URL`) is `CHANGE_ME`.
+- Keys with a built-in default, and the SMTP / OpenWA / Feeder fallbacks that the `utility:preference-*` and `utility:feeder-add-credential` settings override, are written commented out.
+- If the file exists, only missing keys are appended (a commented-out key counts as present, except `JWT_SECRET`: without an active one the server signs logins with a public default, so a real one is added). Existing values are never changed, so `APP_ENCRYPTION_KEY` stays the same and encrypted secrets in the database stay readable.
+- A new file is created with mode `600`.
+- If the existing `JWT_SECRET` is empty, the built-in default, or shorter than 32 characters, the task warns and shows how to generate a new one. It doesn't replace it, because that logs everyone out.
 
 ##### 🛡️ Generate Permissions from Client (`utility:generate-permission-from-client`)
 

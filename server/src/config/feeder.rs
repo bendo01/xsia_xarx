@@ -2,6 +2,7 @@ use sea_orm::{ColumnTrait, ConnectionTrait, EntityTrait, QueryFilter};
 use std::env;
 use uuid::Uuid;
 
+use super::institution::CurrentInstitution;
 use crate::library::crypto;
 use crate::models::feeder::akun::kredential;
 
@@ -15,9 +16,9 @@ pub struct FeederConfig {
 impl Default for FeederConfig {
     fn default() -> Self {
         Self {
-            feeder_url: "http://feeder.tritunas.ac.id/ws/live2.php".to_string(),
-            feeder_username: "".to_string(),
-            feeder_password: "".to_string(),
+            feeder_url: "http://feeder_domain.tld/ws/live2.php".to_string(),
+            feeder_username: "fill_your_username".to_string(),
+            feeder_password: "fill_your_password".to_string(),
         }
     }
 }
@@ -66,22 +67,24 @@ impl FeederConfig {
         }))
     }
 
-    /// Loads the credential for `CURRENT_INSTITUTION_ID` from the database,
-    /// falling back to `FEEDER_*` environment variables if none is stored.
+    /// Loads the credential of the current institution (see [`CurrentInstitution`])
+    /// from the database, falling back to `FEEDER_*` environment variables if no
+    /// credential is stored.
     pub async fn load<C: ConnectionTrait>(
         db: &C,
     ) -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
-        dotenv::dotenv().ok();
-        let institution_id = env::var("CURRENT_INSTITUTION_ID")
-            .ok()
-            .and_then(|id| Uuid::parse_str(&id).ok());
-
-        if let Some(institution_id) = institution_id
-            && let Some(config) = Self::from_db(db, institution_id).await?
-        {
-            return Ok(config);
+        let has_credential = kredential::Entity::find()
+            .filter(kredential::Column::DeletedAt.is_null())
+            .one(db)
+            .await?
+            .is_some();
+        if !has_credential {
+            return Ok(Self::from_env());
         }
 
-        Ok(Self::from_env())
+        let institution = CurrentInstitution::load(db).await?;
+        Self::from_db(db, institution.id).await?.ok_or_else(|| {
+            format!("No Feeder credential for institution {}", institution.id).into()
+        })
     }
 }

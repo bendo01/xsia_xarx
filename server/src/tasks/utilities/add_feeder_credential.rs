@@ -7,6 +7,7 @@ use sea_orm::{
 use std::io::{self, Write};
 use uuid::Uuid;
 
+use crate::config::institution::CurrentInstitution;
 use crate::library::crypto;
 use crate::models::feeder::akun::kredential;
 use crate::models::institution::master::institutions;
@@ -52,7 +53,8 @@ impl Task for AddFeederCredentialTask {
         println!(" ADD FEEDER CREDENTIAL");
         println!("{}", "=".repeat(60));
 
-        let default_code = std::env::var("CURRENT_INSTITUTION_CODE").ok();
+        // Suggest the institution of the credential already stored, if any
+        let default_code = CurrentInstitution::load(db).await.ok().and_then(|i| i.code);
         let institution_code = prompt_required("Institution code", default_code.as_deref())?;
 
         let institution = institutions::Entity::find()

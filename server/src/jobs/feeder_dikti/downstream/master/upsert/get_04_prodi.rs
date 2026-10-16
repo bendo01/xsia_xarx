@@ -6,6 +6,7 @@ use sea_orm::{
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+use crate::config::institution::CurrentInstitution;
 use crate::models::feeder::master::profil_program_studi as profil_program_studi;
 
 /// Feeder model for GetAllProdi endpoint
@@ -45,12 +46,13 @@ pub struct Worker;
 
 impl Worker {
     pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+        let institution_id = Some(CurrentInstitution::load(db).await?.id);
         let txn = db.begin().await?;
         let mut success_count = 0;
         let mut error_count = 0;
 
         for (index, record) in args.records.iter().enumerate() {
-            match Self::upsert_record(&txn, record).await {
+            match Self::upsert_record(&txn, record, institution_id).await {
                 Ok(_action) => {
                     success_count += 1;
                 }
@@ -70,8 +72,7 @@ impl Worker {
     }
 
 
-    pub async fn upsert_record(txn: &DatabaseTransaction, record: &GetProdiResponse) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
-        let institution_id = std::env::var("CURRENT_INSTITUTION_ID").ok().and_then(|s| Uuid::parse_str(&s).ok());
+    pub async fn upsert_record(txn: &DatabaseTransaction, record: &GetProdiResponse, institution_id: Option<Uuid>) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         let id_prodi = record
             .id_prodi
             .ok_or("id_prodi is missing")?;

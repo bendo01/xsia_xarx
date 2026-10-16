@@ -78,6 +78,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 return Ok(());
             }
             Commands::Task { name, args } => {
+                // Writes the .env the database connection needs, so it runs without one
+                use xsia_xarx::tasks::utilities::generate_env;
+                if name.as_deref().is_some_and(|n| n == generate_env::NAME || n == generate_env::NAME.replace(':', "_")) {
+                    return generate_env::generate_env(&args);
+                }
                 let db = db::connect_db().await?;
                 println!("Database connection successful");
                 xsia_xarx::tasks::run_task(name, &args, &db).await?;

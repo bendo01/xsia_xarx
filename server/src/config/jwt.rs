@@ -4,6 +4,9 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use chrono::{Utc, Duration};
 
+/// Used when `JWT_SECRET` is unset. It is public, so tokens signed with it can be forged.
+pub const DEFAULT_SECRET: &str = "default_secret_key_change_me_in_production";
+
 #[derive(Debug, Clone)]
 pub struct JwtConfig {
     pub secret: String,
@@ -13,7 +16,7 @@ pub struct JwtConfig {
 impl Default for JwtConfig {
     fn default() -> Self {
         Self {
-            secret: "default_secret_key_change_me_in_production".to_string(),
+            secret: DEFAULT_SECRET.to_string(),
             expiration_hours: 24,
         }
     }
