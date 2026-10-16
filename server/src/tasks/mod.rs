@@ -32,6 +32,7 @@ pub fn get_tasks() -> Vec<Box<dyn Task>> {
         Box::new(utilities::hash_password::HashPasswordTask),
         Box::new(utilities::sync_staff_roles::SyncStaffRolesTask),
         Box::new(utilities::sync_student_roles::SyncStudentRolesTask),
+        Box::new(utilities::cleanup_student_detail_activity::CleanupStudentDetailActivityTask),
         // Feeder Dikti Downstream Master Synchronization Tasks
         Box::new(feeder_dikti::synchronize::downstream::master::upsert_00_all::SyncAllMasterData),
         Box::new(feeder_dikti::synchronize::downstream::master::upsert_01_biodata_mahasiswa_and_mahasiswa_to_individual_and_student::SyncBiodataMahasiswaToAcademicStudentMasterStudent),

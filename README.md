@@ -603,6 +603,7 @@ cargo run -- task
 | `SyncNilaiPerkuliahanKelasToDetailActivities` | Upsert detail_nilai_perkuliahan_kelas to academic_student_campaign.detail_activities grades (Step 20) | `cargo run -- task SyncNilaiPerkuliahanKelasToDetailActivities` |
 | `SyncBiodataMahasiswaToContactDetails` | Upsert biodata_mahasiswa to contact_master phones, emails, and residences (Step 21) | `cargo run -- task SyncBiodataMahasiswaToContactDetails` |
 | `SyncBiodataDosenToContactDetails` | Upsert biodata_dosen to contact_master phones, emails, and residences (Step 22) | `cargo run -- task SyncBiodataDosenToContactDetails` |
+| `utility:cleanup-student-detail-activity` | Soft-deletes duplicate detail_activities rows (same activity_id + course_id), keeping the best one, and rows whose course no longer exists (even if they have a mark) | `cargo run -- task utility:cleanup-student-detail-activity --dry-run` |
 | `utility:feeder-add-credential` | Prompts for Feeder username, password, institution code and URL, then stores the credential (password encrypted) | `cargo run -- task utility:feeder-add-credential` |
 | `utility:generate-env` | Creates `.env` with every key the server reads (secrets generated), or adds only the missing keys to an existing one. Needs no database | `cargo run -- task utility:generate-env` |
 | `utility:generate-permission-from-client` | Grants each position type the permissions its client area (`client/src/routes/<area>`) requests | `cargo run -- task utility:generate-permission-from-client --dry-run` |
@@ -843,6 +844,27 @@ The data scope is based on the **active** role:
 Re-running `utility:generate-permission-from-client` doesn't fix a 404 like this, because the endpoint is allowed and only the record is out of scope. Check which unit or institution the record belongs to and compare it with the active role's scope.
 
 One exception: `GET academic/student/master/students/{id}` also returns a student who is the `roleable` of one of the signed-in user's **own** roles, whatever role is active (`is_own_student()` in `data_scope.rs`). The role switcher needs this: `enrichUserRolesWithStudentCodes()` in `client/src/lib/authStore.ts` looks up each student role's code and unit. Without the exception, a user with a Rektorat role in one institution and Mahasiswa roles in another got 404s on every page. Other students outside the scope are still hidden, and list, update and delete still use the active role's scope only.
+
+##### 🧹 Clean Up Student Detail Activities (`utility:cleanup-student-detail-activity`)
+
+Soft-deletes bad rows in `academic_student_campaign.detail_activities` in two phases. It sets `deleted_at` and never removes rows outright.
+
+```bash
+# Preview the changes without writing anything
+cargo run -- task utility:cleanup-student-detail-activity --dry-run
+
+# Apply the cleanup
+cargo run -- task utility:cleanup-student-detail-activity
+```
+
+1. **Duplicates.** For each `(activity_id, course_id)` pair with more than one active row, one row is kept and the rest are soft-deleted. The kept row is chosen by, in order: having a mark above 0 or a grade, having a Feeder ID, and the newest `updated_at`.
+2. **Orphaned courses.** Active rows whose `course_id` has no active course in `academic_course_master.courses` are soft-deleted, including rows with a mark. The output shows how many of them had a mark above 0, so check that number in the dry run before you apply it.
+
+| Flag | Effect |
+|---|---|
+| `--dry-run` | Show what would be deleted without writing to the database |
+
+A spinner runs while the task queries the database, and a progress bar tracks the deletes, which are committed in transactions of 200 rows.
 
 ##### 📥 Feeder Master Data Estimation Orchestrator (`EstimateGetAllMasterData`)
 

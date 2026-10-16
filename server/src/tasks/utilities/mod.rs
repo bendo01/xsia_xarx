@@ -10,3 +10,4 @@ pub mod sync_staff_roles;
 pub mod sync_student_roles;
 pub mod route_list;
 pub mod sync_permissions;
+pub mod cleanup_student_detail_activity;
