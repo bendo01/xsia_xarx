@@ -66,6 +66,7 @@ export async function listTeaches(queryParams?: {
     page?: number;
     page_size?: number;
     name?: string;
+    search?: string;
     activity_id?: string;
     teach_decree_id?: string;
     course_id?: string;
@@ -80,7 +81,8 @@ export async function listTeaches(queryParams?: {
         const params = new URLSearchParams();
         if (queryParams?.page) params.set('page', String(queryParams.page));
         if (queryParams?.page_size) params.set('page_size', String(queryParams.page_size));
-        if (queryParams?.name) params.set('name', queryParams.name);
+        const searchName = queryParams?.name ?? queryParams?.search;
+        if (searchName) params.set('name', searchName);
         if (queryParams?.activity_id) params.set('activity_id', queryParams.activity_id);
         if (queryParams?.teach_decree_id) params.set('teach_decree_id', queryParams.teach_decree_id);
         if (queryParams?.course_id) params.set('course_id', queryParams.course_id);

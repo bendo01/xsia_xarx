@@ -254,3 +254,178 @@ export async function printActivityResult(activityId: string): Promise<Blob | nu
         return null;
     }
 }
+
+export async function createStudentActivity(payload: {
+    student_id: string;
+    unit_activity_id: string;
+    status_id: string;
+    name?: string | null;
+    cumulative_index?: number;
+    grand_cumulative_index?: number;
+    total_credit?: number | null;
+    grand_total_credit?: number | null;
+    unit_id?: string | null;
+    resign_status_id?: string | null;
+    is_lock?: boolean;
+    feeder_id?: string | null;
+    finance_id?: string | null;
+    finance_fee?: number | null;
+}): Promise<{
+    is_error: boolean;
+    message: string;
+    data?: StudentActivityItem;
+}> {
+    try {
+        const res = await fetch(`${getBaseUrl()}/academic/student/campaign/student-activities`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({
+                name: payload.name || null,
+                cumulative_index: payload.cumulative_index ?? 0,
+                grand_cumulative_index: payload.grand_cumulative_index ?? 0,
+                total_credit: payload.total_credit ?? 0,
+                grand_total_credit: payload.grand_total_credit ?? 0,
+                student_id: payload.student_id,
+                unit_activity_id: payload.unit_activity_id,
+                status_id: payload.status_id,
+                resign_status_id: payload.resign_status_id || null,
+                unit_id: payload.unit_id || null,
+                is_lock: payload.is_lock ?? false,
+                feeder_id: payload.feeder_id || null,
+                finance_id: payload.finance_id || null,
+                finance_fee: payload.finance_fee ?? null,
+            }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            return {
+                is_error: true,
+                message: data.message || data.brief || 'Failed to create student activity',
+            };
+        }
+        return {
+            is_error: false,
+            message: 'Student activity created successfully',
+            data,
+        };
+    } catch (err: any) {
+        return {
+            is_error: true,
+            message: err?.message || 'Network error while creating student activity',
+        };
+    }
+}
+
+export async function updateStudentActivity(
+    id: string,
+    payload: {
+        name?: string | null;
+        cumulative_index?: number;
+        grand_cumulative_index?: number;
+        total_credit?: number | null;
+        grand_total_credit?: number | null;
+        student_id?: string;
+        unit_activity_id?: string;
+        status_id?: string;
+        resign_status_id?: string | null;
+        unit_id?: string | null;
+        is_lock?: boolean;
+        feeder_id?: string | null;
+        finance_id?: string | null;
+        finance_fee?: number | null;
+    }
+): Promise<{
+    is_error: boolean;
+    message: string;
+    data?: StudentActivityItem;
+}> {
+    try {
+        const res = await fetch(`${getBaseUrl()}/academic/student/campaign/student-activities/${id}`, {
+            method: 'PUT',
+            headers: getHeaders(),
+            body: JSON.stringify(payload),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            return {
+                is_error: true,
+                message: data.message || data.brief || 'Failed to update student activity',
+            };
+        }
+        return {
+            is_error: false,
+            message: 'Student activity updated successfully',
+            data,
+        };
+    } catch (err: any) {
+        return {
+            is_error: true,
+            message: err?.message || 'Network error while updating student activity',
+        };
+    }
+}
+
+export async function deleteStudentActivity(id: string): Promise<{
+    is_error: boolean;
+    message: string;
+}> {
+    if (!id) return { is_error: true, message: 'Missing ID' };
+    try {
+        const res = await fetch(`${getBaseUrl()}/academic/student/campaign/student-activities/${id}`, {
+            method: 'DELETE',
+            headers: getHeaders(),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            return {
+                is_error: true,
+                message: data.message || data.brief || 'Failed to delete student activity',
+            };
+        }
+        return {
+            is_error: false,
+            message: data.message || 'Student activity deleted successfully',
+        };
+    } catch (err: any) {
+        return {
+            is_error: true,
+            message: err?.message || 'Network error while deleting student activity',
+        };
+    }
+}
+
+export async function toggleStudentActivityLock(id: string, currentLockState: boolean): Promise<{
+    is_error: boolean;
+    message: string;
+    data?: StudentActivityItem;
+}> {
+    return updateStudentActivity(id, { is_lock: !currentLockState });
+}
+
+export async function downloadActivityPlanPdf(activityId: string, filename = 'KRS.pdf'): Promise<boolean> {
+    const blob = await printActivityPlan(activityId);
+    if (!blob) return false;
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    return true;
+}
+
+export async function downloadActivityResultPdf(activityId: string, filename = 'KHS.pdf'): Promise<boolean> {
+    const blob = await printActivityResult(activityId);
+    if (!blob) return false;
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    return true;
+}
