@@ -22,7 +22,7 @@ fn generate_secret() -> String {
 #[async_trait]
 impl Task for GenerateWebhookSecretTask {
     fn name(&self) -> &str {
-        "preference:generate-webhook-secret"
+        "utility:preference-generate-webhook-secret"
     }
 
     fn description(&self) -> &str {
@@ -76,7 +76,7 @@ impl Task for GenerateWebhookSecretTask {
             }
             None => {
                 println!("⚠️  No active OpenWA settings found, secrets were not stored in the database.");
-                println!("   Run `cargo run -- task preference:add-openwa` and paste them there.");
+                println!("   Run `cargo run -- task utility:preference-add-openwa` and paste them there.");
             }
         }
         println!("{}", "=".repeat(60));

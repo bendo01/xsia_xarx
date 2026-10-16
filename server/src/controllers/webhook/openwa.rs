@@ -31,13 +31,22 @@ pub async fn receive(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<OpenWaWebhookResponse>, StatusError> {
-    let config = depot
-        .get_typed::<OpenwaConfig>()
-        .cloned()
-        .unwrap_or_else(|_| OpenwaConfig::from_env());
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    // Settings injected by `router_with_config` win; otherwise read the active
+    // `preference.what_apps` record, falling back to the environment.
+    let config = match depot.get_typed::<OpenwaConfig>() {
+        Ok(config) => config.clone(),
+        Err(_) => OpenwaConfig::load(db).await.map_err(|e| {
+            tracing::error!("Failed to load OpenWA webhook settings: {e}");
+            StatusError::internal_server_error().brief("Webhook settings unavailable")
+        })?,
+    };
 
     if config.webhook_secret.is_empty() {
-        tracing::warn!("OpenWA webhook called but OPENWA_WEBHOOK_SECRET is not set");
+        tracing::warn!("OpenWA webhook called but no secret is set (preference.what_apps or OPENWA_WEBHOOK_SECRET)");
         return Err(StatusError::service_unavailable().brief("Webhook is not configured"));
     }
 
@@ -63,10 +72,6 @@ pub async fn receive(
         .map_err(|e| StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e)))?;
 
     payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
-
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
 
     // OpenWA retries with the same idempotency key, so a repeat is acknowledged without storing it again
     if let Some(existing) = find_by_idempotency_key(db, &payload.idempotency_key).await? {

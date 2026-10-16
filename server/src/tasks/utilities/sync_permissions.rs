@@ -15,7 +15,7 @@ pub struct SyncPermissionsTask;
 #[async_trait]
 impl Task for SyncPermissionsTask {
     fn name(&self) -> &str {
-        "sync:permissions"
+        "utility:sync-permissions"
     }
 
     fn description(&self) -> &str {

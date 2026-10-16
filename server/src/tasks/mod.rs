@@ -132,10 +132,39 @@ pub fn get_tasks() -> Vec<Box<dyn Task>> {
     ]
 }
 
+/// Names the utility tasks had before they moved under `utility:`. They still run,
+/// with a warning, so existing scripts and cron jobs keep working.
+const RENAMED_TASKS: &[(&str, &str)] = &[
+    ("feeder:add-credential", "utility:feeder-add-credential"),
+    ("preference:add-mail-server", "utility:preference-add-mail-server"),
+    ("preference:add-openwa", "utility:preference-add-openwa"),
+    ("preference:generate-webhook-secret", "utility:preference-generate-webhook-secret"),
+    ("generate:permission-from-client", "utility:generate-permission-from-client"),
+    ("generate:permission-from-route", "utility:generate-permission-from-route"),
+    ("sync:permissions", "utility:sync-permissions"),
+    ("sync:staff-roles", "utility:sync-staff-roles"),
+    ("sync:student-roles", "utility:sync-student-roles"),
+    ("hash:password", "utility:hash-password"),
+    ("route:list", "utility:route-list"),
+];
+
+/// Maps a pre-rename task name (also in its `_` form, e.g. `sync_permissions`) to its current name.
+fn renamed_task(task_name: &str) -> Option<&'static str> {
+    let normalized = task_name.replace('_', ":");
+    RENAMED_TASKS
+        .iter()
+        .find(|(old, _)| *old == task_name || *old == normalized)
+        .map(|(_, new)| *new)
+}
+
 pub async fn run_task(name: Option<String>, args: &[String], db: &DatabaseConnection) -> Result<(), Box<dyn std::error::Error>> {
     let tasks = get_tasks();
     
-    if let Some(task_name) = name {
+    if let Some(mut task_name) = name {
+        if let Some(new_name) = renamed_task(&task_name) {
+            eprintln!("⚠️  Task '{task_name}' was renamed to '{new_name}'; the old name will be removed in a future release.");
+            task_name = new_name.to_string();
+        }
         for task in &tasks {
             if task.name() == task_name 
                 || task.name().replace(':', "_") == task_name 
@@ -158,4 +187,26 @@ pub async fn run_task(name: Option<String>, args: &[String], db: &DatabaseConnec
     }
     
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn renamed_tasks_point_to_existing_tasks() {
+        let names: Vec<String> = get_tasks().iter().map(|t| t.name().to_string()).collect();
+        for (old, new) in RENAMED_TASKS {
+            assert!(names.iter().any(|n| n == new), "{old} -> {new}: no such task");
+            assert!(!names.iter().any(|n| n == old), "{old} is still a task name");
+        }
+    }
+
+    #[test]
+    fn renamed_task_accepts_old_and_underscore_forms() {
+        assert_eq!(renamed_task("sync:permissions"), Some("utility:sync-permissions"));
+        assert_eq!(renamed_task("sync_permissions"), Some("utility:sync-permissions"));
+        assert_eq!(renamed_task("utility:sync-permissions"), None);
+        assert_eq!(renamed_task("SyncAllMasterData"), None);
+    }
 }

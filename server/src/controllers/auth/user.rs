@@ -936,7 +936,7 @@ pub async fn forgot_password(
 
         let wa_text = format!("You requested a password reset. Use the following token to reset your password:\n{}", reset_token);
         
-        let wa_config = crate::config::openwa::OpenwaConfig::from_env();
+        let wa_config = crate::config::openwa::OpenwaConfig::load_or_env(db).await;
         let wa_sender = crate::services::messenger::openwa::OpenWaSender::new(wa_config);
         
         let wa_link = match wa_sender.send_message(&phone_number, &wa_text).await {
@@ -1021,7 +1021,7 @@ pub async fn reset_password(
 
     let wa_link = if let Some(p) = phone {
         let wa_text = "Your password has been successfully reset.";
-        let wa_config = crate::config::openwa::OpenwaConfig::from_env();
+        let wa_config = crate::config::openwa::OpenwaConfig::load_or_env(db).await;
         let wa_sender = crate::services::messenger::openwa::OpenWaSender::new(wa_config);
         match wa_sender.send_message(&p.phone_number, wa_text).await {
             Ok(_) => "".to_string(),
@@ -1247,7 +1247,7 @@ pub async fn resend_verification_token(
                 .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
             if let Some(p) = phone {
-                let wa_config = crate::config::openwa::OpenwaConfig::from_env();
+                let wa_config = crate::config::openwa::OpenwaConfig::load_or_env(db).await;
                 let wa_sender = crate::services::messenger::openwa::OpenWaSender::new(wa_config);
                 if let Err(e) = wa_sender.send_message(&p.phone_number, &wa_text).await {
                     tracing::error!("Failed to send WA message: {}", e);
@@ -1432,7 +1432,7 @@ pub async fn account_acquisition(
     email::enqueue_email(queue, &job).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
     let wa_text = "Your account has been successfully created.";
-    let wa_config = crate::config::openwa::OpenwaConfig::from_env();
+    let wa_config = crate::config::openwa::OpenwaConfig::load_or_env(db).await;
     let wa_sender = crate::services::messenger::openwa::OpenWaSender::new(wa_config);
     
     let wa_link = match wa_sender.send_message(&payload.phone_number, wa_text).await {

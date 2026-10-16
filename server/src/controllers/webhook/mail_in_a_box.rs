@@ -38,13 +38,22 @@ pub async fn receive(
     req: &mut Request,
     depot: &mut Depot,
 ) -> Result<Json<MailInABoxWebhookResponse>, StatusError> {
-    let config = depot
-        .get_typed::<MailInABoxConfig>()
-        .cloned()
-        .unwrap_or_else(|_| MailInABoxConfig::from_env());
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    // Settings injected by `router_with_config` win; otherwise read the active
+    // `preference.what_apps` record, falling back to the environment.
+    let config = match depot.get_typed::<MailInABoxConfig>() {
+        Ok(config) => config.clone(),
+        Err(_) => MailInABoxConfig::load(db).await.map_err(|e| {
+            tracing::error!("Failed to load Mail-in-a-Box webhook settings: {e}");
+            StatusError::internal_server_error().brief("Webhook settings unavailable")
+        })?,
+    };
 
     if config.webhook_secret.is_empty() {
-        tracing::warn!("Mail-in-a-Box webhook called but MIAB_WEBHOOK_SECRET is not set");
+        tracing::warn!("Mail-in-a-Box webhook called but no secret is set (preference.what_apps or MIAB_WEBHOOK_SECRET)");
         return Err(StatusError::service_unavailable().brief("Webhook is not configured"));
     }
 
@@ -68,10 +77,6 @@ pub async fn receive(
         .map_err(|e| StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e)))?;
 
     payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
-
-    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
-        StatusError::internal_server_error().brief("Database connection missing")
-    })?;
 
     if let Some(ref event_id) = payload.id {
         let existing = entity_mod::Entity::find()

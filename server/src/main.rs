@@ -108,7 +108,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await
         .map_err(|e| std::io::Error::other(format!("Failed to initialize email queue: {e}")))?;
 
-    start_email_worker(queue.clone());
+    start_email_worker(queue.clone(), db.clone());
     println!("PGMQ email worker started");
 
     init_pdf_embedding_queue(&queue)

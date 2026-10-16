@@ -17,7 +17,7 @@ pub struct SyncStudentRolesTask;
 #[async_trait]
 impl Task for SyncStudentRolesTask {
     fn name(&self) -> &str {
-        "sync:student-roles"
+        "utility:sync-student-roles"
     }
 
     fn description(&self) -> &str {

@@ -26,10 +26,15 @@ impl<T: Clone + Send + Sync + 'static> Handler for InjectConfig<T> {
 
 /// Inbound webhooks. These are called by other servers, so they authenticate with
 /// a shared secret instead of a user JWT and are not RBAC-named routes.
+/// Each request reads the secrets from the database (falling back to the
+/// environment), so a changed secret applies without a restart.
 pub fn router() -> Router {
-    router_with_config(MailInABoxConfig::from_env(), OpenwaConfig::from_env())
+    Router::with_path("webhook")
+        .push(Router::with_path("mail-in-a-box").post(mail_in_a_box::receive))
+        .push(Router::with_path("openwa").post(openwa::receive))
 }
 
+/// Like [`router`], but with fixed settings instead of database lookups (used by tests).
 pub fn router_with_config(
     mail_in_a_box_config: MailInABoxConfig,
     openwa_config: OpenwaConfig,

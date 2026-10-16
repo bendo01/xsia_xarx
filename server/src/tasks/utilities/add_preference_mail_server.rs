@@ -48,7 +48,7 @@ fn prompt_bool(label: &str, default: bool) -> Result<bool, Box<dyn std::error::E
 #[async_trait]
 impl Task for AddPreferenceMailServerTask {
     fn name(&self) -> &str {
-        "preference:add-mail-server"
+        "utility:preference-add-mail-server"
     }
 
     fn description(&self) -> &str {

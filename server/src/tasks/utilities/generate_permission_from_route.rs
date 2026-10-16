@@ -32,7 +32,7 @@ fn progress_bar(len: u64, prefix: &'static str) -> ProgressBar {
 #[async_trait]
 impl Task for GeneratePermissionFromRouteTask {
     fn name(&self) -> &str {
-        "generate:permission-from-route"
+        "utility:generate-permission-from-route"
     }
 
     fn description(&self) -> &str {

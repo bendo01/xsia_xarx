@@ -54,7 +54,7 @@ impl FeederConfig {
         } else {
             eprintln!(
                 "⚠️  Feeder credential for institution {institution_id} is stored unencrypted; \
-                 re-save it with `task feeder:add-credential`"
+                 re-save it with `task utility:feeder-add-credential`"
             );
             record.password
         };

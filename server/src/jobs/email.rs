@@ -3,6 +3,7 @@ use lettre::message::MultiPart;
 use lettre::{Message, SmtpTransport, Transport, transport::smtp::authentication::Credentials};
 use pgmq::errors::PgmqError;
 use pgmq::PGMQueueExt;
+use sea_orm::DatabaseConnection;
 use serde::{Deserialize, Serialize};
 
 use crate::config::email::EmailConfig;
@@ -19,8 +20,12 @@ pub struct EmailJob {
     pub html_body: Option<String>,
 }
 
-pub async fn send_email(job: &EmailJob) -> Result<(), std::io::Error> {
-    let email_config = EmailConfig::from_env();
+/// Sends `job` with the active mail server from `preference.mail_servers`,
+/// or the `SMTP_*` environment variables if none is stored.
+pub async fn send_email(db: &DatabaseConnection, job: &EmailJob) -> Result<(), std::io::Error> {
+    let email_config = EmailConfig::load(db)
+        .await
+        .map_err(|e| std::io::Error::other(format!("Failed to load mail server settings: {e}")))?;
 
     let builder = Message::builder()
         .from(
@@ -48,11 +53,13 @@ pub async fn send_email(job: &EmailJob) -> Result<(), std::io::Error> {
         None
     };
 
-    let mut mailer_builder = if email_config.smtp_port == 465 {
-        SmtpTransport::relay(&email_config.smtp_host)
+    let mut mailer_builder = match (email_config.smtp_secure, email_config.smtp_port) {
+        (true, 465) => SmtpTransport::relay(&email_config.smtp_host)
+            .map_err(|e| std::io::Error::other(e.to_string()))?,
+        (true, port) => SmtpTransport::starttls_relay(&email_config.smtp_host)
             .map_err(|e| std::io::Error::other(e.to_string()))?
-    } else {
-        SmtpTransport::builder_dangerous(&email_config.smtp_host).port(email_config.smtp_port)
+            .port(port),
+        (false, port) => SmtpTransport::builder_dangerous(&email_config.smtp_host).port(port),
     };
 
     if let Some(c) = creds {
@@ -80,7 +87,7 @@ pub async fn enqueue_email(queue: &PGMQueueExt, job: &EmailJob) -> Result<i64, P
 }
 
 /// Starts the background email worker using PGMQ.
-pub fn start_email_worker(queue: PGMQueueExt) -> tokio::task::JoinHandle<()> {
+pub fn start_email_worker(queue: PGMQueueExt, db: DatabaseConnection) -> tokio::task::JoinHandle<()> {
     tokio::spawn(async move {
         tracing::info!("PGMQ email worker loop started on queue '{EMAIL_QUEUE}'");
 
@@ -103,7 +110,7 @@ pub fn start_email_worker(queue: PGMQueueExt) -> tokio::task::JoinHandle<()> {
                         msg.message.to
                     );
 
-                    match send_email(&msg.message).await {
+                    match send_email(&db, &msg.message).await {
                         Ok(_) => {
                             tracing::info!(
                                 "Email delivered successfully for job msg_id: {}",

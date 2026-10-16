@@ -9,7 +9,7 @@ pub struct RouteListTask;
 #[async_trait]
 impl Task for RouteListTask {
     fn name(&self) -> &str {
-        "route:list"
+        "utility:route-list"
     }
 
     fn description(&self) -> &str {

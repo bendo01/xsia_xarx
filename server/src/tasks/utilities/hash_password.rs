@@ -12,7 +12,7 @@ pub struct HashPasswordTask;
 #[async_trait]
 impl Task for HashPasswordTask {
     fn name(&self) -> &str {
-        "hash:password"
+        "utility:hash-password"
     }
 
     fn description(&self) -> &str {
@@ -31,7 +31,7 @@ impl Task for HashPasswordTask {
             let trimmed = input.trim();
             if trimmed.is_empty() {
                 eprintln!("Error: Password input cannot be empty.");
-                eprintln!("Usage: cargo run -- task hash:password <password> [algorithm]");
+                eprintln!("Usage: cargo run -- task utility:hash-password <password> [algorithm]");
                 return Ok(());
             }
             trimmed.to_string()

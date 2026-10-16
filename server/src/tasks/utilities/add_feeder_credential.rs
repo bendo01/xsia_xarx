@@ -40,7 +40,7 @@ fn prompt_required(label: &str, default: Option<&str>) -> Result<String, Box<dyn
 #[async_trait]
 impl Task for AddFeederCredentialTask {
     fn name(&self) -> &str {
-        "feeder:add-credential"
+        "utility:feeder-add-credential"
     }
 
     fn description(&self) -> &str {

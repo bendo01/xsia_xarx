@@ -248,7 +248,7 @@ pub struct GeneratePermissionFromClientTask;
 #[async_trait]
 impl Task for GeneratePermissionFromClientTask {
     fn name(&self) -> &str {
-        "generate:permission-from-client"
+        "utility:generate-permission-from-client"
     }
 
     fn description(&self) -> &str {
@@ -453,7 +453,7 @@ impl Task for GeneratePermissionFromClientTask {
 
         for name in &missing_permissions {
             println!(
-                "  [MISSING]   {} has no auth.permissions row; run generate:permission-from-route first",
+                "  [MISSING]   {} has no auth.permissions row; run utility:generate-permission-from-route first",
                 name
             );
         }

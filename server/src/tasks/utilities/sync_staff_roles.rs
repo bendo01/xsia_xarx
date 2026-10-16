@@ -12,7 +12,7 @@ pub struct SyncStaffRolesTask;
 #[async_trait]
 impl Task for SyncStaffRolesTask {
     fn name(&self) -> &str {
-        "sync:staff-roles"
+        "utility:sync-staff-roles"
     }
 
     fn description(&self) -> &str {

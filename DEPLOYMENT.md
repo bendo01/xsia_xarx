@@ -173,7 +173,7 @@ sudo -u xsia -H bash -c 'curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.
 sudo -u xsia -H bash -c 'curl -fsSL https://bun.sh/install | bash'
 ```
 
-> ℹ️ Node.js is **not** needed. [Bun](https://github.com/oven-sh/bun) runs the client build (`bun --bun run build` forces Bun to run `vp`, whose shebang asks for `node`), the SSR server (`bun .output/server/index.mjs`), and `client/scripts/extract-api-usage.mjs` for the `generate:permission-from-client` task.
+> ℹ️ Node.js is **not** needed. [Bun](https://github.com/oven-sh/bun) runs the client build (`bun --bun run build` forces Bun to run `vp`, whose shebang asks for `node`), the SSR server (`bun .output/server/index.mjs`), and `client/scripts/extract-api-usage.mjs` for the `utility:generate-permission-from-client` task.
 
 Helper to run commands as `xsia` with the toolchains on `PATH` (used throughout this guide):
 
@@ -307,9 +307,6 @@ SMTP_HOST="mail.example.ac.id"
 SMTP_PORT=587
 SMTP_USER="no-reply@example.ac.id"
 SMTP_PASSWORD="CHANGE_ME"
-SMTP_SENDER="Academic Information System"
-SYSTEM_MAIL_ADDRESS="no-reply@example.ac.id"
-SMTP_SECURE=true
 
 # PDDikti Feeder
 FEEDER_USERNAME="CHANGE_ME"
@@ -332,7 +329,7 @@ asxsia 'cd /var/www/ferron/xsia_xarx/server && ./migration up'              # re
 asxsia 'cd /var/www/ferron/xsia_xarx/server && ./migration status'
 
 # Sync permissions / roles from the client route definitions (needs the client source)
-asxsia 'cd /var/www/ferron/xsia_xarx/src/server && cp /var/www/ferron/xsia_xarx/server/.env . && cargo run --release -- task generate:permission-from-client --prune'
+asxsia 'cd /var/www/ferron/xsia_xarx/src/server && cp /var/www/ferron/xsia_xarx/server/.env . && cargo run --release -- task utility:generate-permission-from-client --prune'
 
 # List all available tasks (e.g. feeder master-data sync)
 asxsia 'cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task'
@@ -643,32 +640,47 @@ Both endpoints answer `503` until their secret is set, and `401` for a missing o
 
 ### A. Set the secrets
 
-Generate them with the `preference:generate-webhook-secret` task. It prints both as `.env` lines and, if OpenWA settings were already added with `preference:add-openwa`, also stores them encrypted in the database. Pass `miab` or `openwa` to generate only one:
+Generate them with the `utility:preference-generate-webhook-secret` task. It prints both as `.env` lines and, if OpenWA settings were already added with `utility:preference-add-openwa`, also stores them encrypted in the database. Pass `miab` or `openwa` to generate only one:
 
 ```bash
-asxsia 'cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task preference:generate-webhook-secret'
+asxsia 'cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task utility:preference-generate-webhook-secret'
 # MIAB_WEBHOOK_SECRET="…"
 # OPENWA_WEBHOOK_SECRET="…"
 ```
 
-Or with `openssl` (same format: 32 random bytes as hex). Either way, the API reads the secrets only from `server/.env`, so append them there:
+Or with `openssl` (same format: 32 random bytes as hex):
 
 ```bash
-# Used the task? Paste its values instead:  MIAB_SECRET="…"; OPENWA_SECRET="…"
-MIAB_SECRET="$(openssl rand -hex 32)";   echo "MIAB_WEBHOOK_SECRET=$MIAB_SECRET"     # store both safely
-OPENWA_SECRET="$(openssl rand -hex 32)"; echo "OPENWA_WEBHOOK_SECRET=$OPENWA_SECRET"
+openssl rand -hex 32     # MIAB_WEBHOOK_SECRET
+openssl rand -hex 32     # OPENWA_WEBHOOK_SECRET
+```
 
-sudo -u xsia tee -a /var/www/ferron/xsia_xarx/server/.env >/dev/null <<EOF
+Either way, the API reads the secrets **only from `server/.env`**. Set them with the `set_env` helper below, which replaces a key that's already in `.env` and appends it otherwise. Don't just append (`tee -a`, `>>`) a second time: `.env` is loaded with the first occurrence of a key winning, so a duplicate line added later is silently ignored.
 
-# Inbound webhooks
-MIAB_WEBHOOK_SECRET="$MIAB_SECRET"
-OPENWA_WEBHOOK_SECRET="$OPENWA_SECRET"
+```bash
+ENV_FILE=/var/www/ferron/xsia_xarx/server/.env
+set_env() {   # usage: set_env KEY VALUE
+  sudo -u xsia sed -i "/^$1=/d" "$ENV_FILE"
+  printf '%s="%s"\n' "$1" "$2" | sudo -u xsia tee -a "$ENV_FILE" >/dev/null
+}
+
+# Paste the values from the task (or openssl) above
+set_env MIAB_WEBHOOK_SECRET   "PASTE_MIAB_SECRET"
+set_env OPENWA_WEBHOOK_SECRET "PASTE_OPENWA_SECRET"     # at least 16 characters
+
+# Or generate and set in one go (prints nothing; read them back below)
+# set_env MIAB_WEBHOOK_SECRET   "$(openssl rand -hex 32)"
+# set_env OPENWA_WEBHOOK_SECRET "$(openssl rand -hex 32)"
 
 # OpenWA gateway (outgoing WhatsApp messages + webhook registration)
-OPENWA_URL="https://wa.example.ac.id"
-OPENWA_API_KEY_SESSION_ID="CHANGE_ME"
-OPENWA_API_KEY_OPERATOR="CHANGE_ME"
-EOF
+set_env OPENWA_URL                "https://wa.example.ac.id"
+set_env OPENWA_API_KEY_SESSION_ID "CHANGE_ME"
+set_env OPENWA_API_KEY_OPERATOR   "CHANGE_ME"
+
+# Check: each key exactly once, file still private
+sudo grep -nE '^(MIAB_WEBHOOK_SECRET|OPENWA_WEBHOOK_SECRET|OPENWA_URL|OPENWA_API_KEY_SESSION_ID|OPENWA_API_KEY_OPERATOR)=' "$ENV_FILE"
+sudo stat -c '%a %U' "$ENV_FILE"     # expect: 600 xsia
+
 sudo systemctl restart xsia-api
 
 # Both should now return 401 (unsigned request), not 503
@@ -748,7 +760,7 @@ location /api/v1/webhook/mail-in-a-box {
 }
 ```
 
-**Rotating the secret:** generate a new one ([12.A](#a-set-the-secrets)), update `MIAB_WEBHOOK_SECRET` in `server/.env`, restart `xsia-api`, then update `XSIA_WEBHOOK_SECRET` in `/etc/xsia-webhook.env` and rerun step 4. Events sent between the two changes get `401`.
+**Rotating the secret:** generate a new one and set it with `set_env MIAB_WEBHOOK_SECRET "…"` ([12.A](#a-set-the-secrets)), restart `xsia-api`, then update `XSIA_WEBHOOK_SECRET` in `/etc/xsia-webhook.env` and rerun step 4. Events sent between the two changes get `401`.
 
 ### C. OpenWA → xsia
 
@@ -806,7 +818,7 @@ curl -fsS -X PUT -H "$H" -H "Content-Type: application/json" \
 curl -fsS -X DELETE -H "$H" "$BASE/$WEBHOOK_ID"              # remove
 ```
 
-**Rotating the secret:** update `OPENWA_WEBHOOK_SECRET` in `server/.env`, restart `xsia-api`, reload the variables above, then run the `PUT` and repeat step 2. OpenWA retries failed deliveries (3 attempts by default, exponential backoff), so events sent during the switch may still arrive once both sides match.
+**Rotating the secret:** set the new value with `set_env OPENWA_WEBHOOK_SECRET "…"` ([12.A](#a-set-the-secrets)), restart `xsia-api`, reload the variables above, then run the `PUT` and repeat step 2. OpenWA retries failed deliveries (3 attempts by default, exponential backoff), so events sent during the switch may still arrive once both sides match.
 
 `OpenWaSender::register_webhook` in `server/src/services/messenger/openwa.rs` makes the same registration call from Rust.
 

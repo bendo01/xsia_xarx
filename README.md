@@ -194,9 +194,6 @@ SMTP_HOST="mail.xsia.app"
 SMTP_PORT=587
 SMTP_USER="no-reply@xsia.app"
 SMTP_PASSWORD="your-smtp-password"
-SMTP_SENDER="Academic Information System"
-SYSTEM_MAIL_ADDRESS="no-reply@xsia.app"
-SMTP_SECURE=true
 
 # External Integrations (PDDikti Feeder / Payment)
 FEEDER_USERNAME="feeder_username"
@@ -205,7 +202,7 @@ FEEDER_URL="http://feeder.example.ac.id/ws/live2.php"
 IS_PRODUCTION_MIDTRANS_PAYMENT=false
 
 # Inbound Webhooks (shared secrets; an empty value disables that endpoint)
-# Generate with: cargo run -- task preference:generate-webhook-secret (or openssl rand -hex 32)
+# Generate with: cargo run -- task utility:preference-generate-webhook-secret (or openssl rand -hex 32)
 MIAB_WEBHOOK_SECRET="generate-with-openssl-rand-hex-32"   # POST /api/v1/webhook/mail-in-a-box
 OPENWA_WEBHOOK_SECRET="generate-with-openssl-rand-hex-32" # POST /api/v1/webhook/openwa
 ```
@@ -478,7 +475,7 @@ The server automatically initializes an **Apalis** background monitor on startup
 
 Custom CLI tasks, utilities, and one-off maintenance scripts can be executed using the integrated task runner located in `server/src/tasks/`.
 
-Both colon (`:`) and underscore (`_`) task name formats are supported interchangeably (e.g. `hash:password` or `hash_password`).
+Both colon (`:`) and underscore (`_`) task name formats are supported interchangeably (e.g. `utility:hash-password` or `hash_password`).
 
 #### 1. List Available Tasks
 
@@ -568,17 +565,6 @@ cargo run -- task
 | `EstimateRiwayatSertifikasiDosen` | Fetch and process GetRiwayatSertifikasiDosen data from Feeder Dikti | `cargo run -- task EstimateRiwayatSertifikasiDosen` |
 | `EstimateTranskripMahasiswa` | Fetch and process GetTranskripMahasiswa data from Feeder Dikti | `cargo run -- task EstimateTranskripMahasiswa` |
 | `example` | An example task that prints a message | `cargo run -- task example arg1 arg2` |
-| `feeder:add-credential` | Prompts for Feeder username, password, institution code and URL, then stores the credential (password encrypted) | `cargo run -- task feeder:add-credential` |
-| `generate:permission-from-client` | Grants each position type the permissions its client area (`client/src/routes/<area>`) requests | `cargo run -- task generate:permission-from-client --dry-run` |
-| `generate:permission-from-route` | Upserts every named controller route into auth.permissions and deletes permissions no route uses | `cargo run -- task generate:permission-from-route --dry-run` |
-| `hash:password` | Hashes input string/password using Argon2id and Bcrypt from arguments | `cargo run -- task hash:password "MySecretPass123"` |
-| `preference:add-mail-server` | Prompts for SMTP host, port, sender, address and credentials, then stores the active mail server (password encrypted) | `cargo run -- task preference:add-mail-server` |
-| `preference:add-openwa` | Prompts for OpenWA URL, session ID, operator API key and webhook secrets, then stores the active OpenWA settings (keys and secrets encrypted) | `cargo run -- task preference:add-openwa` |
-| `preference:generate-webhook-secret` | Generates MIAB and OpenWA webhook secrets ([miab\|openwa], default both), prints them as .env lines and stores them encrypted in the active OpenWA settings | `cargo run -- task preference:generate-webhook-secret` |
-| `route:list` | Lists all system routes with their URL path, HTTP method, handler function, and route name | `cargo run -- task route:list` |
-| `sync:staff-roles` | Gives every current staff appointment with a position type and a user account a role, and revokes the rest | `cargo run -- task sync:staff-roles --dry-run` |
-| `sync:student-roles` | Synchronizes student roles into the auth.roles table | `cargo run -- task sync:student-roles` |
-| `sync:permissions` | Synchronizes all predefined route permissions into the auth.permissions table | `cargo run -- task sync:permissions` |
 | `SyncAllMasterData` | Sequentially run all 22 downstream master synchronization tasks (01 to 22) in topological DAG dependency order | `cargo run -- task SyncAllMasterData` or `cargo run -- task SyncAllMasterData --fail-fast` |
 | `SyncBiodataMahasiswaToAcademicStudentMasterStudent` | Upsert biodata_mahasiswa and mahasiswa to person_master.individuals and academic_student_master.students (Step 01) | `cargo run -- task SyncBiodataMahasiswaToAcademicStudentMasterStudent` |
 | `SyncBiodataDosenToAcademicLecturerMasterLecturer` | Upsert biodata_dosen and dosen to person_master.individuals and academic_lecturer_master.lecturers (Step 02) | `cargo run -- task SyncBiodataDosenToAcademicLecturerMasterLecturer` |
@@ -602,52 +588,65 @@ cargo run -- task
 | `SyncNilaiPerkuliahanKelasToDetailActivities` | Upsert detail_nilai_perkuliahan_kelas to academic_student_campaign.detail_activities grades (Step 20) | `cargo run -- task SyncNilaiPerkuliahanKelasToDetailActivities` |
 | `SyncBiodataMahasiswaToContactDetails` | Upsert biodata_mahasiswa to contact_master phones, emails, and residences (Step 21) | `cargo run -- task SyncBiodataMahasiswaToContactDetails` |
 | `SyncBiodataDosenToContactDetails` | Upsert biodata_dosen to contact_master phones, emails, and residences (Step 22) | `cargo run -- task SyncBiodataDosenToContactDetails` |
+| `utility:feeder-add-credential` | Prompts for Feeder username, password, institution code and URL, then stores the credential (password encrypted) | `cargo run -- task utility:feeder-add-credential` |
+| `utility:generate-permission-from-client` | Grants each position type the permissions its client area (`client/src/routes/<area>`) requests | `cargo run -- task utility:generate-permission-from-client --dry-run` |
+| `utility:generate-permission-from-route` | Upserts every named controller route into auth.permissions and deletes permissions no route uses | `cargo run -- task utility:generate-permission-from-route --dry-run` |
+| `utility:hash-password` | Hashes input string/password using Argon2id and Bcrypt from arguments | `cargo run -- task utility:hash-password "MySecretPass123"` |
+| `utility:preference-add-mail-server` | Prompts for SMTP host, port, sender, address and credentials, then stores the active mail server (password encrypted) | `cargo run -- task utility:preference-add-mail-server` |
+| `utility:preference-add-openwa` | Prompts for OpenWA URL, session ID, operator API key and webhook secrets, then stores the active OpenWA settings (keys and secrets encrypted) | `cargo run -- task utility:preference-add-openwa` |
+| `utility:preference-generate-webhook-secret` | Generates MIAB and OpenWA webhook secrets ([miab\|openwa], default both), prints them as .env lines and stores them encrypted in the active OpenWA settings | `cargo run -- task utility:preference-generate-webhook-secret` |
+| `utility:route-list` | Lists all system routes with their URL path, HTTP method, handler function, and route name | `cargo run -- task utility:route-list` |
+| `utility:sync-permissions` | Synchronizes all predefined route permissions into the auth.permissions table | `cargo run -- task utility:sync-permissions` |
+| `utility:sync-staff-roles` | Gives every current staff appointment with a position type and a user account a role, and revokes the rest | `cargo run -- task utility:sync-staff-roles --dry-run` |
+| `utility:sync-student-roles` | Synchronizes student roles into the auth.roles table | `cargo run -- task utility:sync-student-roles` |
 
-##### 🔑 Password Hashing Utility (`hash:password`)
+> ℹ️ The `utility:*` tasks used to be named `feeder:add-credential`, `sync:permissions`, `hash:password`, and so on. The old names still run the task, with a warning pointing to the new name, but will be removed in a future release, so update scripts and cron jobs.
+
+##### 🔑 Password Hashing Utility (`utility:hash-password`)
 
 Hash a raw password string directly from command-line arguments:
 
 ```bash
 # Generate both Argon2id and Bcrypt hashes:
-cargo run -- task hash:password "MySecretPass123"
+cargo run -- task utility:hash-password "MySecretPass123"
 
 # Specify a specific algorithm (argon2 or bcrypt):
-cargo run -- task hash:password "MySecretPass123" argon2
-cargo run -- task hash:password "MySecretPass123" bcrypt
+cargo run -- task utility:hash-password "MySecretPass123" argon2
+cargo run -- task utility:hash-password "MySecretPass123" bcrypt
 
 # Interactive prompt (if no argument is provided):
-cargo run -- task hash:password
+cargo run -- task utility:hash-password
 ```
 
-##### 🛣️ Route Listing (`route:list`)
+##### 🛣️ Route Listing (`utility:route-list`)
 
 List and inspect registered API routes in a formatted table:
 
 ```bash
 # List all routes
-cargo run -- task route:list
+cargo run -- task utility:route-list
 
 # Filter routes by path, method, handler name, or keyword
-cargo run -- task route:list auth
-cargo run -- task route:list student
+cargo run -- task utility:route-list auth
+cargo run -- task utility:route-list student
 ```
 
-##### 🔄 Sync Permissions (`sync:permissions`)
+##### 🔄 Sync Permissions (`utility:sync-permissions`)
 
 Sync predefined system permission constants into the PostgreSQL database:
 
 ```bash
-cargo run -- task sync:permissions
+cargo run -- task utility:sync-permissions
 # or
 cargo run -- task sync_permissions
 ```
 
-##### 🎓 Add Feeder Credential (`feeder:add-credential`)
+##### 🎓 Add Feeder Credential (`utility:feeder-add-credential`)
 
 Store the PDDikti Feeder login for an institution. The task prompts for each value; nothing is passed as an argument:
 
 ```bash
-cargo run -- task feeder:add-credential
+cargo run -- task utility:feeder-add-credential
 ```
 
 | Prompt | Notes |
@@ -659,12 +658,12 @@ cargo run -- task feeder:add-credential
 
 Each institution has one credential. If one already exists, it is updated; otherwise a new one is created.
 
-##### 📧 Add Mail Server (`preference:add-mail-server`)
+##### 📧 Add Mail Server (`utility:preference-add-mail-server`)
 
 Store the SMTP server used to send e-mail. The task prompts for each value:
 
 ```bash
-cargo run -- task preference:add-mail-server
+cargo run -- task utility:preference-add-mail-server
 ```
 
 | Prompt | Notes |
@@ -673,18 +672,18 @@ cargo run -- task preference:add-mail-server
 | SMTP port | Defaults to `587` |
 | Use TLS (y/n) | Defaults to `y` |
 | Sender name | Required |
-| Sender mail address | Defaults to `SYSTEM_MAIL_ADDRESS`. Must contain `@` |
+| Sender mail address | Defaults to `SYSTEM_MAIL_ADDRESS` if set. Must contain `@` |
 | SMTP user | Leave empty for a server without authentication; the password prompt is then skipped |
 | SMTP password | Hidden input. Stored encrypted |
 
 If an active mail server already exists, it is updated; otherwise a new active one is created.
 
-##### 💬 Add OpenWA Settings (`preference:add-openwa`)
+##### 💬 Add OpenWA Settings (`utility:preference-add-openwa`)
 
 Store the OpenWA (WhatsApp) connection and the webhook secrets described in [Inbound Webhooks](#-inbound-webhooks). The task prompts for each value:
 
 ```bash
-cargo run -- task preference:add-openwa
+cargo run -- task utility:preference-add-openwa
 ```
 
 | Prompt | Notes |
@@ -697,23 +696,23 @@ cargo run -- task preference:add-openwa
 
 If active OpenWA settings already exist, they are updated; otherwise a new active record is created.
 
-##### 🔐 Generate Webhook Secrets (`preference:generate-webhook-secret`)
+##### 🔐 Generate Webhook Secrets (`utility:preference-generate-webhook-secret`)
 
 Generate the shared secrets for the [Inbound Webhooks](#-inbound-webhooks). Each secret is 32 random bytes as 64 hex characters, the same as `openssl rand -hex 32`:
 
 ```bash
-cargo run -- task preference:generate-webhook-secret          # both secrets
-cargo run -- task preference:generate-webhook-secret miab     # only MIAB_WEBHOOK_SECRET
-cargo run -- task preference:generate-webhook-secret openwa   # only OPENWA_WEBHOOK_SECRET
+cargo run -- task utility:preference-generate-webhook-secret          # both secrets
+cargo run -- task utility:preference-generate-webhook-secret miab     # only MIAB_WEBHOOK_SECRET
+cargo run -- task utility:preference-generate-webhook-secret openwa   # only OPENWA_WEBHOOK_SECRET
 ```
 
-The task prints the secrets as `.env` lines (`MIAB_WEBHOOK_SECRET="..."`, `OPENWA_WEBHOOK_SECRET="..."`) and stores them encrypted in the active OpenWA settings. If no active OpenWA settings exist, nothing is stored; run `preference:add-openwa` first and paste the secrets there.
+The task prints the secrets as `.env` lines (`MIAB_WEBHOOK_SECRET="..."`, `OPENWA_WEBHOOK_SECRET="..."`) and stores them encrypted in the active OpenWA settings. If no active OpenWA settings exist, nothing is stored; run `utility:preference-add-openwa` first and paste the secrets there.
 
 The webhook endpoints read the secrets **only from `server/.env`**, so copy the printed lines there and restart the API. Every run replaces the old secrets: register the new OpenWA secret again and update `XSIA_WEBHOOK_SECRET` on the Mail-in-a-Box server, or their deliveries will get `401`. The secrets are printed in plain text, so don't run the task where output is logged.
 
 All four tasks need a configured database connection and `APP_ENCRYPTION_KEY` set in `server/.env`, since they encrypt the secrets before saving them.
 
-##### 🛡️ Generate Permissions from Client (`generate:permission-from-client`)
+##### 🛡️ Generate Permissions from Client (`utility:generate-permission-from-client`)
 
 Traces which API endpoints each client area (`client/src/routes/<area>`) calls, using `client/scripts/extract-api-usage.mjs`. It then grants the matching route permissions to the position types that work in that area. Administrator is skipped because it bypasses RBAC.
 
@@ -721,21 +720,21 @@ Run it from `server/`, because the client is found at `../client` by default. It
 
 ```bash
 # Preview the changes without writing anything
-cargo run -- task generate:permission-from-client --dry-run
+cargo run -- task utility:generate-permission-from-client --dry-run
 
 # Apply the grants
-cargo run -- task generate:permission-from-client
+cargo run -- task utility:generate-permission-from-client
 
 # Limit to a single area
-cargo run -- task generate:permission-from-client --area rectorat --dry-run
+cargo run -- task utility:generate-permission-from-client --area rectorat --dry-run
 
 # Also revoke grants the client no longer needs (preview first!)
-cargo run -- task generate:permission-from-client --prune --dry-run
-cargo run -- task generate:permission-from-client --prune
+cargo run -- task utility:generate-permission-from-client --prune --dry-run
+cargo run -- task utility:generate-permission-from-client --prune
 
 # Reuse a previously captured usage JSON instead of running the Bun script
 (cd ../client && bun scripts/extract-api-usage.mjs) > /tmp/usage.json
-cargo run -- task generate:permission-from-client --input /tmp/usage.json --dry-run
+cargo run -- task utility:generate-permission-from-client --input /tmp/usage.json --dry-run
 ```
 
 | Flag | Effect |
@@ -755,8 +754,8 @@ Access denied: role lacks permission 'institution.master.employees.register' or 
 The fix is usually to re-run the task for that area (dry-run first):
 
 ```bash
-cargo run -- task generate:permission-from-client --area rectorat --dry-run
-cargo run -- task generate:permission-from-client --area rectorat
+cargo run -- task utility:generate-permission-from-client --area rectorat --dry-run
+cargo run -- task utility:generate-permission-from-client --area rectorat
 ```
 
 **What the extractor can trace.** `extract-api-usage.mjs` reads the code without running it. It follows each page's imports down to its `fetch()` calls. A call is traced when:
@@ -807,7 +806,7 @@ The data scope is based on the **active** role:
 - **Student:** sees only their own records.
 - **Lecturer:** sees students in the classes they teach, plus the students they advise.
 
-Re-running `generate:permission-from-client` doesn't fix a 404 like this, because the endpoint is allowed and only the record is out of scope. Check which unit or institution the record belongs to and compare it with the active role's scope.
+Re-running `utility:generate-permission-from-client` doesn't fix a 404 like this, because the endpoint is allowed and only the record is out of scope. Check which unit or institution the record belongs to and compare it with the active role's scope.
 
 One exception: `GET academic/student/master/students/{id}` also returns a student who is the `roleable` of one of the signed-in user's **own** roles, whatever role is active (`is_own_student()` in `data_scope.rs`). The role switcher needs this: `enrichUserRolesWithStudentCodes()` in `client/src/lib/authStore.ts` looks up each student role's code and unit. Without the exception, a user with a Rektorat role in one institution and Mahasiswa roles in another got 404s on every page. Other students outside the scope are still hidden, and list, update and delete still use the active role's scope only.
 
@@ -1341,7 +1340,7 @@ See **[DEPLOYMENT.md](DEPLOYMENT.md)** for a step-by-step guide to launching on 
 ## Fix Role
 
 ```sh
-cargo run -- task generate:permission-from-client --prune
+cargo run -- task utility:generate-permission-from-client --prune
 ```
 
 ## 📄 License

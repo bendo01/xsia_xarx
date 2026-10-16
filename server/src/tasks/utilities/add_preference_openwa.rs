@@ -47,7 +47,7 @@ fn prompt_secret(label: &str) -> Result<String, Box<dyn std::error::Error>> {
 #[async_trait]
 impl Task for AddPreferenceOpenWaTask {
     fn name(&self) -> &str {
-        "preference:add-openwa"
+        "utility:preference-add-openwa"
     }
 
     fn description(&self) -> &str {
