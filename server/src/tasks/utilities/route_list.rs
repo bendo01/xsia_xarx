@@ -1,7 +1,7 @@
 use salvo::async_trait;
 use sea_orm::DatabaseConnection;
 
-use super::Task;
+use crate::tasks::Task;
 use crate::library::routes::get_system_routes;
 
 pub struct RouteListTask;

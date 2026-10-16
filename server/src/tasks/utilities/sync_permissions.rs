@@ -6,7 +6,7 @@ use sea_orm::{
 };
 use uuid::Uuid;
 
-use super::Task;
+use crate::tasks::Task;
 use crate::library::permissions::get_system_permissions;
 use crate::models::auth::permission as entity_mod;
 
@@ -15,7 +15,7 @@ pub struct SyncPermissionsTask;
 #[async_trait]
 impl Task for SyncPermissionsTask {
     fn name(&self) -> &str {
-        "sync_permissions"
+        "sync:permissions"
     }
 
     fn description(&self) -> &str {

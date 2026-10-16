@@ -74,7 +74,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         match command {
             Commands::RouteList { filter } => {
                 let args = filter.map(|f| vec![f]).unwrap_or_default();
-                xsia_xarx::tasks::route_list::print_route_list(&args);
+                xsia_xarx::tasks::utilities::route_list::print_route_list(&args);
                 return Ok(());
             }
             Commands::Task { name, args } => {

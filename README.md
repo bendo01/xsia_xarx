@@ -178,6 +178,10 @@ REDIS_URL="redis://127.0.0.1:6379"
 # Authentication & Security
 JWT_SECRET="your-super-secret-jwt-key"
 JWT_EXPIRATION_HOURS=24
+# AES-256-GCM key for secrets stored in the database (Feeder, mail server, OpenWA).
+# Base64 of 32 bytes; generate with `openssl rand -base64 32`. Changing it makes
+# existing encrypted values unreadable.
+APP_ENCRYPTION_KEY="generate-with-openssl-rand-base64-32"
 
 # Institution & Academic Context
 CURRENT_ACADEMIC_YEAR_ID="5133cbba-7e54-4795-9bad-0caae06e0284"
@@ -228,13 +232,21 @@ CURRENT_INSTITUTION_CODE="092010"
    cd server
    ```
 
-2. **Run database migrations**:
+2. **Generate the encryption key** (once per environment) and add it to `.env`:
+
+   ```bash
+   echo "APP_ENCRYPTION_KEY=\"$(openssl rand -base64 32)\"" >> .env
+   ```
+
+   Keep this key safe and don't change it later: secrets already encrypted with it (Feeder, mail server, OpenWA) can't be read with a different key.
+
+3. **Run database migrations**:
 
    ```bash
    sea-orm-cli migrate up
    ```
 
-3. **Start the server with background email worker**:
+4. **Start the server with background email worker**:
 
    ```bash
    cargo run
@@ -546,11 +558,16 @@ cargo run -- task
 | `EstimateRiwayatSertifikasiDosen` | Fetch and process GetRiwayatSertifikasiDosen data from Feeder Dikti | `cargo run -- task EstimateRiwayatSertifikasiDosen` |
 | `EstimateTranskripMahasiswa` | Fetch and process GetTranskripMahasiswa data from Feeder Dikti | `cargo run -- task EstimateTranskripMahasiswa` |
 | `example` | An example task that prints a message | `cargo run -- task example arg1 arg2` |
+| `feeder:add-credential` | Prompts for Feeder username, password, institution code and URL, then stores the credential (password encrypted) | `cargo run -- task feeder:add-credential` |
 | `generate:permission-from-client` | Grants each position type the permissions its client area (`client/src/routes/<area>`) requests | `cargo run -- task generate:permission-from-client --dry-run` |
+| `generate:permission-from-route` | Upserts every named controller route into auth.permissions and deletes permissions no route uses | `cargo run -- task generate:permission-from-route --dry-run` |
 | `hash:password` | Hashes input string/password using Argon2id and Bcrypt from arguments | `cargo run -- task hash:password "MySecretPass123"` |
+| `preference:add-mail-server` | Prompts for SMTP host, port, sender, address and credentials, then stores the active mail server (password encrypted) | `cargo run -- task preference:add-mail-server` |
+| `preference:add-openwa` | Prompts for OpenWA URL, session ID, operator API key and webhook secrets, then stores the active OpenWA settings (keys and secrets encrypted) | `cargo run -- task preference:add-openwa` |
 | `route:list` | Lists all system routes with their URL path, HTTP method, handler function, and route name | `cargo run -- task route:list` |
+| `sync:staff-roles` | Gives every current staff appointment with a position type and a user account a role, and revokes the rest | `cargo run -- task sync:staff-roles --dry-run` |
 | `sync:student-roles` | Synchronizes student roles into the auth.roles table | `cargo run -- task sync:student-roles` |
-| `sync_permissions` | Synchronizes all predefined route permissions into the auth.permissions table | `cargo run -- task sync_permissions` |
+| `sync:permissions` | Synchronizes all predefined route permissions into the auth.permissions table | `cargo run -- task sync:permissions` |
 | `SyncAllMasterData` | Sequentially run all 22 downstream master synchronization tasks (01 to 22) in topological DAG dependency order | `cargo run -- task SyncAllMasterData` or `cargo run -- task SyncAllMasterData --fail-fast` |
 | `SyncBiodataMahasiswaToAcademicStudentMasterStudent` | Upsert biodata_mahasiswa and mahasiswa to person_master.individuals and academic_student_master.students (Step 01) | `cargo run -- task SyncBiodataMahasiswaToAcademicStudentMasterStudent` |
 | `SyncBiodataDosenToAcademicLecturerMasterLecturer` | Upsert biodata_dosen and dosen to person_master.individuals and academic_lecturer_master.lecturers (Step 02) | `cargo run -- task SyncBiodataDosenToAcademicLecturerMasterLecturer` |
@@ -604,15 +621,72 @@ cargo run -- task route:list auth
 cargo run -- task route:list student
 ```
 
-##### 🔄 Sync Permissions (`sync_permissions`)
+##### 🔄 Sync Permissions (`sync:permissions`)
 
 Sync predefined system permission constants into the PostgreSQL database:
 
 ```bash
-cargo run -- task sync_permissions
-# or
 cargo run -- task sync:permissions
+# or
+cargo run -- task sync_permissions
 ```
+
+##### 🎓 Add Feeder Credential (`feeder:add-credential`)
+
+Store the PDDikti Feeder login for an institution. The task prompts for each value; nothing is passed as an argument:
+
+```bash
+cargo run -- task feeder:add-credential
+```
+
+| Prompt | Notes |
+| :--- | :--- |
+| Institution code | Defaults to `CURRENT_INSTITUTION_CODE`. Must match an existing institution |
+| Feeder username | Required |
+| Feeder password | Hidden input. Stored encrypted |
+| Feeder URL | Must start with `http://` or `https://`, e.g. `http://host:3003/ws/live2.php` |
+
+Each institution has one credential. If one already exists, it is updated; otherwise a new one is created.
+
+##### 📧 Add Mail Server (`preference:add-mail-server`)
+
+Store the SMTP server used to send e-mail. The task prompts for each value:
+
+```bash
+cargo run -- task preference:add-mail-server
+```
+
+| Prompt | Notes |
+| :--- | :--- |
+| SMTP host | Required |
+| SMTP port | Defaults to `587` |
+| Use TLS (y/n) | Defaults to `y` |
+| Sender name | Required |
+| Sender mail address | Defaults to `SYSTEM_MAIL_ADDRESS`. Must contain `@` |
+| SMTP user | Leave empty for a server without authentication; the password prompt is then skipped |
+| SMTP password | Hidden input. Stored encrypted |
+
+If an active mail server already exists, it is updated; otherwise a new active one is created.
+
+##### 💬 Add OpenWA Settings (`preference:add-openwa`)
+
+Store the OpenWA (WhatsApp) connection and the webhook secrets described in [Inbound Webhooks](#-inbound-webhooks). The task prompts for each value:
+
+```bash
+cargo run -- task preference:add-openwa
+```
+
+| Prompt | Notes |
+| :--- | :--- |
+| OpenWA URL | Must start with `http://` or `https://`, e.g. `http://host:2785` |
+| OpenWA session ID | Defaults to `OPENWA_API_KEY_SESSION_ID` |
+| OpenWA operator API key | Hidden input. Stored encrypted |
+| OpenWA webhook secret | Hidden input. Stored encrypted |
+| Mail-in-a-Box webhook secret | Hidden input. Stored encrypted |
+
+If active OpenWA settings already exist, they are updated; otherwise a new active record is created.
+
+All three tasks need a configured database connection and `APP_ENCRYPTION_KEY` set in `server/.env`, since they encrypt the secrets before saving them.
 
 ##### 🛡️ Generate Permissions from Client (`generate:permission-from-client`)
 

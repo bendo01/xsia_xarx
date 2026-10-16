@@ -51,7 +51,7 @@ impl MigrationTrait for Migration {
                     )
                     .primary_key(
                         Index::create()
-                            .name("prfc_what_apps_pkey")
+                            .name("prfc_applications_pkey")
                             .col(Alias::new("id")),
                     )
                     .to_owned(),

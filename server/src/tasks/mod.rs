@@ -3,8 +3,6 @@ use sea_orm::DatabaseConnection;
 
 pub mod example;
 pub mod feeder_dikti;
-pub mod route_list;
-pub mod sync_permissions;
 pub mod utilities;
 
 #[async_trait]
@@ -22,8 +20,8 @@ pub trait Task: Send + Sync {
 pub fn get_tasks() -> Vec<Box<dyn Task>> {
     vec![
         Box::new(example::ExampleTask),
-        Box::new(sync_permissions::SyncPermissionsTask),
-        Box::new(route_list::RouteListTask),
+        Box::new(utilities::sync_permissions::SyncPermissionsTask),
+        Box::new(utilities::route_list::RouteListTask),
         Box::new(utilities::generate_permission_from_route::GeneratePermissionFromRouteTask),
         Box::new(utilities::generate_permission_from_client::GeneratePermissionFromClientTask),
         Box::new(utilities::add_feeder_credential::AddFeederCredentialTask),
