@@ -255,6 +255,8 @@ asxsia 'cd /var/www/ferron/xsia_xarx/src/server/migration && cargo build --relea
 sudo -u xsia install -m 0755 /var/www/ferron/xsia_xarx/src/server/target/release/xsia_xarx          /var/www/ferron/xsia_xarx/server/
 sudo -u xsia install -m 0755 /var/www/ferron/xsia_xarx/src/server/migration/target/release/migration /var/www/ferron/xsia_xarx/server/
 sudo -u xsia cp -a /var/www/ferron/xsia_xarx/src/server/public /var/www/ferron/xsia_xarx/server/
+# Embedding model for AI chunks (gitignored, so not in the checkout); ≈ 460 MB
+asxsia 'cd /var/www/ferron/xsia_xarx/server && uvx --from huggingface_hub hf download sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 config.json tokenizer.json model.safetensors --local-dir models/paraphrase-multilingual-MiniLM-L12-v2'
 
 # Check for missing shared libraries (e.g. libtensorflow from the tensorflow crate)
 ldd /var/www/ferron/xsia_xarx/server/xsia_xarx | grep 'not found' || echo "all libraries resolved"
@@ -1009,6 +1011,34 @@ docker run --rm -v $BUILD/out/release:/r rockylinux/rockylinux:10 \
 ```
 
 ### D. Transfer and install on the server
+
+**What goes to the server.** Only these files; everything under `/var/www/ferron/xsia_xarx` is relative to that directory:
+
+| From the workstation | To the server | How | When |
+|---|---|---|---|
+| `server/xsia_xarx` (API binary) | `server/xsia_xarx` | tarball | every deploy |
+| `server/migration` (migration binary) | `server/migration` | tarball | every deploy |
+| `server/lib/libtensorflow*.so*` | `/usr/local/lib64/` | tarball | every deploy |
+| `server/public/` (static assets, PDF logos/signatures) | `server/public/` (never overwrites `public/upload/`) | tarball | every deploy |
+| `client/.output/` (SolidStart SSR build) | `client/.output/` | tarball | every deploy |
+| `api-usage.json` | `server/api-usage.json` | tarball | every deploy |
+| `server/models/paraphrase-multilingual-MiniLM-L12-v2/` (≈ 460 MB, gitignored) | `server/models/paraphrase-multilingual-MiniLM-L12-v2/` | `rsync`, see below | once, or when the model changes |
+| — | `server/.env` | created on the server ([6.C](#c-production-env)) | once |
+
+**Don't copy:** `target/`, the source tree, your dev `server/.env` / `client/.env`, `backups/`, `logs/`. The email template and the i18n files are compiled into the binary. The server creates `server/logs/`, `server/storage/ai/uploads/` and `server/public/upload/` itself.
+
+The embedding model isn't in git, so it isn't in the tarball. Copy it once from your dev checkout (or download it on the server with the `hf download` command in `src/services/ai/embedding.rs`):
+
+```bash
+rsync -a --mkpath ~/Projects/xsia_xarx/server/models/paraphrase-multilingual-MiniLM-L12-v2/ \
+  admin@server.example.ac.id:/tmp/minilm/
+# on the server
+sudo mkdir -p /var/www/ferron/xsia_xarx/server/models
+sudo rsync -a --delete /tmp/minilm/ /var/www/ferron/xsia_xarx/server/models/paraphrase-multilingual-MiniLM-L12-v2/
+sudo chown -R xsia:xsia /var/www/ferron/xsia_xarx/server/models
+```
+
+Ship the tarball:
 
 ```bash
 scp $BUILD/out/xsia_xarx-$TAG.tar.gz admin@server.example.ac.id:/tmp/
