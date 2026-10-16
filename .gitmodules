@@ -1,0 +1,3 @@
+[submodule ".claude/skills/SolidJS-Claude-Skill-Package"]
+	path = .claude/skills/SolidJS-Claude-Skill-Package
+	url = https://github.com/OpenAEC-Foundation/SolidJS-Claude-Skill-Package.git

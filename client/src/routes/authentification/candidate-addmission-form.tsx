@@ -11,8 +11,6 @@ import {
     type OptionItem,
 } from '~/controllers/academic/candidate/AcademicCandidateAdmissionController';
 
-const NIL_UUID = '00000000-0000-0000-0000-000000000000';
-
 const inputClass = "w-full bg-[#111827]/70 border border-emerald-500/20 text-white placeholder-white/30 px-4 py-3 rounded-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400/50 transition-all text-sm shadow-inner";
 
 function FieldShell(props: { label: string; error?: string; children: JSX.Element }) {
@@ -72,10 +70,8 @@ export default function CandidateAdmissionForm() {
             setErrorMessage(null);
 
             try {
-                const academicYearId = configuration.studentAdmissionAcademicYearId;
                 const result = await admissionRegister({
                     institution_code: configuration.institutionCode,
-                    academic_year_id: academicYearId !== NIL_UUID ? academicYearId : null,
                     name: value.name.trim(),
                     nik: value.nik.trim(),
                     birth_place: value.birth_place.trim(),

@@ -41,8 +41,9 @@ Replace `app.example.ac.id` / `api.example.ac.id` with your real domains everywh
 11. [Verify](#11-verify)
 12. [Inbound webhooks (Mail-in-a-Box & OpenWA)](#12-inbound-webhooks-mail-in-a-box--openwa)
 13. [Updating / redeploying](#13-updating--redeploying)
-14. [Backups](#14-backups)
-15. [Troubleshooting](#15-troubleshooting)
+14. [Alternative: build on a workstation, ship to the server](#14-alternative-build-on-a-workstation-ship-to-the-server)
+15. [Backups](#15-backups)
+16. [Troubleshooting](#16-troubleshooting)
 
 ---
 
@@ -162,7 +163,7 @@ PostgreSQL listens on `localhost` only by default — keep it that way.
 
 ## 3. Install build toolchains (Rust, Bun)
 
-Install as the `xsia` user so builds don't run as root. (Alternatively, build on a separate **Rocky Linux 10** machine and copy only the artifacts.)
+Install as the `xsia` user so builds don't run as root. (Alternatively, compile on your workstation and copy only the artifacts; see [section 14](#14-alternative-build-on-a-workstation-ship-to-the-server). The server then needs Bun as the SSR runtime but no Rust toolchain.)
 
 ```bash
 # Rust (stable; the crate needs >= 1.97.1)
@@ -304,9 +305,8 @@ JWT_SECRET="CHANGE_ME"
 JWT_EXPIRATION_HOURS=24
 
 # Institution & academic context
+# The academic year is resolved from the current date (academic_years.start_date)
 # The institution comes from the stored Feeder credential (task utility:feeder-add-credential)
-CURRENT_ACADEMIC_YEAR_ID="5133cbba-7e54-4795-9bad-0caae06e0284"
-CURRENT_STUDENT_ADMISSION_ACADEMIC_YEAR_ID="5133cbba-7e54-4795-9bad-0caae06e0284"
 
 # SMTP and Feeder: fallbacks only. Prefer storing them in the database (6.D);
 # a stored mail server / Feeder credential wins over these values.
@@ -389,8 +389,6 @@ These values are compiled into the bundle:
 
 ```bash
 sudo -u xsia tee /var/www/ferron/xsia_xarx/src/client/.env >/dev/null <<'EOF'
-CURRENT_ACADEMIC_YEAR_ID="5133cbba-7e54-4795-9bad-0caae06e0284"
-CURRENT_STUDENT_ADMISSION_ACADEMIC_YEAR_ID="5133cbba-7e54-4795-9bad-0caae06e0284"
 CURRENT_INSTITUTION_ID="ed7e8c02-451b-4548-aa81-26b8d0b7fdec"
 CURRENT_INSTITUTION_CODE="092010"
 VITE_API_SERVER_URL="https://api.example.ac.id/api/v1/"
@@ -916,7 +914,167 @@ systemctl is-active xsia-api xsia-web
 
 ---
 
-## 14. Backups
+## 14. Alternative: build on a workstation, ship to the server
+
+Compiling on the server needs Rust, lots of RAM and a long first build. Instead you can compile on a development workstation and copy only the finished artifacts. The server then needs **no Rust toolchain and no source checkout**: skip the Rust line of [step 3](#3-install-build-toolchains-rust-bun) (keep Bun, it runs the SSR server) and all of [step 5](#5-get-the-code).
+
+> ⚠️ **Build inside a Rocky Linux 10 container, not directly on the workstation.** A Rust binary needs the glibc version it was linked against *or newer*. Rocky 10 ships glibc 2.39; a rolling-release workstation (Arch, Fedora, …) is usually newer (`ldd --version`), and a binary built there fails on the server with `GLIBC_2.4x not found`. The container also produces the right `libtensorflow*.so`. Docker and Podman both work (replace `docker` with `podman`).
+>
+> 🚫 **Don't upgrade the server's glibc to match the workstation.** Rocky 10 stays on glibc 2.39 for its whole lifetime and no repository offers a newer one. `dnf`, `systemd`, `sshd`, PostgreSQL and nearly everything else link against it, so replacing it by hand can leave the server unable to boot or log in. Build for the server's glibc instead (this container), never the other way round.
+
+### A. Prepare a clean build tree (workstation)
+
+Export the commit you want to deploy into a separate directory, so your dev `.env` files and `target/` (built against the workstation glibc) don't end up in the release:
+
+```bash
+BUILD=~/xsia-build
+REV=main                                   # branch, tag or commit to ship
+rm -rf $BUILD/src && mkdir -p $BUILD/src $BUILD/out
+git -C ~/Projects/xsia_xarx archive "$REV" | tar -x -C $BUILD/src
+```
+
+Put the **production** client values in `$BUILD/src/client/.env`; they are baked into the bundle (same content as [7.B](#b-production-client-env)):
+
+```bash
+cat > $BUILD/src/client/.env <<'EOF'
+CURRENT_INSTITUTION_ID="ed7e8c02-451b-4548-aa81-26b8d0b7fdec"
+CURRENT_INSTITUTION_CODE="092010"
+VITE_API_SERVER_URL="https://api.example.ac.id/api/v1/"
+VITE_SERVER_URL="https://api.example.ac.id/"
+VITE_WEB_SOCKET_SERVER_URL="wss://api.example.ac.id/api/v1/realtime/ws"
+VITE_APP_NAME="XARX"
+VITE_APP_TYPE="xarx"
+EOF
+```
+
+### B. Build image (one-time)
+
+Save as `$BUILD/Containerfile`:
+
+```dockerfile
+FROM rockylinux/rockylinux:10
+RUN dnf -y install epel-release && dnf config-manager --set-enabled crb && \
+    dnf -y install git curl tar unzip gzip gcc gcc-c++ make cmake clang perl \
+                   pkgconf-pkg-config openssl-devel && dnf clean all
+ENV RUSTUP_HOME=/opt/rustup CARGO_HOME=/opt/cargo BUN_INSTALL=/opt/bun
+ENV PATH=/opt/cargo/bin:/opt/bun/bin:$PATH
+RUN curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal && \
+    curl -fsSL https://bun.sh/install | bash
+WORKDIR /work
+```
+
+```bash
+docker build -t xsia-build:rocky10 -f $BUILD/Containerfile $BUILD
+```
+
+`rust-toolchain.toml` (channel `stable`) makes rustup fetch the current stable toolchain on first use; the named volumes below keep it, the cargo registry and the `target/` cache between builds, so later builds are incremental.
+
+### C. Compile and collect the artifacts
+
+```bash
+docker run --rm \
+  -v $BUILD/src:/work/src -v $BUILD/out:/work/out \
+  -v xsia-cargo-registry:/opt/cargo/registry -v xsia-rustup:/opt/rustup \
+  -v xsia-target:/work/target -v xsia-target-migration:/work/target-migration \
+  xsia-build:rocky10 bash -euo pipefail -c '
+    cd /work/src/server
+    CARGO_TARGET_DIR=/work/target cargo build --release --locked
+    cd migration
+    CARGO_TARGET_DIR=/work/target-migration cargo build --release --locked
+    cd /work/src/client
+    bun install --frozen-lockfile
+    bun --bun run build
+    bun scripts/extract-api-usage.mjs > /work/out/api-usage.json   # for the permission task, see 14.E
+
+    rm -rf /work/out/release && mkdir -p /work/out/release/server/lib /work/out/release/client
+    install -m 0755 /work/target/release/xsia_xarx            /work/out/release/server/
+    install -m 0755 /work/target-migration/release/migration  /work/out/release/server/
+    find /work/target/release -name "libtensorflow*.so*" -exec cp -a {} /work/out/release/server/lib/ \;
+    cp -a /work/src/server/public  /work/out/release/server/
+    cp -a /work/src/client/.output /work/out/release/client/
+    mv /work/out/api-usage.json    /work/out/release/
+    chown -R '"$(id -u):$(id -g)"' /work/out
+  '
+```
+
+> ⏳ Same memory notes as [6.A](#a-build-release-binaries) apply; add `-e CARGO_BUILD_JOBS=4` if the workstation runs out of RAM.
+
+Package it with the commit in the name and check that it runs against Rocky's glibc:
+
+```bash
+TAG=$(git -C ~/Projects/xsia_xarx rev-parse --short "$REV")
+tar -C $BUILD/out/release -czf $BUILD/out/xsia_xarx-$TAG.tar.gz .
+docker run --rm -v $BUILD/out/release:/r rockylinux/rockylinux:10 \
+  bash -c 'LD_LIBRARY_PATH=/r/server/lib ldd /r/server/xsia_xarx | grep "not found" || echo "all libraries resolved"'
+```
+
+### D. Transfer and install on the server
+
+```bash
+scp $BUILD/out/xsia_xarx-$TAG.tar.gz admin@server.example.ac.id:/tmp/
+```
+
+On the server, save as `/var/www/ferron/xsia_xarx/install-release.sh` (`chmod +x`) and run `sudo /var/www/ferron/xsia_xarx/install-release.sh /tmp/xsia_xarx-<TAG>.tar.gz`. It does the same as the install half of [13](#13-updating--redeploying): DB backup, keep the old binary, migrate, swap the client, restart.
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+asxsia() { sudo -u xsia -H bash -lc "export PATH=\$HOME/.bun/bin:\$HOME/.local/bin:\$PATH; $*"; }
+
+PKG=${1:?usage: install-release.sh <xsia_xarx-TAG.tar.gz>}
+RUN=/var/www/ferron/xsia_xarx
+STAGE=$(mktemp -d)
+trap 'rm -rf "$STAGE"' EXIT
+tar -xzf "$PKG" -C "$STAGE"
+
+# Backup DB before migrating
+mkdir -p /var/lib/pgsql/backups
+sudo -u postgres pg_dump -Fc xsia_xarx > "/var/lib/pgsql/backups/xsia_xarx_$(date +%F_%H%M).dump"
+
+# Shared library from the tensorflow crate
+if compgen -G "$STAGE/server/lib/libtensorflow*.so*" >/dev/null; then
+  cp -a "$STAGE"/server/lib/libtensorflow*.so* /usr/local/lib64/
+  echo /usr/local/lib64 > /etc/ld.so.conf.d/local-lib64.conf && ldconfig
+fi
+
+# Backend (keep the old binary for rollback)
+mkdir -p $RUN/server/logs
+[ -f $RUN/server/xsia_xarx ] && cp -a $RUN/server/xsia_xarx $RUN/server/xsia_xarx.prev
+install -o xsia -g xsia -m 0755 "$STAGE/server/xsia_xarx" "$STAGE/server/migration" $RUN/server/
+# Sync static assets but NEVER delete runtime uploads
+rsync -a --exclude 'upload/' "$STAGE/server/public/" $RUN/server/public/
+install -o xsia -g xsia -m 0644 "$STAGE/api-usage.json" $RUN/server/
+chown -R xsia:xsia $RUN/server/public $RUN/server/logs
+restorecon -R $RUN/server                       # bin_t label (SELinux, see 6.B)
+
+asxsia "cd $RUN/server && ./migration up"
+
+# Frontend
+mkdir -p $RUN/client
+rm -rf $RUN/client/.output.new && cp -a "$STAGE/client/.output" $RUN/client/.output.new
+rm -rf $RUN/client/.output && mv $RUN/client/.output.new $RUN/client/.output
+chown -R xsia:xsia $RUN/client
+
+systemctl restart xsia-api xsia-web
+sleep 3
+systemctl is-active xsia-api xsia-web
+```
+
+**First install.** Before the first run, do steps [1](#1-prepare-the-server), [2](#2-install-postgresql-18--extensions), [3](#3-install-build-toolchains-rust-bun) (Bun only) and [4](#4-install-headless-chromium-pdf--python-tools), add the SELinux rule from [6.B](#b-install-the-runtime-files) (the `semanage fcontext` line), and create `server/.env` as in [6.C](#c-production-env). After the script, finish [6.D](#d-run-migrations-and-initial-tasks) (the credential tasks, and the permission sync from 14.E), then [8](#8-systemd-services)–[11](#11-verify). Skip [7](#7-build--configure-the-frontend): the client was built in 14.C (it still needs the Nitro change from 7.A in the committed code). Until the units from step 8 exist, the script's final `systemctl restart` fails; that's expected.
+
+**Rollback** works as in [13](#13-updating--redeploying), or reinstall an older tarball (restore the pre-deploy dump if a migration must be undone).
+
+### E. Permissions sync without the client source
+
+`utility:generate-permission-from-client` normally runs `client/scripts/extract-api-usage.mjs` against the client source. The build step above already ran it and shipped the result as `api-usage.json`, so pass it with `--input`:
+
+```bash
+asxsia 'cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task utility:generate-permission-from-client --input api-usage.json --prune'
+```
+
+---
+
+## 15. Backups
 
 ```bash
 sudo -u postgres mkdir -p /var/lib/pgsql/backups
@@ -934,7 +1092,7 @@ Copy backups off the server (rsync / object storage) — a backup on the same di
 
 ---
 
-## 15. Troubleshooting
+## 16. Troubleshooting
 
 | Symptom | Likely cause / fix |
 | :--- | :--- |
@@ -959,6 +1117,7 @@ Copy backups off the server (rsync / object storage) — a backup on the same di
 | WebSocket closes immediately | `ws://` used on an HTTPS page (use `wss://` in `VITE_WEB_SOCKET_SERVER_URL` and rebuild the client). |
 | `xsia-api` fails with `status=203/EXEC` | SELinux label on the binary is `httpd_sys_content_t`. Run the `semanage fcontext` + `restorecon` step in [6.B](#b-install-the-runtime-files). |
 | `error while loading shared libraries: libtensorflow…` | See the `ldd` step in [6.B](#b-install-the-runtime-files). |
+| `version 'GLIBC_2.4x' not found` | The binary was built on a machine with a newer glibc. Rebuild in the Rocky 10 container ([14.C](#c-compile-and-collect-the-artifacts)); don't upgrade the server's glibc. |
 | CORS errors | The API allows any origin; check that Ferron isn't adding duplicate `Access-Control-*` headers (e.g. via the old `cors_headers` snippet). |
 
 Logs: `journalctl -u xsia-api -f`, `journalctl -u xsia-web -f`, `/var/log/ferron/error.log`, `journalctl -u ferron`, `/var/lib/pgsql/18/data/log/`.

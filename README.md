@@ -184,8 +184,6 @@ APP_ENCRYPTION_KEY="generate-with-openssl-rand-base64-32"
 
 # Institution & Academic Context
 # The institution comes from the stored Feeder credential (task utility:feeder-add-credential)
-CURRENT_ACADEMIC_YEAR_ID="5133cbba-7e54-4795-9bad-0caae06e0284"
-CURRENT_STUDENT_ADMISSION_ACADEMIC_YEAR_ID="5133cbba-7e54-4795-9bad-0caae06e0284"
 
 # SMTP Mailer Settings
 SMTP_HOST="mail.xsia.app"
@@ -227,8 +225,6 @@ A stored row wins over `.env` as a whole: for example, with an active OpenWA row
 Create a `.env` file in the `client/` directory:
 
 ```env
-CURRENT_ACADEMIC_YEAR_ID="5133cbba-7e54-4795-9bad-0caae06e0284"
-CURRENT_STUDENT_ADMISSION_ACADEMIC_YEAR_ID="5133cbba-7e54-4795-9bad-0caae06e0284"
 CURRENT_INSTITUTION_ID="ed7e8c02-451b-4548-aa81-26b8d0b7fdec"
 CURRENT_INSTITUTION_CODE="092010"
 ```

@@ -21,6 +21,7 @@ use crate::dtos::auth::user::UserResponse;
 use crate::middleware::auth::auth_user_id;
 use crate::models::academic::candidate::master::{candidate_unit, candidates};
 use crate::models::academic::candidate::reference::{registration_categories, registration_types};
+use crate::models::academic::general::reference::academic_years;
 use crate::models::auth::{role, user};
 use crate::models::document::reference::archive_types;
 use crate::models::document::transaction::archives;
@@ -349,6 +350,14 @@ pub async fn register(
     let now = Utc::now().naive_utc();
     let hashed_password = hash_password(&payload.password)?;
 
+    let academic_year_id = match payload.academic_year_id.filter(|id| !id.is_nil()) {
+        Some(id) => Some(id),
+        None => academic_years::Entity::find_by_date(&db, now.date())
+            .await
+            .map_err(internal)?
+            .map(|year| year.id),
+    };
+
     let txn = db.begin().await.map_err(internal)?;
 
     let individual_id = match existing_individual {
@@ -412,7 +421,7 @@ pub async fn register(
         school_regency_id: Set(None),
         state_smart_card_number: Set(None),
         individual_id: Set(Some(individual_id)),
-        academic_year_id: Set(payload.academic_year_id.filter(|id| !id.is_nil())),
+        academic_year_id: Set(academic_year_id),
         student_id: Set(None),
         user_id: Set(user_id),
         // Assigned once the candidate picks a study program on the dashboard

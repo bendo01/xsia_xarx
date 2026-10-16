@@ -43,5 +43,20 @@ pub struct Model {
     pub students: HasMany<crate::models::academic::student::master::students::Entity>,
 }
 
-
 impl ActiveModelBehavior for ActiveModel {}
+
+impl Entity {
+    /// The academic year in effect on `date`: the latest-starting year whose
+    /// `start_date` is on or before `date`. Ranges in the data overlap (e.g. a
+    /// short semester inside an even one), so the most recent start wins.
+    pub async fn find_by_date<C: ConnectionTrait>(db: &C, date: Date) -> Result<Option<Model>, DbErr> {
+        use sea_orm::QueryOrder;
+
+        Self::find()
+            .filter(Column::DeletedAt.is_null())
+            .filter(Column::StartDate.lte(date))
+            .order_by_desc(Column::StartDate)
+            .one(db)
+            .await
+    }
+}
