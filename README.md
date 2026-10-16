@@ -205,6 +205,7 @@ FEEDER_URL="http://feeder.example.ac.id/ws/live2.php"
 IS_PRODUCTION_MIDTRANS_PAYMENT=false
 
 # Inbound Webhooks (shared secrets; an empty value disables that endpoint)
+# Generate with: cargo run -- task preference:generate-webhook-secret (or openssl rand -hex 32)
 MIAB_WEBHOOK_SECRET="generate-with-openssl-rand-hex-32"   # POST /api/v1/webhook/mail-in-a-box
 OPENWA_WEBHOOK_SECRET="generate-with-openssl-rand-hex-32" # POST /api/v1/webhook/openwa
 ```
@@ -372,6 +373,8 @@ If a signature header is present it is the one checked. A missing or wrong secre
 
 **Responses.** `200 {"id": "<uuid>", "duplicate": false}` on success, `400` for invalid JSON or fields, `401` for a bad secret, `503` when no secret is configured.
 
+**Setting it up.** Store the secret on the box, install a signing script, send a test event, then call the script from cron or Postfix/Dovecot hooks. The step-by-step procedure is in [DEPLOYMENT.md §12.B](DEPLOYMENT.md#b-mail-in-a-box--xsia). A minimal signed request looks like this:
+
 **Sending from the box.**
 
 ```bash
@@ -416,7 +419,14 @@ curl -fsS -X POST "$OPENWA_URL/api/sessions/$OPENWA_API_KEY_SESSION_ID/webhooks"
   -d '{"url":"https://your-xsia-host/api/v1/webhook/openwa","events":["message.received","message.ack","session.status"],"secret":"'"$OPENWA_WEBHOOK_SECRET"'"}'
 ```
 
-`OpenWaSender::register_webhook` in `server/src/services/messenger/openwa.rs` makes the same call from Rust. Use OpenWA's "test webhook" action to confirm delivery: it sends a signed `test` event, which is stored like any other.
+`OpenWaSender::register_webhook` in `server/src/services/messenger/openwa.rs` makes the same call from Rust. Note the `id` in the response, then send a test delivery (or use the **Test** button in the OpenWA dashboard). It sends a signed `test` event, which is stored like any other:
+
+```bash
+curl -fsS -X POST "$OPENWA_URL/api/sessions/$OPENWA_API_KEY_SESSION_ID/webhooks/<webhook-id>/test" \
+  -H "X-API-Key: $OPENWA_API_KEY_OPERATOR"
+```
+
+The full procedure (prerequisites, dashboard steps, listing, updating and deleting webhooks, rotating the secret) is in [DEPLOYMENT.md §12.C](DEPLOYMENT.md#c-openwa--xsia).
 
 ---
 
@@ -564,6 +574,7 @@ cargo run -- task
 | `hash:password` | Hashes input string/password using Argon2id and Bcrypt from arguments | `cargo run -- task hash:password "MySecretPass123"` |
 | `preference:add-mail-server` | Prompts for SMTP host, port, sender, address and credentials, then stores the active mail server (password encrypted) | `cargo run -- task preference:add-mail-server` |
 | `preference:add-openwa` | Prompts for OpenWA URL, session ID, operator API key and webhook secrets, then stores the active OpenWA settings (keys and secrets encrypted) | `cargo run -- task preference:add-openwa` |
+| `preference:generate-webhook-secret` | Generates MIAB and OpenWA webhook secrets ([miab\|openwa], default both), prints them as .env lines and stores them encrypted in the active OpenWA settings | `cargo run -- task preference:generate-webhook-secret` |
 | `route:list` | Lists all system routes with their URL path, HTTP method, handler function, and route name | `cargo run -- task route:list` |
 | `sync:staff-roles` | Gives every current staff appointment with a position type and a user account a role, and revokes the rest | `cargo run -- task sync:staff-roles --dry-run` |
 | `sync:student-roles` | Synchronizes student roles into the auth.roles table | `cargo run -- task sync:student-roles` |
@@ -686,7 +697,21 @@ cargo run -- task preference:add-openwa
 
 If active OpenWA settings already exist, they are updated; otherwise a new active record is created.
 
-All three tasks need a configured database connection and `APP_ENCRYPTION_KEY` set in `server/.env`, since they encrypt the secrets before saving them.
+##### 🔐 Generate Webhook Secrets (`preference:generate-webhook-secret`)
+
+Generate the shared secrets for the [Inbound Webhooks](#-inbound-webhooks). Each secret is 32 random bytes as 64 hex characters, the same as `openssl rand -hex 32`:
+
+```bash
+cargo run -- task preference:generate-webhook-secret          # both secrets
+cargo run -- task preference:generate-webhook-secret miab     # only MIAB_WEBHOOK_SECRET
+cargo run -- task preference:generate-webhook-secret openwa   # only OPENWA_WEBHOOK_SECRET
+```
+
+The task prints the secrets as `.env` lines (`MIAB_WEBHOOK_SECRET="..."`, `OPENWA_WEBHOOK_SECRET="..."`) and stores them encrypted in the active OpenWA settings. If no active OpenWA settings exist, nothing is stored; run `preference:add-openwa` first and paste the secrets there.
+
+The webhook endpoints read the secrets **only from `server/.env`**, so copy the printed lines there and restart the API. Every run replaces the old secrets: register the new OpenWA secret again and update `XSIA_WEBHOOK_SECRET` on the Mail-in-a-Box server, or their deliveries will get `401`. The secrets are printed in plain text, so don't run the task where output is logged.
+
+All four tasks need a configured database connection and `APP_ENCRYPTION_KEY` set in `server/.env`, since they encrypt the secrets before saving them.
 
 ##### 🛡️ Generate Permissions from Client (`generate:permission-from-client`)
 

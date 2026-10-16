@@ -643,7 +643,18 @@ Both endpoints answer `503` until their secret is set, and `401` for a missing o
 
 ### A. Set the secrets
 
+Generate them with the `preference:generate-webhook-secret` task. It prints both as `.env` lines and, if OpenWA settings were already added with `preference:add-openwa`, also stores them encrypted in the database. Pass `miab` or `openwa` to generate only one:
+
 ```bash
+asxsia 'cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task preference:generate-webhook-secret'
+# MIAB_WEBHOOK_SECRET="…"
+# OPENWA_WEBHOOK_SECRET="…"
+```
+
+Or with `openssl` (same format: 32 random bytes as hex). Either way, the API reads the secrets only from `server/.env`, so append them there:
+
+```bash
+# Used the task? Paste its values instead:  MIAB_SECRET="…"; OPENWA_SECRET="…"
 MIAB_SECRET="$(openssl rand -hex 32)";   echo "MIAB_WEBHOOK_SECRET=$MIAB_SECRET"     # store both safely
 OPENWA_SECRET="$(openssl rand -hex 32)"; echo "OPENWA_WEBHOOK_SECRET=$OPENWA_SECRET"
 
@@ -669,7 +680,18 @@ done
 
 ### B. Mail-in-a-Box → xsia
 
-Mail-in-a-Box has no built-in webhook sender, so install a small signing script **on the Mail-in-a-Box server** and call it from cron or a hook:
+Mail-in-a-Box has no built-in webhook sender, so you install a small signing script **on the Mail-in-a-Box server** and call it from cron or a hook.
+
+**Before you start:** [12.A](#a-set-the-secrets) is done (the endpoint answers `401`, not `503`), and you have the value of `MIAB_WEBHOOK_SECRET`.
+
+**Step 1 — Check the box can reach the API.** On the Mail-in-a-Box server:
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" -X POST https://api.example.ac.id/api/v1/webhook/mail-in-a-box \
+  -H 'Content-Type: application/json' -d '{}'     # expect 401
+```
+
+**Step 2 — Store the URL and secret** (readable by root only):
 
 ```bash
 # On the Mail-in-a-Box server, as root
@@ -678,7 +700,11 @@ cat > /etc/xsia-webhook.env <<'EOF'
 XSIA_WEBHOOK_URL="https://api.example.ac.id/api/v1/webhook/mail-in-a-box"
 XSIA_WEBHOOK_SECRET="<same value as MIAB_WEBHOOK_SECRET>"
 EOF
+```
 
+**Step 3 — Install the sender script.** It builds the JSON body, signs it with HMAC-SHA256 and posts it with `X-Webhook-Signature`:
+
+```bash
 cat > /usr/local/bin/xsia-webhook <<'EOF'
 #!/usr/bin/env bash
 # Usage: xsia-webhook <event> [data-json]
@@ -695,42 +721,94 @@ curl -fsS --retry 3 -X POST "$XSIA_WEBHOOK_URL" \
   --data-raw "$BODY"
 EOF
 chmod 755 /usr/local/bin/xsia-webhook
+```
 
+**Step 4 — Send a test event:**
+
+```bash
 xsia-webhook test.ping '{"note":"deployment test"}'     # → {"id":"…","duplicate":false}
 ```
 
-Example cron job (`crontab -e` on the box) that reports a stopped mail service every 5 minutes:
+A `401` means the secret in `/etc/xsia-webhook.env` differs from `MIAB_WEBHOOK_SECRET`. The event should now be in `webhook.mail_in_a_box_events` ([12.D](#d-verify)).
+
+**Step 5 — Hook it to real events.** Call `xsia-webhook <event> '<json>'` wherever the box should report something. Use dotted lowercase event names (`mail.bounced`, `mailbox.created`, `status_check.failed`, …; see the README's *Inbound Webhooks*). Example cron job (`crontab -e` as root) that reports a stopped mail service every 5 minutes:
 
 ```cron
 */5 * * * * for s in postfix dovecot; do systemctl is-active --quiet $s || /usr/local/bin/xsia-webhook status_check.failed "{\"service\":\"$s\"}"; done
 ```
 
-> 🔒 Optional: accept this endpoint only from the mail server. Inside the `api.example.ac.id` block in `/etc/ferron/ferron.conf`:
-> ```kdl
-> location /api/v1/webhook/mail-in-a-box {
->     allow "203.0.113.25"            // Mail-in-a-Box public IP
->     proxy {
->         upstream http://127.0.0.1:5800
->     }
-> }
-> ```
+**Step 6 (optional) — Accept this endpoint only from the mail server.** Inside the `api.example.ac.id` block in `/etc/ferron/ferron.conf`, then reload Ferron:
+
+```kdl
+location /api/v1/webhook/mail-in-a-box {
+    allow "203.0.113.25"            // Mail-in-a-Box public IP
+    proxy {
+        upstream http://127.0.0.1:5800
+    }
+}
+```
+
+**Rotating the secret:** generate a new one ([12.A](#a-set-the-secrets)), update `MIAB_WEBHOOK_SECRET` in `server/.env`, restart `xsia-api`, then update `XSIA_WEBHOOK_SECRET` in `/etc/xsia-webhook.env` and rerun step 4. Events sent between the two changes get `401`.
 
 ### C. OpenWA → xsia
 
-Register the webhook with the **same secret** as `OPENWA_WEBHOOK_SECRET`. Either use the OpenWA dashboard (session → Webhooks → add URL, events, secret), or its API:
+OpenWA sends webhooks itself; you only register the xsia URL on the OpenWA session, with the **same secret** as `OPENWA_WEBHOOK_SECRET`.
+
+**Before you start:**
+- [12.A](#a-set-the-secrets) is done (the endpoint answers `401`, not `503`).
+- The OpenWA session exists and is connected (QR scanned). Its ID is `OPENWA_API_KEY_SESSION_ID`.
+- You have an OpenWA API key with the **operator** role or higher (`OPENWA_API_KEY_OPERATOR`).
+- `OPENWA_WEBHOOK_SECRET` is at least 16 characters. OpenWA rejects shorter secrets, and a webhook without a secret is unsigned, so xsia always answers `401`.
+- The OpenWA host can reach `https://api.example.ac.id`. OpenWA checks webhook URLs against SSRF rules when you register them, so use the public HTTPS URL rather than a private or loopback address.
+
+Load the variables used below (as root on the xsia server):
 
 ```bash
-set -a; . /var/www/ferron/xsia_xarx/server/.env; set +a      # loads OPENWA_* (run as root)
-
-curl -fsS -X POST "$OPENWA_URL/api/sessions/$OPENWA_API_KEY_SESSION_ID/webhooks" \
-  -H "X-API-Key: $OPENWA_API_KEY_OPERATOR" \
-  -H "Content-Type: application/json" \
-  -d '{"url":"https://api.example.ac.id/api/v1/webhook/openwa","events":["message.received","message.ack","session.status"],"secret":"'"$OPENWA_WEBHOOK_SECRET"'"}'
+set -a; . /var/www/ferron/xsia_xarx/server/.env; set +a      # OPENWA_URL, OPENWA_API_KEY_*, OPENWA_WEBHOOK_SECRET
 ```
 
-Then use OpenWA's **test webhook** action. It sends a signed `test` event that should be stored like any other. OpenWA retries non-2xx responses (3 attempts by default). A webhook registered without a secret is unsigned and always rejected with `401`.
+**Step 1 — Register the webhook.** Either:
 
-> ℹ️ If OpenWA runs on this same server, still use the public `https://api.example.ac.id/...` URL (or `http://127.0.0.1:5800/api/v1/webhook/openwa`). Don't point it at the frontend host.
+- **Dashboard:** open `OPENWA_URL` (default port `2785`) → **Webhooks** → choose the session → **New Webhook**. Set the URL to `https://api.example.ac.id/api/v1/webhook/openwa`, pick the events, paste the secret, save. (Menu and button labels may differ slightly between OpenWA versions.)
+- **API:**
+
+  ```bash
+  curl -fsS -X POST "$OPENWA_URL/api/sessions/$OPENWA_API_KEY_SESSION_ID/webhooks" \
+    -H "X-API-Key: $OPENWA_API_KEY_OPERATOR" \
+    -H "Content-Type: application/json" \
+    -d '{"url":"https://api.example.ac.id/api/v1/webhook/openwa","events":["message.received","message.ack","session.status"],"secret":"'"$OPENWA_WEBHOOK_SECRET"'"}'
+  ```
+
+  Note the `id` in the response; it's the webhook ID used below.
+
+Common events: `message.received`, `message.sent`, `message.ack`, `message.failed`, `session.status`, `session.disconnected`. Use `["*"]` for all of them. Without `events`, OpenWA subscribes to `message.received` only.
+
+**Step 2 — Send a test delivery.** Use the webhook's **Test** button in the dashboard, or:
+
+```bash
+WEBHOOK_ID="<id from step 1>"
+curl -fsS -X POST "$OPENWA_URL/api/sessions/$OPENWA_API_KEY_SESSION_ID/webhooks/$WEBHOOK_ID/test" \
+  -H "X-API-Key: $OPENWA_API_KEY_OPERATOR"
+```
+
+OpenWA sends a signed `test` event, which xsia stores like any other ([12.D](#d-verify)). A `401` in `journalctl -u xsia-api` means the secret registered in OpenWA differs from `OPENWA_WEBHOOK_SECRET`.
+
+**Step 3 — Send a real message** to the WhatsApp number and check that a `message.received` row appears.
+
+**Managing the webhook:**
+
+```bash
+H="X-API-Key: $OPENWA_API_KEY_OPERATOR"; BASE="$OPENWA_URL/api/sessions/$OPENWA_API_KEY_SESSION_ID/webhooks"
+
+curl -fsS -H "$H" "$BASE"                                    # list (secrets are not returned)
+curl -fsS -X PUT -H "$H" -H "Content-Type: application/json" \
+  -d '{"secret":"'"$OPENWA_WEBHOOK_SECRET"'"}' "$BASE/$WEBHOOK_ID"   # rotate secret / change url, events, active
+curl -fsS -X DELETE -H "$H" "$BASE/$WEBHOOK_ID"              # remove
+```
+
+**Rotating the secret:** update `OPENWA_WEBHOOK_SECRET` in `server/.env`, restart `xsia-api`, reload the variables above, then run the `PUT` and repeat step 2. OpenWA retries failed deliveries (3 attempts by default, exponential backoff), so events sent during the switch may still arrive once both sides match.
+
+`OpenWaSender::register_webhook` in `server/src/services/messenger/openwa.rs` makes the same registration call from Rust.
 
 ### D. Verify
 
