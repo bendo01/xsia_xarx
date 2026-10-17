@@ -983,8 +983,14 @@ RUN for i in 1 2 3 4 5; do \
     done; exit 1
 ENV RUSTUP_HOME=/opt/rustup CARGO_HOME=/opt/cargo BUN_INSTALL=/opt/bun
 ENV PATH=/opt/cargo/bin:/opt/bun/bin:$PATH
-RUN curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal && \
-    curl -fsSL https://bun.sh/install | bash
+# Flaky connections: retry the toolchain downloads from a clean state.
+ENV RUSTUP_MAX_RETRIES=10
+RUN for i in 1 2 3 4 5; do \
+      rm -rf /opt/rustup /opt/cargo /opt/bun && \
+      curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal && \
+      curl -fsSL https://bun.sh/install | bash && exit 0; \
+      echo "toolchain download failed (attempt $i), retrying in 20s"; sleep 20; \
+    done; exit 1
 WORKDIR /work
 ```
 
