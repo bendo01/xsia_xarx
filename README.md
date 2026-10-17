@@ -158,51 +158,59 @@ Before starting, ensure you have the following installed on your machine:
 
 ### Server Environment (`server/.env`)
 
-Create a `.env` file in the `server/` directory (refer to `.env.production.example` or `.env.dev.*` files):
+Generate it with the task `cargo run -- task utility:generate-env` (it creates the secrets for you; see below), or create `server/.env` by hand (`.env.production.example` and `.env.*.example` are starting points). Keys marked optional have a server default or a database setting that wins:
 
 ```env
-# Application Mode
-ENV=development
-SERVER_DOMAIN="127.0.0.1:5800"
-SERVER_PORT=5800
+# Server
+SERVER_DOMAIN="localhost:5800"
+APP_FRONTEND_URL="http://localhost:3000"
+# APP_DIRECTORY="/path/to/server"   # base for relative paths (logos, QR images)
+# APP_SYSTEM_NAME="Sistem Informasi Akademik"
+# INSTITUTION_NAME=""
+# INSTITUTION_ADDRESS=""
 
-# Database Configuration
-DATABASE_URL="postgres://postgres:password@localhost:5432/xsia_xarx"
-DATABASE_URL_TEST="postgres://postgres:password@localhost:5432/xsia_xarx_test"
-DB_CONNECT_TIMEOUT=5000
-DB_IDLE_TIMEOUT=5000
+# Database
+DATABASE_URL="postgres://postgres:password@127.0.0.1:5432/xsia_xarx"
+DB_CONNECT_TIMEOUT=8000
+DB_IDLE_TIMEOUT=8000
 DB_MIN_CONNECTIONS=5
 DB_MAX_CONNECTIONS=50
 
 # Authentication & Security
-JWT_SECRET="your-super-secret-jwt-key"
+JWT_SECRET="your-super-secret-jwt-key"   # openssl rand -base64 64
 JWT_EXPIRATION_HOURS=24
 # AES-256-GCM key for secrets stored in the database (Feeder, mail server, OpenWA).
 # Base64 of 32 bytes; generate with `openssl rand -base64 32`. Changing it makes
 # existing encrypted values unreadable.
 APP_ENCRYPTION_KEY="generate-with-openssl-rand-base64-32"
 
-# Institution & Academic Context
-# The institution comes from the stored Feeder credential (task utility:feeder-add-credential)
-
-# SMTP Mailer Settings
-SMTP_HOST="mail.xsia.app"
-SMTP_PORT=587
-SMTP_USER="no-reply@xsia.app"
-SMTP_PASSWORD="your-smtp-password"
-
-# External Integrations (PDDikti Feeder / Payment)
-# FEEDER_* and SMTP_* are fallbacks: a stored Feeder credential / mail server wins (see below)
-FEEDER_USERNAME="feeder_username"
-FEEDER_PASSWORD="feeder_password"
-FEEDER_URL="http://feeder.example.ac.id/ws/live2.php"
-IS_PRODUCTION_MIDTRANS_PAYMENT=false
-
 # Inbound Webhooks (fallback; the active OpenWA settings in the database win)
 # Generate with: cargo run -- task utility:preference-generate-webhook-secret (or openssl rand -hex 32)
 MIAB_WEBHOOK_SECRET="generate-with-openssl-rand-hex-32"   # POST /api/v1/webhook/mail-in-a-box
 OPENWA_WEBHOOK_SECRET="generate-with-openssl-rand-hex-32" # POST /api/v1/webhook/openwa
+
+# Fallbacks, used only when nothing is stored in the database (see below)
+# SMTP_HOST="localhost"
+# SMTP_PORT=587
+# SMTP_USER=""
+# SMTP_PASSWORD=""
+# SMTP_FROM_EMAIL="noreply@example.ac.id"
+# SMTP_FROM_NAME="Xsia Xarx"
+# OPENWA_URL="http://localhost:2785"
+# OPENWA_API_KEY_SESSION_ID=""
+# OPENWA_API_KEY_OPERATOR=""
+# FEEDER_URL="http://feeder.example.ac.id/ws/live2.php"
+# FEEDER_USERNAME=""
+# FEEDER_PASSWORD=""
+
+# External tools (defaults shown)
+# CHROME_BIN="/usr/lib64/chromium-browser/headless_shell"   # CHROMIUM_BIN also works
+# DOCLING_BIN="docling"
+# EMBEDDING_MODEL_DIR="models/paraphrase-multilingual-MiniLM-L12-v2"
+# AI_UPLOAD_DIR="storage/ai/uploads"
 ```
+
+The server reads no `ENV`, `SERVER_PORT`, `DATABASE_URL_TEST` or `IS_PRODUCTION_MIDTRANS_PAYMENT` key.
 
 ### Settings Stored in the Database
 
