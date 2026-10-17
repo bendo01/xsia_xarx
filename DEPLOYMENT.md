@@ -130,6 +130,11 @@ sudo -u postgres psql <<SQL
 CREATE ROLE xsia WITH LOGIN PASSWORD '$DB_PASS';
 CREATE DATABASE xsia_xarx OWNER xsia;
 \c xsia_xarx
+LOAD 'age';
+-- Set the search path so AGE's functions can be resolved
+SET search_path = ag_catalog, "$user", public;
+-- Now create the extension
+CREATE EXTENSION IF NOT EXISTS age;
 CREATE EXTENSION IF NOT EXISTS pg_uuidv7;
 CREATE EXTENSION IF NOT EXISTS vector;
 CREATE EXTENSION IF NOT EXISTS pgmq;
