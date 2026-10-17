@@ -924,6 +924,23 @@ Compiling on the server needs Rust, lots of RAM and a long first build. Instead 
 >
 > 🚫 **Don't upgrade the server's glibc to match the workstation.** Rocky 10 stays on glibc 2.39 for its whole lifetime and no repository offers a newer one. `dnf`, `systemd`, `sshd`, PostgreSQL and nearly everything else link against it, so replacing it by hand can leave the server unable to boot or log in. Build for the server's glibc instead (this container), never the other way round.
 
+### Quick path: `deploy/build-release.sh`
+
+Steps A–D below are automated by one script. Put the production client values (the file from A) in e.g. `~/xsia-client.env`, then:
+
+```bash
+sudo systemctl start docker                      # if the daemon isn't running
+ENGINE="sudo docker" deploy/build-release.sh --client-env ~/xsia-client.env main
+# Output: ~/xsia-build/out/xsia_xarx-<commit>.tar.gz
+```
+
+- `ENGINE` defaults to `docker` (or `podman`); use `ENGINE="sudo docker"` if your user isn't in the `docker` group.
+- The last argument is the branch, tag or commit to build (default `HEAD`). Uncommitted changes are not included.
+- `BUILD=<dir>` changes the build directory (default `~/xsia-build`); `CARGO_BUILD_JOBS=4` limits memory use.
+- The script ends by checking the binary's libraries against Rocky 10, then prints the `scp` command. Install on the server as in step D.
+
+The manual steps follow for reference.
+
 ### A. Prepare a clean build tree (workstation)
 
 Export the commit you want to deploy into a separate directory, so your dev `.env` files and `target/` (built against the workstation glibc) don't end up in the release:
@@ -955,9 +972,15 @@ Save as `$BUILD/Containerfile`:
 
 ```dockerfile
 FROM rockylinux/rockylinux:10
-RUN dnf -y install epel-release && dnf config-manager --set-enabled crb && \
-    dnf -y install git curl tar unzip gzip gcc gcc-c++ make cmake clang perl \
-                   pkgconf-pkg-config openssl-devel && dnf clean all
+# Mirrors are sometimes out of sync (404 on repodata): refresh metadata and retry.
+RUN for i in 1 2 3 4 5; do \
+      dnf clean all && \
+      dnf -y --setopt=retries=5 --setopt=timeout=60 install epel-release && \
+      dnf config-manager --set-enabled crb && \
+      dnf -y --setopt=retries=5 --setopt=timeout=60 install git curl tar unzip gzip gcc gcc-c++ make cmake clang perl \
+                   pkgconf-pkg-config openssl-devel && dnf clean all && exit 0; \
+      echo "dnf failed (attempt $i), retrying in 20s"; sleep 20; \
+    done; exit 1
 ENV RUSTUP_HOME=/opt/rustup CARGO_HOME=/opt/cargo BUN_INSTALL=/opt/bun
 ENV PATH=/opt/cargo/bin:/opt/bun/bin:$PATH
 RUN curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal && \
