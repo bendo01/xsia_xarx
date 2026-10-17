@@ -30,8 +30,10 @@ if ! git -C "$REPO" diff --quiet HEAD 2>/dev/null; then
 fi
 TAG=$(git -C "$REPO" rev-parse --short "$REV")
 
-# A. clean build tree
-rm -rf "$BUILD/src" && mkdir -p "$BUILD/src" "$BUILD/out"
+# A. clean build tree (a previous failed run may have left root-owned files; clean as root in a container)
+mkdir -p "$BUILD/src" "$BUILD/out"
+"${ENGINE[@]}" run --rm -v "$BUILD:/b" rockylinux/rockylinux:10 \
+  bash -c 'rm -rf /b/src/* /b/src/.[!.]* /b/out/release /b/out/*.tar.gz /b/out/api-usage.json'
 git -C "$REPO" archive "$REV" | tar -x -C "$BUILD/src"
 cp "$CLIENT_ENV" "$BUILD/src/client/.env"
 
@@ -62,13 +64,13 @@ DOCKERFILE
 "${ENGINE[@]}" build -t xsia-build:rocky10 -f "$BUILD/Containerfile" "$BUILD"
 
 # C. compile and collect
-rm -rf "$BUILD/out/release"
 "${ENGINE[@]}" run --rm \
   ${CARGO_BUILD_JOBS:+-e CARGO_BUILD_JOBS=$CARGO_BUILD_JOBS} \
   -v "$BUILD/src:/work/src" -v "$BUILD/out:/work/out" \
   -v xsia-cargo-registry:/opt/cargo/registry -v xsia-rustup:/opt/rustup \
   -v xsia-target:/work/target -v xsia-target-migration:/work/target-migration \
   xsia-build:rocky10 bash -euo pipefail -c '
+    trap "chown -R '"$(id -u):$(id -g)"' /work/out /work/src" EXIT
     cd /work/src/server
     CARGO_TARGET_DIR=/work/target cargo build --release --locked
     cd migration
@@ -76,6 +78,7 @@ rm -rf "$BUILD/out/release"
     cd /work/src/client
     bun install --frozen-lockfile
     bun --bun run build
+    [ -f .output/server/index.mjs ] || { echo "error: client build produced no .output/server/index.mjs (is the nitro plugin registered in client/vite.config.ts?)" >&2; exit 1; }
     bun scripts/extract-api-usage.mjs > /work/out/api-usage.json
 
     mkdir -p /work/out/release/server/lib /work/out/release/client
@@ -85,7 +88,6 @@ rm -rf "$BUILD/out/release"
     cp -a /work/src/server/public  /work/out/release/server/
     cp -a /work/src/client/.output /work/out/release/client/
     mv /work/out/api-usage.json    /work/out/release/
-    chown -R '"$(id -u):$(id -g)"' /work/out /work/src
   '
 
 # D. package + verify against Rocky's glibc

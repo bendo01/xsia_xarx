@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { solidStart } from "@solidjs/start/config";
 import tailwindcss from "@tailwindcss/vite";
+import { nitro } from "nitro/vite";
 import solidPlugin from "vite-plugin-solid";
 import { defineConfig, lazyPlugins, type Plugin } from "vite-plus";
 
@@ -116,7 +117,7 @@ export default defineConfig(({ mode }) => {
     plugins: lazyPlugins(() =>
       isTest
         ? [solidPlugin()]
-        : [institutionAssetsPlugin(), solidStart({ devOverlay: false }), tailwindcss()],
+        : [institutionAssetsPlugin(), solidStart({ devOverlay: false }), nitro(), tailwindcss()],
     ),
     resolve: isTest
       ? {
