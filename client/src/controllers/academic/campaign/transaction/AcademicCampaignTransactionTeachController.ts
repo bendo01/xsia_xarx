@@ -70,6 +70,7 @@ export async function listTeaches(queryParams?: {
     activity_id?: string;
     teach_decree_id?: string;
     course_id?: string;
+    class_code_id?: string;
 }): Promise<{
     data: TeachItem[];
     total: number;
@@ -86,6 +87,7 @@ export async function listTeaches(queryParams?: {
         if (queryParams?.activity_id) params.set('activity_id', queryParams.activity_id);
         if (queryParams?.teach_decree_id) params.set('teach_decree_id', queryParams.teach_decree_id);
         if (queryParams?.course_id) params.set('course_id', queryParams.course_id);
+        if (queryParams?.class_code_id) params.set('class_code_id', queryParams.class_code_id);
 
         const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/teaches?${params.toString()}`, {
             method: 'GET',

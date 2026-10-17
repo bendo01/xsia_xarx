@@ -76,6 +76,7 @@ export async function listStudents(queryParams?: {
     code?: string;
     individual_id?: string;
     unit_id?: string;
+    class_code_id?: string;
     institution_id?: string;
     academic_year_id?: string;
     academic_year_ids?: string;
@@ -103,6 +104,7 @@ export async function listStudents(queryParams?: {
         if (queryParams?.code) params.set('code', queryParams.code);
         if (queryParams?.individual_id) params.set('individual_id', queryParams.individual_id);
         if (queryParams?.unit_id) params.set('unit_id', queryParams.unit_id);
+        if (queryParams?.class_code_id) params.set('class_code_id', queryParams.class_code_id);
         if (queryParams?.institution_id) params.set('institution_id', queryParams.institution_id);
         if (queryParams?.academic_year_id) params.set('academic_year_id', queryParams.academic_year_id);
         if (queryParams?.academic_year_ids) params.set('academic_year_ids', queryParams.academic_year_ids);

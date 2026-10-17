@@ -2,9 +2,9 @@ use std::collections::HashMap;
 use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::sea_query::extension::postgres::PgExpr;
-use sea_orm::sea_query::Expr;
+use sea_orm::sea_query::{Expr, ExprTrait, Query};
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, EntityTrait, IntoActiveModel,
+    ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, EntityName, EntityTrait, IntoActiveModel,
     PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, Set,
 };
 use uuid::Uuid;
@@ -227,6 +227,37 @@ pub async fn index(
 
     if let Some(individual_id) = query.individual_id {
         select = select.filter(entity_mod::Column::IndividualId.eq(individual_id));
+    }
+
+    if let Some(class_code_id) = query.class_code_id {
+        use crate::models::academic::campaign::transaction::teaches as teach_mod;
+        use crate::models::academic::student::campaign::detail_activities as da_mod;
+        use crate::models::academic::student::campaign::student_activities as sa_mod;
+
+        // Students enrolled in any of this class code's teaches (detail_activities.activity_id
+        // points at student_activities), so past classes still list their participants
+        let enrolled_students = Query::select()
+            .column((sa_mod::Entity, sa_mod::Column::StudentId))
+            .from(da_mod::Entity.table_ref())
+            .inner_join(
+                sa_mod::Entity.table_ref(),
+                Expr::col((sa_mod::Entity, sa_mod::Column::Id)).equals((da_mod::Entity, da_mod::Column::ActivityId)),
+            )
+            .inner_join(
+                teach_mod::Entity.table_ref(),
+                Expr::col((teach_mod::Entity, teach_mod::Column::Id)).equals((da_mod::Entity, da_mod::Column::TeachId)),
+            )
+            .and_where(Expr::col((teach_mod::Entity, teach_mod::Column::ClassCodeId)).eq(class_code_id))
+            .and_where(Expr::col((da_mod::Entity, da_mod::Column::DeletedAt)).is_null())
+            .and_where(Expr::col((sa_mod::Entity, sa_mod::Column::DeletedAt)).is_null())
+            .and_where(Expr::col((teach_mod::Entity, teach_mod::Column::DeletedAt)).is_null())
+            .to_owned();
+
+        select = select.filter(
+            Condition::any()
+                .add(entity_mod::Column::ClassCodeId.eq(class_code_id))
+                .add(entity_mod::Column::Id.in_subquery(enrolled_students)),
+        );
     }
 
     if let Some(unit_id) = query.unit_id {

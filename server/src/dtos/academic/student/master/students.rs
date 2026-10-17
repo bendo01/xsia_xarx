@@ -137,6 +137,7 @@ pub struct StudentQuery {
     pub code: Option<String>,
     pub individual_id: Option<Uuid>,
     pub unit_id: Option<Uuid>,
+    pub class_code_id: Option<Uuid>,
     pub institution_id: Option<Uuid>,
     pub academic_year_id: Option<String>,
     pub academic_year_ids: Option<String>,

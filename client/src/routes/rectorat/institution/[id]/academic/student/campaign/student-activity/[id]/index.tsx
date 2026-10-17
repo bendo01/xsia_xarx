@@ -1,14 +1,20 @@
-import { createSignal, createEffect, For, Show } from 'solid-js';
+import { createSignal, createEffect, createMemo, For, Show, lazy, Suspense } from 'solid-js';
 import { useParams, useSearchParams, useLocation, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import {
     getStudentActivityById,
+    listStudentActivities,
     printActivityPlan,
     printActivityResult,
     type StudentActivityItem
 } from '~/controllers/academic/student/campaign/AcademicStudentCampaignActivityController';
 import type { DetailActivityItem } from '~/controllers/academic/student/campaign/AcademicStudentCampaignDetailActivityController';
+import { AcademicCourseReferenceControllerVarietyIndex } from '~/controllers/academic/course/reference/AcademicCourseReferenceVarietyController';
+import type { AcademicCourseReferenceVariety } from '~/models/academic/course/reference/Variety';
+import type { AcademicTrendPoint } from '~/components/chart/academic_performance_chart';
+import StudentCreditChart from '~/components/chart/student_credit_chart';
+import SemesterGradeChart, { type SemesterGradePoint } from '~/components/chart/semester_grade_chart';
 import {
     getStudentById,
     type StudentMasterItem
@@ -19,6 +25,8 @@ import {
 import type { PersonMasterIndividualDataObject } from '~/models/person/master/Individual';
 import { openOrDownloadPdf } from '~/lib/pdfHelper';
 import { resolveInstitutionFromStaffRole } from '~/lib/rectoratHelper';
+
+const AcademicPerformanceChart = lazy(() => import('~/components/chart/academic_performance_chart'));
 
 export default function RectoratStudentActivityDetail() {
     const params = useParams();
@@ -34,8 +42,16 @@ export default function RectoratStudentActivityDetail() {
     const [isPrintingKRS, setIsPrintingKRS] = createSignal(false);
     const [isPrintingKHS, setIsPrintingKHS] = createSignal(false);
 
+    // Whole study history of the student, for the charts
+    const [studentActivities, setStudentActivities] = createSignal<StudentActivityItem[]>([]);
+    const [studentDetails, setStudentDetails] = createSignal<DetailActivityItem[]>([]);
+    const [courseVarieties, setCourseVarieties] = createSignal<AcademicCourseReferenceVariety[]>([]);
+    const [isHistoryLoading, setIsHistoryLoading] = createSignal(false);
+    const [hoveredVarietyIdx, setHoveredVarietyIdx] = createSignal<number | null>(null);
+
     let lastFetchedActivityId = '';
     let isFetching = false;
+    let historyStudentId = '';
 
     const isValidId = (id?: string | null): id is string => {
         if (!id) return false;
@@ -93,6 +109,35 @@ export default function RectoratStudentActivityDetail() {
         }
     });
 
+    // Loads every semester of the student with its courses; runs in the background so the course table is not held up
+    const loadStudentHistory = async (studentId: string) => {
+        if (historyStudentId === studentId) return;
+        historyStudentId = studentId;
+        setIsHistoryLoading(true);
+        try {
+            const [actRes, varietiesRes] = await Promise.all([
+                listStudentActivities({ student_id: studentId, page: 1, page_size: 100 }),
+                AcademicCourseReferenceControllerVarietyIndex({ page: 1, per_page: 100 }).catch(() => ({ data: [] })),
+            ]);
+            const activities = actRes.data || [];
+            // The show endpoint embeds each semester's courses with grade and course variety,
+            // and unlike detail-activities it is readable by rectorate roles
+            const semesterResults = await Promise.all(activities.map((act) => getStudentActivityById(act.id)));
+            if (historyStudentId !== studentId) return;
+            setStudentActivities(activities);
+            setCourseVarieties(Array.isArray(varietiesRes.data) ? varietiesRes.data : []);
+            setStudentDetails(
+                semesterResults.flatMap((act) =>
+                    (act?.detail_activities || []).map((d: DetailActivityItem) => ({ ...d, activity_id: d.activity_id || act!.id }))
+                )
+            );
+        } catch (err) {
+            console.error('Error loading student study history:', err);
+        } finally {
+            if (historyStudentId === studentId) setIsHistoryLoading(false);
+        }
+    };
+
     const fetchActivityDetail = async (targetId?: string) => {
         const activityId = targetId || resolveActivityId();
         if (!activityId) {
@@ -114,6 +159,9 @@ export default function RectoratStudentActivityDetail() {
 
             if (actRes) {
                 setActivity(actRes);
+                if (actRes.student_id) {
+                    void loadStudentHistory(actRes.student_id);
+                }
 
                 // Student info is already embedded in actRes.student
                 if (actRes.student) {
@@ -270,6 +318,178 @@ export default function RectoratStudentActivityDetail() {
         }
         return calculatedIPS();
     };
+
+    // --- Chart data ---
+    const detailCredit = (d: DetailActivityItem) =>
+        Number(d.credit ?? d.course?.total_credit ?? d.course?.credit ?? 0) || 0;
+
+    const detailGradePoint = (d: DetailActivityItem): number | null => {
+        const gp = d.grade_point != null ? Number(d.grade_point) : (d.grade?.grade != null ? Number(d.grade.grade) : null);
+        return gp != null && !isNaN(gp) ? gp : null;
+    };
+
+    // Chronological order, e.g. "2024 / 1" -> "2024 / 2" -> "2025 / 1"
+    const chronologicalActivities = createMemo(() => {
+        const label = (a: StudentActivityItem) => a.academic_year?.name || a.name || '';
+        return [...studentActivities()].sort((a, b) => {
+            const matchA = label(a).match(/(\d{4})\s*[/-]?\s*(\d+)/);
+            const matchB = label(b).match(/(\d{4})\s*[/-]?\s*(\d+)/);
+            if (matchA && matchB) {
+                const yearDiff = parseInt(matchA[1], 10) - parseInt(matchB[1], 10);
+                return yearDiff !== 0 ? yearDiff : parseInt(matchA[2], 10) - parseInt(matchB[2], 10);
+            }
+            if (a.created_at && b.created_at) {
+                return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+            }
+            return label(a).localeCompare(label(b));
+        });
+    });
+
+    // IPS and SKS per semester from its courses, IPK as the running credit-weighted average
+    const trendData = createMemo((): AcademicTrendPoint[] => {
+        const perActivity = new Map<string, { credits: number; graded: number; weighted: number }>();
+        for (const d of studentDetails()) {
+            if (!d.activity_id) continue;
+            const entry = perActivity.get(d.activity_id) || { credits: 0, graded: 0, weighted: 0 };
+            const cred = detailCredit(d);
+            const gp = detailGradePoint(d);
+            entry.credits += cred;
+            if (gp != null) {
+                entry.graded += cred;
+                entry.weighted += gp * cred;
+            }
+            perActivity.set(d.activity_id, entry);
+        }
+
+        let runningCredits = 0;
+        let runningGraded = 0;
+        let runningWeighted = 0;
+
+        // A semester without courses yet (e.g. just opened) would plot as IPS 0 and drag the lines down
+        const withCourses = chronologicalActivities().filter((act) => perActivity.has(act.id) || (act.total_credit || 0) > 0);
+
+        return withCourses.map((act, idx) => {
+            const entry = perActivity.get(act.id);
+            const sks = entry && entry.credits > 0 ? entry.credits : (act.total_credit || 0);
+            const ips = entry && entry.graded > 0 ? entry.weighted / entry.graded : (act.cumulative_index || 0);
+            const graded = entry && entry.graded > 0 ? entry.graded : sks;
+            const weighted = entry && entry.graded > 0 ? entry.weighted : ips * graded;
+
+            runningCredits += sks;
+            runningGraded += graded;
+            runningWeighted += weighted;
+
+            return {
+                semName: act.academic_year?.name || act.name || `Sem ${idx + 1}`,
+                ips: Number(ips.toFixed(2)),
+                ipk: Number((runningGraded > 0 ? runningWeighted / runningGraded : ips).toFixed(2)),
+                sks,
+                totalSks: runningCredits,
+            };
+        });
+    });
+
+    // This semester's courses grouped by grade letter, best grade first
+    const gradeDistribution = createMemo((): SemesterGradePoint[] => {
+        const groups = new Map<string, SemesterGradePoint & { point: number }>();
+        for (const c of detailCourses()) {
+            const letter = (c.grade_letter && c.grade_letter !== '-') ? c.grade_letter.trim() : 'Belum Dinilai';
+            const entry = groups.get(letter) || { grade: letter, courseCount: 0, credits: 0, point: -1 };
+            entry.courseCount += 1;
+            entry.credits += detailCredit(c);
+            entry.point = Math.max(entry.point, detailGradePoint(c) ?? -1);
+            groups.set(letter, entry);
+        }
+        return Array.from(groups.values())
+            .sort((a, b) => b.point - a.point || a.grade.localeCompare(b.grade))
+            .map(({ grade, courseCount, credits }) => ({ grade, courseCount, credits }));
+    });
+
+    // --- Course variety donut (all semesters) ---
+    const varietyPalette = [
+        '#6366f1', // Indigo
+        '#10b981', // Emerald
+        '#f59e0b', // Amber
+        '#06b6d4', // Cyan
+        '#ec4899', // Pink
+        '#8b5cf6', // Purple
+        '#3b82f6', // Blue
+        '#14b8a6', // Teal
+        '#f97316', // Orange
+    ];
+
+    const varietyScopeData = createMemo(() => {
+        const map = new Map<string, {
+            varietyName: string;
+            courseCount: number;
+            totalCredits: number;
+            gradedCredits: number;
+            weightedGradeSum: number;
+        }>();
+
+        for (const v of courseVarieties()) {
+            if (v.id) {
+                map.set(v.id, { varietyName: v.name, courseCount: 0, totalCredits: 0, gradedCredits: 0, weightedGradeSum: 0 });
+            }
+        }
+        const fallbackKey = 'other';
+        map.set(fallbackKey, { varietyName: 'Mata Kuliah Umum / Lainnya', courseCount: 0, totalCredits: 0, gradedCredits: 0, weightedGradeSum: 0 });
+
+        for (const d of studentDetails()) {
+            const entry = map.get(d.course?.variety_id || fallbackKey) || map.get(fallbackKey)!;
+            const cred = detailCredit(d);
+            const gp = detailGradePoint(d);
+            entry.courseCount += 1;
+            entry.totalCredits += cred;
+            if (gp != null) {
+                entry.gradedCredits += cred;
+                entry.weightedGradeSum += gp * cred;
+            }
+        }
+
+        const activeGroups = Array.from(map.values()).filter((g) => g.courseCount > 0);
+        const totalAllCredits = activeGroups.reduce((acc, g) => acc + (g.totalCredits || g.courseCount), 0) || 1;
+
+        let currentAngle = -Math.PI / 2;
+        return activeGroups.map((g, idx) => {
+            const share = (g.totalCredits || g.courseCount) / totalAllCredits;
+            const startAngle = currentAngle;
+            const endAngle = currentAngle + share * 2 * Math.PI;
+            currentAngle = endAngle;
+            return {
+                ...g,
+                color: varietyPalette[idx % varietyPalette.length],
+                cumulativeIndex: g.gradedCredits > 0 ? g.weightedGradeSum / g.gradedCredits : 0,
+                percent: Math.round(share * 100),
+                startAngle,
+                endAngle,
+            };
+        });
+    });
+
+    // IPK over every course the student has taken, shown in the donut center
+    const overallIPK = () => {
+        const groups = varietyScopeData();
+        const graded = groups.reduce((acc, g) => acc + g.gradedCredits, 0);
+        return graded > 0 ? (groups.reduce((acc, g) => acc + g.weightedGradeSum, 0) / graded).toFixed(2) : calculatedIPK();
+    };
+
+    function describeDonutSlice(cx: number, cy: number, innerR: number, outerR: number, startAngle: number, endAngle: number): string {
+        const eps = 0.0001;
+        const actualEnd = endAngle - startAngle >= 2 * Math.PI - eps ? startAngle + 2 * Math.PI - eps : endAngle;
+
+        const x1 = cx + outerR * Math.cos(startAngle);
+        const y1 = cy + outerR * Math.sin(startAngle);
+        const x2 = cx + outerR * Math.cos(actualEnd);
+        const y2 = cy + outerR * Math.sin(actualEnd);
+        const x3 = cx + innerR * Math.cos(actualEnd);
+        const y3 = cy + innerR * Math.sin(actualEnd);
+        const x4 = cx + innerR * Math.cos(startAngle);
+        const y4 = cy + innerR * Math.sin(startAngle);
+        const largeArc = actualEnd - startAngle > Math.PI ? 1 : 0;
+
+        return `M ${x1.toFixed(2)} ${y1.toFixed(2)} A ${outerR} ${outerR} 0 ${largeArc} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} L ${x3.toFixed(2)} ${y3.toFixed(2)} A ${innerR} ${innerR} 0 ${largeArc} 0 ${x4.toFixed(2)} ${y4.toFixed(2)} Z`;
+    }
 
     const studentDisplayName = () =>
         activity()?.student_name ||
@@ -451,6 +671,245 @@ export default function RectoratStudentActivityDetail() {
                                 {activity()?.status_name || 'Aktif / Selesai'}
                             </span>
                         </div>
+                    </div>
+                </div>
+
+                {/* Academic Analytics Charts */}
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Chart 1: IPK & IPS trend over the student's semesters */}
+                    <div class="min-w-0 p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs flex flex-col justify-between space-y-4">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <div class="size-7 rounded-xs bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                                    </div>
+                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                        Tren Indeks Prestasi
+                                    </h3>
+                                </div>
+                                <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
+                                    IPS semester dan IPK kumulatif per tahun akademik (skala 0.0 - 4.0).
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-3 text-[11px] font-mono shrink-0">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="size-2.5 rounded-xs bg-blue-600"></span>
+                                    <span class="text-neutral-700 dark:text-neutral-300 font-semibold">IPK</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="size-2.5 rounded-xs bg-sky-500"></span>
+                                    <span class="text-neutral-700 dark:text-neutral-300 font-semibold">IPS</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <Show when={!isHistoryLoading()} fallback={
+                            <div class="py-16 text-center flex flex-col items-center justify-center gap-2">
+                                <div class="size-6 border-2 border-blue-600 border-t-transparent rounded-xs animate-spin"></div>
+                                <span class="text-xs font-mono text-neutral-400">Memuat grafik...</span>
+                            </div>
+                        }>
+                            <Show when={trendData().length > 0} fallback={
+                                <div class="py-16 text-center text-neutral-400 font-mono text-xs flex flex-col items-center justify-center gap-2">
+                                    <svg class="size-8 text-neutral-300 dark:text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                                    <span>Belum ada riwayat semester untuk ditampilkan.</span>
+                                </div>
+                            }>
+                                <Suspense fallback={
+                                    <div class="py-16 text-center flex flex-col items-center justify-center gap-2">
+                                        <div class="size-6 border-2 border-blue-600 border-t-transparent rounded-xs animate-spin"></div>
+                                        <span class="text-xs font-mono text-neutral-400">Memuat grafik...</span>
+                                    </div>
+                                }>
+                                    <AcademicPerformanceChart data={trendData()} />
+                                </Suspense>
+                            </Show>
+                        </Show>
+                    </div>
+
+                    {/* Chart 2: SKS load per semester and cumulative */}
+                    <div class="min-w-0 p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs flex flex-col justify-between space-y-4">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <div class="size-7 rounded-xs bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+                                    </div>
+                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                        Progres Beban Kredit SKS
+                                    </h3>
+                                </div>
+                                <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
+                                    Akumulasi SKS kumulatif dan SKS diambil per semester.
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-3 text-[11px] font-mono shrink-0">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="size-2.5 rounded-xs bg-teal-600"></span>
+                                    <span class="text-neutral-700 dark:text-neutral-300 font-semibold">SKS Kumulatif</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="size-2.5 rounded-xs bg-amber-500"></span>
+                                    <span class="text-neutral-700 dark:text-neutral-300 font-semibold">SKS Semester</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <Show when={!isHistoryLoading()} fallback={
+                            <div class="py-16 text-center flex flex-col items-center justify-center gap-2">
+                                <div class="size-6 border-2 border-blue-600 border-t-transparent rounded-xs animate-spin"></div>
+                                <span class="text-xs font-mono text-neutral-400">Memuat grafik...</span>
+                            </div>
+                        }>
+                            <Show when={trendData().length > 0} fallback={
+                                <div class="py-16 text-center text-neutral-400 font-mono text-xs flex flex-col items-center justify-center gap-2">
+                                    <svg class="size-8 text-neutral-300 dark:text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+                                    <span>Belum ada riwayat SKS untuk ditampilkan.</span>
+                                </div>
+                            }>
+                                <StudentCreditChart data={trendData()} />
+                            </Show>
+                        </Show>
+                    </div>
+
+                    {/* Chart 3: Course variety donut over every semester */}
+                    <div class="min-w-0 p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs flex flex-col justify-between space-y-4">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <div class="size-7 rounded-xs bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+                                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                                    </div>
+                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                        Jenis Mata Kuliah & IPK
+                                    </h3>
+                                </div>
+                                <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
+                                    Sebaran SKS dan IPK per jenis mata kuliah, seluruh semester.
+                                </p>
+                            </div>
+                            <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 font-mono shrink-0">
+                                {varietyScopeData().length} Jenis
+                            </span>
+                        </div>
+
+                        <Show when={!isHistoryLoading()} fallback={
+                            <div class="py-16 text-center flex flex-col items-center justify-center gap-2">
+                                <div class="size-6 border-2 border-emerald-600 border-t-transparent rounded-xs animate-spin"></div>
+                                <span class="text-xs font-mono text-neutral-400">Memuat grafik...</span>
+                            </div>
+                        }>
+                            <Show when={varietyScopeData().length > 0} fallback={
+                                <div class="py-16 text-center text-neutral-400 font-mono text-xs flex flex-col items-center justify-center gap-2">
+                                    <svg class="size-8 text-neutral-300 dark:text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                                    <span>Belum ada data mata kuliah yang diambil.</span>
+                                </div>
+                            }>
+                                <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+                                    {/* Donut Chart SVG */}
+                                    <div class="sm:col-span-5 flex items-center justify-center">
+                                        <svg viewBox="0 0 220 220" class="size-44 max-w-full">
+                                            <For each={varietyScopeData()}>
+                                                {(slice, idx) => (
+                                                    <path
+                                                        d={describeDonutSlice(110, 110, 56, hoveredVarietyIdx() === idx() ? 92 : 86, slice.startAngle, slice.endAngle)}
+                                                        fill={slice.color}
+                                                        class="transition-all duration-200 cursor-pointer hover:opacity-90"
+                                                        stroke="currentColor"
+                                                        stroke-width="1.5"
+                                                        stroke-opacity="0.1"
+                                                        onPointerEnter={() => setHoveredVarietyIdx(idx())}
+                                                        onPointerLeave={() => setHoveredVarietyIdx(null)}
+                                                    />
+                                                )}
+                                            </For>
+                                            <g pointer-events="none">
+                                                <text x="110" y="104" text-anchor="middle" class="font-mono font-extrabold text-base fill-neutral-900 dark:fill-white">
+                                                    {hoveredVarietyIdx() !== null
+                                                        ? varietyScopeData()[hoveredVarietyIdx()!]?.cumulativeIndex.toFixed(2)
+                                                        : overallIPK()}
+                                                </text>
+                                                <text x="110" y="122" text-anchor="middle" class="font-mono uppercase text-[9px] fill-neutral-400 tracking-wider">
+                                                    {hoveredVarietyIdx() !== null ? 'IPK Jenis' : 'IPK Total'}
+                                                </text>
+                                            </g>
+                                        </svg>
+                                    </div>
+
+                                    {/* Legend & Breakdown List */}
+                                    <div class="sm:col-span-7 space-y-2 max-h-56 overflow-y-auto pr-1 text-xs">
+                                        <For each={varietyScopeData()}>
+                                            {(slice, idx) => (
+                                                <div
+                                                    onPointerEnter={() => setHoveredVarietyIdx(idx())}
+                                                    onPointerLeave={() => setHoveredVarietyIdx(null)}
+                                                    class={`p-2 rounded-xs border transition-all cursor-pointer ${
+                                                        hoveredVarietyIdx() === idx()
+                                                            ? 'bg-neutral-100 dark:bg-neutral-700/60 border-neutral-300 dark:border-neutral-600 shadow-2xs'
+                                                            : 'bg-neutral-50 dark:bg-neutral-900/50 border-neutral-200/60 dark:border-neutral-700/60'
+                                                    }`}
+                                                >
+                                                    <div class="flex items-center justify-between gap-2">
+                                                        <div class="flex items-center gap-2 min-w-0">
+                                                            <span class="size-2.5 rounded-xs shrink-0" style={{ "background-color": slice.color }}></span>
+                                                            <span class="font-bold text-neutral-800 dark:text-neutral-200 truncate">
+                                                                {slice.varietyName}
+                                                            </span>
+                                                        </div>
+                                                        <span class="font-mono font-extrabold text-blue-600 dark:text-blue-400 shrink-0">
+                                                            IPK {slice.cumulativeIndex.toFixed(2)}
+                                                        </span>
+                                                    </div>
+                                                    <div class="flex items-center justify-between text-[10px] text-neutral-400 font-mono mt-1 pl-4.5">
+                                                        <span>{slice.courseCount} MK • {slice.totalCredits} SKS</span>
+                                                        <span class="font-semibold text-neutral-500 dark:text-neutral-400">{slice.percent}%</span>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </For>
+                                    </div>
+                                </div>
+                            </Show>
+                        </Show>
+                    </div>
+
+                    {/* Chart 4: Grade distribution of this semester */}
+                    <div class="min-w-0 p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs flex flex-col justify-between space-y-4">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <div class="size-7 rounded-xs bg-indigo-100 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+                                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="3" width="4" height="18"/></svg>
+                                    </div>
+                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                        Sebaran Nilai Semester Ini
+                                    </h3>
+                                </div>
+                                <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
+                                    Jumlah mata kuliah dan SKS per nilai huruf pada {activity()?.academic_year_name || activity()?.academic_year?.name || 'semester ini'}.
+                                </p>
+                            </div>
+                            <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 font-mono shrink-0">
+                                IPS {calculatedIPS()}
+                            </span>
+                        </div>
+
+                        <Show when={!isLoading()} fallback={
+                            <div class="py-16 text-center flex flex-col items-center justify-center gap-2">
+                                <div class="size-6 border-2 border-indigo-600 border-t-transparent rounded-xs animate-spin"></div>
+                                <span class="text-xs font-mono text-neutral-400">Memuat grafik...</span>
+                            </div>
+                        }>
+                            <Show when={gradeDistribution().length > 0} fallback={
+                                <div class="py-16 text-center text-neutral-400 font-mono text-xs flex flex-col items-center justify-center gap-2">
+                                    <svg class="size-8 text-neutral-300 dark:text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="3" width="4" height="18"/></svg>
+                                    <span>Belum ada mata kuliah pada semester ini.</span>
+                                </div>
+                            }>
+                                <SemesterGradeChart data={gradeDistribution()} />
+                            </Show>
+                        </Show>
                     </div>
                 </div>
 

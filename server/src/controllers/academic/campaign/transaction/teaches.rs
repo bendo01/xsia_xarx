@@ -50,6 +50,9 @@ pub async fn index(
     if let Some(course_id) = query.course_id {
         select = select.filter(entity_mod::Column::CourseId.eq(course_id));
     }
+    if let Some(class_code_id) = query.class_code_id {
+        select = select.filter(entity_mod::Column::ClassCodeId.eq(class_code_id));
+    }
     if let Some(lecturer_id) = query.lecturer_id {
         let teach_ids: Vec<Uuid> = crate::models::academic::campaign::transaction::teach_lecturers::Entity::find()
             .filter(crate::models::academic::campaign::transaction::teach_lecturers::Column::LecturerId.eq(lecturer_id))

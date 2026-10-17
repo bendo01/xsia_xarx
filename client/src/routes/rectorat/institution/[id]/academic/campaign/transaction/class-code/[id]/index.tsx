@@ -1,4 +1,4 @@
-import { createSignal, createEffect, onMount, Show } from 'solid-js';
+import { createSignal, createEffect, onMount, onCleanup, Show, For } from 'solid-js';
 import { useParams, useLocation, useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
@@ -12,6 +12,14 @@ import {
     getActivityById,
     type CampaignActivityItem,
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionActivityController';
+import {
+    listTeaches,
+    type TeachItem,
+} from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachController';
+import {
+    listStudents,
+    type StudentMasterItem,
+} from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
 
 interface UnitDetail {
     id: string;
@@ -31,6 +39,19 @@ export default function RectoratClassCodeDetail() {
     const [isLoading, setIsLoading] = createSignal(true);
     const [error, setError] = createSignal<string | null>(null);
     const [isCopied, setIsCopied] = createSignal(false);
+
+    const [teaches, setTeaches] = createSignal<TeachItem[]>([]);
+    const [isTeachesLoading, setIsTeachesLoading] = createSignal(false);
+
+    const STUDENT_PAGE_SIZE = 20;
+    const [students, setStudents] = createSignal<StudentMasterItem[]>([]);
+    const [studentTotal, setStudentTotal] = createSignal(0);
+    const [studentPage, setStudentPage] = createSignal(1);
+    const [studentTotalPages, setStudentTotalPages] = createSignal(1);
+    const [studentSearch, setStudentSearch] = createSignal('');
+    const [isStudentsLoading, setIsStudentsLoading] = createSignal(false);
+    let studentSearchTimer: ReturnType<typeof setTimeout> | undefined;
+    let studentRequestSeq = 0;
 
     const isValidId = (id?: string | null): id is string => {
         if (!id) return false;
@@ -130,6 +151,8 @@ export default function RectoratClassCodeDetail() {
                 );
             }
 
+            promises.push(fetchTeaches(data.id));
+
             await Promise.allSettled(promises);
         } catch (e: any) {
             console.error('Error loading class code detail:', e);
@@ -139,6 +162,71 @@ export default function RectoratClassCodeDetail() {
             setIsLoading(false);
         }
     };
+
+    const fetchTeaches = async (cId: string) => {
+        setIsTeachesLoading(true);
+        try {
+            // A class code holds one semester's courses, so a single page covers it
+            const res = await listTeaches({ class_code_id: cId, page_size: 100 });
+            setTeaches(res.data);
+        } catch (e) {
+            console.warn('Could not load class teaches:', e);
+            setTeaches([]);
+        } finally {
+            setIsTeachesLoading(false);
+        }
+    };
+
+    const totalTeachCredit = () =>
+        teaches().reduce((sum, t) => sum + (Number(t.course?.total_credit) || 0), 0);
+
+    const fetchStudents = async () => {
+        const cId = classCode()?.id;
+        if (!cId) return;
+
+        const seq = ++studentRequestSeq;
+        setIsStudentsLoading(true);
+        try {
+            const res = await listStudents({
+                class_code_id: cId,
+                search: studentSearch().trim() || undefined,
+                page: studentPage(),
+                page_size: STUDENT_PAGE_SIZE,
+                sort_by: 'code',
+                sort_dir: 'asc',
+            });
+            if (seq !== studentRequestSeq) return;
+            setStudents(res.data);
+            setStudentTotal(res.total);
+            setStudentTotalPages(Math.max(1, res.total_pages));
+        } catch (e) {
+            if (seq !== studentRequestSeq) return;
+            console.warn('Could not load class students:', e);
+            setStudents([]);
+            setStudentTotal(0);
+            setStudentTotalPages(1);
+        } finally {
+            if (seq === studentRequestSeq) setIsStudentsLoading(false);
+        }
+    };
+
+    // Reload students whenever the class code, page, or search changes
+    createEffect(() => {
+        classCode();
+        studentPage();
+        studentSearch();
+        fetchStudents();
+    });
+
+    const onStudentSearchInput = (value: string) => {
+        clearTimeout(studentSearchTimer);
+        studentSearchTimer = setTimeout(() => {
+            setStudentPage(1);
+            setStudentSearch(value);
+        }, 350);
+    };
+
+    onCleanup(() => clearTimeout(studentSearchTimer));
 
     onMount(() => {
         fetchDetail();
@@ -492,6 +580,215 @@ export default function RectoratClassCodeDetail() {
                                     </div>
                                 </div>
                             </div>
+                        </div>
+
+                        {/* Teaches in this Class */}
+                        <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-4">
+                            <div class="flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-3">
+                                <div class="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
+                                    <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+                                    </svg>
+                                </div>
+                                <h3 class="text-base font-bold text-neutral-900 dark:text-white">
+                                    Pengajaran di Kelas Ini
+                                </h3>
+                                <span class="font-mono text-2xs px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300">
+                                    {teaches().length} MK · {totalTeachCredit()} SKS
+                                </span>
+                            </div>
+
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-xs">
+                                    <thead>
+                                        <tr class="text-left text-2xs uppercase tracking-wider text-neutral-500 dark:text-neutral-400 border-b border-neutral-200 dark:border-neutral-800">
+                                            <th class="py-2.5 pr-3 font-semibold w-12">No</th>
+                                            <th class="py-2.5 pr-3 font-semibold">Kode MK</th>
+                                            <th class="py-2.5 pr-3 font-semibold">Mata Kuliah</th>
+                                            <th class="py-2.5 pr-3 font-semibold text-right">SKS</th>
+                                            <th class="py-2.5 pr-3 font-semibold text-right">Peserta</th>
+                                            <th class="py-2.5 font-semibold text-right">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-neutral-100 dark:divide-neutral-800/80">
+                                        <Show
+                                            when={!isTeachesLoading()}
+                                            fallback={
+                                                <tr>
+                                                    <td colspan="6" class="py-10 text-center text-neutral-500">
+                                                        <div class="inline-flex items-center gap-2">
+                                                            <div class="size-4 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
+                                                            Memuat data pengajaran...
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        >
+                                            <For
+                                                each={teaches()}
+                                                fallback={
+                                                    <tr>
+                                                        <td colspan="6" class="py-10 text-center text-neutral-500">
+                                                            Belum ada pengajaran untuk kelas ini.
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            >
+                                                {(teach, index) => (
+                                                    <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-800/40 transition-colors">
+                                                        <td class="py-2.5 pr-3 font-mono text-neutral-400">{index() + 1}</td>
+                                                        <td class="py-2.5 pr-3 font-mono font-semibold text-indigo-600 dark:text-indigo-400">
+                                                            {teach.course?.code || '-'}
+                                                        </td>
+                                                        <td class="py-2.5 pr-3 font-semibold text-neutral-900 dark:text-white">
+                                                            {teach.course?.name || teach.name || '-'}
+                                                        </td>
+                                                        <td class="py-2.5 pr-3 font-mono text-right text-neutral-600 dark:text-neutral-300">
+                                                            {teach.course?.total_credit ?? '-'}
+                                                        </td>
+                                                        <td class="py-2.5 pr-3 font-mono text-right text-neutral-600 dark:text-neutral-300">
+                                                            {teach.enrolled_count ?? 0}
+                                                            <Show when={teach.max_member}>
+                                                                <span class="text-neutral-400"> / {teach.max_member}</span>
+                                                            </Show>
+                                                        </td>
+                                                        <td class="py-2.5 text-right">
+                                                            <A
+                                                                href={`/rectorat/institution/${institutionId()}/academic/campaign/transaction/teach/${teach.id}`}
+                                                                class="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                                                            >
+                                                                Detail →
+                                                            </A>
+                                                        </td>
+                                                    </tr>
+                                                )}
+                                            </For>
+                                        </Show>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        {/* Students in this Class */}
+                        <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-4">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-200 dark:border-neutral-800 pb-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
+                                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-base font-bold text-neutral-900 dark:text-white">
+                                        Mahasiswa di Kelas Ini
+                                    </h3>
+                                    <span class="font-mono text-2xs px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300">
+                                        {studentTotal()} / {classCode()?.capacity || 0}
+                                    </span>
+                                </div>
+                                <input
+                                    type="search"
+                                    placeholder="Cari NIM atau nama..."
+                                    onInput={(e) => onStudentSearchInput(e.currentTarget.value)}
+                                    class="w-full sm:w-64 px-3 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-xs text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+                                />
+                            </div>
+
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-xs">
+                                    <thead>
+                                        <tr class="text-left text-2xs uppercase tracking-wider text-neutral-500 dark:text-neutral-400 border-b border-neutral-200 dark:border-neutral-800">
+                                            <th class="py-2.5 pr-3 font-semibold w-12">No</th>
+                                            <th class="py-2.5 pr-3 font-semibold">NIM</th>
+                                            <th class="py-2.5 pr-3 font-semibold">Nama</th>
+                                            <th class="py-2.5 pr-3 font-semibold">Angkatan</th>
+                                            <th class="py-2.5 pr-3 font-semibold">Status</th>
+                                            <th class="py-2.5 font-semibold text-right">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-neutral-100 dark:divide-neutral-800/80">
+                                        <Show
+                                            when={!isStudentsLoading()}
+                                            fallback={
+                                                <tr>
+                                                    <td colspan="6" class="py-10 text-center text-neutral-500">
+                                                        <div class="inline-flex items-center gap-2">
+                                                            <div class="size-4 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
+                                                            Memuat data mahasiswa...
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        >
+                                            <For
+                                                each={students()}
+                                                fallback={
+                                                    <tr>
+                                                        <td colspan="6" class="py-10 text-center text-neutral-500">
+                                                            {studentSearch() ? 'Tidak ada mahasiswa yang cocok dengan pencarian.' : 'Belum ada mahasiswa yang terdaftar di kelas ini.'}
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            >
+                                                {(student, index) => (
+                                                    <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-800/40 transition-colors">
+                                                        <td class="py-2.5 pr-3 font-mono text-neutral-400">
+                                                            {(studentPage() - 1) * STUDENT_PAGE_SIZE + index() + 1}
+                                                        </td>
+                                                        <td class="py-2.5 pr-3 font-mono font-semibold text-indigo-600 dark:text-indigo-400">
+                                                            {student.code || '-'}
+                                                        </td>
+                                                        <td class="py-2.5 pr-3 font-semibold text-neutral-900 dark:text-white">
+                                                            {student.name || '-'}
+                                                        </td>
+                                                        <td class="py-2.5 pr-3 font-mono text-neutral-600 dark:text-neutral-300">
+                                                            {student.academic_year_name || '-'}
+                                                        </td>
+                                                        <td class="py-2.5 pr-3">
+                                                            <span class="inline-flex px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-2xs font-semibold">
+                                                                {student.status_name || '-'}
+                                                            </span>
+                                                        </td>
+                                                        <td class="py-2.5 text-right">
+                                                            <A
+                                                                href={`/rectorat/institution/${institutionId()}/academic/student/master/student/${student.id}`}
+                                                                class="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                                                            >
+                                                                Detail →
+                                                            </A>
+                                                        </td>
+                                                    </tr>
+                                                )}
+                                            </For>
+                                        </Show>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <Show when={studentTotalPages() > 1}>
+                                <div class="flex items-center justify-between pt-2 text-xs text-neutral-500">
+                                    <span class="font-mono">
+                                        Halaman {studentPage()} dari {studentTotalPages()}
+                                    </span>
+                                    <div class="flex items-center gap-2">
+                                        <button
+                                            type="button"
+                                            disabled={studentPage() <= 1 || isStudentsLoading()}
+                                            onClick={() => setStudentPage((p) => Math.max(1, p - 1))}
+                                            class="px-3 py-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 font-semibold disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                                        >
+                                            ← Sebelumnya
+                                        </button>
+                                        <button
+                                            type="button"
+                                            disabled={studentPage() >= studentTotalPages() || isStudentsLoading()}
+                                            onClick={() => setStudentPage((p) => Math.min(studentTotalPages(), p + 1))}
+                                            class="px-3 py-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 font-semibold disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                                        >
+                                            Berikutnya →
+                                        </button>
+                                    </div>
+                                </div>
+                            </Show>
                         </div>
 
                         {/* Audit Trail & Metadata */}

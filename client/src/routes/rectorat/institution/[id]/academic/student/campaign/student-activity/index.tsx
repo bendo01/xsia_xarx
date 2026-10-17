@@ -553,7 +553,7 @@ export default function RectoratStudentActivityIndex() {
                                                             when={item.unit_name}
                                                             fallback={<span class="text-neutral-400 dark:text-neutral-600">-</span>}
                                                         >
-                                                            <p class="text-sm font-medium text-neutral-800 dark:text-neutral-200 truncate max-w-[200px]">
+                                                            <p class="text-sm font-medium text-neutral-800 dark:text-neutral-200 truncate max-w-50">
                                                                 {item.unit_name}
                                                             </p>
                                                             <Show when={item.unit_code}>

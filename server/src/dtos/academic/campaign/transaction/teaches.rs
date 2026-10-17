@@ -19,6 +19,7 @@ pub struct TeachQuery {
     pub activity_id: Option<Uuid>,
     pub teach_decree_id: Option<Uuid>,
     pub course_id: Option<Uuid>,
+    pub class_code_id: Option<Uuid>,
     pub lecturer_id: Option<Uuid>,
     pub unit_id: Option<Uuid>,
     pub institution_id: Option<Uuid>,

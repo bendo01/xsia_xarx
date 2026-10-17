@@ -8,6 +8,7 @@ pub mod generate_env;
 pub mod hash_password;
 pub mod sync_staff_roles;
 pub mod sync_student_roles;
+pub mod sync_student_class_codes;
 pub mod route_list;
 pub mod sync_permissions;
 pub mod cleanup_student_detail_activity;

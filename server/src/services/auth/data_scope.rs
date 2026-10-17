@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::sea_query::{Query, SelectStatement, UnionType};
-use sea_orm::{ColumnTrait, Condition, ConnectionTrait, EntityTrait, QueryFilter, Select};
+use sea_orm::{ColumnTrait, Condition, ConnectionTrait, EntityName, EntityTrait, QueryFilter, Select};
 use uuid::Uuid;
 
 use crate::middleware::auth::auth_user_id;
@@ -120,25 +120,25 @@ impl DataScope {
             DataScope::Units(unit_ids) => Some(
                 Query::select()
                     .column((students::Entity, students::Column::Id))
-                    .from(students::Entity)
+                    .from(students::Entity.table_ref())
                     .and_where(students::Column::UnitId.is_in(unit_ids.iter().copied()))
                     .to_owned(),
             ),
             DataScope::Student(student_id) => Some(
                 Query::select()
                     .column((students::Entity, students::Column::Id))
-                    .from(students::Entity)
+                    .from(students::Entity.table_ref())
                     .and_where(students::Column::Id.eq(*student_id))
                     .to_owned(),
             ),
             DataScope::Lecturer(lecturer_id) => {
                 let mut taught = Query::select()
                     .column((student_activities::Entity, student_activities::Column::StudentId))
-                    .from(student_activities::Entity)
+                    .from(student_activities::Entity.table_ref())
                     .and_where(student_activities::Column::Id.in_subquery(
                         Query::select()
                             .column((detail_activities::Entity, detail_activities::Column::ActivityId))
-                            .from(detail_activities::Entity)
+                            .from(detail_activities::Entity.table_ref())
                             .and_where(detail_activities::Column::DeletedAt.is_null())
                             .and_where(detail_activities::Column::TeachId.in_subquery(lecturer_teach_ids(*lecturer_id)))
                             .to_owned(),
@@ -163,7 +163,7 @@ impl DataScope {
         Some(
             Query::select()
                 .column((detail_activities::Entity, detail_activities::Column::Id))
-                .from(detail_activities::Entity)
+                .from(detail_activities::Entity.table_ref())
                 .cond_where(condition)
                 .to_owned(),
         )
@@ -178,7 +178,7 @@ impl DataScope {
 fn lecturer_teach_ids(lecturer_id: Uuid) -> SelectStatement {
     Query::select()
         .column((teach_lecturers::Entity, teach_lecturers::Column::TeachId))
-        .from(teach_lecturers::Entity)
+        .from(teach_lecturers::Entity.table_ref())
         .and_where(teach_lecturers::Column::LecturerId.eq(lecturer_id))
         .and_where(teach_lecturers::Column::DeletedAt.is_null())
         .to_owned()
@@ -188,15 +188,15 @@ fn lecturer_teach_ids(lecturer_id: Uuid) -> SelectStatement {
 fn advisee_ids(lecturer_id: Uuid) -> SelectStatement {
     let final_assignment = Query::select()
         .column((student_activities::Entity, student_activities::Column::StudentId))
-        .from(student_activities::Entity)
+        .from(student_activities::Entity.table_ref())
         .and_where(student_activities::Column::Id.in_subquery(
             Query::select()
                 .column((detail_activities::Entity, detail_activities::Column::ActivityId))
-                .from(detail_activities::Entity)
+                .from(detail_activities::Entity.table_ref())
                 .and_where(detail_activities::Column::Id.in_subquery(
                     Query::select()
                         .column((advisers::Entity, advisers::Column::DetailActivityId))
-                        .from(advisers::Entity)
+                        .from(advisers::Entity.table_ref())
                         .and_where(advisers::Column::LecturerId.eq(lecturer_id))
                         .and_where(advisers::Column::DeletedAt.is_null())
                         .to_owned(),
@@ -207,7 +207,7 @@ fn advisee_ids(lecturer_id: Uuid) -> SelectStatement {
 
     Query::select()
         .column((counsellors::Entity, counsellors::Column::StudentId))
-        .from(counsellors::Entity)
+        .from(counsellors::Entity.table_ref())
         .and_where(counsellors::Column::LecturerId.eq(lecturer_id))
         .and_where(counsellors::Column::DeletedAt.is_null())
         .union(UnionType::Distinct, final_assignment)
@@ -339,7 +339,7 @@ impl ScopedEntity for detail_activities::Entity {
                     .add(detail_activities::Column::ActivityId.in_subquery(
                         Query::select()
                             .column((student_activities::Entity, student_activities::Column::Id))
-                            .from(student_activities::Entity)
+                            .from(student_activities::Entity.table_ref())
                             .and_where(student_activities::Column::StudentId.in_subquery(advisee_ids(*lecturer_id)))
                             .to_owned(),
                     )),
@@ -350,7 +350,7 @@ impl ScopedEntity for detail_activities::Entity {
                     detail_activities::Column::ActivityId.in_subquery(
                         Query::select()
                             .column((student_activities::Entity, student_activities::Column::Id))
-                            .from(student_activities::Entity)
+                            .from(student_activities::Entity.table_ref())
                             .cond_where(student_condition)
                             .to_owned(),
                     ),
@@ -386,7 +386,7 @@ impl ScopedEntity for prerequisites::Entity {
             prerequisites::Column::SubmissionId.in_subquery(
                 Query::select()
                     .column((submissions::Entity, submissions::Column::Id))
-                    .from(submissions::Entity)
+                    .from(submissions::Entity.table_ref())
                     .cond_where(submission_condition)
                     .to_owned(),
             ),
@@ -404,7 +404,7 @@ impl ScopedEntity for evaluation_details::Entity {
             evaluation_details::Column::EvaluationSummaryId.in_subquery(
                 Query::select()
                     .column((evaluation_summaries::Entity, evaluation_summaries::Column::Id))
-                    .from(evaluation_summaries::Entity)
+                    .from(evaluation_summaries::Entity.table_ref())
                     .cond_where(summary_condition)
                     .to_owned(),
             ),
@@ -427,7 +427,7 @@ impl ScopedEntity for decrees::Entity {
                     decrees::Column::Id.in_subquery(
                         Query::select()
                             .column((counsellors::Entity, counsellors::Column::DecreeId))
-                            .from(counsellors::Entity)
+                            .from(counsellors::Entity.table_ref())
                             .cond_where(Condition::all().add(counsellors::Column::DeletedAt.is_null()).add(counsellor_condition))
                             .to_owned(),
                     ),
@@ -454,7 +454,7 @@ impl ScopedEntity for final_assignment_decrees::Entity {
                     final_assignment_decrees::Column::Id.in_subquery(
                         Query::select()
                             .column((submissions::Entity, submissions::Column::FinalAssignmentDecreeId))
-                            .from(submissions::Entity)
+                            .from(submissions::Entity.table_ref())
                             .cond_where(Condition::all().add(submissions::Column::DeletedAt.is_null()).add(submission_condition))
                             .to_owned(),
                     ),
@@ -476,7 +476,7 @@ impl ScopedEntity for teaches::Entity {
                 teaches::Column::ClassCodeId.in_subquery(
                     Query::select()
                         .column((class_codes::Entity, class_codes::Column::Id))
-                        .from(class_codes::Entity)
+                        .from(class_codes::Entity.table_ref())
                         .and_where(class_codes::Column::UnitId.is_in(unit_ids.iter().copied()))
                         .to_owned(),
                 ),
@@ -490,7 +490,7 @@ impl ScopedEntity for teaches::Entity {
                     teaches::Column::Id.in_subquery(
                         Query::select()
                             .column((detail_activities::Entity, detail_activities::Column::TeachId))
-                            .from(detail_activities::Entity)
+                            .from(detail_activities::Entity.table_ref())
                             .cond_where(Condition::all().add(detail_activities::Column::DeletedAt.is_null()).add(detail_condition))
                             .to_owned(),
                     ),

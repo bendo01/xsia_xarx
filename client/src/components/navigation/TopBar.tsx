@@ -182,7 +182,7 @@ export default function TopBar() {
                                 )}
                             </Show>
                             <div class="flex flex-col">
-                                <span class="leading-none text-sm font-extrabold tracking-wide">XSIA XARX</span>
+                                <span class="leading-none text-sm font-extrabold tracking-wide">{import.meta.env.VITE_APP_NAME ?? 'XSIA XARX'}</span>
                                 <span class="leading-none text-[10px] text-neutral-500 dark:text-neutral-400 font-mono">{t('nav.brandSubtitle')}</span>
                             </div>
                         </A>
@@ -241,7 +241,7 @@ export default function TopBar() {
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
                             </svg>
                         </button>
-                        <div id="events-popover" popover="auto" class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-xl rounded-xs p-4 w-72 m-0 text-neutral-800 dark:text-neutral-100 top-[3.5rem] right-4 inset-auto">
+                        <div id="events-popover" popover="auto" class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-xl rounded-xs p-4 w-72 m-0 text-neutral-800 dark:text-neutral-100 top-14 right-4 inset-auto">
                             <h3 class="font-semibold text-xs uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-mono mb-2">{t('nav.systemActivity')}</h3>
                             <ul class="text-xs text-neutral-600 dark:text-neutral-300 space-y-2">
                                 <li class="p-2 bg-neutral-50 dark:bg-neutral-800 rounded-xs flex items-center gap-2">
@@ -321,7 +321,7 @@ export default function TopBar() {
 
                     {/* Footer / Account Dropdown */}
                     <footer class="mt-auto shrink-0 pt-4 border-t border-neutral-200 dark:border-neutral-800">
-                        {/* 
+                        {/*
                         <Show when={isAuthenticatedSignal()} fallback={
                             <div class="flex flex-col gap-2">
                                 <A
@@ -370,7 +370,7 @@ export default function TopBar() {
                                 <div
                                     id="account-dropdown"
                                     popover="auto"
-                                    class="fixed top-auto left-auto bottom-20 right-7 m-0 w-[22rem] z-30 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xs shadow-2xl p-3"
+                                    class="fixed top-auto left-auto bottom-20 right-7 m-0 w-88 z-30 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xs shadow-2xl p-3"
                                     role="menu"
                                 >
                                     {/* User Info Header */}
