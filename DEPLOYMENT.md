@@ -754,7 +754,11 @@ OpenWA sends webhooks itself; you only register the xsia URL on the OpenWA sessi
 **Before you start:**
 - [12.A](#a-set-the-secrets) is done (the endpoint answers `401`, not `503`).
 - The OpenWA session exists and is connected (QR scanned). Its ID is `OPENWA_API_KEY_SESSION_ID`.
-- You have an OpenWA API key with the **operator** role or higher (`OPENWA_API_KEY_OPERATOR`).
+- You have an OpenWA API key with the **operator** role or higher (`OPENWA_API_KEY_OPERATOR`). If OpenWA runs in Docker, read the generated key from the container (run on the OpenWA host):
+
+  ```bash
+  docker exec openwa-api cat /app/data/.api-key
+  ```
 - `OPENWA_WEBHOOK_SECRET` is at least 16 characters. OpenWA rejects shorter secrets, and a webhook without a secret is unsigned, so xsia always answers `401`.
 - The OpenWA host can reach `https://api.example.ac.id`. OpenWA checks webhook URLs against SSRF rules when you register them, so use the public HTTPS URL rather than a private or loopback address.
 
@@ -766,8 +770,10 @@ set -a; . /var/www/ferron/xsia_xarx/server/.env; set +a      # OPENWA_URL, OPENW
 
 **Step 1 — Register the webhook.** Either:
 
-- **Dashboard:** open `OPENWA_URL` (default port `2785`) → **Webhooks** → choose the session → **New Webhook**. Set the URL to `https://api.example.ac.id/api/v1/webhook/openwa`, pick the events, paste the secret, save. (Menu and button labels may differ slightly between OpenWA versions.)
-- **API:**
+- **Dashboard:** open `OPENWA_URL` (default port `2785`) → **Webhooks** → choose the session → **New Webhook**. Set the URL to `https://api.example.ac.id/api/v1/webhook/openwa` and pick the events. (Menu and button labels may differ slightly between OpenWA versions.)
+
+  > **Note:** the **Create Webhook** dialog has no **Secret** field, so a webhook created here is unsigned and xsia answers `401` to every delivery. Use the **API** option below, which accepts `secret`. If you already created one in the dashboard, delete it first so xsia doesn't receive duplicates.
+- **API (required for the secret):**
 
   ```bash
   curl -fsS -X POST "$OPENWA_URL/api/sessions/$OPENWA_API_KEY_SESSION_ID/webhooks" \
