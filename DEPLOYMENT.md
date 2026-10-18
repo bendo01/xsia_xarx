@@ -79,7 +79,7 @@ Directory layout used in this guide:
 /var/lib/xsia/           # home of the xsia user: ~/.cargo, ~/.rustup, ~/.bun
 ```
 
-> ⚠️ **`/var/www/ferron` is Ferron's default web root.** The app directory holds `.env` (database password, JWT secret) and the full source, so **no Ferron host may use `root "/var/www/ferron"`** or any folder above `xsia_xarx`. Otherwise those files could be downloaded over HTTP. Remove or change the catch-all `:80 { root "/var/www/ferron" }` block that ships with Ferron (it's also in `server/server_config/ferron.kdl`). The `chmod 750` above is a second safeguard: the `ferron` user can't read the folder even if a host is misconfigured.
+> ⚠️ **`/var/www/ferron` is Ferron's default web root.** The app directory holds `.env` (database password, JWT secret) and the full source, so **no Ferron host may use `root "/var/www/ferron"`** or any folder above `xsia_xarx`. Otherwise those files could be downloaded over HTTP. Remove or change the catch-all `:80 { root "/var/www/ferron" }` block that ships with Ferron (it's also in `server/server_config/ferron.conf`). The `chmod 750` above is a second safeguard: the `ferron` user can't read the folder even if a host is misconfigured.
 
 ---
 
@@ -521,113 +521,52 @@ Ferron reads `/etc/ferron/ferron.conf`, logs to `/var/log/ferron/`, and runs as 
 
 ### B. `/etc/ferron/ferron.conf`
 
-```kdl
-// Global configuration
+Ferron 3's `.conf` syntax uses `#` comments (`//` is a parse error) and `proxy "<url>"` for upstreams. Named hosts (anything but `*:80`) get a Let's Encrypt certificate automatically, so no `tls`/ACME block is needed. The listing below is also in `server/server_config/ferron.conf`.
+
+```conf
+# Global configuration
 {
-    observability {
-        provider file
-        access_log /var/log/ferron/access.log
-        error_log /var/log/ferron/error.log
+    log /var/log/ferron/access.log {
+        access_log_rotate_size 10485760
+        access_log_rotate_keep 7
+    }
+    error_log /var/log/ferron/error.log {
+        error_log_rotate_size 10485760
+        error_log_rotate_keep 7
     }
 }
 
-snippet "acme" {
-    tls {
-        provider acme
-        challenge http-01
-        contact admin@example.ac.id
-        cache /var/cache/ferron-acme
-    }
-}
-
-// ---------- API (Rust, 127.0.0.1:5800) ----------
-// REST, WebSocket (/api/v1/realtime/ws) and SSE (/api/v1/realtime/sse) all go through this one proxy.
-api.example.ac.id {
-    use "acme"
-    dynamic_compressed
-
-    proxy {
-        upstream http://127.0.0.1:5800
-    }
-    request_header Host "{{request.host}}"
-}
-
-// ---------- Frontend (SolidStart SSR, 127.0.0.1:3000) ----------
-app.example.ac.id {
-    use "acme"
-    dynamic_compressed
-
-    proxy {
-        upstream http://127.0.0.1:3000
-    }
-    request_header Host "{{request.host}}"
-
-    // Hashed build assets can be cached forever
-    location /_build/assets {
-        proxy {
-            upstream http://127.0.0.1:3000
-        }
-        header Cache-Control "public, max-age=31536000, immutable"
-    }
-}
-```
-
-Don't add `Access-Control-*` headers in Ferron. The API already sends permissive CORS headers, and sending them twice makes browsers reject the response.
-
-```bash
-sudo mkdir -p /var/cache/ferron-acme
-sudo chown ferron:ferron /var/cache/ferron-acme 2>/dev/null || true   # service user from the package
-
-sudo ferron validate -c /etc/ferron/ferron.conf
-sudo systemctl restart ferron            # later edits: sudo systemctl reload ferron
-journalctl -u ferron -f                  # watch the certificates being issued
-```
-
-DNS A/AAAA records for both domains must point at this server, and port 80 must be reachable, before Ferron can pass the HTTP-01 challenge.
-
-> 🔒 **Swagger UI** is public at `https://api.example.ac.id/api/v1/swagger-ui/`. To restrict it to your internal network, add this inside the `api.example.ac.id` block:
-> ```kdl
-> location /api/v1/swagger-ui {
->     allow "10.0.0.0/8" "192.168.0.0/16"
->     proxy {
->         upstream http://127.0.0.1:5800
->     }
-> }
-> location /api/v1/api-docs {
->     allow "10.0.0.0/8" "192.168.0.0/16"
->     proxy {
->         upstream http://127.0.0.1:5800
->     }
-> }
-> ```
-
-> ⏱️ If long requests (PDF generation, feeder syncs) get cut off, raise the pipeline `timeout` (see Ferron's *Core directives* docs).
-
-### C. Still on Ferron 2?
-
-The existing `server/server_config/ferron.kdl` uses **Ferron 2** syntax. If your server runs Ferron 2 (`ferron.kdl`), the equivalent hosts are below. Note that the old file proxies to port `5150`; the API now listens on **`5800`**.
-
-```kdl
-globals {
-    log "/var/log/ferron/access.log"
-    error_log "/var/log/ferron/error.log"
-}
-
-* {
-    auto_tls
-    auto_tls_contact "admin@example.ac.id"
-}
-
+# ---------- API (Rust, 127.0.0.1:5800) ----------
+# REST, WebSocket (/api/v1/realtime/ws) and SSE (/api/v1/realtime/sse) all go through this one proxy.
 api.example.ac.id {
     proxy "http://127.0.0.1:5800"
 }
 
+# ---------- Frontend (SolidStart SSR, 127.0.0.1:3000) ----------
 app.example.ac.id {
     proxy "http://127.0.0.1:3000"
+    compressed
 }
 ```
 
-To upgrade, follow Ferron's [migration guide from v2](https://ferron.sh/docs/migration/from-v2).
+Use `127.0.0.1`, not `localhost`: both services bind IPv4 loopback only, and `localhost` can resolve to `::1` first, which gives a `502`.
+
+Don't add `Access-Control-*` headers (e.g. a `cors_headers` snippet) to the API or SSR hosts. The API already sends permissive CORS headers, and sending them twice makes browsers reject the response. They are only appropriate for hosts serving static files.
+
+```bash
+sudo ferron validate -c /etc/ferron/ferron.conf
+sudo systemctl restart ferron            # later edits: sudo systemctl reload ferron
+journalctl -u ferron -f                  # watch the certificates being issued
+tail -f /var/log/ferron/error.log        # ACME progress / errors
+```
+
+DNS A/AAAA records for both domains must point at this server, and ports 80 and 443 must be reachable from the internet, before Ferron can pass the HTTP-01 challenge. Right after a (re)start, HTTPS can fail for a few minutes with `ERR_SSL_PROTOCOL_ERROR` until the certificates are issued. Don't keep restarting Ferron while issuing fails: every attempt counts as a failed authorization and Let's Encrypt rate-limits the domain (5 failures per hour).
+
+> ⚠️ The directives in the old KDL examples (`observability { provider file }`, `tls { provider acme }`, `proxy { upstream ... }`, `request_header Host "{{request.host}}"`, nested `location`) are **not** valid in the `.conf` syntax above. If you need extras such as caching headers for `/_build/assets`, restricting Swagger UI by IP, or a custom `Host` header, look up the exact directive in the Ferron docs (https://ferron.sh/docs/configuration/fundamentals/syntax) and confirm with `ferron validate` before reloading.
+
+### C. Still on Ferron 2?
+
+Older servers used `ferron.kdl` (Ferron 2 syntax) and proxied to port `5150`. The API now listens on **`5800`**, so update the upstream when you migrate. Follow Ferron's [migration guide from v2](https://ferron.sh/docs/migration/from-v2); the Ferron 3 equivalent of the hosts is the `.conf` in step B.
 
 ---
 
@@ -799,13 +738,11 @@ A `401` means the secret in `/etc/xsia-webhook.env` differs from `MIAB_WEBHOOK_S
 
 **Step 6 (optional) — Accept this endpoint only from the mail server.** Inside the `api.example.ac.id` block in `/etc/ferron/ferron.conf`, then reload Ferron:
 
-```kdl
-location /api/v1/webhook/mail-in-a-box {
-    allow "203.0.113.25"            // Mail-in-a-Box public IP
-    proxy {
-        upstream http://127.0.0.1:5800
-    }
-}
+```conf
+# Syntax not verified against Ferron 3's .conf format: look up the IP-allow and
+# location directives in the Ferron docs and check with `ferron validate`.
+# Intent: allow only the Mail-in-a-Box public IP (e.g. 203.0.113.25) on
+# /api/v1/webhook/mail-in-a-box, proxying to http://127.0.0.1:5800
 ```
 
 **Rotating the secret:** generate a new one and set it with `set_env MIAB_WEBHOOK_SECRET "…"` ([12.A](#a-set-the-secrets)), restart `xsia-api`, then update `XSIA_WEBHOOK_SECRET` in `/etc/xsia-webhook.env` and rerun step 4. Events sent between the two changes get `401`.
@@ -1197,6 +1134,6 @@ Copy backups off the server (rsync / object storage) — a backup on the same di
 | `xsia-web` fails with `status=203/EXEC` | SELinux label on `/var/lib/xsia/.bun/bin/bun` is `var_lib_t`. Run the `semanage fcontext` + `restorecon` lines in [step 3](#3-install-build-toolchains-rust-bun) (again after `bun upgrade`). |
 | `error while loading shared libraries: libtensorflow…` | See the `ldd` step in [6.B](#b-install-the-runtime-files). |
 | `version 'GLIBC_2.4x' not found` | The binary was built on a machine with a newer glibc. Rebuild in the Rocky 10 container ([14.C](#c-compile-and-collect-the-artifacts)); don't upgrade the server's glibc. |
-| CORS errors | The API allows any origin; check that Ferron isn't adding duplicate `Access-Control-*` headers (e.g. via the old `cors_headers` snippet). |
+| CORS errors | The API allows any origin; check that Ferron isn't adding duplicate `Access-Control-*` headers (e.g. a `cors_headers` snippet applied to the API host). |
 
 Logs: `journalctl -u xsia-api -f`, `journalctl -u xsia-web -f`, `/var/log/ferron/error.log`, `journalctl -u ferron`, `/var/lib/pgsql/18/data/log/`.
