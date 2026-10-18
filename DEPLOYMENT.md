@@ -177,6 +177,10 @@ sudo -u xsia -H bash -c 'curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.
 # Bun — package manager, build runner, AND the runtime for the SolidStart SSR server (packageManager = bun@1.4.3)
 # Vite+ (`vp`) needs no global install — it's a client dev dependency installed by `bun install`
 sudo -u xsia -H bash -c 'curl -fsSL https://bun.sh/install | bash'
+
+# SELinux: files under /var/lib get var_lib_t, which systemd won't execute (xsia-web fails with status=203/EXEC)
+sudo semanage fcontext -a -t bin_t '/var/lib/xsia/\.bun/bin(/.*)?'
+sudo restorecon -Rv /var/lib/xsia/.bun/bin
 ```
 
 > ℹ️ Node.js is **not** needed. [Bun](https://github.com/oven-sh/bun) runs the client build (`bun --bun run build` forces Bun to run `vp`, whose shebang asks for `node`), the SSR server (`bun .output/server/index.mjs`), and `client/scripts/extract-api-usage.mjs` for the `utility:generate-permission-from-client` task.
@@ -336,6 +340,15 @@ CHROME_BIN="/usr/lib64/chromium-browser/headless_shell"
 EOF
 sudo chmod 600 /var/www/ferron/xsia_xarx/server/.env
 ```
+
+> ⚠️ **`.env` must be owned by `xsia`.** Mode `600` means only the owner can read it. If it's created or saved as root (e.g. `sudo nano .env`, `sudo cp`, a FileZilla/scp upload moved in with `sudo`), the API can't read it, **silently ignores it**, and falls back to built-in defaults. The usual symptom: `password authentication failed for user "bendo01"` although `DATABASE_URL` is correct. Check and fix:
+>
+> ```bash
+> sudo ls -la /var/www/ferron/xsia_xarx/server/.env    # must show: -rw------- ... xsia xsia
+> sudo chown xsia:xsia /var/www/ferron/xsia_xarx/server/.env && sudo chmod 600 /var/www/ferron/xsia_xarx/server/.env
+> ```
+>
+> Always edit it with `sudo -u xsia ${EDITOR:-vi} …`, and run `./xsia_xarx` / `./migration` by hand as `xsia` (`asxsia '…'` or `sudo -u xsia ./xsia_xarx …`). Run as your own login user, the binary can't read the file either and hits the same fallback.
 
 ### D. Run migrations and initial tasks
 
@@ -1162,6 +1175,7 @@ Copy backups off the server (rsync / object storage) — a backup on the same di
 | :--- | :--- |
 | `502 Bad Gateway` from Ferron | Service down (`systemctl status xsia-api xsia-web`), the upstream port is wrong (old configs use `5150`; the API is on `5800`), or SELinux (see [step 10](#10-firewall--selinux)). |
 | No HTTPS certificate issued | DNS doesn't point at the server yet, port 80 is blocked, or `/var/cache/ferron-acme` isn't writable. Check `journalctl -u ferron`. |
+| API exits with `password authentication failed for user "bendo01"` | `server/.env` isn't readable, so the built-in default credentials are used. Usually it's owned by `root` (created/edited with plain `sudo`), or the binary was run as your login user. `chown xsia:xsia` + `chmod 600` it and run as `xsia` ([6.C](#c-production-env)). |
 | API exits with `Failed to connect to PGMQ` | Wrong `DATABASE_URL`, `pg_hba.conf` still on `ident`, or role lacks rights on schema `pgmq`. |
 | `extension "pg_uuidv7" is not available` (or `"age"`) | Built against the wrong PostgreSQL — rebuild with `PATH=/usr/pgsql-18/bin:$PATH` (for AGE, use the `release/PG18/…` branch). |
 | Migration fails: `permission denied for schema ag_catalog` / `for table ag_graph` | AGE grants missing — run the AGE lines of [2.C](#c-create-the-database-role-and-enable-extensions) as `postgres`. |
@@ -1180,6 +1194,7 @@ Copy backups off the server (rsync / object storage) — a backup on the same di
 | Frontend calls `127.0.0.1:5800` from the browser | `client/.env` missing at build time — `VITE_API_SERVER_URL` is baked in; fix and rebuild. |
 | WebSocket closes immediately | `ws://` used on an HTTPS page (use `wss://` in `VITE_WEB_SOCKET_SERVER_URL` and rebuild the client). |
 | `xsia-api` fails with `status=203/EXEC` | SELinux label on the binary is `httpd_sys_content_t`. Run the `semanage fcontext` + `restorecon` step in [6.B](#b-install-the-runtime-files). |
+| `xsia-web` fails with `status=203/EXEC` | SELinux label on `/var/lib/xsia/.bun/bin/bun` is `var_lib_t`. Run the `semanage fcontext` + `restorecon` lines in [step 3](#3-install-build-toolchains-rust-bun) (again after `bun upgrade`). |
 | `error while loading shared libraries: libtensorflow…` | See the `ldd` step in [6.B](#b-install-the-runtime-files). |
 | `version 'GLIBC_2.4x' not found` | The binary was built on a machine with a newer glibc. Rebuild in the Rocky 10 container ([14.C](#c-compile-and-collect-the-artifacts)); don't upgrade the server's glibc. |
 | CORS errors | The API allows any origin; check that Ferron isn't adding duplicate `Access-Control-*` headers (e.g. via the old `cors_headers` snippet). |
