@@ -3,6 +3,7 @@ import { useNavigate, A } from '@solidjs/router';
 import { isAuthenticated, getDashboardPathForRole, getActiveRole, refreshAuthState } from '~/lib/authStore';
 import { getInstitutionLogo } from '~/lib/institutionLogo';
 import TopBar from '~/components/navigation/TopBar';
+import { t } from '~/i18n';
 
 type GuideFlowId = 'all' | 'login' | 'acquisition' | 'forgot' | 'reset';
 
@@ -33,7 +34,7 @@ export default function Home() {
 
     onMount(() => {
         if (typeof document !== 'undefined') {
-            document.title = 'Panduan Autentikasi & Portal Akademik - XSIA XARX';
+            document.title = t('au.homeDocTitle');
         }
         refreshAuthState();
         if (isAuthenticated()) {
@@ -41,150 +42,150 @@ export default function Home() {
         }
     });
 
-    const guideFlows: GuideFlow[] = [
+    const guideFlows = (): GuideFlow[] => [
         {
             id: 'login',
-            title: '1. Masuk Sistem (Login Portal)',
-            subtitle: 'Metode utama untuk mengakses dasbor akademik dengan keamanan sesi terenkripsi.',
-            badge: 'Default / Direkomendasikan',
+            title: t('au.homeLoginTitle'),
+            subtitle: t('au.homeLoginSubtitle'),
+            badge: t('au.homeLoginBadge'),
             badgeColor: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30',
             accentColor: 'emerald',
             route: '/authentification/login_with_session',
-            buttonLabel: 'Buka Halaman Masuk Sesi',
+            buttonLabel: t('au.homeLoginButton'),
             recommended: true,
-            requirements: ['Username / Email / NIM terdaftar', 'Kata Sandi akun', 'Peran aktif (jika memiliki multi-peran)'],
+            requirements: [t('au.homeLoginReq1'), t('au.homeLoginReq2'), t('au.homeLoginReq3')],
             steps: [
                 {
                     step: 1,
-                    title: 'Buka Halaman Masuk Sesi (Default)',
-                    description: 'Klik tombol Masuk Sesi pada navigasi atau tombol utama di halaman ini.',
+                    title: t('au.homeLoginStep1Title'),
+                    description: t('au.homeLoginStep1Desc'),
                 },
                 {
                     step: 2,
-                    title: 'Masukkan Kredensial Pengguna',
-                    description: 'Ketik Username, Email terdaftar, atau Nomor Induk Mahasiswa/Pegawai beserta kata sandi Anda.',
+                    title: t('au.homeLoginStep2Title'),
+                    description: t('au.homeLoginStep2Desc'),
                 },
                 {
                     step: 3,
-                    title: 'Verifikasi Keamanan Sesi',
-                    description: 'Sistem mengesahkan session token aman yang otomatis tersinkronisasi dengan peran otoritas Anda.',
+                    title: t('au.homeLoginStep3Title'),
+                    description: t('au.homeLoginStep3Desc'),
                 },
                 {
                     step: 4,
-                    title: 'Akses Dasbor Kerja',
-                    description: 'Anda langsung dialihkan ke ruang kerja Anda (Mahasiswa, Dosen, Rektorat, atau Departemen).',
+                    title: t('au.homeLoginStep4Title'),
+                    description: t('au.homeLoginStep4Desc'),
                 },
             ],
-            tip: 'Catatan: Opsi Masuk Standar (JWT) tetap tersedia di menu untuk pengembang atau integrasi API pihak ketiga.',
+            tip: t('au.homeLoginTip'),
         },
         {
             id: 'acquisition',
-            title: '2. Permohonan Akun (Account Acquisition)',
-            subtitle: 'Prosedur mandiri pembuatan akun bagi mahasiswa atau sivitas akademika baru yang belum memiliki akses login.',
-            badge: 'Pendaftaran Akses',
+            title: t('au.homeAcqTitle'),
+            subtitle: t('au.homeAcqSubtitle'),
+            badge: t('au.homeAcqBadge'),
             badgeColor: 'bg-teal-500/10 text-teal-700 dark:text-teal-400 border-teal-500/30',
             accentColor: 'teal',
             route: '/authentification/account-acquisition-request',
-            buttonLabel: 'Ajukan Permohonan Akun',
-            requirements: ['NIK 16 digit sesuai KTP/KK', 'NIM / Kode Mahasiswa valid', 'Email aktif', 'Nomor WhatsApp aktif'],
+            buttonLabel: t('au.homeAcqButton'),
+            requirements: [t('au.homeAcqReq1'), t('au.homeAcqReq2'), t('au.homeAcqReq3'), t('au.homeAcqReq4')],
             steps: [
                 {
                     step: 1,
-                    title: 'Akses Formulir Permohonan Akun',
-                    description: 'Navigasikan ke menu Permohonan Akun (/authentification/account-acquisition-request).',
+                    title: t('au.homeAcqStep1Title'),
+                    description: t('au.homeAcqStep1Desc'),
                 },
                 {
                     step: 2,
-                    title: 'Lengkapi Data Identitas',
-                    description: 'Isi NIK (16 digit), NIM/Kode Mahasiswa, Email aktif, dan Nomor WhatsApp yang dapat dihubungi.',
+                    title: t('au.homeAcqStep2Title'),
+                    description: t('au.homeAcqStep2Desc'),
                 },
                 {
                     step: 3,
-                    title: 'Tentukan Kata Sandi Baru',
-                    description: 'Buat kata sandi yang kuat dan aman untuk akun portal akademik Anda.',
+                    title: t('au.homeAcqStep3Title'),
+                    description: t('au.homeAcqStep3Desc'),
                 },
                 {
                     step: 4,
-                    title: 'Verifikasi Data Otomatis',
-                    description: 'Sistem mencocokkan data Anda dengan arsip induk kampus dan mengirimkan konfirmasi WhatsApp/Email.',
+                    title: t('au.homeAcqStep4Title'),
+                    description: t('au.homeAcqStep4Desc'),
                 },
             ],
-            tip: 'Pastikan NIK dan NIM sama persis dengan data saat Anda dinyatakan lulus registrasi PMB.',
+            tip: t('au.homeAcqTip'),
         },
         {
             id: 'forgot',
-            title: '3. Lupa Kata Sandi (Forgot Password)',
-            subtitle: 'Solusi pemulihan akun jika Anda lupa atau kehilangan kredensial kata sandi portal Anda.',
-            badge: 'Pemulihan Akun',
+            title: t('au.homeForgotTitle'),
+            subtitle: t('au.homeForgotSubtitle'),
+            badge: t('au.homeForgotBadge'),
             badgeColor: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30',
             accentColor: 'amber',
             route: '/authentification/forgot-password',
-            buttonLabel: 'Mulai Pemulihan Sandi',
-            requirements: ['Email akun yang telah terdaftar', 'Nomor WhatsApp aktif yang terhubung'],
+            buttonLabel: t('au.homeForgotButton'),
+            requirements: [t('au.homeForgotReq1'), t('au.homeForgotReq2')],
             steps: [
                 {
                     step: 1,
-                    title: 'Buka Halaman Lupa Kata Sandi',
-                    description: 'Klik menu Lupa Kata Sandi pada menu navigasi atau tautan di bawah form login.',
+                    title: t('au.homeForgotStep1Title'),
+                    description: t('au.homeForgotStep1Desc'),
                 },
                 {
                     step: 2,
-                    title: 'Masukkan Email & Nomor Telepon',
-                    description: 'Ketikkan alamat email dan nomor WhatsApp yang telah terdaftar pada sistem akademik.',
+                    title: t('au.homeForgotStep2Title'),
+                    description: t('au.homeForgotStep2Desc'),
                 },
                 {
                     step: 3,
-                    title: 'Kirim Permintaan Pemulihan',
-                    description: 'Klik tombol Kirim. Sistem akan menghasilkan tautan dan token reset UUID unik.',
+                    title: t('au.homeForgotStep3Title'),
+                    description: t('au.homeForgotStep3Desc'),
                 },
                 {
                     step: 4,
-                    title: 'Buka Tautan WhatsApp / Email',
-                    description: 'Periksa pesan masuk untuk mengklik tautan langsung atau menyalin token reset yang dikirimkan.',
+                    title: t('au.homeForgotStep4Title'),
+                    description: t('au.homeForgotStep4Desc'),
                 },
             ],
-            tip: 'Tautan pemulihan memiliki masa berlaku terbatas demi keamanan akun Anda. Segera lakukan reset setelah menerima pesan.',
+            tip: t('au.homeForgotTip'),
         },
         {
             id: 'reset',
-            title: '4. Reset Kata Sandi (Password Reset)',
-            subtitle: 'Tahap akhir pemulihan untuk menetapkan kata sandi baru menggunakan token reset yang telah diterima.',
-            badge: 'Pembaruan Sandi',
+            title: t('au.homeResetTitle'),
+            subtitle: t('au.homeResetSubtitle'),
+            badge: t('au.homeResetBadge'),
             badgeColor: 'bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/30',
             accentColor: 'purple',
             route: '/authentification/password-reset',
-            buttonLabel: 'Buka Halaman Reset Sandi',
-            requirements: ['Token reset dari email/WhatsApp', 'Kata sandi baru (minimal 8 karakter)', 'Konfirmasi kata sandi cocok'],
+            buttonLabel: t('au.homeResetButton'),
+            requirements: [t('au.homeResetReq1'), t('au.homeResetReq2'), t('au.homeResetReq3')],
             steps: [
                 {
                     step: 1,
-                    title: 'Buka Halaman Reset Kata Sandi',
-                    description: 'Akses halaman /authentification/password-reset melalui tautan di pesan WhatsApp/Email.',
+                    title: t('au.homeResetStep1Title'),
+                    description: t('au.homeResetStep1Desc'),
                 },
                 {
                     step: 2,
-                    title: 'Masukkan Token Reset',
-                    description: 'Ketik atau tempelkan token reset yang diberikan oleh sistem.',
+                    title: t('au.homeResetStep2Title'),
+                    description: t('au.homeResetStep2Desc'),
                 },
                 {
                     step: 3,
-                    title: 'Ketik Kata Sandi Baru & Konfirmasi',
-                    description: 'Buat kata sandi baru dan pastikan kedua kolom kata sandi cocok dan memenuhi standar keamanan.',
+                    title: t('au.homeResetStep3Title'),
+                    description: t('au.homeResetStep3Desc'),
                 },
                 {
                     step: 4,
-                    title: 'Selesai & Masuk Sesi',
-                    description: 'Klik Reset Kata Sandi. Sistem akan menyimpan sandi baru dan mengarahkan Anda ke Masuk Sesi.',
+                    title: t('au.homeResetStep4Title'),
+                    description: t('au.homeResetStep4Desc'),
                 },
             ],
-            tip: 'Gunakan kombinasi huruf besar, huruf kecil, angka, dan simbol untuk perlindungan kata sandi yang optimal.',
+            tip: t('au.homeResetTip'),
         },
     ];
 
     const filteredFlows = () => {
         const cat = selectedCategory();
-        if (cat === 'all') return guideFlows;
-        return guideFlows.filter((f) => f.id === cat);
+        if (cat === 'all') return guideFlows();
+        return guideFlows().filter((f) => f.id === cat);
     };
 
     return (
@@ -208,7 +209,7 @@ export default function Home() {
                             <div class="mb-6 flex items-center justify-center">
                                 <img
                                     src={getInstitutionLogo()!}
-                                    alt="Institution Logo"
+                                    alt={t('au.logo')}
                                     class="h-20 sm:h-24 w-auto object-contain drop-shadow-[0_0_25px_rgba(16,185,129,0.35)] transition-transform duration-300 hover:scale-105"
                                 />
                             </div>
@@ -217,18 +218,17 @@ export default function Home() {
                         {/* Top System Badge */}
                         <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-semibold tracking-wide uppercase shadow-sm mb-5">
                             <span class="size-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                            <span>Sistem Informasi Akademik • Panduan Autentikasi Pengguna</span>
+                            <span>{t('au.homeHeroBadge')}</span>
                         </div>
 
                         {/* Main Headline */}
                         <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-neutral-900 dark:text-white max-w-3xl leading-tight sm:leading-tight mb-4">
-                            Panduan Lengkap Masuk dan Pengelolaan Akun Portal
+                            {t('au.homeHeroTitle')}
                         </h1>
 
                         {/* Subtitle */}
                         <p class="text-base sm:text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl font-normal leading-relaxed mb-8">
-                            Selamat datang di portal akademik terpadu.
-                            Ikuti petunjuk langkah demi langkah di bawah ini untuk mengakses ruang kerja Anda, mendaftarkan akun baru, atau memulihkan kata sandi.
+                            {t('au.homeHeroSubtitle')}
                         </p>
 
                         {/* Quick Hero Action CTAs */}
@@ -241,7 +241,7 @@ export default function Home() {
                                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                                     <path d="m9 12 2 2 4-4" />
                                 </svg>
-                                <span>Masuk Sesi (Default)</span>
+                                <span>{t('au.homeCtaLogin')}</span>
                             </A>
 
                             <A
@@ -254,7 +254,7 @@ export default function Home() {
                                     <line x1="19" y1="8" x2="19" y2="14" />
                                     <line x1="22" y1="11" x2="16" y2="11" />
                                 </svg>
-                                <span>Permohonan Akun</span>
+                                <span>{t('au.homeCtaAccount')}</span>
                             </A>
 
                             <A
@@ -265,7 +265,7 @@ export default function Home() {
                                     <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
                                     <path d="M6 12v5c3 3 9 3 12 0v-5" />
                                 </svg>
-                                <span>Pendaftaran Mahasiswa Baru</span>
+                                <span>{t('au.homeCtaAdmission')}</span>
                             </A>
                             {/*
                             <A
@@ -288,11 +288,11 @@ export default function Home() {
                     <section class="mb-12 bg-linear-to-r from-amber-50 dark:from-amber-950/40 via-white/60 dark:via-slate-900/60 to-emerald-50 dark:to-emerald-950/40 border border-amber-500/25 rounded-xs p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div class="space-y-2 max-w-2xl">
                             <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xs bg-amber-500/10 text-amber-700 dark:text-amber-300 text-xs font-mono font-bold uppercase border border-amber-500/30">
-                                Penerimaan Mahasiswa Baru
+                                {t('au.homeBannerBadge')}
                             </div>
-                            <h2 class="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white">Ingin mendaftar sebagai calon mahasiswa baru?</h2>
+                            <h2 class="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white">{t('au.homeBannerTitle')}</h2>
                             <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
-                                Pelajari dokumen yang perlu disiapkan dan cara mengisi formulir pendaftaran, lalu buat akun pendaftaran Anda secara daring.
+                                {t('au.homeBannerDesc')}
                             </p>
                         </div>
                         <div class="flex flex-wrap gap-3 shrink-0">
@@ -300,13 +300,13 @@ export default function Home() {
                                 href="/authentification/candidate-addmission-procedure"
                                 class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xs bg-neutral-100 dark:bg-slate-800 hover:bg-neutral-200 dark:hover:bg-slate-700 text-neutral-700 dark:text-neutral-200 border border-neutral-300 dark:border-slate-700 hover:border-neutral-400 dark:hover:border-slate-600 text-xs font-semibold transition-all"
                             >
-                                Baca Prosedur Pendaftaran
+                                {t('au.homeBannerRead')}
                             </A>
                             <A
                                 href="/authentification/candidate-addmission-form"
                                 class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xs bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-md shadow-emerald-900/40 transition-all"
                             >
-                                Isi Formulir Pendaftaran
+                                {t('au.homeBannerForm')}
                             </A>
                         </div>
                     </section>
@@ -322,7 +322,7 @@ export default function Home() {
                                     : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200'
                                     }`}
                             >
-                                Semua Panduan (4)
+                                {t('au.homeFilterAll')}
                             </button>
                             <button
                                 type="button"
@@ -332,7 +332,7 @@ export default function Home() {
                                     : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200'
                                     }`}
                             >
-                                1. Masuk Sesi (Default)
+                                1. {t('au.homeCtaLogin')}
                             </button>
                             <button
                                 type="button"
@@ -342,7 +342,7 @@ export default function Home() {
                                     : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200'
                                     }`}
                             >
-                                2. Permohonan Akun
+                                2. {t('au.homeCtaAccount')}
                             </button>
                             <button
                                 type="button"
@@ -352,7 +352,7 @@ export default function Home() {
                                     : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200'
                                     }`}
                             >
-                                3. Lupa Sandi
+                                {t('au.homeFilterForgot')}
                             </button>
                             <button
                                 type="button"
@@ -362,7 +362,7 @@ export default function Home() {
                                     : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200'
                                     }`}
                             >
-                                4. Reset Sandi
+                                {t('au.homeFilterReset')}
                             </button>
                         </div>
                     </div>
@@ -406,7 +406,7 @@ export default function Home() {
                                     {/* Requirements Bar */}
                                     <div class="py-4 flex flex-wrap items-center gap-2 text-xs">
                                         <span class="font-mono text-neutral-500 dark:text-neutral-400 uppercase tracking-wider font-semibold">
-                                            Persyaratan:
+                                            {t('au.homeRequirements')}
                                         </span>
                                         <For each={flow.requirements}>
                                             {(req) => (
@@ -493,10 +493,10 @@ export default function Home() {
                     {/* Support & Helpdesk Footer */}
                     <footer class="text-center pt-8 border-t border-neutral-200 dark:border-slate-800/80 text-xs text-neutral-500">
                         <p class="mb-2">
-                            Butuh bantuan lebih lanjut terkait akun Anda? Hubungi Layanan Administrasi Akademik atau Pusat Data dan Sistem Informasi Institusi.
+                            {t('au.homeFooterHelp')}
                         </p>
                         <p class="font-mono text-[11px] text-neutral-600">
-                            Sistem Informasi Akademik
+                            {t('au.homeFooterSystem')}
                         </p>
                     </footer>
                 </div>
