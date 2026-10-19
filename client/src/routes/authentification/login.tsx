@@ -6,6 +6,7 @@ import { processLoginSuccess, getDashboardPathForRole, getActiveRole } from '~/l
 import { getInstitutionLogo } from '~/lib/institutionLogo';
 import { toast } from '~/components/toast/Toaster';
 import { t, getLocale, toggleLocale } from '~/i18n';
+import ThemeToggle from '../../components/navigation/ThemeToggle';
 
 export default function Login() {
     let canvasRef: HTMLCanvasElement | undefined;
@@ -85,6 +86,8 @@ export default function Login() {
 
         // Initialize rain canvas animation
         if (!canvasRef) return;
+        const rgb = () => document.documentElement.classList.contains('dark') ? '150, 200, 255' : '37, 99, 235';
+        const boost = () => (document.documentElement.classList.contains('dark') ? 1 : 2.5);
         const canvas = canvasRef;
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
@@ -128,7 +131,7 @@ export default function Login() {
                 ctx.beginPath();
                 ctx.moveTo(this.x, this.y);
                 ctx.lineTo(this.x, this.y + this.l);
-                ctx.strokeStyle = 'rgba(150, 200, 255, 0.3)';
+                ctx.strokeStyle = `rgba(${rgb()}, ${Math.min(0.3 * boost(), 0.8)})`;
                 ctx.lineWidth = 1.5;
                 ctx.stroke();
             }
@@ -156,7 +159,7 @@ export default function Login() {
                 if (!ctx) return;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-                ctx.strokeStyle = `rgba(150, 200, 255, ${this.a})`;
+                ctx.strokeStyle = `rgba(${rgb()}, ${Math.min(this.a * boost(), 1)})`;
                 ctx.lineWidth = 1;
                 ctx.stroke();
             }
@@ -193,23 +196,23 @@ export default function Login() {
     });
 
     return (
-        <div class="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-[#0F2027] px-4 py-8 select-none">
+        <div class="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-neutral-100 dark:bg-[#0F2027] px-4 py-8 select-none">
             {/* Background Gradients */}
             <div class="absolute inset-0 w-full h-full pointer-events-none z-0">
                 {/* Top Left Deep Blue */}
-                <div class="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-[#0f3460] rounded-xs mix-blend-screen filter blur-[100px] opacity-80"></div>
+                <div class="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-sky-200 dark:bg-[#0f3460] rounded-xs dark:mix-blend-screen filter blur-[140px] opacity-40 dark:opacity-80"></div>
                 {/* Bottom Left Deep Red */}
-                <div class="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-[#e94560] rounded-xs mix-blend-multiply filter blur-[120px] opacity-90"></div>
+                <div class="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-[#e94560] rounded-xs mix-blend-multiply filter blur-[120px] opacity-45 dark:opacity-90"></div>
                 {/* Bottom Right Bright Orange */}
-                <div class="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] bg-[#f9a826] rounded-xs mix-blend-screen filter blur-[120px] opacity-70"></div>
+                <div class="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] bg-[#f9a826] rounded-xs dark:mix-blend-screen filter blur-[120px] opacity-35 dark:opacity-70"></div>
 
                 {/* Custom SVG Wave for deep ambience */}
-                <svg class="absolute bottom-0 w-full h-[80%] opacity-40 mix-blend-overlay" preserveAspectRatio="none" viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg">
+                <svg class="absolute bottom-0 w-full h-[80%] opacity-40 mix-blend-overlay hidden dark:block" preserveAspectRatio="none" viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg">
                     <path fill="#ffffff" fill-opacity="1" d="M0,192L48,202.7C96,213,192,235,288,218.7C384,203,480,149,576,149.3C672,149,768,203,864,229.3C960,256,1056,256,1152,240C1248,224,1344,192,1392,176L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
                 </svg>
 
                 {/* Rain Canvas */}
-                <canvas ref={canvasRef} class="absolute inset-0 w-full h-full opacity-60 mix-blend-screen"></canvas>
+                <canvas ref={canvasRef} class="absolute inset-0 w-full h-full opacity-60 dark:mix-blend-screen"></canvas>
 
                 {/* Small floating glowing stars */}
                 <div class="absolute top-[25%] left-[20%] w-1 h-1 bg-white rounded-xs opacity-60 shadow-[0_0_10px_rgba(255,255,255,0.8)]"></div>
@@ -220,11 +223,12 @@ export default function Login() {
             </div>
 
             {/* Language Switcher on Login page */}
-            <div class="absolute top-4 right-4 z-20">
+            <div class="absolute top-4 right-4 z-20 flex items-center gap-2">
+                <ThemeToggle />
                 <button
                     onClick={toggleLocale}
                     type="button"
-                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-xs bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs font-semibold backdrop-blur-md transition-all shadow-lg"
+                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-xs bg-neutral-900/5 dark:bg-white/10 hover:bg-neutral-900/10 dark:hover:bg-white/20 border border-neutral-200 dark:border-white/15 text-neutral-900 dark:text-white text-xs font-semibold backdrop-blur-md transition-all shadow-lg"
                     aria-label={t('nav.selectLanguage')}
                     title={t('nav.selectLanguage')}
                 >
@@ -234,7 +238,7 @@ export default function Login() {
             </div>
 
             {/* Glassmorphism Card */}
-            <div class="relative z-10 w-full max-w-lg p-8 sm:p-10 bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] rounded-xs flex flex-col items-center">
+            <div class="relative z-10 w-full max-w-lg p-8 sm:p-10 bg-white/95 dark:bg-white/5 backdrop-blur-2xl border border-neutral-300 dark:border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] rounded-xs flex flex-col items-center">
 
                 {/* Logo */}
                 <Show
@@ -257,21 +261,21 @@ export default function Login() {
                 </Show>
 
                 {/* Header Titles */}
-                <h1 class="text-[28px] sm:text-[32px] font-bold text-white tracking-wide mb-1 font-sans">
+                <h1 class="text-[28px] sm:text-[32px] font-bold text-neutral-900 dark:text-white tracking-wide mb-1 font-sans">
                     {t('auth.login.title')}
                 </h1>
-                <p class="text-white/60 text-xs font-semibold tracking-wider uppercase mb-4 font-mono">
+                <p class="text-neutral-600 dark:text-white/60 text-xs font-semibold tracking-wider uppercase mb-4 font-mono">
                     {t('auth.login.subtitle')}
                 </p>
 
-                <p class="text-center text-white/80 text-sm font-normal leading-relaxed mb-6 px-2 max-w-95">
+                <p class="text-center text-neutral-700 dark:text-white/80 text-sm font-normal leading-relaxed mb-6 px-2 max-w-95">
                     {t('auth.login.description')}
                 </p>
 
                 {/* Error Alert Box */}
                 <Show when={errorMessage()}>
-                    <div class="w-full mb-5 p-3.5 bg-red-500/15 border border-red-500/30 rounded-xs flex items-center gap-3 text-red-200 text-xs font-medium animate-fadeIn">
-                        <svg class="shrink-0 size-4 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <div class="w-full mb-5 p-3.5 bg-red-50 dark:bg-red-500/15 border border-red-500/30 rounded-xs flex items-center gap-3 text-red-700 dark:text-red-200 text-xs font-medium animate-fadeIn">
+                        <svg class="shrink-0 size-4 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10" />
                             <line x1="12" y1="8" x2="12" y2="12" />
                             <line x1="12" y1="16" x2="12.01" y2="16" />
@@ -280,7 +284,7 @@ export default function Login() {
                         <button
                             type="button"
                             onClick={() => setErrorMessage(null)}
-                            class="text-red-400 hover:text-white transition-colors"
+                            class="text-red-600 dark:text-red-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
                             aria-label="Dismiss error"
                         >
                             <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -304,11 +308,11 @@ export default function Login() {
                     <form.Field name="email">
                         {(field) => (
                             <div class="space-y-1">
-                                <label class="block text-xs font-medium text-white/80 px-1">
+                                <label class="block text-xs font-medium text-neutral-700 dark:text-white/80 px-1">
                                     {t('auth.login.emailLabel')}
                                 </label>
                                 <div class="relative flex items-center">
-                                    <span class="absolute left-4 text-white/40 pointer-events-none">
+                                    <span class="absolute left-4 text-neutral-400 dark:text-white/40 pointer-events-none">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <rect width="20" height="16" x="2" y="4" rx="2" />
                                             <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
@@ -325,7 +329,7 @@ export default function Login() {
                                             field().handleChange(e.currentTarget.value);
                                             if (errorMessage()) setErrorMessage(null);
                                         }}
-                                        class="w-full bg-[#1c1a1f]/50 border border-white/10 text-white placeholder-white/30 pl-11 pr-4 py-3 rounded-xs focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 focus:bg-[#1c1a1f]/75 transition-all text-sm shadow-inner"
+                                        class="w-full bg-white dark:bg-[#1c1a1f]/50 border border-neutral-300 dark:border-white/10 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-white/30 pl-11 pr-4 py-3 rounded-xs focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 focus:bg-white dark:focus:bg-[#1c1a1f]/75 transition-all text-sm shadow-inner"
                                     />
                                 </div>
                             </div>
@@ -337,12 +341,12 @@ export default function Login() {
                         {(field) => (
                             <div class="space-y-1">
                                 <div class="flex items-center justify-between px-1">
-                                    <label class="block text-xs font-medium text-white/80">
+                                    <label class="block text-xs font-medium text-neutral-700 dark:text-white/80">
                                         {t('auth.login.passwordLabel')}
                                     </label>
                                 </div>
                                 <div class="relative flex items-center">
-                                    <span class="absolute left-4 text-white/40 pointer-events-none">
+                                    <span class="absolute left-4 text-neutral-400 dark:text-white/40 pointer-events-none">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
                                             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -359,12 +363,12 @@ export default function Login() {
                                             field().handleChange(e.currentTarget.value);
                                             if (errorMessage()) setErrorMessage(null);
                                         }}
-                                        class="w-full bg-[#1c1a1f]/50 border border-white/10 text-white placeholder-white/30 pl-11 pr-11 py-3 rounded-xs focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 focus:bg-[#1c1a1f]/75 transition-all text-sm shadow-inner"
+                                        class="w-full bg-white dark:bg-[#1c1a1f]/50 border border-neutral-300 dark:border-white/10 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-white/30 pl-11 pr-11 py-3 rounded-xs focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 focus:bg-white dark:focus:bg-[#1c1a1f]/75 transition-all text-sm shadow-inner"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword())}
-                                        class="absolute right-3.5 text-white/40 hover:text-white/90 transition-colors p-1"
+                                        class="absolute right-3.5 text-neutral-400 dark:text-white/40 hover:text-neutral-900 dark:hover:text-white/90 transition-colors p-1"
                                         aria-label={showPassword() ? "Hide password" : "Show password"}
                                     >
                                         <Show when={showPassword()} fallback={
@@ -388,16 +392,16 @@ export default function Login() {
 
                     {/* Remember me & Options */}
                     <div class="flex items-center justify-between pt-1 text-xs">
-                        <label class="flex items-center gap-2 cursor-pointer text-white/70 hover:text-white transition-colors">
+                        <label class="flex items-center gap-2 cursor-pointer text-neutral-600 dark:text-white/70 hover:text-neutral-900 dark:hover:text-white transition-colors">
                             <input
                                 type="checkbox"
                                 checked={rememberMe()}
                                 onChange={(e) => setRememberMe(e.currentTarget.checked)}
-                                class="rounded-xs border-white/20 bg-white/10 text-blue-500 focus:ring-0 focus:ring-offset-0 cursor-pointer size-3.5"
+                                class="rounded-xs border-neutral-300 dark:border-white/20 bg-neutral-900/5 dark:bg-white/10 text-blue-500 focus:ring-0 focus:ring-offset-0 cursor-pointer size-3.5"
                             />
                             <span>{t('auth.login.rememberMe')}</span>
                         </label>
-                        <A href="/authentification/forgot-password" class="text-blue-400 hover:text-blue-300 transition-colors">
+                        <A href="/authentification/forgot-password" class="text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
                             Forgot Password?
                         </A>
                     </div>
@@ -408,7 +412,7 @@ export default function Login() {
                             <button
                                 type="submit"
                                 disabled={!canSubmit() || isLoading()}
-                                class="w-full mt-5 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 px-4 rounded-xs border border-white/10 transition-all duration-300 shadow-[0_4px_20px_rgba(58,118,240,0.35)] hover:shadow-[0_6px_25px_rgba(58,118,240,0.5)] active:scale-[0.99] text-xs tracking-[0.12em] uppercase disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                class="w-full mt-5 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 px-4 rounded-xs border border-neutral-200 dark:border-white/10 transition-all duration-300 shadow-[0_4px_20px_rgba(58,118,240,0.35)] hover:shadow-[0_6px_25px_rgba(58,118,240,0.5)] active:scale-[0.99] text-xs tracking-[0.12em] uppercase disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 <Show when={isLoading()} fallback={
                                     <>
@@ -420,7 +424,7 @@ export default function Login() {
                                     </>
                                 }>{(
                                     <>
-                                        <svg class="animate-spin size-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <svg class="animate-spin size-4 text-neutral-900 dark:text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
@@ -433,14 +437,14 @@ export default function Login() {
                 </form>
 
                 {/* Card Footer */}
-                <div class="w-full pt-4 border-t border-white/10 flex items-center justify-between text-xs text-white/50">
-                    <A href="/" class="hover:text-white transition-colors flex items-center gap-1">
+                <div class="w-full pt-4 border-t border-neutral-200 dark:border-white/10 flex items-center justify-between text-xs text-neutral-500 dark:text-white/50">
+                    <A href="/" class="hover:text-neutral-900 dark:hover:text-white transition-colors flex items-center gap-1">
                         <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="m15 18-6-6 6-6" />
                         </svg>
                         {t('common.back')}
                     </A>
-                    <A href="/authentification/login_with_session" class="text-blue-400/80 hover:text-blue-300 transition-colors flex items-center gap-1">
+                    <A href="/authentification/login_with_session" class="text-blue-700 dark:text-blue-400/80 hover:text-blue-800 dark:hover:text-blue-300 transition-colors flex items-center gap-1">
                         <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                         </svg>

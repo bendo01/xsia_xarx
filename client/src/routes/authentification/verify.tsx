@@ -3,6 +3,7 @@ import { createSignal, onMount, onCleanup, Show } from 'solid-js';
 import { useSearchParams, A } from '@solidjs/router';
 import { getInstitutionLogo } from '~/lib/institutionLogo';
 import { toast } from '~/components/toast/Toaster';
+import ThemeToggle from '../../components/navigation/ThemeToggle';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0.1:5800/api/v1").replace(/\/+$/, "");
 
@@ -67,6 +68,8 @@ export default function VerifyEmail() {
 
     onMount(() => {
         if (!canvasRef) return;
+        const rgb = () => document.documentElement.classList.contains('dark') ? '56, 189, 248' : '3, 105, 161';
+        const boost = () => (document.documentElement.classList.contains('dark') ? 1 : 2.5);
         const canvas = canvasRef;
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
@@ -93,7 +96,7 @@ export default function VerifyEmail() {
                 this.y = Math.random() * height;
                 this.vx = (Math.random() - 0.5) * 0.8;
                 this.vy = (Math.random() - 0.5) * 0.8;
-                this.radius = Math.random() * 2 + 1;
+                this.radius = Math.random() * 2 + 1.5;
                 this.alpha = Math.random() * 0.5 + 0.2;
             }
 
@@ -111,7 +114,7 @@ export default function VerifyEmail() {
                 if (!ctx) return;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(56, 189, 248, ${this.alpha})`;
+                ctx.fillStyle = `rgba(${rgb()}, ${Math.min(this.alpha * boost(), 1)})`;
                 ctx.fill();
             }
         }
@@ -133,7 +136,7 @@ export default function VerifyEmail() {
                         ctx.beginPath();
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.strokeStyle = `rgba(56, 189, 248, ${0.15 * (1 - dist / 100)})`;
+                        ctx.strokeStyle = `rgba(${rgb()}, ${Math.min(0.15 * boost(), 0.5) * (1 - dist / 100)})`;
                         ctx.lineWidth = 0.8;
                         ctx.stroke();
                     }
@@ -157,17 +160,18 @@ export default function VerifyEmail() {
     });
 
     return (
-        <div class="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-[#0A0F1D] px-4 py-8 select-none">
+        <div class="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-neutral-50 dark:bg-[#0A0F1D] px-4 py-8 select-none">
+            <div class="absolute top-4 right-4 z-20"><ThemeToggle /></div>
             {/* Ambient Background Gradient Spheres */}
             <div class="absolute inset-0 w-full h-full pointer-events-none z-0">
-                <div class="absolute top-[-15%] left-[-10%] w-[65%] h-[65%] bg-[#0d9488]/30 rounded-xs mix-blend-screen filter blur-[120px] opacity-70"></div>
-                <div class="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-[#3b82f6]/25 rounded-xs mix-blend-screen filter blur-[120px] opacity-60"></div>
-                <div class="absolute bottom-[-15%] right-[-10%] w-[65%] h-[65%] bg-[#10b981]/25 rounded-xs mix-blend-screen filter blur-[120px] opacity-60"></div>
+                <div class="absolute top-[-15%] left-[-10%] w-[65%] h-[65%] bg-[#0d9488]/30 rounded-xs mix-blend-screen filter blur-[120px] opacity-35 dark:opacity-70"></div>
+                <div class="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-[#3b82f6]/25 rounded-xs mix-blend-screen filter blur-[120px] opacity-30 dark:opacity-60"></div>
+                <div class="absolute bottom-[-15%] right-[-10%] w-[65%] h-[65%] bg-[#10b981]/25 rounded-xs mix-blend-screen filter blur-[120px] opacity-30 dark:opacity-60"></div>
                 <canvas ref={canvasRef} class="absolute inset-0 w-full h-full opacity-70"></canvas>
             </div>
 
             {/* Glassmorphic Card */}
-            <div class="relative z-10 w-full max-w-lg p-8 sm:p-10 bg-slate-900/60 backdrop-blur-2xl border border-emerald-500/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] rounded-xs flex flex-col items-center">
+            <div class="relative z-10 w-full max-w-lg p-8 sm:p-10 bg-white/95 dark:bg-slate-900/60 backdrop-blur-2xl border border-neutral-300 dark:border-emerald-500/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] rounded-xs flex flex-col items-center">
 
                 {/* Logo */}
                 <Show when={getInstitutionLogo()}>
@@ -180,16 +184,16 @@ export default function VerifyEmail() {
                     )}
                 </Show>
 
-                <h1 class="text-[26px] sm:text-[30px] font-bold text-white tracking-wide mb-1 font-sans">
+                <h1 class="text-[26px] sm:text-[30px] font-bold text-neutral-900 dark:text-white tracking-wide mb-1 font-sans">
                     Verifikasi Akun
                 </h1>
-                <p class="text-white/60 text-xs font-semibold tracking-wider uppercase mb-6 font-mono text-center">
+                <p class="text-neutral-600 dark:text-white/60 text-xs font-semibold tracking-wider uppercase mb-6 font-mono text-center">
                     Silakan masukkan token verifikasi Anda
                 </p>
 
                 <Show when={errorMessage()}>
-                    <div class="w-full mb-5 p-3.5 bg-red-500/15 border border-red-500/30 rounded-xs flex items-center gap-3 text-red-200 text-xs font-medium animate-fadeIn">
-                        <svg class="shrink-0 size-4 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <div class="w-full mb-5 p-3.5 bg-red-50 dark:bg-red-500/15 border border-red-500/30 rounded-xs flex items-center gap-3 text-red-700 dark:text-red-200 text-xs font-medium animate-fadeIn">
+                        <svg class="shrink-0 size-4 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10" />
                             <line x1="12" y1="8" x2="12" y2="12" />
                             <line x1="12" y1="16" x2="12.01" y2="16" />
@@ -198,7 +202,7 @@ export default function VerifyEmail() {
                         <button
                             type="button"
                             onClick={() => setErrorMessage(null)}
-                            class="text-red-400 hover:text-white transition-colors"
+                            class="text-red-600 dark:text-red-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
                         >
                             <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -209,14 +213,14 @@ export default function VerifyEmail() {
                 </Show>
 
                 <Show when={successMessage()}>
-                    <div class="w-full mb-5 p-3.5 bg-emerald-500/15 border border-emerald-500/30 rounded-xs flex items-start gap-3 text-emerald-200 text-xs font-medium animate-fadeIn">
-                        <svg class="shrink-0 size-4 text-emerald-400 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <div class="w-full mb-5 p-3.5 bg-emerald-500/15 border border-emerald-500/30 rounded-xs flex items-start gap-3 text-emerald-800 dark:text-emerald-200 text-xs font-medium animate-fadeIn">
+                        <svg class="shrink-0 size-4 text-emerald-700 dark:text-emerald-400 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                             <path d="M22 4L12 14.01l-3-3" />
                         </svg>
                         <div class="flex-1 leading-snug">
                             <p>{successMessage()}</p>
-                            <A href="/authentification/login" class="mt-4 text-emerald-400 hover:text-emerald-300 underline font-semibold block">Kembali ke Halaman Masuk</A>
+                            <A href="/authentification/login" class="mt-4 text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 underline font-semibold block">Kembali ke Halaman Masuk</A>
                         </div>
                     </div>
                 </Show>
@@ -233,7 +237,7 @@ export default function VerifyEmail() {
                         <form.Field name="token">
                             {(field) => (
                                 <div class="space-y-1">
-                                    <label class="block text-xs font-medium text-white/80 px-1">Token Verifikasi</label>
+                                    <label class="block text-xs font-medium text-neutral-700 dark:text-white/80 px-1">Token Verifikasi</label>
                                     <div class="relative flex items-center">
                                         <input
                                             type="text"
@@ -245,7 +249,7 @@ export default function VerifyEmail() {
                                                 field().handleChange(e.currentTarget.value);
                                                 if (errorMessage()) setErrorMessage(null);
                                             }}
-                                            class="w-full bg-[#111827]/70 border border-emerald-500/20 text-white placeholder-white/30 pl-4 py-3 rounded-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400/50 transition-all text-sm shadow-inner"
+                                            class="w-full bg-white dark:bg-[#111827]/70 border border-neutral-300 dark:border-emerald-500/20 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-white/30 pl-4 py-3 rounded-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400/50 transition-all text-sm shadow-inner"
                                         />
                                     </div>
                                 </div>
@@ -269,7 +273,7 @@ export default function VerifyEmail() {
                                         </>
                                     }>{(
                                         <>
-                                            <svg class="animate-spin size-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <svg class="animate-spin size-4 text-neutral-900 dark:text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                             </svg>
@@ -282,8 +286,8 @@ export default function VerifyEmail() {
                     </form>
                 </Show>
 
-                <div class="w-full pt-4 border-t border-white/10 flex items-center justify-between text-xs text-white/50">
-                    <A href="/authentification/login_with_session" class="hover:text-emerald-300 transition-colors flex items-center gap-1">
+                <div class="w-full pt-4 border-t border-neutral-200 dark:border-white/10 flex items-center justify-between text-xs text-neutral-500 dark:text-white/50">
+                    <A href="/authentification/login_with_session" class="hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors flex items-center gap-1">
                         <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="m15 18-6-6 6-6" />
                         </svg>

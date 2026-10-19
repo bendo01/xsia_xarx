@@ -24,14 +24,14 @@ import {
     refreshAuthState,
     enrichUserRolesWithStudentCodes,
     normalizeRoleName,
-    getStorageItem,
+    
     type UserRoleItem
 } from '../../lib/authStore';
-import { masterApiShow } from '../../controllers/master/masterApiController';
 import { ChangeUserRole } from '../../controllers/auth/AuthUser';
 import { resolveInstitutionFromStaffRole } from '../../lib/rectoratHelper';
+import { toggleTheme } from '../../lib/theme';
 import { toast } from '../toast/Toaster';
-import { t, getLocale, setLocale, toggleLocale, SUPPORTED_LOCALES } from '../../i18n';
+import { t, getLocale,  toggleLocale } from '../../i18n';
 
 export default function TopBar() {
     const navigate = useNavigate();
@@ -40,17 +40,6 @@ export default function TopBar() {
         refreshAuthState();
         enrichUserRolesWithStudentCodes();
     });
-
-    const toggleDarkMode = () => {
-        if (typeof document === 'undefined') return;
-        if (document.documentElement.classList.contains('dark')) {
-            document.documentElement.classList.remove('dark');
-            localStorage.theme = 'light';
-        } else {
-            document.documentElement.classList.add('dark');
-            localStorage.theme = 'dark';
-        }
-    };
 
     const handleSignOut = () => {
         logout();
@@ -108,7 +97,7 @@ export default function TopBar() {
                     const instId = await resolveInstitutionFromStaffRole(undefined, role || roleId);
                     if (instId) {
                         const instName = await lookupInstitutionName(instId);
-                        resolvedRole = { ...(role || {}), id: roleId, name: roleName, institution_id: instId, institution_name: instName || undefined };
+                        resolvedRole = { ...role, id: roleId, name: roleName, institution_id: instId, institution_name: instName || undefined };
                         setActiveInstitution(instId, false, instName);
                     }
                 }
@@ -220,7 +209,7 @@ export default function TopBar() {
 
                         {/* Theme Toggle */}
                         <button
-                            onClick={toggleDarkMode}
+                            onClick={toggleTheme}
                             type="button"
                             class="relative size-9 flex justify-center items-center rounded-xs bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 focus:outline-hidden transition-colors"
                             aria-label={t('nav.toggleDarkMode')}

@@ -5,21 +5,23 @@ import { toast } from '~/components/toast/Toaster';
 import { getInstitutionLogo } from '~/lib/institutionLogo';
 import { processLoginSuccess } from '~/lib/authStore';
 import configuration from '~/config/configuration';
+import ThemeToggle from '../../components/navigation/ThemeToggle';
 import {
     admissionRegister,
     fetchPublicOptions,
     type OptionItem,
 } from '~/controllers/academic/candidate/AcademicCandidateAdmissionController';
 
-const inputClass = "w-full bg-[#111827]/70 border border-emerald-500/20 text-white placeholder-white/30 px-4 py-3 rounded-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400/50 transition-all text-sm shadow-inner";
+const inputClass = "w-full bg-white dark:bg-[#111827]/70 border border-neutral-300 dark:border-emerald-500/20 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-white/30 px-4 py-3 rounded-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400/50 transition-all text-sm shadow-inner";
 
 function FieldShell(props: { label: string; error?: string; children: JSX.Element }) {
     return (
         <div class="space-y-1">
-            <label class="block text-xs font-medium text-white/80 px-1">{props.label}</label>
+            <div class="absolute top-4 right-4 z-20"><ThemeToggle /></div>
+            <label class="block text-xs font-medium text-neutral-700 dark:text-white/80 px-1">{props.label}</label>
             {props.children}
             <Show when={props.error}>
-                <p class="text-[11px] text-red-300 px-1">{props.error}</p>
+                <p class="text-[11px] text-red-700 dark:text-red-300 px-1">{props.error}</p>
             </Show>
         </div>
     );
@@ -106,38 +108,38 @@ export default function CandidateAdmissionForm() {
     }));
 
     return (
-        <div class="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-[#0A0F1D] px-4 py-8">
+        <div class="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-neutral-50 dark:bg-[#0A0F1D] px-4 py-8">
             {/* Ambient Background Gradient Spheres */}
-            <div class="absolute inset-0 w-full h-full pointer-events-none z-0">
+            <div class="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-50 dark:opacity-100">
                 <div class="absolute top-[-15%] left-[-10%] w-[65%] h-[65%] bg-[#0d9488]/30 rounded-xs mix-blend-screen filter blur-[120px] opacity-70"></div>
                 <div class="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-[#3b82f6]/25 rounded-xs mix-blend-screen filter blur-[120px] opacity-60"></div>
                 <div class="absolute bottom-[-15%] right-[-10%] w-[65%] h-[65%] bg-[#10b981]/25 rounded-xs mix-blend-screen filter blur-[120px] opacity-60"></div>
             </div>
 
             {/* Glassmorphic Card */}
-            <div class="relative z-10 w-full max-w-3xl p-8 sm:p-10 bg-slate-900/60 backdrop-blur-2xl border border-emerald-500/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] rounded-xs flex flex-col items-center">
+            <div class="relative z-10 w-full max-w-3xl p-8 sm:p-10 bg-white/95 dark:bg-slate-900/60 backdrop-blur-2xl border border-neutral-300 dark:border-emerald-500/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] rounded-xs flex flex-col items-center">
                 <Show when={getInstitutionLogo()}>
                     {(logo) => (
                         <img src={logo()} alt="Logo" class="size-20 object-contain mb-4 drop-shadow-lg" />
                     )}
                 </Show>
 
-                <h1 class="text-[26px] sm:text-[30px] font-bold text-white tracking-wide mb-1 font-sans text-center">
+                <h1 class="text-[26px] sm:text-[30px] font-bold text-neutral-900 dark:text-white tracking-wide mb-1 font-sans text-center">
                     Formulir Pendaftaran Calon Mahasiswa
                 </h1>
-                <p class="text-white/60 text-xs font-semibold tracking-wider uppercase mb-6 font-mono text-center">
+                <p class="text-neutral-600 dark:text-white/60 text-xs font-semibold tracking-wider uppercase mb-6 font-mono text-center">
                     Lengkapi data diri untuk membuat akun pendaftaran
                 </p>
 
                 <Show when={errorMessage()}>
-                    <div class="w-full mb-5 p-3.5 bg-red-500/15 border border-red-500/30 rounded-xs flex items-center gap-3 text-red-200 text-xs font-medium">
-                        <svg class="shrink-0 size-4 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <div class="w-full mb-5 p-3.5 bg-red-50 dark:bg-red-500/15 border border-red-500/30 rounded-xs flex items-center gap-3 text-red-700 dark:text-red-200 text-xs font-medium">
+                        <svg class="shrink-0 size-4 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10" />
                             <line x1="12" y1="8" x2="12" y2="12" />
                             <line x1="12" y1="16" x2="12.01" y2="16" />
                         </svg>
                         <span class="flex-1 leading-snug">{errorMessage()}</span>
-                        <button type="button" onClick={() => setErrorMessage(null)} class="text-red-400 hover:text-white transition-colors">
+                        <button type="button" onClick={() => setErrorMessage(null)} class="text-red-600 dark:text-red-400 hover:text-neutral-900 dark:hover:text-white transition-colors">
                             <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18" />
                                 <line x1="6" y1="6" x2="18" y2="18" />
@@ -156,7 +158,7 @@ export default function CandidateAdmissionForm() {
                 >
                     {/* Identity */}
                     <section class="space-y-4">
-                        <h2 class="text-xs font-bold uppercase tracking-[0.15em] text-emerald-300/90 border-b border-white/10 pb-2">Data Diri</h2>
+                        <h2 class="text-xs font-bold uppercase tracking-[0.15em] text-emerald-700 dark:text-emerald-300/90 border-b border-neutral-200 dark:border-white/10 pb-2">Data Diri</h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <form.Field name="name" validators={{ onChange: required('Nama lengkap') }}>
                                 {(field) => (
@@ -226,7 +228,7 @@ export default function CandidateAdmissionForm() {
 
                     {/* School */}
                     <section class="space-y-4">
-                        <h2 class="text-xs font-bold uppercase tracking-[0.15em] text-emerald-300/90 border-b border-white/10 pb-2">Asal Sekolah</h2>
+                        <h2 class="text-xs font-bold uppercase tracking-[0.15em] text-emerald-700 dark:text-emerald-300/90 border-b border-neutral-200 dark:border-white/10 pb-2">Asal Sekolah</h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <form.Field name="student_national_number" validators={{ onChange: ({ value }) => (value && !/^\d{10}$/.test(value) ? 'NISN harus 10 digit angka' : undefined) }}>
                                 {(field) => (
@@ -248,7 +250,7 @@ export default function CandidateAdmissionForm() {
 
                     {/* Account */}
                     <section class="space-y-4">
-                        <h2 class="text-xs font-bold uppercase tracking-[0.15em] text-emerald-300/90 border-b border-white/10 pb-2">Akun Pendaftaran</h2>
+                        <h2 class="text-xs font-bold uppercase tracking-[0.15em] text-emerald-700 dark:text-emerald-300/90 border-b border-neutral-200 dark:border-white/10 pb-2">Akun Pendaftaran</h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <form.Field name="email" validators={{ onChange: ({ value }) => (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim()) ? undefined : 'Email tidak valid') }}>
                                 {(field) => (
@@ -265,7 +267,7 @@ export default function CandidateAdmissionForm() {
                                     <FieldShell label="Kata Sandi" error={field().state.meta.isTouched ? field().state.meta.errors[0] as string : undefined}>
                                         <div class="relative flex items-center">
                                             <input type={showPassword() ? 'text' : 'password'} placeholder="Minimal 6 karakter" value={field().state.value} onBlur={field().handleBlur} onInput={(e) => field().handleChange(e.currentTarget.value)} class={`${inputClass} pr-11`} />
-                                            <button type="button" onClick={() => setShowPassword(!showPassword())} class="absolute right-3.5 text-white/40 hover:text-white/90 transition-colors p-1">
+                                            <button type="button" onClick={() => setShowPassword(!showPassword())} class="absolute right-3.5 text-neutral-400 dark:text-white/40 hover:text-neutral-900 dark:hover:text-white/90 transition-colors p-1">
                                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
                                                     <circle cx="12" cy="12" r="3" />
@@ -300,7 +302,7 @@ export default function CandidateAdmissionForm() {
                                 class="w-full mt-2 bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-3.5 px-4 rounded-xs border border-emerald-400/20 transition-all duration-300 shadow-[0_4px_20px_rgba(16,185,129,0.3)] active:scale-[0.99] text-xs tracking-[0.12em] uppercase disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 <Show when={isLoading()} fallback={<span>Daftar Sekarang</span>}>
-                                    <svg class="animate-spin size-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <svg class="animate-spin size-4 text-neutral-900 dark:text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
@@ -311,8 +313,8 @@ export default function CandidateAdmissionForm() {
                     </form.Subscribe>
                 </form>
 
-                <div class="w-full pt-4 border-t border-white/10 flex items-center justify-between text-xs text-white/50">
-                    <A href="/authentification/login_with_session" class="hover:text-emerald-300 transition-colors flex items-center gap-1">
+                <div class="w-full pt-4 border-t border-neutral-200 dark:border-white/10 flex items-center justify-between text-xs text-neutral-500 dark:text-white/50">
+                    <A href="/authentification/login_with_session" class="hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors flex items-center gap-1">
                         <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="m15 18-6-6 6-6" />
                         </svg>
