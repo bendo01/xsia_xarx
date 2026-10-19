@@ -12253,6 +12253,7 @@ dependencies = [
  "serde_json",
  "serial_test",
  "sha256",
+ "strsim",
  "tensorflow",
  "tera",
  "text-splitter",
