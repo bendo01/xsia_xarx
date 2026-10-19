@@ -6,6 +6,8 @@ import { logout, refreshAuthState } from "../../lib/authStore";
 import { setStorageItem } from "../../lib/storage";
 import { setLocale, getLocale } from "../../i18n";
 
+const appName = import.meta.env.VITE_APP_NAME ?? "XSIA XARX";
+
 describe("TopBar Navigation Component (White-Box Component Tests)", () => {
   beforeEach(() => {
     localStorage.clear();
@@ -23,7 +25,7 @@ describe("TopBar Navigation Component (White-Box Component Tests)", () => {
       </Router>
     ));
 
-    expect(screen.getByText("XSIA XARX")).toBeInTheDocument();
+    expect(screen.getByText(appName)).toBeInTheDocument();
     expect(screen.getByText("Enterprise Portal")).toBeInTheDocument();
     // Guest sign-in links were removed from the sidebar footer; guests see the guest-mode label
     // and no account menu.
@@ -40,7 +42,7 @@ describe("TopBar Navigation Component (White-Box Component Tests)", () => {
       </Router>
     ));
 
-    expect(screen.getByText("XSIA XARX")).toBeInTheDocument();
+    expect(screen.getByText(appName)).toBeInTheDocument();
     expect(screen.getByText("Portal Enterprise")).toBeInTheDocument();
     expect(screen.getByText("Mode Tamu")).toBeInTheDocument();
     expect(screen.queryByLabelText("Detail Akun")).not.toBeInTheDocument();
@@ -85,7 +87,7 @@ describe("TopBar Navigation Component (White-Box Component Tests)", () => {
       </Router>
     ));
 
-    expect(screen.getByText("XSIA XARX")).toBeInTheDocument();
+    expect(screen.getByText(appName)).toBeInTheDocument();
     expect(screen.getAllByText("Lecturer").length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText("Prof. Alan Turing").length).toBeGreaterThanOrEqual(1);
   });
