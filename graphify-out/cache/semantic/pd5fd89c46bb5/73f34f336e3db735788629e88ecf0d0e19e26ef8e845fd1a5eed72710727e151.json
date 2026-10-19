@@ -1,0 +1,1 @@
+{"nodes": [{"id": "_claude_skills_rust_skill", "label": "rust skill (cargo, rustc, clippy, rustfmt)", "file_type": "document", "source_file": ".claude/skills/rust/SKILL.md", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}

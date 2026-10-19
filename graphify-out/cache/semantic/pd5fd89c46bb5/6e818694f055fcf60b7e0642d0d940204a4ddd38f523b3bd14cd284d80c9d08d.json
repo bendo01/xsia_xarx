@@ -1,0 +1,1 @@
+{"nodes": [{"id": "$graphify-root$_claude_skills_rust_skills_rules_conv_tryfrom_fallible", "label": "Rule: TryFrom for fallible conversions", "file_type": "document", "source_file": ".claude/skills/rust-skills/rules/conv-tryfrom-fallible.md", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}

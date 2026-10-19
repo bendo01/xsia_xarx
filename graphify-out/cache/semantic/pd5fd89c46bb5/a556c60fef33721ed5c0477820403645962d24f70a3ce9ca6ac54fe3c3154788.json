@@ -1,0 +1,1 @@
+{"nodes": [{"id": "claude_skills_rust_skills_rules_perf_iter_over_index", "label": "Prefer iterators over manual indexing", "file_type": "document", "source_file": ".claude/skills/rust-skills/rules/perf-iter-over-index.md", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}
