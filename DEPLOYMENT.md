@@ -383,6 +383,27 @@ Stored settings win over `.env` and are read when needed, so changing them later
 sudo -u postgres psql -d xsia_xarx -c "SELECT i.code, i.name FROM feeder_akun.kredential k JOIN institution_master.institutions i ON i.id = k.institution_id WHERE k.deleted_at IS NULL;"   # expect exactly one row
 ```
 
+#### Running tasks when you're logged in as another user
+
+The files in `server/` (notably `.env`) belong to `xsia`, so run `./xsia_xarx task …` and `./migration …` **as `xsia`**, not as your login user (e.g. `bendo01`). Otherwise `.env` can't be read and the binary falls back to the built-in default database credentials.
+
+```bash
+# One-off command, using the asxsia helper from step 3
+asxsia 'cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task <task-name>'
+
+# Same thing without the helper
+sudo -u xsia -H bash -c 'cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task <task-name>'
+
+# Interactive shell as xsia (for prompting tasks such as utility:feeder-add-credential)
+sudo -iu xsia
+cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task
+```
+
+- `-H` / `-i` set `HOME` to `/var/lib/xsia`, so `~/.cargo`, `~/.bun` and `~/.local/bin` (`autocrop`, `docling`) are found.
+- `cd` is a shell builtin, so wrap it in `bash -c '…'` as above.
+- If `bendo01` can't use `sudo -u xsia`, add `bendo01 ALL=(xsia) NOPASSWD: ALL` with `sudo visudo -f /etc/sudoers.d/bendo01` (or restrict it to specific commands).
+- For tasks that must run on a schedule, use a systemd timer with `User=xsia` or `sudo crontab -u xsia -e` rather than your own crontab.
+
 ---
 
 ## 7. Build & configure the frontend
