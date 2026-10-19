@@ -280,3 +280,19 @@ export async function listStudentAcademicYears(params?: {
         return [];
     }
 }
+
+// Public options endpoint: all academic years (id + name), no unit scoping
+export async function listAcademicYearOptions(): Promise<DistinctAcademicYearItem[]> {
+    try {
+        const res = await fetch(`${getBaseUrl()}/academic/general/reference/academic-years/options`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({}),
+        });
+        if (!res.ok) return [];
+        const json = await res.json();
+        return Array.isArray(json) ? json : (json.data || []);
+    } catch {
+        return [];
+    }
+}

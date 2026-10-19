@@ -122,9 +122,15 @@ export default function MasterShowPage() {
 
     const activities = () => {
         const list = (record()?.student_activities || []) as any[];
-        return [...list].sort((a, b) =>
+        const sorted = [...list].sort((a, b) =>
             String(a.academic_year?.code || a.academic_year_name || '').localeCompare(String(b.academic_year?.code || b.academic_year_name || ''))
         );
+        // SKS kumulatif = running total of per-semester SKS in chronological order
+        let runningSks = 0;
+        return sorted.map((a) => {
+            runningSks += Number(a.total_credit || 0);
+            return { ...a, grand_total_credit: runningSks };
+        });
     };
 
     return (

@@ -236,7 +236,12 @@ export default function RectoratStudentDetail() {
 
     // Activities sorted ascending chronologically by academic year
     const sortedActivities = createMemo<StudentActivityItem[]>(() => {
-        return sortActivitiesChronologically(activities());
+        // SKS kumulatif = running total of per-semester SKS in chronological order
+        let runningSks = 0;
+        return sortActivitiesChronologically(activities()).map((a) => {
+            runningSks += Number(a.total_credit || 0);
+            return { ...a, grand_total_credit: runningSks };
+        });
     });
 
     // Academic Trend Points for Apache ECharts (sorted ascending by academic year)

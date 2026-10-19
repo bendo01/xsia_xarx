@@ -17,7 +17,7 @@ import {
     listStudyUnits,
     listAcademicYears,
     listStudentStatuses,
-    listStudentAcademicYears,
+    listAcademicYearOptions,
     StudentMasterItem
 } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
 import { getRegistrationOptions } from '~/controllers/academic/student/reference/AcademicStudentReferenceRegistrationController';
@@ -222,14 +222,7 @@ export default function CourseDepartmentStudentMasterPage() {
         }
 
         try {
-            const isAll = targetUnitId === 'all';
-            const instId = (searchParams.institution_id as string) || (activeUnitData()?.institution_id as string) || undefined;
-
-            // Fetch distinct academic years scoped directly from backend
-            const distinctYears = await listStudentAcademicYears({
-                unit_id: !isAll ? targetUnitId : undefined,
-                institution_id: isAll ? instId : undefined,
-            });
+            const distinctYears = await listAcademicYearOptions();
 
             setUnitAcademicYears(distinctYears);
 

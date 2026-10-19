@@ -53,7 +53,22 @@ export default function CourseDepartmentStudentMasterShowPage() {
             if (studentId) {
                 // Fetch student academic activities (IPS, IPK, SKS per semester)
                 const actRes = await listStudentActivities({ student_id: studentId, page: 1, page_size: 50 }).catch(() => null);
-                setActivities(actRes?.data || []);
+                const label = (a: StudentActivityItem) =>
+                    a.academic_year?.name || a.academic_year_name || a.name || a.semester_name || '';
+                // Oldest academic year first so charts and table read chronologically
+                const sorted = [...(actRes?.data || [])].sort(
+                    (a, b) =>
+                        label(a).localeCompare(label(b), undefined, { numeric: true }) ||
+                        (a.created_at || '').localeCompare(b.created_at || ''),
+                );
+                // SKS kumulatif = running total of per-semester SKS in chronological order
+                let runningSks = 0;
+                setActivities(
+                    sorted.map((a) => {
+                        runningSks += Number(a.total_credit || 0);
+                        return { ...a, grand_total_credit: runningSks };
+                    }),
+                );
             } else {
                 setActivities([]);
             }
@@ -274,11 +289,13 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                         Grafik perkembangan indeks prestasi (IPS & IPK) dan beban kredit SKS mahasiswa berbasis Apache ECharts.
                                     </p>
                                 </div>
+                                {/*
                                 <div class="flex items-center gap-2">
                                     <span class="px-2.5 py-1 rounded-xs bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-mono text-[11px] font-semibold border border-teal-200 dark:border-teal-800">
                                         Apache ECharts v6
                                     </span>
                                 </div>
+                                */}
                             </div>
 
                             <Show when={academicTrendData().length > 0} fallback={
@@ -365,7 +382,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                     </span>
                                 </div>
 
-                                <div class="overflow-x-auto">
+                                <div class="hidden md:block overflow-x-auto">
                                     <table class="w-full text-xs text-left border-collapse">
                                         <thead class="bg-neutral-50 dark:bg-neutral-900/60 text-neutral-500 dark:text-neutral-400 uppercase font-mono text-[10px] tracking-wider border-b border-neutral-200 dark:border-neutral-700">
                                             <tr>
@@ -376,6 +393,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                                 <th class="px-5 py-3 text-center">IPS</th>
                                                 <th class="px-5 py-3 text-center">IPK</th>
                                                 <th class="px-5 py-3 text-center">Status</th>
+                                                <th class="px-5 py-3 text-center">Aksi</th>
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-neutral-100 dark:divide-neutral-700/60">
@@ -403,11 +421,64 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                                                 {act.status_name || 'Selesai'}
                                                             </span>
                                                         </td>
+                                                        <td class="px-5 py-3 text-center">
+                                                            <A
+                                                                href={`/course-department/academic/student/campaign/activity/${act.id}`}
+                                                                class="inline-flex items-center px-2.5 py-1 rounded-xs text-[10px] font-bold bg-sky-100 text-sky-800 hover:bg-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:hover:bg-sky-900 transition-colors"
+                                                            >
+                                                                Detail
+                                                            </A>
+                                                        </td>
                                                     </tr>
                                                 )}
                                             </For>
                                         </tbody>
                                     </table>
+                                </div>
+
+                                {/* Mobile card view */}
+                                <div class="md:hidden divide-y divide-neutral-100 dark:divide-neutral-700/60">
+                                    <For each={activities()}>
+                                        {(act, idx) => (
+                                            <div class="p-4 space-y-3">
+                                                <div class="flex items-start justify-between gap-3">
+                                                    <div>
+                                                        <p class="text-[10px] font-mono text-neutral-400">#{idx() + 1}</p>
+                                                        <p class="text-sm font-medium text-neutral-900 dark:text-white">
+                                                            {act.academic_year?.name || act.academic_year_name || act.name || act.semester_name || `Semester ${idx() + 1}`}
+                                                        </p>
+                                                    </div>
+                                                    <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                                                        {act.status_name || 'Selesai'}
+                                                    </span>
+                                                </div>
+                                                <div class="grid grid-cols-4 gap-2 text-center text-xs">
+                                                    <div>
+                                                        <p class="text-[10px] uppercase text-neutral-500 dark:text-neutral-400">SKS</p>
+                                                        <p class="font-mono font-bold text-neutral-700 dark:text-neutral-300">{act.total_credit || 0}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-[10px] uppercase text-neutral-500 dark:text-neutral-400">SKS Kum.</p>
+                                                        <p class="font-mono font-bold text-teal-600 dark:text-teal-400">{act.grand_total_credit || act.total_credit || 0}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-[10px] uppercase text-neutral-500 dark:text-neutral-400">IPS</p>
+                                                        <p class="font-mono font-bold text-sky-600 dark:text-sky-400">{Number(act.cumulative_index || 0).toFixed(2)}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-[10px] uppercase text-neutral-500 dark:text-neutral-400">IPK</p>
+                                                        <p class="font-mono font-bold text-indigo-600 dark:text-indigo-400">{Number(act.grand_cumulative_index || act.cumulative_index || 0).toFixed(2)}</p>
+                                                    </div>
+                                                </div>
+                                                <A
+                                                    href={`/course-department/academic/student/campaign/activity/${act.id}`}
+                                                    class="block w-full text-center px-3 py-2 rounded-xs text-xs font-bold bg-sky-100 text-sky-800 hover:bg-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:hover:bg-sky-900 transition-colors"
+                                                >
+                                                    Lihat Detail
+                                                </A>
+                                            </div>
+                                        )}
+                                    </For>
                                 </div>
                             </div>
                         </Show>

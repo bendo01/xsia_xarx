@@ -917,6 +917,15 @@ ENGINE="sudo docker" deploy/build-release.sh --client-env ~/xsia-client.env main
 ```
 
 - `ENGINE` defaults to `docker` (or `podman`); use `ENGINE="sudo docker"` if your user isn't in the `docker` group.
+  Symptom of the missing prefix: `permission denied while trying to connect to the docker API at unix:///var/run/docker.sock`. Either use the prefix, or run `sudo usermod -aG docker $USER` and log in again.
+- Building from the repo with a local client `.env` (when it already holds the production values):
+
+  ```bash
+  cd /path/to/xsia_xarx
+  ENGINE="sudo docker" deploy/build-release.sh --client-env client/.env
+  ```
+
+  The build is long (full release compile of server, migration and client). It must be run in your own terminal if `sudo` asks for a password.
 - The last argument is the branch, tag or commit to build (default `HEAD`). Uncommitted changes are not included.
 - `BUILD=<dir>` changes the build directory (default `~/xsia-build`); `CARGO_BUILD_JOBS=4` limits memory use.
 - The script ends by checking the binary's libraries against Rocky 10, then prints the `scp` command. Install on the server as in step D.
