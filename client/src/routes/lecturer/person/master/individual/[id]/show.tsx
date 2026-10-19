@@ -27,6 +27,7 @@ const TeachCreditChart = lazy(() => import('~/components/chart/teach_credit_char
 import EChart from '~/components/chart/echart_component';
 import PopupBlockedAlert from '~/components/alert/PopupBlockedAlert';
 import { Loader } from '~/components/loader';
+import { t } from '../../../../../../i18n';
 
 export default function LecturerIndividualShowPage() {
     const params = useParams();
@@ -180,7 +181,7 @@ export default function LecturerIndividualShowPage() {
 
         for (const item of assignedTeaches()) {
             const yId = item.academic_year_id || 'unknown';
-            const yName = item.academic_year_name || (item.academic_year_code ? `Tahun ${item.academic_year_code}` : 'Tahun Akademik');
+            const yName = item.academic_year_name || (item.academic_year_code ? `Tahun ${item.academic_year_code}` : t('lc.tahunAkademik'));
             const yCode = item.academic_year_code;
             const cr = Number(item.credit || item.course_total_credit) || 0;
 
@@ -297,7 +298,7 @@ export default function LecturerIndividualShowPage() {
                                         class="size-20 sm:size-24 rounded-xs object-cover shadow-lg border-2 border-blue-200 dark:border-blue-800/80"
                                     />
                                 </Show>
-                                <span class="absolute -bottom-1 -right-1 size-5 bg-emerald-500 border-2 border-white dark:border-neutral-800 rounded-xs" title="Active Lecturer"></span>
+                                <span class="absolute -bottom-1 -right-1 size-5 bg-emerald-500 border-2 border-white dark:border-neutral-800 rounded-xs" title={t('lc.activeLecturer')}></span>
                             </div>
 
                             <div class="text-center sm:text-start space-y-1">
@@ -326,7 +327,7 @@ export default function LecturerIndividualShowPage() {
                                     <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
                                     <path d="M6 6h10M6 10h10M6 14h6" />
                                 </svg>
-                                <span>Teaching Classes</span>
+                                <span>{t('lc.teachingClasses')}</span>
                             </A>
                         </div>
                     </div>
@@ -343,7 +344,7 @@ export default function LecturerIndividualShowPage() {
                             }`}
                     >
                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z" /></svg>
-                        <span>Profile Overview</span>
+                        <span>{t('lc.profileOverview')}</span>
                     </button>
                     <button
                         type="button"
@@ -354,7 +355,7 @@ export default function LecturerIndividualShowPage() {
                             }`}
                     >
                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5" /><path d="M20 21a8 8 0 0 0-16 0" /></svg>
-                        <span>Personal Biodata</span>
+                        <span>{t('lc.personalBiodata')}</span>
                     </button>
                     <button
                         type="button"
@@ -365,14 +366,14 @@ export default function LecturerIndividualShowPage() {
                             }`}
                     >
                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" /></svg>
-                        <span>Academic & Faculty Details</span>
+                        <span>{t('lc.academicFacultyDetails')}</span>
                     </button>
                 </div>
 
                 {/* Tab Content */}
                 <Show when={!isLoading()} fallback={
                     <Loader
-                        message="Loading lecturer profile..."
+                        message={t('lc.loadingLecturerProfile')}
                         color="indigo"
                         size="lg"
                         class="py-20"
@@ -386,7 +387,7 @@ export default function LecturerIndividualShowPage() {
                                 <div class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-3 shadow-2xs">
                                     <div class="flex items-center justify-between">
                                         <h3 class="text-xs font-bold font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                                            Faculty Appointment
+                                            {t('lc.facultyAppointment')}
                                         </h3>
                                         <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-mono">
                                             {currentStatusName()}
@@ -394,32 +395,32 @@ export default function LecturerIndividualShowPage() {
                                     </div>
                                     <div class="grid grid-cols-2 gap-3 text-xs">
                                         <div>
-                                            <span class="text-neutral-400 block">NIDN</span>
+                                            <span class="text-neutral-400 block">{t('lc.nidn')}</span>
                                             <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{lecturerNidn() || '-'}</span>
                                         </div>
                                         <div>
-                                            <span class="text-neutral-400 block">NUPTK</span>
+                                            <span class="text-neutral-400 block">{t('lc.nuptk')}</span>
                                             <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{lecturerNuptk() || '-'}</span>
                                         </div>
                                         <div>
-                                            <span class="text-neutral-400 block">Study Program (Homebase)</span>
+                                            <span class="text-neutral-400 block">{t('lc.studyProgramHomebase')}</span>
                                             <span class="font-bold text-neutral-800 dark:text-neutral-100">{currentUnitName()}</span>
                                         </div>
                                         <div>
-                                            <span class="text-neutral-400 block">Academic Rank</span>
+                                            <span class="text-neutral-400 block">{t('lc.academicRank')}</span>
                                             <span class="font-bold text-neutral-800 dark:text-neutral-100">{currentRankName()}</span>
                                         </div>
                                         <div>
-                                            <span class="text-neutral-400 block">Golongan / Pangkat</span>
+                                            <span class="text-neutral-400 block">{t('lc.golonganPangkat')}</span>
                                             <span class="font-bold text-neutral-800 dark:text-neutral-100">{currentGroupName() || '-'}</span>
                                         </div>
                                         <div>
-                                            <span class="text-neutral-400 block">Academic Status</span>
+                                            <span class="text-neutral-400 block">{t('lc.academicStatus')}</span>
                                             <span class="font-bold text-emerald-600 dark:text-emerald-400">{currentStatusName()}</span>
                                         </div>
                                         <Show when={currentContractName()}>
                                             <div class="col-span-2">
-                                                <span class="text-neutral-400 block">Contract Agreement</span>
+                                                <span class="text-neutral-400 block">{t('lc.contractAgreement')}</span>
                                                 <span class="font-bold text-neutral-800 dark:text-neutral-100">{currentContractName()}</span>
                                             </div>
                                         </Show>
@@ -429,27 +430,27 @@ export default function LecturerIndividualShowPage() {
                                 {/* Identity Summary Card */}
                                 <div class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-3 shadow-2xs">
                                     <h3 class="text-xs font-bold font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                                        Identity & Contact
+                                        {t('lc.identityContact')}
                                     </h3>
                                     <div class="grid grid-cols-2 gap-3 text-xs">
                                         <div>
-                                            <span class="text-neutral-400 block">National ID (NIK)</span>
+                                            <span class="text-neutral-400 block">{t('lc.nationalIDNIK')}</span>
                                             <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{ind()?.code || '-'}</span>
                                         </div>
                                         <div>
-                                            <span class="text-neutral-400 block">Gender</span>
+                                            <span class="text-neutral-400 block">{t('lc.gender')}</span>
                                             <span class="font-bold text-neutral-800 dark:text-neutral-100">
                                                 {individualData()?.gender?.name || '-'}
                                             </span>
                                         </div>
                                         <div>
-                                            <span class="text-neutral-400 block">Birth Place & Date</span>
+                                            <span class="text-neutral-400 block">{t('lc.birthPlaceDate')}</span>
                                             <span class="font-bold text-neutral-800 dark:text-neutral-100">
                                                 {ind()?.birth_place ? `${ind()?.birth_place}, ${ind()?.birth_date || '-'}` : (ind()?.birth_date || '-')}
                                             </span>
                                         </div>
                                         <div>
-                                            <span class="text-neutral-400 block">Email Address</span>
+                                            <span class="text-neutral-400 block">{t('lc.emailAddress')}</span>
                                             <span class="font-bold text-neutral-800 dark:text-neutral-100 truncate block">
                                                 {user()?.email || individualData()?.user?.email || 'mim@tritunas.ac.id'}
                                             </span>
@@ -469,11 +470,11 @@ export default function LecturerIndividualShowPage() {
                                                 </svg>
                                             </div>
                                             <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                                Teaching Credits Progression
+                                                {t('lc.teachingCreditsProgression')}
                                             </h3>
                                         </div>
                                         <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                            Tren akumulasi beban SKS perkuliahan yang diampu di setiap Tahun Akademik berbasis Apache ECharts.
+                                            {t('lc.trenAkumulasiBebanSKSPerkuliahanYang')}
                                         </p>
                                     </div>
                                     <Show when={yearlyCreditTrends().length > 0}>
@@ -492,13 +493,13 @@ export default function LecturerIndividualShowPage() {
                                             <svg class="size-8 text-neutral-300 dark:text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                                 <path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" />
                                             </svg>
-                                            <span>Belum ada data penugasan perkuliahan dengan Tahun Akademik untuk ditampilkan di grafik.</span>
+                                            <span>{t('lc.belumAdaDataPenugasanPerkuliahanDengan')}</span>
                                         </div>
                                     }
                                 >
                                     <Suspense fallback={
                                         <Loader
-                                            message="Loading chart..."
+                                            message={t('lc.loadingChart')}
                                             color="indigo"
                                             size="md"
                                             class="py-12"
@@ -520,17 +521,17 @@ export default function LecturerIndividualShowPage() {
                             <div class="p-6 rounded-xs bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40 border border-blue-200/80 dark:border-blue-800/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                                 <div class="space-y-1">
                                     <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                        Teaching & Class Management
+                                        {t('lc.teachingClassManagement')}
                                     </h3>
                                     <p class="text-xs text-neutral-600 dark:text-neutral-400">
-                                        Input semester student scores, download attendee journals, and manage teaching schedules.
+                                        {t('lc.inputSemesterStudentScoresDownloadAttendee')}
                                     </p>
                                 </div>
                                 <A
                                     href="/lecturer/academic/campaign/transaction/teach"
                                     class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xs text-xs inline-flex items-center gap-2 transition-colors shrink-0"
                                 >
-                                    <span>Go to Teaching Portal →</span>
+                                    <span>{t('lc.goToTeachingPortal')}</span>
                                 </A>
                             </div>
                         </div>
@@ -541,48 +542,48 @@ export default function LecturerIndividualShowPage() {
                         <div class="p-6 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-6 shadow-2xs">
                             <div class="border-b border-neutral-200/80 dark:border-neutral-700/80 pb-4">
                                 <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                    Personal Biodata & Civil Records
+                                    {t('lc.personalBiodataCivilRecords')}
                                 </h3>
                                 <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                    Official individual identity stored in the campus registry.
+                                    {t('lc.officialIndividualIdentityStoredInThe')}
                                 </p>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 text-xs">
                                 <div>
-                                    <span class="text-neutral-400 block mb-0.5">Full Name</span>
+                                    <span class="text-neutral-400 block mb-0.5">{t('lc.fullName')}</span>
                                     <span class="font-bold text-neutral-900 dark:text-white">{formattedFullName()}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 block mb-0.5">Front Title</span>
+                                    <span class="text-neutral-400 block mb-0.5">{t('lc.frontTitle')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-200">{ind()?.front_title || '-'}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 block mb-0.5">Last Title</span>
+                                    <span class="text-neutral-400 block mb-0.5">{t('lc.lastTitle')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-200">{ind()?.last_title || '-'}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 block mb-0.5">National ID (NIK)</span>
+                                    <span class="text-neutral-400 block mb-0.5">{t('lc.nationalIDNIK')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-200 font-mono">{ind()?.code || '-'}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 block mb-0.5">Gender</span>
+                                    <span class="text-neutral-400 block mb-0.5">{t('lc.gender')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-200">{individualData()?.gender?.name || '-'}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 block mb-0.5">Religion</span>
+                                    <span class="text-neutral-400 block mb-0.5">{t('lc.religion')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-200">{individualData()?.religion?.name || '-'}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 block mb-0.5">Birth Place</span>
+                                    <span class="text-neutral-400 block mb-0.5">{t('lc.birthPlace')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-200">{ind()?.birth_place || '-'}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 block mb-0.5">Birth Date</span>
+                                    <span class="text-neutral-400 block mb-0.5">{t('lc.birthDate')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-200 font-mono">{ind()?.birth_date || '-'}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 block mb-0.5">Marital Status</span>
+                                    <span class="text-neutral-400 block mb-0.5">{t('lc.maritalStatus')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-200">{individualData()?.marital_status?.name || '-'}</span>
                                 </div>
                             </div>
@@ -597,10 +598,10 @@ export default function LecturerIndividualShowPage() {
                                 <div class="border-b border-neutral-200/80 dark:border-neutral-700/80 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                     <div>
                                         <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                            Academic Employment & Faculty Registration
+                                            {t('lc.academicEmploymentFacultyRegistration')}
                                         </h3>
                                         <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                            Higher education teaching credentials, homebase assignment, and functional ranks.
+                                            {t('lc.higherEducationTeachingCredentialsHomebaseAssignment')}
                                         </p>
                                     </div>
                                     <span class="px-2.5 py-1 rounded-xs text-xs font-mono font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 self-start sm:self-auto">
@@ -610,39 +611,39 @@ export default function LecturerIndividualShowPage() {
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 text-xs">
                                     <div>
-                                        <span class="text-neutral-400 block mb-0.5">NIDN (Nomor Induk Dosen Nasional)</span>
+                                        <span class="text-neutral-400 block mb-0.5">{t('lc.nidnNomorIndukDosenNasional')}</span>
                                         <span class="font-bold text-neutral-900 dark:text-white font-mono">{lecturerNidn() || '-'}</span>
                                     </div>
                                     <div>
-                                        <span class="text-neutral-400 block mb-0.5">NUPTK / NUPN</span>
+                                        <span class="text-neutral-400 block mb-0.5">{t('lc.nuptkNUPN')}</span>
                                         <span class="font-bold text-neutral-900 dark:text-white font-mono">{lecturerNuptk() || '-'}</span>
                                     </div>
                                     <div>
-                                        <span class="text-neutral-400 block mb-0.5">Academic Rank (Jabatan Fungsional)</span>
+                                        <span class="text-neutral-400 block mb-0.5">{t('lc.academicRankJabatanFungsional')}</span>
                                         <span class="font-bold text-neutral-800 dark:text-neutral-200">{currentRankName()}</span>
                                     </div>
                                     <div>
-                                        <span class="text-neutral-400 block mb-0.5">Academic Group (Golongan / Pangkat)</span>
+                                        <span class="text-neutral-400 block mb-0.5">{t('lc.academicGroupGolonganPangkat')}</span>
                                         <span class="font-bold text-neutral-800 dark:text-neutral-200">{currentGroupName() || '-'}</span>
                                     </div>
                                     <div>
-                                        <span class="text-neutral-400 block mb-0.5">Homebase Study Program</span>
+                                        <span class="text-neutral-400 block mb-0.5">{t('lc.homebaseStudyProgram')}</span>
                                         <span class="font-bold text-neutral-800 dark:text-neutral-200">{currentUnitName()}</span>
                                     </div>
                                     <div>
-                                        <span class="text-neutral-400 block mb-0.5">Employment Status</span>
+                                        <span class="text-neutral-400 block mb-0.5">{t('lc.employmentStatus')}</span>
                                         <span class="font-bold text-emerald-600 dark:text-emerald-400">{currentStatusName()}</span>
                                     </div>
                                     <div>
-                                        <span class="text-neutral-400 block mb-0.5">Contract Agreement</span>
+                                        <span class="text-neutral-400 block mb-0.5">{t('lc.contractAgreement')}</span>
                                         <span class="font-bold text-neutral-800 dark:text-neutral-200">{currentContractName() || '-'}</span>
                                     </div>
                                     <div>
-                                        <span class="text-neutral-400 block mb-0.5">Highest Education Degree</span>
+                                        <span class="text-neutral-400 block mb-0.5">{t('lc.highestEducationDegree')}</span>
                                         <span class="font-bold text-neutral-800 dark:text-neutral-200">{individualData()?.education?.name || 'Magister (S2)'}</span>
                                     </div>
                                     <div>
-                                        <span class="text-neutral-400 block mb-0.5">Registered Email</span>
+                                        <span class="text-neutral-400 block mb-0.5">{t('lc.registeredEmail')}</span>
                                         <span class="font-bold text-neutral-800 dark:text-neutral-200 font-mono">{user()?.email || individualData()?.user?.email || '-'}</span>
                                     </div>
                                 </div>
@@ -655,10 +656,10 @@ export default function LecturerIndividualShowPage() {
                                     <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
                                         <div class="flex items-center gap-2">
                                             <div class="size-8 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
-                                                HB
+                                                {t('lc.hb')}
                                             </div>
                                             <div>
-                                                <h4 class="text-xs font-bold text-neutral-900 dark:text-white">Homebase Assignment History</h4>
+                                                <h4 class="text-xs font-bold text-neutral-900 dark:text-white">{t('lc.homebaseAssignmentHistory')}</h4>
                                                 <p class="text-[10px] text-neutral-500 font-mono">academic_lecturer_transaction.homebases</p>
                                             </div>
                                         </div>
@@ -669,7 +670,7 @@ export default function LecturerIndividualShowPage() {
 
                                     <Show when={allHomebases().length > 0} fallback={
                                         <div class="py-6 text-center text-xs text-neutral-400 font-mono">
-                                            Current active homebase: <span class="font-bold text-neutral-700 dark:text-neutral-300">{currentUnitName()}</span>
+                                            {t('lc.currentActiveHomebase')} <span class="font-bold text-neutral-700 dark:text-neutral-300">{currentUnitName()}</span>
                                         </div>
                                     }>
                                         <div class="space-y-3">
@@ -680,7 +681,7 @@ export default function LecturerIndividualShowPage() {
                                                             <div class="flex items-center gap-2">
                                                                 <span class="font-bold text-neutral-900 dark:text-white">{hb.unit_name || 'Program Studi'}</span>
                                                                 <Show when={idx() === 0}>
-                                                                    <span class="px-1.5 py-0.2 rounded-xs text-[9px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">Active</span>
+                                                                    <span class="px-1.5 py-0.2 rounded-xs text-[9px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">{t('lc.active')}</span>
                                                                 </Show>
                                                             </div>
                                                             <div class="flex items-center gap-2 text-[11px] text-neutral-500">
@@ -706,10 +707,10 @@ export default function LecturerIndividualShowPage() {
                                     <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
                                         <div class="flex items-center gap-2">
                                             <div class="size-8 rounded-xs bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-xs">
-                                                RK
+                                                {t('lc.rk')}
                                             </div>
                                             <div>
-                                                <h4 class="text-xs font-bold text-neutral-900 dark:text-white">Academic Rank & Group History</h4>
+                                                <h4 class="text-xs font-bold text-neutral-900 dark:text-white">{t('lc.academicRankGroupHistory')}</h4>
                                                 <p class="text-[10px] text-neutral-500 font-mono">academic_ranks & academic_groups</p>
                                             </div>
                                         </div>
@@ -720,7 +721,7 @@ export default function LecturerIndividualShowPage() {
 
                                     <Show when={allAcademicRanks().length > 0 || allAcademicGroups().length > 0} fallback={
                                         <div class="py-6 text-center text-xs text-neutral-400 font-mono">
-                                            Current rank: <span class="font-bold text-neutral-700 dark:text-neutral-300">{currentRankName()}</span> {currentGroupName() ? `• ${currentGroupName()}` : ''}
+                                            {t('lc.currentRank')} <span class="font-bold text-neutral-700 dark:text-neutral-300">{currentRankName()}</span> {currentGroupName() ? `• ${currentGroupName()}` : ''}
                                         </div>
                                     }>
                                         <div class="space-y-3">
@@ -731,13 +732,13 @@ export default function LecturerIndividualShowPage() {
                                                             <div class="flex items-center gap-2">
                                                                 <span class="font-bold text-neutral-900 dark:text-white">{rk.rank_name || 'Jabatan Fungsional'}</span>
                                                                 <Show when={idx() === 0}>
-                                                                    <span class="px-1.5 py-0.2 rounded-xs text-[9px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">Latest</span>
+                                                                    <span class="px-1.5 py-0.2 rounded-xs text-[9px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">{t('lc.latest')}</span>
                                                                 </Show>
                                                             </div>
-                                                            <span class="text-[10px] text-neutral-500 font-mono">SK: {rk.decree_number || '-'} {rk.decree_date ? `(${rk.decree_date})` : ''}</span>
+                                                            <span class="text-[10px] text-neutral-500 font-mono">{t('lc.sk')} {rk.decree_number || '-'} {rk.decree_date ? `(${rk.decree_date})` : ''}</span>
                                                         </div>
                                                         <div class="text-[10px] font-mono text-neutral-400">
-                                                            TMT: {rk.start_date || '-'}
+                                                            {t('lc.tmt')} {rk.start_date || '-'}
                                                         </div>
                                                     </div>
                                                 )}
@@ -747,15 +748,15 @@ export default function LecturerIndividualShowPage() {
                                                     <div class="p-3 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60 flex items-center justify-between text-xs">
                                                         <div class="space-y-0.5">
                                                             <div class="flex items-center gap-2">
-                                                                <span class="font-bold text-neutral-900 dark:text-white">Golongan: {gp.group_name || 'Golongan'}</span>
+                                                                <span class="font-bold text-neutral-900 dark:text-white">{t('lc.golongan')} {gp.group_name || 'Golongan'}</span>
                                                                 <Show when={idx() === 0}>
-                                                                    <span class="px-1.5 py-0.2 rounded-xs text-[9px] font-bold bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">Latest</span>
+                                                                    <span class="px-1.5 py-0.2 rounded-xs text-[9px] font-bold bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">{t('lc.latest')}</span>
                                                                 </Show>
                                                             </div>
-                                                            <span class="text-[10px] text-neutral-500 font-mono">SK: {gp.decree_number || '-'} {gp.decree_date ? `(${gp.decree_date})` : ''}</span>
+                                                            <span class="text-[10px] text-neutral-500 font-mono">{t('lc.sk')} {gp.decree_number || '-'} {gp.decree_date ? `(${gp.decree_date})` : ''}</span>
                                                         </div>
                                                         <div class="text-[10px] font-mono text-neutral-400">
-                                                            TMT: {gp.start_date || '-'}
+                                                            {t('lc.tmt')} {gp.start_date || '-'}
                                                         </div>
                                                     </div>
                                                 )}

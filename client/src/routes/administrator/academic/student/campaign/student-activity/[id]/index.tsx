@@ -32,6 +32,7 @@ import {
     getStudentById,
     StudentMasterItem
 } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
+import { t } from '../../../../../../../i18n';
 
 export default function AcademicStudentCampaignStudentActivityDetailPage() {
     const params = useParams();
@@ -95,7 +96,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
         try {
             const data = await getStudentActivityById(id);
             if (!data) {
-                toast.danger('Data aktivitas kuliah tidak ditemukan');
+                toast.danger(t('ad.dataAktivitasKuliahTidakDitemukan'));
                 navigate('/administrator/academic/student/campaign/student-activity');
                 return;
             }
@@ -116,7 +117,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
             }
         } catch (err) {
             console.error('Error fetching student activity detail:', err);
-            toast.danger('Gagal memuat detail aktivitas kuliah');
+            toast.danger(t('ad.gagalMemuatDetailAktivitasKuliah'));
         } finally {
             setIsLoading(false);
         }
@@ -153,12 +154,12 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
             const res = await toggleStudentActivityLock(act.id, currentLock);
             if (!res.is_error) {
                 setActivity(prev => (prev ? { ...prev, is_lock: !currentLock } : null));
-                toast.success(`Aktivitas berhasil di-${!currentLock ? 'kunci' : 'buka kuncinya'}`);
+                toast.success(!currentLock ? t('ad.activityLockedSuccessfully') : t('ad.activityUnlockedSuccessfully'));
             } else {
-                toast.danger(res.message || 'Gagal mengubah status kunci');
+                toast.danger(res.message || t('ad.gagalMengubahStatusKunci'));
             }
         } catch {
-            toast.danger('Gagal memproses penguncian aktivitas');
+            toast.danger(t('ad.gagalMemprosesPenguncianAktivitas'));
         } finally {
             setIsLocking(false);
         }
@@ -174,12 +175,12 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
             const filename = `KRS_${studentCode}_${act.academic_year_name || 'Semester'}.pdf`;
             const ok = await downloadActivityPlanPdf(act.id, filename);
             if (ok) {
-                toast.success('KRS PDF berhasil diunduh');
+                toast.success(t('ad.krsPDFBerhasilDiunduh'));
             } else {
-                toast.danger('Gagal menghasilkan file KRS PDF');
+                toast.danger(t('ad.gagalMenghasilkanFileKRSPDF'));
             }
         } catch {
-            toast.danger('Terjadi kesalahan saat mengunduh KRS');
+            toast.danger(t('ad.terjadiKesalahanSaatMengunduhKRS'));
         } finally {
             setIsPrintingKrs(false);
         }
@@ -195,12 +196,12 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
             const filename = `KHS_${studentCode}_${act.academic_year_name || 'Semester'}.pdf`;
             const ok = await downloadActivityResultPdf(act.id, filename);
             if (ok) {
-                toast.success('KHS PDF berhasil diunduh');
+                toast.success(t('ad.khsPDFBerhasilDiunduh'));
             } else {
-                toast.danger('Gagal menghasilkan file KHS PDF');
+                toast.danger(t('ad.gagalMenghasilkanFileKHSPDF'));
             }
         } catch {
-            toast.danger('Terjadi kesalahan saat mengunduh KHS');
+            toast.danger(t('ad.terjadiKesalahanSaatMengunduhKHS'));
         } finally {
             setIsPrintingKhs(false);
         }
@@ -241,14 +242,14 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
             });
 
             if (!res.is_error) {
-                toast.success('Data aktivitas berhasil diperbarui');
+                toast.success(t('ad.dataAktivitasBerhasilDiperbarui'));
                 setShowEditActivityModal(false);
                 loadActivityData();
             } else {
-                toast.danger(res.message || 'Gagal memperbarui aktivitas');
+                toast.danger(res.message || t('ad.gagalMemperbaruiAktivitas'));
             }
         } catch {
-            toast.danger('Terjadi kesalahan saat menyimpan perubahan');
+            toast.danger(t('ad.terjadiKesalahanSaatMenyimpanPerubahan'));
         } finally {
             setIsSubmitting(false);
         }
@@ -262,14 +263,14 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
         try {
             const res = await deleteStudentActivity(act.id);
             if (!res.is_error) {
-                toast.success('Aktivitas mahasiswa berhasil dihapus');
+                toast.success(t('ad.aktivitasMahasiswaBerhasilDihapus'));
                 setShowDeleteModal(false);
                 navigate('/administrator/academic/student/campaign/student-activity');
             } else {
-                toast.danger(res.message || 'Gagal menghapus aktivitas');
+                toast.danger(res.message || t('ad.gagalMenghapusAktivitas'));
             }
         } catch {
-            toast.danger('Terjadi kesalahan saat menghapus aktivitas');
+            toast.danger(t('ad.terjadiKesalahanSaatMenghapusAktivitas'));
         } finally {
             setIsSubmitting(false);
         }
@@ -310,7 +311,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
         const act = activity();
         if (!act) return;
         if (!selectedCourseId()) {
-            toast.warning('Pilih mata kuliah terlebih dahulu');
+            toast.warning(t('ad.pilihMataKuliahTerlebihDahulu'));
             return;
         }
 
@@ -325,14 +326,14 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
             });
 
             if (!res.is_error) {
-                toast.success('Mata kuliah berhasil didaftarkan ke KRS');
+                toast.success(t('ad.mataKuliahBerhasilDidaftarkanKeKRS'));
                 setShowAddCourseModal(false);
                 loadActivityData();
             } else {
-                toast.danger(res.message || 'Gagal mendaftarkan mata kuliah');
+                toast.danger(res.message || t('ad.gagalMendaftarkanMataKuliah'));
             }
         } catch {
-            toast.danger('Terjadi kesalahan saat menambahkan mata kuliah ke KRS');
+            toast.danger(t('ad.terjadiKesalahanSaatMenambahkanMataKuliah'));
         } finally {
             setIsSubmitting(false);
         }
@@ -362,14 +363,14 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
             });
 
             if (!res.is_error) {
-                toast.success('Nilai perkuliahan berhasil diperbarui');
+                toast.success(t('ad.nilaiPerkuliahanBerhasilDiperbarui'));
                 setShowEditGradeModal(false);
                 loadActivityData();
             } else {
-                toast.danger(res.message || 'Gagal memperbarui nilai');
+                toast.danger(res.message || t('ad.gagalMemperbaruiNilai'));
             }
         } catch {
-            toast.danger('Terjadi kesalahan saat menyimpan nilai');
+            toast.danger(t('ad.terjadiKesalahanSaatMenyimpanNilai'));
         } finally {
             setIsSubmitting(false);
         }
@@ -390,14 +391,14 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
         try {
             const res = await deleteDetailActivity(detail.id);
             if (!res.is_error) {
-                toast.success('Mata kuliah berhasil dibatalkan dari KRS');
+                toast.success(t('ad.mataKuliahBerhasilDibatalkanDariKRS'));
                 setShowDropCourseModal(false);
                 loadActivityData();
             } else {
-                toast.danger(res.message || 'Gagal membatalkan mata kuliah');
+                toast.danger(res.message || t('ad.gagalMembatalkanMataKuliah'));
             }
         } catch {
-            toast.danger('Terjadi kesalahan saat membatalkan mata kuliah');
+            toast.danger(t('ad.terjadiKesalahanSaatMembatalkanMataKuliah'));
         } finally {
             setIsSubmitting(false);
         }
@@ -432,13 +433,13 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-5">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1.5">
-                            <A href="/administrator/dashboard" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Administrator</A>
+                            <A href="/administrator/dashboard" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{t('ad.administrator')}</A>
                             <span>/</span>
-                            <span>Akademik</span>
+                            <span>{t('ad.akademik')}</span>
                             <span>/</span>
-                            <span>Mahasiswa</span>
+                            <span>{t('ad.mahasiswa')}</span>
                             <span>/</span>
-                            <A href="/administrator/academic/student/campaign/student-activity" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Aktivitas Kuliah</A>
+                            <A href="/administrator/academic/student/campaign/student-activity" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{t('ad.aktivitasKuliah')}</A>
                             <span>/</span>
                             <span class="font-medium text-neutral-900 dark:text-white truncate max-w-[200px]">
                                 {activity()?.student_name || 'Detail Aktivitas'}
@@ -448,7 +449,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                             <A
                                 href="/administrator/academic/student/campaign/student-activity"
                                 class="p-1 rounded-md text-neutral-500 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
-                                title="Kembali ke Daftar"
+                                title={t('ad.kembaliKeDaftar')}
                             >
                                 <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -456,10 +457,10 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                             </A>
                             <div>
                                 <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
-                                    Detail Aktivitas Kuliah Mahasiswa
+                                    {t('ad.detailAktivitasKuliahMahasiswa')}
                                 </h1>
                                 <p class="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
-                                    Informasi lengkap riwayat studi semester, kartu rencana studi (KRS), hasil studi (KHS), dan status evaluasi.
+                                    {t('ad.informasiLengkapRiwayatStudiSemesterKartu')}
                                 </p>
                             </div>
                         </div>
@@ -498,7 +499,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                     </svg>
                                 </Show>
                             </Show>
-                            <span>{activity()?.is_lock ? 'Aktivitas Terkunci' : 'Kunci Aktivitas'}</span>
+                            <span>{activity()?.is_lock ? t('ad.aktivitasTerkunci') : t('ad.kunciAktivitas')}</span>
                         </button>
 
                         {/* Print KRS Button */}
@@ -521,7 +522,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                                 </svg>
                             </Show>
-                            <span>Cetak KRS</span>
+                            <span>{t('ad.cetakKRS')}</span>
                         </button>
 
                         {/* Print KHS Button */}
@@ -544,7 +545,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                             </Show>
-                            <span>Cetak KHS</span>
+                            <span>{t('ad.cetakKHS')}</span>
                         </button>
 
                         {/* Edit Button */}
@@ -556,7 +557,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                             <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
-                            <span>Edit Data</span>
+                            <span>{t('ad.editData')}</span>
                         </button>
 
                         {/* Delete Button */}
@@ -568,7 +569,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                             <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
-                            <span>Hapus</span>
+                            <span>{t('ad.hapus')}</span>
                         </button>
                     </div>
                 </div>
@@ -599,26 +600,26 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                             <svg class="size-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                             </svg>
-                                            <span>Terkunci</span>
+                                            <span>{t('ad.terkunci')}</span>
                                         </span>
                                     </Show>
                                 </div>
 
                                 <div class="flex items-center gap-3 mt-1.5 text-xs text-neutral-600 dark:text-neutral-400 flex-wrap">
                                     <div class="flex items-center gap-1 font-mono">
-                                        <span class="text-neutral-500">NIM:</span>
+                                        <span class="text-neutral-500">{t('ad.nim')}</span>
                                         <span class="font-bold text-neutral-900 dark:text-white">{activity()?.student_code || activity()?.student?.code || '-'}</span>
                                     </div>
                                     <span>•</span>
                                     <div>
-                                        <span class="text-neutral-500">Program Studi:</span>{' '}
+                                        <span class="text-neutral-500">{t('ad.programStudi2')}</span>{' '}
                                         <span class="font-semibold text-neutral-800 dark:text-neutral-200">
                                             {activity()?.unit_name || activity()?.unit?.name || student()?.unit_name || '-'}
                                         </span>
                                     </div>
                                     <span>•</span>
                                     <div>
-                                        <span class="text-neutral-500">Periode:</span>{' '}
+                                        <span class="text-neutral-500">{t('ad.periode')}</span>{' '}
                                         <span class="font-semibold text-neutral-800 dark:text-neutral-200">
                                             {activity()?.academic_year_name || activity()?.unit_activity?.name || '-'}
                                         </span>
@@ -632,7 +633,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                 href={`/administrator/academic/student/master/student/${activity()?.student_id}`}
                                 class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                             >
-                                <span>Profil Mahasiswa</span>
+                                <span>{t('ad.profilMahasiswa')}</span>
                                 <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                 </svg>
@@ -645,45 +646,45 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3.5">
                     {/* IPS */}
                     <div class="bg-white dark:bg-neutral-800 p-4 rounded-lg border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-                        <span class="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider block">IPS Semester</span>
+                        <span class="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider block">{t('ad.ipsSemester')}</span>
                         <div class="text-2xl font-black text-blue-600 dark:text-blue-400 font-mono mt-1">
                             {Number(activity()?.cumulative_index || calculatedIps()).toFixed(2)}
                         </div>
-                        <span class="text-[10px] text-neutral-400 mt-0.5 block">Indeks Prestasi Semester</span>
+                        <span class="text-[10px] text-neutral-400 mt-0.5 block">{t('ad.indeksPrestasiSemester')}</span>
                     </div>
 
                     {/* IPK */}
                     <div class="bg-white dark:bg-neutral-800 p-4 rounded-lg border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-                        <span class="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider block">IPK Kumulatif</span>
+                        <span class="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider block">{t('ad.ipkKumulatif')}</span>
                         <div class="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono mt-1">
                             {Number(activity()?.grand_cumulative_index || 0).toFixed(2)}
                         </div>
-                        <span class="text-[10px] text-neutral-400 mt-0.5 block">Indeks Prestasi Kumulatif</span>
+                        <span class="text-[10px] text-neutral-400 mt-0.5 block">{t('ad.indeksPrestasiKumulatif')}</span>
                     </div>
 
                     {/* SKS Semester */}
                     <div class="bg-white dark:bg-neutral-800 p-4 rounded-lg border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-                        <span class="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider block">SKS Semester</span>
+                        <span class="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider block">{t('ad.sksSemester')}</span>
                         <div class="text-2xl font-bold text-neutral-900 dark:text-white font-mono mt-1">
-                            {activity()?.total_credit ?? totalKrsSks()} <span class="text-xs text-neutral-500 font-sans">SKS</span>
+                            {activity()?.total_credit ?? totalKrsSks()} <span class="text-xs text-neutral-500 font-sans">{t('ad.sks')}</span>
                         </div>
-                        <span class="text-[10px] text-neutral-400 mt-0.5 block">KRS Terdaftar: {totalKrsSks()} SKS</span>
+                        <span class="text-[10px] text-neutral-400 mt-0.5 block">{t('ad.krsTerdaftar')} {totalKrsSks()} SKS</span>
                     </div>
 
                     {/* SKS Kumulatif */}
                     <div class="bg-white dark:bg-neutral-800 p-4 rounded-lg border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-                        <span class="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider block">SKS Kumulatif</span>
+                        <span class="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider block">{t('ad.sksKumulatif')}</span>
                         <div class="text-2xl font-bold text-neutral-900 dark:text-white font-mono mt-1">
-                            {activity()?.grand_total_credit ?? 0} <span class="text-xs text-neutral-500 font-sans">SKS</span>
+                            {activity()?.grand_total_credit ?? 0} <span class="text-xs text-neutral-500 font-sans">{t('ad.sks')}</span>
                         </div>
-                        <span class="text-[10px] text-neutral-400 mt-0.5 block">Total SKS Diakui</span>
+                        <span class="text-[10px] text-neutral-400 mt-0.5 block">{t('ad.totalSKSDiakui')}</span>
                     </div>
 
                     {/* Biaya Kuliah */}
                     <div class="bg-white dark:bg-neutral-800 p-4 rounded-lg border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-                        <span class="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider block">Biaya / SPP</span>
+                        <span class="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider block">{t('ad.biayaSPP')}</span>
                         <div class="text-lg font-bold text-neutral-900 dark:text-white mt-1.5 font-mono truncate">
-                            {activity()?.finance_fee ? `Rp ${(activity()?.finance_fee || 0).toLocaleString('id-ID')}` : 'Rp 0'}
+                            {activity()?.finance_fee ? `Rp ${(activity()?.finance_fee || 0).toLocaleString('id-ID')}` : t('ad.rp0')}
                         </div>
                         <span class="text-[10px] text-emerald-600 dark:text-emerald-400 mt-0.5 block font-medium">
                             {activity()?.finance_name || 'Status Terdaftar'}
@@ -692,11 +693,11 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
 
                     {/* Total Matakuliah */}
                     <div class="bg-white dark:bg-neutral-800 p-4 rounded-lg border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-                        <span class="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider block">Mata Kuliah</span>
+                        <span class="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider block">{t('ad.mataKuliah')}</span>
                         <div class="text-2xl font-bold text-purple-600 dark:text-purple-400 font-mono mt-1">
                             {detailActivities().length}
                         </div>
-                        <span class="text-[10px] text-neutral-400 mt-0.5 block">Kelas perkuliahan diambil</span>
+                        <span class="text-[10px] text-neutral-400 mt-0.5 block">{t('ad.kelasPerkuliahanDiambil')}</span>
                     </div>
                 </div>
 
@@ -713,7 +714,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                         </svg>
-                        <span>Kartu Rencana & Hasil Studi (KRS & KHS)</span>
+                        <span>{t('ad.kartuRencanaHasilStudiKRSKHS')}</span>
                         <span class="px-2 py-0.5 rounded-full text-xs font-mono bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">
                             {detailActivities().length}
                         </span>
@@ -730,7 +731,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <span>Informasi Aktivitas & Mahasiswa</span>
+                        <span>{t('ad.informasiAktivitasMahasiswa')}</span>
                     </button>
 
                     <button
@@ -744,7 +745,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                         </svg>
-                        <span>Sinkronisasi PDDikti (Feeder)</span>
+                        <span>{t('ad.sinkronisasiPDDiktiFeeder')}</span>
                     </button>
                 </div>
 
@@ -754,10 +755,10 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div>
                                 <h3 class="text-base font-bold text-neutral-900 dark:text-white">
-                                    Daftar Mata Kuliah Diambil (KRS)
+                                    {t('ad.daftarMataKuliahDiambilKRS')}
                                 </h3>
                                 <p class="text-xs text-neutral-500 mt-0.5">
-                                    Daftar kelas dan mata kuliah yang terdaftar pada semester ini beserta penilaiannya.
+                                    {t('ad.daftarKelasDanMataKuliahYang')}
                                 </p>
                             </div>
 
@@ -770,7 +771,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                     <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                     </svg>
-                                    <span>Tambah Mata Kuliah (KRS)</span>
+                                    <span>{t('ad.tambahMataKuliahKRS')}</span>
                                 </button>
                             </div>
                         </div>
@@ -779,15 +780,15 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                             <table class="w-full text-left text-xs border-collapse">
                                 <thead>
                                     <tr class="bg-neutral-50 dark:bg-neutral-900/60 border-b border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 font-semibold uppercase tracking-wider text-[11px]">
-                                        <th class="w-10 px-3 py-3 text-center">No</th>
-                                        <th class="px-4 py-3">Kode & Mata Kuliah</th>
-                                        <th class="px-4 py-3">Kelas & Dosen</th>
-                                        <th class="px-4 py-3 text-center">SKS</th>
-                                        <th class="px-4 py-3 text-center">Nilai Angka</th>
-                                        <th class="px-4 py-3 text-center">Nilai Huruf</th>
-                                        <th class="px-4 py-3 text-center">Bobot</th>
-                                        <th class="px-4 py-3 text-center">Mutu (SKS x B)</th>
-                                        <th class="px-4 py-3 text-right">Aksi</th>
+                                        <th class="w-10 px-3 py-3 text-center">{t('ad.no')}</th>
+                                        <th class="px-4 py-3">{t('ad.kodeMataKuliah')}</th>
+                                        <th class="px-4 py-3">{t('ad.kelasDosen')}</th>
+                                        <th class="px-4 py-3 text-center">{t('ad.sks')}</th>
+                                        <th class="px-4 py-3 text-center">{t('ad.nilaiAngka')}</th>
+                                        <th class="px-4 py-3 text-center">{t('ad.nilaiHuruf')}</th>
+                                        <th class="px-4 py-3 text-center">{t('ad.bobot')}</th>
+                                        <th class="px-4 py-3 text-center">{t('ad.mutuSKSXB')}</th>
+                                        <th class="px-4 py-3 text-right">{t('ad.aksi')}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700/60">
@@ -796,7 +797,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                         fallback={
                                             <tr>
                                                 <td colspan="9" class="px-4 py-12 text-center text-neutral-500">
-                                                    Belum ada mata kuliah yang terdaftar pada semester ini.
+                                                    {t('ad.belumAdaMataKuliahYangTerdaftar')}
                                                 </td>
                                             </tr>
                                         }
@@ -824,7 +825,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                                         </td>
                                                         <td class="px-4 py-3">
                                                             <div class="font-medium text-neutral-800 dark:text-neutral-200">
-                                                                Kelas: {detail.class_name || detail.teach?.class_code?.name || '-'}
+                                                                {t('ad.kelas')} {detail.class_name || detail.teach?.class_code?.name || '-'}
                                                             </div>
                                                             <div class="text-[11px] text-neutral-500 truncate max-w-[200px]">
                                                                 {detail.lecturer_name || (Array.isArray(detail.lecturers) ? detail.lecturers.join(', ') : '-')}
@@ -864,7 +865,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                                                     type="button"
                                                                     onClick={() => openEditGradeModal(detail)}
                                                                     class="p-1.5 text-neutral-600 hover:text-blue-600 dark:text-neutral-400 dark:hover:text-blue-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded transition-colors"
-                                                                    title="Input / Edit Nilai"
+                                                                    title={t('ad.inputEditNilai')}
                                                                 >
                                                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -875,7 +876,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                                                     type="button"
                                                                     onClick={() => openDropCourseModal(detail)}
                                                                     class="p-1.5 text-neutral-600 hover:text-rose-600 dark:text-neutral-400 dark:hover:text-rose-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded transition-colors"
-                                                                    title="Drop / Batalkan Mata Kuliah"
+                                                                    title={t('ad.dropBatalkanMataKuliah')}
                                                                 >
                                                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -892,13 +893,13 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                 <tfoot class="bg-neutral-50 dark:bg-neutral-900/60 font-semibold border-t-2 border-neutral-200 dark:border-neutral-700">
                                     <tr>
                                         <td colspan="3" class="px-4 py-3 text-right text-xs uppercase tracking-wider text-neutral-500">
-                                            Total Semester:
+                                            {t('ad.totalSemester')}
                                         </td>
                                         <td class="px-4 py-3 text-center font-mono font-bold text-neutral-900 dark:text-white">
                                             {totalKrsSks()} SKS
                                         </td>
                                         <td colspan="3" class="px-4 py-3 text-right text-xs text-neutral-500">
-                                            Total Mutu & IPS:
+                                            {t('ad.totalMutuIPS')}
                                         </td>
                                         <td class="px-4 py-3 text-center font-mono font-bold text-blue-600 dark:text-blue-400">
                                             {totalQualityPoints().toFixed(2)} ({calculatedIps()})
@@ -920,44 +921,44 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                 <svg class="size-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                                <span>Aktivitas Perkuliahan</span>
+                                <span>{t('ad.aktivitasPerkuliahan')}</span>
                             </h3>
 
                             <dl class="grid grid-cols-2 gap-x-4 gap-y-3 text-xs">
                                 <div>
-                                    <dt class="text-neutral-500 font-medium">ID Aktivitas</dt>
+                                    <dt class="text-neutral-500 font-medium">{t('ad.idAktivitas')}</dt>
                                     <dd class="font-mono text-neutral-900 dark:text-neutral-100 break-all">{activity()?.id}</dd>
                                 </div>
                                 <div>
-                                    <dt class="text-neutral-500 font-medium">Periode Akademik</dt>
+                                    <dt class="text-neutral-500 font-medium">{t('ad.periodeAkademik')}</dt>
                                     <dd class="font-semibold text-neutral-900 dark:text-neutral-100">{activity()?.academic_year_name || '-'}</dd>
                                 </div>
                                 <div>
-                                    <dt class="text-neutral-500 font-medium">Status Registrasi</dt>
+                                    <dt class="text-neutral-500 font-medium">{t('ad.statusRegistrasi')}</dt>
                                     <dd class="font-semibold text-emerald-600 dark:text-emerald-400">{activity()?.status_name || '-'}</dd>
                                 </div>
                                 <div>
-                                    <dt class="text-neutral-500 font-medium">Status Keluar / Cuti</dt>
+                                    <dt class="text-neutral-500 font-medium">{t('ad.statusKeluarCuti')}</dt>
                                     <dd class="text-neutral-900 dark:text-neutral-100">{activity()?.resign_status_name || '-'}</dd>
                                 </div>
                                 <div>
-                                    <dt class="text-neutral-500 font-medium">Status Kunci KRS/KHS</dt>
+                                    <dt class="text-neutral-500 font-medium">{t('ad.statusKunciKRSKHS')}</dt>
                                     <dd class="font-semibold">{activity()?.is_lock ? 'Terkunci' : 'Terbuka'}</dd>
                                 </div>
                                 <div>
-                                    <dt class="text-neutral-500 font-medium">Biaya Kuliah (Tagihan)</dt>
+                                    <dt class="text-neutral-500 font-medium">{t('ad.biayaKuliahTagihan')}</dt>
                                     <dd class="font-mono text-neutral-900 dark:text-neutral-100">
-                                        Rp {(activity()?.finance_fee || 0).toLocaleString('id-ID')}
+                                        {t('ad.rp')} {(activity()?.finance_fee || 0).toLocaleString('id-ID')}
                                     </dd>
                                 </div>
                                 <div>
-                                    <dt class="text-neutral-500 font-medium">Tanggal Dibuat</dt>
+                                    <dt class="text-neutral-500 font-medium">{t('ad.tanggalDibuat')}</dt>
                                     <dd class="text-neutral-700 dark:text-neutral-300">
                                         {activity()?.created_at ? new Date(activity()!.created_at!).toLocaleString('id-ID') : '-'}
                                     </dd>
                                 </div>
                                 <div>
-                                    <dt class="text-neutral-500 font-medium">Terakhir Diperbarui</dt>
+                                    <dt class="text-neutral-500 font-medium">{t('ad.terakhirDiperbarui')}</dt>
                                     <dd class="text-neutral-700 dark:text-neutral-300">
                                         {activity()?.updated_at ? new Date(activity()!.updated_at!).toLocaleString('id-ID') : '-'}
                                     </dd>
@@ -971,38 +972,38 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                 <svg class="size-4 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
-                                <span>Informasi Mahasiswa</span>
+                                <span>{t('ad.informasiMahasiswa')}</span>
                             </h3>
 
                             <dl class="grid grid-cols-2 gap-x-4 gap-y-3 text-xs">
                                 <div>
-                                    <dt class="text-neutral-500 font-medium">NIM</dt>
+                                    <dt class="text-neutral-500 font-medium">{t('ad.nim2')}</dt>
                                     <dd class="font-mono font-bold text-neutral-900 dark:text-neutral-100">
                                         {activity()?.student_code || student()?.code || '-'}
                                     </dd>
                                 </div>
                                 <div>
-                                    <dt class="text-neutral-500 font-medium">Nama Mahasiswa</dt>
+                                    <dt class="text-neutral-500 font-medium">{t('ad.namaMahasiswa')}</dt>
                                     <dd class="font-semibold text-neutral-900 dark:text-neutral-100">
                                         {activity()?.student_name || student()?.name || '-'}
                                     </dd>
                                 </div>
                                 <div>
-                                    <dt class="text-neutral-500 font-medium">Program Studi</dt>
+                                    <dt class="text-neutral-500 font-medium">{t('ad.programStudi')}</dt>
                                     <dd class="text-neutral-900 dark:text-neutral-100">
                                         {activity()?.unit_name || student()?.unit_name || '-'}
                                     </dd>
                                 </div>
                                 <div>
-                                    <dt class="text-neutral-500 font-medium">Tahun Masuk / Angkatan</dt>
+                                    <dt class="text-neutral-500 font-medium">{t('ad.tahunMasukAngkatan')}</dt>
                                     <dd class="text-neutral-900 dark:text-neutral-100">{student()?.registered || '-'}</dd>
                                 </div>
                                 <div>
-                                    <dt class="text-neutral-500 font-medium">Jenis Pendaftaran</dt>
+                                    <dt class="text-neutral-500 font-medium">{t('ad.jenisPendaftaran')}</dt>
                                     <dd class="text-neutral-900 dark:text-neutral-100">{student()?.registration_name || '-'}</dd>
                                 </div>
                                 <div>
-                                    <dt class="text-neutral-500 font-medium">Kurikulum</dt>
+                                    <dt class="text-neutral-500 font-medium">{t('ad.kurikulum')}</dt>
                                     <dd class="text-neutral-900 dark:text-neutral-100">{student()?.curriculum_name || '-'}</dd>
                                 </div>
                             </dl>
@@ -1021,37 +1022,37 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                             </div>
                             <div>
                                 <h3 class="text-base font-bold text-neutral-900 dark:text-white">
-                                    Status Sinkronisasi Feeder PDDikti
+                                    {t('ad.statusSinkronisasiFeederPDDikti')}
                                 </h3>
                                 <p class="text-xs text-neutral-500 mt-0.5">
-                                    Data integrasi AKM (Aktivitas Kuliah Mahasiswa) ke Pangkalan Data Pendidikan Tinggi Kemendikbudristek.
+                                    {t('ad.dataIntegrasiAKMAktivitasKuliahMahasiswa')}
                                 </p>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs pt-2">
                             <div class="p-3.5 bg-neutral-50 dark:bg-neutral-850 rounded border border-neutral-200 dark:border-neutral-700">
-                                <span class="text-neutral-500 block font-medium">ID Registrasi Feeder (AKM)</span>
+                                <span class="text-neutral-500 block font-medium">{t('ad.idRegistrasiFeederAKM')}</span>
                                 <span class="font-mono font-bold text-neutral-900 dark:text-white mt-1 block break-all">
                                     {activity()?.feeder_id || 'Belum tersinkronisasi'}
                                 </span>
                             </div>
 
                             <div class="p-3.5 bg-neutral-50 dark:bg-neutral-850 rounded border border-neutral-200 dark:border-neutral-700">
-                                <span class="text-neutral-500 block font-medium">Waktu Sinkronisasi Terakhir</span>
+                                <span class="text-neutral-500 block font-medium">{t('ad.waktuSinkronisasiTerakhir')}</span>
                                 <span class="font-mono text-neutral-800 dark:text-neutral-200 mt-1 block">
                                     {activity()?.sync_at ? new Date(activity()!.sync_at!).toLocaleString('id-ID') : '-'}
                                 </span>
                             </div>
 
                             <div class="p-3.5 bg-neutral-50 dark:bg-neutral-850 rounded border border-neutral-200 dark:border-neutral-700">
-                                <span class="text-neutral-500 block font-medium">Status Integrasi</span>
+                                <span class="text-neutral-500 block font-medium">{t('ad.statusIntegrasi')}</span>
                                 <div class="mt-1">
                                     <Show
                                         when={activity()?.feeder_id}
                                         fallback={
                                             <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300">
-                                                Lokal (Belum Sync)
+                                                {t('ad.lokalBelumSync')}
                                             </span>
                                         }
                                     >
@@ -1059,7 +1060,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                             <svg class="size-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                             </svg>
-                                            Tersinkronisasi PDDikti
+                                            {t('ad.tersinkronisasiPDDikti')}
                                         </span>
                                     </Show>
                                 </div>
@@ -1078,7 +1079,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                 <svg class="size-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
-                                <span>Edit Data Aktivitas Kuliah</span>
+                                <span>{t('ad.editDataAktivitasKuliah')}</span>
                             </h3>
                             <button
                                 type="button"
@@ -1095,7 +1096,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Status Perkuliahan
+                                        {t('ad.statusPerkuliahan')}
                                     </label>
                                     <select
                                         value={formStatusId()}
@@ -1110,7 +1111,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
 
                                 <div>
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Program Studi
+                                        {t('ad.programStudi')}
                                     </label>
                                     <select
                                         value={formUnitId()}
@@ -1125,7 +1126,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
 
                                 <div>
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        SKS Semester
+                                        {t('ad.sksSemester')}
                                     </label>
                                     <input
                                         type="number"
@@ -1137,7 +1138,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
 
                                 <div>
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Total SKS Kumulatif
+                                        {t('ad.totalSKSKumulatif')}
                                     </label>
                                     <input
                                         type="number"
@@ -1149,7 +1150,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
 
                                 <div>
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        IPS (Indeks Prestasi Semester)
+                                        {t('ad.ipsIndeksPrestasiSemester')}
                                     </label>
                                     <input
                                         type="number"
@@ -1164,7 +1165,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
 
                                 <div>
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        IPK (Indeks Prestasi Kumulatif)
+                                        {t('ad.ipkIndeksPrestasiKumulatif')}
                                     </label>
                                     <input
                                         type="number"
@@ -1179,7 +1180,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
 
                                 <div class="sm:col-span-2">
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Biaya Tagihan / SPP (Rp)
+                                        {t('ad.biayaTagihanSPPRp')}
                                     </label>
                                     <input
                                         type="number"
@@ -1199,7 +1200,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                     class="rounded border-neutral-300 text-blue-600 focus:ring-blue-500"
                                 />
                                 <label for="detailEditLock" class="font-medium text-neutral-800 dark:text-neutral-200">
-                                    Kunci aktivitas semester ini
+                                    {t('ad.kunciAktivitasSemesterIni')}
                                 </label>
                             </div>
 
@@ -1209,7 +1210,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                     onClick={() => setShowEditActivityModal(false)}
                                     class="px-4 py-2 text-xs font-semibold rounded border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700"
                                 >
-                                    Batal
+                                    {t('ad.batal')}
                                 </button>
                                 <button
                                     type="submit"
@@ -1222,7 +1223,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
                                     </Show>
-                                    <span>Simpan Perubahan</span>
+                                    <span>{t('ad.simpanPerubahan')}</span>
                                 </button>
                             </div>
                         </form>
@@ -1239,7 +1240,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                 <svg class="size-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                 </svg>
-                                <span>Tambah Mata Kuliah ke KRS</span>
+                                <span>{t('ad.tambahMataKuliahKeKRS')}</span>
                             </h3>
                             <button
                                 type="button"
@@ -1255,7 +1256,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                         <form onSubmit={handleAddCourseSubmit} class="p-6 overflow-y-auto space-y-4 text-xs">
                             <div>
                                 <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                    Cari Kelas / Mata Kuliah Ditawarkan
+                                    {t('ad.cariKelasMataKuliahDitawarkan')}
                                 </label>
                                 <div class="relative">
                                     <input
@@ -1266,7 +1267,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                             setTeachSearchQuery(q);
                                             searchAvailableTeaches(q);
                                         }}
-                                        placeholder="Ketik kode atau nama mata kuliah / kelas..."
+                                        placeholder={t('ad.ketikKodeAtauNamaMataKuliah')}
                                         class="w-full px-3 py-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                                     />
                                     <Show when={isSearchingTeaches()}>
@@ -1286,7 +1287,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                     when={availableTeaches().length > 0}
                                     fallback={
                                         <div class="p-4 text-center text-neutral-500">
-                                            {isSearchingTeaches() ? 'Sedang mencari kelas...' : 'Tidak ada kelas ditemukan.'}
+                                            {isSearchingTeaches() ? t('ad.sedangMencariKelas') : t('ad.tidakAdaKelasDitemukan')}
                                         </div>
                                     }
                                 >
@@ -1312,9 +1313,9 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                                         <div class="text-[11px] text-neutral-500 flex items-center gap-2 mt-0.5">
                                                             <span class="font-mono">{teach.course_code || '-'}</span>
                                                             <span>•</span>
-                                                            <span>Kelas: {teach.class_name || '-'}</span>
+                                                            <span>{t('ad.kelas')} {teach.class_name || '-'}</span>
                                                             <span>•</span>
-                                                            <span>Dosen: {teach.lecturer_name || '-'}</span>
+                                                            <span>{t('ad.dosen')} {teach.lecturer_name || '-'}</span>
                                                         </div>
                                                     </div>
                                                     <span class="px-2 py-0.5 rounded font-mono font-bold bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300">
@@ -1330,11 +1331,11 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                             <Show when={selectedCourseId()}>
                                 <div class="p-3 bg-blue-50 dark:bg-blue-950/50 rounded border border-blue-200 dark:border-blue-800 flex items-center justify-between">
                                     <div>
-                                        <span class="text-[10px] uppercase font-bold text-blue-600 dark:text-blue-400">Kelas Terpilih</span>
+                                        <span class="text-[10px] uppercase font-bold text-blue-600 dark:text-blue-400">{t('ad.kelasTerpilih')}</span>
                                         <div class="font-semibold text-neutral-900 dark:text-white mt-0.5">{selectedCourseName()}</div>
                                     </div>
                                     <div class="w-24">
-                                        <label class="block text-[10px] text-neutral-500 mb-0.5">SKS Diambil</label>
+                                        <label class="block text-[10px] text-neutral-500 mb-0.5">{t('ad.sksDiambil')}</label>
                                         <input
                                             type="number"
                                             value={selectedCourseCredit()}
@@ -1351,7 +1352,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                     onClick={() => setShowAddCourseModal(false)}
                                     class="px-4 py-2 text-xs font-semibold rounded border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700"
                                 >
-                                    Batal
+                                    {t('ad.batal')}
                                 </button>
                                 <button
                                     type="submit"
@@ -1364,7 +1365,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
                                     </Show>
-                                    <span>Tambahkan ke KRS</span>
+                                    <span>{t('ad.tambahkanKeKRS')}</span>
                                 </button>
                             </div>
                         </form>
@@ -1381,7 +1382,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                 <svg class="size-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                                <span>Input / Perbarui Nilai Perkuliahan</span>
+                                <span>{t('ad.inputPerbaruiNilaiPerkuliahan')}</span>
                             </h3>
                             <button
                                 type="button"
@@ -1400,14 +1401,14 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                     {selectedDetail()?.course_name || selectedDetail()?.course?.name || selectedDetail()?.name}
                                 </div>
                                 <div class="text-[11px] text-neutral-500 font-mono mt-0.5">
-                                    Kode: {selectedDetail()?.course_code || selectedDetail()?.course?.code || '-'}
+                                    {t('ad.kode')} {selectedDetail()?.course_code || selectedDetail()?.course?.code || '-'}
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Nilai Angka (0 - 100)
+                                        {t('ad.nilaiAngka0100')}
                                     </label>
                                     <input
                                         type="number"
@@ -1422,14 +1423,14 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
 
                                 <div>
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Nilai Huruf / Bobot
+                                        {t('ad.nilaiHurufBobot')}
                                     </label>
                                     <select
                                         value={formGradeId()}
                                         onChange={e => setFormGradeId(e.currentTarget.value)}
                                         class="w-full px-3 py-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white font-mono"
                                     >
-                                        <option value="">(Belum Dinilai)</option>
+                                        <option value="">{t('ad.belumDinilai')}</option>
                                         <For each={grades()}>
                                             {g => (
                                                 <option value={g.id}>
@@ -1442,7 +1443,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
 
                                 <div class="col-span-2">
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Beban SKS
+                                        {t('ad.bebanSKS')}
                                     </label>
                                     <input
                                         type="number"
@@ -1459,7 +1460,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                     onClick={() => setShowEditGradeModal(false)}
                                     class="px-4 py-2 text-xs font-semibold rounded border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700"
                                 >
-                                    Batal
+                                    {t('ad.batal')}
                                 </button>
                                 <button
                                     type="submit"
@@ -1472,7 +1473,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
                                     </Show>
-                                    <span>Simpan Nilai</span>
+                                    <span>{t('ad.simpanNilai')}</span>
                                 </button>
                             </div>
                         </form>
@@ -1492,10 +1493,10 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                             </div>
                             <div>
                                 <h3 class="text-base font-bold text-neutral-900 dark:text-white">
-                                    Batalkan Mata Kuliah (Drop)
+                                    {t('ad.batalkanMataKuliahDrop')}
                                 </h3>
                                 <p class="text-xs text-neutral-500 mt-0.5">
-                                    Mata kuliah ini akan dihapus dari rencana studi mahasiswa semester ini.
+                                    {t('ad.mataKuliahIniAkanDihapusDari')}
                                 </p>
                             </div>
                         </div>
@@ -1515,7 +1516,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                 onClick={() => setShowDropCourseModal(false)}
                                 class="px-4 py-2 text-xs font-semibold rounded border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700"
                             >
-                                Batal
+                                {t('ad.batal')}
                             </button>
                             <button
                                 type="button"
@@ -1529,7 +1530,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
                                 </Show>
-                                <span>Ya, Batalkan MK</span>
+                                <span>{t('ad.yaBatalkanMK')}</span>
                             </button>
                         </div>
                     </div>
@@ -1548,10 +1549,10 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                             </div>
                             <div>
                                 <h3 class="text-base font-bold text-neutral-900 dark:text-white">
-                                    Hapus Aktivitas Kuliah
+                                    {t('ad.hapusAktivitasKuliah')}
                                 </h3>
                                 <p class="text-xs text-neutral-500 mt-0.5">
-                                    Aktivitas ini beserta seluruh data KRS terkait akan dihapus. Tindakan ini tidak dapat dibatalkan.
+                                    {t('ad.aktivitasIniBesertaSeluruhDataKRS')}
                                 </p>
                             </div>
                         </div>
@@ -1562,7 +1563,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                 onClick={() => setShowDeleteModal(false)}
                                 class="px-4 py-2 text-xs font-semibold rounded border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700"
                             >
-                                Batal
+                                {t('ad.batal')}
                             </button>
                             <button
                                 type="button"
@@ -1576,7 +1577,7 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
                                 </Show>
-                                <span>Ya, Hapus Aktivitas</span>
+                                <span>{t('ad.yaHapusAktivitas')}</span>
                             </button>
                         </div>
                     </div>

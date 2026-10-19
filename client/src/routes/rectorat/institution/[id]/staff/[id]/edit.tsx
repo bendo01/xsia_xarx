@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { getBaseApiUrl, getAuthHeaders } from '~/controllers/master/masterApiController';
+import { t } from '../../../../../../i18n';
 
 interface OptionItem {
     id: string;
@@ -153,7 +154,7 @@ export default function RectoratStaffEdit() {
                 .catch(() => setEmployee(null));
         } catch (err: any) {
             setStaff(null);
-            toast.danger(err.message || 'Gagal memuat data staf.');
+            toast.danger(err.message || t('rt.gagalMemuatDataStaf'));
         } finally {
             setIsLoading(false);
         }
@@ -166,8 +167,8 @@ export default function RectoratStaffEdit() {
         if (!positionTypeId()) return 'Jenis jabatan dikosongkan: peran akun pegawai untuk jabatan ini akan dicabut.';
         const target = positionTypes().find((p) => p.id === positionTypeId())?.name ?? 'jenis jabatan baru';
         return original
-            ? `Peran akun pegawai akan diubah menjadi "${target}".`
-            : `Akun pegawai akan mendapat peran "${target}".`;
+            ? t('rt.theEmployeeAccountRoleWillBe', { role: target })
+            : t('rt.theEmployeeAccountWillBeGiven', { role: target });
     };
 
     const employeeLabel = () => {
@@ -180,11 +181,11 @@ export default function RectoratStaffEdit() {
         e.preventDefault();
 
         if (!unitId()) {
-            toast.danger('Unit wajib dipilih.');
+            toast.danger(t('rt.unitWajibDipilih'));
             return;
         }
         if (startDate() && endDate() && endDate() < startDate()) {
-            toast.danger('Tanggal selesai tidak boleh sebelum tanggal mulai.');
+            toast.danger(t('rt.tanggalSelesaiTidakBolehSebelumTanggal'));
             return;
         }
 
@@ -200,10 +201,10 @@ export default function RectoratStaffEdit() {
                 start_date: startDate() || null,
                 end_date: endDate() || null,
             });
-            toast.success('Data staf berhasil diperbarui.');
+            toast.success(t('rt.dataStafBerhasilDiperbarui'));
             navigate(detailPath());
         } catch (err: any) {
-            toast.danger(err.message || 'Gagal menyimpan data staf.');
+            toast.danger(err.message || t('rt.gagalMenyimpanDataStaf'));
         } finally {
             setIsSubmitting(false);
         }
@@ -219,26 +220,26 @@ export default function RectoratStaffEdit() {
                 <div class="flex flex-col md:flex-row md:items-end md:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-6 gap-4">
                     <div>
                         <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
-                            <A href="/rectorat" class="hover:text-teal-600 transition-colors">Rektorat</A>
+                            <A href="/rectorat" class="hover:text-teal-600 transition-colors">{t('rt.rektorat')}</A>
                             <span>/</span>
-                            <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-teal-600 transition-colors">Institusi</A>
+                            <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-teal-600 transition-colors">{t('rt.institusi')}</A>
                             <span>/</span>
-                            <A href={listPath()} class="hover:text-teal-600 transition-colors">Staf</A>
+                            <A href={listPath()} class="hover:text-teal-600 transition-colors">{t('rt.staf')}</A>
                             <span>/</span>
-                            <A href={detailPath()} class="hover:text-teal-600 transition-colors">Detail</A>
+                            <A href={detailPath()} class="hover:text-teal-600 transition-colors">{t('rt.detail')}</A>
                             <span>/</span>
-                            <span class="text-neutral-700 dark:text-neutral-300 font-semibold">Ubah</span>
+                            <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.ubah')}</span>
                         </nav>
-                        <h1 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">Ubah Staf</h1>
+                        <h1 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">{t('rt.ubahStaf')}</h1>
                         <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
-                            Perbarui penempatan, jabatan, dan masa jabatan. Peran akun pegawai disesuaikan otomatis.
+                            {t('rt.perbaruiPenempatanJabatanDanMasaJabatan')}
                         </p>
                     </div>
                     <A
                         href={detailPath()}
                         class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all shadow-sm w-fit"
                     >
-                        Batal
+                        {t('rt.batal')}
                     </A>
                 </div>
 
@@ -248,19 +249,19 @@ export default function RectoratStaffEdit() {
                             <div class="absolute inset-0 rounded-full border-4 border-teal-200 dark:border-teal-900/40"></div>
                             <div class="absolute inset-0 rounded-full border-4 border-teal-600 border-t-transparent animate-spin"></div>
                         </div>
-                        <p class="text-sm text-neutral-500 dark:text-neutral-400 font-medium">Memuat data staf...</p>
+                        <p class="text-sm text-neutral-500 dark:text-neutral-400 font-medium">{t('rt.memuatDataStaf')}</p>
                     </div>
                 </Show>
 
                 <Show when={!isLoading() && !staff()}>
                     <div class="flex flex-col items-center justify-center py-24 gap-4">
-                        <h2 class="text-xl font-bold text-neutral-700 dark:text-neutral-300">Data Tidak Ditemukan</h2>
-                        <p class="text-sm text-neutral-500 dark:text-neutral-400 text-center max-w-sm">Data staf tidak dapat ditemukan atau mungkin telah dihapus.</p>
+                        <h2 class="text-xl font-bold text-neutral-700 dark:text-neutral-300">{t('rt.dataTidakDitemukan')}</h2>
+                        <p class="text-sm text-neutral-500 dark:text-neutral-400 text-center max-w-sm">{t('rt.dataStafTidakDapatDitemukanAtau')}</p>
                         <A
                             href={listPath()}
                             class="mt-2 inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-teal-600 text-white hover:bg-teal-700 transition-colors shadow-sm"
                         >
-                            Kembali ke Daftar Staf
+                            {t('rt.kembaliKeDaftarStaf')}
                         </A>
                     </div>
                 </Show>
@@ -270,42 +271,42 @@ export default function RectoratStaffEdit() {
 
                         {/* Employee (read-only) */}
                         <div class="p-4 rounded-xl border border-teal-200 dark:border-teal-800/60 bg-teal-50/50 dark:bg-teal-900/20">
-                            <p class="text-[11px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Pegawai</p>
+                            <p class="text-[11px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{t('rt.pegawai')}</p>
                             <p class="font-semibold text-neutral-900 dark:text-white truncate">{employeeLabel()}</p>
                             <Show when={employee()?.code}>
                                 <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 font-mono">{employee()?.code}</p>
                             </Show>
                         </div>
 
-                        <Section title="Penempatan & Jabatan">
-                            <Field label="Unit" required>
-                                <OptionSelect required value={unitId()} options={units()} placeholder="Pilih unit" onChange={setUnitId} />
+                        <Section title={t('rt.penempatanJabatan')}>
+                            <Field label={t('rt.unit2')} required>
+                                <OptionSelect required value={unitId()} options={units()} placeholder={t('rt.pilihUnit')} onChange={setUnitId} />
                             </Field>
-                            <Field label="Jenis Jabatan">
-                                <OptionSelect value={positionTypeId()} options={positionTypes()} placeholder="Pilih jenis jabatan" onChange={setPositionTypeId} />
+                            <Field label={t('rt.jenisJabatan')}>
+                                <OptionSelect value={positionTypeId()} options={positionTypes()} placeholder={t('rt.pilihJenisJabatan')} onChange={setPositionTypeId} />
                                 <Show when={roleChangeNotice()}>
                                     <p class="mt-1.5 text-xs text-amber-700 dark:text-amber-400">{roleChangeNotice()}</p>
                                 </Show>
                             </Field>
-                            <Field label="Kode Staf">
+                            <Field label={t('rt.kodeStaf')}>
                                 <input id="staff-code" class={`${inputClass} font-mono`} value={code()} onInput={(e) => setCode(e.currentTarget.value)} />
                             </Field>
-                            <Field label="Nama Jabatan">
+                            <Field label={t('rt.namaJabatan')}>
                                 <input id="staff-name" class={inputClass} value={name()} onInput={(e) => setName(e.currentTarget.value)} />
                             </Field>
                         </Section>
 
-                        <Section title="Surat Keputusan & Masa Jabatan" description="Isi tanggal selesai untuk mengakhiri jabatan.">
-                            <Field label="Nomor SK">
+                        <Section title={t('rt.suratKeputusanMasaJabatan')} description={t('rt.isiTanggalSelesaiUntukMengakhiriJabatan')}>
+                            <Field label={t('rt.nomorSK')}>
                                 <input class={`${inputClass} font-mono`} value={decreeNumber()} onInput={(e) => setDecreeNumber(e.currentTarget.value)} />
                             </Field>
-                            <Field label="Tanggal SK">
+                            <Field label={t('rt.tanggalSK')}>
                                 <input type="date" class={inputClass} value={decreeDate()} onInput={(e) => setDecreeDate(e.currentTarget.value)} />
                             </Field>
-                            <Field label="Tanggal Mulai">
+                            <Field label={t('rt.tanggalMulai')}>
                                 <input type="date" class={inputClass} value={startDate()} onInput={(e) => setStartDate(e.currentTarget.value)} />
                             </Field>
-                            <Field label="Tanggal Selesai">
+                            <Field label={t('rt.tanggalSelesai')}>
                                 <input type="date" class={inputClass} min={startDate() || undefined} value={endDate()} onInput={(e) => setEndDate(e.currentTarget.value)} />
                             </Field>
                         </Section>
@@ -315,7 +316,7 @@ export default function RectoratStaffEdit() {
                                 href={detailPath()}
                                 class="px-4 py-2 text-sm font-medium rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all"
                             >
-                                Batal
+                                {t('rt.batal')}
                             </A>
                             <button
                                 type="submit"
@@ -323,7 +324,7 @@ export default function RectoratStaffEdit() {
                                 disabled={isSubmitting()}
                                 class="inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold rounded-lg bg-teal-600 hover:bg-teal-700 text-white shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                             >
-                                {isSubmitting() ? 'Menyimpan...' : 'Simpan Perubahan'}
+                                {isSubmitting() ? t('rt.menyimpan') : t('rt.simpanPerubahan')}
                             </button>
                         </div>
                     </form>

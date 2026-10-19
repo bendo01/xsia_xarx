@@ -22,6 +22,7 @@ import {
 import type { PersonMasterIndividualDataObject } from '~/models/person/master/Individual';
 import { openOrDownloadPdf } from '~/lib/pdfHelper';
 import { resolveInstitutionFromStaffRole } from '~/lib/rectoratHelper';
+import { t } from '../../../../../../../../../i18n';
 
 const AcademicPerformanceChart = lazy(() => import('~/components/chart/academic_performance_chart'));
 
@@ -221,7 +222,7 @@ export default function RectoratStudentActivityDetail() {
             setDetailCourses(enrichedDetails);
         } catch (err) {
             console.error('Error fetching student activity details:', err);
-            toast.danger('Gagal memuat detail aktivitas semester mahasiswa.');
+            toast.danger(t('rt.gagalMemuatDetailAktivitasSemesterMahasiswa'));
         } finally {
             isFetching = false;
             setIsLoading(false);
@@ -238,23 +239,23 @@ export default function RectoratStudentActivityDetail() {
     const handlePrintKRS = async () => {
         const act = activity();
         if (!act?.id) {
-            toast.danger('ID aktivitas semester tidak ditemukan.');
+            toast.danger(t('rt.idAktivitasSemesterTidakDitemukan'));
             return;
         }
 
         setIsPrintingKRS(true);
         try {
-            toast.info('Membuat berkas PDF KRS...');
+            toast.info(t('rt.membuatBerkasPDFKRS'));
             const blob = await printActivityPlan(act.id);
             if (blob) {
                 const semName = (act.name || 'Semester').replace(/\s+/g, '_');
                 openOrDownloadPdf(blob, `KRS_${semName}.pdf`, 'KRS (Kartu Rencana Studi)');
             } else {
-                toast.danger('Gagal membuat dokumen KRS PDF.');
+                toast.danger(t('rt.gagalMembuatDokumenKRSPDF'));
             }
         } catch (err) {
             console.error('Error printing KRS:', err);
-            toast.danger('Terjadi kesalahan saat membuat KRS PDF.');
+            toast.danger(t('rt.terjadiKesalahanSaatMembuatKRSPDF'));
         } finally {
             setIsPrintingKRS(false);
         }
@@ -263,23 +264,23 @@ export default function RectoratStudentActivityDetail() {
     const handlePrintKHS = async () => {
         const act = activity();
         if (!act?.id) {
-            toast.danger('ID aktivitas semester tidak ditemukan.');
+            toast.danger(t('rt.idAktivitasSemesterTidakDitemukan'));
             return;
         }
 
         setIsPrintingKHS(true);
         try {
-            toast.info('Membuat berkas PDF KHS...');
+            toast.info(t('rt.membuatBerkasPDFKHS'));
             const blob = await printActivityResult(act.id);
             if (blob) {
                 const semName = (act.name || 'Semester').replace(/\s+/g, '_');
                 openOrDownloadPdf(blob, `KHS_${semName}.pdf`, 'KHS (Kartu Hasil Studi)');
             } else {
-                toast.danger('Gagal membuat dokumen KHS PDF.');
+                toast.danger(t('rt.gagalMembuatDokumenKHSPDF'));
             }
         } catch (err) {
             console.error('Error printing KHS:', err);
-            toast.danger('Terjadi kesalahan saat membuat KHS PDF.');
+            toast.danger(t('rt.terjadiKesalahanSaatMembuatKHSPDF'));
         } finally {
             setIsPrintingKHS(false);
         }
@@ -377,7 +378,7 @@ export default function RectoratStudentActivityDetail() {
             runningWeighted += weighted;
 
             return {
-                semName: act.academic_year?.name || act.name || `Sem ${idx + 1}`,
+                semName: act.academic_year?.name || act.name || t('rt.semN', { n: idx + 1 }),
                 ips: Number(ips.toFixed(2)),
                 ipk: Number((runningGraded > 0 ? runningWeighted / runningGraded : ips).toFixed(2)),
                 sks,
@@ -390,7 +391,7 @@ export default function RectoratStudentActivityDetail() {
     const gradeDistribution = createMemo((): SemesterGradePoint[] => {
         const groups = new Map<string, SemesterGradePoint & { point: number }>();
         for (const c of detailCourses()) {
-            const letter = (c.grade_letter && c.grade_letter !== '-') ? c.grade_letter.trim() : 'Belum Dinilai';
+            const letter = (c.grade_letter && c.grade_letter !== '-') ? c.grade_letter.trim() : t('rt.belumDinilai');
             const entry = groups.get(letter) || { grade: letter, courseCount: 0, credits: 0, point: -1 };
             entry.courseCount += 1;
             entry.credits += detailCredit(c);
@@ -430,7 +431,7 @@ export default function RectoratStudentActivityDetail() {
             }
         }
         const fallbackKey = 'other';
-        map.set(fallbackKey, { varietyName: 'Mata Kuliah Umum / Lainnya', courseCount: 0, totalCredits: 0, gradedCredits: 0, weightedGradeSum: 0 });
+        map.set(fallbackKey, { varietyName: t('rt.mataKuliahUmumLainnya'), courseCount: 0, totalCredits: 0, gradedCredits: 0, weightedGradeSum: 0 });
 
         for (const d of studentDetails()) {
             const entry = map.get(d.course?.variety_id || fallbackKey) || map.get(fallbackKey)!;
@@ -541,11 +542,11 @@ export default function RectoratStudentActivityDetail() {
                 {/* Breadcrumb Navigation */}
                 <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 font-mono">
                     <A href={institutionId() ? `/rectorat/institution/${institutionId()}` : '/rectorat/institution'} class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                        Rektorat
+                        {t('rt.rektorat')}
                     </A>
                     <span>/</span>
                     <A href={institutionId() ? `/rectorat/institution/${institutionId()}/academic/student/master/student` : '#'} class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                        Mahasiswa
+                        {t('rt.mahasiswa')}
                     </A>
                     <span>/</span>
                     <Show when={activity()?.student_id || student()?.id}>
@@ -554,7 +555,7 @@ export default function RectoratStudentActivityDetail() {
                         </A>
                         <span>/</span>
                     </Show>
-                    <span class="text-neutral-900 dark:text-white font-bold">Aktivitas Semester</span>
+                    <span class="text-neutral-900 dark:text-white font-bold">{t('rt.aktivitasSemester')}</span>
                 </nav>
 
                 {/* Header Card */}
@@ -564,7 +565,7 @@ export default function RectoratStudentActivityDetail() {
                             <div class="flex items-center gap-2 flex-wrap">
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xs bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-xs font-mono font-semibold border border-indigo-200 dark:border-indigo-800/80">
                                     <span class="size-1.5 rounded-xs bg-indigo-500"></span>
-                                    <span>Aktivitas Perkuliahan Mahasiswa</span>
+                                    <span>{t('rt.aktivitasPerkuliahanMahasiswa')}</span>
                                 </span>
                                 <Show when={activity()?.status_name}>
                                     <span class="inline-flex items-center px-2 py-0.5 rounded-xs text-[11px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80">
@@ -573,7 +574,7 @@ export default function RectoratStudentActivityDetail() {
                                 </Show>
                                 <Show when={activity()?.is_lock}>
                                     <span class="inline-flex items-center px-2 py-0.5 rounded-xs text-[11px] font-mono text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-700">
-                                        Terkunci
+                                        {t('rt.terkunci')}
                                     </span>
                                 </Show>
                             </div>
@@ -585,7 +586,7 @@ export default function RectoratStudentActivityDetail() {
                             <div class="flex items-center gap-2 text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 flex-wrap">
                                 <span class="font-bold text-neutral-800 dark:text-neutral-200">{studentDisplayName()}</span>
                                 <span>•</span>
-                                <span class="font-mono">NIM: {studentCode()}</span>
+                                <span class="font-mono">{t('rt.nim2')} {studentCode()}</span>
                                 <Show when={student()?.unit_name || (student() as any)?.unit?.name || activity()?.unit_name || (activity() as any)?.unit?.name}>
                                     <span>•</span>
                                     <span>{student()?.unit_name || (student() as any)?.unit?.name || activity()?.unit_name || (activity() as any)?.unit?.name}</span>
@@ -603,7 +604,7 @@ export default function RectoratStudentActivityDetail() {
                                     <line x1="19" y1="12" x2="5" y2="12" />
                                     <polyline points="12 19 5 12 12 5" />
                                 </svg>
-                                <span>Profil Mahasiswa</span>
+                                <span>{t('rt.profilMahasiswa')}</span>
                             </A>
 
                             <button
@@ -611,7 +612,7 @@ export default function RectoratStudentActivityDetail() {
                                 onClick={handlePrintKRS}
                                 disabled={isPrintingKRS()}
                                 class="px-3.5 py-2 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700 dark:hover:bg-neutral-600 text-neutral-700 dark:text-neutral-200 rounded-xs text-xs font-bold transition-colors inline-flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
-                                title="Cetak Kartu Rencana Studi (KRS)"
+                                title={t('rt.cetakKartuRencanaStudiKRS')}
                             >
                                 <Show
                                     when={!isPrintingKRS()}
@@ -619,7 +620,7 @@ export default function RectoratStudentActivityDetail() {
                                 >
                                     <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect width="12" height="8" x="6" y="14" /></svg>
                                 </Show>
-                                <span>{isPrintingKRS() ? 'Mencetak...' : 'Cetak KRS'}</span>
+                                <span>{isPrintingKRS() ? t('rt.mencetak') : t('rt.cetakKRS')}</span>
                             </button>
 
                             <button
@@ -627,7 +628,7 @@ export default function RectoratStudentActivityDetail() {
                                 onClick={handlePrintKHS}
                                 disabled={isPrintingKHS()}
                                 class="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/80 rounded-xs text-xs font-bold transition-colors inline-flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
-                                title="Cetak Kartu Hasil Studi (KHS)"
+                                title={t('rt.cetakKartuHasilStudiKHS')}
                             >
                                 <Show
                                     when={!isPrintingKHS()}
@@ -635,7 +636,7 @@ export default function RectoratStudentActivityDetail() {
                                 >
                                     <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
                                 </Show>
-                                <span>{isPrintingKHS() ? 'Mencetak...' : 'Cetak KHS'}</span>
+                                <span>{isPrintingKHS() ? t('rt.mencetak') : t('rt.cetakKHS')}</span>
                             </button>
                         </div>
                     </div>
@@ -643,27 +644,27 @@ export default function RectoratStudentActivityDetail() {
                     {/* KPI Metrics Grid */}
                     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 mt-6 pt-6 border-t border-neutral-100 dark:border-neutral-700/60">
                         <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
-                            <span class="text-[10px] text-neutral-400 font-mono uppercase block">Mata Kuliah</span>
+                            <span class="text-[10px] text-neutral-400 font-mono uppercase block">{t('rt.mataKuliah')}</span>
                             <span class="text-xl font-black text-neutral-900 dark:text-white">{detailCourses().length} Kelas</span>
                         </div>
                         <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
-                            <span class="text-[10px] text-neutral-400 font-mono uppercase block">SKS Semester</span>
+                            <span class="text-[10px] text-neutral-400 font-mono uppercase block">{t('rt.sksSemester')}</span>
                             <span class="text-xl font-black text-blue-600 dark:text-blue-400">{totalEnrolledSKS()} SKS</span>
                         </div>
                         <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
-                            <span class="text-[10px] text-neutral-400 font-mono uppercase block">SKS Kumulatif</span>
+                            <span class="text-[10px] text-neutral-400 font-mono uppercase block">{t('rt.sksKumulatif')}</span>
                             <span class="text-xl font-black text-teal-600 dark:text-teal-400">{cumulativeSKS()} SKS</span>
                         </div>
                         <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
-                            <span class="text-[10px] text-neutral-400 font-mono uppercase block">Indeks Prestasi (IPS)</span>
+                            <span class="text-[10px] text-neutral-400 font-mono uppercase block">{t('rt.indeksPrestasiIPS')}</span>
                             <span class="text-xl font-black text-indigo-600 dark:text-indigo-400">{calculatedIPS()}</span>
                         </div>
                         <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
-                            <span class="text-[10px] text-neutral-400 font-mono uppercase block">IPK Kumulatif</span>
+                            <span class="text-[10px] text-neutral-400 font-mono uppercase block">{t('rt.ipkKumulatif')}</span>
                             <span class="text-xl font-black text-sky-600 dark:text-sky-400">{calculatedIPK()}</span>
                         </div>
                         <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
-                            <span class="text-[10px] text-neutral-400 font-mono uppercase block">Status</span>
+                            <span class="text-[10px] text-neutral-400 font-mono uppercase block">{t('rt.status')}</span>
                             <span class="text-sm font-bold text-emerald-600 dark:text-emerald-400 truncate block mt-1">
                                 {activity()?.status_name || 'Aktif / Selesai'}
                             </span>
@@ -682,21 +683,21 @@ export default function RectoratStudentActivityDetail() {
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
                                     </div>
                                     <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                        Tren Indeks Prestasi
+                                        {t('rt.trenIndeksPrestasi')}
                                     </h3>
                                 </div>
                                 <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
-                                    IPS semester dan IPK kumulatif per tahun akademik (skala 0.0 - 4.0).
+                                    {t('rt.ipsSemesterDanIPKKumulatifPer')}
                                 </p>
                             </div>
                             <div class="flex items-center gap-3 text-[11px] font-mono shrink-0">
                                 <div class="flex items-center gap-1.5">
                                     <span class="size-2.5 rounded-xs bg-blue-600"></span>
-                                    <span class="text-neutral-700 dark:text-neutral-300 font-semibold">IPK</span>
+                                    <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.ipk2')}</span>
                                 </div>
                                 <div class="flex items-center gap-1.5">
                                     <span class="size-2.5 rounded-xs bg-sky-500"></span>
-                                    <span class="text-neutral-700 dark:text-neutral-300 font-semibold">IPS</span>
+                                    <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.ips')}</span>
                                 </div>
                             </div>
                         </div>
@@ -704,19 +705,19 @@ export default function RectoratStudentActivityDetail() {
                         <Show when={!isHistoryLoading()} fallback={
                             <div class="py-16 text-center flex flex-col items-center justify-center gap-2">
                                 <div class="size-6 border-2 border-blue-600 border-t-transparent rounded-xs animate-spin"></div>
-                                <span class="text-xs font-mono text-neutral-400">Memuat grafik...</span>
+                                <span class="text-xs font-mono text-neutral-400">{t('rt.memuatGrafik')}</span>
                             </div>
                         }>
                             <Show when={trendData().length > 0} fallback={
                                 <div class="py-16 text-center text-neutral-400 font-mono text-xs flex flex-col items-center justify-center gap-2">
                                     <svg class="size-8 text-neutral-300 dark:text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-                                    <span>Belum ada riwayat semester untuk ditampilkan.</span>
+                                    <span>{t('rt.belumAdaRiwayatSemesterUntukDitampilkan')}</span>
                                 </div>
                             }>
                                 <Suspense fallback={
                                     <div class="py-16 text-center flex flex-col items-center justify-center gap-2">
                                         <div class="size-6 border-2 border-blue-600 border-t-transparent rounded-xs animate-spin"></div>
-                                        <span class="text-xs font-mono text-neutral-400">Memuat grafik...</span>
+                                        <span class="text-xs font-mono text-neutral-400">{t('rt.memuatGrafik')}</span>
                                     </div>
                                 }>
                                     <AcademicPerformanceChart data={trendData()} />
@@ -734,21 +735,21 @@ export default function RectoratStudentActivityDetail() {
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
                                     </div>
                                     <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                        Progres Beban Kredit SKS
+                                        {t('rt.progresBebanKreditSKS')}
                                     </h3>
                                 </div>
                                 <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
-                                    Akumulasi SKS kumulatif dan SKS diambil per semester.
+                                    {t('rt.akumulasiSKSKumulatifDanSKSDiambil')}
                                 </p>
                             </div>
                             <div class="flex items-center gap-3 text-[11px] font-mono shrink-0">
                                 <div class="flex items-center gap-1.5">
                                     <span class="size-2.5 rounded-xs bg-teal-600"></span>
-                                    <span class="text-neutral-700 dark:text-neutral-300 font-semibold">SKS Kumulatif</span>
+                                    <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.sksKumulatif')}</span>
                                 </div>
                                 <div class="flex items-center gap-1.5">
                                     <span class="size-2.5 rounded-xs bg-amber-500"></span>
-                                    <span class="text-neutral-700 dark:text-neutral-300 font-semibold">SKS Semester</span>
+                                    <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.sksSemester')}</span>
                                 </div>
                             </div>
                         </div>
@@ -756,13 +757,13 @@ export default function RectoratStudentActivityDetail() {
                         <Show when={!isHistoryLoading()} fallback={
                             <div class="py-16 text-center flex flex-col items-center justify-center gap-2">
                                 <div class="size-6 border-2 border-blue-600 border-t-transparent rounded-xs animate-spin"></div>
-                                <span class="text-xs font-mono text-neutral-400">Memuat grafik...</span>
+                                <span class="text-xs font-mono text-neutral-400">{t('rt.memuatGrafik')}</span>
                             </div>
                         }>
                             <Show when={trendData().length > 0} fallback={
                                 <div class="py-16 text-center text-neutral-400 font-mono text-xs flex flex-col items-center justify-center gap-2">
                                     <svg class="size-8 text-neutral-300 dark:text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
-                                    <span>Belum ada riwayat SKS untuk ditampilkan.</span>
+                                    <span>{t('rt.belumAdaRiwayatSKSUntukDitampilkan')}</span>
                                 </div>
                             }>
                                 <StudentCreditChart data={trendData()} />
@@ -779,11 +780,11 @@ export default function RectoratStudentActivityDetail() {
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
                                     </div>
                                     <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                        Jenis Mata Kuliah & IPK
+                                        {t('rt.jenisMataKuliahIPK')}
                                     </h3>
                                 </div>
                                 <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
-                                    Sebaran SKS dan IPK per jenis mata kuliah, seluruh semester.
+                                    {t('rt.sebaranSKSDanIPKPerJenis')}
                                 </p>
                             </div>
                             <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 font-mono shrink-0">
@@ -794,13 +795,13 @@ export default function RectoratStudentActivityDetail() {
                         <Show when={!isHistoryLoading()} fallback={
                             <div class="py-16 text-center flex flex-col items-center justify-center gap-2">
                                 <div class="size-6 border-2 border-emerald-600 border-t-transparent rounded-xs animate-spin"></div>
-                                <span class="text-xs font-mono text-neutral-400">Memuat grafik...</span>
+                                <span class="text-xs font-mono text-neutral-400">{t('rt.memuatGrafik')}</span>
                             </div>
                         }>
                             <Show when={varietyScopeData().length > 0} fallback={
                                 <div class="py-16 text-center text-neutral-400 font-mono text-xs flex flex-col items-center justify-center gap-2">
                                     <svg class="size-8 text-neutral-300 dark:text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
-                                    <span>Belum ada data mata kuliah yang diambil.</span>
+                                    <span>{t('rt.belumAdaDataMataKuliahYang')}</span>
                                 </div>
                             }>
                                 <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
@@ -828,7 +829,7 @@ export default function RectoratStudentActivityDetail() {
                                                         : overallIPK()}
                                                 </text>
                                                 <text x="110" y="122" text-anchor="middle" class="font-mono uppercase text-[9px] fill-neutral-400 tracking-wider">
-                                                    {hoveredVarietyIdx() !== null ? 'IPK Jenis' : 'IPK Total'}
+                                                    {hoveredVarietyIdx() !== null ? t('rt.ipkJenis') : t('rt.ipkTotal')}
                                                 </text>
                                             </g>
                                         </svg>
@@ -855,7 +856,7 @@ export default function RectoratStudentActivityDetail() {
                                                             </span>
                                                         </div>
                                                         <span class="font-mono font-extrabold text-blue-600 dark:text-blue-400 shrink-0">
-                                                            IPK {slice.cumulativeIndex.toFixed(2)}
+                                                            {t('rt.ipk2')} {slice.cumulativeIndex.toFixed(2)}
                                                         </span>
                                                     </div>
                                                     <div class="flex items-center justify-between text-[10px] text-neutral-400 font-mono mt-1 pl-4.5">
@@ -880,28 +881,28 @@ export default function RectoratStudentActivityDetail() {
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="3" width="4" height="18"/></svg>
                                     </div>
                                     <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                        Sebaran Nilai Semester Ini
+                                        {t('rt.sebaranNilaiSemesterIni')}
                                     </h3>
                                 </div>
                                 <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
-                                    Jumlah mata kuliah dan SKS per nilai huruf pada {activity()?.academic_year_name || activity()?.academic_year?.name || 'semester ini'}.
+                                    {t('rt.jumlahMataKuliahDanSKSPer')} {activity()?.academic_year_name || activity()?.academic_year?.name || 'semester ini'}.
                                 </p>
                             </div>
                             <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 font-mono shrink-0">
-                                IPS {calculatedIPS()}
+                                {t('rt.ips')} {calculatedIPS()}
                             </span>
                         </div>
 
                         <Show when={!isLoading()} fallback={
                             <div class="py-16 text-center flex flex-col items-center justify-center gap-2">
                                 <div class="size-6 border-2 border-indigo-600 border-t-transparent rounded-xs animate-spin"></div>
-                                <span class="text-xs font-mono text-neutral-400">Memuat grafik...</span>
+                                <span class="text-xs font-mono text-neutral-400">{t('rt.memuatGrafik')}</span>
                             </div>
                         }>
                             <Show when={gradeDistribution().length > 0} fallback={
                                 <div class="py-16 text-center text-neutral-400 font-mono text-xs flex flex-col items-center justify-center gap-2">
                                     <svg class="size-8 text-neutral-300 dark:text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="3" width="4" height="18"/></svg>
-                                    <span>Belum ada mata kuliah pada semester ini.</span>
+                                    <span>{t('rt.belumAdaMataKuliahPadaSemester')}</span>
                                 </div>
                             }>
                                 <SemesterGradeChart data={gradeDistribution()} />
@@ -915,21 +916,21 @@ export default function RectoratStudentActivityDetail() {
                     <div class="p-4 sm:p-5 border-b border-neutral-200 dark:border-neutral-700 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <div>
                             <h2 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                Daftar Mata Kuliah & Hasil Studi
+                                {t('rt.daftarMataKuliahHasilStudi')}
                             </h2>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                Rekapitulasi Rencana Studi (KRS) dan Nilai Evaluasi Pembelajaran (KHS) mahasiswa pada semester ini.
+                                {t('rt.rekapitulasiRencanaStudiKRSDanNilai')}
                             </p>
                         </div>
                         <span class="text-xs text-neutral-400 font-mono">
-                            Total {detailCourses().length} Mata Kuliah
+                            {t('rt.total')} {detailCourses().length} {t('rt.mataKuliah')}
                         </span>
                     </div>
 
                     <Show when={!isLoading()} fallback={
                         <div class="py-16 flex flex-col items-center justify-center gap-3 text-neutral-400">
                             <div class="size-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                            <p class="text-xs font-mono">Memuat daftar mata kuliah...</p>
+                            <p class="text-xs font-mono">{t('rt.memuatDaftarMataKuliah')}</p>
                         </div>
                     }>
                         {/* Desktop Table View */}
@@ -937,23 +938,23 @@ export default function RectoratStudentActivityDetail() {
                             <table class="w-full text-xs text-start">
                                 <thead class="bg-neutral-100 dark:bg-neutral-900/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-neutral-200 dark:border-neutral-700">
                                     <tr>
-                                        <th class="py-3 px-4 text-start">No</th>
-                                        {/* <th class="py-3 px-4 text-start">Teach ID</th> */}
-                                        <th class="py-3 px-4 text-start">Kode MK</th>
-                                        <th class="py-3 px-4 text-start">Nama Mata Kuliah</th>
-                                        <th class="py-3 px-4 text-center">SKS</th>
-                                        <th class="py-3 px-4 text-start">Dosen Pengajar</th>
-                                        <th class="py-3 px-4 text-center">Nilai Angka</th>
-                                        <th class="py-3 px-4 text-center">Nilai Huruf</th>
-                                        <th class="py-3 px-4 text-center">Bobot / Indeks</th>
-                                        <th class="py-3 px-4 text-center">Status</th>
+                                        <th class="py-3 px-4 text-start">{t('rt.no')}</th>
+                                        {/* <th class="py-3 px-4 text-start">{t('rt.teachID')}</th> */}
+                                        <th class="py-3 px-4 text-start">{t('rt.kodeMK')}</th>
+                                        <th class="py-3 px-4 text-start">{t('rt.namaMataKuliah')}</th>
+                                        <th class="py-3 px-4 text-center">{t('rt.sks')}</th>
+                                        <th class="py-3 px-4 text-start">{t('rt.dosenPengajar')}</th>
+                                        <th class="py-3 px-4 text-center">{t('rt.nilaiAngka')}</th>
+                                        <th class="py-3 px-4 text-center">{t('rt.nilaiHuruf')}</th>
+                                        <th class="py-3 px-4 text-center">{t('rt.bobotIndeks2')}</th>
+                                        <th class="py-3 px-4 text-center">{t('rt.status')}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-neutral-100 dark:divide-neutral-700/50">
                                     <For each={detailCourses()} fallback={
                                         <tr>
                                             <td colspan="9" class="py-12 text-center text-neutral-400 font-mono">
-                                                Tidak ada mata kuliah yang terdaftar pada aktivitas semester ini.
+                                                {t('rt.tidakAdaMataKuliahYangTerdaftar')}
                                             </td>
                                         </tr>
                                     }>
@@ -1008,12 +1009,12 @@ export default function RectoratStudentActivityDetail() {
                                                         when={c.grade_letter && c.grade_letter !== '-' && !c.grade_letter.toUpperCase().startsWith('E')}
                                                         fallback={
                                                             <span class="inline-block px-2 py-0.5 rounded-xs text-[10px] font-bold bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400">
-                                                                {c.grade_letter?.toUpperCase().startsWith('E') ? 'Tidak Lulus' : 'Belum Ada Nilai'}
+                                                                {c.grade_letter?.toUpperCase().startsWith('E') ? t('rt.tidakLulus') : t('rt.belumAdaNilai')}
                                                             </span>
                                                         }
                                                     >
                                                         <span class="inline-block px-2 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80">
-                                                            Lulus
+                                                            {t('rt.lulus')}
                                                         </span>
                                                     </Show>
                                                 </td>
@@ -1028,7 +1029,7 @@ export default function RectoratStudentActivityDetail() {
                         <div class="block md:hidden divide-y divide-neutral-100 dark:divide-neutral-700/50">
                             <For each={detailCourses()} fallback={
                                 <div class="py-12 px-4 text-center text-neutral-400 font-mono text-xs">
-                                    Tidak ada mata kuliah yang terdaftar pada aktivitas semester ini.
+                                    {t('rt.tidakAdaMataKuliahYangTerdaftar')}
                                 </div>
                             }>
                                 {(c, idx) => (
@@ -1052,12 +1053,12 @@ export default function RectoratStudentActivityDetail() {
                                                     when={c.grade_letter && c.grade_letter !== '-' && !c.grade_letter.toUpperCase().startsWith('E')}
                                                     fallback={
                                                         <span class="inline-block px-2 py-0.5 rounded-xs text-[10px] font-bold bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400">
-                                                            {c.grade_letter?.toUpperCase().startsWith('E') ? 'Tidak Lulus' : 'Belum Ada Nilai'}
+                                                            {c.grade_letter?.toUpperCase().startsWith('E') ? t('rt.tidakLulus') : t('rt.belumAdaNilai')}
                                                         </span>
                                                     }
                                                 >
                                                     <span class="inline-block px-2 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80">
-                                                        Lulus
+                                                        {t('rt.lulus')}
                                                     </span>
                                                 </Show>
                                             </div>
@@ -1071,7 +1072,7 @@ export default function RectoratStudentActivityDetail() {
                                             {/* TODO 
                                             <Show when={c.teach_id}>
                                                 <p class="text-[10px] font-mono text-neutral-400 dark:text-neutral-500 mt-0.5 truncate">
-                                                    Teach ID: {c.teach_id}
+                                                    {t('rt.teachID2')} {c.teach_id}
                                                 </p>
                                             </Show>
                                             */}
@@ -1079,7 +1080,7 @@ export default function RectoratStudentActivityDetail() {
 
                                         {/* Lecturer */}
                                         <div class="text-xs text-neutral-600 dark:text-neutral-300 flex items-start gap-1.5">
-                                            <span class="text-neutral-400 dark:text-neutral-500 shrink-0 font-medium text-[11px]">Dosen:</span>
+                                            <span class="text-neutral-400 dark:text-neutral-500 shrink-0 font-medium text-[11px]">{t('rt.dosen2')}</span>
                                             <div class="flex-1 text-[11px]">
                                                 <Show
                                                     when={c.lecturers && c.lecturers.length > 0}
@@ -1107,21 +1108,21 @@ export default function RectoratStudentActivityDetail() {
                                         {/* Academic Performance KPI Grid */}
                                         <div class="grid grid-cols-3 gap-2 pt-2 mt-0.5 border-t border-neutral-100 dark:border-neutral-700/40 text-center">
                                             <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
-                                                <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">Nilai Angka</span>
+                                                <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('rt.nilaiAngka')}</span>
                                                 <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
                                                     {c.mark != null && c.mark > 0 ? Number(c.mark).toFixed(2) : '-'}
                                                 </span>
                                             </div>
 
                                             <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
-                                                <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">Nilai Huruf</span>
+                                                <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('rt.nilaiHuruf')}</span>
                                                 <span class={`inline-block px-2.5 py-0.5 rounded-xs font-mono font-bold text-xs ${getGradeBadgeClass(c.grade_letter)}`}>
                                                     {c.grade_letter || '-'}
                                                 </span>
                                             </div>
 
                                             <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
-                                                <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">Bobot / Indeks</span>
+                                                <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('rt.bobotIndeks2')}</span>
                                                 <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
                                                     {c.grade_point != null ? Number(c.grade_point).toFixed(2) : '-'}
                                                 </span>

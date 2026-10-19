@@ -1,4 +1,5 @@
 import LecturerDecreeAssignmentPage from '~/components/admin/LecturerDecreeAssignmentPage';
+import { t } from '../../../../../../i18n';
 
 export default function AcademicLecturerTransactionAcademicrankPage() {
     return (
@@ -8,11 +9,11 @@ export default function AcademicLecturerTransactionAcademicrankPage() {
                 referenceApiPath: 'academic/lecturer/reference/ranks',
                 referenceKey: 'rank_id',
                 basePath: '/administrator/academic/lecturer/transaction/academic-rank',
-                breadcrumb: 'Academic Rank',
-                title: 'Lecturer Academic Ranks',
-                description: 'Manage lecturer academic rank history (jabatan fungsional): assigned rank, decree (SK) number and date, and validity period.',
-                referenceLabel: 'Rank',
-                recordLabel: 'Academic Rank',
+                breadcrumb: t('ad.academicRank'),
+                title: t('ad.lecturerAcademicRanks'),
+                description: t('ad.manageLecturerAcademicRankHistoryJabatan'),
+                referenceLabel: t('ad.rank'),
+                recordLabel: t('ad.academicRank'),
             }}
         />
     );

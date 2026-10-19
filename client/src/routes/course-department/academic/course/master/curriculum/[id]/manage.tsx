@@ -3,6 +3,7 @@ import { useParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { masterApiShow } from '~/controllers/master/masterApiController';
+import { t } from '../../../../../../../i18n';
 
 export default function MasterShowPage() {
     const apiPath = "academic/course/master/curriculums";
@@ -30,7 +31,7 @@ export default function MasterShowPage() {
         } catch (error) {
             console.error('Error fetching detail:', error);
             setRecord(null);
-            toast.danger('Failed to load record from server.');
+            toast.danger(t('cd.failedToLoadRecordFromServer'));
         } finally {
             setIsLoading(false);
         }
@@ -52,7 +53,7 @@ export default function MasterShowPage() {
     const copyToClipboard = (text: string, label: string) => {
         if (!text) return;
         navigator.clipboard.writeText(text);
-        toast.success(`Copied ${label} to clipboard`, 3000);
+        toast.success(t('cd.copiedLabelToClipboard', { label }), 3000);
     };
 
     return (
@@ -63,20 +64,20 @@ export default function MasterShowPage() {
                 <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                            <a href="/" class="hover:text-blue-600 transition-colors">Home</a>
+                            <a href="/" class="hover:text-blue-600 transition-colors">{t('cd.home')}</a>
                             <span>/</span>
-                            <span>Academic</span>
+                            <span>{t('cd.academic')}</span>
                             <span>/</span>
-                            <span>Course</span>
+                            <span>{t('cd.course')}</span>
                             <span>/</span>
-                            <span>Master</span>
+                            <span>{t('cd.master')}</span>
                             <span>/</span>
-                            <a href={basePath} class="hover:text-blue-600 transition-colors">Curriculum</a>
+                            <a href={basePath} class="hover:text-blue-600 transition-colors">{t('cd.curriculum')}</a>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">Detail</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">{t('cd.detail')}</span>
                         </nav>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Curriculum Details
+                            {t('cd.curriculumDetails')}
                         </h1>
                     </div>
 
@@ -88,7 +89,7 @@ export default function MasterShowPage() {
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6" />
                             </svg>
-                            <span>Back to List</span>
+                            <span>{t('cd.backToList')}</span>
                         </a>
                         <Show when={selectedId()}>
                             <a
@@ -99,7 +100,7 @@ export default function MasterShowPage() {
                                     <path d="M12 20h9" />
                                     <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
                                 </svg>
-                                <span>Edit Curriculum</span>
+                                <span>{t('cd.editCurriculum')}</span>
                             </a>
                         </Show>
                     </div>
@@ -123,15 +124,15 @@ export default function MasterShowPage() {
                             when={record()}
                             fallback={
                                 <div class="py-12 text-center text-neutral-500">
-                                    <p class="text-base font-semibold">No record details found.</p>
-                                    <p class="text-xs mt-1">Check if the ID parameter in the URL is valid.</p>
+                                    <p class="text-base font-semibold">{t('cd.noRecordDetailsFound')}</p>
+                                    <p class="text-xs mt-1">{t('cd.checkIfTheIDParameterIn')}</p>
                                 </div>
                             }
                         >
                             <div class="space-y-6">
                                 <div class="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-700 pb-4">
                                     <div>
-                                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Record Name</span>
+                                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{t('cd.recordName')}</span>
                                         <h2 class="text-xl font-bold text-neutral-900 dark:text-white font-mono">
                                             {record()?.name || record()?.nama || record()?.title || '-'}
                                         </h2>
@@ -145,7 +146,7 @@ export default function MasterShowPage() {
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-xs">
                                     <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60">
-                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">UUID</span>
+                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">{t('cd.uuid')}</span>
                                         <div class="flex items-center justify-between gap-2">
                                             <span class="font-mono text-neutral-800 dark:text-neutral-200 truncate">{record()?.id || record()?.uuid || '-'}</span>
                                             <button
@@ -153,66 +154,66 @@ export default function MasterShowPage() {
                                                 onClick={() => copyToClipboard(record()?.id || record()?.uuid, 'ID')}
                                                 class="text-blue-600 hover:text-blue-700 cursor-pointer font-mono"
                                             >
-                                                Copy
+                                                {t('cd.copy')}
                                             </button>
                                         </div>
                                     </div>
 
                                     <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60">
-                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">Created At</span>
+                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">{t('cd.createdAt')}</span>
                                         <span class="font-mono text-neutral-800 dark:text-neutral-200 block">{record()?.created_at || '-'}</span>
                                     </div>
 
                                     <Show when={record()?.unit}>
                                         <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60">
-                                            <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">Unit</span>
+                                            <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">{t('cd.unit')}</span>
                                             <span class="font-mono text-neutral-800 dark:text-neutral-200 block truncate">{record().unit.name || record().unit.nama || '-'}</span>
                                         </div>
                                     </Show>
 
                                     <Show when={record()?.academic_year}>
                                         <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60">
-                                            <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">Academic Year</span>
+                                            <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">{t('cd.academicYear')}</span>
                                             <span class="font-mono text-neutral-800 dark:text-neutral-200 block truncate">{record().academic_year.name || record().academic_year.nama || '-'}</span>
                                         </div>
                                     </Show>
 
                                     <Show when={record()?.curriculum_type}>
                                         <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60">
-                                            <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">Curriculum Type</span>
+                                            <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">{t('cd.curriculumType')}</span>
                                             <span class="font-mono text-neutral-800 dark:text-neutral-200 block truncate">{record().curriculum_type.name || record().curriculum_type.nama || '-'}</span>
                                         </div>
                                     </Show>
                                     <Show when={record()?.total_credit !== undefined && record()?.total_credit !== null}>
                                         <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60">
-                                            <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">Total Credit</span>
+                                            <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">{t('cd.totalCredit')}</span>
                                             <span class="font-mono text-neutral-800 dark:text-neutral-200 block">{record().total_credit}</span>
                                         </div>
                                     </Show>
 
                                     <Show when={record()?.mandatory_course_credit !== undefined && record()?.mandatory_course_credit !== null}>
                                         <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60">
-                                            <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">Mandatory Credit</span>
+                                            <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">{t('cd.mandatoryCredit')}</span>
                                             <span class="font-mono text-neutral-800 dark:text-neutral-200 block">{record().mandatory_course_credit}</span>
                                         </div>
                                     </Show>
 
                                     <Show when={record()?.optional_course_credit !== undefined && record()?.optional_course_credit !== null}>
                                         <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60">
-                                            <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">Optional Credit</span>
+                                            <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">{t('cd.optionalCredit')}</span>
                                             <span class="font-mono text-neutral-800 dark:text-neutral-200 block">{record().optional_course_credit}</span>
                                         </div>
                                     </Show>
 
                                     <Show when={record()?.is_active !== undefined && record()?.is_active !== null}>
                                         <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60">
-                                            <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">Status</span>
+                                            <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">{t('cd.status')}</span>
                                             <span class="font-mono block">
                                                 <span class={`px-1.5 py-0.5 text-xs font-medium border ${record().is_active
                                                     ? 'bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800'
                                                     : 'bg-neutral-100 text-neutral-600 border-neutral-200 dark:bg-neutral-700 dark:text-neutral-400'
                                                     }`}>
-                                                    {record().is_active ? 'Active' : 'Inactive'}
+                                                    {record().is_active ? t('cd.active') : t('cd.inactive')}
                                                 </span>
                                             </span>
                                         </div>
@@ -221,19 +222,19 @@ export default function MasterShowPage() {
                                 </div>
                                 <Show when={record()?.curriculum_details && Array.isArray(record().curriculum_details) && record().curriculum_details.length > 0}>
                                     <div class="mt-8">
-                                        <h3 class="text-sm font-bold font-mono text-neutral-900 dark:text-white mb-3">Curriculum Details</h3>
+                                        <h3 class="text-sm font-bold font-mono text-neutral-900 dark:text-white mb-3">{t('cd.curriculumDetails')}</h3>
 
                                         {/* Desktop Table View */}
                                         <div class="hidden md:block border border-neutral-200 dark:border-neutral-700 overflow-hidden bg-white dark:bg-neutral-900">
                                             <table class="w-full text-sm text-left">
                                                 <thead class="bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 font-mono text-xs uppercase">
                                                     <tr>
-                                                        <th class="px-4 py-3 border-b border-neutral-200 dark:border-neutral-700">Sequence</th>
-                                                        <th class="px-4 py-3 border-b border-neutral-200 dark:border-neutral-700">Code</th>
-                                                        <th class="px-4 py-3 border-b border-neutral-200 dark:border-neutral-700">Name</th>
-                                                        <th class="px-4 py-3 border-b border-neutral-200 dark:border-neutral-700">Credit</th>
-                                                        <th class="px-4 py-3 border-b border-neutral-200 dark:border-neutral-700">MBKM</th>
-                                                        <th class="px-4 py-3 border-b border-neutral-200 dark:border-neutral-700">RPL</th>
+                                                        <th class="px-4 py-3 border-b border-neutral-200 dark:border-neutral-700">{t('cd.sequence')}</th>
+                                                        <th class="px-4 py-3 border-b border-neutral-200 dark:border-neutral-700">{t('cd.code')}</th>
+                                                        <th class="px-4 py-3 border-b border-neutral-200 dark:border-neutral-700">{t('cd.name')}</th>
+                                                        <th class="px-4 py-3 border-b border-neutral-200 dark:border-neutral-700">{t('cd.credit')}</th>
+                                                        <th class="px-4 py-3 border-b border-neutral-200 dark:border-neutral-700">{t('cd.mbkm')}</th>
+                                                        <th class="px-4 py-3 border-b border-neutral-200 dark:border-neutral-700">{t('cd.rpl')}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
@@ -246,12 +247,12 @@ export default function MasterShowPage() {
                                                                 <td class="px-4 py-3">{detail.credit || '-'}</td>
                                                                 <td class="px-4 py-3">
                                                                     <span class={`px-2 py-1 text-xs font-medium rounded ${detail.is_convertable_to_mbkm ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
-                                                                        {detail.is_convertable_to_mbkm ? 'Yes' : 'No'}
+                                                                        {detail.is_convertable_to_mbkm ? t('cd.yes') : t('cd.no')}
                                                                     </span>
                                                                 </td>
                                                                 <td class="px-4 py-3">
                                                                     <span class={`px-2 py-1 text-xs font-medium rounded ${detail.is_convertable_to_prior_learning_recognition ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
-                                                                        {detail.is_convertable_to_prior_learning_recognition ? 'Yes' : 'No'}
+                                                                        {detail.is_convertable_to_prior_learning_recognition ? t('cd.yes') : t('cd.no')}
                                                                     </span>
                                                                 </td>
                                                             </tr>
@@ -278,15 +279,15 @@ export default function MasterShowPage() {
                                                         </div>
                                                         <div class="grid grid-cols-2 gap-2 text-xs pt-3 border-t border-neutral-100 dark:border-neutral-800">
                                                             <div>
-                                                                <span class="text-neutral-500 dark:text-neutral-400 block mb-1">MBKM</span>
+                                                                <span class="text-neutral-500 dark:text-neutral-400 block mb-1">{t('cd.mbkm')}</span>
                                                                 <span class={`inline-block px-2 py-1 font-medium rounded ${detail.is_convertable_to_mbkm ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
-                                                                    {detail.is_convertable_to_mbkm ? 'Yes' : 'No'}
+                                                                    {detail.is_convertable_to_mbkm ? t('cd.yes') : t('cd.no')}
                                                                 </span>
                                                             </div>
                                                             <div>
-                                                                <span class="text-neutral-500 dark:text-neutral-400 block mb-1">RPL</span>
+                                                                <span class="text-neutral-500 dark:text-neutral-400 block mb-1">{t('cd.rpl')}</span>
                                                                 <span class={`inline-block px-2 py-1 font-medium rounded ${detail.is_convertable_to_prior_learning_recognition ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
-                                                                    {detail.is_convertable_to_prior_learning_recognition ? 'Yes' : 'No'}
+                                                                    {detail.is_convertable_to_prior_learning_recognition ? t('cd.yes') : t('cd.no')}
                                                                 </span>
                                                             </div>
                                                         </div>

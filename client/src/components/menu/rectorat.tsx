@@ -72,7 +72,7 @@ export default function MenuRectorat() {
                             </li>
                             <li>
                                 <A href={`/rectorat/institution/${instId()}/academic/student/campaign/student-activity`} class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
-                                    <span class="size-1.5 rounded-full bg-purple-400"></span> Aktivitas Semester Mahasiswa
+                                    <span class="size-1.5 rounded-full bg-purple-400"></span> {t('menu.rectorat.studentSemesterActivities')}
                                 </A>
                             </li>
                             <li>
@@ -124,17 +124,17 @@ export default function MenuRectorat() {
                             </li>
                             <li>
                                 <A href={`/rectorat/institution/${instId()}/employee`} class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
-                                    <span class="size-1.5 rounded-full bg-indigo-400"></span> Pegawai
+                                    <span class="size-1.5 rounded-full bg-indigo-400"></span> {t('menu.rectorat.employees')}
                                 </A>
                             </li>
                             <li>
                                 <A href={`/rectorat/institution/${instId()}/staff`} class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
-                                    <span class="size-1.5 rounded-full bg-teal-400"></span> Staf
+                                    <span class="size-1.5 rounded-full bg-teal-400"></span> {t('menu.rectorat.staff')}
                                 </A>
                             </li>
                             <li>
                                 <A href={`/rectorat/institution/${instId()}/academic`} class="flex items-center gap-2 py-1.5 px-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded">
-                                    <span class="size-1.5 rounded-full bg-blue-400"></span> Akademik
+                                    <span class="size-1.5 rounded-full bg-blue-400"></span> {t('menu.rectorat.academic')}
                                 </A>
                             </li>
                         </ul>
@@ -152,7 +152,7 @@ export default function MenuRectorat() {
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                         <path d="m9 12 2 2 4-4" />
                     </svg>
-                    <span>Quality Assurance (SPMI)</span>
+                    <span>{t('menu.rectorat.qualityAssuranceSpmi')}</span>
                 </A>
             </li>
 
@@ -167,7 +167,7 @@ export default function MenuRectorat() {
                         <path d="M5 21V7l8-4v18" />
                         <path d="M19 21V11l-6-4" />
                     </svg>
-                    <span>Campus Infrastructure</span>
+                    <span>{t('menu.rectorat.campusInfrastructure')}</span>
                 </A>
             </li>
         </ul>

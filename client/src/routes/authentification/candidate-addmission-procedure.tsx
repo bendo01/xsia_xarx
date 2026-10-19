@@ -2,6 +2,7 @@ import { onMount, Show, For, type JSX } from 'solid-js';
 import { A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { getInstitutionLogo } from '~/lib/institutionLogo';
+import { t } from '../../i18n';
 
 interface DocumentItem {
     name: string;
@@ -22,123 +23,123 @@ interface StepItem {
     points: string[];
 }
 
-const documents: DocumentItem[] = [
+const getDocuments = (): DocumentItem[] => [
     {
-        name: 'Kartu Keluarga (KK)',
-        description: 'Kartu Keluarga terbaru yang memuat nama Anda beserta orang tua atau wali.',
-        format: 'JPG, PNG atau PDF • maks. 5 MB',
+        name: t('au.kartuKeluargaKK'),
+        description: t('au.kartuKeluargaTerbaruYangMemuatNama'),
+        format: t('au.jpgPNGAtauPDFMaks5'),
         tips: [
-            'Pindai atau foto seluruh halaman KK hingga keempat sudutnya terlihat.',
-            'Pastikan nomor KK (16 digit) dan seluruh nama anggota keluarga terbaca jelas.',
+            t('au.pindaiAtauFotoSeluruhHalamanKK'),
+            t('au.pastikanNomorKK16DigitDan'),
         ],
     },
     {
-        name: 'Kartu Tanda Penduduk (KTP)',
-        description: 'KTP elektronik milik Anda. Jika belum memiliki KTP, gunakan Kartu Identitas Anak (KIA) atau surat keterangan kependudukan.',
-        format: 'JPG, PNG atau PDF • maks. 5 MB',
+        name: t('au.kartuTandaPendudukKTP'),
+        description: t('au.ktpElektronikMilikAndaJikaBelum'),
+        format: t('au.jpgPNGAtauPDFMaks5'),
         tips: [
-            'Foto KTP di atas permukaan polos dengan pencahayaan cukup, hindari pantulan cahaya (glare).',
-            'NIK pada KTP harus sama dengan NIK yang Anda isi pada formulir pendaftaran.',
+            t('au.fotoKTPDiAtasPermukaanPolos'),
+            t('au.nikPadaKTPHarusSamaDengan'),
         ],
     },
     {
-        name: 'Pas Foto',
-        description: 'Pas foto berwarna terbaru dengan wajah menghadap ke depan.',
-        format: 'JPG atau PNG • maks. 5 MB (PDF tidak diterima)',
+        name: t('au.pasFoto'),
+        description: t('au.pasFotoBerwarnaTerbaruDenganWajah'),
+        format: t('au.jpgAtauPNGMaks5MB'),
         tips: [
-            'Gunakan latar belakang polos (merah atau biru) dan pakaian rapi berkerah.',
-            'Wajah terlihat jelas, tidak memakai kacamata hitam atau masker.',
-            'Foto akan digunakan untuk kartu ujian dan kartu mahasiswa, jadi gunakan foto yang layak.',
+            t('au.gunakanLatarBelakangPolosMerahAtau'),
+            t('au.wajahTerlihatJelasTidakMemakaiKacamata'),
+            t('au.fotoAkanDigunakanUntukKartuUjian'),
         ],
     },
     {
-        name: 'Ijazah SMA / SMK / MA',
-        description: 'Ijazah sekolah menengah atas atau sederajat. Bagi lulusan tahun berjalan yang ijazahnya belum terbit, unggah Surat Keterangan Lulus (SKL) dari sekolah.',
-        format: 'JPG, PNG atau PDF • maks. 5 MB',
+        name: t('au.ijazahSMASMKMA'),
+        description: t('au.ijazahSekolahMenengahAtasAtauSederajat'),
+        format: t('au.jpgPNGAtauPDFMaks5'),
         tips: [
-            'Unggah halaman depan ijazah yang memuat nama, tanggal lahir, dan nomor seri ijazah.',
-            'Ijazah atau SKL asli wajib dibawa saat verifikasi berkas di kampus.',
+            t('au.unggahHalamanDepanIjazahYangMemuat'),
+            t('au.ijazahAtauSKLAsliWajibDibawa'),
         ],
     },
 ];
 
-const dataChecklist: string[] = [
-    'NIK 16 digit sesuai KTP / Kartu Keluarga',
-    'Nomor Kartu Keluarga 16 digit',
-    'NISN 10 digit (jika ada) dan nama sekolah asal',
-    'Email aktif yang dapat Anda buka',
-    'Nomor WhatsApp aktif',
-    'NIK, nama, tempat dan tanggal lahir ibu kandung',
-    'Data ayah kandung (opsional) atau wali (jika diperlukan)',
+const getDataChecklist = (): string[] => [
+    t('au.nik16DigitSesuaiKTPKartu'),
+    t('au.nomorKartuKeluarga16Digit'),
+    t('au.nisn10DigitJikaAdaDan'),
+    t('au.emailAktifYangDapatAndaBuka'),
+    t('au.nomorWhatsAppAktif'),
+    t('au.nikNamaTempatDanTanggalLahir'),
+    t('au.dataAyahKandungOpsionalAtauWali'),
 ];
 
-const formFields: FieldItem[] = [
-    { label: 'Nama Lengkap', description: 'Tulis sesuai KTP atau ijazah, tanpa gelar dan tanpa singkatan.', required: true },
-    { label: 'NIK', description: '16 digit angka Nomor Induk Kependudukan, sesuai KTP atau Kartu Keluarga.', required: true },
-    { label: 'Jenis Kelamin & Agama', description: 'Pilih sesuai data kependudukan Anda.', required: true },
-    { label: 'Tempat & Tanggal Lahir', description: 'Isi kota/kabupaten tempat lahir dan pilih tanggal lahir sesuai akta kelahiran.', required: true },
-    { label: 'Nomor WhatsApp', description: 'Gunakan format 62 (contoh: 6281234567890). Informasi seleksi akan dikirim ke nomor ini.', required: true },
-    { label: 'NISN', description: '10 digit Nomor Induk Siswa Nasional. Dapat dicek di ijazah, rapor, atau situs NISN Kemendikdasmen.', required: false },
-    { label: 'Nama Sekolah Asal', description: 'Nama SMA / SMK / MA tempat Anda lulus.', required: false },
-    { label: 'Email', description: 'Email aktif milik sendiri. Email ini menjadi nama pengguna saat masuk ke portal.', required: true },
-    { label: 'Kata Sandi & Konfirmasi', description: 'Minimal 6 karakter. Simpan baik-baik dan jangan berikan kepada orang lain.', required: true },
+const getFormFields = (): FieldItem[] => [
+    { label: t('au.namaLengkap2'), description: t('au.tulisSesuaiKTPAtauIjazahTanpa'), required: true },
+    { label: t('au.nik'), description: t('au.n16DigitAngkaNomorIndukKependudukan'), required: true },
+    { label: t('au.jenisKelaminAgama'), description: t('au.pilihSesuaiDataKependudukanAnda'), required: true },
+    { label: t('au.tempatTanggalLahir'), description: t('au.isiKotaKabupatenTempatLahirDan'), required: true },
+    { label: t('au.nomorWhatsApp'), description: t('au.gunakanFormat62Contoh6281234567890Informasi'), required: true },
+    { label: t('au.nisn'), description: t('au.n10DigitNomorIndukSiswaNasional'), required: false },
+    { label: t('au.namaSekolahAsal'), description: t('au.namaSMASMKMATempatAnda'), required: false },
+    { label: t('au.email'), description: t('au.emailAktifMilikSendiriEmailIni'), required: true },
+    { label: t('au.kataSandiKonfirmasi'), description: t('au.minimal6KarakterSimpanBaikBaik'), required: true },
 ];
 
-const dashboardSteps: StepItem[] = [
+const getDashboardSteps = (): StepItem[] => [
     {
-        title: 'Pilihan Program Studi',
-        description: 'Tentukan program studi dan kelas yang ingin Anda ikuti.',
+        title: t('au.pilihanProgramStudi'),
+        description: t('au.tentukanProgramStudiDanKelasYang'),
         points: [
-            'Pilih program studi dari daftar yang tersedia di institusi.',
-            'Pilih kelas: Reguler atau Hybrid / Blended.',
-            'Klik "Simpan Pilihan". Pilihan masih dapat diubah selama pendaftaran belum diverifikasi.',
+            t('au.pilihProgramStudiDariDaftarYang'),
+            t('au.pilihKelasRegulerAtauHybridBlended'),
+            t('au.klikSimpanPilihanPilihanMasihDapat'),
         ],
     },
     {
-        title: 'Nomor Kartu Keluarga',
-        description: 'Masukkan 16 digit nomor KK sebelum mengisi data orang tua.',
+        title: t('au.nomorKartuKeluarga'),
+        description: t('au.masukkan16DigitNomorKKSebelum'),
         points: [
-            'Nomor KK tercantum di bagian atas Kartu Keluarga.',
-            'Klik "Simpan". Data orang tua / wali baru dapat ditambahkan setelah nomor KK tersimpan.',
+            t('au.nomorKKTercantumDiBagianAtas'),
+            t('au.klikSimpanDataOrangTuaWali'),
         ],
     },
     {
-        title: 'Data Orang Tua / Wali',
-        description: 'Tambahkan anggota keluarga sesuai hubungan dengan Anda.',
+        title: t('au.dataOrangTuaWali'),
+        description: t('au.tambahkanAnggotaKeluargaSesuaiHubunganDengan'),
         points: [
-            'Data Ibu Kandung wajib diisi, termasuk apabila beliau telah meninggal dunia (centang "Sudah meninggal dunia").',
-            'Data Ayah Kandung bersifat opsional.',
-            'Jika ibu telah meninggal dan ayah telah meninggal atau tidak tercatat (yatim piatu), data Wali (Ayah Wali / Ibu Wali) wajib diisi.',
-            'Setiap anggota keluarga memerlukan NIK 16 digit, nama, tempat dan tanggal lahir. Untuk mengganti data, hapus lalu tambahkan kembali.',
+            t('au.dataIbuKandungWajibDiisiTermasuk'),
+            t('au.dataAyahKandungBersifatOpsional'),
+            t('au.jikaIbuTelahMeninggalDanAyah'),
+            t('au.setiapAnggotaKeluargaMemerlukanNIK16'),
         ],
     },
     {
-        title: 'Unggah Berkas',
-        description: 'Unggah keempat dokumen yang telah Anda siapkan.',
+        title: t('au.unggahBerkas'),
+        description: t('au.unggahKeempatDokumenYangTelahAnda'),
         points: [
-            'Klik "Pilih Berkas" pada setiap jenis dokumen, lalu pilih file dari perangkat Anda.',
-            'Status berubah menjadi "Terunggah" bila berhasil. Gunakan tombol "Lihat" untuk memeriksa kembali.',
-            'Berkas yang salah dapat diganti dengan "Ganti Berkas"; berkas lama otomatis tergantikan.',
+            t('au.klikPilihBerkasPadaSetiapJenis'),
+            t('au.statusBerubahMenjadiTerunggahBilaBerhasil'),
+            t('au.berkasYangSalahDapatDigantiDengan'),
         ],
     },
 ];
 
-const faqs: { question: string; answer: string }[] = [
+const getFaqs = (): { question: string; answer: string }[] => [
     {
-        question: 'NIK saya ditolak karena "sudah memiliki akun". Apa yang harus dilakukan?',
-        answer: 'Artinya NIK tersebut sudah pernah didaftarkan. Masuk menggunakan email yang dulu dipakai, atau gunakan menu Lupa Kata Sandi. Jika Anda tidak pernah mendaftar, hubungi panitia PMB.',
+        question: t('au.nikSayaDitolakKarenaSudahMemiliki'),
+        answer: t('au.artinyaNIKTersebutSudahPernahDidaftarkan'),
     },
     {
-        question: 'Apakah data bisa diubah setelah formulir dikirim?',
-        answer: 'Pilihan program studi, nomor KK, data orang tua/wali, dan berkas dapat diperbarui dari dasbor calon mahasiswa. Perubahan data diri (nama, NIK, tanggal lahir) dilakukan melalui panitia PMB.',
+        question: t('au.apakahDataBisaDiubahSetelahFormulir'),
+        answer: t('au.pilihanProgramStudiNomorKKData'),
     },
     {
-        question: 'Saya belum memiliki ijazah karena baru lulus tahun ini.',
-        answer: 'Unggah Surat Keterangan Lulus (SKL) dari sekolah pada kolom Ijazah. Ijazah asli diserahkan saat daftar ulang.',
+        question: t('au.sayaBelumMemilikiIjazahKarenaBaru'),
+        answer: t('au.unggahSuratKeteranganLulusSKLDari'),
     },
     {
-        question: 'Ukuran file saya lebih dari 5 MB.',
-        answer: 'Kompres gambar menggunakan aplikasi pemindai di ponsel (mis. mode "dokumen") atau simpan ulang dengan resolusi lebih kecil. Pastikan tulisan tetap terbaca.',
+        question: t('au.ukuranFileSayaLebihDari5'),
+        answer: t('au.kompresGambarMenggunakanAplikasiPemindaiDi'),
     },
 ];
 
@@ -146,7 +147,7 @@ function SectionHeading(props: { number: string; title: string; subtitle: string
     return (
         <div class="mb-6">
             <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-xs bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-mono font-bold uppercase mb-2 border border-emerald-500/20">
-                Bagian {props.number}
+                {t('au.bagian')} {props.number}
             </div>
             <h2 class="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white tracking-wide mb-1">{props.title}</h2>
             <p class="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed max-w-3xl">{props.subtitle}</p>
@@ -186,26 +187,25 @@ export default function CandidateAdmissionProcedure() {
                     <header class="flex flex-col items-center text-center">
                         <Show when={getInstitutionLogo()}>
                             {(logo) => (
-                                <img src={logo()} alt="Logo Institusi" class="h-20 sm:h-24 w-auto object-contain mb-6 drop-shadow-[0_0_25px_rgba(16,185,129,0.35)]" />
+                                <img src={logo()} alt={t('au.logoInstitusi')} class="h-20 sm:h-24 w-auto object-contain mb-6 drop-shadow-[0_0_25px_rgba(16,185,129,0.35)]" />
                             )}
                         </Show>
                         <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-semibold tracking-wide uppercase mb-5">
                             <span class="size-2 rounded-full bg-amber-400 animate-pulse"></span>
-                            <span>Penerimaan Mahasiswa Baru • Panduan Pendaftaran</span>
+                            <span>{t('au.penerimaanMahasiswaBaruPanduanPendaftaran')}</span>
                         </div>
                         <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-neutral-900 dark:text-white max-w-3xl leading-tight mb-4">
-                            Persiapan Dokumen dan Cara Mengisi Formulir Pendaftaran
+                            {t('au.persiapanDokumenDanCaraMengisiFormulir')}
                         </h1>
                         <p class="text-base sm:text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl leading-relaxed mb-8">
-                            Pendaftaran calon mahasiswa baru dilakukan sepenuhnya secara daring. Baca panduan ini sampai selesai,
-                            siapkan dokumen yang diperlukan, lalu ikuti langkah-langkahnya agar pendaftaran Anda lengkap dan dapat segera diverifikasi.
+                            {t('au.pendaftaranCalonMahasiswaBaruDilakukanSepenuhnya')}
                         </p>
                         <div class="flex flex-wrap items-center justify-center gap-3">
                             <A
                                 href="/authentification/candidate-addmission-form"
                                 class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xs bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition-all shadow-[0_0_25px_rgba(16,185,129,0.4)] hover:-translate-y-0.5"
                             >
-                                <span>Isi Formulir Pendaftaran</span>
+                                <span>{t('au.isiFormulirPendaftaran')}</span>
                                 <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <line x1="5" y1="12" x2="19" y2="12" />
                                     <polyline points="12 5 19 12 12 19" />
@@ -215,16 +215,16 @@ export default function CandidateAdmissionProcedure() {
                                 href="/authentification/login_with_session"
                                 class="inline-flex items-center gap-2 px-5 py-3.5 rounded-xs bg-neutral-100 dark:bg-slate-800/80 hover:bg-neutral-200 dark:hover:bg-slate-700/80 border border-neutral-300 dark:border-slate-700 text-neutral-700 dark:text-neutral-200 text-sm font-semibold transition-all"
                             >
-                                Sudah mendaftar? Masuk
+                                {t('au.sudahMendaftarMasuk')}
                             </A>
                         </div>
                     </header>
 
                     {/* Overview */}
                     <Card>
-                        <h2 class="text-lg font-bold text-neutral-900 dark:text-white mb-4">Alur Pendaftaran Secara Singkat</h2>
+                        <h2 class="text-lg font-bold text-neutral-900 dark:text-white mb-4">{t('au.alurPendaftaranSecaraSingkat')}</h2>
                         <ol class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <For each={['Siapkan dokumen dan data', 'Isi formulir pendaftaran akun', 'Lengkapi data di dasbor calon mahasiswa', 'Tunggu verifikasi panitia PMB']}>
+                            <For each={[t('au.siapkanDokumenDanData'), t('au.isiFormulirPendaftaranAkun'), t('au.lengkapiDataDiDasborCalonMahasiswa'), t('au.tungguVerifikasiPanitiaPMB')]}>
                                 {(item, index) => (
                                     <li class="p-4 rounded-xs bg-neutral-100/80 dark:bg-slate-950/40 border border-neutral-200 dark:border-slate-800/60 flex items-start gap-3">
                                         <span class="size-6 shrink-0 rounded-xs bg-emerald-600 text-white text-xs font-bold font-mono flex items-center justify-center">
@@ -241,16 +241,16 @@ export default function CandidateAdmissionProcedure() {
                     <section>
                         <SectionHeading
                             number="1"
-                            title="Persiapan Dokumen"
-                            subtitle="Siapkan file digital dokumen berikut sebelum mulai mendaftar. Keempat dokumen wajib diunggah agar pendaftaran dinyatakan lengkap."
+                            title={t('au.persiapanDokumen')}
+                            subtitle={t('au.siapkanFileDigitalDokumenBerikutSebelum')}
                         />
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <For each={documents}>
+                            <For each={getDocuments()}>
                                 {(doc) => (
                                     <div class="bg-white/80 dark:bg-slate-900/60 border border-neutral-200 dark:border-slate-800 rounded-xs p-5 space-y-3">
                                         <div class="flex items-start justify-between gap-3">
                                             <h3 class="text-base font-bold text-neutral-900 dark:text-white">{doc.name}</h3>
-                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-xs bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/30 whitespace-nowrap">Wajib</span>
+                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-xs bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/30 whitespace-nowrap">{t('au.wajib')}</span>
                                         </div>
                                         <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">{doc.description}</p>
                                         <p class="text-xs font-mono text-emerald-700 dark:text-emerald-300">{doc.format}</p>
@@ -270,9 +270,9 @@ export default function CandidateAdmissionProcedure() {
                         </div>
 
                         <Card class="mt-4">
-                            <h3 class="text-base font-bold text-neutral-900 dark:text-white mb-3">Data yang Perlu Disiapkan</h3>
+                            <h3 class="text-base font-bold text-neutral-900 dark:text-white mb-3">{t('au.dataYangPerluDisiapkan')}</h3>
                             <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-neutral-600 dark:text-neutral-300">
-                                <For each={dataChecklist}>
+                                <For each={getDataChecklist()}>
                                     {(item) => (
                                         <li class="flex items-start gap-2">
                                             <svg class="size-4 mt-0.5 shrink-0 text-emerald-700 dark:text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -284,8 +284,7 @@ export default function CandidateAdmissionProcedure() {
                                 </For>
                             </ul>
                             <p class="mt-4 text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
-                                Format file yang diterima adalah JPG, PNG, dan PDF dengan ukuran maksimal 5 MB per file. Pastikan file tidak buram,
-                                tidak terpotong, dan seluruh tulisan dapat dibaca dengan jelas.
+                                {t('au.formatFileYangDiterimaAdalahJPG')}
                             </p>
                         </Card>
                     </section>
@@ -294,21 +293,21 @@ export default function CandidateAdmissionProcedure() {
                     <section>
                         <SectionHeading
                             number="2"
-                            title="Mengisi Formulir Pendaftaran"
-                            subtitle="Formulir ini membuat akun pendaftaran Anda. Setelah berhasil, Anda otomatis masuk ke dasbor calon mahasiswa."
+                            title={t('au.mengisiFormulirPendaftaran')}
+                            subtitle={t('au.formulirIniMembuatAkunPendaftaranAnda')}
                         />
                         <Card>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left text-sm">
                                     <thead>
                                         <tr class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 border-b border-neutral-200 dark:border-slate-800">
-                                            <th class="py-2 pr-4 font-semibold">Kolom</th>
-                                            <th class="py-2 pr-4 font-semibold">Keterangan</th>
-                                            <th class="py-2 font-semibold">Status</th>
+                                            <th class="py-2 pr-4 font-semibold">{t('au.kolom')}</th>
+                                            <th class="py-2 pr-4 font-semibold">{t('au.keterangan')}</th>
+                                            <th class="py-2 font-semibold">{t('au.status')}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <For each={formFields}>
+                                        <For each={getFormFields()}>
                                             {(field) => (
                                                 <tr class="border-b border-neutral-200 dark:border-slate-800/60 align-top">
                                                     <td class="py-3 pr-4 font-semibold text-neutral-900 dark:text-white whitespace-nowrap">{field.label}</td>
@@ -321,7 +320,7 @@ export default function CandidateAdmissionProcedure() {
                                                                 'bg-neutral-200/60 dark:bg-slate-700/40 text-neutral-600 dark:text-neutral-300 border-neutral-400 dark:border-slate-600': !field.required,
                                                             }}
                                                         >
-                                                            {field.required ? 'Wajib' : 'Opsional'}
+                                                            {field.required ? t('au.wajib') : t('au.opsional')}
                                                         </span>
                                                     </td>
                                                 </tr>
@@ -337,8 +336,8 @@ export default function CandidateAdmissionProcedure() {
                                     <line x1="12" y1="8" x2="12.01" y2="8" />
                                 </svg>
                                 <span class="leading-relaxed">
-                                    Satu NIK dan satu email hanya dapat digunakan untuk satu akun. Periksa kembali seluruh isian sebelum menekan tombol
-                                    <strong class="text-neutral-900 dark:text-white"> Daftar Sekarang</strong>, karena data diri menjadi dasar penerbitan dokumen akademik Anda.
+                                    {t('au.satuNIKDanSatuEmailHanya')}
+                                    <strong class="text-neutral-900 dark:text-white"> {t('au.daftarSekarang')}</strong>{t('au.karenaDataDiriMenjadiDasarPenerbitan')}
                                 </span>
                             </div>
                         </Card>
@@ -348,11 +347,11 @@ export default function CandidateAdmissionProcedure() {
                     <section>
                         <SectionHeading
                             number="3"
-                            title="Melengkapi Data di Dasbor Calon Mahasiswa"
-                            subtitle="Setelah mendaftar, dasbor menampilkan status kelengkapan dari empat tahapan berikut. Pendaftaran dinyatakan lengkap bila seluruh tahapan berstatus Lengkap."
+                            title={t('au.melengkapiDataDiDasborCalonMahasiswa')}
+                            subtitle={t('au.setelahMendaftarDasborMenampilkanStatusKelengkapan')}
                         />
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <For each={dashboardSteps}>
+                            <For each={getDashboardSteps()}>
                                 {(step, index) => (
                                     <div class="bg-white/80 dark:bg-slate-900/60 border border-neutral-200 dark:border-slate-800 rounded-xs p-5 space-y-3">
                                         <div class="flex items-center gap-3">
@@ -382,11 +381,11 @@ export default function CandidateAdmissionProcedure() {
                     <section>
                         <SectionHeading
                             number="4"
-                            title="Pertanyaan yang Sering Diajukan"
-                            subtitle="Beberapa kendala yang umum dialami calon mahasiswa saat mendaftar."
+                            title={t('au.pertanyaanYangSeringDiajukan')}
+                            subtitle={t('au.beberapaKendalaYangUmumDialamiCalon')}
                         />
                         <div class="space-y-3">
-                            <For each={faqs}>
+                            <For each={getFaqs()}>
                                 {(faq) => (
                                     <details class="group bg-white/80 dark:bg-slate-900/60 border border-neutral-200 dark:border-slate-800 rounded-xs p-5">
                                         <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer flex items-center justify-between gap-4 text-sm font-semibold text-neutral-900 dark:text-white">
@@ -405,19 +404,19 @@ export default function CandidateAdmissionProcedure() {
                     {/* Closing CTA */}
                     <section class="bg-linear-to-r from-emerald-50 dark:from-emerald-950/40 via-white/60 dark:via-slate-900/60 to-blue-50 dark:to-blue-950/40 border border-emerald-500/20 rounded-xs p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div>
-                            <h2 class="text-xl font-bold text-neutral-900 dark:text-white mb-1">Dokumen Anda sudah siap?</h2>
-                            <p class="text-sm text-neutral-600 dark:text-neutral-300">Mulai pendaftaran sekarang. Proses pengisian formulir hanya membutuhkan beberapa menit.</p>
+                            <h2 class="text-xl font-bold text-neutral-900 dark:text-white mb-1">{t('au.dokumenAndaSudahSiap')}</h2>
+                            <p class="text-sm text-neutral-600 dark:text-neutral-300">{t('au.mulaiPendaftaranSekarangProsesPengisianFormulir')}</p>
                         </div>
                         <A
                             href="/authentification/candidate-addmission-form"
                             class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xs bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold shrink-0 transition-colors"
                         >
-                            Daftar Sekarang
+                            {t('au.daftarSekarang')}
                         </A>
                     </section>
 
                     <footer class="text-center pt-8 border-t border-neutral-200 dark:border-slate-800/80 text-xs text-neutral-500">
-                        Butuh bantuan? Hubungi Panitia Penerimaan Mahasiswa Baru atau Biro Administrasi Akademik dan Kemahasiswaan.
+                        {t('au.butuhBantuanHubungiPanitiaPenerimaanMahasiswa')}
                     </footer>
                 </article>
             </main>

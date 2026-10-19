@@ -6,6 +6,7 @@ import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
 import { LocationProvinceControllerUpsert } from '~/controllers/location/LocationProvinceController';
 import { LocationCountryControllerList } from '~/controllers/location/LocationCountryController';
 import { masterApiShow } from '~/controllers/master/masterApiController';
+import { t } from '../../../../../i18n';
 
 export default function LocationProvinceEditPage() {
     const params = useParams();
@@ -45,11 +46,11 @@ export default function LocationProvinceEditPage() {
                 setCountryId(p.country_id || '');
                 setDescription(p.description || '');
             } else {
-                toast.danger('Province not found');
+                toast.danger(t('ad.provinceNotFound'));
             }
         } catch (e: any) {
             console.error('Error loading province:', e);
-            toast.danger('Failed to load province data');
+            toast.danger(t('ad.failedToLoadProvinceData'));
         } finally {
             setIsLoading(false);
         }
@@ -70,7 +71,7 @@ export default function LocationProvinceEditPage() {
     const handleSubmit = async (e: Event) => {
         e.preventDefault();
         if (!name().trim()) {
-            toast.warning('Province name is required');
+            toast.warning(t('ad.provinceNameIsRequired'));
             return;
         }
 
@@ -87,13 +88,13 @@ export default function LocationProvinceEditPage() {
             });
 
             if (!res.is_error) {
-                toast.success(res.message || 'Province updated successfully!');
+                toast.success(res.message || t('ad.provinceUpdatedSuccessfully'));
                 navigate(`${basePath}/${id()}`);
             } else {
-                toast.danger(res.message || 'Failed to update province.');
+                toast.danger(res.message || t('ad.failedToUpdateProvince'));
             }
         } catch (err: any) {
-            toast.danger(err.message || 'Network error occurred.');
+            toast.danger(err.message || t('ad.networkErrorOccurred'));
         } finally {
             setIsSubmitting(false);
         }
@@ -107,18 +108,18 @@ export default function LocationProvinceEditPage() {
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div class="min-w-0">
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
-                            <a href="/" class="hover:text-blue-600 transition-colors shrink-0">Home</a>
+                            <a href="/" class="hover:text-blue-600 transition-colors shrink-0">{t('ad.home')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="shrink-0">Location</span>
+                            <span class="shrink-0">{t('ad.location')}</span>
                             <span class="shrink-0">/</span>
-                            <a href={basePath} class="hover:text-blue-600 transition-colors shrink-0">Province</a>
+                            <a href={basePath} class="hover:text-blue-600 transition-colors shrink-0">{t('ad.province')}</a>
                             <span class="shrink-0">/</span>
-                            <a href={`${basePath}/${id()}`} class="hover:text-blue-600 transition-colors shrink-0">Detail</a>
+                            <a href={`${basePath}/${id()}`} class="hover:text-blue-600 transition-colors shrink-0">{t('ad.detail2')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white shrink-0">Edit</span>
+                            <span class="font-medium text-neutral-900 dark:text-white shrink-0">{t('ad.edit')}</span>
                         </nav>
                         <h1 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono truncate">
-                            Edit Province
+                            {t('ad.editProvince')}
                         </h1>
                     </div>
 
@@ -130,7 +131,7 @@ export default function LocationProvinceEditPage() {
                             <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6"/>
                             </svg>
-                            <span>Cancel</span>
+                            <span>{t('ad.cancel')}</span>
                         </a>
                     </div>
                 </div>
@@ -150,21 +151,21 @@ export default function LocationProvinceEditPage() {
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                        Province Name <span class="text-red-500">*</span>
+                                        {t('ad.provinceName')} <span class="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="text"
                                         required
                                         value={name()}
                                         onInput={(e) => setName(e.currentTarget.value)}
-                                        placeholder="e.g. Jawa Barat"
+                                        placeholder={t('ad.eGJawaBarat')}
                                         class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                     />
                                 </div>
 
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                        Code
+                                        {t('ad.code2')}
                                     </label>
                                     <input
                                         type="text"
@@ -177,14 +178,14 @@ export default function LocationProvinceEditPage() {
 
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                        Country
+                                        {t('ad.country')}
                                     </label>
                                     <select
                                         value={countryId()}
                                         onChange={(e) => setCountryId(e.currentTarget.value)}
                                         class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                     >
-                                        <option value="">Select Country</option>
+                                        <option value="">{t('ad.selectCountry2')}</option>
                                         <For each={countryOptions()}>
                                             {(c) => <option value={c.value}>{c.label}</option>}
                                         </For>
@@ -193,7 +194,7 @@ export default function LocationProvinceEditPage() {
 
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                        DIKTI Code
+                                        {t('ad.diktiCode2')}
                                     </label>
                                     <input
                                         type="text"
@@ -206,7 +207,7 @@ export default function LocationProvinceEditPage() {
 
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                        EPSBED Code
+                                        {t('ad.epsbedCode')}
                                     </label>
                                     <input
                                         type="text"
@@ -219,13 +220,13 @@ export default function LocationProvinceEditPage() {
 
                                 <div class="sm:col-span-2">
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                        Description
+                                        {t('ad.description')}
                                     </label>
                                     <textarea
                                         rows="3"
                                         value={description()}
                                         onInput={(e) => setDescription(e.currentTarget.value)}
-                                        placeholder="Optional notes or description..."
+                                        placeholder={t('ad.optionalNotesOrDescription')}
                                         class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                     />
                                 </div>
@@ -236,14 +237,14 @@ export default function LocationProvinceEditPage() {
                                     href={`${basePath}/${id()}`}
                                     class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 text-xs sm:text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                                 >
-                                    Cancel
+                                    {t('ad.cancel')}
                                 </a>
                                 <button
                                     type="submit"
                                     disabled={isSubmitting()}
                                     class="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 transition-colors cursor-pointer"
                                 >
-                                    {isSubmitting() ? 'Updating...' : 'Save Changes'}
+                                    {isSubmitting() ? t('ad.updating') : t('ad.saveChanges')}
                                 </button>
                             </div>
                         </form>

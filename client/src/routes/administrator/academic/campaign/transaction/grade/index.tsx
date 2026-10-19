@@ -10,6 +10,7 @@ import {
     type GradeItem,
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionGradeController';
 import { getUnitOptions } from '~/controllers/institution/master/InstitutionMasterUnitController';
+import { t } from '../../../../../../i18n';
 
 interface SelectOption {
     id: string;
@@ -132,7 +133,7 @@ export default function AcademicCampaignTransactionGradePage() {
             setTotalPages(res.total_pages || Math.max(1, Math.ceil((res.total || items.length) / itemsPerPage())));
         } catch (error) {
             console.error('Error fetching grades:', error);
-            toast.danger('Failed to load grade scales.');
+            toast.danger(t('ad.failedToLoadGradeScales'));
             setGrades([]);
             setTotalData(0);
         } finally {
@@ -169,7 +170,7 @@ export default function AcademicCampaignTransactionGradePage() {
     const handleRefresh = async () => {
         setIsRefreshing(true);
         await Promise.all([loadOptions(), fetchData()]);
-        toast.success('Grade records refreshed successfully.');
+        toast.success(t('ad.gradeRecordsRefreshedSuccessfully'));
     };
 
     // Calculate Summary KPIs
@@ -236,7 +237,7 @@ export default function AcademicCampaignTransactionGradePage() {
     const copyToClipboard = (text: string, label: string) => {
         if (!text) return;
         navigator.clipboard.writeText(text);
-        toast.success(`Copied ${label} to clipboard`, 3000);
+        toast.success(t('ad.copiedLabelToClipboard', { label }), 3000);
     };
 
     // Modal Openers
@@ -286,26 +287,26 @@ export default function AcademicCampaignTransactionGradePage() {
         const form = formState();
 
         if (!form.name.trim()) {
-            toast.danger('Grade name is required.');
+            toast.danger(t('ad.gradeNameIsRequired'));
             return;
         }
         if (!form.unit_id) {
-            toast.danger('Unit is required.');
+            toast.danger(t('ad.unitIsRequired'));
             return;
         }
         const grade = Number(form.grade);
         const minimum = Number(form.minimum);
         const maximum = Number(form.maximum);
         if ([form.grade, form.minimum, form.maximum].some((v) => v.trim() === '') || [grade, minimum, maximum].some(Number.isNaN)) {
-            toast.danger('Grade point, minimum and maximum score are required numbers.');
+            toast.danger(t('ad.gradePointMinimumAndMaximumScore'));
             return;
         }
         if (minimum > maximum) {
-            toast.danger('Minimum score cannot be greater than maximum score.');
+            toast.danger(t('ad.minimumScoreCannotBeGreaterThan'));
             return;
         }
         if (form.start_date && form.end_date && form.start_date > form.end_date) {
-            toast.danger('Start date cannot be after end date.');
+            toast.danger(t('ad.startDateCannotBeAfterEnd'));
             return;
         }
 
@@ -326,26 +327,26 @@ export default function AcademicCampaignTransactionGradePage() {
             if (modalMode() === 'create') {
                 const res = await createGrade(payload);
                 if (res.success) {
-                    toast.success('Grade scale created successfully!');
+                    toast.success(t('ad.gradeScaleCreatedSuccessfully'));
                     closeFormModal();
                     fetchData();
                 } else {
-                    toast.danger(res.message || 'Failed to create grade scale.');
+                    toast.danger(res.message || t('ad.failedToCreateGradeScale'));
                 }
             } else {
                 const target = selectedGrade();
                 if (!target?.id) return;
                 const res = await updateGrade(target.id, payload);
                 if (res.success) {
-                    toast.success('Grade scale updated successfully!');
+                    toast.success(t('ad.gradeScaleUpdatedSuccessfully'));
                     closeFormModal();
                     fetchData();
                 } else {
-                    toast.danger(res.message || 'Failed to update grade scale.');
+                    toast.danger(res.message || t('ad.failedToUpdateGradeScale'));
                 }
             }
         } catch (err: any) {
-            toast.danger(err.message || 'An unexpected error occurred.');
+            toast.danger(err.message || t('ad.anUnexpectedErrorOccurred'));
         } finally {
             setIsSubmitting(false);
         }
@@ -360,14 +361,14 @@ export default function AcademicCampaignTransactionGradePage() {
         try {
             const res = await deleteGrade(item.id);
             if (res.success) {
-                toast.success(res.message || 'Grade scale deleted successfully!');
+                toast.success(res.message || t('ad.gradeScaleDeletedSuccessfully'));
                 closeDeleteModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to delete grade scale.');
+                toast.danger(res.message || t('ad.failedToDeleteGradeScale'));
             }
         } catch (err: any) {
-            toast.danger(err.message || 'An error occurred while deleting.');
+            toast.danger(err.message || t('ad.anErrorOccurredWhileDeleting'));
         } finally {
             setIsSubmitting(false);
         }
@@ -398,27 +399,27 @@ export default function AcademicCampaignTransactionGradePage() {
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-5">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1.5 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
-                            <a href="/" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Home</a>
+                            <a href="/" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{t('ad.home')}</a>
                             <span>/</span>
-                            <span>Academic</span>
+                            <span>{t('ad.academic')}</span>
                             <span>/</span>
-                            <span>Campaign</span>
+                            <span>{t('ad.campaign')}</span>
                             <span>/</span>
-                            <span>Transaction</span>
+                            <span>{t('ad.transaction')}</span>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">Grade</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">{t('ad.grade')}</span>
                         </nav>
                         <div class="flex items-center gap-2 mb-1">
                             <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold border border-blue-200 dark:border-blue-800/80">
                                 <span class="size-1.5 rounded-full bg-blue-500"></span>
-                                Administrator Workspace
+                                {t('ad.administratorWorkspace')}
                             </span>
                         </div>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Grade Scales
+                            {t('ad.gradeScales')}
                         </h1>
                         <p class="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 max-w-2xl">
-                            Manage study program grading scales (skala nilai): letter codes, grade points, score ranges and validity periods.
+                            {t('ad.manageStudyProgramGradingScalesSkala')}
                         </p>
                     </div>
 
@@ -435,7 +436,7 @@ export default function AcademicCampaignTransactionGradePage() {
                                 <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
                                 <path d="M16 21h5v-5" />
                             </svg>
-                            <span>Refresh</span>
+                            <span>{t('ad.refresh')}</span>
                         </button>
 
                         <button
@@ -447,7 +448,7 @@ export default function AcademicCampaignTransactionGradePage() {
                                 <path d="M5 12h14" />
                                 <path d="M12 5v14" />
                             </svg>
-                            <span>New Grade</span>
+                            <span>{t('ad.newGrade')}</span>
                         </button>
                     </div>
                 </div>
@@ -455,10 +456,10 @@ export default function AcademicCampaignTransactionGradePage() {
                 {/* Sub-Navigation Tabs */}
                 <div class="flex items-center gap-2 p-1.5 bg-white dark:bg-neutral-800/80 rounded-xs border border-neutral-200 dark:border-neutral-700/80 overflow-x-auto scrollbar-none shadow-2xs">
                     <A href="/administrator/academic/campaign/transaction/activity" class={tabClass}>
-                        <span>Activities</span>
+                        <span>{t('ad.activities')}</span>
                     </A>
                     <A href="/administrator/academic/campaign/transaction/class-code" class={tabClass}>
-                        <span>Class Codes</span>
+                        <span>{t('ad.classCodes')}</span>
                     </A>
                     <A
                         href={basePath}
@@ -468,16 +469,16 @@ export default function AcademicCampaignTransactionGradePage() {
                             <path d="M3 3v18h18" />
                             <path d="m19 9-5 5-4-4-3 3" />
                         </svg>
-                        <span>Grades</span>
+                        <span>{t('ad.grades')}</span>
                     </A>
                     <A href="/administrator/academic/campaign/transaction/teach" class={tabClass}>
-                        <span>Teaching Activities</span>
+                        <span>{t('ad.teachingActivities')}</span>
                     </A>
                     <A href="/administrator/academic/campaign/transaction/teach-lecturer" class={tabClass}>
-                        <span>Teach Lecturers</span>
+                        <span>{t('ad.teachLecturers')}</span>
                     </A>
                     <A href="/administrator/academic/campaign/transaction/teach-evaluation" class={tabClass}>
-                        <span>Evaluations</span>
+                        <span>{t('ad.evaluations')}</span>
                     </A>
                 </div>
 
@@ -485,7 +486,7 @@ export default function AcademicCampaignTransactionGradePage() {
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="bg-white dark:bg-neutral-800 p-4 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">Total Grades</span>
+                            <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">{t('ad.totalGrades')}</span>
                             <span class="px-2 py-0.5 rounded-xs text-[10px] font-mono font-bold bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                                 {summaryStats().activeCount} Active
                             </span>
@@ -500,7 +501,7 @@ export default function AcademicCampaignTransactionGradePage() {
 
                     <div class="bg-white dark:bg-neutral-800 p-4 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">Units Covered</span>
+                            <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">{t('ad.unitsCovered')}</span>
                             <svg class="size-4 text-neutral-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1M9 13h1M14 9h1M14 13h1" />
                             </svg>
@@ -509,13 +510,13 @@ export default function AcademicCampaignTransactionGradePage() {
                             <span class="text-2xl font-bold font-mono text-neutral-900 dark:text-white">
                                 {summaryStats().unitCount}
                             </span>
-                            <span class="text-xs text-neutral-500">on this page</span>
+                            <span class="text-xs text-neutral-500">{t('ad.onThisPage')}</span>
                         </div>
                     </div>
 
                     <div class="bg-white dark:bg-neutral-800 p-4 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">Top Grade Point</span>
+                            <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">{t('ad.topGradePoint')}</span>
                             <span class="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">max</span>
                         </div>
                         <div class="mt-2 flex items-baseline gap-2">
@@ -528,14 +529,14 @@ export default function AcademicCampaignTransactionGradePage() {
 
                     <div class="bg-white dark:bg-neutral-800 p-4 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">Lowest Passing Score</span>
+                            <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">{t('ad.lowestPassingScore')}</span>
                             <span class="text-xs font-mono text-neutral-500">grade &gt; 0</span>
                         </div>
                         <div class="mt-2 flex items-baseline gap-2">
                             <span class="text-2xl font-bold font-mono text-neutral-900 dark:text-white">
                                 {formatNumber(summaryStats().lowestPassing)}
                             </span>
-                            <span class="text-xs text-neutral-500">minimum score</span>
+                            <span class="text-xs text-neutral-500">{t('ad.minimumScore')}</span>
                         </div>
                     </div>
                 </div>
@@ -554,7 +555,7 @@ export default function AcademicCampaignTransactionGradePage() {
                             <input
                                 type="text"
                                 class={`${filterClass} pl-9`}
-                                placeholder="Search by grade name..."
+                                placeholder={t('ad.searchByGradeName')}
                                 value={searchQuery()}
                                 onInput={handleSearchInput}
                             />
@@ -582,7 +583,7 @@ export default function AcademicCampaignTransactionGradePage() {
                                     setCurrentPage(1);
                                 }}
                             >
-                                <option value="">All Units</option>
+                                <option value="">{t('ad.allUnits')}</option>
                                 <For each={unitOptions()}>
                                     {(u) => <option value={u.id}>{u.name}</option>}
                                 </For>
@@ -599,43 +600,43 @@ export default function AcademicCampaignTransactionGradePage() {
                                     setCurrentPage(1);
                                 }}
                             >
-                                <option value="all">All Status</option>
-                                <option value="active">Active Only</option>
-                                <option value="expired">Expired Only</option>
+                                <option value="all">{t('ad.allStatus')}</option>
+                                <option value="active">{t('ad.activeOnly')}</option>
+                                <option value="expired">{t('ad.expiredOnly')}</option>
                             </select>
                         </div>
 
                         <div class="md:col-span-1 flex gap-2">
                             <button
                                 type="button"
-                                title="Reset all filters"
+                                title={t('ad.resetAllFilters')}
                                 onClick={resetFilters}
                                 class="w-full p-2 text-xs flex items-center justify-center font-medium text-neutral-600 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xs transition-colors"
                             >
-                                Reset
+                                {t('ad.reset')}
                             </button>
                         </div>
                     </div>
 
                     <div class="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400 pt-1 border-t border-neutral-100 dark:border-neutral-700/60">
                         <span>
-                            Showing <strong class="text-neutral-800 dark:text-neutral-200">{grades().length > 0 ? startIndex() + 1 : 0}</strong> - <strong class="text-neutral-800 dark:text-neutral-200">{endIndex()}</strong> of <strong class="text-neutral-800 dark:text-neutral-200">{totalData()}</strong> grades
+                            {t('ad.showing')} <strong class="text-neutral-800 dark:text-neutral-200">{grades().length > 0 ? startIndex() + 1 : 0}</strong> - <strong class="text-neutral-800 dark:text-neutral-200">{endIndex()}</strong> of <strong class="text-neutral-800 dark:text-neutral-200">{totalData()}</strong> grades
                         </span>
 
                         <div class="flex items-center gap-2">
-                            <span>Sort:</span>
+                            <span>{t('ad.sort')}</span>
                             <select
                                 class="p-1 text-xs border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200"
                                 value={sortParam()}
                                 onChange={(e) => setSortParam((e.target as HTMLSelectElement).value)}
                             >
-                                <option value="minimum-desc">Score (Highest)</option>
-                                <option value="minimum-asc">Score (Lowest)</option>
-                                <option value="grade-desc">Grade Point (Highest)</option>
-                                <option value="name-asc">Name (A-Z)</option>
+                                <option value="minimum-desc">{t('ad.scoreHighest')}</option>
+                                <option value="minimum-asc">{t('ad.scoreLowest')}</option>
+                                <option value="grade-desc">{t('ad.gradePointHighest')}</option>
+                                <option value="name-asc">{t('ad.nameAZ')}</option>
                             </select>
 
-                            <span>Per page:</span>
+                            <span>{t('ad.perPage')}</span>
                             <select
                                 class="p-1 text-xs border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200"
                                 value={itemsPerPage()}
@@ -680,10 +681,10 @@ export default function AcademicCampaignTransactionGradePage() {
                                         </svg>
                                     </div>
                                     <h3 class="text-base font-bold font-mono text-neutral-900 dark:text-white">
-                                        No Grade Scales Found
+                                        {t('ad.noGradeScalesFound')}
                                     </h3>
                                     <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1 max-w-sm mx-auto font-mono">
-                                        There are no grade records matching your current filter criteria or database state.
+                                        {t('ad.thereAreNoGradeRecordsMatching')}
                                     </p>
                                     <div class="mt-4 flex items-center justify-center gap-2">
                                         <button
@@ -691,14 +692,14 @@ export default function AcademicCampaignTransactionGradePage() {
                                             onClick={resetFilters}
                                             class="px-3.5 py-1.5 text-xs font-mono font-medium text-neutral-700 dark:text-neutral-200 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 rounded-xs transition-colors"
                                         >
-                                            Clear Filters
+                                            {t('ad.clearFilters')}
                                         </button>
                                         <button
                                             type="button"
                                             onClick={openCreateModal}
                                             class="px-3.5 py-1.5 text-xs font-mono font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs transition-colors"
                                         >
-                                            + Add Grade
+                                            {t('ad.addGrade')}
                                         </button>
                                     </div>
                                 </div>
@@ -709,13 +710,13 @@ export default function AcademicCampaignTransactionGradePage() {
                                 <table class="w-full text-left text-xs">
                                     <thead class="bg-neutral-50 dark:bg-neutral-900/60 border-b border-neutral-200 dark:border-neutral-700 font-mono text-neutral-600 dark:text-neutral-300 uppercase tracking-wider">
                                         <tr>
-                                            <th class="px-4 py-3 font-semibold">Letter</th>
-                                            <th class="px-4 py-3 font-semibold">Grade & Unit</th>
-                                            <th class="px-4 py-3 font-semibold text-center">Grade Point</th>
-                                            <th class="px-4 py-3 font-semibold">Score Range</th>
-                                            <th class="px-4 py-3 font-semibold">Validity</th>
-                                            <th class="px-4 py-3 font-semibold text-center">Status</th>
-                                            <th class="px-4 py-3 font-semibold text-right">Actions</th>
+                                            <th class="px-4 py-3 font-semibold">{t('ad.letter')}</th>
+                                            <th class="px-4 py-3 font-semibold">{t('ad.gradeUnit')}</th>
+                                            <th class="px-4 py-3 font-semibold text-center">{t('ad.gradePoint')}</th>
+                                            <th class="px-4 py-3 font-semibold">{t('ad.scoreRange')}</th>
+                                            <th class="px-4 py-3 font-semibold">{t('ad.validity')}</th>
+                                            <th class="px-4 py-3 font-semibold text-center">{t('ad.status')}</th>
+                                            <th class="px-4 py-3 font-semibold text-right">{t('ad.actions')}</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
@@ -742,13 +743,13 @@ export default function AcademicCampaignTransactionGradePage() {
                                                                 {unitName(item)}
                                                             </span>
                                                             <Show when={item.code !== null && item.code !== undefined}>
-                                                                <span class="text-[10px] font-mono text-neutral-500">Code: {item.code}</span>
+                                                                <span class="text-[10px] font-mono text-neutral-500">{t('ad.code')} {item.code}</span>
                                                             </Show>
                                                             <button
                                                                 type="button"
                                                                 onClick={() => copyToClipboard(item.id, 'UUID')}
                                                                 class="px-1.5 py-0.5 rounded-xs text-[10px] font-mono text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-200/50 dark:hover:bg-neutral-700/50 transition-colors cursor-pointer"
-                                                                title="Click to copy UUID"
+                                                                title={t('ad.clickToCopyUUID')}
                                                             >
                                                                 {item.id.substring(0, 8)}...
                                                             </button>
@@ -774,8 +775,8 @@ export default function AcademicCampaignTransactionGradePage() {
 
                                                     {/* Validity */}
                                                     <td class="px-4 py-3.5 align-top font-mono text-[11px] text-neutral-600 dark:text-neutral-400 whitespace-nowrap">
-                                                        <div>From: {formatDate(item.start_date)}</div>
-                                                        <div class="text-[10px] text-neutral-500 mt-0.5">Until: {item.end_date ? formatDate(item.end_date) : 'No end date'}</div>
+                                                        <div>{t('ad.from')} {formatDate(item.start_date)}</div>
+                                                        <div class="text-[10px] text-neutral-500 mt-0.5">{t('ad.until')} {item.end_date ? formatDate(item.end_date) : 'No end date'}</div>
                                                     </td>
 
                                                     {/* Status */}
@@ -798,7 +799,7 @@ export default function AcademicCampaignTransactionGradePage() {
                                                             <A
                                                                 href={`${basePath}/${item.id}`}
                                                                 class="p-1.5 text-neutral-600 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-xs transition-colors"
-                                                                title="View Details"
+                                                                title={t('ad.viewDetails')}
                                                             >
                                                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                                     <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
@@ -809,7 +810,7 @@ export default function AcademicCampaignTransactionGradePage() {
                                                                 type="button"
                                                                 onClick={() => openEditModal(item)}
                                                                 class="p-1.5 text-neutral-600 dark:text-neutral-300 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-xs transition-colors cursor-pointer"
-                                                                title="Edit Grade"
+                                                                title={t('ad.editGrade')}
                                                             >
                                                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                                     <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
@@ -819,7 +820,7 @@ export default function AcademicCampaignTransactionGradePage() {
                                                                 type="button"
                                                                 onClick={() => openDeleteModal(item)}
                                                                 class="p-1.5 text-neutral-600 dark:text-neutral-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-xs transition-colors cursor-pointer"
-                                                                title="Delete Grade"
+                                                                title={t('ad.deleteGrade')}
                                                             >
                                                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                                     <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
@@ -868,21 +869,21 @@ export default function AcademicCampaignTransactionGradePage() {
                                             {/* Metrics Grid */}
                                             <div class="grid grid-cols-3 gap-2 p-2.5 bg-neutral-50 dark:bg-neutral-900/40 rounded-xs border border-neutral-200/80 dark:border-neutral-700/60 text-center font-mono">
                                                 <div>
-                                                    <span class="text-[10px] text-neutral-500 block">Point</span>
+                                                    <span class="text-[10px] text-neutral-500 block">{t('ad.point')}</span>
                                                     <span class="text-xs font-bold text-neutral-900 dark:text-white">{formatNumber(item.grade)}</span>
                                                 </div>
                                                 <div>
-                                                    <span class="text-[10px] text-neutral-500 block">Min</span>
+                                                    <span class="text-[10px] text-neutral-500 block">{t('ad.min')}</span>
                                                     <span class="text-xs font-bold text-neutral-900 dark:text-white">{formatNumber(item.minimum)}</span>
                                                 </div>
                                                 <div>
-                                                    <span class="text-[10px] text-neutral-500 block">Max</span>
+                                                    <span class="text-[10px] text-neutral-500 block">{t('ad.max')}</span>
                                                     <span class="text-xs font-bold text-neutral-900 dark:text-white">{formatNumber(item.maximum)}</span>
                                                 </div>
                                             </div>
 
                                             <div class="text-[11px] font-mono text-neutral-500">
-                                                Valid {formatDate(item.start_date)} - {item.end_date ? formatDate(item.end_date) : 'no end date'}
+                                                {t('ad.valid')} {formatDate(item.start_date)} - {item.end_date ? formatDate(item.end_date) : 'no end date'}
                                             </div>
 
                                             {/* Actions */}
@@ -892,7 +893,7 @@ export default function AcademicCampaignTransactionGradePage() {
                                                     onClick={() => copyToClipboard(item.id, 'UUID')}
                                                     class="text-neutral-500 hover:text-neutral-800 font-mono text-[11px]"
                                                 >
-                                                    UUID: {item.id.substring(0, 8)}...
+                                                    {t('ad.uuid')} {item.id.substring(0, 8)}...
                                                 </button>
                                                 <div class="flex items-center gap-2">
                                                     <button
@@ -900,20 +901,20 @@ export default function AcademicCampaignTransactionGradePage() {
                                                         onClick={() => openEditModal(item)}
                                                         class="px-2.5 py-1 font-mono text-xs text-neutral-700 dark:text-neutral-200 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 rounded-xs"
                                                     >
-                                                        Edit
+                                                        {t('ad.edit')}
                                                     </button>
                                                     <button
                                                         type="button"
                                                         onClick={() => openDeleteModal(item)}
                                                         class="px-2.5 py-1 font-mono text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xs"
                                                     >
-                                                        Delete
+                                                        {t('ad.delete')}
                                                     </button>
                                                     <A
                                                         href={`${basePath}/${item.id}`}
                                                         class="px-2.5 py-1 font-mono text-xs text-white bg-blue-600 hover:bg-blue-700 rounded-xs"
                                                     >
-                                                        Detail →
+                                                        {t('ad.detail')}
                                                     </A>
                                                 </div>
                                             </div>
@@ -929,16 +930,16 @@ export default function AcademicCampaignTransactionGradePage() {
                 <Show when={totalPages() > 1}>
                     <div class="flex flex-col sm:flex-row items-center justify-between border rounded-lg border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-3">
                         <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                            Showing <span class="font-semibold text-neutral-900 dark:text-white">{totalData() > 0 ? startIndex() + 1 : 0}</span>–<span class="font-semibold text-neutral-900 dark:text-white">{endIndex()}</span> of <span class="font-semibold text-neutral-900 dark:text-white">{totalData().toLocaleString()}</span> grades
+                            {t('ad.showing')} <span class="font-semibold text-neutral-900 dark:text-white">{totalData() > 0 ? startIndex() + 1 : 0}</span>–<span class="font-semibold text-neutral-900 dark:text-white">{endIndex()}</span> of <span class="font-semibold text-neutral-900 dark:text-white">{totalData().toLocaleString()}</span> grades
                         </p>
-                        <nav class="inline-flex -space-x-px rounded-lg overflow-hidden shadow-sm" aria-label="Pagination">
+                        <nav class="inline-flex -space-x-px rounded-lg overflow-hidden shadow-sm" aria-label={t('ad.pagination')}>
                             <button
                                 type="button"
                                 class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
                                 disabled={currentPage() <= 1 || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                             >
-                                Previous
+                                {t('ad.previous')}
                             </button>
                             <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border-y border-neutral-300 dark:border-neutral-600">
                                 {currentPage()} / {totalPages()}
@@ -949,7 +950,7 @@ export default function AcademicCampaignTransactionGradePage() {
                                 disabled={currentPage() >= totalPages() || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
                             >
-                                Next
+                                {t('ad.next')}
                             </button>
                         </nav>
                     </div>
@@ -965,10 +966,10 @@ export default function AcademicCampaignTransactionGradePage() {
                     <div class="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-3">
                         <div>
                             <span class="text-xs font-mono uppercase tracking-wider text-blue-600 dark:text-blue-400 font-semibold">
-                                {modalMode() === 'create' ? 'Create Record' : 'Edit Record'}
+                                {modalMode() === 'create' ? t('ad.createRecord') : t('ad.editRecord')}
                             </span>
                             <h3 class="text-lg font-bold font-mono text-neutral-900 dark:text-white">
-                                {modalMode() === 'create' ? 'New Grade Scale' : 'Update Grade Scale'}
+                                {modalMode() === 'create' ? t('ad.newGradeScale') : t('ad.updateGradeScale')}
                             </h3>
                         </div>
                         <button
@@ -987,7 +988,7 @@ export default function AcademicCampaignTransactionGradePage() {
                         {/* Unit */}
                         <div>
                             <label class={labelClass}>
-                                Unit / Study Program <span class="text-red-500">*</span>
+                                {t('ad.unitStudyProgram')} <span class="text-red-500">*</span>
                             </label>
                             <select
                                 required
@@ -995,7 +996,7 @@ export default function AcademicCampaignTransactionGradePage() {
                                 value={formState().unit_id}
                                 onChange={(e) => updateForm('unit_id', (e.target as HTMLSelectElement).value)}
                             >
-                                <option value="">Select Unit</option>
+                                <option value="">{t('ad.selectUnit')}</option>
                                 <For each={unitOptions()}>
                                     {(u) => <option value={u.id}>{u.name}</option>}
                                 </For>
@@ -1006,7 +1007,7 @@ export default function AcademicCampaignTransactionGradePage() {
                         <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
                             <div class="sm:col-span-2">
                                 <label class={labelClass}>
-                                    Grade Name <span class="text-red-500">*</span>
+                                    {t('ad.gradeName')} <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -1018,7 +1019,7 @@ export default function AcademicCampaignTransactionGradePage() {
                                 />
                             </div>
                             <div>
-                                <label class={labelClass}>Letter Code</label>
+                                <label class={labelClass}>{t('ad.letterCode')}</label>
                                 <input
                                     type="text"
                                     maxLength={5}
@@ -1029,7 +1030,7 @@ export default function AcademicCampaignTransactionGradePage() {
                                 />
                             </div>
                             <div>
-                                <label class={labelClass}>Code</label>
+                                <label class={labelClass}>{t('ad.code2')}</label>
                                 <input
                                     type="number"
                                     step="1"
@@ -1045,7 +1046,7 @@ export default function AcademicCampaignTransactionGradePage() {
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                             <div>
                                 <label class={labelClass}>
-                                    Grade Point <span class="text-red-500">*</span>
+                                    {t('ad.gradePoint')} <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="number"
@@ -1060,7 +1061,7 @@ export default function AcademicCampaignTransactionGradePage() {
                             </div>
                             <div>
                                 <label class={labelClass}>
-                                    Minimum Score <span class="text-red-500">*</span>
+                                    {t('ad.minimumScore2')} <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="number"
@@ -1075,7 +1076,7 @@ export default function AcademicCampaignTransactionGradePage() {
                             </div>
                             <div>
                                 <label class={labelClass}>
-                                    Maximum Score <span class="text-red-500">*</span>
+                                    {t('ad.maximumScore')} <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="number"
@@ -1093,7 +1094,7 @@ export default function AcademicCampaignTransactionGradePage() {
                         {/* Validity Dates */}
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class={labelClass}>Valid From</label>
+                                <label class={labelClass}>{t('ad.validFrom')}</label>
                                 <input
                                     type="date"
                                     class={inputClass}
@@ -1102,14 +1103,14 @@ export default function AcademicCampaignTransactionGradePage() {
                                 />
                             </div>
                             <div>
-                                <label class={labelClass}>Valid Until</label>
+                                <label class={labelClass}>{t('ad.validUntil')}</label>
                                 <input
                                     type="date"
                                     class={inputClass}
                                     value={formState().end_date}
                                     onInput={(e) => updateForm('end_date', (e.target as HTMLInputElement).value)}
                                 />
-                                <p class="mt-1 text-[10px] font-mono text-neutral-500">Leave empty to keep this scale active.</p>
+                                <p class="mt-1 text-[10px] font-mono text-neutral-500">{t('ad.leaveEmptyToKeepThisScale')}</p>
                             </div>
                         </div>
                     </div>
@@ -1120,14 +1121,14 @@ export default function AcademicCampaignTransactionGradePage() {
                             onClick={closeFormModal}
                             class="px-4 py-2 text-xs sm:text-sm font-mono font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 rounded-xs transition-colors cursor-pointer"
                         >
-                            Cancel
+                            {t('ad.cancel')}
                         </button>
                         <button
                             type="submit"
                             disabled={isSubmitting()}
                             class="px-4 py-2 text-xs sm:text-sm font-mono font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xs transition-colors cursor-pointer disabled:opacity-50"
                         >
-                            {isSubmitting() ? 'Saving...' : modalMode() === 'create' ? 'Create Grade' : 'Update Grade'}
+                            {isSubmitting() ? t('ad.saving') : modalMode() === 'create' ? t('ad.createGrade') : t('ad.updateGrade')}
                         </button>
                     </div>
                 </form>
@@ -1147,16 +1148,16 @@ export default function AcademicCampaignTransactionGradePage() {
                         </div>
                         <div>
                             <h3 class="text-base font-bold font-mono text-neutral-900 dark:text-white">
-                                Delete Grade
+                                {t('ad.deleteGrade')}
                             </h3>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                This action cannot be reversed.
+                                {t('ad.thisActionCannotBeReversed')}
                             </p>
                         </div>
                     </div>
 
                     <p class="text-xs text-neutral-600 dark:text-neutral-300 font-mono">
-                        Are you sure you want to delete grade <strong class="text-neutral-900 dark:text-white">"{selectedGrade()?.name}"</strong> ({formatNumber(selectedGrade()?.minimum)} - {formatNumber(selectedGrade()?.maximum)})? Student scores using this scale may no longer resolve to a letter grade.
+                        {t('ad.areYouSureYouWantTo2')} <strong class="text-neutral-900 dark:text-white">"{selectedGrade()?.name}"</strong> ({formatNumber(selectedGrade()?.minimum)} - {formatNumber(selectedGrade()?.maximum)})? Student scores using this scale may no longer resolve to a letter grade.
                     </p>
 
                     <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-neutral-200 dark:border-neutral-800">
@@ -1165,7 +1166,7 @@ export default function AcademicCampaignTransactionGradePage() {
                             onClick={closeDeleteModal}
                             class="px-3.5 py-1.5 text-xs font-mono font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 rounded-xs transition-colors cursor-pointer"
                         >
-                            Cancel
+                            {t('ad.cancel')}
                         </button>
                         <button
                             type="button"
@@ -1173,7 +1174,7 @@ export default function AcademicCampaignTransactionGradePage() {
                             onClick={handleDeleteSubmit}
                             class="px-4 py-1.5 text-xs font-mono font-semibold text-white bg-red-600 hover:bg-red-700 rounded-xs transition-colors cursor-pointer disabled:opacity-50"
                         >
-                            {isSubmitting() ? 'Deleting...' : 'Confirm Delete'}
+                            {isSubmitting() ? t('ad.deleting') : t('ad.confirmDelete')}
                         </button>
                     </div>
                 </div>

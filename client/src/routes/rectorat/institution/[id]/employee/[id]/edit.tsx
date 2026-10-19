@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { getBaseApiUrl, getAuthHeaders } from '~/controllers/master/masterApiController';
+import { t } from '../../../../../../i18n';
 
 interface EmployeeData {
     id: string;
@@ -102,7 +103,7 @@ export default function RectoratEmployeeEdit() {
             setIsActive(!!data.is_active);
         } catch (err: any) {
             setEmployee(null);
-            toast.danger(err.message || 'Gagal memuat data pegawai.');
+            toast.danger(err.message || t('rt.gagalMemuatDataPegawai'));
         } finally {
             setIsLoading(false);
         }
@@ -124,10 +125,10 @@ export default function RectoratEmployeeEdit() {
                 decree_date: decreeDate() || null,
                 is_active: isActive(),
             });
-            toast.success('Data pegawai berhasil diperbarui.');
+            toast.success(t('rt.dataPegawaiBerhasilDiperbarui'));
             navigate(detailPath());
         } catch (err: any) {
-            toast.danger(err.message || 'Gagal menyimpan data pegawai.');
+            toast.danger(err.message || t('rt.gagalMenyimpanDataPegawai'));
         } finally {
             setIsSubmitting(false);
         }
@@ -143,26 +144,26 @@ export default function RectoratEmployeeEdit() {
                 <div class="flex flex-col md:flex-row md:items-end md:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-6 gap-4">
                     <div>
                         <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
-                            <A href="/rectorat" class="hover:text-indigo-600 transition-colors">Rektorat</A>
+                            <A href="/rectorat" class="hover:text-indigo-600 transition-colors">{t('rt.rektorat')}</A>
                             <span>/</span>
-                            <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-indigo-600 transition-colors">Institusi</A>
+                            <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-indigo-600 transition-colors">{t('rt.institusi')}</A>
                             <span>/</span>
-                            <A href={listPath()} class="hover:text-indigo-600 transition-colors">Pegawai</A>
+                            <A href={listPath()} class="hover:text-indigo-600 transition-colors">{t('rt.pegawai')}</A>
                             <span>/</span>
-                            <A href={detailPath()} class="hover:text-indigo-600 transition-colors">Detail</A>
+                            <A href={detailPath()} class="hover:text-indigo-600 transition-colors">{t('rt.detail')}</A>
                             <span>/</span>
-                            <span class="text-neutral-700 dark:text-neutral-300 font-semibold">Ubah</span>
+                            <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.ubah')}</span>
                         </nav>
-                        <h1 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">Ubah Pegawai</h1>
+                        <h1 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">{t('rt.ubahPegawai')}</h1>
                         <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
-                            Perbarui data kepegawaian. Data individu dikelola terpisah.
+                            {t('rt.perbaruiDataKepegawaianDataIndividuDikelola')}
                         </p>
                     </div>
                     <A
                         href={detailPath()}
                         class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all shadow-sm w-fit"
                     >
-                        Batal
+                        {t('rt.batal')}
                     </A>
                 </div>
 
@@ -172,19 +173,19 @@ export default function RectoratEmployeeEdit() {
                             <div class="absolute inset-0 rounded-full border-4 border-indigo-200 dark:border-indigo-900/40"></div>
                             <div class="absolute inset-0 rounded-full border-4 border-indigo-600 border-t-transparent animate-spin"></div>
                         </div>
-                        <p class="text-sm text-neutral-500 dark:text-neutral-400 font-medium">Memuat data pegawai...</p>
+                        <p class="text-sm text-neutral-500 dark:text-neutral-400 font-medium">{t('rt.memuatDataPegawai')}</p>
                     </div>
                 </Show>
 
                 <Show when={!isLoading() && !employee()}>
                     <div class="flex flex-col items-center justify-center py-24 gap-4">
-                        <h2 class="text-xl font-bold text-neutral-700 dark:text-neutral-300">Data Tidak Ditemukan</h2>
-                        <p class="text-sm text-neutral-500 dark:text-neutral-400 text-center max-w-sm">Data pegawai tidak dapat ditemukan atau mungkin telah dihapus.</p>
+                        <h2 class="text-xl font-bold text-neutral-700 dark:text-neutral-300">{t('rt.dataTidakDitemukan')}</h2>
+                        <p class="text-sm text-neutral-500 dark:text-neutral-400 text-center max-w-sm">{t('rt.dataPegawaiTidakDapatDitemukanAtau')}</p>
                         <A
                             href={listPath()}
                             class="mt-2 inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors shadow-sm"
                         >
-                            Kembali ke Daftar Pegawai
+                            {t('rt.kembaliKeDaftarPegawai')}
                         </A>
                     </div>
                 </Show>
@@ -195,35 +196,35 @@ export default function RectoratEmployeeEdit() {
                         {/* Individual (read-only) */}
                         <div class="flex items-center gap-4 p-4 rounded-xl border border-indigo-200 dark:border-indigo-800/60 bg-indigo-50/50 dark:bg-indigo-900/20">
                             <div class="min-w-0">
-                                <p class="text-[11px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Individu</p>
+                                <p class="text-[11px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{t('rt.individu')}</p>
                                 <p class="font-semibold text-neutral-900 dark:text-white truncate">{individualLabel()}</p>
                                 <Show when={employee()?.individual}>
                                     {(ind) => (
                                         <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                            NIK <span class="font-mono">{ind().code || '-'}</span> · {ind().birth_place || '-'}, {ind().birth_date || '-'}
+                                            {t('rt.nik')} <span class="font-mono">{ind().code || '-'}</span> · {ind().birth_place || '-'}, {ind().birth_date || '-'}
                                         </p>
                                     )}
                                 </Show>
                             </div>
                         </div>
 
-                        <Section title="Data Kepegawaian">
-                            <Field label="Kode Pegawai" required>
+                        <Section title={t('rt.dataKepegawaian')}>
+                            <Field label={t('rt.kodePegawai')} required>
                                 <input id="employee-code" class={`${inputClass} font-mono`} required value={code()} onInput={(e) => setCode(e.currentTarget.value)} />
                             </Field>
-                            <Field label="Nama Pegawai" required>
+                            <Field label={t('rt.namaPegawai')} required>
                                 <input id="employee-name" class={inputClass} required value={name()} onInput={(e) => setName(e.currentTarget.value)} />
                             </Field>
-                            <Field label="Nomor SK">
+                            <Field label={t('rt.nomorSK')}>
                                 <input class={`${inputClass} font-mono`} value={decreeNumber()} onInput={(e) => setDecreeNumber(e.currentTarget.value)} />
                             </Field>
-                            <Field label="Tanggal SK">
+                            <Field label={t('rt.tanggalSK')}>
                                 <input type="date" class={inputClass} value={decreeDate()} onInput={(e) => setDecreeDate(e.currentTarget.value)} />
                             </Field>
-                            <Field label="Status">
+                            <Field label={t('rt.status')}>
                                 <label class="inline-flex items-center gap-2 h-[10.5] text-sm cursor-pointer">
                                     <input type="checkbox" class="size-4 accent-indigo-600" checked={isActive()} onChange={(e) => setIsActive(e.currentTarget.checked)} />
-                                    Aktif
+                                    {t('rt.aktif')}
                                 </label>
                             </Field>
                         </Section>
@@ -233,7 +234,7 @@ export default function RectoratEmployeeEdit() {
                                 href={detailPath()}
                                 class="px-4 py-2 text-sm font-medium rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all"
                             >
-                                Batal
+                                {t('rt.batal')}
                             </A>
                             <button
                                 type="submit"
@@ -241,7 +242,7 @@ export default function RectoratEmployeeEdit() {
                                 disabled={isSubmitting()}
                                 class="inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                             >
-                                {isSubmitting() ? 'Menyimpan...' : 'Simpan Perubahan'}
+                                {isSubmitting() ? t('rt.menyimpan') : t('rt.simpanPerubahan')}
                             </button>
                         </div>
                     </form>

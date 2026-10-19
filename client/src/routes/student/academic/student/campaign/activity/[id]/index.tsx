@@ -109,7 +109,7 @@ export default function StudentCampaignActivityShowPage() {
             setDetailCourses(enrichedDetails);
         } catch (err) {
             console.error('Error fetching activity details:', err);
-            toast.danger('Failed to load semester course details from server.');
+            toast.danger(t('st.failedToLoadSemesterCourseDetails'));
         } finally {
             setIsLoading(false);
         }
@@ -127,19 +127,19 @@ export default function StudentCampaignActivityShowPage() {
     });
 
     const handleDropCourse = async (courseId: string, courseName: string) => {
-        if (!confirm(`Are you sure you want to drop "${courseName}" from your study plan?`)) return;
+        if (!confirm(t('st.areYouSureYouWantTo2', { course: courseName }))) return;
 
         setIsDropping(courseId);
         try {
             const res = await deleteDetailActivity(courseId);
             if (!res.is_error) {
-                toast.success(`Dropped ${courseName} from your KRS.`);
+                toast.success(t('st.droppedCourseFromYourKRS', { course: courseName }));
                 await fetchActivityDetail();
             } else {
-                toast.danger(res.message || 'Failed to drop course.');
+                toast.danger(res.message || t('st.failedToDropCourse'));
             }
         } catch {
-            toast.danger('Failed to drop course.');
+            toast.danger(t('st.failedToDropCourse'));
         } finally {
             setIsDropping(null);
         }
@@ -151,23 +151,23 @@ export default function StudentCampaignActivityShowPage() {
     const handlePrintKRS = async () => {
         const act = activity();
         if (!act?.id) {
-            toast.danger('Activity ID is missing.');
+            toast.danger(t('st.activityIDIsMissing'));
             return;
         }
 
         setIsPrintingKRS(true);
         try {
-            toast.info('Generating KRS (Study Plan Card) PDF...');
+            toast.info(t('st.generatingKRSStudyPlanCardPDF'));
             const blob = await printActivityPlan(act.id);
             if (blob) {
                 const semName = (act.name || 'Semester').replace(/\s+/g, '_');
                 openOrDownloadPdf(blob, `KRS_${semName}.pdf`, 'KRS (Study Plan Card)');
             } else {
-                toast.danger('Failed to generate KRS PDF.');
+                toast.danger(t('st.failedToGenerateKRSPDF'));
             }
         } catch (err) {
             console.error('Error printing KRS:', err);
-            toast.danger('An error occurred while generating KRS PDF.');
+            toast.danger(t('st.anErrorOccurredWhileGeneratingKRS'));
         } finally {
             setIsPrintingKRS(false);
         }
@@ -176,23 +176,23 @@ export default function StudentCampaignActivityShowPage() {
     const handlePrintKHS = async () => {
         const act = activity();
         if (!act?.id) {
-            toast.danger('Activity ID is missing.');
+            toast.danger(t('st.activityIDIsMissing'));
             return;
         }
 
         setIsPrintingKHS(true);
         try {
-            toast.info('Generating KHS (Study Result Card) PDF...');
+            toast.info(t('st.generatingKHSStudyResultCardPDF'));
             const blob = await printActivityResult(act.id);
             if (blob) {
                 const semName = (act.name || 'Semester').replace(/\s+/g, '_');
                 openOrDownloadPdf(blob, `KHS_${semName}.pdf`, 'KHS (Study Result Card)');
             } else {
-                toast.danger('Failed to generate KHS PDF.');
+                toast.danger(t('st.failedToGenerateKHSPDF'));
             }
         } catch (err) {
             console.error('Error printing KHS:', err);
-            toast.danger('An error occurred while generating KHS PDF.');
+            toast.danger(t('st.anErrorOccurredWhileGeneratingKHS'));
         } finally {
             setIsPrintingKHS(false);
         }
@@ -313,13 +313,13 @@ export default function StudentCampaignActivityShowPage() {
                         <div class="space-y-1">
                             <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold border border-blue-200 dark:border-blue-800/80">
                                 <span class="size-1.5 rounded-xs bg-blue-500"></span>
-                                <span>Academic Student Activity Detail</span>
+                                <span>{t('st.academicStudentActivityDetail')}</span>
                             </div>
                             <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900 dark:text-white">
-                                {activity()?.name || 'Academic Activity Detail'}
+                                {activity()?.name || t('st.academicActivityDetail')}
                             </h1>
                             <p class="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
-                                Study Plan Card (KRS) & Academic Grade Evaluation (KHS) for this active campaign.
+                                {t('st.studyPlanCardKRSAcademicGrade')}
                             </p>
                         </div>
 
@@ -329,14 +329,14 @@ export default function StudentCampaignActivityShowPage() {
                                 href="/student/academic/student/campaign/activity"
                                 class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xs text-xs font-bold transition-colors"
                             >
-                                ← Back to Activities
+                                {t('st.backToActivities')}
                             </A>
                             <button
                                 type="button"
                                 onClick={handlePrintKRS}
                                 disabled={isPrintingKRS()}
                                 class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xs text-xs font-bold transition-colors flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
-                                title="Print Study Plan Card (KRS)"
+                                title={t('st.printStudyPlanCardKRS')}
                             >
                                 <Show
                                     when={!isPrintingKRS()}
@@ -344,14 +344,14 @@ export default function StudentCampaignActivityShowPage() {
                                 >
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect width="12" height="8" x="6" y="14" /></svg>
                                 </Show>
-                                <span>{isPrintingKRS() ? 'Generating KRS...' : 'Print KRS'}</span>
+                                <span>{isPrintingKRS() ? t('st.generatingKRS') : t('st.printKRS')}</span>
                             </button>
                             <button
                                 type="button"
                                 onClick={handlePrintKHS}
                                 disabled={isPrintingKHS()}
                                 class="px-4 py-2.5 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/80 rounded-xs text-xs font-bold transition-colors flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
-                                title="Print Study Result Card (KHS)"
+                                title={t('st.printStudyResultCardKHS')}
                             >
                                 <Show
                                     when={!isPrintingKHS()}
@@ -359,7 +359,7 @@ export default function StudentCampaignActivityShowPage() {
                                 >
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
                                 </Show>
-                                <span>{isPrintingKHS() ? 'Generating KHS...' : 'Print KHS'}</span>
+                                <span>{isPrintingKHS() ? t('st.generatingKHS') : t('st.printKHS')}</span>
                             </button>
                             <Show
                                 when={!activity()?.is_lock}
@@ -368,10 +368,10 @@ export default function StudentCampaignActivityShowPage() {
                                         type="button"
                                         disabled
                                         class="px-5 py-2.5 bg-neutral-200 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-500 rounded-xs text-xs font-bold transition-colors cursor-not-allowed flex items-center gap-1.5 opacity-60"
-                                        title="Academic activity is locked"
+                                        title={t('st.academicActivityIsLocked')}
                                     >
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>
-                                        <span>Add / Enroll Courses</span>
+                                        <span>{t('st.addEnrollCourses')}</span>
                                     </button>
                                 }
                             >
@@ -380,7 +380,7 @@ export default function StudentCampaignActivityShowPage() {
                                     class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xs text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5"
                                 >
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>
-                                    <span>Add / Enroll Courses</span>
+                                    <span>{t('st.addEnrollCourses')}</span>
                                 </A>
                             </Show>
                         </div>
@@ -389,19 +389,19 @@ export default function StudentCampaignActivityShowPage() {
                     {/* Summary KPI Badges */}
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t border-neutral-100 dark:border-neutral-700/50">
                         <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
-                            <span class="text-[10px] text-neutral-400 font-mono uppercase block">Enrolled Courses</span>
+                            <span class="text-[10px] text-neutral-400 font-mono uppercase block">{t('st.enrolledCourses')}</span>
                             <span class="text-xl font-black text-neutral-900 dark:text-white">{detailCourses().length} Classes</span>
                         </div>
                         <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
-                            <span class="text-[10px] text-neutral-400 font-mono uppercase block">Semester SKS Taken</span>
+                            <span class="text-[10px] text-neutral-400 font-mono uppercase block">{t('st.semesterSKSTaken')}</span>
                             <span class="text-xl font-black text-blue-600 dark:text-blue-400">{totalEnrolledSKS()} SKS</span>
                         </div>
                         <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
-                            <span class="text-[10px] text-neutral-400 font-mono uppercase block">Semester GPA (IPS)</span>
+                            <span class="text-[10px] text-neutral-400 font-mono uppercase block">{t('st.semesterGPAIPS')}</span>
                             <span class="text-xl font-black text-blue-600 dark:text-blue-400">{calculatedIPS()}</span>
                         </div>
                         <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
-                            <span class="text-[10px] text-neutral-400 font-mono uppercase block">Cumulative GPA (IPK)</span>
+                            <span class="text-[10px] text-neutral-400 font-mono uppercase block">{t('st.cumulativeGPAIPK')}</span>
                             <span class="text-xl font-black text-emerald-600 dark:text-emerald-400">{calculatedIPK()}</span>
                         </div>
                     </div>
@@ -411,10 +411,10 @@ export default function StudentCampaignActivityShowPage() {
                 <div class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
                     <div class="p-4 sm:p-5 border-b border-neutral-200 dark:border-neutral-700 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <h2 class="text-sm font-bold text-neutral-900 dark:text-white">
-                            Enrolled Courses List (Rencana & Hasil Studi)
+                            {t('st.enrolledCoursesListRencanaHasilStudi')}
                         </h2>
                         <span class="text-xs text-neutral-400 font-mono">
-                            Total {detailCourses().length} Enrolled Courses
+                            {t('st.total')} {detailCourses().length} Enrolled Courses
                         </span>
                     </div>
 
@@ -478,14 +478,14 @@ export default function StudentCampaignActivityShowPage() {
                                                     <Show
                                                         when={c.is_lock}
                                                         fallback={
-                                                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-xs text-[10px] font-bold text-red-800 dark:text-red-300" title="Unlocked">
+                                                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-xs text-[10px] font-bold text-red-800 dark:text-red-300" title={t('st.unlocked')}>
                                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                                                 </svg>
                                                             </span>
                                                         }
                                                     >
-                                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-xs text-[10px] font-bold text-emerald-800 dark:text-emerald-300" title="Locked">
+                                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-xs text-[10px] font-bold text-emerald-800 dark:text-emerald-300" title={t('st.locked')}>
                                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
                                                             </svg>
@@ -527,13 +527,13 @@ export default function StudentCampaignActivityShowPage() {
                                                 fallback={
                                                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-xs text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/80">
                                                         <span class="size-1.5 rounded-xs bg-amber-500"></span>
-                                                        <span>Unlocked</span>
+                                                        <span>{t('st.unlocked')}</span>
                                                     </span>
                                                 }
                                             >
                                                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80">
                                                     <span class="size-1.5 rounded-xs bg-emerald-500"></span>
-                                                    <span>Locked</span>
+                                                    <span>{t('st.locked')}</span>
                                                 </span>
                                             </Show>
                                         </div>

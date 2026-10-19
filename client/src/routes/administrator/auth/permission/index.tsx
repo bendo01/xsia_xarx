@@ -7,6 +7,7 @@ import {
     AuthPermissionControllerUpsert,
     AuthPermissionControllerDelete,
 } from '~/controllers/auth/AuthPermissionController';
+import { t } from '../../../../i18n';
 
 export default function AuthPermissionPage() {
     const [items, setItems] = createSignal<Permission[]>([]);
@@ -79,8 +80,8 @@ export default function AuthPermissionPage() {
             type="button"
             role="switch"
             aria-checked={Boolean(props.item.is_open)}
-            aria-label={`Toggle open access for ${props.item.name}`}
-            title={props.item.is_open ? 'Open: no login or role required' : 'Restricted: requires a granted role'}
+            aria-label={t('ad.toggleOpenAccessForName', { name: props.item.name ?? '' })}
+            title={props.item.is_open ? t('ad.openNoLoginOrRoleRequired') : t('ad.restrictedRequiresAGrantedRole')}
             disabled={Boolean(togglingIds()[props.item.id])}
             onClick={() => toggleIsOpen(props.item)}
             class="relative inline-flex h-5 w-9 shrink-0 items-center border transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-wait"
@@ -130,7 +131,7 @@ export default function AuthPermissionPage() {
             }
         } catch (error) {
             console.error('Error loading permission data:', error);
-            toast.danger('Failed to load permission data from server.');
+            toast.danger(t('ad.failedToLoadPermissionDataFrom'));
         } finally {
             setIsLoading(false);
         }
@@ -221,14 +222,14 @@ export default function AuthPermissionPage() {
         try {
             const res = await AuthPermissionControllerUpsert(formData());
             if (!res.is_error) {
-                toast.success(res.message || 'Permission created successfully!', 5000);
+                toast.success(res.message || t('ad.permissionCreatedSuccessfully'), 5000);
                 closeCreateModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to create permission.', 5000);
+                toast.danger(res.message || t('ad.failedToCreatePermission'), 5000);
             }
         } catch (error: any) {
-            toast.danger(error.message || 'Error occurred while creating.', 5000);
+            toast.danger(error.message || t('ad.errorOccurredWhileCreating'), 5000);
         } finally {
             setIsSubmitting(false);
         }
@@ -242,14 +243,14 @@ export default function AuthPermissionPage() {
         try {
             const res = await AuthPermissionControllerUpsert(formData());
             if (!res.is_error) {
-                toast.success(res.message || 'Permission updated successfully!', 5000);
+                toast.success(res.message || t('ad.permissionUpdatedSuccessfully'), 5000);
                 closeEditModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to update permission.', 5000);
+                toast.danger(res.message || t('ad.failedToUpdatePermission'), 5000);
             }
         } catch (error: any) {
-            toast.danger(error.message || 'Error occurred while updating.', 5000);
+            toast.danger(error.message || t('ad.errorOccurredWhileUpdating'), 5000);
         } finally {
             setIsSubmitting(false);
         }
@@ -263,14 +264,14 @@ export default function AuthPermissionPage() {
         try {
             const res = await AuthPermissionControllerDelete({ id: item.id });
             if (!res.is_error) {
-                toast.success(res.message || 'Permission deleted successfully!', 5000);
+                toast.success(res.message || t('ad.permissionDeletedSuccessfully'), 5000);
                 closeDeleteModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to delete permission.', 5000);
+                toast.danger(res.message || t('ad.failedToDeletePermission'), 5000);
             }
         } catch (error: any) {
-            toast.danger(error.message || 'Error occurred while deleting.', 5000);
+            toast.danger(error.message || t('ad.errorOccurredWhileDeleting'), 5000);
         } finally {
             setIsSubmitting(false);
         }
@@ -288,17 +289,17 @@ export default function AuthPermissionPage() {
                 <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                            <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">Administrator</a>
+                            <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">{t('ad.administrator')}</a>
                             <span>/</span>
-                            <span>Auth</span>
+                            <span>{t('ad.auth')}</span>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">Permission</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">{t('ad.permission')}</span>
                         </nav>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Permission / Hak Akses
+                            {t('ad.permissionHakAkses')}
                         </h1>
                         <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
-                            Manage granular system route and feature access permissions.
+                            {t('ad.manageGranularSystemRouteAndFeature')}
                         </p>
                     </div>
                     <div class="mt-4 sm:mt-0 flex items-center gap-2 justify-end">
@@ -312,7 +313,7 @@ export default function AuthPermissionPage() {
                                 <path d="M5 12h14" />
                                 <path d="M12 5v14" />
                             </svg>
-                            <span>Add Permission</span>
+                            <span>{t('ad.addPermission')}</span>
                         </button>
                     </div>
                 </div>
@@ -329,7 +330,7 @@ export default function AuthPermissionPage() {
                             <input
                                 type="text"
                                 class="block w-full p-2.5 pl-10 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:placeholder-neutral-400 dark:text-white transition-colors"
-                                placeholder="Search by permission name (e.g. auth.permission.list)..."
+                                placeholder={t('ad.searchByPermissionNameEG')}
                                 onInput={handleSearch}
                                 id="input-search-permission"
                             />
@@ -347,9 +348,9 @@ export default function AuthPermissionPage() {
                                 }}
                                 id="select-open-permission"
                             >
-                                <option value="">All</option>
-                                <option value="true">Open</option>
-                                <option value="false">Restricted</option>
+                                <option value="">{t('ad.all')}</option>
+                                <option value="true">{t('ad.open')}</option>
+                                <option value="false">{t('ad.restricted')}</option>
                             </select>
                         </div>
                         <div class="w-1/3">
@@ -359,8 +360,8 @@ export default function AuthPermissionPage() {
                                 onChange={(e) => setSortParam((e.target as HTMLSelectElement).value)}
                                 id="select-sort-permission"
                             >
-                                <option value="name-asc">Name (A-Z)</option>
-                                <option value="name-desc">Name (Z-A)</option>
+                                <option value="name-asc">{t('ad.nameAZ')}</option>
+                                <option value="name-desc">{t('ad.nameZA')}</option>
                             </select>
                         </div>
                         <div class="w-1/3">
@@ -370,10 +371,10 @@ export default function AuthPermissionPage() {
                                 onChange={handleItemsPerPageChange}
                                 id="select-per-page-permission"
                             >
-                                <option value={10}>10 / page</option>
-                                <option value={25}>25 / page</option>
-                                <option value={50}>50 / page</option>
-                                <option value={100}>100 / page</option>
+                                <option value={10}>{t('ad.n10Page')}</option>
+                                <option value={25}>{t('ad.n25Page')}</option>
+                                <option value={50}>{t('ad.n50Page')}</option>
+                                <option value={100}>{t('ad.n100Page')}</option>
                             </select>
                         </div>
                     </div>
@@ -387,10 +388,10 @@ export default function AuthPermissionPage() {
                             <table class="w-full text-xs sm:text-sm text-left whitespace-nowrap">
                                 <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
                                     <tr>
-                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider">Permission Name</th>
-                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider">Open</th>
-                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider">Created At</th>
-                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider text-right">Actions</th>
+                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider">{t('ad.permissionName')}</th>
+                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider">{t('ad.open')}</th>
+                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider">{t('ad.createdAt')}</th>
+                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider text-right">{t('ad.actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
@@ -421,8 +422,8 @@ export default function AuthPermissionPage() {
                                                             <svg class="size-8 text-neutral-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                                             </svg>
-                                                            <p class="text-sm font-medium">No permission records found</p>
-                                                            <p class="text-xs">Click "Add Permission" to create a new access permission.</p>
+                                                            <p class="text-sm font-medium">{t('ad.noPermissionRecordsFound')}</p>
+                                                            <p class="text-xs">{t('ad.clickAddPermissionToCreateA')}</p>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -451,8 +452,8 @@ export default function AuthPermissionPage() {
                                                                     type="button"
                                                                     onClick={() => openEditModal(item)}
                                                                     class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
-                                                                    title="Edit Record"
-                                                                    aria-label={`Edit ${item.name}`}
+                                                                    title={t('ad.editRecord')}
+                                                                    aria-label={t('ad.editName', { name: item.name ?? '' })}
                                                                 >
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                                         <path d="M12 20h9" />
@@ -463,8 +464,8 @@ export default function AuthPermissionPage() {
                                                                     type="button"
                                                                     onClick={() => openDeleteModal(item)}
                                                                     class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-red-600 hover:border-red-500 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:border-red-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
-                                                                    title="Delete Record"
-                                                                    aria-label={`Delete ${item.name}`}
+                                                                    title={t('ad.deleteRecord')}
+                                                                    aria-label={t('ad.deleteName', { name: item.name ?? '' })}
                                                                 >
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                                         <path d="M3 6h18" />
@@ -509,7 +510,7 @@ export default function AuthPermissionPage() {
                                 when={items().length > 0}
                                 fallback={
                                     <div class="p-8 text-center text-neutral-500 dark:text-neutral-400">
-                                        No permission records found.
+                                        {t('ad.noPermissionRecordsFound2')}
                                     </div>
                                 }
                             >
@@ -530,7 +531,7 @@ export default function AuthPermissionPage() {
                                             <div class="flex justify-between items-center gap-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
                                                 <label class="inline-flex items-center gap-2 text-xs text-neutral-600 dark:text-neutral-400">
                                                     <OpenToggle item={item} />
-                                                    Open
+                                                    {t('ad.open')}
                                                 </label>
                                                 <div class="flex gap-2">
                                                 <button
@@ -538,14 +539,14 @@ export default function AuthPermissionPage() {
                                                     onClick={() => openEditModal(item)}
                                                     class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-yellow-50 hover:text-yellow-600 hover:border-yellow-500 dark:text-blue-400 dark:bg-blue-950/50 dark:hover:text-yellow-400 dark:hover:border-yellow-500 border border-blue-200 dark:border-blue-800 transition-colors cursor-pointer"
                                                 >
-                                                    Edit
+                                                    {t('ad.edit')}
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => openDeleteModal(item)}
                                                     class="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-50 hover:text-red-600 hover:border-red-500 dark:text-red-400 dark:bg-red-950/50 dark:hover:text-red-400 dark:hover:border-red-500 border border-red-200 dark:border-red-800 transition-colors cursor-pointer"
                                                 >
-                                                    Delete
+                                                    {t('ad.delete')}
                                                 </button>
                                                 </div>
                                             </div>
@@ -559,16 +560,16 @@ export default function AuthPermissionPage() {
                     {/* Pagination Footer */}
                     <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/80 px-4 py-3 sm:px-6 gap-3 sm:gap-0">
                         <p class="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300">
-                            Showing <span class="font-medium">{totalData() > 0 ? startIndex() + 1 : 0}</span> to <span class="font-medium">{endIndex()}</span> of <span class="font-medium">{totalData().toLocaleString()}</span> results
+                            {t('ad.showing')} <span class="font-medium">{totalData() > 0 ? startIndex() + 1 : 0}</span> to <span class="font-medium">{endIndex()}</span> of <span class="font-medium">{totalData().toLocaleString()}</span> results
                         </p>
-                        <nav class="inline-flex -space-x-px shadow-2xs" aria-label="Pagination">
+                        <nav class="inline-flex -space-x-px shadow-2xs" aria-label={t('ad.pagination')}>
                             <button
                                 type="button"
                                 class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 cursor-pointer"
                                 disabled={currentPage() <= 1 || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                             >
-                                Previous
+                                {t('ad.previous')}
                             </button>
                             <span class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 border border-blue-600">
                                 {currentPage()} / {totalPages()}
@@ -579,7 +580,7 @@ export default function AuthPermissionPage() {
                                 disabled={currentPage() >= totalPages() || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
                             >
-                                Next
+                                {t('ad.next')}
                             </button>
                         </nav>
                     </div>
@@ -598,17 +599,17 @@ export default function AuthPermissionPage() {
                     <div class="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-700">
                         <div>
                             <h2 class="text-lg font-bold text-neutral-900 dark:text-white">
-                                Add Permission
+                                {t('ad.addPermission')}
                             </h2>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                Define a new route permission name.
+                                {t('ad.defineANewRoutePermissionName')}
                             </p>
                         </div>
                         <button
                             type="button"
                             onClick={closeCreateModal}
                             class="size-8 inline-flex items-center justify-center text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
-                            aria-label="Close dialog"
+                            aria-label={t('ad.closeDialog')}
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -619,14 +620,14 @@ export default function AuthPermissionPage() {
                     <form onSubmit={handleCreateSubmit} class="space-y-4 pt-4">
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Permission Name <span class="text-red-500">*</span>
+                                {t('ad.permissionName')} <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
                                 class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
                                     formErrors().name ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
                                 }`}
-                                placeholder="e.g. auth.permission.index"
+                                placeholder={t('ad.eGAuthPermissionIndex')}
                                 value={formData().name}
                                 onInput={(e) => setFormData({ ...formData(), name: e.currentTarget.value })}
                             />
@@ -637,7 +638,7 @@ export default function AuthPermissionPage() {
 
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                URI / Route Pattern
+                                {t('ad.uriRoutePattern')}
                             </label>
                             <input
                                 type="text"
@@ -654,14 +655,14 @@ export default function AuthPermissionPage() {
                                 onClick={closeCreateModal}
                                 class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xs transition-colors cursor-pointer"
                             >
-                                Cancel
+                                {t('ad.cancel')}
                             </button>
                             <button
                                 type="submit"
                                 disabled={isSubmitting()}
                                 class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-xs transition-colors cursor-pointer"
                             >
-                                {isSubmitting() ? 'Creating...' : 'Save Permission'}
+                                {isSubmitting() ? t('ad.creating') : t('ad.savePermission')}
                             </button>
                         </div>
                     </form>
@@ -680,17 +681,17 @@ export default function AuthPermissionPage() {
                     <div class="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-700">
                         <div>
                             <h2 class="text-lg font-bold text-neutral-900 dark:text-white">
-                                Edit Permission
+                                {t('ad.editPermission')}
                             </h2>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                Modify permission properties.
+                                {t('ad.modifyPermissionProperties')}
                             </p>
                         </div>
                         <button
                             type="button"
                             onClick={closeEditModal}
                             class="size-8 inline-flex items-center justify-center text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
-                            aria-label="Close dialog"
+                            aria-label={t('ad.closeDialog')}
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -701,14 +702,14 @@ export default function AuthPermissionPage() {
                     <form onSubmit={handleEditSubmit} class="space-y-4 pt-4">
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Permission Name <span class="text-red-500">*</span>
+                                {t('ad.permissionName')} <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
                                 class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
                                     formErrors().name ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
                                 }`}
-                                placeholder="e.g. auth.permission.index"
+                                placeholder={t('ad.eGAuthPermissionIndex')}
                                 value={formData().name}
                                 onInput={(e) => setFormData({ ...formData(), name: e.currentTarget.value })}
                             />
@@ -719,7 +720,7 @@ export default function AuthPermissionPage() {
 
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                URI / Route Pattern
+                                {t('ad.uriRoutePattern')}
                             </label>
                             <input
                                 type="text"
@@ -736,14 +737,14 @@ export default function AuthPermissionPage() {
                                 onClick={closeEditModal}
                                 class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xs transition-colors cursor-pointer"
                             >
-                                Cancel
+                                {t('ad.cancel')}
                             </button>
                             <button
                                 type="submit"
                                 disabled={isSubmitting()}
                                 class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-xs transition-colors cursor-pointer"
                             >
-                                {isSubmitting() ? 'Updating...' : 'Update Permission'}
+                                {isSubmitting() ? t('ad.updating') : t('ad.updatePermission')}
                             </button>
                         </div>
                     </form>
@@ -767,10 +768,10 @@ export default function AuthPermissionPage() {
                         </div>
                         <div>
                             <h3 class="text-base font-bold text-neutral-900 dark:text-white">
-                                Confirm Delete
+                                {t('ad.confirmDelete')}
                             </h3>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                Are you sure you want to delete this permission?
+                                {t('ad.areYouSureYouWantTo6')}
                             </p>
                         </div>
                     </div>
@@ -785,7 +786,7 @@ export default function AuthPermissionPage() {
                             onClick={closeDeleteModal}
                             class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xs transition-colors cursor-pointer"
                         >
-                            Cancel
+                            {t('ad.cancel')}
                         </button>
                         <button
                             type="button"
@@ -793,7 +794,7 @@ export default function AuthPermissionPage() {
                             disabled={isSubmitting()}
                             class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 rounded-xs transition-colors cursor-pointer"
                         >
-                            {isSubmitting() ? 'Deleting...' : 'Delete'}
+                            {isSubmitting() ? t('ad.deleting') : t('ad.delete')}
                         </button>
                     </div>
                 </div>

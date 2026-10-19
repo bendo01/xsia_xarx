@@ -7,6 +7,7 @@ import {
     masterApiIndex,
     masterApiDelete
 } from '~/controllers/master/masterApiController';
+import { t } from '../../../../../../i18n';
 
 export default function ClassCodeIndexPage() {
     const apiPath = "academic/campaign/transaction/class-codes";
@@ -51,7 +52,7 @@ export default function ClassCodeIndexPage() {
         } catch (error) {
             console.error('Error loading data:', error);
             setItems([]);
-            toast.danger('Failed to load class codes.');
+            toast.danger(t('cd.failedToLoadClassCodes'));
         } finally {
             setIsLoading(false);
         }
@@ -104,14 +105,14 @@ export default function ClassCodeIndexPage() {
         try {
             const res = await masterApiDelete(apiPath, id);
             if (res.success) {
-                toast.success('Class code deleted successfully!');
+                toast.success(t('cd.classCodeDeletedSuccessfully'));
                 closeDeleteModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to delete record.');
+                toast.danger(res.message || t('cd.failedToDeleteRecord'));
             }
         } catch (err: any) {
-            toast.danger(err.message || 'Error occurred while deleting.');
+            toast.danger(err.message || t('cd.errorOccurredWhileDeleting'));
         } finally {
             setIsSubmitting(false);
         }
@@ -128,19 +129,19 @@ export default function ClassCodeIndexPage() {
                 <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                            <a href="/" class="hover:text-blue-600 transition-colors">Home</a>
+                            <a href="/" class="hover:text-blue-600 transition-colors">{t('cd.home')}</a>
                             <span>/</span>
-                            <span>Course Department</span>
+                            <span>{t('cd.courseDepartment')}</span>
                             <span>/</span>
-                            <span>Academic</span>
+                            <span>{t('cd.academic')}</span>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">Class Codes</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">{t('cd.classCodes')}</span>
                         </nav>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Class Codes Directory
+                            {t('cd.classCodesDirectory')}
                         </h1>
                         <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
-                            Manage class codes for the academic campaign.
+                            {t('cd.manageClassCodesForTheAcademic')}
                         </p>
                     </div>
 
@@ -153,7 +154,7 @@ export default function ClassCodeIndexPage() {
                                 <path d="M5 12h14" />
                                 <path d="M12 5v14" />
                             </svg>
-                            <span>Add New Class Code</span>
+                            <span>{t('cd.addNewClassCode')}</span>
                         </A>
                     </div>
                 </div>
@@ -169,7 +170,7 @@ export default function ClassCodeIndexPage() {
                             </span>
                             <input
                                 type="text"
-                                placeholder="Search by name..."
+                                placeholder={t('cd.searchByName')}
                                 onInput={handleNameSearch}
                                 class="block w-full pl-10 pr-3 py-2 border border-neutral-200 dark:border-neutral-700 rounded-xs leading-5 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors"
                             />
@@ -183,14 +184,14 @@ export default function ClassCodeIndexPage() {
                             </span>
                             <input
                                 type="text"
-                                placeholder="Search by code..."
+                                placeholder={t('cd.searchByCode')}
                                 onInput={handleCodeSearch}
                                 class="block w-full pl-10 pr-3 py-2 border border-neutral-200 dark:border-neutral-700 rounded-xs leading-5 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors"
                             />
                         </div>
                     </div>
                     <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-                        <label class="text-sm text-neutral-600 dark:text-neutral-400">Rows per page:</label>
+                        <label class="text-sm text-neutral-600 dark:text-neutral-400">{t('cd.rowsPerPage')}</label>
                         <select
                             value={itemsPerPage()}
                             onChange={(e) => {
@@ -224,13 +225,13 @@ export default function ClassCodeIndexPage() {
                                 <thead class="bg-neutral-50 dark:bg-neutral-900/50">
                                     <tr>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                                            No
+                                            {t('cd.no')}
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                                            Class Code
+                                            {t('cd.classCode')}
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-right text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                                            Actions
+                                            {t('cd.actions')}
                                         </th>
                                     </tr>
                                 </thead>
@@ -238,7 +239,7 @@ export default function ClassCodeIndexPage() {
                                     <Show when={items().length > 0} fallback={
                                         <tr>
                                             <td colspan="3" class="px-6 py-8 text-center text-sm text-neutral-500 dark:text-neutral-400">
-                                                No class codes found.
+                                                {t('cd.noClassCodesFound')}
                                             </td>
                                         </tr>
                                     }>
@@ -256,7 +257,7 @@ export default function ClassCodeIndexPage() {
                                                             <A
                                                                 href={`/course-department/academic/campaign/transaction/class-code/${item.id}`}
                                                                 class="text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300 transition-colors"
-                                                                title="View Details"
+                                                                title={t('cd.viewDetails')}
                                                             >
                                                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                                     <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
@@ -266,7 +267,7 @@ export default function ClassCodeIndexPage() {
                                                             <A
                                                                 href={`/course-department/academic/campaign/transaction/class-code/${item.id}/edit`}
                                                                 class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
-                                                                title="Edit"
+                                                                title={t('cd.edit')}
                                                             >
                                                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                                     <path d="M12 20h9" />
@@ -277,7 +278,7 @@ export default function ClassCodeIndexPage() {
                                                                 type="button"
                                                                 onClick={() => openDeleteModal(item)}
                                                                 class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors"
-                                                                title="Delete"
+                                                                title={t('cd.delete')}
                                                             >
                                                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                                     <path d="M3 6h18" />
@@ -301,7 +302,7 @@ export default function ClassCodeIndexPage() {
                     <div class="block sm:hidden divide-y divide-neutral-200 dark:divide-neutral-700">
                         <Show when={items().length > 0} fallback={
                             <div class="p-6 text-center text-sm text-neutral-500 dark:text-neutral-400">
-                                No class codes found.
+                                {t('cd.noClassCodesFound')}
                             </div>
                         }>
                             <For each={items()}>
@@ -315,7 +316,7 @@ export default function ClassCodeIndexPage() {
                                                 <A
                                                     href={`/course-department/academic/campaign/transaction/class-code/${item.id}`}
                                                     class="p-1.5 text-neutral-600 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700 rounded transition-colors"
-                                                    title="View Details"
+                                                    title={t('cd.viewDetails')}
                                                 >
                                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                         <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
@@ -325,7 +326,7 @@ export default function ClassCodeIndexPage() {
                                                 <A
                                                     href={`/course-department/academic/campaign/transaction/class-code/${item.id}/edit`}
                                                     class="p-1.5 text-blue-600 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/40 rounded transition-colors"
-                                                    title="Edit"
+                                                    title={t('cd.edit')}
                                                 >
                                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                         <path d="M12 20h9" />
@@ -361,17 +362,17 @@ export default function ClassCodeIndexPage() {
                     {/* Pagination */}
                     <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/80 px-4 py-3 sm:px-6 gap-3 sm:gap-0">
                         <div class="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300">
-                            Showing <span class="font-medium">{totalData() > 0 ? startIndex() + 1 : 0}</span> to <span class="font-medium">{endIndex()}</span> of <span class="font-medium">{totalData()}</span> results
+                            {t('cd.showing')} <span class="font-medium">{totalData() > 0 ? startIndex() + 1 : 0}</span> {t('cd.to')} <span class="font-medium">{endIndex()}</span> {t('cd.of')} <span class="font-medium">{totalData()}</span> {t('cd.results')}
                         </div>
                         <div class="flex justify-center">
-                            <nav class="inline-flex -space-x-px shadow-2xs" aria-label="Pagination">
+                            <nav class="inline-flex -space-x-px shadow-2xs" aria-label={t('cd.pagination')}>
                                 <button
                                     type="button"
                                     class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 cursor-pointer"
                                     disabled={currentPage() <= 1 || isLoading()}
                                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                                 >
-                                    Previous
+                                    {t('cd.previous')}
                                 </button>
                                 <span class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 border border-blue-600">
                                     {currentPage()} / {totalPages()}
@@ -382,7 +383,7 @@ export default function ClassCodeIndexPage() {
                                     disabled={currentPage() >= totalPages() || isLoading()}
                                     onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
                                 >
-                                    Next
+                                    {t('cd.next')}
                                 </button>
                             </nav>
                         </div>
@@ -404,11 +405,11 @@ export default function ClassCodeIndexPage() {
                         <svg class="size-6 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
-                        <h3 class="text-base font-bold text-neutral-900 dark:text-white">Delete Class Code</h3>
+                        <h3 class="text-base font-bold text-neutral-900 dark:text-white">{t('cd.deleteClassCode')}</h3>
                     </div>
 
                     <p class="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
-                        Are you sure you want to delete <span class="font-bold text-neutral-900 dark:text-white">{selectedItem()?.name || 'this item'}</span>?
+                        {t('cd.areYouSureYouWantTo')} <span class="font-bold text-neutral-900 dark:text-white">{selectedItem()?.name || 'this item'}</span>?
                     </p>
 
                     <div class="flex items-center justify-end gap-2 pt-6">
@@ -417,7 +418,7 @@ export default function ClassCodeIndexPage() {
                             onClick={closeDeleteModal}
                             class="px-4 py-2 text-xs font-medium text-neutral-700 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-600 rounded-xs transition-colors cursor-pointer"
                         >
-                            Cancel
+                            {t('cd.cancel')}
                         </button>
                         <button
                             type="button"
@@ -425,7 +426,7 @@ export default function ClassCodeIndexPage() {
                             disabled={isSubmitting()}
                             class="px-4 py-2 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-xs shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
                         >
-                            {isSubmitting() ? 'Deleting...' : 'Confirm Delete'}
+                            {isSubmitting() ? t('cd.deleting') : t('cd.confirmDelete')}
                         </button>
                     </div>
                 </div>

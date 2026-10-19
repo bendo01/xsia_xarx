@@ -3,6 +3,7 @@ import { useParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { masterApiShow } from '~/controllers/master/masterApiController';
+import { t } from '../../../../../../../i18n';
 
 const NIL_UUID = '00000000-0000-0000-0000-000000000000';
 
@@ -89,7 +90,7 @@ export default function MasterShowPage() {
         } catch (error) {
             console.error('Error fetching detail:', error);
             setRecord(null);
-            toast.danger('Failed to load record from server.');
+            toast.danger(t('ad.failedToLoadRecordFromServer'));
         } finally {
             setIsLoading(false);
         }
@@ -111,7 +112,7 @@ export default function MasterShowPage() {
     const copyToClipboard = (text: string, label: string) => {
         if (!text) return;
         navigator.clipboard.writeText(text);
-        toast.success(`Copied ${label} to clipboard`, 3000);
+        toast.success(t('ad.copiedLabelToClipboard', { label }), 3000);
     };
 
     const individualFullName = () => {
@@ -141,20 +142,20 @@ export default function MasterShowPage() {
                 <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                            <a href="/" class="hover:text-blue-600 transition-colors">Home</a>
+                            <a href="/" class="hover:text-blue-600 transition-colors">{t('ad.home')}</a>
                             <span>/</span>
-                            <span>Academic</span>
+                            <span>{t('ad.academic')}</span>
                             <span>/</span>
-                            <span>Student</span>
+                            <span>{t('ad.student')}</span>
                             <span>/</span>
-                            <span>Master</span>
+                            <span>{t('ad.master')}</span>
                             <span>/</span>
-                            <a href={basePath} class="hover:text-blue-600 transition-colors">Student</a>
+                            <a href={basePath} class="hover:text-blue-600 transition-colors">{t('ad.student')}</a>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">Detail</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">{t('ad.detail2')}</span>
                         </nav>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Student Details
+                            {t('ad.studentDetails')}
                         </h1>
                     </div>
 
@@ -166,7 +167,7 @@ export default function MasterShowPage() {
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6"/>
                             </svg>
-                            <span>Back to List</span>
+                            <span>{t('ad.backToList')}</span>
                         </a>
                         <Show when={selectedId()}>
                             <a
@@ -177,7 +178,7 @@ export default function MasterShowPage() {
                                     <path d="M12 20h9" />
                                     <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
                                 </svg>
-                                <span>Edit Student</span>
+                                <span>{t('ad.editStudent')}</span>
                             </a>
                         </Show>
                     </div>
@@ -201,8 +202,8 @@ export default function MasterShowPage() {
                             when={record()}
                             fallback={
                                 <div class="py-12 text-center text-neutral-500">
-                                    <p class="text-base font-semibold">No record details found.</p>
-                                    <p class="text-xs mt-1">Check if the ID parameter in the URL is valid.</p>
+                                    <p class="text-base font-semibold">{t('ad.noRecordDetailsFound')}</p>
+                                    <p class="text-xs mt-1">{t('ad.checkIfTheIDParameterIn')}</p>
                                 </div>
                             }
                         >
@@ -210,12 +211,12 @@ export default function MasterShowPage() {
                                 {/* Title banner */}
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-100 dark:border-neutral-700 pb-4">
                                     <div class="min-w-0">
-                                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Student Name</span>
+                                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{t('ad.studentName')}</span>
                                         <h2 class="text-lg sm:text-xl font-bold text-neutral-900 dark:text-white font-mono wrap-break-word">
                                             {text(record()?.name)}
                                         </h2>
                                         <p class="text-xs font-mono text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                            NIM {text(record()?.code)}
+                                            {t('ad.nim2')} {text(record()?.code)}
                                         </p>
                                     </div>
                                     <div class="flex flex-wrap items-center gap-2 shrink-0">
@@ -233,7 +234,7 @@ export default function MasterShowPage() {
                                 {/* Highlights */}
                                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 text-xs">
                                     <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 min-w-0">
-                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">UUID</span>
+                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">{t('ad.uuid2')}</span>
                                         <div class="flex items-center justify-between gap-2">
                                             <span class="font-mono text-neutral-800 dark:text-neutral-200 truncate">{text(record()?.id)}</span>
                                             <button
@@ -241,80 +242,80 @@ export default function MasterShowPage() {
                                                 onClick={() => copyToClipboard(record()?.id, 'ID')}
                                                 class="text-blue-600 hover:text-blue-700 cursor-pointer font-mono shrink-0"
                                             >
-                                                Copy
+                                                {t('ad.copy')}
                                             </button>
                                         </div>
                                     </div>
                                     <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 min-w-0">
-                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">Unit</span>
+                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">{t('ad.unit')}</span>
                                         <span class="font-mono text-neutral-800 dark:text-neutral-200 block truncate">{refLabel(record()?.unit, record()?.unit_name)}</span>
                                     </div>
                                     <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 min-w-0">
-                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">Entry Academic Year</span>
+                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">{t('ad.entryAcademicYear')}</span>
                                         <span class="font-mono text-neutral-800 dark:text-neutral-200 block truncate">{text(record()?.academic_year_name || record()?.academic_year?.name)}</span>
                                     </div>
                                     <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 min-w-0">
-                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">Registered</span>
+                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">{t('ad.registered')}</span>
                                         <span class="font-mono text-neutral-800 dark:text-neutral-200 block truncate">{formatDate(record()?.registered)}</span>
                                     </div>
                                 </div>
 
                                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                                    <Section title="Academic Information">
+                                    <Section title={t('ad.academicInformation')}>
                                         <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <Field label="Concentration" value={refLabel(record()?.concentration)} />
-                                            <Field label="Curriculum" value={text(record()?.curriculum_name || record()?.curriculum?.name)} />
-                                            <Field label="Class Code" value={refLabel(record()?.class_code)} />
-                                            <Field label="Selection Type" value={text(record()?.selection_type_name || record()?.selection_type?.name)} />
-                                            <Field label="Registration" value={text(record()?.registration?.name)} />
-                                            <Field label="Resign Status" value={text(record()?.resign_status?.name)} />
-                                            <Field label="Finance" value={text(record()?.finance?.name)} />
-                                            <Field label="Finance Fee" value={formatCurrency(record()?.finance_fee)} mono />
-                                            <Field label="NISN" value={text(record()?.nisn)} mono />
-                                            <Field label="Transfer Code" value={text(record()?.transfer_code)} mono />
+                                            <Field label={t('ad.concentration')} value={refLabel(record()?.concentration)} />
+                                            <Field label={t('ad.curriculum')} value={text(record()?.curriculum_name || record()?.curriculum?.name)} />
+                                            <Field label={t('ad.classCode2')} value={refLabel(record()?.class_code)} />
+                                            <Field label={t('ad.selectionType')} value={text(record()?.selection_type_name || record()?.selection_type?.name)} />
+                                            <Field label={t('ad.registration')} value={text(record()?.registration?.name)} />
+                                            <Field label={t('ad.resignStatus')} value={text(record()?.resign_status?.name)} />
+                                            <Field label={t('ad.finance')} value={text(record()?.finance?.name)} />
+                                            <Field label={t('ad.financeFee')} value={formatCurrency(record()?.finance_fee)} mono />
+                                            <Field label={t('ad.nisn')} value={text(record()?.nisn)} mono />
+                                            <Field label={t('ad.transferCode')} value={text(record()?.transfer_code)} mono />
                                         </dl>
                                     </Section>
 
-                                    <Section title="Personal Information">
+                                    <Section title={t('ad.personalInformation')}>
                                         <Show
                                             when={record()?.individual}
-                                            fallback={<p class="text-xs text-neutral-500">No linked individual record.</p>}
+                                            fallback={<p class="text-xs text-neutral-500">{t('ad.noLinkedIndividualRecord')}</p>}
                                         >
                                             <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <div class="sm:col-span-2">
-                                                    <Field label="Full Name" value={individualFullName()} />
+                                                    <Field label={t('ad.fullName')} value={individualFullName()} />
                                                 </div>
-                                                <Field label="Identity Number" value={text(record()?.individual?.code)} mono />
+                                                <Field label={t('ad.identityNumber')} value={text(record()?.individual?.code)} mono />
                                                 <Field
-                                                    label="Birth"
+                                                    label={t('ad.birth')}
                                                     value={`${text(record()?.individual?.birth_place)}, ${formatDate(record()?.individual?.birth_date)}`}
                                                 />
-                                                <Field label="Special Needs" value={record()?.individual?.is_special_need ? 'Yes' : 'No'} />
-                                                <Field label="Social Protection Card" value={record()?.individual?.is_social_protection_card_recipient ? 'Yes' : 'No'} />
-                                                <Field label="Deceased" value={record()?.individual?.is_deceased ? 'Yes' : 'No'} />
+                                                <Field label={t('ad.specialNeeds')} value={record()?.individual?.is_special_need ? t('ad.yes') : t('ad.no')} />
+                                                <Field label={t('ad.socialProtectionCard')} value={record()?.individual?.is_social_protection_card_recipient ? t('ad.yes') : t('ad.no')} />
+                                                <Field label={t('ad.deceased')} value={record()?.individual?.is_deceased ? t('ad.yes') : t('ad.no')} />
                                             </dl>
                                         </Show>
                                     </Section>
                                 </div>
 
-                                <Section title={`Semester Activities (${activities().length})`}>
+                                <Section title={t('ad.semesterActivitiesCount', { count: activities().length })}>
                                     <Show
                                         when={activities().length > 0}
-                                        fallback={<p class="text-xs text-neutral-500">No semester activities recorded.</p>}
+                                        fallback={<p class="text-xs text-neutral-500">{t('ad.noSemesterActivitiesRecorded')}</p>}
                                     >
                                         {/* Desktop table */}
                                         <div class="hidden md:block overflow-x-auto -m-4">
                                             <table class="w-full text-xs text-left">
                                                 <thead class="bg-neutral-50 dark:bg-neutral-900/30 text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
                                                     <tr>
-                                                        <th class="px-4 py-2.5 font-semibold">Academic Year</th>
-                                                        <th class="px-4 py-2.5 font-semibold">Status</th>
-                                                        <th class="px-4 py-2.5 font-semibold text-right">Credits</th>
-                                                        <th class="px-4 py-2.5 font-semibold text-right">GPA (IPS)</th>
-                                                        <th class="px-4 py-2.5 font-semibold text-right">Total Credits</th>
-                                                        <th class="px-4 py-2.5 font-semibold text-right">CGPA (IPK)</th>
-                                                        <th class="px-4 py-2.5 font-semibold">Finance</th>
-                                                        <th class="px-4 py-2.5 font-semibold text-center">Locked</th>
+                                                        <th class="px-4 py-2.5 font-semibold">{t('ad.academicYear')}</th>
+                                                        <th class="px-4 py-2.5 font-semibold">{t('ad.status')}</th>
+                                                        <th class="px-4 py-2.5 font-semibold text-right">{t('ad.credits')}</th>
+                                                        <th class="px-4 py-2.5 font-semibold text-right">{t('ad.gpaIPS')}</th>
+                                                        <th class="px-4 py-2.5 font-semibold text-right">{t('ad.totalCredits')}</th>
+                                                        <th class="px-4 py-2.5 font-semibold text-right">{t('ad.cgpaIPK')}</th>
+                                                        <th class="px-4 py-2.5 font-semibold">{t('ad.finance')}</th>
+                                                        <th class="px-4 py-2.5 font-semibold text-center">{t('ad.locked')}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700 font-mono">
@@ -346,10 +347,10 @@ export default function MasterShowPage() {
                                                             <span class="text-neutral-500">{text(act.status_name)}</span>
                                                         </div>
                                                         <div class="grid grid-cols-2 gap-1 font-mono text-neutral-700 dark:text-neutral-300">
-                                                            <span>IPS {formatNumber(act.cumulative_index, 2)}</span>
-                                                            <span>SKS {formatNumber(act.total_credit)}</span>
-                                                            <span>IPK {formatNumber(act.grand_cumulative_index, 2)}</span>
-                                                            <span>Total SKS {formatNumber(act.grand_total_credit)}</span>
+                                                            <span>{t('ad.ips')} {formatNumber(act.cumulative_index, 2)}</span>
+                                                            <span>{t('ad.sks')} {formatNumber(act.total_credit)}</span>
+                                                            <span>{t('ad.ipk')} {formatNumber(act.grand_cumulative_index, 2)}</span>
+                                                            <span>{t('ad.totalSKS')} {formatNumber(act.grand_total_credit)}</span>
                                                         </div>
                                                     </div>
                                                 )}
@@ -358,14 +359,14 @@ export default function MasterShowPage() {
                                     </Show>
                                 </Section>
 
-                                <Section title="System Metadata">
+                                <Section title={t('ad.systemMetadata')}>
                                     <dl class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                                        <Field label="Feeder Student ID" value={text(record()?.id_mahasiswa)} mono />
-                                        <Field label="Feeder Registration ID" value={text(record()?.id_registrasi_mahasiswa)} mono />
-                                        <Field label="Individual ID" value={text(record()?.individual_id)} mono />
-                                        <Field label="Synced At" value={formatDateTime(record()?.sync_at)} />
-                                        <Field label="Created At" value={formatDateTime(record()?.created_at)} />
-                                        <Field label="Updated At" value={formatDateTime(record()?.updated_at)} />
+                                        <Field label={t('ad.feederStudentID')} value={text(record()?.id_mahasiswa)} mono />
+                                        <Field label={t('ad.feederRegistrationID')} value={text(record()?.id_registrasi_mahasiswa)} mono />
+                                        <Field label={t('ad.individualID')} value={text(record()?.individual_id)} mono />
+                                        <Field label={t('ad.syncedAt')} value={formatDateTime(record()?.sync_at)} />
+                                        <Field label={t('ad.createdAt')} value={formatDateTime(record()?.created_at)} />
+                                        <Field label={t('ad.updatedAt')} value={formatDateTime(record()?.updated_at)} />
                                     </dl>
                                 </Section>
                             </div>

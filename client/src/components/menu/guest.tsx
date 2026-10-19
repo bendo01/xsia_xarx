@@ -40,7 +40,7 @@ export default function MenuGuest() {
                         <span>{t('menu.guest.sessionSignIn')}</span>
                     </div>
                     <span class="text-[10px] font-bold font-mono px-1.5 py-0.5 rounded-xs bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                        DEFAULT
+                        {t('menu.guest.defaultBadge')}
                     </span>
                 </A>
             </li>

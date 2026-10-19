@@ -3,6 +3,7 @@ import { useParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { masterApiShow } from '~/controllers/master/masterApiController';
+import { t } from '../../../../../../../i18n';
 
 export default function AcademicCourseMasterCurriculumDetailPage() {
     const basePath = "/administrator/academic/course/master/curriculum";
@@ -24,12 +25,12 @@ export default function AcademicCourseMasterCurriculumDetailPage() {
                 setRecord(apiRes.data);
             } else {
                 setRecord(null);
-                toast.danger('Curriculum record not found.');
+                toast.danger(t('ad.curriculumRecordNotFound'));
             }
         } catch (error) {
             console.error('Error fetching curriculum detail:', error);
             setRecord(null);
-            toast.danger('Failed to load curriculum record from server.');
+            toast.danger(t('ad.failedToLoadCurriculumRecordFrom'));
         } finally {
             setIsLoading(false);
         }
@@ -51,7 +52,7 @@ export default function AcademicCourseMasterCurriculumDetailPage() {
     const copyToClipboard = (text: string, label: string) => {
         if (!text) return;
         navigator.clipboard.writeText(text);
-        toast.success(`Copied ${label} to clipboard`, 3000);
+        toast.success(t('ad.copiedLabelToClipboard', { label }), 3000);
     };
 
     return (
@@ -63,20 +64,20 @@ export default function AcademicCourseMasterCurriculumDetailPage() {
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div class="min-w-0">
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
-                            <a href="/" class="hover:text-blue-600 transition-colors shrink-0">Home</a>
+                            <a href="/" class="hover:text-blue-600 transition-colors shrink-0">{t('ad.home')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="shrink-0">Academic</span>
+                            <span class="shrink-0">{t('ad.academic')}</span>
                             <span class="shrink-0">/</span>
-                            <span class="shrink-0">Course</span>
+                            <span class="shrink-0">{t('ad.course')}</span>
                             <span class="shrink-0">/</span>
-                            <span class="shrink-0">Master</span>
+                            <span class="shrink-0">{t('ad.master')}</span>
                             <span class="shrink-0">/</span>
-                            <a href={basePath} class="hover:text-blue-600 transition-colors shrink-0">Curriculum</a>
+                            <a href={basePath} class="hover:text-blue-600 transition-colors shrink-0">{t('ad.curriculum')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white shrink-0">Detail</span>
+                            <span class="font-medium text-neutral-900 dark:text-white shrink-0">{t('ad.detail2')}</span>
                         </nav>
                         <h1 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono truncate">
-                            Curriculum Details
+                            {t('ad.curriculumDetails')}
                         </h1>
                     </div>
 
@@ -88,7 +89,7 @@ export default function AcademicCourseMasterCurriculumDetailPage() {
                             <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6" />
                             </svg>
-                            <span>Back to List</span>
+                            <span>{t('ad.backToList')}</span>
                         </a>
                     </div>
                 </div>
@@ -101,8 +102,8 @@ export default function AcademicCourseMasterCurriculumDetailPage() {
                             class="p-4 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xs hover:border-blue-500 dark:hover:border-blue-500 shadow-2xs transition-colors flex items-center justify-between"
                         >
                             <div class="min-w-0 pr-2">
-                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white font-mono truncate">Curriculum Courses & Structure</h3>
-                                <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">Explore courses, credit allocations, and semester mappings for this curriculum</p>
+                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white font-mono truncate">{t('ad.curriculumCoursesStructure')}</h3>
+                                <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">{t('ad.exploreCoursesCreditAllocationsAndSemester')}</p>
                             </div>
                             <svg class="size-5 text-neutral-400 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m9 18 6-6-6-6" />
@@ -132,8 +133,8 @@ export default function AcademicCourseMasterCurriculumDetailPage() {
                             when={record()}
                             fallback={
                                 <div class="py-12 text-center text-neutral-500">
-                                    <p class="text-base font-semibold">No curriculum details found.</p>
-                                    <p class="text-xs mt-1">Check if the ID parameter in the URL is valid.</p>
+                                    <p class="text-base font-semibold">{t('ad.noCurriculumDetailsFound')}</p>
+                                    <p class="text-xs mt-1">{t('ad.checkIfTheIDParameterIn')}</p>
                                 </div>
                             }
                         >
@@ -141,7 +142,7 @@ export default function AcademicCourseMasterCurriculumDetailPage() {
                                 {/* Title and Badge Banner */}
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-100 dark:border-neutral-700 pb-4">
                                     <div class="min-w-0">
-                                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 block mb-0.5">Curriculum Name</span>
+                                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 block mb-0.5">{t('ad.curriculumName')}</span>
                                         <h2 class="text-lg sm:text-xl font-bold text-neutral-900 dark:text-white font-mono break-all sm:break-normal">
                                             {record()?.name || '-'}
                                         </h2>
@@ -156,7 +157,7 @@ export default function AcademicCourseMasterCurriculumDetailPage() {
                                 {/* Key Metrics / Highlights Grid */}
                                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 text-xs">
                                     <div class="p-3.5 sm:p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 min-w-0">
-                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">UUID</span>
+                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">{t('ad.uuid2')}</span>
                                         <div class="flex items-center justify-between gap-2 min-w-0">
                                             <span class="font-mono text-neutral-800 dark:text-neutral-200 truncate">{record()?.id || '-'}</span>
                                             <button
@@ -164,23 +165,23 @@ export default function AcademicCourseMasterCurriculumDetailPage() {
                                                 onClick={() => copyToClipboard(record()?.id, 'ID')}
                                                 class="text-blue-600 hover:text-blue-700 cursor-pointer font-mono shrink-0 text-xs font-medium"
                                             >
-                                                Copy
+                                                {t('ad.copy')}
                                             </button>
                                         </div>
                                     </div>
 
                                     <div class="p-3.5 sm:p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 min-w-0">
-                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">Total Credits (SKS)</span>
+                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">{t('ad.totalCreditsSKS')}</span>
                                         <span class="font-mono text-neutral-800 dark:text-neutral-200 block truncate">{record()?.credit_total ?? record()?.sks_total ?? '-'}</span>
                                     </div>
 
                                     <div class="p-3.5 sm:p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 min-w-0">
-                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">Academic Year</span>
+                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">{t('ad.academicYear')}</span>
                                         <span class="font-mono text-neutral-800 dark:text-neutral-200 block truncate">{record()?.academic_year_name || record()?.academic_year_id || '-'}</span>
                                     </div>
 
                                     <div class="p-3.5 sm:p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 min-w-0">
-                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">Unit Reference</span>
+                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">{t('ad.unitReference')}</span>
                                         <div class="flex items-center justify-between gap-2 min-w-0">
                                             <span class="font-mono text-neutral-800 dark:text-neutral-200 truncate">{record()?.unit_id || '-'}</span>
                                             <Show when={record()?.unit_id}>
@@ -188,7 +189,7 @@ export default function AcademicCourseMasterCurriculumDetailPage() {
                                                     href={`/administrator/institution/master/unit/${record()?.unit_id}`}
                                                     class="text-blue-600 hover:text-blue-700 font-mono text-[11px] shrink-0"
                                                 >
-                                                    View
+                                                    {t('ad.view')}
                                                 </a>
                                             </Show>
                                         </div>
@@ -198,7 +199,7 @@ export default function AcademicCourseMasterCurriculumDetailPage() {
                                 {/* All Entity Attributes: Dual Desktop Table & Mobile Card View */}
                                 <div class="mt-6">
                                     <div class="flex items-center justify-between mb-3">
-                                        <h3 class="text-sm font-bold font-mono text-neutral-900 dark:text-white">All Entity Attributes</h3>
+                                        <h3 class="text-sm font-bold font-mono text-neutral-900 dark:text-white">{t('ad.allEntityAttributes')}</h3>
                                         <span class="text-[11px] font-mono text-neutral-500 dark:text-neutral-400">
                                             {Object.keys(record() || {}).length} fields
                                         </span>

@@ -36,6 +36,7 @@ import {
     StudentMasterItem
 } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
 import { getActiveStudentId } from '~/lib/authStore';
+import { t as tt } from '../../../../../../../i18n';
 
 export default function StudentCourseEnrollmentPage() {
     const params = useParams();
@@ -302,7 +303,7 @@ export default function StudentCourseEnrollmentPage() {
             setEnrolledCourses(enrichedEnrolled);
         } catch (err) {
             console.error('Error fetching enrollment data:', err);
-            toast.danger('Failed to load course offerings from server.');
+            toast.danger(tt('st.failedToLoadCourseOfferingsFrom'));
         } finally {
             setIsLoading(false);
         }
@@ -336,19 +337,19 @@ export default function StudentCourseEnrollmentPage() {
 
     const handleEnroll = async (teach: TeachItem) => {
         if (activeActivity()?.is_lock) {
-            toast.warning('Cannot enroll courses because this academic activity is locked.');
+            toast.warning(tt('st.cannotEnrollCoursesBecauseThisAcademic'));
             return;
         }
 
         const courseCredit = teach.credits ?? 0;
         if (totalCurrentSKS() + courseCredit > maxAllowedSKS) {
-            toast.danger(`Cannot enroll. Exceeds maximum SKS allowance of ${maxAllowedSKS} SKS.`);
+            toast.danger(tt('st.cannotEnrollExceedsMaximumSKSAllowance', { max: maxAllowedSKS }));
             return;
         }
 
         // Prevent enrolling in the same course under a different class
         if (isCourseAlreadyEnrolled(teach.course_id)) {
-            toast.warning(`You have already enrolled in ${teach.course_name || 'this course'} in another class. Please drop the existing class first to change classes.`);
+            toast.warning(tt('st.youHaveAlreadyEnrolledInCourse', { course: teach.course_name || tt('st.thisCourse') }));
             return;
         }
 
@@ -363,13 +364,13 @@ export default function StudentCourseEnrollmentPage() {
             });
 
             if (!res.is_error && res.data) {
-                toast.success(`Successfully enrolled in ${teach.course_name || teach.name || 'course'}! (+${courseCredit} SKS)`);
+                toast.success(tt('st.successfullyEnrolledInCourseCreditSKS', { course: teach.course_name || teach.name || tt('st.course'), credit: courseCredit }));
                 await fetchEnrollmentData();
             } else {
-                toast.danger(res.message || 'Failed to enroll class.');
+                toast.danger(res.message || tt('st.failedToEnrollClass'));
             }
         } catch {
-            toast.danger('Failed to enroll class.');
+            toast.danger(tt('st.failedToEnrollClass'));
         } finally {
             setEnrollingTeachId(null);
         }
@@ -405,7 +406,7 @@ export default function StudentCourseEnrollmentPage() {
         if (!item) return;
 
         if (activeActivity()?.is_lock) {
-            toast.warning('Cannot drop courses because this academic activity is locked.');
+            toast.warning(tt('st.cannotDropCoursesBecauseThisAcademic'));
             return;
         }
 
@@ -413,14 +414,14 @@ export default function StudentCourseEnrollmentPage() {
         try {
             const res = await deleteDetailActivity(item.detailId);
             if (!res.is_error) {
-                toast.info(`Dropped ${item.courseName} from study plan.`);
+                toast.info(tt('st.droppedCourseFromStudyPlan', { course: item.courseName }));
                 setTargetToDrop(null);
                 await fetchEnrollmentData();
             } else {
-                toast.danger(res.message || 'Failed to drop class.');
+                toast.danger(res.message || tt('st.failedToDropClass'));
             }
         } catch {
-            toast.danger('Failed to drop class.');
+            toast.danger(tt('st.failedToDropClass'));
         } finally {
             setDroppingDetailId(null);
         }
@@ -455,16 +456,16 @@ export default function StudentCourseEnrollmentPage() {
                             ⚠️
                         </div>
                         <div class="space-y-1">
-                            <h2 class="text-base font-bold text-neutral-900 dark:text-white">Aktivitas Semester Tidak Ditemukan</h2>
+                            <h2 class="text-base font-bold text-neutral-900 dark:text-white">{tt('st.aktivitasSemesterTidakDitemukan')}</h2>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                Halaman KRS memerlukan ID aktivitas semester yang valid. Silakan pilih aktivitas semester dari daftar.
+                                {tt('st.halamanKRSMemerlukanIDAktivitasSemester')}
                             </p>
                         </div>
                         <A
                             href="/student/academic/student/campaign/activity"
                             class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xs text-xs font-bold transition-colors shadow-xs"
                         >
-                            ← Kembali ke Aktivitas Semester
+                            {tt('st.kembaliKeAktivitasSemester')}
                         </A>
                     </div>
                 </Show>
@@ -475,9 +476,9 @@ export default function StudentCourseEnrollmentPage() {
                         <div class="p-4 rounded-xs bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-3 shadow-2xs">
                             <span class="text-lg shrink-0">🔒</span>
                             <div class="space-y-0.5">
-                                <h4 class="font-bold">Aktivitas Perkuliahan Telah Dikunci & Difinalisasi</h4>
+                                <h4 class="font-bold">{tt('st.aktivitasPerkuliahanTelahDikunciDifinalisasi')}</h4>
                                 <p class="text-amber-800 dark:text-amber-300 text-[11px] leading-relaxed">
-                                    Pengisian dan perubahan KRS untuk aktivitas semester ini telah ditutup dan dikunci. Anda hanya dapat meninjau mata kuliah yang telah terdaftar.
+                                    {tt('st.pengisianDanPerubahanKRSUntukAktivitas')}
                                 </p>
                             </div>
                         </div>
@@ -493,25 +494,25 @@ export default function StudentCourseEnrollmentPage() {
                                         href="/student/academic/student/campaign/activity"
                                         class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xs bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 border border-neutral-200 dark:border-neutral-600 text-neutral-900 dark:text-white text-xs font-semibold transition-colors"
                                     >
-                                        ← Back to Activities
+                                        {tt('st.backToActivities')}
                                     </A>
                                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-xs bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 text-emerald-700 dark:text-emerald-300 text-xs font-mono font-semibold">
                                         <span class="size-2 rounded-xs bg-emerald-400 animate-pulse"></span>
-                                        <span>KRS Course Enrollment Gateway</span>
+                                        <span>{tt('st.krsCourseEnrollmentGateway')}</span>
                                     </div>
                                 </div>
                                 <h1 class="text-2xl sm:text-3xl font-black tracking-tight">
-                                    Semester Course Enrollment (KRS)
+                                    {tt('st.semesterCourseEnrollmentKRS')}
                                 </h1>
                                 <p class="text-neutral-600 dark:text-neutral-300 text-xs sm:text-sm max-w-xl">
-                                    Select and enroll into class offerings from the academic catalog for {activeActivity()?.name || 'Academic Semester'}.
+                                    {tt('st.selectAndEnrollIntoClassOfferings')} {activeActivity()?.name || tt('st.academicSemester')}.
                                 </p>
                             </div>
 
                         {/* Realtime SKS Meter */}
                         <div class="p-5 bg-neutral-100 dark:bg-neutral-700 backdrop-blur-md rounded-xs border border-neutral-200 dark:border-neutral-600 min-w-[280px] space-y-3">
                             <div class="flex justify-between items-center text-xs font-mono">
-                                <span class="text-neutral-600 dark:text-neutral-300">Credit Load (SKS):</span>
+                                <span class="text-neutral-600 dark:text-neutral-300">{tt('st.creditLoadSKS')}</span>
                                 <span class="font-bold text-neutral-900 dark:text-white text-sm">{totalCurrentSKS()} / {maxAllowedSKS} SKS</span>
                             </div>
 
@@ -528,7 +529,7 @@ export default function StudentCourseEnrollmentPage() {
                             </div>
 
                             <div class="flex justify-between items-center text-[11px] text-neutral-600 dark:text-neutral-300">
-                                <span>Remaining Allowance:</span>
+                                <span>{tt('st.remainingAllowance')}</span>
                                 <span class="font-bold text-emerald-700 dark:text-emerald-300">{remainingSKS()} SKS</span>
                             </div>
                         </div>
@@ -546,7 +547,7 @@ export default function StudentCourseEnrollmentPage() {
                                 <h2 class="text-sm font-bold text-neutral-900 dark:text-white">
                                     My Selected Study Plan ({enrolledCourses().length} Enrolled Courses)
                                 </h2>
-                                <p class="text-[11px] text-neutral-400 font-mono">Total {totalCurrentSKS()} SKS registered</p>
+                                <p class="text-[11px] text-neutral-400 font-mono">{tt('st.total')} {totalCurrentSKS()} SKS registered</p>
                             </div>
                         </div>
 
@@ -555,7 +556,7 @@ export default function StudentCourseEnrollmentPage() {
                                 href={`/student/academic/student/campaign/activity/${activeActivity()?.id || ''}/show`}
                                 class="px-4 py-2 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 rounded-xs text-xs font-bold transition-colors"
                             >
-                                View Study Plan (KRS Detail) →
+                                {tt('st.viewStudyPlanKRSDetail')}
                             </A>
                         </div>
                     </div>
@@ -563,7 +564,7 @@ export default function StudentCourseEnrollmentPage() {
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                         <For each={enrolledCourses()} fallback={
                             <div class="col-span-1 sm:col-span-2 lg:col-span-3 py-6 text-center text-neutral-400 text-xs">
-                                No courses selected yet. Choose from the available offerings below.
+                                {tt('st.noCoursesSelectedYetChooseFrom')}
                             </div>
                         }>
                             {(enr) => (
@@ -578,7 +579,7 @@ export default function StudentCourseEnrollmentPage() {
                                             </span>
                                             <Show when={enr.class_name && enr.class_name !== '-'}>
                                                 <span class="px-1.5 py-0.5 rounded-xs bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 text-[10px] font-mono font-semibold">
-                                                    Class: {enr.class_name}
+                                                    {tt('st.class')} {enr.class_name}
                                                 </span>
                                             </Show>
                                         </div>
@@ -595,7 +596,7 @@ export default function StudentCourseEnrollmentPage() {
                                             type="button"
                                             onClick={() => openDropModal({
                                                 detailId: enr.id,
-                                                courseName: enr.course_name || 'Course',
+                                                courseName: enr.course_name || tt('st.course'),
                                                 courseCode: enr.course_code,
                                                 className: enr.class_name,
                                                 credit: enr.credit,
@@ -603,7 +604,7 @@ export default function StudentCourseEnrollmentPage() {
                                             })}
                                             disabled={droppingDetailId() === enr.id}
                                             class="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-xs text-xs font-bold transition-colors disabled:opacity-50 shrink-0"
-                                            title="Drop class"
+                                            title={tt('st.dropClass')}
                                         >
                                             ✕
                                         </button>
@@ -620,10 +621,10 @@ export default function StudentCourseEnrollmentPage() {
                     <div class="p-6 border-b border-neutral-200 dark:border-neutral-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <h2 class="text-base font-bold text-neutral-900 dark:text-white">
-                                Available Class Offerings
+                                {tt('st.availableClassOfferings')}
                             </h2>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                Course classes available for your active semester activity and unit.
+                                {tt('st.courseClassesAvailableForYourActive')}
                             </p>
                         </div>
 
@@ -631,7 +632,7 @@ export default function StudentCourseEnrollmentPage() {
                             <div class="relative w-64">
                                 <input
                                     type="text"
-                                    placeholder="Filter by course, code, class, lecturer..."
+                                    placeholder={tt('st.filterByCourseCodeClassLecturer')}
                                     value={searchQuery()}
                                     onInput={(e) => setSearchQuery(e.currentTarget.value)}
                                     class="w-full pl-8 pr-3 py-1.5 text-xs rounded-xs bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-hidden focus:border-blue-500"
@@ -644,7 +645,7 @@ export default function StudentCourseEnrollmentPage() {
                                 onChange={(e) => setSelectedCreditFilter(e.currentTarget.value)}
                                 class="py-1.5 px-3 text-xs rounded-xs bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-hidden"
                             >
-                                <option value="all">All SKS</option>
+                                <option value="all">{tt('st.allSKS')}</option>
                                 <option value="1">1 SKS</option>
                                 <option value="2">2 SKS</option>
                                 <option value="3">3 SKS</option>
@@ -658,7 +659,7 @@ export default function StudentCourseEnrollmentPage() {
                     <Show when={!isLoading()} fallback={
                         <div class="py-16 flex flex-col items-center justify-center gap-3 text-neutral-400">
                             <div class="size-8 border-3 border-blue-500 border-t-transparent rounded-xs animate-spin"></div>
-                            <p class="text-xs font-mono">Loading teach class offerings from server...</p>
+                            <p class="text-xs font-mono">{tt('st.loadingTeachClassOfferingsFromServer')}</p>
                         </div>
                     }>
                         {/* Desktop Table View (md and above) */}
@@ -666,21 +667,21 @@ export default function StudentCourseEnrollmentPage() {
                             <table class="w-full text-xs text-start">
                                 <thead class="bg-neutral-100 dark:bg-neutral-900/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-neutral-200 dark:border-neutral-700">
                                     <tr>
-                                        <th class="py-3 px-4 text-start">Code</th>
-                                        <th class="py-3 px-4 text-start">Course Title</th>
-                                        <th class="py-3 px-4 text-center">SKS</th>
-                                        <th class="py-3 px-4 text-center">Class</th>
-                                        <th class="py-3 px-4 text-start">Lecturer</th>
-                                        <th class="py-3 px-4 text-start">Schedule & Room</th>
-                                        <th class="py-3 px-4 text-center">Quota</th>
-                                        <th class="py-3 px-4 text-end">Action</th>
+                                        <th class="py-3 px-4 text-start">{tt('st.code')}</th>
+                                        <th class="py-3 px-4 text-start">{tt('st.courseTitle')}</th>
+                                        <th class="py-3 px-4 text-center">{tt('st.sks')}</th>
+                                        <th class="py-3 px-4 text-center">{tt('st.class2')}</th>
+                                        <th class="py-3 px-4 text-start">{tt('st.lecturer')}</th>
+                                        <th class="py-3 px-4 text-start">{tt('st.scheduleRoom')}</th>
+                                        <th class="py-3 px-4 text-center">{tt('st.quota')}</th>
+                                        <th class="py-3 px-4 text-end">{tt('st.action')}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-neutral-100 dark:divide-neutral-700/50">
                                     <For each={filteredTeaches()} fallback={
                                         <tr>
                                             <td colspan="8" class="py-12 text-center text-neutral-400">
-                                                No class offerings available for current semester activity and unit.
+                                                {tt('st.noClassOfferingsAvailableForCurrent')}
                                             </td>
                                         </tr>
                                     }>
@@ -730,7 +731,7 @@ export default function StudentCourseEnrollmentPage() {
                                                                     const d = enrolledDetail();
                                                                     if (d) openDropModal({
                                                                         detailId: d.id,
-                                                                        courseName: t.course_name || t.name || 'Course',
+                                                                        courseName: t.course_name || t.name || tt('st.course'),
                                                                         courseCode: t.course_code,
                                                                         className: t.class_name,
                                                                         credit: t.credits,
@@ -741,12 +742,12 @@ export default function StudentCourseEnrollmentPage() {
                                                                 class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-300 dark:hover:bg-red-900/60 border border-red-200 dark:border-red-800/60 rounded-xs text-xs font-bold transition-colors shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1"
                                                                 title={activeActivity()?.is_lock ? "Cannot unenroll: activity is locked" : "Unenroll from this class"}
                                                             >
-                                                                {isDroppingThis() ? 'Dropping...' : '✕ Unenroll'}
+                                                                {isDroppingThis() ? tt('st.dropping') : '✕ Unenroll'}
                                                             </button>
                                                         }>
                                                             <Show when={!isEnrolledOther()} fallback={
-                                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xs bg-neutral-100 dark:bg-neutral-800 text-neutral-400 dark:text-neutral-500 text-[11px] font-semibold border border-neutral-200 dark:border-neutral-700 cursor-not-allowed" title="Already enrolled in this course in another class">
-                                                                    Other Class Enrolled
+                                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xs bg-neutral-100 dark:bg-neutral-800 text-neutral-400 dark:text-neutral-500 text-[11px] font-semibold border border-neutral-200 dark:border-neutral-700 cursor-not-allowed" title={tt('st.alreadyEnrolledInThisCourseIn')}>
+                                                                    {tt('st.otherClassEnrolled')}
                                                                 </span>
                                                             }>
                                                                 <button
@@ -755,7 +756,7 @@ export default function StudentCourseEnrollmentPage() {
                                                                     disabled={enrollingTeachId() === t.id || isFull() || remainingSKS() < (t.credits ?? 0) || Boolean(activeActivity()?.is_lock)}
                                                                     class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xs text-xs font-bold transition-colors shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed"
                                                                 >
-                                                                    {enrollingTeachId() === t.id ? 'Enrolling...' : activeActivity()?.is_lock ? 'Locked' : isFull() ? 'Class Full' : '+ Enroll'}
+                                                                    {enrollingTeachId() === t.id ? tt('st.enrolling') : activeActivity()?.is_lock ? tt('st.locked') : isFull() ? tt('st.classFull') : '+ Enroll'}
                                                                 </button>
                                                             </Show>
                                                         </Show>
@@ -772,7 +773,7 @@ export default function StudentCourseEnrollmentPage() {
                         <div class="block md:hidden divide-y divide-neutral-100 dark:divide-neutral-700/50">
                             <For each={filteredTeaches()} fallback={
                                 <div class="py-12 px-4 text-center text-neutral-400 font-mono text-xs">
-                                    No class offerings available for current semester activity and unit.
+                                    {tt('st.noClassOfferingsAvailableForCurrent')}
                                 </div>
                             }>
                                 {(t) => {
@@ -797,7 +798,7 @@ export default function StudentCourseEnrollmentPage() {
                                                             {t.credits ?? 0} SKS
                                                         </span>
                                                         <span class="px-2 py-0.5 rounded-xs bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 font-mono text-[10px] font-semibold">
-                                                            Class: {t.class_name || '-'}
+                                                            {tt('st.class')} {t.class_name || '-'}
                                                         </span>
                                                     </div>
                                                     <h3 class="text-sm font-bold text-neutral-900 dark:text-white leading-snug">
@@ -812,7 +813,7 @@ export default function StudentCourseEnrollmentPage() {
                                                             const d = enrolledDetail();
                                                             if (d) openDropModal({
                                                                 detailId: d.id,
-                                                                courseName: t.course_name || t.name || 'Course',
+                                                                courseName: t.course_name || t.name || tt('st.course'),
                                                                 courseCode: t.course_code,
                                                                 className: t.class_name,
                                                                 credit: t.credits,
@@ -828,7 +829,7 @@ export default function StudentCourseEnrollmentPage() {
                                                 }>
                                                     <Show when={!isEnrolledOther()} fallback={
                                                         <span class="inline-flex items-center gap-1 px-2 py-1 rounded-xs bg-neutral-100 dark:bg-neutral-800 text-neutral-400 dark:text-neutral-500 text-[10px] font-semibold border border-neutral-200 dark:border-neutral-700 shrink-0 cursor-not-allowed">
-                                                            Other Class
+                                                            {tt('st.otherClass')}
                                                         </span>
                                                     }>
                                                         <button
@@ -837,20 +838,20 @@ export default function StudentCourseEnrollmentPage() {
                                                             disabled={enrollingTeachId() === t.id || isFull() || remainingSKS() < (t.credits ?? 0) || Boolean(activeActivity()?.is_lock)}
                                                             class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xs text-xs font-bold transition-colors shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
                                                         >
-                                                            {enrollingTeachId() === t.id ? '...' : activeActivity()?.is_lock ? 'Locked' : isFull() ? 'Full' : '+ Enroll'}
+                                                            {enrollingTeachId() === t.id ? '...' : activeActivity()?.is_lock ? tt('st.locked') : isFull() ? tt('st.full') : '+ Enroll'}
                                                         </button>
                                                     </Show>
                                                 </Show>
                                             </div>
 
                                             <div class="text-xs text-neutral-600 dark:text-neutral-300 flex items-start gap-1.5">
-                                                <span class="text-neutral-400 dark:text-neutral-500 shrink-0 font-medium text-[11px]">Lecturer:</span>
+                                                <span class="text-neutral-400 dark:text-neutral-500 shrink-0 font-medium text-[11px]">{tt('st.lecturer2')}</span>
                                                 <span class="text-[11px]">{t.lecturer_name || '-'}</span>
                                             </div>
 
                                             <div class="grid grid-cols-2 gap-2 pt-2 border-t border-neutral-100 dark:border-neutral-700/40 text-xs">
                                                 <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
-                                                    <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">Schedule / Room</span>
+                                                    <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{tt('st.scheduleRoom2')}</span>
                                                     <span class="text-[11px] text-neutral-800 dark:text-neutral-200 block truncate">
                                                         {t.schedule_time !== '-' ? t.schedule_time : ''} {t.room_name !== '-' ? `(${t.room_name})` : ''}
                                                         {t.schedule_time === '-' && t.room_name === '-' ? '-' : ''}
@@ -858,7 +859,7 @@ export default function StudentCourseEnrollmentPage() {
                                                 </div>
 
                                                 <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
-                                                    <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">Quota Enrolled</span>
+                                                    <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{tt('st.quotaEnrolled')}</span>
                                                     <span class={`font-mono font-bold text-xs ${isFull() ? 'text-red-500' : 'text-neutral-800 dark:text-neutral-200'}`}>
                                                         {t.enrolled_count ?? 0} / {t.max_member ?? '-'}
                                                     </span>
@@ -892,10 +893,10 @@ export default function StudentCourseEnrollmentPage() {
                                 </div>
                                 <div class="space-y-1 min-w-0">
                                     <h3 class="text-base font-bold text-neutral-900 dark:text-white">
-                                        Confirm Unenroll Class
+                                        {tt('st.confirmUnenrollClass')}
                                     </h3>
                                     <p class="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
-                                        Are you sure you want to unenroll from this course? It will be removed from your study plan.
+                                        {tt('st.areYouSureYouWantTo')}
                                     </p>
                                 </div>
                             </div>
@@ -914,7 +915,7 @@ export default function StudentCourseEnrollmentPage() {
                                         </Show>
                                         <Show when={item().className && item().className !== '-'}>
                                             <span class="px-2 py-0.5 rounded-xs bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 text-[10px] font-mono font-semibold">
-                                                Class {item().className}
+                                                {tt('st.class2')} {item().className}
                                             </span>
                                         </Show>
                                     </div>
@@ -936,7 +937,7 @@ export default function StudentCourseEnrollmentPage() {
                                     disabled={droppingDetailId() !== null}
                                     class="px-4 py-2 text-xs font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-xs transition-colors disabled:opacity-50"
                                 >
-                                    Cancel
+                                    {tt('st.cancel')}
                                 </button>
                                 <button
                                     type="button"
@@ -944,7 +945,7 @@ export default function StudentCourseEnrollmentPage() {
                                     disabled={droppingDetailId() !== null}
                                     class="px-4 py-2 text-xs font-bold text-white bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700 rounded-xs transition-colors shadow-xs disabled:opacity-50 inline-flex items-center gap-1.5"
                                 >
-                                    {droppingDetailId() ? 'Unenrolling...' : 'Yes, Unenroll'}
+                                    {droppingDetailId() ? tt('st.unenrolling') : tt('st.yesUnenroll')}
                                 </button>
                             </div>
                         </div>

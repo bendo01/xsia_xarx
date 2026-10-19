@@ -3,6 +3,7 @@ import { useParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { masterApiIndex } from '~/controllers/master/masterApiController';
 import { resolveInstitutionFromStaffRole } from '~/lib/rectoratHelper';
+import { t } from '../../../../../i18n';
 
 interface SectionStats {
     students: number;
@@ -75,8 +76,8 @@ export default function RectoratAcademicHub() {
     const sections = createMemo(() => [
         {
             id: 'student',
-            title: 'Mahasiswa',
-            description: 'Kelola data mahasiswa yang terdaftar pada institusi ini.',
+            title: t('rt.mahasiswa'),
+            description: t('rt.kelolaDataMahasiswaYangTerdaftarPada'),
             count: stats().students,
             icon: (
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6">
@@ -93,8 +94,8 @@ export default function RectoratAcademicHub() {
         },
         {
             id: 'lecturer',
-            title: 'Dosen',
-            description: 'Kelola data dosen yang bertugas pada institusi ini.',
+            title: t('rt.dosen'),
+            description: t('rt.kelolaDataDosenYangBertugasPada'),
             count: stats().lecturers,
             icon: (
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6">
@@ -111,8 +112,8 @@ export default function RectoratAcademicHub() {
         },
         {
             id: 'teach',
-            title: 'Pengajaran',
-            description: 'Jadwal dan data pengajaran per semester.',
+            title: t('rt.pengajaran'),
+            description: t('rt.jadwalDanDataPengajaranPerSemester'),
             count: stats().teaches,
             icon: (
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6">
@@ -129,8 +130,8 @@ export default function RectoratAcademicHub() {
         },
         {
             id: 'unit',
-            title: 'Unit / Prodi',
-            description: 'Program studi dan unit akademik dalam institusi.',
+            title: t('rt.unitProdi'),
+            description: t('rt.programStudiDanUnitAkademikDalam'),
             count: stats().units,
             icon: (
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6">
@@ -156,11 +157,11 @@ export default function RectoratAcademicHub() {
                 {/* Page Header */}
                 <div class="border-b border-neutral-200 dark:border-neutral-800 pb-6">
                     <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
-                        <A href="/rectorat" class="hover:text-blue-600 transition-colors">Rektorat</A>
+                        <A href="/rectorat" class="hover:text-blue-600 transition-colors">{t('rt.rektorat')}</A>
                         <span>/</span>
-                        <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-blue-600 transition-colors">Institusi</A>
+                        <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-blue-600 transition-colors">{t('rt.institusi')}</A>
                         <span>/</span>
-                        <span class="text-neutral-700 dark:text-neutral-300 font-semibold">Akademik</span>
+                        <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.akademik')}</span>
                     </nav>
 
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -170,13 +171,13 @@ export default function RectoratAcademicHub() {
                                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                                     <span class="relative inline-flex rounded-full size-2 bg-blue-500"></span>
                                 </span>
-                                Hub Akademik
+                                {t('rt.hubAkademik')}
                             </div>
                             <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
-                                Manajemen Akademik
+                                {t('rt.manajemenAkademik')}
                             </h1>
                             <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1.5 max-w-xl">
-                                Pusat pengelolaan seluruh data akademik — mahasiswa, dosen, pengajaran, dan program studi dalam lingkup institusi ini.
+                                {t('rt.pusatPengelolaanSeluruhDataAkademikMahasiswa')}
                             </p>
                         </div>
                     </div>
@@ -211,7 +212,7 @@ export default function RectoratAcademicHub() {
                                         <span class={`text-2xl font-black ${section.text}`}>{section.count.toLocaleString()}</span>
                                     </Show>
                                     <span class={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-lg ${section.badge}`}>
-                                        Lihat Semua
+                                        {t('rt.lihatSemua')}
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="size-3 group-hover:translate-x-0.5 transition-transform">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                                         </svg>
@@ -234,7 +235,7 @@ export default function RectoratAcademicHub() {
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 3.741-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
                                     </svg>
                                 </div>
-                                <h3 class="font-bold text-sm text-neutral-900 dark:text-white">Mahasiswa</h3>
+                                <h3 class="font-bold text-sm text-neutral-900 dark:text-white">{t('rt.mahasiswa')}</h3>
                                 <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40">
                                     {stats().students.toLocaleString()} total
                                 </span>
@@ -243,7 +244,7 @@ export default function RectoratAcademicHub() {
                                 href={`/rectorat/institution/${institutionId()}/academic/student/master/student`}
                                 class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
                             >
-                                Lihat Semua →
+                                {t('rt.lihatSemua2')}
                             </A>
                         </div>
 
@@ -270,7 +271,7 @@ export default function RectoratAcademicHub() {
                                 fallback={
                                     <div class="py-10 flex flex-col items-center justify-center gap-2 text-neutral-400 dark:text-neutral-600">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="size-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489" /></svg>
-                                        <p class="text-xs font-medium">Belum ada data mahasiswa</p>
+                                        <p class="text-xs font-medium">{t('rt.belumAdaDataMahasiswa')}</p>
                                     </div>
                                 }
                             >
@@ -306,7 +307,7 @@ export default function RectoratAcademicHub() {
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
                                     </svg>
                                 </div>
-                                <h3 class="font-bold text-sm text-neutral-900 dark:text-white">Dosen</h3>
+                                <h3 class="font-bold text-sm text-neutral-900 dark:text-white">{t('rt.dosen')}</h3>
                                 <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 border border-violet-200 dark:border-violet-800/40">
                                     {stats().lecturers.toLocaleString()} total
                                 </span>
@@ -315,7 +316,7 @@ export default function RectoratAcademicHub() {
                                 href={`/rectorat/institution/${institutionId()}/academic/lecturer/master/lecturer`}
                                 class="text-xs font-semibold text-violet-600 dark:text-violet-400 hover:underline"
                             >
-                                Lihat Semua →
+                                {t('rt.lihatSemua2')}
                             </A>
                         </div>
 
@@ -342,7 +343,7 @@ export default function RectoratAcademicHub() {
                                 fallback={
                                     <div class="py-10 flex flex-col items-center justify-center gap-2 text-neutral-400 dark:text-neutral-600">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="size-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" /></svg>
-                                        <p class="text-xs font-medium">Belum ada data dosen</p>
+                                        <p class="text-xs font-medium">{t('rt.belumAdaDataDosen')}</p>
                                     </div>
                                 }
                             >
@@ -362,7 +363,7 @@ export default function RectoratAcademicHub() {
                                                         <p class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">{lec.code || lec.nuptk || '-'}</p>
                                                     </div>
                                                     <Show when={lec.end_date == null}>
-                                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40 shrink-0">Aktif</span>
+                                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40 shrink-0">{t('rt.aktif')}</span>
                                                     </Show>
                                                 </li>
                                             );
@@ -376,15 +377,15 @@ export default function RectoratAcademicHub() {
 
                 {/* Quick Links Grid */}
                 <div>
-                    <h2 class="text-sm font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 mb-4">Akses Cepat</h2>
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 mb-4">{t('rt.aksesCepat')}</h2>
                     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                         {[
-                            { label: 'Jadwal Kuliah', icon: '📅', href: `/rectorat/institution/${institutionId()}/academic/campaign/transaction/schedule` },
-                            { label: 'Nilai / Grade', icon: '📊', href: `/rectorat/institution/${institutionId()}/academic/campaign/transaction/grade` },
-                            { label: 'Kelas', icon: '🏫', href: `/rectorat/institution/${institutionId()}/academic/campaign/transaction/class-code` },
-                            { label: 'SK Mengajar', icon: '📋', href: `/rectorat/institution/${institutionId()}/academic/campaign/transaction/teach-decree` },
-                            { label: 'Aktivitas', icon: '⚡', href: `/rectorat/institution/${institutionId()}/academic/campaign/transaction/activity` },
-                            { label: 'Evaluasi', icon: '🔍', href: `/rectorat/institution/${institutionId()}/academic/campaign/transaction/teach-evaluation` },
+                            { label: t('rt.jadwalKuliah'), icon: '📅', href: `/rectorat/institution/${institutionId()}/academic/campaign/transaction/schedule` },
+                            { label: t('rt.nilaiGrade'), icon: '📊', href: `/rectorat/institution/${institutionId()}/academic/campaign/transaction/grade` },
+                            { label: t('rt.kelas'), icon: '🏫', href: `/rectorat/institution/${institutionId()}/academic/campaign/transaction/class-code` },
+                            { label: t('rt.skMengajar'), icon: '📋', href: `/rectorat/institution/${institutionId()}/academic/campaign/transaction/teach-decree` },
+                            { label: t('rt.aktivitas'), icon: '⚡', href: `/rectorat/institution/${institutionId()}/academic/campaign/transaction/activity` },
+                            { label: t('rt.evaluasi'), icon: '🔍', href: `/rectorat/institution/${institutionId()}/academic/campaign/transaction/teach-evaluation` },
                         ].map((link) => (
                             <A
                                 href={link.href}

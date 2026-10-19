@@ -10,6 +10,7 @@ import {
     masterApiDelete,
 } from '~/controllers/master/masterApiController';
 import type { AcademicLecturerTransactionHomebase } from '~/models/academic/lecturer/transaction/Homebase';
+import { t } from '../../../../../../i18n';
 
 interface ReferenceOption {
     id: string;
@@ -45,10 +46,10 @@ const emptyForm = (): FormState => ({
 });
 
 const lecturerTabs = [
-    { label: 'Homebases', path: '/administrator/academic/lecturer/transaction/homebase' },
-    { label: 'Academic Ranks', path: '/administrator/academic/lecturer/transaction/academic-rank' },
-    { label: 'Academic Groups', path: '/administrator/academic/lecturer/transaction/academic-group' },
-    { label: 'Lecturers', path: '/administrator/academic/lecturer/master/lecturer' },
+    { label: t('ad.homebases'), path: '/administrator/academic/lecturer/transaction/homebase' },
+    { label: t('ad.academicRanks'), path: '/administrator/academic/lecturer/transaction/academic-rank' },
+    { label: t('ad.academicGroups'), path: '/administrator/academic/lecturer/transaction/academic-group' },
+    { label: t('ad.lecturers'), path: '/administrator/academic/lecturer/master/lecturer' },
 ];
 
 const lecturerLabel = (l: LecturerOption) => (l.code ? `${l.name || '-'} (${l.code})` : l.name || l.id);
@@ -128,7 +129,7 @@ export default function AcademicLecturerTransactionHomebasePage() {
             setTotalPages(res.total_pages || Math.max(1, Math.ceil((res.total || items.length) / itemsPerPage())));
         } catch (error) {
             console.error('Error fetching homebases:', error);
-            toast.danger('Failed to load lecturer homebases.');
+            toast.danger(t('ad.failedToLoadLecturerHomebases'));
             setHomebases([]);
             setTotalData(0);
         } finally {
@@ -165,7 +166,7 @@ export default function AcademicLecturerTransactionHomebasePage() {
     const handleRefresh = async () => {
         setIsRefreshing(true);
         await Promise.all([loadOptions(), fetchData()]);
-        toast.success('Homebase records refreshed successfully.');
+        toast.success(t('ad.homebaseRecordsRefreshedSuccessfully'));
     };
 
     // Distribution of statuses and contracts on the current page
@@ -194,7 +195,7 @@ export default function AcademicLecturerTransactionHomebasePage() {
     const copyToClipboard = (text: string, label: string) => {
         if (!text) return;
         navigator.clipboard.writeText(text);
-        toast.success(`Copied ${label} to clipboard`, 3000);
+        toast.success(t('ad.copiedLabelToClipboard', { label }), 3000);
     };
 
     // Modal Openers
@@ -239,14 +240,14 @@ export default function AcademicLecturerTransactionHomebasePage() {
         const form = formState();
 
         if (!form.lecturer_id || !form.unit_id || !form.status_id || !form.contract_id) {
-            toast.danger('Lecturer, unit, status and contract are all required.');
+            toast.danger(t('ad.lecturerUnitStatusAndContractAre'));
             return;
         }
 
         // The homebase institution always follows the selected unit
         const institutionId = unitMap().get(form.unit_id)?.institution_id || selectedHomebase()?.institution_id;
         if (!institutionId) {
-            toast.danger('Could not determine the institution of the selected unit.');
+            toast.danger(t('ad.couldNotDetermineTheInstitutionOf'));
             return;
         }
 
@@ -269,14 +270,14 @@ export default function AcademicLecturerTransactionHomebasePage() {
             if (!res) return;
 
             if (res.success) {
-                toast.success(`Homebase ${modalMode() === 'create' ? 'created' : 'updated'} successfully!`);
+                toast.success(modalMode() === 'create' ? t('ad.homebaseCreatedSuccessfully') : t('ad.homebaseUpdatedSuccessfully'));
                 closeFormModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to save homebase.');
+                toast.danger(res.message || t('ad.failedToSaveHomebase'));
             }
         } catch (err: any) {
-            toast.danger(err.message || 'An unexpected error occurred.');
+            toast.danger(err.message || t('ad.anUnexpectedErrorOccurred'));
         } finally {
             setIsSubmitting(false);
         }
@@ -290,14 +291,14 @@ export default function AcademicLecturerTransactionHomebasePage() {
         try {
             const res = await masterApiDelete(apiPath, item.id);
             if (res.success) {
-                toast.success(res.message || 'Homebase deleted successfully!');
+                toast.success(res.message || t('ad.homebaseDeletedSuccessfully'));
                 closeDeleteModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to delete homebase.');
+                toast.danger(res.message || t('ad.failedToDeleteHomebase'));
             }
         } catch (err: any) {
-            toast.danger(err.message || 'An error occurred while deleting.');
+            toast.danger(err.message || t('ad.anErrorOccurredWhileDeleting'));
         } finally {
             setIsSubmitting(false);
         }
@@ -329,27 +330,27 @@ export default function AcademicLecturerTransactionHomebasePage() {
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-5">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1.5 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
-                            <a href="/" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Home</a>
+                            <a href="/" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{t('ad.home')}</a>
                             <span>/</span>
-                            <span>Academic</span>
+                            <span>{t('ad.academic')}</span>
                             <span>/</span>
-                            <span>Lecturer</span>
+                            <span>{t('ad.lecturer')}</span>
                             <span>/</span>
-                            <span>Transaction</span>
+                            <span>{t('ad.transaction')}</span>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">Homebase</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">{t('ad.homebase')}</span>
                         </nav>
                         <div class="flex items-center gap-2 mb-1">
                             <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold border border-blue-200 dark:border-blue-800/80">
                                 <span class="size-1.5 rounded-full bg-blue-500"></span>
-                                Administrator Workspace
+                                {t('ad.administratorWorkspace')}
                             </span>
                         </div>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Lecturer Homebases
+                            {t('ad.lecturerHomebases')}
                         </h1>
                         <p class="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 max-w-2xl">
-                            Manage each lecturer's homebase study program, employment status and contract type.
+                            {t('ad.manageEachLecturerSHomebaseStudy')}
                         </p>
                     </div>
 
@@ -366,7 +367,7 @@ export default function AcademicLecturerTransactionHomebasePage() {
                                 <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
                                 <path d="M16 21h5v-5" />
                             </svg>
-                            <span>Refresh</span>
+                            <span>{t('ad.refresh')}</span>
                         </button>
 
                         <button
@@ -378,7 +379,7 @@ export default function AcademicLecturerTransactionHomebasePage() {
                                 <path d="M5 12h14" />
                                 <path d="M12 5v14" />
                             </svg>
-                            <span>New Homebase</span>
+                            <span>{t('ad.newHomebase')}</span>
                         </button>
                     </div>
                 </div>
@@ -397,29 +398,29 @@ export default function AcademicLecturerTransactionHomebasePage() {
                 {/* KPI Metrics Summary Cards */}
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="bg-white dark:bg-neutral-800 p-4 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">Total Homebases</span>
+                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">{t('ad.totalHomebases')}</span>
                         <div class="mt-2 flex items-baseline gap-2">
                             <span class="text-2xl font-bold font-mono text-neutral-900 dark:text-white">{summaryStats().totalCount}</span>
                             <span class="text-xs text-neutral-500">records</span>
                         </div>
                     </div>
                     <div class="bg-white dark:bg-neutral-800 p-4 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">Units</span>
+                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">{t('ad.units')}</span>
                         <div class="mt-2 flex items-baseline gap-2">
                             <span class="text-2xl font-bold font-mono text-neutral-900 dark:text-white">{summaryStats().unitCount}</span>
-                            <span class="text-xs text-neutral-500">on this page</span>
+                            <span class="text-xs text-neutral-500">{t('ad.onThisPage')}</span>
                         </div>
                     </div>
                     <div class="bg-white dark:bg-neutral-800 p-4 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">Most Common Status</span>
+                            <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">{t('ad.mostCommonStatus')}</span>
                             <span class="text-xs font-mono text-neutral-500">{summaryStats().topStatus[1]}x</span>
                         </div>
                         <div class="mt-2 text-lg font-bold font-mono text-neutral-900 dark:text-white truncate">{summaryStats().topStatus[0]}</div>
                     </div>
                     <div class="bg-white dark:bg-neutral-800 p-4 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">Most Common Contract</span>
+                            <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">{t('ad.mostCommonContract')}</span>
                             <span class="text-xs font-mono text-neutral-500">{summaryStats().topContract[1]}x</span>
                         </div>
                         <div class="mt-2 text-lg font-bold font-mono text-neutral-900 dark:text-white truncate">{summaryStats().topContract[0]}</div>
@@ -439,7 +440,7 @@ export default function AcademicLecturerTransactionHomebasePage() {
                             <input
                                 type="text"
                                 class={`${filterClass} pl-9`}
-                                placeholder="Search lecturer name or code..."
+                                placeholder={t('ad.searchLecturerNameOrCode')}
                                 value={searchQuery()}
                                 onInput={handleSearchInput}
                             />
@@ -453,40 +454,40 @@ export default function AcademicLecturerTransactionHomebasePage() {
                                     setCurrentPage(1);
                                 }}
                             >
-                                <option value="">All Units</option>
+                                <option value="">{t('ad.allUnits')}</option>
                                 <For each={unitOptions()}>{(u) => <option value={u.id}>{u.name}</option>}</For>
                             </select>
                         </div>
                         <div class="md:col-span-2">
                             <select class={filterClass} value={selectedStatusId()} onChange={(e) => setSelectedStatusId((e.target as HTMLSelectElement).value)}>
-                                <option value="">All Statuses</option>
+                                <option value="">{t('ad.allStatuses')}</option>
                                 <For each={statusOptions()}>{(s) => <option value={s.id}>{s.name}</option>}</For>
                             </select>
                         </div>
                         <div class="md:col-span-2">
                             <select class={filterClass} value={selectedContractId()} onChange={(e) => setSelectedContractId((e.target as HTMLSelectElement).value)}>
-                                <option value="">All Contracts</option>
+                                <option value="">{t('ad.allContracts')}</option>
                                 <For each={contractOptions()}>{(c) => <option value={c.id}>{c.name}</option>}</For>
                             </select>
                         </div>
                         <div class="md:col-span-1">
                             <button
                                 type="button"
-                                title="Reset all filters"
+                                title={t('ad.resetAllFilters')}
                                 onClick={resetFilters}
                                 class="w-full p-2 text-xs flex items-center justify-center font-medium text-neutral-600 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xs transition-colors"
                             >
-                                Reset
+                                {t('ad.reset')}
                             </button>
                         </div>
                     </div>
 
                     <div class="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400 pt-1 border-t border-neutral-100 dark:border-neutral-700/60">
                         <span>
-                            Showing <strong class="text-neutral-800 dark:text-neutral-200">{homebases().length > 0 ? startIndex() + 1 : 0}</strong> - <strong class="text-neutral-800 dark:text-neutral-200">{endIndex()}</strong> of <strong class="text-neutral-800 dark:text-neutral-200">{totalData()}</strong> homebases
+                            {t('ad.showing')} <strong class="text-neutral-800 dark:text-neutral-200">{homebases().length > 0 ? startIndex() + 1 : 0}</strong> - <strong class="text-neutral-800 dark:text-neutral-200">{endIndex()}</strong> of <strong class="text-neutral-800 dark:text-neutral-200">{totalData()}</strong> homebases
                         </span>
                         <div class="flex items-center gap-2">
-                            <span>Per page:</span>
+                            <span>{t('ad.perPage')}</span>
                             <select
                                 class="p-1 text-xs border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200"
                                 value={itemsPerPage()}
@@ -524,9 +525,9 @@ export default function AcademicLecturerTransactionHomebasePage() {
                             when={homebases().length > 0}
                             fallback={
                                 <div class="px-4 py-16 text-center">
-                                    <h3 class="text-base font-bold font-mono text-neutral-900 dark:text-white">No Homebases Found</h3>
+                                    <h3 class="text-base font-bold font-mono text-neutral-900 dark:text-white">{t('ad.noHomebasesFound')}</h3>
                                     <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1 max-w-sm mx-auto font-mono">
-                                        There are no homebase records matching your current filter criteria or database state.
+                                        {t('ad.thereAreNoHomebaseRecordsMatching')}
                                     </p>
                                     <div class="mt-4 flex items-center justify-center gap-2">
                                         <button
@@ -534,14 +535,14 @@ export default function AcademicLecturerTransactionHomebasePage() {
                                             onClick={resetFilters}
                                             class="px-3.5 py-1.5 text-xs font-mono font-medium text-neutral-700 dark:text-neutral-200 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 rounded-xs transition-colors"
                                         >
-                                            Clear Filters
+                                            {t('ad.clearFilters')}
                                         </button>
                                         <button
                                             type="button"
                                             onClick={openCreateModal}
                                             class="px-3.5 py-1.5 text-xs font-mono font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs transition-colors"
                                         >
-                                            + Add Homebase
+                                            {t('ad.addHomebase')}
                                         </button>
                                     </div>
                                 </div>
@@ -552,11 +553,11 @@ export default function AcademicLecturerTransactionHomebasePage() {
                                 <table class="w-full text-left text-xs">
                                     <thead class="bg-neutral-50 dark:bg-neutral-900/60 border-b border-neutral-200 dark:border-neutral-700 font-mono text-neutral-600 dark:text-neutral-300 uppercase tracking-wider">
                                         <tr>
-                                            <th class="px-4 py-3 font-semibold">Lecturer</th>
-                                            <th class="px-4 py-3 font-semibold">Homebase Unit</th>
-                                            <th class="px-4 py-3 font-semibold">Status</th>
-                                            <th class="px-4 py-3 font-semibold">Contract</th>
-                                            <th class="px-4 py-3 font-semibold text-right">Actions</th>
+                                            <th class="px-4 py-3 font-semibold">{t('ad.lecturer')}</th>
+                                            <th class="px-4 py-3 font-semibold">{t('ad.homebaseUnit')}</th>
+                                            <th class="px-4 py-3 font-semibold">{t('ad.status')}</th>
+                                            <th class="px-4 py-3 font-semibold">{t('ad.contract')}</th>
+                                            <th class="px-4 py-3 font-semibold text-right">{t('ad.actions')}</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
@@ -575,7 +576,7 @@ export default function AcademicLecturerTransactionHomebasePage() {
                                                                 type="button"
                                                                 onClick={() => copyToClipboard(item.id, 'UUID')}
                                                                 class="px-1.5 py-0.5 rounded-xs text-[10px] font-mono text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-200/50 dark:hover:bg-neutral-700/50 transition-colors cursor-pointer"
-                                                                title="Click to copy record UUID"
+                                                                title={t('ad.clickToCopyRecordUUID')}
                                                             >
                                                                 {item.id.substring(0, 8)}...
                                                             </button>
@@ -598,7 +599,7 @@ export default function AcademicLecturerTransactionHomebasePage() {
                                                                 type="button"
                                                                 onClick={() => openEditModal(item)}
                                                                 class="p-1.5 text-neutral-600 dark:text-neutral-300 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-xs transition-colors cursor-pointer"
-                                                                title="Edit Homebase"
+                                                                title={t('ad.editHomebase')}
                                                             >
                                                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                                     <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
@@ -608,7 +609,7 @@ export default function AcademicLecturerTransactionHomebasePage() {
                                                                 type="button"
                                                                 onClick={() => openDeleteModal(item)}
                                                                 class="p-1.5 text-neutral-600 dark:text-neutral-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-xs transition-colors cursor-pointer"
-                                                                title="Delete Homebase"
+                                                                title={t('ad.deleteHomebase')}
                                                             >
                                                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                                     <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
@@ -645,14 +646,14 @@ export default function AcademicLecturerTransactionHomebasePage() {
                                                     onClick={() => openEditModal(item)}
                                                     class="px-2.5 py-1 font-mono text-xs text-neutral-700 dark:text-neutral-200 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 rounded-xs"
                                                 >
-                                                    Edit
+                                                    {t('ad.edit')}
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => openDeleteModal(item)}
                                                     class="px-2.5 py-1 font-mono text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xs"
                                                 >
-                                                    Delete
+                                                    {t('ad.delete')}
                                                 </button>
                                             </div>
                                         </div>
@@ -667,16 +668,16 @@ export default function AcademicLecturerTransactionHomebasePage() {
                 <Show when={totalPages() > 1}>
                     <div class="flex flex-col sm:flex-row items-center justify-between border rounded-lg border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-3">
                         <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                            Showing <span class="font-semibold text-neutral-900 dark:text-white">{totalData() > 0 ? startIndex() + 1 : 0}</span>–<span class="font-semibold text-neutral-900 dark:text-white">{endIndex()}</span> of <span class="font-semibold text-neutral-900 dark:text-white">{totalData().toLocaleString()}</span> homebases
+                            {t('ad.showing')} <span class="font-semibold text-neutral-900 dark:text-white">{totalData() > 0 ? startIndex() + 1 : 0}</span>–<span class="font-semibold text-neutral-900 dark:text-white">{endIndex()}</span> of <span class="font-semibold text-neutral-900 dark:text-white">{totalData().toLocaleString()}</span> homebases
                         </p>
-                        <nav class="inline-flex -space-x-px rounded-lg overflow-hidden shadow-sm" aria-label="Pagination">
+                        <nav class="inline-flex -space-x-px rounded-lg overflow-hidden shadow-sm" aria-label={t('ad.pagination')}>
                             <button
                                 type="button"
                                 class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
                                 disabled={currentPage() <= 1 || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                             >
-                                Previous
+                                {t('ad.previous')}
                             </button>
                             <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border-y border-neutral-300 dark:border-neutral-600">
                                 {currentPage()} / {totalPages()}
@@ -687,7 +688,7 @@ export default function AcademicLecturerTransactionHomebasePage() {
                                 disabled={currentPage() >= totalPages() || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
                             >
-                                Next
+                                {t('ad.next')}
                             </button>
                         </nav>
                     </div>
@@ -703,10 +704,10 @@ export default function AcademicLecturerTransactionHomebasePage() {
                     <div class="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-3">
                         <div>
                             <span class="text-xs font-mono uppercase tracking-wider text-blue-600 dark:text-blue-400 font-semibold">
-                                {modalMode() === 'create' ? 'Create Record' : 'Edit Record'}
+                                {modalMode() === 'create' ? t('ad.createRecord') : t('ad.editRecord')}
                             </span>
                             <h3 class="text-lg font-bold font-mono text-neutral-900 dark:text-white">
-                                {modalMode() === 'create' ? 'New Homebase' : 'Update Homebase'}
+                                {modalMode() === 'create' ? t('ad.newHomebase') : t('ad.updateHomebase')}
                             </h3>
                         </div>
                         <button type="button" onClick={closeFormModal} class="p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 rounded-xs cursor-pointer">
@@ -720,13 +721,13 @@ export default function AcademicLecturerTransactionHomebasePage() {
                     <div class="space-y-4 px-1">
                         <div>
                             <label class={labelClass}>
-                                Lecturer <span class="text-red-500">*</span>
+                                {t('ad.lecturer')} <span class="text-red-500">*</span>
                             </label>
                             <RemoteSearchSelect<LecturerOption>
                                 apiPath="academic/lecturer/master/lecturers"
                                 value={formState().lecturer_id}
                                 selectedLabel={formState().lecturer_label}
-                                placeholder="Type a lecturer name..."
+                                placeholder={t('ad.typeALecturerName')}
                                 required
                                 getLabel={(l) => l.name || '-'}
                                 getSublabel={(l) => l.code || ''}
@@ -736,31 +737,31 @@ export default function AcademicLecturerTransactionHomebasePage() {
 
                         <div>
                             <label class={labelClass}>
-                                Homebase Unit <span class="text-red-500">*</span>
+                                {t('ad.homebaseUnit')} <span class="text-red-500">*</span>
                             </label>
                             <select required class={inputClass} value={formState().unit_id} onChange={(e) => updateForm('unit_id', (e.target as HTMLSelectElement).value)}>
-                                <option value="">Select Unit</option>
+                                <option value="">{t('ad.selectUnit')}</option>
                                 <For each={unitOptions()}>{(u) => <option value={u.id}>{u.name}</option>}</For>
                             </select>
-                            <p class="mt-1 text-[10px] font-mono text-neutral-500">The institution is taken from the selected unit.</p>
+                            <p class="mt-1 text-[10px] font-mono text-neutral-500">{t('ad.theInstitutionIsTakenFromThe')}</p>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class={labelClass}>
-                                    Employment Status <span class="text-red-500">*</span>
+                                    {t('ad.employmentStatus')} <span class="text-red-500">*</span>
                                 </label>
                                 <select required class={inputClass} value={formState().status_id} onChange={(e) => updateForm('status_id', (e.target as HTMLSelectElement).value)}>
-                                    <option value="">Select Status</option>
+                                    <option value="">{t('ad.selectStatus')}</option>
                                     <For each={statusOptions()}>{(s) => <option value={s.id}>{s.name}</option>}</For>
                                 </select>
                             </div>
                             <div>
                                 <label class={labelClass}>
-                                    Contract Type <span class="text-red-500">*</span>
+                                    {t('ad.contractType')} <span class="text-red-500">*</span>
                                 </label>
                                 <select required class={inputClass} value={formState().contract_id} onChange={(e) => updateForm('contract_id', (e.target as HTMLSelectElement).value)}>
-                                    <option value="">Select Contract</option>
+                                    <option value="">{t('ad.selectContract')}</option>
                                     <For each={contractOptions()}>{(c) => <option value={c.id}>{c.name}</option>}</For>
                                 </select>
                             </div>
@@ -773,14 +774,14 @@ export default function AcademicLecturerTransactionHomebasePage() {
                             onClick={closeFormModal}
                             class="px-4 py-2 text-xs sm:text-sm font-mono font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 rounded-xs transition-colors cursor-pointer"
                         >
-                            Cancel
+                            {t('ad.cancel')}
                         </button>
                         <button
                             type="submit"
                             disabled={isSubmitting()}
                             class="px-4 py-2 text-xs sm:text-sm font-mono font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xs transition-colors cursor-pointer disabled:opacity-50"
                         >
-                            {isSubmitting() ? 'Saving...' : modalMode() === 'create' ? 'Create Homebase' : 'Update Homebase'}
+                            {isSubmitting() ? t('ad.saving') : modalMode() === 'create' ? t('ad.createHomebase') : t('ad.updateHomebase')}
                         </button>
                     </div>
                 </form>
@@ -792,10 +793,10 @@ export default function AcademicLecturerTransactionHomebasePage() {
                 class="fixed inset-0 m-auto w-full max-w-md bg-white dark:bg-neutral-900 rounded-xs border border-neutral-300 dark:border-neutral-700 shadow-2xl p-0 backdrop:bg-black/50 backdrop:backdrop-blur-xs text-neutral-900 dark:text-neutral-100"
             >
                 <div class="p-6 space-y-4">
-                    <h3 class="text-base font-bold font-mono text-neutral-900 dark:text-white">Delete Homebase</h3>
+                    <h3 class="text-base font-bold font-mono text-neutral-900 dark:text-white">{t('ad.deleteHomebase')}</h3>
                     <p class="text-xs text-neutral-600 dark:text-neutral-300 font-mono">
-                        Delete the homebase of <strong class="text-neutral-900 dark:text-white">{selectedHomebase() ? lecturerName(selectedHomebase()!) : ''}</strong> at{' '}
-                        <strong class="text-neutral-900 dark:text-white">{selectedHomebase() ? unitName(selectedHomebase()!) : ''}</strong>? This action cannot be reversed.
+                        {t('ad.deleteTheHomebaseOf')} <strong class="text-neutral-900 dark:text-white">{selectedHomebase() ? lecturerName(selectedHomebase()!) : ''}</strong> at{' '}
+                        <strong class="text-neutral-900 dark:text-white">{selectedHomebase() ? unitName(selectedHomebase()!) : ''}</strong>{t('ad.thisActionCannotBeReversed2')}
                     </p>
                     <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-neutral-200 dark:border-neutral-800">
                         <button
@@ -803,7 +804,7 @@ export default function AcademicLecturerTransactionHomebasePage() {
                             onClick={closeDeleteModal}
                             class="px-3.5 py-1.5 text-xs font-mono font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 rounded-xs transition-colors cursor-pointer"
                         >
-                            Cancel
+                            {t('ad.cancel')}
                         </button>
                         <button
                             type="button"
@@ -811,7 +812,7 @@ export default function AcademicLecturerTransactionHomebasePage() {
                             onClick={handleDeleteSubmit}
                             class="px-4 py-1.5 text-xs font-mono font-semibold text-white bg-red-600 hover:bg-red-700 rounded-xs transition-colors cursor-pointer disabled:opacity-50"
                         >
-                            {isSubmitting() ? 'Deleting...' : 'Confirm Delete'}
+                            {isSubmitting() ? t('ad.deleting') : t('ad.confirmDelete')}
                         </button>
                     </div>
                 </div>

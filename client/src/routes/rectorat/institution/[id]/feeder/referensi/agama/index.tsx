@@ -7,6 +7,7 @@ import {
     FeederReferensiControllerAgamaUpsert,
     FeederReferensiControllerAgamaDelete,
 } from '~/controllers/feeder/referensi/FeederReferensiAgamaController';
+import { t } from '../../../../../../../i18n';
 
 export default function FeederReferensiAgamaPage() {
     const [items, setItems] = createSignal<FeederReferensiAgama[]>([]);
@@ -72,7 +73,7 @@ export default function FeederReferensiAgamaPage() {
             }
         } catch (error) {
             console.error('Error loading data:', error);
-            toast.danger('Failed to load referensi agama from server.');
+            toast.danger(t('rt.failedToLoadReferensiAgamaFrom'));
         } finally {
             setIsLoading(false);
         }
@@ -160,14 +161,14 @@ export default function FeederReferensiAgamaPage() {
         try {
             const res = await FeederReferensiControllerAgamaUpsert(formData());
             if (!res.is_error) {
-                toast.success(res.message || 'Record created successfully!', 5000);
+                toast.success(res.message || t('rt.recordCreatedSuccessfully'), 5000);
                 closeCreateModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to create record.', 5000);
+                toast.danger(res.message || t('rt.failedToCreateRecord'), 5000);
             }
         } catch (error: any) {
-            toast.danger(error.message || 'Error occurred while creating.', 5000);
+            toast.danger(error.message || t('rt.errorOccurredWhileCreating'), 5000);
         } finally {
             setIsSubmitting(false);
         }
@@ -181,14 +182,14 @@ export default function FeederReferensiAgamaPage() {
         try {
             const res = await FeederReferensiControllerAgamaUpsert(formData());
             if (!res.is_error) {
-                toast.success(res.message || 'Record updated successfully!', 5000);
+                toast.success(res.message || t('rt.recordUpdatedSuccessfully'), 5000);
                 closeEditModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to update record.', 5000);
+                toast.danger(res.message || t('rt.failedToUpdateRecord'), 5000);
             }
         } catch (error: any) {
-            toast.danger(error.message || 'Error occurred while updating.', 5000);
+            toast.danger(error.message || t('rt.errorOccurredWhileUpdating'), 5000);
         } finally {
             setIsSubmitting(false);
         }
@@ -202,14 +203,14 @@ export default function FeederReferensiAgamaPage() {
         try {
             const res = await FeederReferensiControllerAgamaDelete({ id: item.id });
             if (!res.is_error) {
-                toast.success(res.message || 'Record deleted successfully!', 5000);
+                toast.success(res.message || t('rt.recordDeletedSuccessfully'), 5000);
                 closeDeleteModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to delete record.', 5000);
+                toast.danger(res.message || t('rt.failedToDeleteRecord'), 5000);
             }
         } catch (error: any) {
-            toast.danger(error.message || 'Error occurred while deleting.', 5000);
+            toast.danger(error.message || t('rt.errorOccurredWhileDeleting'), 5000);
         } finally {
             setIsSubmitting(false);
         }
@@ -227,19 +228,19 @@ export default function FeederReferensiAgamaPage() {
                 <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                            <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">Administrator</a>
+                            <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">{t('rt.administrator')}</a>
                             <span>/</span>
-                            <span>Feeder</span>
+                            <span>{t('rt.feeder')}</span>
                             <span>/</span>
-                            <span>Referensi</span>
+                            <span>{t('rt.referensi')}</span>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">Agama</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">{t('rt.agama')}</span>
                         </nav>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Referensi Agama
+                            {t('rt.referensiAgama')}
                         </h1>
                         <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
-                            Master referensi data agama PDDIKTI Feeder.
+                            {t('rt.masterReferensiDataAgamaPDDIKTIFeeder')}
                         </p>
                     </div>
                     <div class="mt-4 sm:mt-0 flex items-center gap-2 justify-end">
@@ -253,7 +254,7 @@ export default function FeederReferensiAgamaPage() {
                                 <path d="M5 12h14" />
                                 <path d="M12 5v14" />
                             </svg>
-                            <span>Add Record</span>
+                            <span>{t('rt.addRecord')}</span>
                         </button>
                     </div>
                 </div>
@@ -270,7 +271,7 @@ export default function FeederReferensiAgamaPage() {
                             <input
                                 type="text"
                                 class="block w-full p-2.5 pl-10 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:placeholder-neutral-400 dark:text-white transition-colors"
-                                placeholder="Search by name..."
+                                placeholder={t('rt.searchByName')}
                                 onInput={handleSearch}
                                 id="input-search-agama"
                             />
@@ -285,8 +286,8 @@ export default function FeederReferensiAgamaPage() {
                                 onChange={(e) => setSortParam((e.target as HTMLSelectElement).value)}
                                 id="select-sort-agama"
                             >
-                                <option value="name-asc">Name (A-Z)</option>
-                                <option value="name-desc">Name (Z-A)</option>
+                                <option value="name-asc">{t('rt.nameAZ')}</option>
+                                <option value="name-desc">{t('rt.nameZA')}</option>
                             </select>
                         </div>
                         <div class="w-1/2">
@@ -296,10 +297,10 @@ export default function FeederReferensiAgamaPage() {
                                 onChange={handleItemsPerPageChange}
                                 id="select-per-page-agama"
                             >
-                                <option value={10}>10 / page</option>
-                                <option value={25}>25 / page</option>
-                                <option value={50}>50 / page</option>
-                                <option value={100}>100 / page</option>
+                                <option value={10}>{t('rt.n10Page')}</option>
+                                <option value={25}>{t('rt.n25Page')}</option>
+                                <option value={50}>{t('rt.n50Page')}</option>
+                                <option value={100}>{t('rt.n100Page')}</option>
                             </select>
                         </div>
                     </div>
@@ -313,10 +314,10 @@ export default function FeederReferensiAgamaPage() {
                             <table class="w-full text-xs sm:text-sm text-left whitespace-nowrap">
                                 <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
                                     <tr>
-                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider">ID Agama</th>
-                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider">Nama Agama</th>
-                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider">Created At</th>
-                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider text-right">Actions</th>
+                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider">{t('rt.idAgama')}</th>
+                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider">{t('rt.namaAgama')}</th>
+                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider">{t('rt.createdAt')}</th>
+                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider text-right">{t('rt.actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
@@ -347,8 +348,8 @@ export default function FeederReferensiAgamaPage() {
                                                             <svg class="size-8 text-neutral-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                                             </svg>
-                                                            <p class="text-sm font-medium">No records found</p>
-                                                            <p class="text-xs">Click "Add Record" to create a new reference entry.</p>
+                                                            <p class="text-sm font-medium">{t('rt.noRecordsFound')}</p>
+                                                            <p class="text-xs">{t('rt.clickAddRecordToCreateA')}</p>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -375,8 +376,8 @@ export default function FeederReferensiAgamaPage() {
                                                                     type="button"
                                                                     onClick={() => openEditModal(item)}
                                                                     class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
-                                                                    title="Edit Record"
-                                                                    aria-label="Edit record"
+                                                                    title={t('rt.editRecord')}
+                                                                    aria-label={t('rt.editRecord2')}
                                                                 >
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                                         <path d="M12 20h9" />
@@ -387,8 +388,8 @@ export default function FeederReferensiAgamaPage() {
                                                                     type="button"
                                                                     onClick={() => openDeleteModal(item)}
                                                                     class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-red-600 hover:border-red-500 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:border-red-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
-                                                                    title="Delete Record"
-                                                                    aria-label="Delete record"
+                                                                    title={t('rt.deleteRecord')}
+                                                                    aria-label={t('rt.deleteRecord2')}
                                                                 >
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                                         <path d="M3 6h18" />
@@ -433,7 +434,7 @@ export default function FeederReferensiAgamaPage() {
                                 when={items().length > 0}
                                 fallback={
                                     <div class="p-8 text-center text-neutral-500 dark:text-neutral-400">
-                                        No records found.
+                                        {t('rt.noRecordsFound2')}
                                     </div>
                                 }
                             >
@@ -442,7 +443,7 @@ export default function FeederReferensiAgamaPage() {
                                         <div class="p-4 space-y-2">
                                             <div class="flex items-center justify-between">
                                                 <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200">
-                                                    ID: {item.id_agama ?? '-'}
+                                                    {t('rt.id')} {item.id_agama ?? '-'}
                                                 </span>
                                                 <span class="text-xs font-mono text-neutral-500 dark:text-neutral-400">
                                                     {item.created_at ? new Date(item.created_at).toLocaleDateString() : ''}
@@ -458,14 +459,14 @@ export default function FeederReferensiAgamaPage() {
                                                     onClick={() => openEditModal(item)}
                                                     class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-yellow-50 hover:text-yellow-600 hover:border-yellow-500 dark:text-blue-400 dark:bg-blue-950/50 dark:hover:text-yellow-400 dark:hover:border-yellow-500 border border-blue-200 dark:border-blue-800 transition-colors cursor-pointer"
                                                 >
-                                                    Edit
+                                                    {t('rt.edit')}
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => openDeleteModal(item)}
                                                     class="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-50 hover:text-red-600 hover:border-red-500 dark:text-red-400 dark:bg-red-950/50 dark:hover:text-red-400 dark:hover:border-red-500 border border-red-200 dark:border-red-800 transition-colors cursor-pointer"
                                                 >
-                                                    Delete
+                                                    {t('rt.delete')}
                                                 </button>
                                             </div>
                                         </div>
@@ -478,16 +479,16 @@ export default function FeederReferensiAgamaPage() {
                     {/* Pagination Footer */}
                     <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/80 px-4 py-3 sm:px-6 gap-3 sm:gap-0">
                         <p class="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300">
-                            Showing <span class="font-medium">{totalData() > 0 ? startIndex() + 1 : 0}</span> to <span class="font-medium">{endIndex()}</span> of <span class="font-medium">{totalData().toLocaleString()}</span> results
+                            {t('rt.showing')} <span class="font-medium">{totalData() > 0 ? startIndex() + 1 : 0}</span> to <span class="font-medium">{endIndex()}</span> of <span class="font-medium">{totalData().toLocaleString()}</span> results
                         </p>
-                        <nav class="inline-flex -space-x-px shadow-2xs" aria-label="Pagination">
+                        <nav class="inline-flex -space-x-px shadow-2xs" aria-label={t('rt.pagination')}>
                             <button
                                 type="button"
                                 class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 cursor-pointer"
                                 disabled={currentPage() <= 1 || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                             >
-                                Previous
+                                {t('rt.previous')}
                             </button>
                             <span class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 border border-blue-600">
                                 {currentPage()} / {totalPages()}
@@ -498,7 +499,7 @@ export default function FeederReferensiAgamaPage() {
                                 disabled={currentPage() >= totalPages() || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
                             >
-                                Next
+                                {t('rt.next')}
                             </button>
                         </nav>
                     </div>
@@ -517,17 +518,17 @@ export default function FeederReferensiAgamaPage() {
                     <div class="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-700">
                         <div>
                             <h2 class="text-lg font-bold text-neutral-900 dark:text-white">
-                                Add Referensi Agama
+                                {t('rt.addReferensiAgama')}
                             </h2>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                Create a new reference record.
+                                {t('rt.createANewReferenceRecord')}
                             </p>
                         </div>
                         <button
                             type="button"
                             onClick={closeCreateModal}
                             class="size-8 inline-flex items-center justify-center text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
-                            aria-label="Close dialog"
+                            aria-label={t('rt.closeDialog')}
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -538,7 +539,7 @@ export default function FeederReferensiAgamaPage() {
                     <form onSubmit={handleCreateSubmit} class="space-y-4 pt-4">
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                ID Agama
+                                {t('rt.idAgama')}
                             </label>
                             <input
                                 type="number"
@@ -551,14 +552,14 @@ export default function FeederReferensiAgamaPage() {
 
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Nama Agama <span class="text-red-500">*</span>
+                                {t('rt.namaAgama')} <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
                                 class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
                                     formErrors().nama_agama ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
                                 }`}
-                                placeholder="Enter name..."
+                                placeholder={t('rt.enterName')}
                                 value={formData().nama_agama}
                                 onInput={(e) => setFormData({ ...formData(), nama_agama: e.currentTarget.value })}
                             />
@@ -573,14 +574,14 @@ export default function FeederReferensiAgamaPage() {
                                 onClick={closeCreateModal}
                                 class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xs transition-colors cursor-pointer"
                             >
-                                Cancel
+                                {t('rt.cancel')}
                             </button>
                             <button
                                 type="submit"
                                 disabled={isSubmitting()}
                                 class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-xs transition-colors cursor-pointer"
                             >
-                                {isSubmitting() ? 'Creating...' : 'Save Record'}
+                                {isSubmitting() ? t('rt.creating') : t('rt.saveRecord')}
                             </button>
                         </div>
                     </form>
@@ -599,17 +600,17 @@ export default function FeederReferensiAgamaPage() {
                     <div class="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-700">
                         <div>
                             <h2 class="text-lg font-bold text-neutral-900 dark:text-white">
-                                Edit Referensi Agama
+                                {t('rt.editReferensiAgama')}
                             </h2>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                Modify reference record properties.
+                                {t('rt.modifyReferenceRecordProperties')}
                             </p>
                         </div>
                         <button
                             type="button"
                             onClick={closeEditModal}
                             class="size-8 inline-flex items-center justify-center text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
-                            aria-label="Close dialog"
+                            aria-label={t('rt.closeDialog')}
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -620,7 +621,7 @@ export default function FeederReferensiAgamaPage() {
                     <form onSubmit={handleEditSubmit} class="space-y-4 pt-4">
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                ID Agama
+                                {t('rt.idAgama')}
                             </label>
                             <input
                                 type="number"
@@ -633,14 +634,14 @@ export default function FeederReferensiAgamaPage() {
 
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Nama Agama <span class="text-red-500">*</span>
+                                {t('rt.namaAgama')} <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
                                 class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
                                     formErrors().nama_agama ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
                                 }`}
-                                placeholder="Enter name..."
+                                placeholder={t('rt.enterName')}
                                 value={formData().nama_agama}
                                 onInput={(e) => setFormData({ ...formData(), nama_agama: e.currentTarget.value })}
                             />
@@ -655,14 +656,14 @@ export default function FeederReferensiAgamaPage() {
                                 onClick={closeEditModal}
                                 class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xs transition-colors cursor-pointer"
                             >
-                                Cancel
+                                {t('rt.cancel')}
                             </button>
                             <button
                                 type="submit"
                                 disabled={isSubmitting()}
                                 class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-xs transition-colors cursor-pointer"
                             >
-                                {isSubmitting() ? 'Updating...' : 'Update Record'}
+                                {isSubmitting() ? t('rt.updating') : t('rt.updateRecord')}
                             </button>
                         </div>
                     </form>
@@ -686,10 +687,10 @@ export default function FeederReferensiAgamaPage() {
                         </div>
                         <div>
                             <h3 class="text-base font-bold text-neutral-900 dark:text-white">
-                                Confirm Delete
+                                {t('rt.confirmDelete')}
                             </h3>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                Are you sure you want to delete this record?
+                                {t('rt.areYouSureYouWantTo')}
                             </p>
                         </div>
                     </div>
@@ -704,7 +705,7 @@ export default function FeederReferensiAgamaPage() {
                             onClick={closeDeleteModal}
                             class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xs transition-colors cursor-pointer"
                         >
-                            Cancel
+                            {t('rt.cancel')}
                         </button>
                         <button
                             type="button"
@@ -712,7 +713,7 @@ export default function FeederReferensiAgamaPage() {
                             disabled={isSubmitting()}
                             class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 rounded-xs transition-colors cursor-pointer"
                         >
-                            {isSubmitting() ? 'Deleting...' : 'Delete'}
+                            {isSubmitting() ? t('rt.deleting') : t('rt.delete')}
                         </button>
                     </div>
                 </div>

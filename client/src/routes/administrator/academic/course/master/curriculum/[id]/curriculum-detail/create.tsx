@@ -4,6 +4,7 @@ import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import RemoteSearchSelect from '~/components/form/RemoteSearchSelect';
 import { masterApiCreate, masterApiOptions, masterApiShow, type MasterOptionItem } from '~/controllers/master/masterApiController';
+import { t } from '../../../../../../../../i18n';
 
 type CourseOption = { id: string; code?: string; name?: string; total_credit?: number };
 
@@ -60,7 +61,7 @@ export default function AcademicCourseMasterCurriculumDetailCreatePage() {
     const handleSubmit = async (e: Event) => {
         e.preventDefault();
         if (!courseId()) {
-            toast.danger('Please select a course.');
+            toast.danger(t('ad.pleaseSelectACourse'));
             return;
         }
         setIsSubmitting(true);
@@ -78,15 +79,15 @@ export default function AcademicCourseMasterCurriculumDetailCreatePage() {
             });
 
             if (res.success) {
-                toast.success(res.message || 'Curriculum detail created successfully!');
+                toast.success(res.message || t('ad.curriculumDetailCreatedSuccessfully'));
                 setTimeout(() => {
                     window.location.href = res.data?.id ? `${basePath}/${res.data.id}` : basePath;
                 }, 500);
             } else {
-                toast.danger(res.message || 'Failed to create curriculum detail.');
+                toast.danger(res.message || t('ad.failedToCreateCurriculumDetail'));
             }
         } catch (err: any) {
-            toast.danger(err.message || 'Network error occurred.');
+            toast.danger(err.message || t('ad.networkErrorOccurred'));
         } finally {
             setIsSubmitting(false);
         }
@@ -104,22 +105,22 @@ export default function AcademicCourseMasterCurriculumDetailCreatePage() {
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div class="min-w-0">
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
-                            <a href="/" class="hover:text-blue-600 transition-colors shrink-0">Home</a>
+                            <a href="/" class="hover:text-blue-600 transition-colors shrink-0">{t('ad.home')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="shrink-0">Academic</span>
+                            <span class="shrink-0">{t('ad.academic')}</span>
                             <span class="shrink-0">/</span>
-                            <span class="shrink-0">Course</span>
+                            <span class="shrink-0">{t('ad.course')}</span>
                             <span class="shrink-0">/</span>
                             <a href={`/administrator/academic/course/master/curriculum/${curriculumId}`} class="hover:text-blue-600 transition-colors shrink-0">
                                 {curriculumName() || 'Curriculum'}
                             </a>
                             <span class="shrink-0">/</span>
-                            <a href={basePath} class="hover:text-blue-600 transition-colors shrink-0">Curriculum Detail</a>
+                            <a href={basePath} class="hover:text-blue-600 transition-colors shrink-0">{t('ad.curriculumDetail')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white shrink-0">Create</span>
+                            <span class="font-medium text-neutral-900 dark:text-white shrink-0">{t('ad.create')}</span>
                         </nav>
                         <h1 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono truncate">
-                            Add New Curriculum Detail
+                            {t('ad.addNewCurriculumDetail')}
                         </h1>
                     </div>
 
@@ -131,7 +132,7 @@ export default function AcademicCourseMasterCurriculumDetailCreatePage() {
                             <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6" />
                             </svg>
-                            <span>Cancel</span>
+                            <span>{t('ad.cancel')}</span>
                         </a>
                     </div>
                 </div>
@@ -151,7 +152,7 @@ export default function AcademicCourseMasterCurriculumDetailCreatePage() {
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                 <div class="sm:col-span-2">
                                     <label class={labelClass}>
-                                        Course <span class="text-red-500">*</span>
+                                        {t('ad.course')} <span class="text-red-500">*</span>
                                     </label>
                                     <RemoteSearchSelect<CourseOption>
                                         apiPath="academic/course/master/courses"
@@ -159,7 +160,7 @@ export default function AcademicCourseMasterCurriculumDetailCreatePage() {
                                         extraParams={{ unit_id: unitId() || undefined }}
                                         value={courseId()}
                                         selectedLabel={courseLabel()}
-                                        placeholder="Search course by code or name..."
+                                        placeholder={t('ad.searchCourseByCodeOrName')}
                                         getLabel={(item) => item.name || item.id}
                                         getSublabel={(item) => `${item.code || ''}${item.total_credit != null ? ` · ${item.total_credit} SKS` : ''}`}
                                         onSelect={selectCourse}
@@ -170,36 +171,36 @@ export default function AcademicCourseMasterCurriculumDetailCreatePage() {
 
                                 <div>
                                     <label class={labelClass}>
-                                        Semester <span class="text-red-500">*</span>
+                                        {t('ad.semester')} <span class="text-red-500">*</span>
                                     </label>
                                     <select required value={semesterId()} onChange={(e) => setSemesterId(e.currentTarget.value)} class={inputClass}>
-                                        <option value="">-- Select Semester --</option>
+                                        <option value="">{t('ad.selectSemester')}</option>
                                         <For each={semesterOptions()}>{(opt) => <option value={opt.id}>{opt.name}</option>}</For>
                                     </select>
                                 </div>
 
                                 <div>
-                                    <label class={labelClass}>Concentration</label>
+                                    <label class={labelClass}>{t('ad.concentration')}</label>
                                     <select value={concentrationId()} onChange={(e) => setConcentrationId(e.currentTarget.value)} class={inputClass}>
-                                        <option value="">-- None --</option>
+                                        <option value="">{t('ad.none')}</option>
                                         <For each={concentrationOptions()}>{(opt) => <option value={opt.id}>{opt.name}</option>}</For>
                                     </select>
                                 </div>
 
                                 <div>
-                                    <label class={labelClass}>Name</label>
+                                    <label class={labelClass}>{t('ad.name')}</label>
                                     <input
                                         type="text"
                                         value={name()}
                                         onInput={(e) => setName(e.currentTarget.value)}
-                                        placeholder="Filled from the course if left empty"
+                                        placeholder={t('ad.filledFromTheCourseIfLeft')}
                                         class={inputClass}
                                     />
                                 </div>
 
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label class={labelClass}>Code</label>
+                                        <label class={labelClass}>{t('ad.code2')}</label>
                                         <input
                                             type="number"
                                             step="1"
@@ -210,7 +211,7 @@ export default function AcademicCourseMasterCurriculumDetailCreatePage() {
                                         />
                                     </div>
                                     <div>
-                                        <label class={labelClass}>Credit (SKS)</label>
+                                        <label class={labelClass}>{t('ad.creditSKS')}</label>
                                         <input
                                             type="number"
                                             step="0.5"
@@ -226,7 +227,7 @@ export default function AcademicCourseMasterCurriculumDetailCreatePage() {
                                 <div class="sm:col-span-2 flex flex-col sm:flex-row gap-3 sm:gap-6">
                                     <label class="inline-flex items-center gap-2 text-xs font-mono text-neutral-800 dark:text-neutral-200 cursor-pointer">
                                         <input type="checkbox" checked={isConvertableToMbkm()} onChange={(e) => setIsConvertableToMbkm(e.currentTarget.checked)} class="size-4" />
-                                        <span>Convertible to MBKM</span>
+                                        <span>{t('ad.convertibleToMBKM')}</span>
                                     </label>
                                     <label class="inline-flex items-center gap-2 text-xs font-mono text-neutral-800 dark:text-neutral-200 cursor-pointer">
                                         <input
@@ -235,7 +236,7 @@ export default function AcademicCourseMasterCurriculumDetailCreatePage() {
                                             onChange={(e) => setIsConvertableToPriorLearning(e.currentTarget.checked)}
                                             class="size-4"
                                         />
-                                        <span>Convertible to Prior Learning Recognition (RPL)</span>
+                                        <span>{t('ad.convertibleToPriorLearningRecognitionRPL')}</span>
                                     </label>
                                 </div>
                             </div>
@@ -245,14 +246,14 @@ export default function AcademicCourseMasterCurriculumDetailCreatePage() {
                                     href={basePath}
                                     class="px-4 py-2 text-xs font-mono font-medium border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                                 >
-                                    Cancel
+                                    {t('ad.cancel')}
                                 </a>
                                 <button
                                     type="submit"
                                     disabled={isSubmitting()}
                                     class="inline-flex items-center gap-2 px-5 py-2 text-xs font-mono font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs disabled:opacity-50 transition-colors cursor-pointer"
                                 >
-                                    <span>{isSubmitting() ? 'Saving...' : 'Save Curriculum Detail'}</span>
+                                    <span>{isSubmitting() ? t('ad.saving') : t('ad.saveCurriculumDetail')}</span>
                                 </button>
                             </div>
                         </form>

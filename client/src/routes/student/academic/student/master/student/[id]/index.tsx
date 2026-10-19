@@ -10,6 +10,7 @@ import {
     PersonMasterIndividualControllerShow 
 } from '~/controllers/person/master/PersonMasterIndividualController';
 import type { PersonMasterIndividualDataObject } from '~/models/person/master/Individual';
+import { t } from '../../../../../../../i18n';
 
 export default function StudentMasterShowPage() {
     const params = useParams();
@@ -39,7 +40,7 @@ export default function StudentMasterShowPage() {
             }
         } catch (err) {
             console.error('Error fetching student master details:', err);
-            toast.danger('Failed to load student detail from server.');
+            toast.danger(t('st.failedToLoadStudentDetailFrom'));
         } finally {
             setIsLoading(false);
         }
@@ -73,10 +74,10 @@ export default function StudentMasterShowPage() {
                             <div class="space-y-1">
                                 <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold border border-blue-200 dark:border-blue-800/80">
                                     <span class="size-1.5 rounded-xs bg-blue-500"></span>
-                                    <span>NIM: {student()?.code || '-'}</span>
+                                    <span>{t('st.nim')} {student()?.code || '-'}</span>
                                 </div>
                                 <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900 dark:text-white">
-                                    {student()?.name || 'Student Details'}
+                                    {student()?.name || t('st.studentDetails')}
                                 </h1>
                                 <p class="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
                                     {student()?.unit_name || '-'} • Cohort {student()?.academic_year_name || '-'}
@@ -89,13 +90,13 @@ export default function StudentMasterShowPage() {
                                 href="/student/academic/student/master"
                                 class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xs text-xs font-bold transition-colors"
                             >
-                                ← Student Directory
+                                {t('st.studentDirectory')}
                             </A>
                             <A
                                 href="/student/academic/student/campaign/activity"
                                 class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xs text-xs font-bold shadow-xs transition-colors"
                             >
-                                View Academic Records →
+                                {t('st.viewAcademicRecords')}
                             </A>
                         </div>
                     </div>
@@ -105,42 +106,42 @@ export default function StudentMasterShowPage() {
                 <Show when={!isLoading()} fallback={
                     <div class="py-16 flex flex-col items-center justify-center gap-3 text-neutral-400">
                         <div class="size-8 border-3 border-blue-500 border-t-transparent rounded-xs animate-spin"></div>
-                        <p class="text-xs font-mono">Loading student detail from server...</p>
+                        <p class="text-xs font-mono">{t('st.loadingStudentDetailFromServer')}</p>
                     </div>
                 }>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
                         {/* Admission Card */}
                         <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
                             <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
-                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white">Academic Admission Information</h3>
+                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white">{t('st.academicAdmissionInformation')}</h3>
                                 <span class="px-2.5 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                                    {student()?.status_name || 'Admitted & Registered'}
+                                    {student()?.status_name || t('st.admittedRegistered')}
                                 </span>
                             </div>
 
                             <div class="space-y-3">
                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
-                                    <span class="text-neutral-400 font-mono">Student NIM:</span>
+                                    <span class="text-neutral-400 font-mono">{t('st.studentNIM2')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{student()?.code || '-'}</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
-                                    <span class="text-neutral-400 font-mono">Registration Number:</span>
+                                    <span class="text-neutral-400 font-mono">{t('st.registrationNumber')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{student()?.registration_id || '-'}</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
-                                    <span class="text-neutral-400 font-mono">Admission Path / Type:</span>
+                                    <span class="text-neutral-400 font-mono">{t('st.admissionPathType')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-100">{student()?.selection_type_name || '-'}</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
-                                    <span class="text-neutral-400 font-mono">Official Admission Date:</span>
+                                    <span class="text-neutral-400 font-mono">{t('st.officialAdmissionDate')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-100">{student()?.registered || '-'}</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
-                                    <span class="text-neutral-400 font-mono">Study Program / Department:</span>
+                                    <span class="text-neutral-400 font-mono">{t('st.studyProgramDepartment')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-100">{student()?.unit_name || '-'}</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
-                                    <span class="text-neutral-400 font-mono">Curriculum Cohort:</span>
+                                    <span class="text-neutral-400 font-mono">{t('st.curriculumCohort')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{student()?.curriculum_id || '-'}</span>
                                 </div>
                             </div>
@@ -149,37 +150,37 @@ export default function StudentMasterShowPage() {
                         {/* Personal & Demographics Card */}
                         <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
                             <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
-                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white">Individual Biodata & Identity</h3>
-                                <span class="text-xs text-neutral-400 font-mono">Civil Registry</span>
+                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white">{t('st.individualBiodataIdentity')}</h3>
+                                <span class="text-xs text-neutral-400 font-mono">{t('st.civilRegistry')}</span>
                             </div>
 
                             <div class="space-y-3">
                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
-                                    <span class="text-neutral-400 font-mono">Full Legal Name:</span>
+                                    <span class="text-neutral-400 font-mono">{t('st.fullLegalName')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-100">{student()?.name || '-'}</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
-                                    <span class="text-neutral-400 font-mono">National ID (NIK):</span>
+                                    <span class="text-neutral-400 font-mono">{t('st.nationalIDNIK')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{ind()?.code || '-'}</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
-                                    <span class="text-neutral-400 font-mono">NISN:</span>
+                                    <span class="text-neutral-400 font-mono">{t('st.nisn')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{student()?.nisn || '-'}</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
-                                    <span class="text-neutral-400 font-mono">Birth Place & Date:</span>
+                                    <span class="text-neutral-400 font-mono">{t('st.birthPlaceDate')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-100">
                                         {ind()?.birth_place ? `${ind()?.birth_place}, ${ind()?.birth_date || '-'}` : (ind()?.birth_date || '-')}
                                     </span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
-                                    <span class="text-neutral-400 font-mono">Tuition & Financial Fee:</span>
+                                    <span class="text-neutral-400 font-mono">{t('st.tuitionFinancialFee')}</span>
                                     <span class="font-bold text-emerald-600 dark:text-emerald-400 font-mono">
                                         {student()?.finance_fee != null ? `Rp ${(student()!.finance_fee!).toLocaleString('id-ID')}` : '-'}
                                     </span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
-                                    <span class="text-neutral-400 font-mono">Permanent Address:</span>
+                                    <span class="text-neutral-400 font-mono">{t('st.permanentAddress')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-100">{individual()?.biodata?.address || '-'}</span>
                                 </div>
                             </div>

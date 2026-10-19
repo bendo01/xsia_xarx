@@ -8,6 +8,7 @@ import {
     AcademicSurveyReferenceControllerQuestionVarietyUpsert,
     AcademicSurveyReferenceControllerQuestionVarietyDelete,
 } from '~/controllers/academic/survey/reference/AcademicSurveyReferenceQuestionVarietyController';
+import { t } from '../../../../../../i18n';
 
 export default function AcademicSurveyReferenceQuestionVarietyPage() {
     const [items, setItems] = createSignal<AcademicSurveyReferenceQuestionVariety[]>([]);
@@ -73,7 +74,7 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
             }
         } catch (error) {
             console.error('Error loading survey question variety data:', error);
-            toast.danger('Failed to load survey question variety data from server.');
+            toast.danger(t('ad.failedToLoadSurveyQuestionVariety'));
         } finally {
             setIsLoading(false);
         }
@@ -173,14 +174,14 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
         try {
             const res = await AcademicSurveyReferenceControllerQuestionVarietyUpsert(formData());
             if (!res.is_error) {
-                toast.success(res.message || 'Survey question variety created successfully!', 5000);
+                toast.success(res.message || t('ad.surveyQuestionVarietyCreatedSuccessfully'), 5000);
                 closeCreateModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to create survey question variety.', 5000);
+                toast.danger(res.message || t('ad.failedToCreateSurveyQuestionVariety'), 5000);
             }
         } catch (error: any) {
-            toast.danger(error.message || 'Error occurred while creating.', 5000);
+            toast.danger(error.message || t('ad.errorOccurredWhileCreating'), 5000);
         } finally {
             setIsSubmitting(false);
         }
@@ -194,14 +195,14 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
         try {
             const res = await AcademicSurveyReferenceControllerQuestionVarietyUpsert(formData());
             if (!res.is_error) {
-                toast.success(res.message || 'Survey question variety updated successfully!', 5000);
+                toast.success(res.message || t('ad.surveyQuestionVarietyUpdatedSuccessfully'), 5000);
                 closeEditModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to update survey question variety.', 5000);
+                toast.danger(res.message || t('ad.failedToUpdateSurveyQuestionVariety'), 5000);
             }
         } catch (error: any) {
-            toast.danger(error.message || 'Error occurred while updating.', 5000);
+            toast.danger(error.message || t('ad.errorOccurredWhileUpdating'), 5000);
         } finally {
             setIsSubmitting(false);
         }
@@ -215,14 +216,14 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
         try {
             const res = await AcademicSurveyReferenceControllerQuestionVarietyDelete({ id: item.id });
             if (!res.is_error) {
-                toast.success(res.message || 'Survey question variety deleted successfully!', 5000);
+                toast.success(res.message || t('ad.surveyQuestionVarietyDeletedSuccessfully'), 5000);
                 closeDeleteModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to delete survey question variety.', 5000);
+                toast.danger(res.message || t('ad.failedToDeleteSurveyQuestionVariety'), 5000);
             }
         } catch (error: any) {
-            toast.danger(error.message || 'Error occurred while deleting.', 5000);
+            toast.danger(error.message || t('ad.errorOccurredWhileDeleting'), 5000);
         } finally {
             setIsSubmitting(false);
         }
@@ -240,21 +241,21 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                 <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                            <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">Administrator</a>
+                            <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">{t('ad.administrator')}</a>
                             <span>/</span>
-                            <span>Academic</span>
+                            <span>{t('ad.academic')}</span>
                             <span>/</span>
-                            <span>Survey</span>
+                            <span>{t('ad.survey')}</span>
                             <span>/</span>
-                            <span>Reference</span>
+                            <span>{t('ad.reference')}</span>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">Question Variety</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">{t('ad.questionVariety')}</span>
                         </nav>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Survey Question Variety / Bentuk Pertanyaan Kuesioner
+                            {t('ad.surveyQuestionVarietyBentukPertanyaanKuesioner')}
                         </h1>
                         <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
-                            Manage master reference question input forms (e.g. Skala Likert 1-5, Pilihan Ganda (Single Choice), Kotak Centang (Multiple Choice), Isian Terbuka (Essay / Text)).
+                            {t('ad.manageMasterReferenceQuestionInputForms')}
                         </p>
                     </div>
                     <div class="mt-4 sm:mt-0 flex items-center gap-2 justify-end">
@@ -268,7 +269,7 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                                 <path d="M5 12h14" />
                                 <path d="M12 5v14" />
                             </svg>
-                            <span>Add Question Variety</span>
+                            <span>{t('ad.addQuestionVariety')}</span>
                         </button>
                     </div>
                 </div>
@@ -285,7 +286,7 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                             <input
                                 type="text"
                                 class="block w-full p-2.5 pl-10 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:placeholder-neutral-400 dark:text-white transition-colors"
-                                placeholder="Search by question variety (e.g. Skala Likert, Pilihan Ganda)..."
+                                placeholder={t('ad.searchByQuestionVarietyEG')}
                                 onInput={handleSearch}
                                 id="input-search-question-variety"
                             />
@@ -300,10 +301,10 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                                 onChange={(e) => setSortParam((e.target as HTMLSelectElement).value)}
                                 id="select-sort-question-variety"
                             >
-                                <option value="code-asc">Code (Ascending)</option>
-                                <option value="code-desc">Code (Descending)</option>
-                                <option value="name-asc">Name (A-Z)</option>
-                                <option value="name-desc">Name (Z-A)</option>
+                                <option value="code-asc">{t('ad.codeAscending')}</option>
+                                <option value="code-desc">{t('ad.codeDescending')}</option>
+                                <option value="name-asc">{t('ad.nameAZ')}</option>
+                                <option value="name-desc">{t('ad.nameZA')}</option>
                             </select>
                         </div>
                         <div class="w-1/2">
@@ -313,10 +314,10 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                                 onChange={handleItemsPerPageChange}
                                 id="select-per-page-question-variety"
                             >
-                                <option value={10}>10 / page</option>
-                                <option value={25}>25 / page</option>
-                                <option value={50}>50 / page</option>
-                                <option value={100}>100 / page</option>
+                                <option value={10}>{t('ad.n10Page')}</option>
+                                <option value={25}>{t('ad.n25Page')}</option>
+                                <option value={50}>{t('ad.n50Page')}</option>
+                                <option value={100}>{t('ad.n100Page')}</option>
                             </select>
                         </div>
                     </div>
@@ -330,11 +331,11 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                             <table class="w-full text-xs sm:text-sm text-left whitespace-nowrap">
                                 <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
                                     <tr>
-                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider w-24">Code</th>
-                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider w-36">Alphabet Code</th>
-                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider">Question Variety Name</th>
-                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider">Created At</th>
-                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider text-right">Actions</th>
+                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider w-24">{t('ad.code2')}</th>
+                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider w-36">{t('ad.alphabetCode')}</th>
+                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider">{t('ad.questionVarietyName')}</th>
+                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider">{t('ad.createdAt')}</th>
+                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider text-right">{t('ad.actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
@@ -366,8 +367,8 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                                                             <svg class="size-8 text-neutral-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                                                             </svg>
-                                                            <p class="text-sm font-medium">No survey question variety records found</p>
-                                                            <p class="text-xs">Click "Add Question Variety" to add a new record.</p>
+                                                            <p class="text-sm font-medium">{t('ad.noSurveyQuestionVarietyRecordsFound')}</p>
+                                                            <p class="text-xs">{t('ad.clickAddQuestionVarietyToAdd')}</p>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -399,8 +400,8 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                                                                     type="button"
                                                                     onClick={() => openEditModal(item)}
                                                                     class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
-                                                                    title="Edit Record"
-                                                                    aria-label={`Edit ${item.name}`}
+                                                                    title={t('ad.editRecord')}
+                                                                    aria-label={t('ad.editName', { name: item.name ?? '' })}
                                                                 >
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                                         <path d="M12 20h9" />
@@ -411,8 +412,8 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                                                                     type="button"
                                                                     onClick={() => openDeleteModal(item)}
                                                                     class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-red-600 hover:border-red-500 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:border-red-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
-                                                                    title="Delete Record"
-                                                                    aria-label={`Delete ${item.name}`}
+                                                                    title={t('ad.deleteRecord')}
+                                                                    aria-label={t('ad.deleteName', { name: item.name ?? '' })}
                                                                 >
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                                         <path d="M3 6h18" />
@@ -457,7 +458,7 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                                 when={items().length > 0}
                                 fallback={
                                     <div class="p-8 text-center text-neutral-500 dark:text-neutral-400">
-                                        No survey question variety records found.
+                                        {t('ad.noSurveyQuestionVarietyRecordsFound2')}
                                     </div>
                                 }
                             >
@@ -466,10 +467,10 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                                         <div class="p-4 space-y-2">
                                             <div class="flex items-center justify-between">
                                                 <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200">
-                                                    Code: {item.code}
+                                                    {t('ad.code')} {item.code}
                                                 </span>
                                                 <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                                                    Alphabet: {item.alphabetic_code || (item as any).alphabet_code || '-'}
+                                                    {t('ad.alphabet')} {item.alphabetic_code || (item as any).alphabet_code || '-'}
                                                 </span>
                                             </div>
                                             <div>
@@ -486,14 +487,14 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                                                         onClick={() => openEditModal(item)}
                                                         class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-yellow-50 hover:text-yellow-600 hover:border-yellow-500 dark:text-blue-400 dark:bg-blue-950/50 dark:hover:text-yellow-400 dark:hover:border-yellow-500 border border-blue-200 dark:border-blue-800 transition-colors cursor-pointer"
                                                     >
-                                                        Edit
+                                                        {t('ad.edit')}
                                                     </button>
                                                     <button
                                                         type="button"
                                                         onClick={() => openDeleteModal(item)}
                                                         class="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-50 hover:text-red-600 hover:border-red-500 dark:text-red-400 dark:bg-red-950/50 dark:hover:text-red-400 dark:hover:border-red-500 border border-red-200 dark:border-red-800 transition-colors cursor-pointer"
                                                     >
-                                                        Delete
+                                                        {t('ad.delete')}
                                                     </button>
                                                 </div>
                                             </div>
@@ -507,16 +508,16 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                     {/* Pagination Footer */}
                     <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/80 px-4 py-3 sm:px-6 gap-3 sm:gap-0">
                         <p class="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300">
-                            Showing <span class="font-medium">{totalData() > 0 ? startIndex() + 1 : 0}</span> to <span class="font-medium">{endIndex()}</span> of <span class="font-medium">{totalData().toLocaleString()}</span> results
+                            {t('ad.showing')} <span class="font-medium">{totalData() > 0 ? startIndex() + 1 : 0}</span> to <span class="font-medium">{endIndex()}</span> of <span class="font-medium">{totalData().toLocaleString()}</span> results
                         </p>
-                        <nav class="inline-flex -space-x-px shadow-2xs" aria-label="Pagination">
+                        <nav class="inline-flex -space-x-px shadow-2xs" aria-label={t('ad.pagination')}>
                             <button
                                 type="button"
                                 class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 cursor-pointer"
                                 disabled={currentPage() <= 1 || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                             >
-                                Previous
+                                {t('ad.previous')}
                             </button>
                             <span class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 border border-blue-600">
                                 {currentPage()} / {totalPages()}
@@ -527,7 +528,7 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                                 disabled={currentPage() >= totalPages() || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
                             >
-                                Next
+                                {t('ad.next')}
                             </button>
                         </nav>
                     </div>
@@ -550,17 +551,17 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                     <div class="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-700">
                         <div>
                             <h2 class="text-lg font-bold text-neutral-900 dark:text-white">
-                                Add Survey Question Variety Reference
+                                {t('ad.addSurveyQuestionVarietyReference')}
                             </h2>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                Create a new survey question type reference record.
+                                {t('ad.createANewSurveyQuestionType')}
                             </p>
                         </div>
                         <button
                             type="button"
                             onClick={closeCreateModal}
                             class="size-8 inline-flex items-center justify-center text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
-                            aria-label="Close dialog"
+                            aria-label={t('ad.closeDialog')}
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -571,7 +572,7 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                     <form onSubmit={handleCreateSubmit} class="space-y-4 pt-4">
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Code <span class="text-red-500">*</span>
+                                {t('ad.code2')} <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="number"
@@ -589,14 +590,14 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
 
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Alphabet Code <span class="text-red-500">*</span>
+                                {t('ad.alphabetCode')} <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
                                 class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
                                     formErrors().alphabet_code ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
                                 }`}
-                                placeholder="e.g. LIKERT"
+                                placeholder={t('ad.eGLIKERT')}
                                 value={formData().alphabet_code ?? ''}
                                 onInput={(e) => setFormData({ ...formData(), alphabet_code: e.currentTarget.value })}
                             />
@@ -607,14 +608,14 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
 
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Question Variety Name <span class="text-red-500">*</span>
+                                {t('ad.questionVarietyName')} <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
                                 class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
                                     formErrors().name ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
                                 }`}
-                                placeholder="e.g. Skala Likert (Likert Scale 1-5)"
+                                placeholder={t('ad.eGSkalaLikertLikertScale')}
                                 value={formData().name}
                                 onInput={(e) => setFormData({ ...formData(), name: e.currentTarget.value })}
                             />
@@ -629,7 +630,7 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                                 onClick={closeCreateModal}
                                 class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xs transition-colors cursor-pointer"
                             >
-                                Cancel
+                                {t('ad.cancel')}
                             </button>
                             <button
                                 type="submit"
@@ -642,7 +643,7 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
-                                        Creating...
+                                        {t('ad.creating')}
                                     </>
                                 ) : (
                                     'Save Question Variety'
@@ -665,17 +666,17 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                     <div class="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-700">
                         <div>
                             <h2 class="text-lg font-bold text-neutral-900 dark:text-white">
-                                Edit Survey Question Variety Reference
+                                {t('ad.editSurveyQuestionVarietyReference')}
                             </h2>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                Modify survey question type reference properties.
+                                {t('ad.modifySurveyQuestionTypeReferenceProperties')}
                             </p>
                         </div>
                         <button
                             type="button"
                             onClick={closeEditModal}
                             class="size-8 inline-flex items-center justify-center text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
-                            aria-label="Close dialog"
+                            aria-label={t('ad.closeDialog')}
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -686,7 +687,7 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                     <form onSubmit={handleEditSubmit} class="space-y-4 pt-4">
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Code <span class="text-red-500">*</span>
+                                {t('ad.code2')} <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="number"
@@ -704,14 +705,14 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
 
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Alphabet Code <span class="text-red-500">*</span>
+                                {t('ad.alphabetCode')} <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
                                 class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
                                     formErrors().alphabet_code ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
                                 }`}
-                                placeholder="e.g. LIKERT"
+                                placeholder={t('ad.eGLIKERT')}
                                 value={formData().alphabet_code ?? ''}
                                 onInput={(e) => setFormData({ ...formData(), alphabet_code: e.currentTarget.value })}
                             />
@@ -722,14 +723,14 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
 
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Question Variety Name <span class="text-red-500">*</span>
+                                {t('ad.questionVarietyName')} <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
                                 class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
                                     formErrors().name ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
                                 }`}
-                                placeholder="e.g. Skala Likert (Likert Scale 1-5)"
+                                placeholder={t('ad.eGSkalaLikertLikertScale')}
                                 value={formData().name}
                                 onInput={(e) => setFormData({ ...formData(), name: e.currentTarget.value })}
                             />
@@ -744,7 +745,7 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                                 onClick={closeEditModal}
                                 class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xs transition-colors cursor-pointer"
                             >
-                                Cancel
+                                {t('ad.cancel')}
                             </button>
                             <button
                                 type="submit"
@@ -757,7 +758,7 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
-                                        Updating...
+                                        {t('ad.updating')}
                                     </>
                                 ) : (
                                     'Update Question Variety'
@@ -785,32 +786,32 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                         </div>
                         <div>
                             <h2 class="text-base font-bold text-neutral-900 dark:text-white">
-                                Confirm Deletion
+                                {t('ad.confirmDeletion')}
                             </h2>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                This survey question variety record will be removed.
+                                {t('ad.thisSurveyQuestionVarietyRecordWill')}
                             </p>
                         </div>
                     </div>
 
                     <div class="py-4">
                         <div class="mb-4 p-3 bg-red-50 dark:bg-red-950/40 border-l-4 border-red-500 text-red-700 dark:text-red-300 text-xs">
-                            <p class="font-bold">Danger alert! This Action Cannot be Undone</p>
-                            <p class="mt-0.5">Are you sure you want to permanently delete this reference record from the system?</p>
+                            <p class="font-bold">{t('ad.dangerAlertThisActionCannotBe')}</p>
+                            <p class="mt-0.5">{t('ad.areYouSureYouWantTo5')}</p>
                         </div>
 
                         <table class="w-full text-xs text-left border border-neutral-200 dark:border-neutral-700">
                             <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
                                 <tr class="bg-neutral-50 dark:bg-neutral-800/50">
-                                    <td class="px-3 py-2 font-semibold text-neutral-600 dark:text-neutral-300 w-1/3">Code</td>
+                                    <td class="px-3 py-2 font-semibold text-neutral-600 dark:text-neutral-300 w-1/3">{t('ad.code2')}</td>
                                     <td class="px-3 py-2 font-mono text-neutral-900 dark:text-white font-medium">{selectedItem()?.code}</td>
                                 </tr>
                                 <tr>
-                                    <td class="px-3 py-2 font-semibold text-neutral-600 dark:text-neutral-300">Alphabet Code</td>
+                                    <td class="px-3 py-2 font-semibold text-neutral-600 dark:text-neutral-300">{t('ad.alphabetCode')}</td>
                                     <td class="px-3 py-2 text-neutral-900 dark:text-white font-medium">{selectedItem()?.alphabetic_code || (selectedItem() as any)?.alphabet_code || '-'}</td>
                                 </tr>
                                 <tr class="bg-neutral-50 dark:bg-neutral-800/50">
-                                    <td class="px-3 py-2 font-semibold text-neutral-600 dark:text-neutral-300">Question Variety</td>
+                                    <td class="px-3 py-2 font-semibold text-neutral-600 dark:text-neutral-300">{t('ad.questionVariety')}</td>
                                     <td class="px-3 py-2 text-neutral-900 dark:text-white font-medium">{selectedItem()?.name}</td>
                                 </tr>
                             </tbody>
@@ -823,7 +824,7 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                             onClick={closeDeleteModal}
                             class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xs transition-colors cursor-pointer"
                         >
-                            Cancel
+                            {t('ad.cancel')}
                         </button>
                         <button
                             type="button"
@@ -831,7 +832,7 @@ export default function AcademicSurveyReferenceQuestionVarietyPage() {
                             disabled={isSubmitting()}
                             class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 rounded-xs transition-colors cursor-pointer"
                         >
-                            {isSubmitting() ? 'Deleting...' : 'Yes, Delete'}
+                            {isSubmitting() ? t('ad.deleting') : t('ad.yesDelete')}
                         </button>
                     </div>
                 </div>

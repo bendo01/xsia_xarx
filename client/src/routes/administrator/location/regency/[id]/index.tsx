@@ -3,6 +3,7 @@ import { useParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { masterApiShow } from '~/controllers/master/masterApiController';
+import { t } from '../../../../../i18n';
 
 export default function LocationRegencyDetailPage() {
     const basePath = "/administrator/location/regency";
@@ -24,12 +25,12 @@ export default function LocationRegencyDetailPage() {
                 setRecord(apiRes.data);
             } else {
                 setRecord(null);
-                toast.danger('Regency record not found.');
+                toast.danger(t('ad.regencyRecordNotFound'));
             }
         } catch (error) {
             console.error('Error fetching regency detail:', error);
             setRecord(null);
-            toast.danger('Failed to load regency record from server.');
+            toast.danger(t('ad.failedToLoadRegencyRecordFrom'));
         } finally {
             setIsLoading(false);
         }
@@ -51,7 +52,7 @@ export default function LocationRegencyDetailPage() {
     const copyToClipboard = (text: string, label: string) => {
         if (!text) return;
         navigator.clipboard.writeText(text);
-        toast.success(`Copied ${label} to clipboard`, 3000);
+        toast.success(t('ad.copiedLabelToClipboard', { label }), 3000);
     };
 
     return (
@@ -63,16 +64,16 @@ export default function LocationRegencyDetailPage() {
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div class="min-w-0">
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
-                            <a href="/" class="hover:text-blue-600 transition-colors shrink-0">Home</a>
+                            <a href="/" class="hover:text-blue-600 transition-colors shrink-0">{t('ad.home')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="shrink-0">Location</span>
+                            <span class="shrink-0">{t('ad.location')}</span>
                             <span class="shrink-0">/</span>
-                            <a href={basePath} class="hover:text-blue-600 transition-colors shrink-0">Regency</a>
+                            <a href={basePath} class="hover:text-blue-600 transition-colors shrink-0">{t('ad.regency')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white shrink-0">Detail</span>
+                            <span class="font-medium text-neutral-900 dark:text-white shrink-0">{t('ad.detail2')}</span>
                         </nav>
                         <h1 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono truncate">
-                            Regency Details
+                            {t('ad.regencyDetails')}
                         </h1>
                     </div>
 
@@ -84,7 +85,7 @@ export default function LocationRegencyDetailPage() {
                             <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6" />
                             </svg>
-                            <span>Back to List</span>
+                            <span>{t('ad.backToList')}</span>
                         </a>
                         <Show when={selectedId()}>
                             <a
@@ -95,7 +96,7 @@ export default function LocationRegencyDetailPage() {
                                     <path d="M12 20h9" />
                                     <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
                                 </svg>
-                                <span>Edit Regency</span>
+                                <span>{t('ad.editRegency')}</span>
                             </a>
                         </Show>
                     </div>
@@ -122,8 +123,8 @@ export default function LocationRegencyDetailPage() {
                             when={record()}
                             fallback={
                                 <div class="py-12 text-center text-neutral-500">
-                                    <p class="text-base font-semibold">No record details found.</p>
-                                    <p class="text-xs mt-1">Check if the ID parameter in the URL is valid.</p>
+                                    <p class="text-base font-semibold">{t('ad.noRecordDetailsFound')}</p>
+                                    <p class="text-xs mt-1">{t('ad.checkIfTheIDParameterIn')}</p>
                                 </div>
                             }
                         >
@@ -131,14 +132,14 @@ export default function LocationRegencyDetailPage() {
                                 {/* Title and Badge Banner */}
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-100 dark:border-neutral-700 pb-4">
                                     <div class="min-w-0">
-                                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 block mb-0.5">Regency Name</span>
+                                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 block mb-0.5">{t('ad.regencyName')}</span>
                                         <h2 class="text-lg sm:text-xl font-bold text-neutral-900 dark:text-white font-mono break-all sm:break-normal">
                                             {record()?.name || '-'}
                                         </h2>
                                     </div>
                                     <div class="flex flex-wrap items-center gap-2 shrink-0">
                                         <span class="px-2.5 py-1 text-xs font-mono font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/80">
-                                            Code: {record()?.code || '-'}
+                                            {t('ad.code')} {record()?.code || '-'}
                                         </span>
                                     </div>
                                 </div>
@@ -146,7 +147,7 @@ export default function LocationRegencyDetailPage() {
                                 {/* Key Metrics / Highlights Grid */}
                                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 text-xs">
                                     <div class="p-3.5 sm:p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 min-w-0">
-                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">UUID</span>
+                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">{t('ad.uuid2')}</span>
                                         <div class="flex items-center justify-between gap-2 min-w-0">
                                             <span class="font-mono text-neutral-800 dark:text-neutral-200 truncate">{record()?.id || '-'}</span>
                                             <button
@@ -154,13 +155,13 @@ export default function LocationRegencyDetailPage() {
                                                 onClick={() => copyToClipboard(record()?.id, 'ID')}
                                                 class="text-blue-600 hover:text-blue-700 cursor-pointer font-mono shrink-0 text-xs font-medium"
                                             >
-                                                Copy
+                                                {t('ad.copy')}
                                             </button>
                                         </div>
                                     </div>
 
                                     <div class="p-3.5 sm:p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 min-w-0">
-                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">Province Reference</span>
+                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">{t('ad.provinceReference')}</span>
                                         <div class="flex items-center justify-between gap-2 min-w-0">
                                             <span class="font-mono text-neutral-800 dark:text-neutral-200 truncate">{record()?.province_id || '-'}</span>
                                             <Show when={record()?.province_id}>
@@ -168,19 +169,19 @@ export default function LocationRegencyDetailPage() {
                                                     href={`/administrator/location/province/${record()?.province_id}`}
                                                     class="text-blue-600 hover:text-blue-700 font-mono text-[11px] shrink-0"
                                                 >
-                                                    View
+                                                    {t('ad.view')}
                                                 </a>
                                             </Show>
                                         </div>
                                     </div>
 
                                     <div class="p-3.5 sm:p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 min-w-0">
-                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">Dikti Code</span>
+                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">{t('ad.diktiCode')}</span>
                                         <span class="font-mono text-neutral-800 dark:text-neutral-200 block truncate">{record()?.dikti_code || '-'}</span>
                                     </div>
 
                                     <div class="p-3.5 sm:p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 min-w-0">
-                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">EPSBED Code</span>
+                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">{t('ad.epsbedCode')}</span>
                                         <span class="font-mono text-neutral-800 dark:text-neutral-200 block truncate">{record()?.epsbed_code || '-'}</span>
                                     </div>
                                 </div>
@@ -188,7 +189,7 @@ export default function LocationRegencyDetailPage() {
                                 {/* All Entity Attributes: Dual Desktop Table & Mobile Card View */}
                                 <div class="mt-6">
                                     <div class="flex items-center justify-between mb-3">
-                                        <h3 class="text-sm font-bold font-mono text-neutral-900 dark:text-white">All Entity Attributes</h3>
+                                        <h3 class="text-sm font-bold font-mono text-neutral-900 dark:text-white">{t('ad.allEntityAttributes')}</h3>
                                         <span class="text-[11px] font-mono text-neutral-500 dark:text-neutral-400">
                                             {Object.keys(record() || {}).length} fields
                                         </span>

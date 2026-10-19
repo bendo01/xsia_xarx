@@ -127,6 +127,7 @@ export interface TranslationSchema {
             candidateAdmission: string;
             candidateAdmissionProcedure: string;
             candidateAdmissionForm: string;
+            defaultBadge: string;
         };
         student: {
             dashboardProfile: string;
@@ -144,6 +145,7 @@ export interface TranslationSchema {
             adminDashboard: string;
             modelsTree: string;
             entitiesCount: string;
+            tree: Record<string, string>;
         };
         candidate: {
             candidateDashboard: string;
@@ -152,6 +154,11 @@ export interface TranslationSchema {
             registrationTrack: string;
             documentChecklist: string;
             pathwaysScholarships: string;
+            personalBiodata: string;
+            registrationFeeInvoice: string;
+            selectionAnnouncements: string;
+            identityRecord: string;
+            completeBiodata: string;
         };
         rectorat: {
             executiveDashboard: string;
@@ -170,6 +177,12 @@ export interface TranslationSchema {
             activityUnitList: string;
             classCodeUnitList: string;
             gradeUnitList: string;
+            qualityAssuranceSpmi: string;
+            campusInfrastructure: string;
+            studentSemesterActivities: string;
+            employees: string;
+            staff: string;
+            academic: string;
         };
         courseDepartment: {
             departmentDashboard: string;
@@ -179,6 +192,27 @@ export interface TranslationSchema {
             competencesOutcomes: string;
             evaluationBase: string;
             gradingTypes: string;
+            studentDirectory: string;
+            studentActivity: string;
+            courseDirectory: string;
+            curriculumDirectory: string;
+            classCodeDirectory: string;
+            lecturerDirectory: string;
+            staffDirectory: string;
+            classEncounters: string;
+            implementationModes: string;
+            encounterCategories: string;
+            attendanceTypes: string;
+            facultyLecturers: string;
+            academicRanks: string;
+            contracts: string;
+            lecturerStatus: string;
+            finalAssignmentThesis: string;
+            thesisCategories: string;
+            adviserCategories: string;
+            teachingSurveys: string;
+            defenseStages: string;
+            stageRequirements: string;
         };
     };
     errors: {
@@ -217,6 +251,13 @@ export interface TranslationSchema {
         signInTitle: string;
         signInDesc: string;
     };
+    cd: Record<string, string>;
+    lc: Record<string, string>;
+    st: Record<string, string>;
+    cn: Record<string, string>;
+    au: Record<string, string>;
+    rt: Record<string, string>;
+    ad: Record<string, string>;
     academic: {
         no: string;
         courseCode: string;

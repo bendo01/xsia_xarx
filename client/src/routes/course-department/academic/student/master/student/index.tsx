@@ -23,6 +23,7 @@ import {
 import { getRegistrationOptions } from '~/controllers/academic/student/reference/AcademicStudentReferenceRegistrationController';
 import type { InstitutionMasterStaff } from '~/models/institution/master/Staff';
 import { getLoggedInStaffUnit, LoggedInStaffUnitResult } from '~/lib/staffHelper';
+import { t } from '../../../../../../i18n';
 
 export default function CourseDepartmentStudentMasterPage() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -269,7 +270,7 @@ export default function CourseDepartmentStudentMasterPage() {
             setTotalItems(res.total ?? (res.data ? res.data.length : 0));
         } catch (err) {
             console.error('Error fetching students:', err);
-            toast.danger('Failed to load students for this department.');
+            toast.danger(t('cd.failedToLoadStudentsForThis'));
             setStudents([]);
             setTotalPages(1);
             setTotalItems(0);
@@ -392,7 +393,7 @@ export default function CourseDepartmentStudentMasterPage() {
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="bg-white dark:bg-neutral-800 rounded-xs p-4 border border-neutral-200/70 dark:border-neutral-700 shadow-2xs flex items-center justify-between">
                         <div class="space-y-0.5">
-                            <span class="text-[11px] font-mono font-medium text-neutral-400 uppercase tracking-wider">Total Enrolled</span>
+                            <span class="text-[11px] font-mono font-medium text-neutral-400 uppercase tracking-wider">{t('cd.totalEnrolled')}</span>
                             <div class="text-2xl font-black text-neutral-900 dark:text-white">
                                 {totalItems()}
                             </div>
@@ -404,7 +405,7 @@ export default function CourseDepartmentStudentMasterPage() {
 
                     <div class="bg-white dark:bg-neutral-800 rounded-xs p-4 border border-neutral-200/70 dark:border-neutral-700 shadow-2xs flex items-center justify-between">
                         <div class="space-y-0.5">
-                            <span class="text-[11px] font-mono font-medium text-neutral-400 uppercase tracking-wider">Current Unit</span>
+                            <span class="text-[11px] font-mono font-medium text-neutral-400 uppercase tracking-wider">{t('cd.currentUnit')}</span>
                             <div class="text-sm font-bold text-neutral-800 dark:text-neutral-200 truncate max-w-45" title={activeUnitData()?.name || activeUnitData()?.nama || staffResult()?.unit?.name}>
                                 {activeUnitData()?.name || activeUnitData()?.nama || staffResult()?.unit?.name || 'Program Studi'}
                             </div>
@@ -416,7 +417,7 @@ export default function CourseDepartmentStudentMasterPage() {
 
                     <div class="bg-white dark:bg-neutral-800 rounded-xs p-4 border border-neutral-200/70 dark:border-neutral-700 shadow-2xs flex items-center justify-between">
                         <div class="space-y-0.5">
-                            <span class="text-[11px] font-mono font-medium text-neutral-400 uppercase tracking-wider">Academic Cohorts</span>
+                            <span class="text-[11px] font-mono font-medium text-neutral-400 uppercase tracking-wider">{t('cd.academicCohorts')}</span>
                             <div class="text-2xl font-black text-neutral-900 dark:text-white">
                                 {unitAcademicYears().length}
                             </div>
@@ -428,9 +429,9 @@ export default function CourseDepartmentStudentMasterPage() {
 
                     <div class="bg-white dark:bg-neutral-800 rounded-xs p-4 border border-neutral-200/70 dark:border-neutral-700 shadow-2xs flex items-center justify-between">
                         <div class="space-y-0.5">
-                            <span class="text-[11px] font-mono font-medium text-neutral-400 uppercase tracking-wider">Page Position</span>
+                            <span class="text-[11px] font-mono font-medium text-neutral-400 uppercase tracking-wider">{t('cd.pagePosition')}</span>
                             <div class="text-sm font-bold text-neutral-800 dark:text-neutral-200">
-                                Page <strong class="text-teal-600 dark:text-teal-400 font-mono">{page()}</strong> of <strong class="font-mono">{totalPages()}</strong>
+                                {t('cd.page')} <strong class="text-teal-600 dark:text-teal-400 font-mono">{page()}</strong> {t('cd.of')} <strong class="font-mono">{totalPages()}</strong>
                             </div>
                         </div>
                         <div class="size-10 rounded-xs bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-200/50 dark:border-amber-800/40">
@@ -445,7 +446,7 @@ export default function CourseDepartmentStudentMasterPage() {
                         <div class="flex items-center gap-2">
                             <svg class="size-4 text-teal-600 dark:text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>
                             <h2 class="text-xs font-mono uppercase tracking-wider font-bold text-neutral-700 dark:text-neutral-200">
-                                Search & Dynamic Filters
+                                {t('cd.searchDynamicFilters')}
                             </h2>
                         </div>
                         <Show when={hasActiveFilters()}>
@@ -455,7 +456,7 @@ export default function CourseDepartmentStudentMasterPage() {
                                 class="text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline inline-flex items-center gap-1 cursor-pointer"
                             >
                                 <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
-                                <span>Reset All Filters</span>
+                                <span>{t('cd.resetAllFilters')}</span>
                             </button>
                         </Show>
                     </div>
@@ -464,12 +465,12 @@ export default function CourseDepartmentStudentMasterPage() {
                         {/* Search by Name */}
                         <div class="space-y-1">
                             <label class="text-[11px] font-mono font-semibold text-neutral-500 uppercase">
-                                Student Name
+                                {t('cd.studentName')}
                             </label>
                             <div class="relative">
                                 <input
                                     type="text"
-                                    placeholder="Search by name..."
+                                    placeholder={t('cd.searchByName')}
                                     value={searchName()}
                                     onInput={(e) => handleNameInput(e.currentTarget.value)}
                                     class="w-full pl-9 pr-3 py-2 text-xs rounded-xs bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-hidden focus:border-teal-500 transition-colors"
@@ -481,12 +482,12 @@ export default function CourseDepartmentStudentMasterPage() {
                         {/* Search by Code / NIM */}
                         <div class="space-y-1">
                             <label class="text-[11px] font-mono font-semibold text-neutral-500 uppercase">
-                                Student Code (NIM)
+                                {t('cd.studentCodeNIM')}
                             </label>
                             <div class="relative">
                                 <input
                                     type="text"
-                                    placeholder="Search by NIM / code..."
+                                    placeholder={t('cd.searchByNIMCode')}
                                     value={searchCode()}
                                     onInput={(e) => handleCodeInput(e.currentTarget.value)}
                                     class="w-full pl-9 pr-3 py-2 text-xs rounded-xs bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-hidden focus:border-teal-500 transition-colors"
@@ -498,7 +499,7 @@ export default function CourseDepartmentStudentMasterPage() {
                         {/* Filter by Academic Year */}
                         <div class="space-y-1">
                             <label class="text-[11px] font-mono font-semibold text-neutral-500 uppercase">
-                                Academic Year / Cohort
+                                {t('cd.academicYearCohort')}
                             </label>
                             <select
                                 value={selectedAcademicYearId()}
@@ -523,7 +524,7 @@ export default function CourseDepartmentStudentMasterPage() {
                         {/* Filter by Status */}
                         <div class="space-y-1">
                             <label class="text-[11px] font-mono font-semibold text-neutral-500 uppercase">
-                                Student Status
+                                {t('cd.studentStatus')}
                             </label>
                             <select
                                 value={selectedStatusId()}
@@ -534,7 +535,7 @@ export default function CourseDepartmentStudentMasterPage() {
                                 }}
                                 class="w-full px-3 py-2 text-xs rounded-xs bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-hidden focus:border-teal-500 transition-colors"
                             >
-                                <option value="">All Student Statuses</option>
+                                <option value="">{t('cd.allStudentStatuses')}</option>
                                 <For each={statuses()}>
                                     {(st) => (
                                         <option value={st.id}>
@@ -548,7 +549,7 @@ export default function CourseDepartmentStudentMasterPage() {
                         {/* Filter by Registration */}
                         <div class="space-y-1">
                             <label class="text-[11px] font-mono font-semibold text-neutral-500 uppercase">
-                                Registration Type
+                                {t('cd.registrationType')}
                             </label>
                             <select
                                 value={selectedRegistrationId()}
@@ -559,7 +560,7 @@ export default function CourseDepartmentStudentMasterPage() {
                                 }}
                                 class="w-full px-3 py-2 text-xs rounded-xs bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-hidden focus:border-teal-500 transition-colors"
                             >
-                                <option value="">All Registration Types</option>
+                                <option value="">{t('cd.allRegistrationTypes')}</option>
                                 <For each={registrations()}>
                                     {(rg) => <option value={rg.id}>{rg.name}</option>}
                                 </For>
@@ -576,7 +577,7 @@ export default function CourseDepartmentStudentMasterPage() {
                         <div class="flex items-center gap-2">
                             <div class="size-2 rounded-xs bg-teal-500"></div>
                             <span class="text-xs font-mono font-bold text-neutral-700 dark:text-neutral-200">
-                                Students Directory Table
+                                {t('cd.studentsDirectoryTable')}
                             </span>
                             <span class="px-2 py-0.5 rounded-xs bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 text-[10px] font-mono">
                                 {totalItems()} total records
@@ -586,7 +587,7 @@ export default function CourseDepartmentStudentMasterPage() {
                         {/* Sort Selector & Page Size Selector */}
                         <div class="flex flex-wrap items-center gap-3">
                             <div class="flex items-center gap-1.5">
-                                <span class="text-xs text-neutral-400 font-mono">Sort:</span>
+                                <span class="text-xs text-neutral-400 font-mono">{t('cd.sort')}</span>
                                 <select
                                     value={sortParam()}
                                     onChange={(e) => {
@@ -596,17 +597,17 @@ export default function CourseDepartmentStudentMasterPage() {
                                     }}
                                     class="px-2.5 py-1 text-xs rounded-xs bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 focus:outline-hidden focus:border-teal-500"
                                 >
-                                    <option value="code-asc">NIM / Code (Ascending)</option>
-                                    <option value="code-desc">NIM / Code (Descending)</option>
-                                    <option value="name-asc">Full Name (A-Z)</option>
-                                    <option value="name-desc">Full Name (Z-A)</option>
-                                    <option value="registered-desc">Registered (Newest)</option>
-                                    <option value="registered-asc">Registered (Oldest)</option>
+                                    <option value="code-asc">{t('cd.nimCodeAscending')}</option>
+                                    <option value="code-desc">{t('cd.nimCodeDescending')}</option>
+                                    <option value="name-asc">{t('cd.fullNameAZ')}</option>
+                                    <option value="name-desc">{t('cd.fullNameZA')}</option>
+                                    <option value="registered-desc">{t('cd.registeredNewest')}</option>
+                                    <option value="registered-asc">{t('cd.registeredOldest')}</option>
                                 </select>
                             </div>
 
                             <div class="flex items-center gap-1.5">
-                                <span class="text-xs text-neutral-400 font-mono">Rows per page:</span>
+                                <span class="text-xs text-neutral-400 font-mono">{t('cd.rowsPerPage')}</span>
                                 <select
                                     value={pageSize()}
                                     onChange={(e) => {
@@ -630,7 +631,7 @@ export default function CourseDepartmentStudentMasterPage() {
                         when={!isLoading() && !isResolvingUnit()}
                         fallback={
                             <Loader
-                                message="Loading department students from server..."
+                                message={t('cd.loadingDepartmentStudentsFromServer')}
                                 color="teal"
                                 size="lg"
                                 class="py-20"
@@ -650,12 +651,12 @@ export default function CourseDepartmentStudentMasterPage() {
                                                 </svg>
                                             </div>
                                             <p class="text-sm font-bold text-neutral-700 dark:text-neutral-200">
-                                                No student records found
+                                                {t('cd.noStudentRecordsFound')}
                                             </p>
                                             <p class="text-xs text-neutral-400">
                                                 {hasActiveFilters()
-                                                    ? 'No students match the current search filters.'
-                                                    : `There are currently no admitted student records in ${activeUnitData()?.name || 'this department'}.`}
+                                                    ? t('cd.noStudentsMatchTheCurrentSearch')
+                                                    : t('cd.thereAreCurrentlyNoAdmittedStudent', { unit: activeUnitData()?.name || t('cd.thisDepartment') })}
                                             </p>
                                             <Show when={hasActiveFilters()}>
                                                 <button
@@ -663,7 +664,7 @@ export default function CourseDepartmentStudentMasterPage() {
                                                     onClick={handleResetFilters}
                                                     class="mt-2 px-3 py-1.5 bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 rounded-xs text-xs font-bold hover:bg-teal-100 transition-colors cursor-pointer"
                                                 >
-                                                    Clear Filters
+                                                    {t('cd.clearFilters')}
                                                 </button>
                                             </Show>
                                         </div>
@@ -693,26 +694,26 @@ export default function CourseDepartmentStudentMasterPage() {
                                                 </div>
                                             </div>
                                             <span class={`inline-block px-2 py-0.5 rounded-xs text-[10px] font-bold shrink-0 ${getStatusBadgeClass(std.status_name)}`}>
-                                                {std.status_name || 'Active'}
+                                                {std.status_name || t('cd.active')}
                                             </span>
                                         </div>
 
                                         {/* Metadata Rows */}
                                         <div class="bg-neutral-50/80 dark:bg-neutral-900/40 rounded-xs p-2.5 space-y-1.5 border border-neutral-100 dark:border-neutral-700/60 text-xs">
                                             <div class="flex items-center justify-between gap-2">
-                                                <span class="text-neutral-500 dark:text-neutral-400">Study Program:</span>
+                                                <span class="text-neutral-500 dark:text-neutral-400">{t('cd.studyProgram')}</span>
                                                 <span class="font-medium text-neutral-800 dark:text-neutral-200 truncate text-end">
                                                     {std.unit_name || activeUnitData()?.name || '-'}
                                                 </span>
                                             </div>
                                             <div class="flex items-center justify-between gap-2">
-                                                <span class="text-neutral-500 dark:text-neutral-400">Admission Path:</span>
+                                                <span class="text-neutral-500 dark:text-neutral-400">{t('cd.admissionPath')}</span>
                                                 <span class="font-semibold text-neutral-700 dark:text-neutral-300 text-end">
                                                     {std.selection_type_name || '-'}
                                                 </span>
                                             </div>
                                             <div class="flex items-center justify-between gap-2">
-                                                <span class="text-neutral-500 dark:text-neutral-400">Registered:</span>
+                                                <span class="text-neutral-500 dark:text-neutral-400">{t('cd.registered')}</span>
                                                 <span class="font-mono text-neutral-600 dark:text-neutral-400 text-end">
                                                     {std.registered || '-'}
                                                 </span>
@@ -725,7 +726,7 @@ export default function CourseDepartmentStudentMasterPage() {
                                                 href={`/course-department/academic/student/master/student/${std.id}`}
                                                 class="w-full sm:w-auto px-3.5 py-1.5 bg-neutral-100 hover:bg-teal-50 dark:bg-neutral-700 dark:hover:bg-teal-950/60 text-neutral-700 hover:text-teal-700 dark:text-neutral-200 dark:hover:text-teal-300 rounded-xs text-xs font-bold transition-colors inline-flex items-center justify-center gap-1.5 shadow-2xs"
                                             >
-                                                <span>Detail</span>
+                                                <span>{t('cd.detail')}</span>
                                                 <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg>
                                             </A>
                                         </div>
@@ -744,9 +745,9 @@ export default function CourseDepartmentStudentMasterPage() {
                                                 type="button"
                                                 onClick={() => handleSortToggle('code')}
                                                 class="group inline-flex items-center gap-1.5 font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors cursor-pointer"
-                                                title="Sort by NIM / Code"
+                                                title={t('cd.sortByNIMCode')}
                                             >
-                                                <span>NIM / Code</span>
+                                                <span>{t('cd.nimCode')}</span>
                                                 <Show
                                                     when={sortParam().startsWith('code-')}
                                                     fallback={
@@ -769,9 +770,9 @@ export default function CourseDepartmentStudentMasterPage() {
                                                 type="button"
                                                 onClick={() => handleSortToggle('name')}
                                                 class="group inline-flex items-center gap-1.5 font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors cursor-pointer"
-                                                title="Sort by Full Name"
+                                                title={t('cd.sortByFullName')}
                                             >
-                                                <span>Full Name</span>
+                                                <span>{t('cd.fullName')}</span>
                                                 <Show
                                                     when={sortParam().startsWith('name-')}
                                                     fallback={
@@ -789,18 +790,18 @@ export default function CourseDepartmentStudentMasterPage() {
                                                 </Show>
                                             </button>
                                         </th>
-                                        <th class="py-3.5 px-4 text-start">Study Program</th>
-                                        <th class="py-3.5 px-4 text-start">Academic Year</th>
-                                        <th class="py-3.5 px-4 text-start">Admission Path</th>
-                                        <th class="py-3.5 px-4 text-center">Status</th>
+                                        <th class="py-3.5 px-4 text-start">{t('cd.studyProgram2')}</th>
+                                        <th class="py-3.5 px-4 text-start">{t('cd.academicYear')}</th>
+                                        <th class="py-3.5 px-4 text-start">{t('cd.admissionPath2')}</th>
+                                        <th class="py-3.5 px-4 text-center">{t('cd.status')}</th>
                                         <th class="py-3.5 px-4 text-center">
                                             <button
                                                 type="button"
                                                 onClick={() => handleSortToggle('registered')}
                                                 class="group inline-flex items-center gap-1.5 font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors cursor-pointer"
-                                                title="Sort by Registered Date"
+                                                title={t('cd.sortByRegisteredDate')}
                                             >
-                                                <span>Registered</span>
+                                                <span>{t('cd.registered2')}</span>
                                                 <Show
                                                     when={sortParam().startsWith('registered-')}
                                                     fallback={
@@ -818,7 +819,7 @@ export default function CourseDepartmentStudentMasterPage() {
                                                 </Show>
                                             </button>
                                         </th>
-                                        <th class="py-3.5 px-4 text-end">Action</th>
+                                        <th class="py-3.5 px-4 text-end">{t('cd.action')}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-neutral-100 dark:divide-neutral-700/50">
@@ -834,12 +835,12 @@ export default function CourseDepartmentStudentMasterPage() {
                                                             </svg>
                                                         </div>
                                                         <p class="text-sm font-bold text-neutral-700 dark:text-neutral-200">
-                                                            No student records found
+                                                            {t('cd.noStudentRecordsFound')}
                                                         </p>
                                                         <p class="text-xs text-neutral-400">
                                                             {hasActiveFilters()
-                                                                ? 'No students match the current search filters. Try clearing some filters or searching for different terms.'
-                                                                : `There are currently no admitted student records in ${activeUnitData()?.name || 'this department'}.`}
+                                                                ? t('cd.noStudentsMatchTheCurrentSearch2')
+                                                                : t('cd.thereAreCurrentlyNoAdmittedStudent', { unit: activeUnitData()?.name || t('cd.thisDepartment') })}
                                                         </p>
                                                         <Show when={hasActiveFilters()}>
                                                             <button
@@ -847,7 +848,7 @@ export default function CourseDepartmentStudentMasterPage() {
                                                                 onClick={handleResetFilters}
                                                                 class="mt-2 px-3 py-1.5 bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 rounded-xs text-xs font-bold hover:bg-teal-100 transition-colors cursor-pointer"
                                                             >
-                                                                Clear Filters
+                                                                {t('cd.clearFilters')}
                                                             </button>
                                                         </Show>
                                                     </div>
@@ -900,7 +901,7 @@ export default function CourseDepartmentStudentMasterPage() {
                                                 {/* Status */}
                                                 <td class="py-3 px-4 text-center">
                                                     <span class={`inline-block px-2.5 py-0.5 rounded-xs text-[10px] font-bold ${getStatusBadgeClass(std.status_name)}`}>
-                                                        {std.status_name || 'Active'}
+                                                        {std.status_name || t('cd.active')}
                                                     </span>
                                                 </td>
 
@@ -915,7 +916,7 @@ export default function CourseDepartmentStudentMasterPage() {
                                                         href={`/course-department/academic/student/master/student/${std.id}`}
                                                         class="px-3 py-1.5 bg-neutral-100 hover:bg-teal-50 dark:bg-neutral-700 dark:hover:bg-teal-950/60 text-neutral-700 hover:text-teal-700 dark:text-neutral-200 dark:hover:text-teal-300 rounded-xs text-xs font-bold transition-colors inline-flex items-center gap-1 shadow-2xs"
                                                     >
-                                                        <span>Detail</span>
+                                                        <span>{t('cd.detail')}</span>
                                                         <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg>
                                                     </A>
                                                 </td>
@@ -929,7 +930,7 @@ export default function CourseDepartmentStudentMasterPage() {
                         {/* Pagination Footer Bar */}
                         <div class="p-4 border-t border-neutral-200 dark:border-neutral-700 flex flex-col sm:flex-row items-center justify-between gap-3 bg-neutral-50/50 dark:bg-neutral-900/30">
                             <span class="text-xs text-neutral-500 dark:text-neutral-400 font-mono">
-                                Showing page <strong class="text-neutral-800 dark:text-neutral-200">{page()}</strong> of <strong class="text-neutral-800 dark:text-neutral-200">{totalPages()}</strong> ({totalItems()} total students)
+                                {t('cd.showingPage')} <strong class="text-neutral-800 dark:text-neutral-200">{page()}</strong> {t('cd.of')} <strong class="text-neutral-800 dark:text-neutral-200">{totalPages()}</strong> ({totalItems()} total students)
                             </span>
 
                             <div class="flex items-center gap-1.5">
@@ -945,7 +946,7 @@ export default function CourseDepartmentStudentMasterPage() {
                                     class="px-3 py-1.5 text-xs font-semibold rounded-xs border border-neutral-200 dark:border-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors inline-flex items-center gap-1 cursor-pointer"
                                 >
                                     <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-                                    <span>Previous</span>
+                                    <span>{t('cd.previous')}</span>
                                 </button>
 
                                 <div class="px-3 py-1.5 text-xs font-mono font-bold bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xs shadow-2xs">
@@ -963,7 +964,7 @@ export default function CourseDepartmentStudentMasterPage() {
                                     disabled={page() >= totalPages()}
                                     class="px-3 py-1.5 text-xs font-semibold rounded-xs border border-neutral-200 dark:border-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors inline-flex items-center gap-1 cursor-pointer"
                                 >
-                                    <span>Next</span>
+                                    <span>{t('cd.next')}</span>
                                     <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg>
                                 </button>
                             </div>

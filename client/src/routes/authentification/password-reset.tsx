@@ -4,6 +4,7 @@ import { useSearchParams, A, useNavigate } from '@solidjs/router';
 import { getInstitutionLogo } from '~/lib/institutionLogo';
 import { toast } from '~/components/toast/Toaster';
 import ThemeToggle from '../../components/navigation/ThemeToggle';
+import { t } from '../../i18n';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0.1:5800/api/v1").replace(/\/+$/, "");
 
@@ -26,20 +27,20 @@ export default function PasswordReset() {
         },
         onSubmit: async ({ value }) => {
             if (!value.token) {
-                setErrorMessage("Token reset wajib diisi");
+                setErrorMessage(t('au.tokenResetWajibDiisi'));
                 return;
             }
             const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
             if (!uuidRegex.test(value.token)) {
-                setErrorMessage("Format token tidak valid");
+                setErrorMessage(t('au.formatTokenTidakValid'));
                 return;
             }
             if (!value.new_password || !value.confirm_password) {
-                setErrorMessage("Semua kolom harus diisi");
+                setErrorMessage(t('au.semuaKolomHarusDiisi'));
                 return;
             }
             if (value.new_password !== value.confirm_password) {
-                setErrorMessage("Kata sandi tidak cocok");
+                setErrorMessage(t('au.kataSandiTidakCocok'));
                 return;
             }
 
@@ -69,12 +70,12 @@ export default function PasswordReset() {
                 }
 
                 if (!response.ok) {
-                    const errorMsg = data?.brief || data?.message || data?.error?.message || "Gagal mereset kata sandi";
+                    const errorMsg = data?.brief || data?.message || data?.error?.message || t('au.gagalMeresetKataSandi');
                     setErrorMessage(errorMsg);
                     toast.danger(errorMsg);
                 } else {
-                    toast.success(data?.message || "Kata sandi berhasil direset");
-                    setSuccessMessage(data?.message || "Kata sandi berhasil direset. Silakan masuk dengan kata sandi baru Anda.");
+                    toast.success(data?.message || t('au.kataSandiBerhasilDireset'));
+                    setSuccessMessage(data?.message || t('au.kataSandiBerhasilDiresetSilakanMasuk'));
                     setSuccessWaLink(data?.wa_link || null);
                     if (data?.wa_link) {
                         window.open(data.wa_link, "_blank");
@@ -84,7 +85,7 @@ export default function PasswordReset() {
                     }, 1500);
                 }
             } catch (err: any) {
-                const msg = err?.message || "Network Error";
+                const msg = err?.message || t('au.networkError');
                 setErrorMessage(msg);
                 toast.danger(msg);
             } finally {
@@ -206,17 +207,17 @@ export default function PasswordReset() {
                     {(logo) => (
                         <img
                             src={logo()}
-                            alt="Logo"
+                            alt={t('au.logo')}
                             class="size-20 object-contain mb-4 drop-shadow-lg transition-transform duration-300 hover:scale-105"
                         />
                     )}
                 </Show>
 
                 <h1 class="text-[26px] sm:text-[30px] font-bold text-neutral-900 dark:text-white tracking-wide mb-1 font-sans">
-                    Reset Kata Sandi
+                    {t('au.resetKataSandi')}
                 </h1>
                 <p class="text-neutral-600 dark:text-white/60 text-xs font-semibold tracking-wider uppercase mb-6 font-mono text-center">
-                    Silakan masukkan kata sandi baru Anda
+                    {t('au.silakanMasukkanKataSandiBaruAnda')}
                 </p>
 
                 <Show when={errorMessage()}>
@@ -248,8 +249,8 @@ export default function PasswordReset() {
                         </svg>
                         <div class="flex-1 leading-snug">
                             <p>{successMessage()}</p>
-                            <a href={successWaLink()!} target="_blank" class="mt-2 text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 underline font-semibold block">Buka Tautan WhatsApp</a>
-                            <A href="/authentification/login" class="mt-4 text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 underline font-semibold block">Kembali ke Halaman Masuk</A>
+                            <a href={successWaLink()!} target="_blank" class="mt-2 text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 underline font-semibold block">{t('au.bukaTautanWhatsApp')}</a>
+                            <A href="/authentification/login" class="mt-4 text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 underline font-semibold block">{t('au.kembaliKeHalamanMasuk')}</A>
                         </div>
                     </div>
                 </Show>
@@ -265,11 +266,11 @@ export default function PasswordReset() {
                     <form.Field name="token">
                         {(field) => (
                             <div class="space-y-1">
-                                <label class="block text-xs font-medium text-neutral-700 dark:text-white/80 px-1">Token Reset</label>
+                                <label class="block text-xs font-medium text-neutral-700 dark:text-white/80 px-1">{t('au.tokenReset')}</label>
                                 <div class="relative flex items-center">
                                     <input
                                         type="text"
-                                        placeholder="Masukkan token dari email/WA"
+                                        placeholder={t('au.masukkanTokenDariEmailWA')}
                                         required
                                         value={field().state.value}
                                         onBlur={field().handleBlur}
@@ -287,11 +288,11 @@ export default function PasswordReset() {
                     <form.Field name="new_password">
                         {(field) => (
                             <div class="space-y-1">
-                                <label class="block text-xs font-medium text-neutral-700 dark:text-white/80 px-1">Kata Sandi Baru</label>
+                                <label class="block text-xs font-medium text-neutral-700 dark:text-white/80 px-1">{t('au.kataSandiBaru')}</label>
                                 <div class="relative flex items-center">
                                     <input
                                         type={showPassword() ? "text" : "password"}
-                                        placeholder="Minimal 6 karakter"
+                                        placeholder={t('au.minimal6Karakter')}
                                         required
                                         minlength={6}
                                         value={field().state.value}
@@ -329,11 +330,11 @@ export default function PasswordReset() {
                     <form.Field name="confirm_password">
                         {(field) => (
                             <div class="space-y-1">
-                                <label class="block text-xs font-medium text-neutral-700 dark:text-white/80 px-1">Konfirmasi Kata Sandi</label>
+                                <label class="block text-xs font-medium text-neutral-700 dark:text-white/80 px-1">{t('au.konfirmasiKataSandi')}</label>
                                 <div class="relative flex items-center">
                                     <input
                                         type={showConfirmPassword() ? "text" : "password"}
-                                        placeholder="Ulangi kata sandi"
+                                        placeholder={t('au.ulangiKataSandi')}
                                         required
                                         minlength={6}
                                         value={field().state.value}
@@ -377,7 +378,7 @@ export default function PasswordReset() {
                             >
                                 <Show when={isLoading()} fallback={
                                     <>
-                                        <span>Reset Kata Sandi</span>
+                                        <span>{t('au.resetKataSandi')}</span>
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M5 12h14" />
                                             <path d="m12 5 7 7-7 7" />
@@ -389,7 +390,7 @@ export default function PasswordReset() {
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
-                                        <span>Memproses...</span>
+                                        <span>{t('au.memproses')}</span>
                                     </>
                                 )}</Show>
                             </button>
@@ -402,7 +403,7 @@ export default function PasswordReset() {
                         <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="m15 18-6-6 6-6" />
                         </svg>
-                        Kembali ke Login
+                        {t('au.kembaliKeLogin')}
                     </A>
                 </div>
             </div>

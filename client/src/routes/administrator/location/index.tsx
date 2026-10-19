@@ -9,6 +9,7 @@ import { LocationRegencyTypeControllerIndex } from '~/controllers/location/Locat
 import { LocationRegencyControllerIndex } from '~/controllers/location/LocationRegencyController';
 import { LocationSubDistrictControllerIndex } from '~/controllers/location/LocationSubDistrictController';
 import { LocationVillageControllerIndex } from '~/controllers/location/LocationVillageController';
+import { t } from '../../../i18n';
 
 export default function LocationOverviewPage() {
     const [stats, setStats] = createSignal<{
@@ -64,57 +65,57 @@ export default function LocationOverviewPage() {
 
     const modules = () => [
         {
-            title: 'Continent (Benua)',
-            description: 'Master continental entities (Asia, Europe, America, Africa, Australia, etc.).',
+            title: t('ad.continentBenua'),
+            description: t('ad.masterContinentalEntitiesAsiaEuropeAmerica'),
             path: '/location/continent',
             count: stats().continents,
             color: 'from-blue-600 to-blue-800',
         },
         {
-            title: 'Region (Wilayah)',
-            description: 'Regional geographic subcontinental zones (e.g. South East Asia).',
+            title: t('ad.regionWilayah'),
+            description: t('ad.regionalGeographicSubcontinentalZonesEG'),
             path: '/location/region',
             count: stats().regions,
             color: 'from-sky-600 to-sky-800',
         },
         {
-            title: 'Country (Negara)',
-            description: 'Sovereign nations with ISO 3166-1/2 codes, DIKTI codes, and regional links.',
+            title: t('ad.countryNegara'),
+            description: t('ad.sovereignNationsWithISO31661'),
             path: '/location/country',
             count: stats().countries,
             color: 'from-indigo-600 to-indigo-800',
         },
         {
-            title: 'Province (Provinsi)',
-            description: 'First-level administrative territory subdivisions per country.',
+            title: t('ad.provinceProvinsi'),
+            description: t('ad.firstLevelAdministrativeTerritorySubdivisionsPer'),
             path: '/location/province',
             count: stats().provinces,
             color: 'from-emerald-600 to-emerald-800',
         },
         {
-            title: 'Regency Type (Jenis Wilayah)',
-            description: 'Classification types for regencies (Kabupaten, Kota Administrasi, Kota).',
+            title: t('ad.regencyTypeJenisWilayah'),
+            description: t('ad.classificationTypesForRegenciesKabupatenKota'),
             path: '/location/regency-type',
             count: stats().regencyTypes,
             color: 'from-amber-600 to-amber-800',
         },
         {
-            title: 'Regency (Kabupaten / Kota)',
-            description: 'Second-level administrative districts under provinces.',
+            title: t('ad.regencyKabupatenKota'),
+            description: t('ad.secondLevelAdministrativeDistrictsUnderProvinces'),
             path: '/location/regency',
             count: stats().regencies,
             color: 'from-orange-600 to-orange-800',
         },
         {
-            title: 'Sub-District (Kecamatan)',
-            description: 'Third-level administrative units (Kecamatan / Distrik) within regencies.',
+            title: t('ad.subDistrictKecamatan'),
+            description: t('ad.thirdLevelAdministrativeUnitsKecamatanDistrik'),
             path: '/location/sub-district',
             count: stats().subDistricts,
             color: 'from-purple-600 to-purple-800',
         },
         {
-            title: 'Village (Desa / Kelurahan)',
-            description: 'Fourth-level administrative villages and kelurahan records.',
+            title: t('ad.villageDesaKelurahan'),
+            description: t('ad.fourthLevelAdministrativeVillagesAndKelurahan'),
             path: '/location/village',
             count: stats().villages,
             color: 'from-rose-600 to-rose-800',
@@ -128,15 +129,15 @@ export default function LocationOverviewPage() {
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 <div class="border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                        <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">Administrator</a>
+                        <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">{t('ad.administrator')}</a>
                         <span>/</span>
-                        <span class="font-medium text-neutral-900 dark:text-white">Location</span>
+                        <span class="font-medium text-neutral-900 dark:text-white">{t('ad.location')}</span>
                     </nav>
                     <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                        Location Management Hub
+                        {t('ad.locationManagementHub')}
                     </h1>
                     <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
-                        Hierarchical administrative and geospatial master datasets connected to the backend database.
+                        {t('ad.hierarchicalAdministrativeAndGeospatialMasterDatasets')}
                     </p>
                 </div>
 
@@ -161,7 +162,7 @@ export default function LocationOverviewPage() {
                                     </p>
                                 </div>
                                 <div class="mt-4 pt-3 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-xs text-blue-600 dark:text-blue-400 font-medium">
-                                    <span>Manage Records</span>
+                                    <span>{t('ad.manageRecords')}</span>
                                     <svg class="size-4 transform group-hover:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                     </svg>

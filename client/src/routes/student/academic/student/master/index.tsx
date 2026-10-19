@@ -15,6 +15,7 @@ import {
     listStudyUnits, 
     StudentMasterItem 
 } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
+import { t } from '../../../../../i18n';
 
 export default function StudentMasterIndexPage() {
     const [searchParams] = useSearchParams();
@@ -85,7 +86,7 @@ export default function StudentMasterIndexPage() {
             setTotalItems(res.total ?? items.length);
         } catch (err) {
             console.error('Error fetching students:', err);
-            toast.danger('Failed to load admitted student directory from server.');
+            toast.danger(t('st.failedToLoadAdmittedStudentDirectory'));
         } finally {
             setIsLoading(false);
         }
@@ -111,19 +112,19 @@ export default function StudentMasterIndexPage() {
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div class="space-y-1">
                             <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                                <span>Student</span>
+                                <span>{t('st.student')}</span>
                                 <span>/</span>
-                                <span>Academic</span>
+                                <span>{t('st.academic')}</span>
                                 <span>/</span>
-                                <span>Student</span>
+                                <span>{t('st.student')}</span>
                                 <span>/</span>
-                                <span class="font-medium text-neutral-900 dark:text-white">Master</span>
+                                <span class="font-medium text-neutral-900 dark:text-white">{t('st.master')}</span>
                             </nav>
                             <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                                Admitted Students Directory
+                                {t('st.admittedStudentsDirectory')}
                             </h1>
                             <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
-                                Comprehensive institutional registry of admitted students, academic credentials, and admission cohorts.
+                                {t('st.comprehensiveInstitutionalRegistryOfAdmittedStudents')}
                             </p>
                         </div>
 
@@ -132,7 +133,7 @@ export default function StudentMasterIndexPage() {
                                 href={currentUserSignal()?.individual_id || getStorageItem('individual_id') ? `/student/person/master/individual/${currentUserSignal()?.individual_id || getStorageItem('individual_id')}/show` : '/student/person/master/individual/[id]/show'}
                                 class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xs text-xs font-bold transition-colors"
                             >
-                                ← My Profile
+                                {t('st.myProfile')}
                             </A>
                         </div>
                     </div>
@@ -143,7 +144,7 @@ export default function StudentMasterIndexPage() {
                     <form onSubmit={handleSearchSubmit} class="relative w-full sm:w-80">
                         <input
                             type="text"
-                            placeholder="Search by student NIM or name..."
+                            placeholder={t('st.searchByStudentNIMOrName')}
                             value={searchQuery()}
                             onInput={(e) => setSearchQuery(e.currentTarget.value)}
                             class="w-full pl-9 pr-4 py-2 text-xs rounded-xs bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-hidden focus:border-blue-500"
@@ -153,7 +154,7 @@ export default function StudentMasterIndexPage() {
 
                     <div class="flex items-center gap-3 w-full sm:w-auto">
                         <span class="text-xs text-neutral-400 font-mono">
-                            Total: <strong class="text-neutral-700 dark:text-neutral-200">{totalItems()}</strong> Students
+                            {t('st.total2')} <strong class="text-neutral-700 dark:text-neutral-200">{totalItems()}</strong> {t('st.students')}
                         </span>
                     </div>
                 </div>
@@ -163,20 +164,20 @@ export default function StudentMasterIndexPage() {
                     <Show when={!isLoading()} fallback={
                         <div class="py-16 flex flex-col items-center justify-center gap-3 text-neutral-400">
                             <div class="size-8 border-3 border-blue-500 border-t-transparent rounded-xs animate-spin"></div>
-                            <p class="text-xs font-mono">Loading admitted students from server...</p>
+                            <p class="text-xs font-mono">{t('st.loadingAdmittedStudentsFromServer')}</p>
                         </div>
                     }>
                         <div class="overflow-x-auto">
                             <table class="w-full text-xs text-start">
                                 <thead class="bg-neutral-100 dark:bg-neutral-900/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-neutral-200 dark:border-neutral-700">
                                     <tr>
-                                        <th class="py-3.5 px-4 text-start">Student NIM</th>
-                                        <th class="py-3.5 px-4 text-start">Full Name</th>
-                                        <th class="py-3.5 px-4 text-start">Study Program</th>
-                                        <th class="py-3.5 px-4 text-start">Admission Path</th>
-                                        <th class="py-3.5 px-4 text-center">Registration Date</th>
-                                        <th class="py-3.5 px-4 text-center">Status</th>
-                                        <th class="py-3.5 px-4 text-end">Action</th>
+                                        <th class="py-3.5 px-4 text-start">{t('st.studentNIM')}</th>
+                                        <th class="py-3.5 px-4 text-start">{t('st.fullName')}</th>
+                                        <th class="py-3.5 px-4 text-start">{t('st.studyProgram')}</th>
+                                        <th class="py-3.5 px-4 text-start">{t('st.admissionPath')}</th>
+                                        <th class="py-3.5 px-4 text-center">{t('st.registrationDate')}</th>
+                                        <th class="py-3.5 px-4 text-center">{t('st.status')}</th>
+                                        <th class="py-3.5 px-4 text-end">{t('st.action')}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-neutral-100 dark:divide-neutral-700/50">
@@ -188,12 +189,12 @@ export default function StudentMasterIndexPage() {
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                                                     </svg>
                                                     <p class="text-sm font-semibold text-neutral-600 dark:text-neutral-300">
-                                                        No admitted student records found
+                                                        {t('st.noAdmittedStudentRecordsFound')}
                                                     </p>
                                                     <p class="text-xs text-neutral-400 max-w-sm">
                                                         {searchQuery() 
-                                                            ? `No students matching "${searchQuery()}" were found. Try searching with a different query.` 
-                                                            : 'There are currently no admitted student records in the database.'}
+                                                            ? t('st.noStudentsMatchingQueryWereFound', { query: searchQuery() }) 
+                                                            : t('st.thereAreCurrentlyNoAdmittedStudent')}
                                                     </p>
                                                 </div>
                                             </td>
@@ -220,7 +221,7 @@ export default function StudentMasterIndexPage() {
                                                 </td>
                                                 <td class="py-3.5 px-4 text-center">
                                                     <span class="px-2.5 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                                                        Active
+                                                        {t('st.active')}
                                                     </span>
                                                 </td>
                                                 <td class="py-3.5 px-4 text-end">
@@ -228,7 +229,7 @@ export default function StudentMasterIndexPage() {
                                                         href={`/student/academic/student/master/student/${std.id}/show`}
                                                         class="px-3 py-1.5 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-xs text-xs font-bold transition-colors"
                                                     >
-                                                        View Detail →
+                                                        {t('st.viewDetail')}
                                                     </A>
                                                 </td>
                                             </tr>
@@ -241,7 +242,7 @@ export default function StudentMasterIndexPage() {
                         {/* Pagination Bar */}
                         <div class="p-4 border-t border-neutral-200 dark:border-neutral-700 flex items-center justify-between">
                             <span class="text-xs text-neutral-400 font-mono">
-                                Page {page()} of {totalPages()}
+                                {t('st.page')} {page()} of {totalPages()}
                             </span>
                             <div class="flex items-center gap-2">
                                 <button
@@ -255,7 +256,7 @@ export default function StudentMasterIndexPage() {
                                     disabled={page() <= 1}
                                     class="px-3 py-1 text-xs rounded-xs border border-neutral-200 dark:border-neutral-700 disabled:opacity-40 hover:bg-neutral-100 dark:hover:bg-neutral-700"
                                 >
-                                    Previous
+                                    {t('st.previous')}
                                 </button>
                                 <button
                                     type="button"
@@ -268,7 +269,7 @@ export default function StudentMasterIndexPage() {
                                     disabled={page() >= totalPages()}
                                     class="px-3 py-1 text-xs rounded-xs border border-neutral-200 dark:border-neutral-700 disabled:opacity-40 hover:bg-neutral-100 dark:hover:bg-neutral-700"
                                 >
-                                    Next
+                                    {t('st.next')}
                                 </button>
                             </div>
                         </div>

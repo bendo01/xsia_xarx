@@ -11,6 +11,7 @@ import {
     LecturerAssignedTeachItem
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachController';
 import type { AcademicLecturerMasterLecturer } from '~/models/academic/lecturer/master/Lecturer';
+import { t } from '../../../../../../i18n';
 
 const TeachCreditChart = lazy(() => import('~/components/chart/teach_credit_chart'));
 
@@ -96,7 +97,7 @@ export default function LecturerTeachIndexPage() {
                 if (!yearMap.has(item.academic_year_id)) {
                     yearMap.set(item.academic_year_id, {
                         id: item.academic_year_id,
-                        name: item.academic_year_name || (item.academic_year_code ? `Tahun Akademik ${item.academic_year_code}` : 'Tahun Akademik'),
+                        name: item.academic_year_name || (item.academic_year_code ? `Tahun Akademik ${item.academic_year_code}` : t('lc.tahunAkademik')),
                         code: item.academic_year_code,
                     });
                 }
@@ -170,7 +171,7 @@ export default function LecturerTeachIndexPage() {
 
         for (const item of assignedTeaches()) {
             const yId = item.academic_year_id || 'unknown';
-            const yName = item.academic_year_name || (item.academic_year_code ? `Tahun ${item.academic_year_code}` : 'Tahun Akademik');
+            const yName = item.academic_year_name || (item.academic_year_code ? `Tahun ${item.academic_year_code}` : t('lc.tahunAkademik'));
             const yCode = item.academic_year_code;
             const cr = Number(item.credit || item.course_total_credit) || 0;
 
@@ -241,15 +242,15 @@ export default function LecturerTeachIndexPage() {
                     <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div class="space-y-2">
                             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold border border-blue-200 dark:border-blue-800/80">
-                                <span>NIDN: {lecturerNidn()}</span>
+                                <span>{t('lc.nidn2')} {lecturerNidn()}</span>
                                 <span>•</span>
-                                <span>Semester Teaching Portal</span>
+                                <span>{t('lc.semesterTeachingPortal')}</span>
                             </div>
                             <h1 class="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white tracking-tight">
-                                Assigned Teaching Classes
+                                {t('lc.assignedTeachingClasses')}
                             </h1>
                             <p class="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 max-w-2xl font-medium">
-                                Direct course assignments, classroom codes, planned session hours, and student rosters for {lecturerName()}.
+                                {t('lc.directCourseAssignmentsClassroomCodesPlanned')} {lecturerName()}.
                             </p>
                         </div>
 
@@ -262,13 +263,13 @@ export default function LecturerTeachIndexPage() {
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
                                 </svg>
-                                <span>Refresh Classes</span>
+                                <span>{t('lc.refreshClasses')}</span>
                             </button>
                             <A
                                 href={user()?.individual_id || getStorageItem('individual_id') ? `/lecturer/person/master/individual/${user()?.individual_id || getStorageItem('individual_id')}/show` : '/lecturer/person/master/individual/[id]/show'}
                                 class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 text-neutral-900 dark:text-white font-semibold rounded-xs text-xs flex items-center gap-2 border border-neutral-200 dark:border-neutral-600 transition-colors"
                             >
-                                <span>Faculty Profile →</span>
+                                <span>{t('lc.facultyProfile')}</span>
                             </A>
                         </div>
                     </div>
@@ -279,56 +280,56 @@ export default function LecturerTeachIndexPage() {
                     {/* Stat 1: Total Classes */}
                     <div class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-neutral-500 dark:text-neutral-400">Assigned Classes</span>
+                            <span class="text-xs font-bold text-neutral-500 dark:text-neutral-400">{t('lc.assignedClasses')}</span>
                             <div class="size-7 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
                                 📚
                             </div>
                         </div>
                         <div class="flex items-baseline gap-2">
                             <span class="text-2xl font-black text-neutral-900 dark:text-white font-mono">{totalClasses()}</span>
-                            <span class="text-xs text-neutral-400 font-medium">Classes</span>
+                            <span class="text-xs text-neutral-400 font-medium">{t('lc.classes')}</span>
                         </div>
                     </div>
 
                     {/* Stat 2: Total Credits */}
                     <div class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-neutral-500 dark:text-neutral-400">Total SKS (Credits)</span>
+                            <span class="text-xs font-bold text-neutral-500 dark:text-neutral-400">{t('lc.totalSKSCredits')}</span>
                             <div class="size-7 rounded-xs bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-xs">
                                 ⚖️
                             </div>
                         </div>
                         <div class="flex items-baseline gap-2">
                             <span class="text-2xl font-black text-purple-600 dark:text-purple-400 font-mono">{totalCredits()}</span>
-                            <span class="text-xs text-neutral-400 font-medium">SKS</span>
+                            <span class="text-xs text-neutral-400 font-medium">{t('lc.sks')}</span>
                         </div>
                     </div>
 
                     {/* Stat 3: Planned Sessions */}
                     <div class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-neutral-500 dark:text-neutral-400">Planned Sessions</span>
+                            <span class="text-xs font-bold text-neutral-500 dark:text-neutral-400">{t('lc.plannedSessions')}</span>
                             <div class="size-7 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
                                 🎯
                             </div>
                         </div>
                         <div class="flex items-baseline gap-2">
                             <span class="text-2xl font-black text-blue-600 dark:text-blue-400 font-mono">{totalPlannedSessions()}</span>
-                            <span class="text-xs text-neutral-400 font-medium">Sessions</span>
+                            <span class="text-xs text-neutral-400 font-medium">{t('lc.sessions')}</span>
                         </div>
                     </div>
 
                     {/* Stat 4: Realized Sessions */}
                     <div class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-neutral-500 dark:text-neutral-400">Realized Sessions</span>
+                            <span class="text-xs font-bold text-neutral-500 dark:text-neutral-400">{t('lc.realizedSessions')}</span>
                             <div class="size-7 rounded-xs bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs">
                                 ✅
                             </div>
                         </div>
                         <div class="flex items-baseline gap-2">
                             <span class="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono">{totalRealizedSessions()}</span>
-                            <span class="text-xs text-neutral-400 font-medium">Recorded</span>
+                            <span class="text-xs text-neutral-400 font-medium">{t('lc.recorded')}</span>
                         </div>
                     </div>
                 </div>
@@ -345,11 +346,11 @@ export default function LecturerTeachIndexPage() {
                                     </svg>
                                 </div>
                                 <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                    Total Teaching Credits per Academic Year
+                                    {t('lc.totalTeachingCreditsPerAcademicYear')}
                                 </h3>
                             </div>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                Tren beban SKS perkuliahan yang diampu di setiap Tahun Akademik (Y-Axis: Total SKS, X-Axis: Tahun Akademik).
+                                {t('lc.trenBebanSKSPerkuliahanYangDiampu')}
                             </p>
                         </div>
 
@@ -357,12 +358,12 @@ export default function LecturerTeachIndexPage() {
                         <div class="flex items-center gap-2 flex-wrap text-xs font-mono">
                             <Show when={maxYearCreditItem()}>
                                 <div class="px-3 py-1.5 rounded-xs bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/60 text-purple-700 dark:text-purple-300">
-                                    <span class="text-[10px] text-purple-500 block uppercase font-sans">Beban Tertinggi:</span>
+                                    <span class="text-[10px] text-purple-500 block uppercase font-sans">{t('lc.bebanTertinggi')}</span>
                                     <span class="font-bold">{maxYearCreditItem()?.totalCredit} SKS ({maxYearCreditItem()?.yearName})</span>
                                 </div>
                             </Show>
                             <div class="px-3 py-1.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/60 text-blue-700 dark:text-blue-300">
-                                <span class="text-[10px] text-blue-500 block uppercase font-sans">Rata-Rata / Tahun:</span>
+                                <span class="text-[10px] text-blue-500 block uppercase font-sans">{t('lc.rataRataTahun')}</span>
                                 <span class="font-bold">{avgCreditPerYear()} SKS</span>
                             </div>
                         </div>
@@ -375,14 +376,14 @@ export default function LecturerTeachIndexPage() {
                                 <svg class="size-8 text-neutral-300 dark:text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                     <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
                                 </svg>
-                                <span>Belum ada data penugasan perkuliahan dengan Tahun Akademik untuk ditampilkan di grafik.</span>
+                                <span>{t('lc.belumAdaDataPenugasanPerkuliahanDengan')}</span>
                             </div>
                         }
                     >
                         <Suspense fallback={
                             <div class="py-12 text-center flex flex-col items-center justify-center gap-2">
                                 <div class="size-6 border-2 border-blue-600 border-t-transparent rounded-xs animate-spin"></div>
-                                <span class="text-xs font-mono text-neutral-400">Loading chart...</span>
+                                <span class="text-xs font-mono text-neutral-400">{t('lc.loadingChart')}</span>
                             </div>
                         }>
                             <TeachCreditChart data={yearlyCreditTrends()} />
@@ -396,7 +397,7 @@ export default function LecturerTeachIndexPage() {
                     <div class="relative flex-1">
                         <input
                             type="text"
-                            placeholder="Search course title, course code (e.g. TIF101), or class..."
+                            placeholder={t('lc.searchCourseTitleCourseCodeE')}
                             value={searchQuery()}
                             onInput={(e) => setSearchQuery(e.currentTarget.value)}
                             class="w-full pl-9 pr-4 py-2 bg-neutral-50 dark:bg-neutral-900/80 border border-neutral-200 dark:border-neutral-700 rounded-xs text-xs text-neutral-800 dark:text-neutral-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
@@ -414,7 +415,7 @@ export default function LecturerTeachIndexPage() {
                             onChange={(e) => setSelectedAcademicYearFilter(e.currentTarget.value)}
                             class="px-3 py-2 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xs text-xs text-neutral-700 dark:text-neutral-300 focus:outline-none focus:border-blue-500 font-medium"
                         >
-                            <option value="all">Semua Tahun Akademik</option>
+                            <option value="all">{t('lc.semuaTahunAkademik')}</option>
                             <For each={distinctAcademicYears()}>
                                 {(year) => (
                                     <option value={year.id}>
@@ -434,7 +435,7 @@ export default function LecturerTeachIndexPage() {
                                         ? 'bg-white dark:bg-neutral-800 text-blue-600 dark:text-blue-400 shadow-xs'
                                         : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
                                 }`}
-                                title="Grid View"
+                                title={t('lc.gridView')}
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>
@@ -448,7 +449,7 @@ export default function LecturerTeachIndexPage() {
                                         ? 'bg-white dark:bg-neutral-800 text-blue-600 dark:text-blue-400 shadow-xs'
                                         : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
                                 }`}
-                                title="Table Roster View"
+                                title={t('lc.tableRosterView')}
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/>
@@ -464,7 +465,7 @@ export default function LecturerTeachIndexPage() {
                     fallback={
                         <div class="py-24 text-center flex flex-col items-center justify-center gap-3">
                             <div class="size-8 border-2 border-blue-600 border-t-transparent rounded-xs animate-spin"></div>
-                            <span class="text-xs font-mono text-neutral-400">Loading assigned teaching classes...</span>
+                            <span class="text-xs font-mono text-neutral-400">{t('lc.loadingAssignedTeachingClasses')}</span>
                         </div>
                     }
                 >
@@ -476,12 +477,12 @@ export default function LecturerTeachIndexPage() {
                                     📖
                                 </div>
                                 <h3 class="text-base font-bold text-neutral-900 dark:text-white">
-                                    No Teaching Classes Found
+                                    {t('lc.noTeachingClassesFound')}
                                 </h3>
                                 <p class="text-xs text-neutral-500 dark:text-neutral-400 max-w-sm mx-auto">
                                     {searchQuery()
-                                        ? `No classes matching "${searchQuery()}". Try clearing search filters.`
-                                        : 'You have not been assigned to any semester teaching classes yet.'}
+                                        ? t('lc.noClassesMatchingQueryTryClearing', { query: searchQuery() })
+                                        : t('lc.youHaveNotBeenAssignedTo')}
                                 </p>
                                 <Show when={searchQuery() || selectedAcademicYearFilter() !== 'all'}>
                                     <button
@@ -489,7 +490,7 @@ export default function LecturerTeachIndexPage() {
                                         onClick={() => { setSearchQuery(''); setSelectedAcademicYearFilter('all'); }}
                                         class="px-4 py-2 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 font-semibold rounded-xs text-xs transition-colors"
                                     >
-                                        Clear Filters
+                                        {t('lc.clearFilters')}
                                     </button>
                                 </Show>
                             </div>
@@ -533,10 +534,10 @@ export default function LecturerTeachIndexPage() {
                                                             {item.course_name}
                                                         </h3>
                                                         <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 flex items-center gap-2">
-                                                            <span>Class Code: <span class="font-bold text-neutral-800 dark:text-neutral-200 font-mono">{item.class_alphabet_code}</span></span>
+                                                            <span>{t('lc.classCode')} <span class="font-bold text-neutral-800 dark:text-neutral-200 font-mono">{item.class_alphabet_code}</span></span>
                                                             <Show when={item.is_lecturer_home_base}>
                                                                 <span>•</span>
-                                                                <span class="text-emerald-600 dark:text-emerald-400 font-medium">Homebase</span>
+                                                                <span class="text-emerald-600 dark:text-emerald-400 font-medium">{t('lc.homebase')}</span>
                                                             </Show>
                                                         </p>
                                                     </div>
@@ -544,7 +545,7 @@ export default function LecturerTeachIndexPage() {
                                                     {/* Sessions & Teaching Progress */}
                                                     <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60 space-y-2">
                                                         <div class="flex items-center justify-between text-xs">
-                                                            <span class="text-neutral-500 font-medium">Teaching Sessions</span>
+                                                            <span class="text-neutral-500 font-medium">{t('lc.teachingSessions')}</span>
                                                             <span class="font-bold text-neutral-800 dark:text-neutral-200 font-mono">
                                                                 {item.realization} / {item.planning || 16} Pertemuan
                                                             </span>
@@ -556,8 +557,8 @@ export default function LecturerTeachIndexPage() {
                                                             ></div>
                                                         </div>
                                                         <div class="flex items-center justify-between text-[10px] text-neutral-400 font-mono">
-                                                            <span>Progress: {progressPercent()}%</span>
-                                                            <span>Cap: {item.class_capacity || item.max_member || 'Unset'} Mhs</span>
+                                                            <span>{t('lc.progress')} {progressPercent()}%</span>
+                                                            <span>{t('lc.cap')} {item.class_capacity || item.max_member || 'Unset'} Mhs</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -568,14 +569,14 @@ export default function LecturerTeachIndexPage() {
                                                         href={`/lecturer/academic/campaign/transaction/teach/${item.teach_id}/attendance`}
                                                         class="flex-1 py-2 px-3 text-center bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/80 text-blue-700 dark:text-blue-300 font-semibold rounded-xs text-xs transition-colors"
                                                     >
-                                                        Roster & Presensi
+                                                        {t('lc.rosterPresensi')}
                                                     </A>
                                                     <A
                                                         href={`/lecturer/academic/campaign/transaction/teach/${item.teach_id}/grade`}
                                                         class="py-2 px-3 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700/80 text-neutral-700 dark:text-neutral-200 font-semibold rounded-xs text-xs transition-colors shrink-0"
-                                                        title="Nilai Mahasiswa"
+                                                        title={t('lc.nilaiMahasiswa')}
                                                     >
-                                                        Nilai →
+                                                        {t('lc.nilai')}
                                                     </A>
                                                 </div>
                                             </div>
@@ -592,12 +593,12 @@ export default function LecturerTeachIndexPage() {
                                     <table class="w-full text-left text-xs">
                                         <thead class="bg-neutral-50 dark:bg-neutral-900/60 border-b border-neutral-200 dark:border-neutral-700 text-neutral-500 font-mono uppercase tracking-wider text-[11px]">
                                             <tr>
-                                                <th class="px-6 py-4 font-bold">Course Code & Name</th>
-                                                <th class="px-6 py-4 font-bold">Class Section</th>
-                                                <th class="px-6 py-4 font-bold text-center">SKS</th>
-                                                <th class="px-6 py-4 font-bold">Teaching Sessions</th>
-                                                <th class="px-6 py-4 font-bold text-center">Homebase</th>
-                                                <th class="px-6 py-4 font-bold text-right">Actions</th>
+                                                <th class="px-6 py-4 font-bold">{t('lc.courseCodeName')}</th>
+                                                <th class="px-6 py-4 font-bold">{t('lc.classSection')}</th>
+                                                <th class="px-6 py-4 font-bold text-center">{t('lc.sks')}</th>
+                                                <th class="px-6 py-4 font-bold">{t('lc.teachingSessions')}</th>
+                                                <th class="px-6 py-4 font-bold text-center">{t('lc.homebase')}</th>
+                                                <th class="px-6 py-4 font-bold text-right">{t('lc.actions')}</th>
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-neutral-200/60 dark:divide-neutral-700/60">
@@ -648,7 +649,7 @@ export default function LecturerTeachIndexPage() {
                                                                 fallback={<span class="text-neutral-400">-</span>}
                                                             >
                                                                 <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
-                                                                    Homebase
+                                                                    {t('lc.homebase')}
                                                                 </span>
                                                             </Show>
                                                         </td>
@@ -658,13 +659,13 @@ export default function LecturerTeachIndexPage() {
                                                                     href={`/lecturer/academic/campaign/transaction/teach/${item.teach_id}/attendance`}
                                                                     class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900 text-blue-700 dark:text-blue-300 font-semibold rounded-xs text-xs transition-colors"
                                                                 >
-                                                                    Presensi
+                                                                    {t('lc.presensi')}
                                                                 </A>
                                                                 <A
                                                                     href={`/lecturer/academic/campaign/transaction/teach/${item.teach_id}/grade`}
                                                                     class="px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 font-semibold rounded-xs text-xs transition-colors"
                                                                 >
-                                                                    Nilai
+                                                                    {t('lc.nilai2')}
                                                                 </A>
                                                             </div>
                                                         </td>

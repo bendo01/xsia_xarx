@@ -5,6 +5,7 @@ import { toast } from '~/components/toast/Toaster';
 import { masterApiIndex, masterApiDelete } from '~/controllers/master/masterApiController';
 import { listAcademicYears, listStudentStatuses } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
 import { getRegistrationOptions } from '~/controllers/academic/student/reference/AcademicStudentReferenceRegistrationController';
+import { t } from '../../../../../../i18n';
 
 export default function MasterIndexPage() {
     const apiPath = "academic/student/master/students";
@@ -61,7 +62,7 @@ export default function MasterIndexPage() {
             setItems([]);
             setTotalData(0);
             setTotalPages(1);
-            toast.danger('Failed to load records from server.');
+            toast.danger(t('ad.failedToLoadRecordsFromServer'));
         } finally {
             setIsLoading(false);
         }
@@ -84,9 +85,9 @@ export default function MasterIndexPage() {
             select: institutionSelectRef,
             settings: {
                 allowDeselect: true,
-                placeholderText: 'All Institutions',
-                searchPlaceholder: 'Search institution...',
-                searchingText: 'Searching...',
+                placeholderText: t('ad.allInstitutions'),
+                searchPlaceholder: t('ad.searchInstitution'),
+                searchingText: t('ad.searching'),
                 timeoutDelay: 300,
             },
             events: {
@@ -120,7 +121,7 @@ export default function MasterIndexPage() {
                 getRegistrationOptions(),
             ]);
             slimInstitution.setData([
-                { placeholder: true, text: 'All Institutions', value: '' },
+                { placeholder: true, text: t('ad.allInstitutions'), value: '' },
                 ...(instRes?.data || []).map((inst: any) => ({
                     text: inst.name || '-',
                     value: inst.id,
@@ -163,14 +164,14 @@ export default function MasterIndexPage() {
         try {
             const res = await masterApiDelete(apiPath, id);
             if (res.success) {
-                toast.success(res.message || 'Record deleted successfully!', 5000);
+                toast.success(res.message || t('ad.recordDeletedSuccessfully'), 5000);
                 closeDeleteModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to delete record.', 5000);
+                toast.danger(res.message || t('ad.failedToDeleteRecord'), 5000);
             }
         } catch (err: any) {
-            toast.danger(err.message || 'Error occurred while deleting.', 5000);
+            toast.danger(err.message || t('ad.errorOccurredWhileDeleting'), 5000);
         } finally {
             setIsSubmitting(false);
         }
@@ -195,21 +196,21 @@ export default function MasterIndexPage() {
                 <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                            <a href="/" class="hover:text-blue-600 transition-colors">Home</a>
+                            <a href="/" class="hover:text-blue-600 transition-colors">{t('ad.home')}</a>
                             <span>/</span>
-                            <span>Academic</span>
+                            <span>{t('ad.academic')}</span>
                             <span>/</span>
-                            <span>Student</span>
+                            <span>{t('ad.student')}</span>
                             <span>/</span>
-                            <span>Master</span>
+                            <span>{t('ad.master')}</span>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">Student</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">{t('ad.student')}</span>
                         </nav>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Students Directory
+                            {t('ad.studentsDirectory')}
                         </h1>
                         <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
-                            Manage student master records, active enrolments, NIM numbers, and academic statuses.
+                            {t('ad.manageStudentMasterRecordsActiveEnrolments')}
                         </p>
                     </div>
 
@@ -222,7 +223,7 @@ export default function MasterIndexPage() {
                                 <path d="M5 12h14" />
                                 <path d="M12 5v14" />
                             </svg>
-                            <span>Add New Student</span>
+                            <span>{t('ad.addNewStudent')}</span>
                         </a>
                     </div>
                 </div>
@@ -239,7 +240,7 @@ export default function MasterIndexPage() {
                             <input
                                 type="text"
                                 class="block w-full p-2.5 pl-10 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
-                                placeholder="Search by name, code, or keyword..."
+                                placeholder={t('ad.searchByNameCodeOrKeyword')}
                                 onInput={handleSearch}
                             />
                         </div>
@@ -254,10 +255,10 @@ export default function MasterIndexPage() {
                                 setCurrentPage(1);
                             }}
                         >
-                            <option value="name-asc">Name (A-Z)</option>
-                            <option value="name-desc">Name (Z-A)</option>
-                            <option value="code-asc">Code (Ascending)</option>
-                            <option value="code-desc">Code (Descending)</option>
+                            <option value="name-asc">{t('ad.nameAZ')}</option>
+                            <option value="name-desc">{t('ad.nameZA')}</option>
+                            <option value="code-asc">{t('ad.codeAscending')}</option>
+                            <option value="code-desc">{t('ad.codeDescending')}</option>
                         </select>
 
                         <select
@@ -268,9 +269,9 @@ export default function MasterIndexPage() {
                                 setCurrentPage(1);
                             }}
                         >
-                            <option value={10}>10 / page</option>
-                            <option value={25}>25 / page</option>
-                            <option value={50}>50 / page</option>
+                            <option value={10}>{t('ad.n10Page')}</option>
+                            <option value={25}>{t('ad.n25Page')}</option>
+                            <option value={50}>{t('ad.n50Page')}</option>
                         </select>
                     </div>
                 </div>
@@ -278,7 +279,7 @@ export default function MasterIndexPage() {
                 <div class="flex flex-col md:flex-row items-center gap-3">
                     <div class="w-full md:w-1/4">
                         <select id="select-institution" ref={institutionSelectRef}>
-                            <option data-placeholder="true" value="">All Institutions</option>
+                            <option data-placeholder="true" value="">{t('ad.allInstitutions')}</option>
                         </select>
                     </div>
 
@@ -290,7 +291,7 @@ export default function MasterIndexPage() {
                             setCurrentPage(1);
                         }}
                     >
-                        <option value="">All Academic Years</option>
+                        <option value="">{t('ad.allAcademicYears')}</option>
                         <For each={academicYears()}>
                             {(yr) => <option value={yr.id}>{yr.name}{yr.code ? ` (${yr.code})` : ''}</option>}
                         </For>
@@ -304,7 +305,7 @@ export default function MasterIndexPage() {
                             setCurrentPage(1);
                         }}
                     >
-                        <option value="">All Statuses</option>
+                        <option value="">{t('ad.allStatuses')}</option>
                         <For each={statuses()}>
                             {(st) => <option value={st.id}>{st.name}</option>}
                         </For>
@@ -318,7 +319,7 @@ export default function MasterIndexPage() {
                             setCurrentPage(1);
                         }}
                     >
-                        <option value="">All Registrations</option>
+                        <option value="">{t('ad.allRegistrations')}</option>
                         <For each={registrations()}>
                             {(rg) => <option value={rg.id}>{rg.name}</option>}
                         </For>
@@ -355,8 +356,8 @@ export default function MasterIndexPage() {
                                                 <line x1="12" y1="8" x2="12" y2="12" />
                                                 <line x1="12" y1="16" x2="12.01" y2="16" />
                                             </svg>
-                                            <span class="font-semibold text-sm text-neutral-700 dark:text-neutral-300">No records found</span>
-                                            <span class="text-xs text-neutral-500">No data matches your query on the server.</span>
+                                            <span class="font-semibold text-sm text-neutral-700 dark:text-neutral-300">{t('ad.noRecordsFound')}</span>
+                                            <span class="text-xs text-neutral-500">{t('ad.noDataMatchesYourQueryOn')}</span>
                                         </div>
                                     </div>
                                 }
@@ -379,15 +380,15 @@ export default function MasterIndexPage() {
                                                     </div>
                                                     <dl class="grid grid-cols-3 gap-2 mt-2 text-xs">
                                                         <div>
-                                                            <dt class="text-neutral-500 dark:text-neutral-400">Academic Year</dt>
+                                                            <dt class="text-neutral-500 dark:text-neutral-400">{t('ad.academicYear')}</dt>
                                                             <dd class="text-neutral-800 dark:text-neutral-200">{item.academic_year_name || '-'}</dd>
                                                         </div>
                                                         <div>
-                                                            <dt class="text-neutral-500 dark:text-neutral-400">Status</dt>
+                                                            <dt class="text-neutral-500 dark:text-neutral-400">{t('ad.status')}</dt>
                                                             <dd class="text-neutral-800 dark:text-neutral-200">{item.status_name || '-'}</dd>
                                                         </div>
                                                         <div>
-                                                            <dt class="text-neutral-500 dark:text-neutral-400">Registration</dt>
+                                                            <dt class="text-neutral-500 dark:text-neutral-400">{t('ad.registration')}</dt>
                                                             <dd class="text-neutral-800 dark:text-neutral-200">{item.registration_name || '-'}</dd>
                                                         </div>
                                                     </dl>
@@ -398,7 +399,7 @@ export default function MasterIndexPage() {
                                                 <a
                                                     href={`${basePath}/${item.id || item.uuid}`}
                                                     class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
-                                                    title="View Details"
+                                                    title={t('ad.viewDetails')}
                                                 >
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3.5">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
@@ -407,7 +408,7 @@ export default function MasterIndexPage() {
                                                 <a
                                                     href={`${basePath}/${item.id || item.uuid}/edit`}
                                                     class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
-                                                    title="Edit Record"
+                                                    title={t('ad.editRecord')}
                                                 >
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                         <path d="M12 20h9" />
@@ -418,7 +419,7 @@ export default function MasterIndexPage() {
                                                     type="button"
                                                     onClick={() => openDeleteModal(item)}
                                                     class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-red-600 hover:border-red-500 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:border-red-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
-                                                    title="Delete Record"
+                                                    title={t('ad.deleteRecord')}
                                                 >
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                         <path d="M3 6h18" />
@@ -438,12 +439,12 @@ export default function MasterIndexPage() {
                         <table class="w-full text-xs sm:text-sm text-left">
                             <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
                                 <tr>
-                                    <th class="px-4 py-3.5 w-36">Code / ID</th>
-                                    <th class="px-4 py-3.5">Name / Title</th>
-                                    <th class="px-4 py-3.5">Academic Year</th>
-                                    <th class="px-4 py-3.5">Status</th>
-                                    <th class="px-4 py-3.5">Registration</th>
-                                    <th class="px-4 py-3.5 text-right">Actions</th>
+                                    <th class="px-4 py-3.5 w-36">{t('ad.codeID')}</th>
+                                    <th class="px-4 py-3.5">{t('ad.nameTitle')}</th>
+                                    <th class="px-4 py-3.5">{t('ad.academicYear')}</th>
+                                    <th class="px-4 py-3.5">{t('ad.status')}</th>
+                                    <th class="px-4 py-3.5">{t('ad.registration')}</th>
+                                    <th class="px-4 py-3.5 text-right">{t('ad.actions')}</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
@@ -475,8 +476,8 @@ export default function MasterIndexPage() {
                                                             <line x1="12" y1="8" x2="12" y2="12" />
                                                             <line x1="12" y1="16" x2="12.01" y2="16" />
                                                         </svg>
-                                                        <span class="font-semibold text-sm text-neutral-700 dark:text-neutral-300">No records found</span>
-                                                        <span class="text-xs text-neutral-500">No data matches your query on the server.</span>
+                                                        <span class="font-semibold text-sm text-neutral-700 dark:text-neutral-300">{t('ad.noRecordsFound')}</span>
+                                                        <span class="text-xs text-neutral-500">{t('ad.noDataMatchesYourQueryOn')}</span>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -515,7 +516,7 @@ export default function MasterIndexPage() {
                                                             <a
                                                                 href={`${basePath}/${item.id || item.uuid}`}
                                                                 class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
-                                                                title="View Details"
+                                                                title={t('ad.viewDetails')}
                                                             >
                                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3.5">
                                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
@@ -524,7 +525,7 @@ export default function MasterIndexPage() {
                                                             <a
                                                                 href={`${basePath}/${item.id || item.uuid}/edit`}
                                                                 class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
-                                                                title="Edit Record"
+                                                                title={t('ad.editRecord')}
                                                             >
                                                                 <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                                     <path d="M12 20h9" />
@@ -535,7 +536,7 @@ export default function MasterIndexPage() {
                                                                 type="button"
                                                                 onClick={() => openDeleteModal(item)}
                                                                 class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-red-600 hover:border-red-500 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:border-red-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
-                                                                title="Delete Record"
+                                                                title={t('ad.deleteRecord')}
                                                             >
                                                                 <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                                     <path d="M3 6h18" />
@@ -556,16 +557,16 @@ export default function MasterIndexPage() {
 
                     <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-3">
                         <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                            Showing <span class="font-semibold text-neutral-900 dark:text-white">{totalData() > 0 ? startIndex() + 1 : 0}</span>–<span class="font-semibold text-neutral-900 dark:text-white">{endIndex()}</span> of <span class="font-semibold text-neutral-900 dark:text-white">{totalData().toLocaleString()}</span> results
+                            {t('ad.showing')} <span class="font-semibold text-neutral-900 dark:text-white">{totalData() > 0 ? startIndex() + 1 : 0}</span>–<span class="font-semibold text-neutral-900 dark:text-white">{endIndex()}</span> of <span class="font-semibold text-neutral-900 dark:text-white">{totalData().toLocaleString()}</span> results
                         </p>
-                        <nav class="inline-flex -space-x-px rounded-lg overflow-hidden shadow-sm" aria-label="Pagination">
+                        <nav class="inline-flex -space-x-px rounded-lg overflow-hidden shadow-sm" aria-label={t('ad.pagination')}>
                             <button
                                 type="button"
                                 class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
                                 disabled={currentPage() <= 1 || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                             >
-                                Previous
+                                {t('ad.previous')}
                             </button>
                             <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border-y border-neutral-300 dark:border-neutral-600">
                                 {currentPage()} / {totalPages()}
@@ -576,7 +577,7 @@ export default function MasterIndexPage() {
                                 disabled={currentPage() >= totalPages() || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
                             >
-                                Next
+                                {t('ad.next')}
                             </button>
                         </nav>
                     </div>
@@ -595,11 +596,11 @@ export default function MasterIndexPage() {
                         <svg class="size-6 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
-                        <h3 class="text-base font-bold text-neutral-900 dark:text-white">Delete Student Record</h3>
+                        <h3 class="text-base font-bold text-neutral-900 dark:text-white">{t('ad.deleteStudentRecord')}</h3>
                     </div>
 
                     <p class="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
-                        Are you sure you want to delete <span class="font-bold text-neutral-900 dark:text-white">{getItemTitle(selectedItem())}</span>?
+                        {t('ad.areYouSureYouWantTo')} <span class="font-bold text-neutral-900 dark:text-white">{getItemTitle(selectedItem())}</span>?
                     </p>
 
                     <div class="flex items-center justify-end gap-2 pt-6">
@@ -608,7 +609,7 @@ export default function MasterIndexPage() {
                             onClick={closeDeleteModal}
                             class="px-4 py-2 text-xs font-medium text-neutral-700 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-600 rounded-xs transition-colors cursor-pointer"
                         >
-                            Cancel
+                            {t('ad.cancel')}
                         </button>
                         <button
                             type="button"
@@ -616,7 +617,7 @@ export default function MasterIndexPage() {
                             disabled={isSubmitting()}
                             class="px-4 py-2 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-xs shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
                         >
-                            {isSubmitting() ? 'Deleting...' : 'Confirm Delete'}
+                            {isSubmitting() ? t('ad.deleting') : t('ad.confirmDelete')}
                         </button>
                     </div>
                 </div>

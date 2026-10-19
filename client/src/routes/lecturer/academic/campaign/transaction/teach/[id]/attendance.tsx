@@ -1,5 +1,6 @@
 import { useParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
+import { t } from '../../../../../../../i18n';
 
 export default function LecturerTeachAttendancePage() {
     const params = useParams();
@@ -13,15 +14,15 @@ export default function LecturerTeachAttendancePage() {
                 <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-neutral-200 dark:border-neutral-800">
                     <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
                         <A href="/lecturer/dashboard" class="hover:text-blue-600 transition-colors">
-                            Dashboard
+                            {t('lc.dashboard')}
                         </A>
                         <span>/</span>
                         <A href="/lecturer/academic/campaign/transaction/teach" class="hover:text-blue-600 transition-colors">
-                            Pengajaran
+                            {t('lc.pengajaran')}
                         </A>
                         <span>/</span>
                         <span class="font-medium text-neutral-900 dark:text-white">
-                            Presensi & Roster
+                            {t('lc.presensiRoster')}
                         </span>
                     </nav>
 
@@ -33,20 +34,20 @@ export default function LecturerTeachAttendancePage() {
                             <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                             </svg>
-                            Kembali ke Daftar Kelas
+                            {t('lc.kembaliKeDaftarKelas')}
                         </A>
                         <A
                             href={`/lecturer/academic/campaign/transaction/teach/${teachId()}/grade`}
                             class="px-3 py-1.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 text-xs font-semibold transition-colors inline-flex items-center gap-1.5"
                         >
-                            Nilai Mahasiswa →
+                            {t('lc.nilaiMahasiswa2')}
                         </A>
                     </div>
                 </div>
 
                 <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
                     <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                        Class Detail & Attendance Roster
+                        {t('lc.classDetailAttendanceRoster')}
                     </h1>
                 </div>
             </main>

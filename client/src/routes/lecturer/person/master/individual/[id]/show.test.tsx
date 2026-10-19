@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from "vite-plus/test";
+import { setLocale } from "../../../../../../i18n";
 import { render, screen, waitFor } from "@solidjs/testing-library";
 import { Router, Route } from "@solidjs/router";
 
@@ -116,6 +117,7 @@ describe("Lecturer Individual Show Page - Preloaded Relations", () => {
   let getTeachesSpy: any;
 
   beforeEach(() => {
+    setLocale("en");
     individualSpy = vi
       .spyOn(individualControllers, "PersonMasterIndividualControllerShow")
       .mockResolvedValue({

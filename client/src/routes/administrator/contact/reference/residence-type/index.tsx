@@ -8,6 +8,7 @@ import {
     ContactReferenceControllerResidenceTypeUpsert,
     ContactReferenceControllerResidenceTypeDelete,
 } from '~/controllers/contact/reference/ContactReferenceResidenceTypeController';
+import { t } from '../../../../../i18n';
 
 export default function ContactReferenceResidenceTypePage() {
     const [items, setItems] = createSignal<ContactReferenceResidenceType[]>([]);
@@ -73,7 +74,7 @@ export default function ContactReferenceResidenceTypePage() {
             }
         } catch (error) {
             console.error('Error loading residence type data:', error);
-            toast.danger('Failed to load residence type data from server.');
+            toast.danger(t('ad.failedToLoadResidenceTypeData'));
         } finally {
             setIsLoading(false);
         }
@@ -173,14 +174,14 @@ export default function ContactReferenceResidenceTypePage() {
         try {
             const res = await ContactReferenceControllerResidenceTypeUpsert(formData());
             if (!res.is_error) {
-                toast.success(res.message || 'Residence type reference created successfully!', 5000);
+                toast.success(res.message || t('ad.residenceTypeReferenceCreatedSuccessfully'), 5000);
                 closeCreateModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to create residence type reference.', 5000);
+                toast.danger(res.message || t('ad.failedToCreateResidenceTypeReference'), 5000);
             }
         } catch (error: any) {
-            toast.danger(error.message || 'Error occurred while creating.', 5000);
+            toast.danger(error.message || t('ad.errorOccurredWhileCreating'), 5000);
         } finally {
             setIsSubmitting(false);
         }
@@ -194,14 +195,14 @@ export default function ContactReferenceResidenceTypePage() {
         try {
             const res = await ContactReferenceControllerResidenceTypeUpsert(formData());
             if (!res.is_error) {
-                toast.success(res.message || 'Residence type reference updated successfully!', 5000);
+                toast.success(res.message || t('ad.residenceTypeReferenceUpdatedSuccessfully'), 5000);
                 closeEditModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to update residence type reference.', 5000);
+                toast.danger(res.message || t('ad.failedToUpdateResidenceTypeReference'), 5000);
             }
         } catch (error: any) {
-            toast.danger(error.message || 'Error occurred while updating.', 5000);
+            toast.danger(error.message || t('ad.errorOccurredWhileUpdating'), 5000);
         } finally {
             setIsSubmitting(false);
         }
@@ -215,14 +216,14 @@ export default function ContactReferenceResidenceTypePage() {
         try {
             const res = await ContactReferenceControllerResidenceTypeDelete({ id: item.id });
             if (!res.is_error) {
-                toast.success(res.message || 'Residence type reference deleted successfully!', 5000);
+                toast.success(res.message || t('ad.residenceTypeReferenceDeletedSuccessfully'), 5000);
                 closeDeleteModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to delete residence type reference.', 5000);
+                toast.danger(res.message || t('ad.failedToDeleteResidenceTypeReference'), 5000);
             }
         } catch (error: any) {
-            toast.danger(error.message || 'Error occurred while deleting.', 5000);
+            toast.danger(error.message || t('ad.errorOccurredWhileDeleting'), 5000);
         } finally {
             setIsSubmitting(false);
         }
@@ -240,19 +241,19 @@ export default function ContactReferenceResidenceTypePage() {
                 <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                            <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">Administrator</a>
+                            <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">{t('ad.administrator')}</a>
                             <span>/</span>
-                            <span>Contact</span>
+                            <span>{t('ad.contact')}</span>
                             <span>/</span>
-                            <span>Reference</span>
+                            <span>{t('ad.reference')}</span>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">Residence Type</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">{t('ad.residenceType')}</span>
                         </nav>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Residence Type / Tipe Tempat Tinggal
+                            {t('ad.residenceTypeTipeTempatTinggal')}
                         </h1>
                         <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
-                            Manage master reference types for residential status and living arrangements.
+                            {t('ad.manageMasterReferenceTypesForResidential')}
                         </p>
                     </div>
                     <div class="mt-4 sm:mt-0 flex items-center gap-2 justify-end">
@@ -266,7 +267,7 @@ export default function ContactReferenceResidenceTypePage() {
                                 <path d="M5 12h14" />
                                 <path d="M12 5v14" />
                             </svg>
-                            <span>Add Residence Type</span>
+                            <span>{t('ad.addResidenceType')}</span>
                         </button>
                     </div>
                 </div>
@@ -283,7 +284,7 @@ export default function ContactReferenceResidenceTypePage() {
                             <input
                                 type="text"
                                 class="block w-full p-2.5 pl-10 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:placeholder-neutral-400 dark:text-white transition-colors"
-                                placeholder="Search by name (e.g. Milik Sendiri, Sewa/Kontrak, Asrama)..."
+                                placeholder={t('ad.searchByNameEGMilik')}
                                 onInput={handleSearch}
                                 id="input-search-residence-type"
                             />
@@ -298,10 +299,10 @@ export default function ContactReferenceResidenceTypePage() {
                                 onChange={(e) => setSortParam((e.target as HTMLSelectElement).value)}
                                 id="select-sort-residence-type"
                             >
-                                <option value="code-asc">Code (Ascending)</option>
-                                <option value="code-desc">Code (Descending)</option>
-                                <option value="name-asc">Name (A-Z)</option>
-                                <option value="name-desc">Name (Z-A)</option>
+                                <option value="code-asc">{t('ad.codeAscending')}</option>
+                                <option value="code-desc">{t('ad.codeDescending')}</option>
+                                <option value="name-asc">{t('ad.nameAZ')}</option>
+                                <option value="name-desc">{t('ad.nameZA')}</option>
                             </select>
                         </div>
                         <div class="w-1/2">
@@ -311,10 +312,10 @@ export default function ContactReferenceResidenceTypePage() {
                                 onChange={handleItemsPerPageChange}
                                 id="select-per-page-residence-type"
                             >
-                                <option value={10}>10 / page</option>
-                                <option value={25}>25 / page</option>
-                                <option value={50}>50 / page</option>
-                                <option value={100}>100 / page</option>
+                                <option value={10}>{t('ad.n10Page')}</option>
+                                <option value={25}>{t('ad.n25Page')}</option>
+                                <option value={50}>{t('ad.n50Page')}</option>
+                                <option value={100}>{t('ad.n100Page')}</option>
                             </select>
                         </div>
                     </div>
@@ -328,11 +329,11 @@ export default function ContactReferenceResidenceTypePage() {
                             <table class="w-full text-xs sm:text-sm text-left whitespace-nowrap">
                                 <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
                                     <tr>
-                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider w-24">Code</th>
-                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider w-36">Alphabet Code</th>
-                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider">Type Name</th>
-                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider">Created At</th>
-                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider text-right">Actions</th>
+                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider w-24">{t('ad.code2')}</th>
+                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider w-36">{t('ad.alphabetCode')}</th>
+                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider">{t('ad.typeName')}</th>
+                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider">{t('ad.createdAt')}</th>
+                                        <th scope="col" class="px-4 py-3.5 font-semibold tracking-wider text-right">{t('ad.actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
@@ -364,8 +365,8 @@ export default function ContactReferenceResidenceTypePage() {
                                                             <svg class="size-8 text-neutral-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                                                             </svg>
-                                                            <p class="text-sm font-medium">No residence type records found</p>
-                                                            <p class="text-xs">Click "Add Residence Type" to add a new record.</p>
+                                                            <p class="text-sm font-medium">{t('ad.noResidenceTypeRecordsFound')}</p>
+                                                            <p class="text-xs">{t('ad.clickAddResidenceTypeToAdd')}</p>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -397,8 +398,8 @@ export default function ContactReferenceResidenceTypePage() {
                                                                     type="button"
                                                                     onClick={() => openEditModal(item)}
                                                                     class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
-                                                                    title="Edit Record"
-                                                                    aria-label={`Edit ${item.name}`}
+                                                                    title={t('ad.editRecord')}
+                                                                    aria-label={t('ad.editName', { name: item.name ?? '' })}
                                                                 >
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                                         <path d="M12 20h9" />
@@ -409,8 +410,8 @@ export default function ContactReferenceResidenceTypePage() {
                                                                     type="button"
                                                                     onClick={() => openDeleteModal(item)}
                                                                     class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-red-600 hover:border-red-500 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:border-red-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
-                                                                    title="Delete Record"
-                                                                    aria-label={`Delete ${item.name}`}
+                                                                    title={t('ad.deleteRecord')}
+                                                                    aria-label={t('ad.deleteName', { name: item.name ?? '' })}
                                                                 >
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                                         <path d="M3 6h18" />
@@ -455,7 +456,7 @@ export default function ContactReferenceResidenceTypePage() {
                                 when={items().length > 0}
                                 fallback={
                                     <div class="p-8 text-center text-neutral-500 dark:text-neutral-400">
-                                        No residence type records found.
+                                        {t('ad.noResidenceTypeRecordsFound2')}
                                     </div>
                                 }
                             >
@@ -464,10 +465,10 @@ export default function ContactReferenceResidenceTypePage() {
                                         <div class="p-4 space-y-2">
                                             <div class="flex items-center justify-between">
                                                 <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200">
-                                                    Code: {item.code}
+                                                    {t('ad.code')} {item.code}
                                                 </span>
                                                 <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                                                    Alphabet: {item.alphabetic_code || (item as any).alphabet_code || '-'}
+                                                    {t('ad.alphabet')} {item.alphabetic_code || (item as any).alphabet_code || '-'}
                                                 </span>
                                             </div>
                                             <div>
@@ -484,14 +485,14 @@ export default function ContactReferenceResidenceTypePage() {
                                                         onClick={() => openEditModal(item)}
                                                         class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-yellow-50 hover:text-yellow-600 hover:border-yellow-500 dark:text-blue-400 dark:bg-blue-950/50 dark:hover:text-yellow-400 dark:hover:border-yellow-500 border border-blue-200 dark:border-blue-800 transition-colors cursor-pointer"
                                                     >
-                                                        Edit
+                                                        {t('ad.edit')}
                                                     </button>
                                                     <button
                                                         type="button"
                                                         onClick={() => openDeleteModal(item)}
                                                         class="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-50 hover:text-red-600 hover:border-red-500 dark:text-red-400 dark:bg-red-950/50 dark:hover:text-red-400 dark:hover:border-red-500 border border-red-200 dark:border-red-800 transition-colors cursor-pointer"
                                                     >
-                                                        Delete
+                                                        {t('ad.delete')}
                                                     </button>
                                                 </div>
                                             </div>
@@ -505,16 +506,16 @@ export default function ContactReferenceResidenceTypePage() {
                     {/* Pagination Footer */}
                     <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/80 px-4 py-3 sm:px-6 gap-3 sm:gap-0">
                         <p class="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300">
-                            Showing <span class="font-medium">{totalData() > 0 ? startIndex() + 1 : 0}</span> to <span class="font-medium">{endIndex()}</span> of <span class="font-medium">{totalData().toLocaleString()}</span> results
+                            {t('ad.showing')} <span class="font-medium">{totalData() > 0 ? startIndex() + 1 : 0}</span> to <span class="font-medium">{endIndex()}</span> of <span class="font-medium">{totalData().toLocaleString()}</span> results
                         </p>
-                        <nav class="inline-flex -space-x-px shadow-2xs" aria-label="Pagination">
+                        <nav class="inline-flex -space-x-px shadow-2xs" aria-label={t('ad.pagination')}>
                             <button
                                 type="button"
                                 class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 cursor-pointer"
                                 disabled={currentPage() <= 1 || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                             >
-                                Previous
+                                {t('ad.previous')}
                             </button>
                             <span class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 border border-blue-600">
                                 {currentPage()} / {totalPages()}
@@ -525,7 +526,7 @@ export default function ContactReferenceResidenceTypePage() {
                                 disabled={currentPage() >= totalPages() || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
                             >
-                                Next
+                                {t('ad.next')}
                             </button>
                         </nav>
                     </div>
@@ -548,17 +549,17 @@ export default function ContactReferenceResidenceTypePage() {
                     <div class="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-700">
                         <div>
                             <h2 class="text-lg font-bold text-neutral-900 dark:text-white">
-                                Add Residence Type Reference
+                                {t('ad.addResidenceTypeReference')}
                             </h2>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                Create a new residence type reference record.
+                                {t('ad.createANewResidenceTypeReference')}
                             </p>
                         </div>
                         <button
                             type="button"
                             onClick={closeCreateModal}
                             class="size-8 inline-flex items-center justify-center text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
-                            aria-label="Close dialog"
+                            aria-label={t('ad.closeDialog')}
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -569,7 +570,7 @@ export default function ContactReferenceResidenceTypePage() {
                     <form onSubmit={handleCreateSubmit} class="space-y-4 pt-4">
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Code <span class="text-red-500">*</span>
+                                {t('ad.code2')} <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="number"
@@ -587,14 +588,14 @@ export default function ContactReferenceResidenceTypePage() {
 
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Alphabet Code <span class="text-red-500">*</span>
+                                {t('ad.alphabetCode')} <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
                                 class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
                                     formErrors().alphabet_code ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
                                 }`}
-                                placeholder="e.g. OWNED"
+                                placeholder={t('ad.eGOWNED')}
                                 value={formData().alphabet_code ?? ''}
                                 onInput={(e) => setFormData({ ...formData(), alphabet_code: e.currentTarget.value })}
                             />
@@ -605,14 +606,14 @@ export default function ContactReferenceResidenceTypePage() {
 
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Type Name <span class="text-red-500">*</span>
+                                {t('ad.typeName')} <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
                                 class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
                                     formErrors().name ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
                                 }`}
-                                placeholder="e.g. Rumah Pribadi"
+                                placeholder={t('ad.eGRumahPribadi')}
                                 value={formData().name}
                                 onInput={(e) => setFormData({ ...formData(), name: e.currentTarget.value })}
                             />
@@ -627,7 +628,7 @@ export default function ContactReferenceResidenceTypePage() {
                                 onClick={closeCreateModal}
                                 class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xs transition-colors cursor-pointer"
                             >
-                                Cancel
+                                {t('ad.cancel')}
                             </button>
                             <button
                                 type="submit"
@@ -640,7 +641,7 @@ export default function ContactReferenceResidenceTypePage() {
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
-                                        Creating...
+                                        {t('ad.creating')}
                                     </>
                                 ) : (
                                     'Save Residence Type'
@@ -663,17 +664,17 @@ export default function ContactReferenceResidenceTypePage() {
                     <div class="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-700">
                         <div>
                             <h2 class="text-lg font-bold text-neutral-900 dark:text-white">
-                                Edit Residence Type Reference
+                                {t('ad.editResidenceTypeReference')}
                             </h2>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                Modify residence type reference properties.
+                                {t('ad.modifyResidenceTypeReferenceProperties')}
                             </p>
                         </div>
                         <button
                             type="button"
                             onClick={closeEditModal}
                             class="size-8 inline-flex items-center justify-center text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
-                            aria-label="Close dialog"
+                            aria-label={t('ad.closeDialog')}
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -684,7 +685,7 @@ export default function ContactReferenceResidenceTypePage() {
                     <form onSubmit={handleEditSubmit} class="space-y-4 pt-4">
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Code <span class="text-red-500">*</span>
+                                {t('ad.code2')} <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="number"
@@ -702,14 +703,14 @@ export default function ContactReferenceResidenceTypePage() {
 
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Alphabet Code <span class="text-red-500">*</span>
+                                {t('ad.alphabetCode')} <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
                                 class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
                                     formErrors().alphabet_code ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
                                 }`}
-                                placeholder="e.g. OWNED"
+                                placeholder={t('ad.eGOWNED')}
                                 value={formData().alphabet_code ?? ''}
                                 onInput={(e) => setFormData({ ...formData(), alphabet_code: e.currentTarget.value })}
                             />
@@ -720,14 +721,14 @@ export default function ContactReferenceResidenceTypePage() {
 
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Type Name <span class="text-red-500">*</span>
+                                {t('ad.typeName')} <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
                                 class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
                                     formErrors().name ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
                                 }`}
-                                placeholder="e.g. Rumah Pribadi"
+                                placeholder={t('ad.eGRumahPribadi')}
                                 value={formData().name}
                                 onInput={(e) => setFormData({ ...formData(), name: e.currentTarget.value })}
                             />
@@ -742,7 +743,7 @@ export default function ContactReferenceResidenceTypePage() {
                                 onClick={closeEditModal}
                                 class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xs transition-colors cursor-pointer"
                             >
-                                Cancel
+                                {t('ad.cancel')}
                             </button>
                             <button
                                 type="submit"
@@ -755,7 +756,7 @@ export default function ContactReferenceResidenceTypePage() {
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
-                                        Updating...
+                                        {t('ad.updating')}
                                     </>
                                 ) : (
                                     'Update Residence Type'
@@ -783,32 +784,32 @@ export default function ContactReferenceResidenceTypePage() {
                         </div>
                         <div>
                             <h2 class="text-base font-bold text-neutral-900 dark:text-white">
-                                Confirm Deletion
+                                {t('ad.confirmDeletion')}
                             </h2>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                This residence type record will be removed.
+                                {t('ad.thisResidenceTypeRecordWillBe')}
                             </p>
                         </div>
                     </div>
 
                     <div class="py-4">
                         <div class="mb-4 p-3 bg-red-50 dark:bg-red-950/40 border-l-4 border-red-500 text-red-700 dark:text-red-300 text-xs">
-                            <p class="font-bold">Danger alert! This Action Cannot be Undone</p>
-                            <p class="mt-0.5">Are you sure you want to permanently delete this reference record from the system?</p>
+                            <p class="font-bold">{t('ad.dangerAlertThisActionCannotBe')}</p>
+                            <p class="mt-0.5">{t('ad.areYouSureYouWantTo5')}</p>
                         </div>
 
                         <table class="w-full text-xs text-left border border-neutral-200 dark:border-neutral-700">
                             <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
                                 <tr class="bg-neutral-50 dark:bg-neutral-800/50">
-                                    <td class="px-3 py-2 font-semibold text-neutral-600 dark:text-neutral-300 w-1/3">Code</td>
+                                    <td class="px-3 py-2 font-semibold text-neutral-600 dark:text-neutral-300 w-1/3">{t('ad.code2')}</td>
                                     <td class="px-3 py-2 font-mono text-neutral-900 dark:text-white font-medium">{selectedItem()?.code}</td>
                                 </tr>
                                 <tr>
-                                    <td class="px-3 py-2 font-semibold text-neutral-600 dark:text-neutral-300">Alphabet Code</td>
+                                    <td class="px-3 py-2 font-semibold text-neutral-600 dark:text-neutral-300">{t('ad.alphabetCode')}</td>
                                     <td class="px-3 py-2 text-neutral-900 dark:text-white font-medium">{selectedItem()?.alphabetic_code || (selectedItem() as any)?.alphabet_code || '-'}</td>
                                 </tr>
                                 <tr class="bg-neutral-50 dark:bg-neutral-800/50">
-                                    <td class="px-3 py-2 font-semibold text-neutral-600 dark:text-neutral-300">Type Name</td>
+                                    <td class="px-3 py-2 font-semibold text-neutral-600 dark:text-neutral-300">{t('ad.typeName')}</td>
                                     <td class="px-3 py-2 text-neutral-900 dark:text-white font-medium">{selectedItem()?.name}</td>
                                 </tr>
                             </tbody>
@@ -821,7 +822,7 @@ export default function ContactReferenceResidenceTypePage() {
                             onClick={closeDeleteModal}
                             class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xs transition-colors cursor-pointer"
                         >
-                            Cancel
+                            {t('ad.cancel')}
                         </button>
                         <button
                             type="button"
@@ -829,7 +830,7 @@ export default function ContactReferenceResidenceTypePage() {
                             disabled={isSubmitting()}
                             class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 rounded-xs transition-colors cursor-pointer"
                         >
-                            {isSubmitting() ? 'Deleting...' : 'Yes, Delete'}
+                            {isSubmitting() ? t('ad.deleting') : t('ad.yesDelete')}
                         </button>
                     </div>
                 </div>

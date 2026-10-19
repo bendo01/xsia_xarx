@@ -1,4 +1,5 @@
 import TopBar from '~/components/navigation/TopBar';
+import { t } from '../../../../../../i18n';
 
 export default function AcademicCandidateTransactionExamPage() {
     return (
@@ -9,21 +10,21 @@ export default function AcademicCandidateTransactionExamPage() {
                 <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                            <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">Administrator</a>
+                            <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">{t('ad.administrator')}</a>
                             <span>/</span>
-                            <span>Academic</span>
+                            <span>{t('ad.academic')}</span>
                             <span>/</span>
-                            <span>Candidate</span>
+                            <span>{t('ad.candidate')}</span>
                             <span>/</span>
-                            <span>Transaction</span>
+                            <span>{t('ad.transaction')}</span>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">Exam</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">{t('ad.exam')}</span>
                         </nav>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Exam
+                            {t('ad.exam')}
                         </h1>
                         <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
-                            Data management, registry entities, and operational records for Exam.
+                            {t('ad.dataManagementRegistryEntitiesAndOperational14')}
                         </p>
                     </div>
                 </div>
@@ -37,10 +38,10 @@ export default function AcademicCandidateTransactionExamPage() {
                         </svg>
                     </div>
                     <h3 class="text-base font-bold text-neutral-900 dark:text-white mb-1.5 font-mono">
-                        Exam Workspace
+                        {t('ad.examWorkspace')}
                     </h3>
                     <p class="text-xs text-neutral-500 dark:text-neutral-400 max-w-md font-mono leading-relaxed">
-                        Data management, registry entities, and operational records for Exam.
+                        {t('ad.dataManagementRegistryEntitiesAndOperational14')}
                     </p>
                 </div>
             </main>

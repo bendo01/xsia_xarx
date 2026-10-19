@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from "vite-plus/test";
+import { setLocale } from "../../../../../../i18n";
 import { render, screen, waitFor } from "@solidjs/testing-library";
 import { Router, Route } from "@solidjs/router";
 import CourseLearnPlanningIndexPage from "./[id]/course-learn-planning/index";
@@ -66,6 +67,7 @@ const mockEvalPlannings = [
 
 describe("Course Planning course_id Parameter Filtering & URL Cleanup", () => {
   beforeEach(() => {
+    setLocale("en");
     vi.stubGlobal(
       "fetch",
       vi.fn(async (url: any, options: any) => {

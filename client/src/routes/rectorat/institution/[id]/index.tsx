@@ -5,6 +5,7 @@ import { masterApiIndex, masterApiShow, getBaseApiUrl, getAuthHeaders } from '~/
 import { resolveInstitutionFromStaffRole } from '~/lib/rectoratHelper';
 import { toast } from '~/components/toast/Toaster';
 import EChart from '~/components/chart/echart_component';
+import { t as tt } from '../../../../i18n';
 
 interface ProdiUnit {
     id: string;
@@ -152,7 +153,7 @@ export default function RectoratInstitutionDashboard() {
             if (results.length > 0 && !selectedProdiId()) setSelectedProdiId(results[0].unitId);
         } catch (error) {
             console.error('Error loading prodi units:', error);
-            toast.danger('Gagal memuat data program studi.');
+            toast.danger(tt('rt.gagalMemuatDataProgramStudi'));
         } finally {
             setIsLoadingUnits(false);
         }
@@ -191,7 +192,7 @@ export default function RectoratInstitutionDashboard() {
             tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
             grid: { left: 16, right: 40, top: 10, bottom: 40, containLabel: true },
             yAxis: { type: 'category', inverse: true, data: sorted.map((d) => d.unitCode || d.unitName), axisLabel: { fontSize: 11, color: dark ? '#a3a3a3' : '#525252' }, axisLine: { lineStyle: { color: dark ? '#404040' : '#e5e5e5' } } },
-            xAxis: { type: 'value', name: 'Mahasiswa', nameLocation: 'middle', nameGap: 28, nameTextStyle: { fontSize: 11, color: dark ? '#a3a3a3' : '#737373' }, axisLabel: { color: dark ? '#a3a3a3' : '#525252' }, splitLine: { lineStyle: { color: dark ? '#262626' : '#f5f5f5' } } },
+            xAxis: { type: 'value', name: tt('rt.mahasiswa'), nameLocation: 'middle', nameGap: 28, nameTextStyle: { fontSize: 11, color: dark ? '#a3a3a3' : '#737373' }, axisLabel: { color: dark ? '#a3a3a3' : '#525252' }, splitLine: { lineStyle: { color: dark ? '#262626' : '#f5f5f5' } } },
             series: [{ type: 'bar', barMaxWidth: 28, label: { show: true, position: 'right', fontSize: 11, fontWeight: 'bold', color: dark ? '#e5e5e5' : '#171717' }, data: sorted.map((d) => ({ value: d.totalStudents ?? 0, itemStyle: { borderRadius: [0, 6, 6, 0], color: d.is_active ? { type: 'linear', x: 0, y: 0, x2: 1, y2: 0, colorStops: [{ offset: 0, color: '#3b82f6' }, { offset: 1, color: '#1d4ed8' }] } : { type: 'linear', x: 0, y: 0, x2: 1, y2: 0, colorStops: [{ offset: 0, color: '#a3a3a3' }, { offset: 1, color: '#737373' }] } } })) }],
         };
     });
@@ -206,7 +207,7 @@ export default function RectoratInstitutionDashboard() {
             tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
             grid: { left: 16, right: 40, top: 10, bottom: 40, containLabel: true },
             yAxis: { type: 'category', inverse: true, data: sorted.map((d) => d.unitCode || d.unitName), axisLabel: { fontSize: 11, color: dark ? '#a3a3a3' : '#525252' }, axisLine: { lineStyle: { color: dark ? '#404040' : '#e5e5e5' } } },
-            xAxis: { type: 'value', name: 'Matakuliah', nameLocation: 'middle', nameGap: 28, nameTextStyle: { fontSize: 11, color: dark ? '#a3a3a3' : '#737373' }, axisLabel: { color: dark ? '#a3a3a3' : '#525252' }, splitLine: { lineStyle: { color: dark ? '#262626' : '#f5f5f5' } } },
+            xAxis: { type: 'value', name: tt('rt.matakuliah'), nameLocation: 'middle', nameGap: 28, nameTextStyle: { fontSize: 11, color: dark ? '#a3a3a3' : '#737373' }, axisLabel: { color: dark ? '#a3a3a3' : '#525252' }, splitLine: { lineStyle: { color: dark ? '#262626' : '#f5f5f5' } } },
             series: [{ type: 'bar', barMaxWidth: 28, label: { show: true, position: 'right', fontSize: 11, fontWeight: 'bold', color: dark ? '#e5e5e5' : '#171717' }, data: sorted.map((d, i) => ({ value: d.matakuliah?.total_matakuliah ?? 0, itemStyle: { borderRadius: [0, 6, 6, 0], color: colors[i % colors.length] } })) }],
         };
     });
@@ -229,11 +230,11 @@ export default function RectoratInstitutionDashboard() {
         const sorted = [...data].sort((a, b) => (b.latestGpa ?? 0) - (a.latestGpa ?? 0));
         const dark = isDark();
         return {
-            tooltip: { trigger: 'axis', formatter: (p: any) => `${p[0].name}<br/>IPK: <b>${(+p[0].value).toFixed(2)}</b>` },
+            tooltip: { trigger: 'axis', formatter: (p: any) => `${p[0].name}<br/>{tt('rt.ipk')} <b>${(+p[0].value).toFixed(2)}</b>` },
             grid: { left: 16, right: 40, top: 10, bottom: 40, containLabel: true },
             yAxis: { type: 'category', inverse: true, data: sorted.map((d) => d.unitCode || d.unitName), axisLabel: { fontSize: 11, color: dark ? '#a3a3a3' : '#525252' }, axisLine: { lineStyle: { color: dark ? '#404040' : '#e5e5e5' } } },
             xAxis: { type: 'value', min: 0, max: 4, name: 'IPK', nameLocation: 'middle', nameGap: 28, nameTextStyle: { fontSize: 11, color: dark ? '#a3a3a3' : '#737373' }, axisLabel: { color: dark ? '#a3a3a3' : '#525252' }, splitLine: { lineStyle: { color: dark ? '#262626' : '#f5f5f5' } } },
-            series: [{ type: 'bar', barMaxWidth: 28, label: { show: true, position: 'right', fontSize: 11, fontWeight: 'bold', formatter: (p: any) => (+p.value).toFixed(2), color: dark ? '#e5e5e5' : '#171717' }, markLine: { data: [{ xAxis: 3.0, name: 'Min Baik', lineStyle: { color: '#f59e0b', type: 'dashed' }, label: { show: true, formatter: 'Min 3.0' } }] }, data: sorted.map((d) => ({ value: +(d.latestGpa ?? 0).toFixed(2), itemStyle: { borderRadius: [0, 6, 6, 0], color: (d.latestGpa ?? 0) >= 3.5 ? { type: 'linear', x: 0, y: 0, x2: 1, y2: 0, colorStops: [{ offset: 0, color: '#10b981' }, { offset: 1, color: '#059669' }] } : (d.latestGpa ?? 0) >= 3.0 ? { type: 'linear', x: 0, y: 0, x2: 1, y2: 0, colorStops: [{ offset: 0, color: '#f59e0b' }, { offset: 1, color: '#d97706' }] } : { type: 'linear', x: 0, y: 0, x2: 1, y2: 0, colorStops: [{ offset: 0, color: '#ef4444' }, { offset: 1, color: '#dc2626' }] } } })) }],
+            series: [{ type: 'bar', barMaxWidth: 28, label: { show: true, position: 'right', fontSize: 11, fontWeight: 'bold', formatter: (p: any) => (+p.value).toFixed(2), color: dark ? '#e5e5e5' : '#171717' }, markLine: { data: [{ xAxis: 3.0, name: tt('rt.minBaik'), lineStyle: { color: '#f59e0b', type: 'dashed' }, label: { show: true, formatter: tt('rt.min30') } }] }, data: sorted.map((d) => ({ value: +(d.latestGpa ?? 0).toFixed(2), itemStyle: { borderRadius: [0, 6, 6, 0], color: (d.latestGpa ?? 0) >= 3.5 ? { type: 'linear', x: 0, y: 0, x2: 1, y2: 0, colorStops: [{ offset: 0, color: '#10b981' }, { offset: 1, color: '#059669' }] } : (d.latestGpa ?? 0) >= 3.0 ? { type: 'linear', x: 0, y: 0, x2: 1, y2: 0, colorStops: [{ offset: 0, color: '#f59e0b' }, { offset: 1, color: '#d97706' }] } : { type: 'linear', x: 0, y: 0, x2: 1, y2: 0, colorStops: [{ offset: 0, color: '#ef4444' }, { offset: 1, color: '#dc2626' }] } } })) }],
         };
     });
 
@@ -249,12 +250,12 @@ export default function RectoratInstitutionDashboard() {
     });
 
     const kpiCards = [
-        { label: 'Total Prodi', icon: '🏛️', val: () => String(stats().total), sub: () => `${stats().activeCount} aktif` },
-        { label: 'Total Mahasiswa', icon: '🎓', val: () => stats().totalStudents.toLocaleString('id-ID'), sub: () => 'semua prodi' },
-        { label: 'Total Matakuliah', icon: '📚', val: () => String(stats().totalCourses), sub: () => 'seluruh kurikulum' },
-        { label: 'Total SKS', icon: '🧮', val: () => String(stats().totalCredits), sub: () => 'seluruh prodi' },
-        { label: 'Rata-rata IPK', icon: '📊', val: () => stats().avgGpa > 0 ? stats().avgGpa.toFixed(2) : '—', sub: () => 'terkini' },
-        { label: 'Prodi Aktif', icon: '✅', val: () => String(stats().activeCount), sub: () => `dari ${stats().total} prodi` },
+        { label: tt('rt.totalProdi'), icon: '🏛️', val: () => String(stats().total), sub: () => `${stats().activeCount} aktif` },
+        { label: tt('rt.totalMahasiswa'), icon: '🎓', val: () => stats().totalStudents.toLocaleString('id-ID'), sub: () => 'semua prodi' },
+        { label: tt('rt.totalMatakuliah'), icon: '📚', val: () => String(stats().totalCourses), sub: () => 'seluruh kurikulum' },
+        { label: tt('rt.totalSKS'), icon: '🧮', val: () => String(stats().totalCredits), sub: () => 'seluruh prodi' },
+        { label: tt('rt.rataRataIPK'), icon: '📊', val: () => stats().avgGpa > 0 ? stats().avgGpa.toFixed(2) : '—', sub: () => 'terkini' },
+        { label: tt('rt.prodiAktif'), icon: '✅', val: () => String(stats().activeCount), sub: () => tt('rt.ofTotalStudyPrograms', { total: stats().total }) },
     ];
 
     return (
@@ -275,19 +276,19 @@ export default function RectoratInstitutionDashboard() {
                                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
                                     <span class="relative inline-flex rounded-full size-2 bg-blue-400" />
                                 </span>
-                                Executive Dashboard · Rektorat
+                                {tt('rt.executiveDashboardRektorat')}
                             </div>
-                            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">Dashboard Institusi</h1>
+                            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">{tt('rt.dashboardInstitusi')}</h1>
                             <Show when={institutionName()}>
                                 <p class="mt-1 text-blue-200 font-semibold text-lg">{institutionName()}</p>
                             </Show>
                             <p class="mt-2 text-sm text-blue-300/80 max-w-xl">
-                                Ringkasan seluruh Program Studi — statistik mahasiswa, kurikulum, IPK, dan distribusi matakuliah.
+                                {tt('rt.ringkasanSeluruhProgramStudiStatistikMahasiswa')}
                             </p>
                         </div>
                         <div class="text-right shrink-0">
                             <div class="text-4xl font-black tabular-nums">{prodiUnits().length}</div>
-                            <div class="text-xs text-blue-300 font-medium uppercase tracking-wide">Program Studi</div>
+                            <div class="text-xs text-blue-300 font-medium uppercase tracking-wide">{tt('rt.programStudi')}</div>
                         </div>
                     </div>
                 </div>
@@ -297,7 +298,7 @@ export default function RectoratInstitutionDashboard() {
                     <div class="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm p-6">
                         <div class="flex items-center justify-between mb-3">
                             <span class="text-sm font-semibold text-neutral-700 dark:text-neutral-300">
-                                {isLoadingUnits() ? 'Memuat daftar program studi…' : `Memuat data: ${loadedCount()} / ${totalToLoad()} prodi`}
+                                {isLoadingUnits() ? tt('rt.memuatDaftarProgramStudi') : tt('rt.loadingDataLoadedTotalStudyPrograms', { loaded: loadedCount(), total: totalToLoad() })}
                             </span>
                             <span class="text-xs text-neutral-500 font-mono">
                                 {totalToLoad() > 0 ? `${Math.round((loadedCount() / totalToLoad()) * 100)}%` : '…'}
@@ -336,34 +337,34 @@ export default function RectoratInstitutionDashboard() {
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <div class="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm p-6 hover:shadow-md transition-shadow">
                             <h3 class="text-sm font-bold text-neutral-900 dark:text-white mb-1 flex items-center gap-2">
-                                <span class="w-3 h-3 rounded-full bg-blue-500" />Jumlah Mahasiswa per Prodi
+                                <span class="w-3 h-3 rounded-full bg-blue-500" />{tt('rt.jumlahMahasiswaPerProdi')}
                             </h3>
-                            <p class="text-xs text-neutral-500 dark:text-neutral-400 mb-4">Akumulasi seluruh tahun akademik</p>
+                            <p class="text-xs text-neutral-500 dark:text-neutral-400 mb-4">{tt('rt.akumulasiSeluruhTahunAkademik')}</p>
                             <div class="h-72"><EChart option={studentsBarOption()} height="100%" width="100%" /></div>
                         </div>
 
                         <div class="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm p-6 hover:shadow-md transition-shadow">
                             <h3 class="text-sm font-bold text-neutral-900 dark:text-white mb-1 flex items-center gap-2">
-                                <span class="w-3 h-3 rounded-full bg-indigo-500" />Distribusi Mahasiswa
+                                <span class="w-3 h-3 rounded-full bg-indigo-500" />{tt('rt.distribusiMahasiswa')}
                             </h3>
-                            <p class="text-xs text-neutral-500 dark:text-neutral-400 mb-4">Proporsi mahasiswa antar program studi</p>
+                            <p class="text-xs text-neutral-500 dark:text-neutral-400 mb-4">{tt('rt.proporsiMahasiswaAntarProgramStudi')}</p>
                             <div class="h-72"><EChart option={studentsPieOption()} height="100%" width="100%" /></div>
                         </div>
 
                         <div class="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm p-6 hover:shadow-md transition-shadow">
                             <h3 class="text-sm font-bold text-neutral-900 dark:text-white mb-1 flex items-center gap-2">
-                                <span class="w-3 h-3 rounded-full bg-violet-500" />Jumlah Matakuliah per Prodi
+                                <span class="w-3 h-3 rounded-full bg-violet-500" />{tt('rt.jumlahMatakuliahPerProdi')}
                             </h3>
-                            <p class="text-xs text-neutral-500 dark:text-neutral-400 mb-4">Total matakuliah aktif dalam kurikulum</p>
+                            <p class="text-xs text-neutral-500 dark:text-neutral-400 mb-4">{tt('rt.totalMatakuliahAktifDalamKurikulum')}</p>
                             <div class="h-72"><EChart option={coursesBarOption()} height="100%" width="100%" /></div>
                         </div>
 
                         <Show when={dashboards().some((d) => (d.latestGpa ?? 0) > 0)}>
                             <div class="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm p-6 hover:shadow-md transition-shadow">
                                 <h3 class="text-sm font-bold text-neutral-900 dark:text-white mb-1 flex items-center gap-2">
-                                    <span class="w-3 h-3 rounded-full bg-emerald-500" />Rata-rata IPK per Prodi
+                                    <span class="w-3 h-3 rounded-full bg-emerald-500" />{tt('rt.rataRataIPKPerProdi')}
                                 </h3>
-                                <p class="text-xs text-neutral-500 dark:text-neutral-400 mb-4">IPK terakhir tercatat per program studi</p>
+                                <p class="text-xs text-neutral-500 dark:text-neutral-400 mb-4">{tt('rt.ipkTerakhirTercatatPerProgramStudi')}</p>
                                 <div class="h-72"><EChart option={gpaBarOption()} height="100%" width="100%" /></div>
                             </div>
                         </Show>
@@ -373,14 +374,14 @@ export default function RectoratInstitutionDashboard() {
                     <div class="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm overflow-hidden">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-6 py-4 border-b border-neutral-100 dark:border-neutral-800">
                             <div>
-                                <h3 class="text-base font-bold text-neutral-900 dark:text-white">Ringkasan Semua Program Studi</h3>
-                                <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">Klik baris untuk melihat detail dashboard per prodi</p>
+                                <h3 class="text-base font-bold text-neutral-900 dark:text-white">{tt('rt.ringkasanSemuaProgramStudi')}</h3>
+                                <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">{tt('rt.klikBarisUntukMelihatDetailDashboard')}</p>
                             </div>
                             <div class="relative w-full sm:w-64">
                                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-neutral-400 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                                 </svg>
-                                <input type="text" placeholder="Cari prodi…"
+                                <input type="text" placeholder={tt('rt.cariProdi')}
                                     class="w-full pl-10 pr-4 py-2 text-sm bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all"
                                     onInput={(e) => setSearchQuery((e.target as HTMLInputElement).value)} />
                             </div>
@@ -389,15 +390,15 @@ export default function RectoratInstitutionDashboard() {
                             <table class="w-full text-sm text-left">
                                 <thead class="text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider bg-neutral-50/80 dark:bg-neutral-800/50 border-b border-neutral-100 dark:border-neutral-800">
                                     <tr>
-                                        <th class="px-6 py-3">Kode</th>
-                                        <th class="px-6 py-3">Program Studi</th>
-                                        <th class="px-6 py-3">Jenjang</th>
-                                        <th class="px-6 py-3 text-right">Mahasiswa</th>
-                                        <th class="px-6 py-3 text-right">MK</th>
-                                        <th class="px-6 py-3 text-right">SKS</th>
-                                        <th class="px-6 py-3 text-right">IPK</th>
-                                        <th class="px-6 py-3 text-center">Status</th>
-                                        <th class="px-6 py-3 text-right">Detail</th>
+                                        <th class="px-6 py-3">{tt('rt.kode')}</th>
+                                        <th class="px-6 py-3">{tt('rt.programStudi')}</th>
+                                        <th class="px-6 py-3">{tt('rt.jenjang')}</th>
+                                        <th class="px-6 py-3 text-right">{tt('rt.mahasiswa')}</th>
+                                        <th class="px-6 py-3 text-right">{tt('rt.mk')}</th>
+                                        <th class="px-6 py-3 text-right">{tt('rt.sks')}</th>
+                                        <th class="px-6 py-3 text-right">{tt('rt.ipk2')}</th>
+                                        <th class="px-6 py-3 text-center">{tt('rt.status')}</th>
+                                        <th class="px-6 py-3 text-right">{tt('rt.detail')}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-neutral-100 dark:divide-neutral-800">
@@ -426,9 +427,9 @@ export default function RectoratInstitutionDashboard() {
                                                 <td class="px-6 py-4 text-center">
                                                     {d.is_active
                                                         ? <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800/50">
-                                                            <span class="size-1.5 rounded-full bg-emerald-500" />Aktif
+                                                            <span class="size-1.5 rounded-full bg-emerald-500" />{tt('rt.aktif')}
                                                         </span>
-                                                        : <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold text-neutral-500 bg-neutral-100 border border-neutral-200 rounded-full dark:bg-neutral-800 dark:text-neutral-400 dark:border-neutral-700">Non-Aktif</span>
+                                                        : <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold text-neutral-500 bg-neutral-100 border border-neutral-200 rounded-full dark:bg-neutral-800 dark:text-neutral-400 dark:border-neutral-700">{tt('rt.nonAktif')}</span>
                                                     }
                                                 </td>
                                                 <td class="px-6 py-4 text-right">
@@ -439,14 +440,14 @@ export default function RectoratInstitutionDashboard() {
                                                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
                                                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                                         </svg>
-                                                        Detail
+                                                        {tt('rt.detail')}
                                                     </button>
                                                 </td>
                                             </tr>
                                         )}
                                     </For>
                                     <Show when={filteredDashboards().length === 0}>
-                                        <tr><td colspan="9" class="px-6 py-12 text-center text-neutral-400 dark:text-neutral-500 text-sm">Tidak ada program studi ditemukan.</td></tr>
+                                        <tr><td colspan="9" class="px-6 py-12 text-center text-neutral-400 dark:text-neutral-500 text-sm">{tt('rt.tidakAdaProgramStudiDitemukan')}</td></tr>
                                     </Show>
                                 </tbody>
                             </table>
@@ -461,7 +462,7 @@ export default function RectoratInstitutionDashboard() {
                                     <div class="absolute top-0 right-0 -mt-6 -mr-6 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none" />
                                     <div class="relative z-10 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                                         <div>
-                                            <div class="text-xs font-bold uppercase tracking-widest text-indigo-200 mb-2">Detail Program Studi</div>
+                                            <div class="text-xs font-bold uppercase tracking-widest text-indigo-200 mb-2">{tt('rt.detailProgramStudi')}</div>
                                             <h2 class="text-2xl sm:text-3xl font-extrabold leading-tight">{dash().unitName}</h2>
                                             <div class="flex flex-wrap items-center gap-2 mt-2">
                                                 <Show when={dash().unitCode}>
@@ -472,18 +473,18 @@ export default function RectoratInstitutionDashboard() {
                                                 </Show>
                                                 <Show when={dash().is_active}>
                                                     <span class="px-2.5 py-0.5 text-xs font-bold bg-emerald-500/30 border border-emerald-400/30 text-emerald-100 rounded-full flex items-center gap-1">
-                                                        <span class="size-1.5 rounded-full bg-emerald-400" />Aktif
+                                                        <span class="size-1.5 rounded-full bg-emerald-400" />{tt('rt.aktif')}
                                                     </span>
                                                 </Show>
                                             </div>
                                             <Show when={dash().parent}>
-                                                <p class="mt-2 text-sm text-indigo-200">Induk: {dash().parent}</p>
+                                                <p class="mt-2 text-sm text-indigo-200">{tt('rt.induk')} {dash().parent}</p>
                                             </Show>
                                         </div>
                                         <div class="grid grid-cols-3 gap-3 shrink-0">
                                             {[
-                                                { label: 'Mahasiswa', value: (dash().totalStudents ?? 0).toLocaleString('id-ID') },
-                                                { label: 'Matakuliah', value: String(dash().matakuliah?.total_matakuliah ?? '—') },
+                                                { label: tt('rt.mahasiswa'), value: (dash().totalStudents ?? 0).toLocaleString('id-ID') },
+                                                { label: tt('rt.matakuliah'), value: String(dash().matakuliah?.total_matakuliah ?? '—') },
                                                 { label: 'SKS', value: String(dash().matakuliah?.total_credit ?? '—') },
                                             ].map((s) => (
                                                 <div class="text-center p-3 bg-white/10 rounded-xl border border-white/10">
@@ -499,45 +500,45 @@ export default function RectoratInstitutionDashboard() {
                                     <Show when={dash().student_academic_year_chart}>
                                         <div class="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm p-6 hover:shadow-md transition-shadow">
                                             <h4 class="text-sm font-bold text-neutral-900 dark:text-white mb-1 flex items-center gap-2">
-                                                <span class="w-2.5 h-2.5 rounded-full bg-blue-500" />Tren Mahasiswa per Tahun Akademik
+                                                <span class="w-2.5 h-2.5 rounded-full bg-blue-500" />{tt('rt.trenMahasiswaPerTahunAkademik')}
                                             </h4>
-                                            <p class="text-xs text-neutral-400 mb-4">Jumlah mahasiswa aktif per semester</p>
+                                            <p class="text-xs text-neutral-400 mb-4">{tt('rt.jumlahMahasiswaAktifPerSemester')}</p>
                                             <div class="h-72"><EChart option={dash().student_academic_year_chart} height="100%" width="100%" /></div>
                                         </div>
                                     </Show>
                                     <Show when={dash().course_category_distribution}>
                                         <div class="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm p-6 hover:shadow-md transition-shadow">
                                             <h4 class="text-sm font-bold text-neutral-900 dark:text-white mb-1 flex items-center gap-2">
-                                                <span class="w-2.5 h-2.5 rounded-full bg-violet-500" />Distribusi Kategori Matakuliah
+                                                <span class="w-2.5 h-2.5 rounded-full bg-violet-500" />{tt('rt.distribusiKategoriMatakuliah')}
                                             </h4>
-                                            <p class="text-xs text-neutral-400 mb-4">Proporsi kelompok matakuliah dalam kurikulum</p>
+                                            <p class="text-xs text-neutral-400 mb-4">{tt('rt.proporsiKelompokMatakuliahDalamKurikulum')}</p>
                                             <div class="h-72"><EChart option={dash().course_category_distribution} height="100%" width="100%" /></div>
                                         </div>
                                     </Show>
                                     <Show when={dash().average_gpa_trend}>
                                         <div class="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm p-6 hover:shadow-md transition-shadow">
                                             <h4 class="text-sm font-bold text-neutral-900 dark:text-white mb-1 flex items-center gap-2">
-                                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500" />Tren Rata-rata IPK
+                                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500" />{tt('rt.trenRataRataIPK')}
                                             </h4>
-                                            <p class="text-xs text-neutral-400 mb-4">Perkembangan IPK rata-rata per periode</p>
+                                            <p class="text-xs text-neutral-400 mb-4">{tt('rt.perkembanganIPKRataRataPerPeriode')}</p>
                                             <div class="h-72"><EChart option={dash().average_gpa_trend} height="100%" width="100%" /></div>
                                         </div>
                                     </Show>
                                     <Show when={dash().lecturer_academic_group_distribution}>
                                         <div class="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm p-6 hover:shadow-md transition-shadow">
                                             <h4 class="text-sm font-bold text-neutral-900 dark:text-white mb-1 flex items-center gap-2">
-                                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500" />Kelompok Keahlian Dosen
+                                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500" />{tt('rt.kelompokKeahlianDosen')}
                                             </h4>
-                                            <p class="text-xs text-neutral-400 mb-4">Dosen homebase berdasarkan kelompok akademik</p>
+                                            <p class="text-xs text-neutral-400 mb-4">{tt('rt.dosenHomebaseBerdasarkanKelompokAkademik')}</p>
                                             <div class="h-72"><EChart option={dash().lecturer_academic_group_distribution} height="100%" width="100%" /></div>
                                         </div>
                                     </Show>
                                     <Show when={dash().lecturer_academic_rank_distribution}>
                                         <div class="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm p-6 hover:shadow-md transition-shadow lg:col-span-2">
                                             <h4 class="text-sm font-bold text-neutral-900 dark:text-white mb-1 flex items-center gap-2">
-                                                <span class="w-2.5 h-2.5 rounded-full bg-rose-500" />Jabatan Akademik Dosen
+                                                <span class="w-2.5 h-2.5 rounded-full bg-rose-500" />{tt('rt.jabatanAkademikDosen')}
                                             </h4>
-                                            <p class="text-xs text-neutral-400 mb-4">Jabatan fungsional dosen di homebase prodi ini</p>
+                                            <p class="text-xs text-neutral-400 mb-4">{tt('rt.jabatanFungsionalDosenDiHomebaseProdi')}</p>
                                             <div class="h-72"><EChart option={dash().lecturer_academic_rank_distribution} height="100%" width="100%" /></div>
                                         </div>
                                     </Show>
@@ -555,9 +556,9 @@ export default function RectoratInstitutionDashboard() {
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21" />
                             </svg>
                         </div>
-                        <h3 class="text-lg font-bold text-neutral-900 dark:text-white">Tidak ada Program Studi ditemukan</h3>
+                        <h3 class="text-lg font-bold text-neutral-900 dark:text-white">{tt('rt.tidakAdaProgramStudiDitemukan2')}</h3>
                         <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1 max-w-sm">
-                            Tidak ada unit bertipe Program Studi terdaftar pada institusi ini.
+                            {tt('rt.tidakAdaUnitBertipeProgramStudi')}
                         </p>
                     </div>
                 </Show>

@@ -23,6 +23,7 @@ import {
     listActivities,
     CampaignActivityItem
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionActivityController';
+import { t } from '../../../../../../i18n';
 
 export default function AcademicStudentCampaignStudentActivityPage() {
     // Data list state
@@ -107,7 +108,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
             setTotalPages(res.total_pages || 1);
         } catch (err) {
             console.error('Failed to load student activities:', err);
-            toast.danger('Gagal memuat data aktivitas mahasiswa');
+            toast.danger(t('ad.gagalMemuatDataAktivitasMahasiswa'));
             setItems([]);
         } finally {
             setIsLoading(false);
@@ -185,12 +186,12 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                 setItems(prev =>
                     prev.map(a => (a.id === targetId ? { ...a, is_lock: !currentLock } : a))
                 );
-                toast.success(`Aktivitas berhasil di-${!currentLock ? 'kunci' : 'buka kuncinya'}`);
+                toast.success(!currentLock ? t('ad.activityLockedSuccessfully') : t('ad.activityUnlockedSuccessfully'));
             } else {
-                toast.danger(res.message || 'Gagal mengubah status kunci');
+                toast.danger(res.message || t('ad.gagalMengubahStatusKunci'));
             }
         } catch {
-            toast.danger('Gagal memproses perubahan status kunci');
+            toast.danger(t('ad.gagalMemprosesPerubahanStatusKunci'));
         } finally {
             setLockingId(null);
         }
@@ -204,12 +205,12 @@ export default function AcademicStudentCampaignStudentActivityPage() {
             const filename = `KRS_${studentCode}_${item.academic_year_name || 'Semester'}.pdf`;
             const ok = await downloadActivityPlanPdf(item.id, filename);
             if (ok) {
-                toast.success('File KRS PDF berhasil diunduh');
+                toast.success(t('ad.fileKRSPDFBerhasilDiunduh'));
             } else {
-                toast.danger('Gagal mencetak KRS PDF');
+                toast.danger(t('ad.gagalMencetakKRSPDF'));
             }
         } catch {
-            toast.danger('Terjadi kesalahan saat mengunduh KRS');
+            toast.danger(t('ad.terjadiKesalahanSaatMengunduhKRS'));
         } finally {
             setPrintingPlanId(null);
         }
@@ -223,12 +224,12 @@ export default function AcademicStudentCampaignStudentActivityPage() {
             const filename = `KHS_${studentCode}_${item.academic_year_name || 'Semester'}.pdf`;
             const ok = await downloadActivityResultPdf(item.id, filename);
             if (ok) {
-                toast.success('File KHS PDF berhasil diunduh');
+                toast.success(t('ad.fileKHSPDFBerhasilDiunduh'));
             } else {
-                toast.danger('Gagal mencetak KHS PDF');
+                toast.danger(t('ad.gagalMencetakKHSPDF'));
             }
         } catch {
-            toast.danger('Terjadi kesalahan saat mengunduh KHS');
+            toast.danger(t('ad.terjadiKesalahanSaatMengunduhKHS'));
         } finally {
             setPrintingResultId(null);
         }
@@ -267,7 +268,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
             setSelectedIds([]);
             fetchData();
         } catch {
-            toast.danger('Terjadi kesalahan pada aksi massal');
+            toast.danger(t('ad.terjadiKesalahanPadaAksiMassal'));
         } finally {
             setIsBulkProcessing(false);
         }
@@ -276,7 +277,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
     // Export to CSV
     const exportCsv = (dataList: StudentActivityItem[]) => {
         if (!dataList.length) {
-            toast.warning('Tidak ada data untuk diekspor');
+            toast.warning(t('ad.tidakAdaDataUntukDiekspor'));
             return;
         }
         const rows = dataList.map((item, idx) => ({
@@ -290,7 +291,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
             SKS_Kumulatif: item.grand_total_credit ?? 0,
             IPS: Number(item.cumulative_index || 0).toFixed(2),
             IPK: Number(item.grand_cumulative_index || 0).toFixed(2),
-            Status_Kunci: item.is_lock ? 'Terkunci' : 'Terbuka',
+            Status_Kunci: item.is_lock ? t('ad.terkunci') : t('ad.terbuka'),
             Biaya_Kuliah: item.finance_fee ?? 0,
             Feeder_ID: item.feeder_id || '-',
         }));
@@ -323,7 +324,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
-        toast.success('Data aktivitas berhasil diekspor ke CSV');
+        toast.success(t('ad.dataAktivitasBerhasilDieksporKeCSV'));
     };
 
     // Open Create Modal
@@ -348,7 +349,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
     const handleCreateSubmit = async (e: Event) => {
         e.preventDefault();
         if (!formStudentId() || !formUnitActivityId() || !formStatusId()) {
-            toast.warning('Mahasiswa, Periode Aktivitas, dan Status wajib dipilih');
+            toast.warning(t('ad.mahasiswaPeriodeAktivitasDanStatusWajib'));
             return;
         }
 
@@ -369,14 +370,14 @@ export default function AcademicStudentCampaignStudentActivityPage() {
             });
 
             if (!res.is_error) {
-                toast.success('Aktivitas mahasiswa berhasil ditambahkan');
+                toast.success(t('ad.aktivitasMahasiswaBerhasilDitambahkan'));
                 setShowCreateModal(false);
                 fetchData();
             } else {
-                toast.danger(res.message || 'Gagal menambahkan aktivitas');
+                toast.danger(res.message || t('ad.gagalMenambahkanAktivitas'));
             }
         } catch {
-            toast.danger('Terjadi kesalahan saat menyimpan aktivitas');
+            toast.danger(t('ad.terjadiKesalahanSaatMenyimpanAktivitas'));
         } finally {
             setIsSubmitting(false);
         }
@@ -418,14 +419,14 @@ export default function AcademicStudentCampaignStudentActivityPage() {
             });
 
             if (!res.is_error) {
-                toast.success('Aktivitas mahasiswa berhasil diperbarui');
+                toast.success(t('ad.aktivitasMahasiswaBerhasilDiperbarui'));
                 setShowEditModal(false);
                 fetchData();
             } else {
-                toast.danger(res.message || 'Gagal memperbarui aktivitas');
+                toast.danger(res.message || t('ad.gagalMemperbaruiAktivitas'));
             }
         } catch {
-            toast.danger('Terjadi kesalahan saat memperbarui aktivitas');
+            toast.danger(t('ad.terjadiKesalahanSaatMemperbaruiAktivitas'));
         } finally {
             setIsSubmitting(false);
         }
@@ -446,14 +447,14 @@ export default function AcademicStudentCampaignStudentActivityPage() {
         try {
             const res = await deleteStudentActivity(active.id);
             if (!res.is_error) {
-                toast.success('Aktivitas mahasiswa berhasil dihapus');
+                toast.success(t('ad.aktivitasMahasiswaBerhasilDihapus'));
                 setShowDeleteModal(false);
                 fetchData();
             } else {
-                toast.danger(res.message || 'Gagal menghapus aktivitas');
+                toast.danger(res.message || t('ad.gagalMenghapusAktivitas'));
             }
         } catch {
-            toast.danger('Terjadi kesalahan saat menghapus aktivitas');
+            toast.danger(t('ad.terjadiKesalahanSaatMenghapusAktivitas'));
         } finally {
             setIsSubmitting(false);
         }
@@ -484,21 +485,21 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-5">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1.5">
-                            <A href="/administrator/dashboard" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Administrator</A>
+                            <A href="/administrator/dashboard" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{t('ad.administrator')}</A>
                             <span>/</span>
-                            <span>Akademik</span>
+                            <span>{t('ad.akademik')}</span>
                             <span>/</span>
-                            <span>Mahasiswa</span>
+                            <span>{t('ad.mahasiswa')}</span>
                             <span>/</span>
-                            <span>Kampanye</span>
+                            <span>{t('ad.kampanye')}</span>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">Aktivitas Kuliah</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">{t('ad.aktivitasKuliah')}</span>
                         </nav>
                         <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
-                            Aktivitas Kuliah Mahasiswa (AKM)
+                            {t('ad.aktivitasKuliahMahasiswaAKM')}
                         </h1>
                         <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-                            Manajemen data riwayat aktivitas semester, SKS, IPS/IPK, status registrasi, dan kunci KRS/KHS.
+                            {t('ad.manajemenDataRiwayatAktivitasSemesterSKS')}
                         </p>
                     </div>
 
@@ -507,12 +508,12 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                             type="button"
                             onClick={() => fetchData()}
                             class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors shadow-2xs"
-                            title="Segarkan Data"
+                            title={t('ad.segarkanData')}
                         >
                             <svg class={`size-3.5 ${isLoading() ? 'animate-spin' : ''}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
-                            <span>Refresh</span>
+                            <span>{t('ad.refresh')}</span>
                         </button>
 
                         <button
@@ -523,7 +524,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                             <svg class="size-3.5 text-emerald-600 dark:text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            <span>Ekspor CSV</span>
+                            <span>{t('ad.eksporCSV')}</span>
                         </button>
 
                         <button
@@ -534,7 +535,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                             <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                             </svg>
-                            <span>Tambah Aktivitas</span>
+                            <span>{t('ad.tambahAktivitas')}</span>
                         </button>
                     </div>
                 </div>
@@ -548,7 +549,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                             </svg>
                         </div>
                         <div>
-                            <span class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Total Aktivitas</span>
+                            <span class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">{t('ad.totalAktivitas')}</span>
                             <div class="text-xl font-bold text-neutral-900 dark:text-white mt-0.5">{totalData()}</div>
                         </div>
                     </div>
@@ -560,9 +561,9 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                             </svg>
                         </div>
                         <div>
-                            <span class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Status Aktif</span>
+                            <span class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">{t('ad.statusAktif')}</span>
                             <div class="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">
-                                {activeCount()} <span class="text-xs font-normal text-neutral-500">di halaman ini</span>
+                                {activeCount()} <span class="text-xs font-normal text-neutral-500">{t('ad.diHalamanIni')}</span>
                             </div>
                         </div>
                     </div>
@@ -574,7 +575,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                             </svg>
                         </div>
                         <div>
-                            <span class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Terkunci (Lock)</span>
+                            <span class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">{t('ad.terkunciLock')}</span>
                             <div class="text-xl font-bold text-amber-600 dark:text-amber-400 mt-0.5">
                                 {lockedCount()} <span class="text-xs font-normal text-neutral-500">aktivitas</span>
                             </div>
@@ -588,7 +589,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                             </svg>
                         </div>
                         <div>
-                            <span class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Rata-Rata IPK / SKS</span>
+                            <span class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">{t('ad.rataRataIPKSKS')}</span>
                             <div class="text-xl font-bold text-neutral-900 dark:text-white mt-0.5">
                                 {avgIpk()} <span class="text-xs font-normal text-neutral-500">/ {avgSks()} SKS</span>
                             </div>
@@ -613,7 +614,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                     setSearchQuery(e.currentTarget.value);
                                     setCurrentPage(1);
                                 }}
-                                placeholder="Cari nama, NIM, atau aktivitas..."
+                                placeholder={t('ad.cariNamaNIMAtauAktivitas')}
                                 class="w-full pl-9 pr-3 py-2 text-xs rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                             />
                         </div>
@@ -628,7 +629,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 }}
                                 class="w-full px-2.5 py-2 text-xs rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                             >
-                                <option value="">Semua Periode / TA</option>
+                                <option value="">{t('ad.semuaPeriodeTA')}</option>
                                 <For each={academicYears()}>
                                     {ay => <option value={ay.id}>{ay.name || ay.code}</option>}
                                 </For>
@@ -645,7 +646,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 }}
                                 class="w-full px-2.5 py-2 text-xs rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                             >
-                                <option value="">Semua Program Studi</option>
+                                <option value="">{t('ad.semuaProgramStudi')}</option>
                                 <For each={studyUnits()}>
                                     {u => <option value={u.id}>{u.name}</option>}
                                 </For>
@@ -662,7 +663,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 }}
                                 class="w-full px-2.5 py-2 text-xs rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                             >
-                                <option value="">Semua Status Kuliah</option>
+                                <option value="">{t('ad.semuaStatusKuliah')}</option>
                                 <For each={statuses()}>
                                     {s => <option value={s.id}>{s.name}</option>}
                                 </For>
@@ -679,28 +680,28 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 }}
                                 class="w-full px-2.5 py-2 text-xs rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                             >
-                                <option value="all">Status Kunci: Semua</option>
-                                <option value="locked">Hanya Terkunci</option>
-                                <option value="unlocked">Hanya Belum Terkunci</option>
+                                <option value="all">{t('ad.statusKunciSemua')}</option>
+                                <option value="locked">{t('ad.hanyaTerkunci')}</option>
+                                <option value="unlocked">{t('ad.hanyaBelumTerkunci')}</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="flex items-center justify-between border-t border-neutral-200 dark:border-neutral-700/60 pt-3 text-xs">
                         <div class="flex items-center gap-2">
-                            <span class="text-neutral-500">Urutkan:</span>
+                            <span class="text-neutral-500">{t('ad.urutkan')}</span>
                             <select
                                 value={sortOption()}
                                 onChange={e => setSortOption(e.currentTarget.value)}
                                 class="px-2 py-1 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
                             >
-                                <option value="created_at-desc">Tanggal Dibuat (Terbaru)</option>
-                                <option value="created_at-asc">Tanggal Dibuat (Terlama)</option>
-                                <option value="name-asc">Nama Mahasiswa (A - Z)</option>
-                                <option value="name-desc">Nama Mahasiswa (Z - A)</option>
+                                <option value="created_at-desc">{t('ad.tanggalDibuatTerbaru')}</option>
+                                <option value="created_at-asc">{t('ad.tanggalDibuatTerlama')}</option>
+                                <option value="name-asc">{t('ad.namaMahasiswaAZ')}</option>
+                                <option value="name-desc">{t('ad.namaMahasiswaZA')}</option>
                             </select>
 
-                            <span class="text-neutral-500 ml-2">Per Halaman:</span>
+                            <span class="text-neutral-500 ml-2">{t('ad.perHalaman')}</span>
                             <select
                                 value={itemsPerPage()}
                                 onChange={e => {
@@ -721,7 +722,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                             onClick={resetFilters}
                             class="text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 font-medium transition-colors"
                         >
-                            Reset Filter
+                            {t('ad.resetFilter')}
                         </button>
                     </div>
                 </div>
@@ -733,7 +734,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                             <span class="px-2 py-0.5 rounded-full bg-blue-600 text-white font-mono text-xs">
                                 {selectedIds().length}
                             </span>
-                            <span>Aktivitas dipilih</span>
+                            <span>{t('ad.aktivitasDipilih')}</span>
                         </div>
 
                         <div class="flex items-center gap-2 flex-wrap">
@@ -743,7 +744,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 onClick={() => handleBulkLock(true)}
                                 class="px-3 py-1.5 text-xs font-semibold rounded bg-amber-600 hover:bg-amber-700 text-white transition-colors disabled:opacity-50"
                             >
-                                Kunci Terpilih
+                                {t('ad.kunciTerpilih')}
                             </button>
                             <button
                                 type="button"
@@ -751,7 +752,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 onClick={() => handleBulkLock(false)}
                                 class="px-3 py-1.5 text-xs font-semibold rounded bg-emerald-600 hover:bg-emerald-700 text-white transition-colors disabled:opacity-50"
                             >
-                                Buka Kunci Terpilih
+                                {t('ad.bukaKunciTerpilih')}
                             </button>
                             <button
                                 type="button"
@@ -761,14 +762,14 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 }}
                                 class="px-3 py-1.5 text-xs font-semibold rounded bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                             >
-                                Ekspor Terpilih
+                                {t('ad.eksporTerpilih')}
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setSelectedIds([])}
                                 class="px-2.5 py-1.5 text-xs text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
                             >
-                                Batal
+                                {t('ad.batal')}
                             </button>
                         </div>
                     </div>
@@ -788,13 +789,13 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                             class="rounded border-neutral-300 dark:border-neutral-600 text-blue-600 focus:ring-blue-500 cursor-pointer"
                                         />
                                     </th>
-                                    <th class="px-4 py-3">Mahasiswa</th>
-                                    <th class="px-4 py-3">Periode / Semester</th>
-                                    <th class="px-4 py-3 text-center">Status</th>
-                                    <th class="px-4 py-3 text-center">SKS</th>
-                                    <th class="px-4 py-3 text-center">IPS / IPK</th>
-                                    <th class="px-4 py-3 text-center">Kunci</th>
-                                    <th class="px-4 py-3 text-right">Aksi</th>
+                                    <th class="px-4 py-3">{t('ad.mahasiswa')}</th>
+                                    <th class="px-4 py-3">{t('ad.periodeSemester')}</th>
+                                    <th class="px-4 py-3 text-center">{t('ad.status')}</th>
+                                    <th class="px-4 py-3 text-center">{t('ad.sks')}</th>
+                                    <th class="px-4 py-3 text-center">{t('ad.ipsIPK')}</th>
+                                    <th class="px-4 py-3 text-center">{t('ad.kunci')}</th>
+                                    <th class="px-4 py-3 text-right">{t('ad.aksi')}</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700/60">
@@ -808,7 +809,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                                     </svg>
-                                                    <span>Memuat data aktivitas mahasiswa...</span>
+                                                    <span>{t('ad.memuatDataAktivitasMahasiswa')}</span>
                                                 </div>
                                             </td>
                                         </tr>
@@ -825,8 +826,8 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                                             </svg>
                                                         </div>
-                                                        <h4 class="font-bold text-neutral-800 dark:text-neutral-200">Tidak ada data aktivitas</h4>
-                                                        <p class="text-xs text-neutral-500 mt-1">Coba sesuaikan kata kunci pencarian atau filter yang dipilih.</p>
+                                                        <h4 class="font-bold text-neutral-800 dark:text-neutral-200">{t('ad.tidakAdaDataAktivitas')}</h4>
+                                                        <p class="text-xs text-neutral-500 mt-1">{t('ad.cobaSesuaikanKataKunciPencarianAtau')}</p>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -902,7 +903,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                                                 {semSks} <span class="text-neutral-400 text-[10px]">sem</span>
                                                             </div>
                                                             <div class="text-[10px] text-neutral-500 font-mono">
-                                                                Total: {totalSks} SKS
+                                                                {t('ad.total')} {totalSks} SKS
                                                             </div>
                                                         </td>
                                                         <td class="px-4 py-3 text-center">
@@ -916,17 +917,17 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                                                                     ? 'bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200'
                                                                                     : 'bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200'
                                                                         }`}
-                                                                    title="Indeks Prestasi Semester"
+                                                                    title={t('ad.indeksPrestasiSemester')}
                                                                 >
                                                                     {ips.toFixed(2)}
                                                                 </span>
                                                                 <span class="text-neutral-400">/</span>
-                                                                <span class="font-semibold text-neutral-700 dark:text-neutral-300" title="Indeks Prestasi Kumulatif">
+                                                                <span class="font-semibold text-neutral-700 dark:text-neutral-300" title={t('ad.indeksPrestasiKumulatif')}>
                                                                     {ipk.toFixed(2)}
                                                                 </span>
                                                             </div>
                                                             <div class="text-[9px] text-neutral-400 uppercase tracking-tighter mt-0.5">
-                                                                IPS / IPK
+                                                                {t('ad.ipsIPK')}
                                                             </div>
                                                         </td>
                                                         <td class="px-4 py-3 text-center">
@@ -938,7 +939,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                                                         ? 'bg-amber-50 dark:bg-amber-950/70 text-amber-700 dark:text-amber-300 hover:bg-amber-100 border border-amber-200 dark:border-amber-800/80'
                                                                         : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 border border-neutral-300 dark:border-neutral-700'
                                                                     }`}
-                                                                title={item.is_lock ? 'Klik untuk membuka kunci' : 'Klik untuk mengunci aktivitas'}
+                                                                title={item.is_lock ? t('ad.klikUntukMembukaKunci') : t('ad.klikUntukMengunciAktivitas')}
                                                             >
                                                                 <Show
                                                                     when={lockingId() !== item.id}
@@ -962,7 +963,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                                                         </svg>
                                                                     </Show>
                                                                 </Show>
-                                                                <span>{item.is_lock ? 'Kunci' : 'Buka'}</span>
+                                                                <span>{item.is_lock ? t('ad.kunci') : t('ad.buka')}</span>
                                                             </button>
                                                         </td>
                                                         <td class="px-4 py-3 text-right">
@@ -971,7 +972,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                                                 <A
                                                                     href={`/administrator/academic/student/campaign/student-activity/${item.id}`}
                                                                     class="p-1.5 text-neutral-600 hover:text-blue-600 dark:text-neutral-400 dark:hover:text-blue-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded transition-colors"
-                                                                    title="Lihat Detail & KRS"
+                                                                    title={t('ad.lihatDetailKRS')}
                                                                 >
                                                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -984,7 +985,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                                                     type="button"
                                                                     onClick={() => openEditModal(item)}
                                                                     class="p-1.5 text-neutral-600 hover:text-amber-600 dark:text-neutral-400 dark:hover:text-amber-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded transition-colors"
-                                                                    title="Edit Aktivitas"
+                                                                    title={t('ad.editAktivitas')}
                                                                 >
                                                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -997,7 +998,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                                                     disabled={printingPlanId() === item.id}
                                                                     onClick={() => handlePrintPlan(item)}
                                                                     class="p-1.5 text-neutral-600 hover:text-purple-600 dark:text-neutral-400 dark:hover:text-purple-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded transition-colors disabled:opacity-50"
-                                                                    title="Cetak KRS (Kartu Rencana Studi)"
+                                                                    title={t('ad.cetakKRSKartuRencanaStudi')}
                                                                 >
                                                                     <Show
                                                                         when={printingPlanId() !== item.id}
@@ -1020,7 +1021,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                                                     disabled={printingResultId() === item.id}
                                                                     onClick={() => handlePrintResult(item)}
                                                                     class="p-1.5 text-neutral-600 hover:text-emerald-600 dark:text-neutral-400 dark:hover:text-emerald-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded transition-colors disabled:opacity-50"
-                                                                    title="Cetak KHS (Kartu Hasil Studi)"
+                                                                    title={t('ad.cetakKHSKartuHasilStudi')}
                                                                 >
                                                                     <Show
                                                                         when={printingResultId() !== item.id}
@@ -1042,7 +1043,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                                                     type="button"
                                                                     onClick={() => openDeleteModal(item)}
                                                                     class="p-1.5 text-neutral-600 hover:text-rose-600 dark:text-neutral-400 dark:hover:text-rose-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded transition-colors"
-                                                                    title="Hapus Aktivitas"
+                                                                    title={t('ad.hapusAktivitas')}
                                                                 >
                                                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -1063,9 +1064,9 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                     {/* Pagination Footer */}
                     <div class="px-4 py-3 bg-neutral-50 dark:bg-neutral-900/40 border-t border-neutral-200 dark:border-neutral-700 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
                         <div class="text-neutral-600 dark:text-neutral-400">
-                            Menampilkan <span class="font-semibold text-neutral-900 dark:text-white">{items().length ? (currentPage() - 1) * itemsPerPage() + 1 : 0}</span> sampai{' '}
+                            {t('ad.menampilkan')} <span class="font-semibold text-neutral-900 dark:text-white">{items().length ? (currentPage() - 1) * itemsPerPage() + 1 : 0}</span> sampai{' '}
                             <span class="font-semibold text-neutral-900 dark:text-white">{Math.min(currentPage() * itemsPerPage(), totalData())}</span> dari{' '}
-                            <span class="font-semibold text-neutral-900 dark:text-white">{totalData()}</span> total aktivitas
+                            <span class="font-semibold text-neutral-900 dark:text-white">{totalData()}</span> {t('ad.totalAktivitas2')}
                         </div>
 
                         <div class="flex items-center gap-1.5">
@@ -1075,7 +1076,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
                                 class="px-2.5 py-1.5 rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed text-xs transition-colors"
                             >
-                                Sebelumnya
+                                {t('ad.sebelumnya')}
                             </button>
 
                             <span class="px-3 py-1 font-mono text-neutral-700 dark:text-neutral-300">
@@ -1088,7 +1089,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages()))}
                                 class="px-2.5 py-1.5 rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed text-xs transition-colors"
                             >
-                                Selanjutnya
+                                {t('ad.selanjutnya')}
                             </button>
                         </div>
                     </div>
@@ -1104,7 +1105,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 <svg class="size-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                 </svg>
-                                <span>Tambah Aktivitas Kuliah Mahasiswa</span>
+                                <span>{t('ad.tambahAktivitasKuliahMahasiswa')}</span>
                             </h3>
                             <button
                                 type="button"
@@ -1121,7 +1122,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                             {/* Search and Select Student */}
                             <div class="space-y-1.5">
                                 <label class="block font-semibold text-neutral-700 dark:text-neutral-300">
-                                    Pilih Mahasiswa <span class="text-rose-500">*</span>
+                                    {t('ad.pilihMahasiswa')} <span class="text-rose-500">*</span>
                                 </label>
                                 <div class="relative">
                                     <input
@@ -1132,7 +1133,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                             setFormStudentSearch(val);
                                             searchStudents(val);
                                         }}
-                                        placeholder="Ketik NIM atau Nama Mahasiswa (min 2 huruf)..."
+                                        placeholder={t('ad.ketikNIMAtauNamaMahasiswaMin')}
                                         class="w-full px-3 py-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                                     />
                                     <Show when={isSearchingStudents()}>
@@ -1174,7 +1175,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                         <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                         </svg>
-                                        Mahasiswa terpilih
+                                        {t('ad.mahasiswaTerpilih')}
                                     </p>
                                 </Show>
                             </div>
@@ -1183,7 +1184,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 {/* Unit Activity / Periode */}
                                 <div>
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Periode / Aktivitas Semester <span class="text-rose-500">*</span>
+                                        {t('ad.periodeAktivitasSemester')} <span class="text-rose-500">*</span>
                                     </label>
                                     <select
                                         value={formUnitActivityId()}
@@ -1191,7 +1192,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                         class="w-full px-3 py-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                                         required
                                     >
-                                        <option value="">Pilih Periode Aktivitas</option>
+                                        <option value="">{t('ad.pilihPeriodeAktivitas')}</option>
                                         <For each={campaignActivities()}>
                                             {act => <option value={act.id}>{act.name} {act.academic_year_name ? `(${act.academic_year_name})` : ''}</option>}
                                         </For>
@@ -1201,7 +1202,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 {/* Status Mahasiswa */}
                                 <div>
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Status Perkuliahan <span class="text-rose-500">*</span>
+                                        {t('ad.statusPerkuliahan')} <span class="text-rose-500">*</span>
                                     </label>
                                     <select
                                         value={formStatusId()}
@@ -1209,7 +1210,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                         class="w-full px-3 py-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                                         required
                                     >
-                                        <option value="">Pilih Status</option>
+                                        <option value="">{t('ad.pilihStatus')}</option>
                                         <For each={statuses()}>
                                             {s => <option value={s.id}>{s.name}</option>}
                                         </For>
@@ -1219,14 +1220,14 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 {/* Program Studi / Unit */}
                                 <div>
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Program Studi / Unit
+                                        {t('ad.programStudiUnit')}
                                     </label>
                                     <select
                                         value={formUnitId()}
                                         onChange={e => setFormUnitId(e.currentTarget.value)}
                                         class="w-full px-3 py-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                                     >
-                                        <option value="">Otomatis dari Mahasiswa</option>
+                                        <option value="">{t('ad.otomatisDariMahasiswa')}</option>
                                         <For each={studyUnits()}>
                                             {u => <option value={u.id}>{u.name}</option>}
                                         </For>
@@ -1236,7 +1237,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 {/* Biaya Kuliah / SPP */}
                                 <div>
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Biaya Kuliah / SPP (Rp)
+                                        {t('ad.biayaKuliahSPPRp')}
                                     </label>
                                     <input
                                         type="number"
@@ -1250,7 +1251,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 {/* SKS Semester */}
                                 <div>
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        SKS Semester
+                                        {t('ad.sksSemester')}
                                     </label>
                                     <input
                                         type="number"
@@ -1264,7 +1265,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 {/* SKS Kumulatif */}
                                 <div>
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Total SKS Kumulatif
+                                        {t('ad.totalSKSKumulatif')}
                                     </label>
                                     <input
                                         type="number"
@@ -1278,7 +1279,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 {/* IPS */}
                                 <div>
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        IPS (Indeks Prestasi Semester)
+                                        {t('ad.ipsIndeksPrestasiSemester')}
                                     </label>
                                     <input
                                         type="number"
@@ -1295,7 +1296,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 {/* IPK */}
                                 <div>
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        IPK (Indeks Prestasi Kumulatif)
+                                        {t('ad.ipkIndeksPrestasiKumulatif')}
                                     </label>
                                     <input
                                         type="number"
@@ -1320,7 +1321,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                     class="rounded border-neutral-300 text-blue-600 focus:ring-blue-500"
                                 />
                                 <label for="createIsLock" class="font-medium text-neutral-800 dark:text-neutral-200">
-                                    Kunci aktivitas ini (KRS dan KHS terkunci dari perubahan mahasiswa)
+                                    {t('ad.kunciAktivitasIniKRSDanKHS')}
                                 </label>
                             </div>
 
@@ -1330,7 +1331,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                     onClick={() => setShowCreateModal(false)}
                                     class="px-4 py-2 text-xs font-semibold rounded border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700"
                                 >
-                                    Batal
+                                    {t('ad.batal')}
                                 </button>
                                 <button
                                     type="submit"
@@ -1343,7 +1344,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
                                     </Show>
-                                    <span>Simpan Aktivitas</span>
+                                    <span>{t('ad.simpanAktivitas')}</span>
                                 </button>
                             </div>
                         </form>
@@ -1360,7 +1361,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 <svg class="size-5 text-amber-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
-                                <span>Edit Data Aktivitas Mahasiswa</span>
+                                <span>{t('ad.editDataAktivitasMahasiswa')}</span>
                             </h3>
                             <button
                                 type="button"
@@ -1379,7 +1380,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                     {selectedActivity()?.student_name || selectedActivity()?.name}
                                 </div>
                                 <div class="text-[11px] text-neutral-500 font-mono mt-0.5">
-                                    NIM: {selectedActivity()?.student_code || '-'} • Periode: {selectedActivity()?.academic_year_name || '-'}
+                                    {t('ad.nim')} {selectedActivity()?.student_code || '-'} • Periode: {selectedActivity()?.academic_year_name || '-'}
                                 </div>
                             </div>
 
@@ -1387,7 +1388,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 {/* Status Mahasiswa */}
                                 <div>
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Status Perkuliahan
+                                        {t('ad.statusPerkuliahan')}
                                     </label>
                                     <select
                                         value={formStatusId()}
@@ -1403,14 +1404,14 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 {/* Program Studi */}
                                 <div>
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Program Studi
+                                        {t('ad.programStudi')}
                                     </label>
                                     <select
                                         value={formUnitId()}
                                         onChange={e => setFormUnitId(e.currentTarget.value)}
                                         class="w-full px-3 py-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
                                     >
-                                        <option value="">(Default)</option>
+                                        <option value="">{t('ad.default')}</option>
                                         <For each={studyUnits()}>
                                             {u => <option value={u.id}>{u.name}</option>}
                                         </For>
@@ -1420,7 +1421,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 {/* SKS Semester */}
                                 <div>
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        SKS Semester
+                                        {t('ad.sksSemester')}
                                     </label>
                                     <input
                                         type="number"
@@ -1433,7 +1434,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 {/* SKS Kumulatif */}
                                 <div>
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Total SKS Kumulatif
+                                        {t('ad.totalSKSKumulatif')}
                                     </label>
                                     <input
                                         type="number"
@@ -1446,7 +1447,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 {/* IPS */}
                                 <div>
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        IPS (Indeks Prestasi Semester)
+                                        {t('ad.ipsIndeksPrestasiSemester')}
                                     </label>
                                     <input
                                         type="number"
@@ -1462,7 +1463,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 {/* IPK */}
                                 <div>
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        IPK (Indeks Prestasi Kumulatif)
+                                        {t('ad.ipkIndeksPrestasiKumulatif')}
                                     </label>
                                     <input
                                         type="number"
@@ -1478,7 +1479,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 {/* Biaya Kuliah */}
                                 <div class="sm:col-span-2">
                                     <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Biaya Tagihan / SPP (Rp)
+                                        {t('ad.biayaTagihanSPPRp')}
                                     </label>
                                     <input
                                         type="number"
@@ -1499,7 +1500,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                     class="rounded border-neutral-300 text-blue-600 focus:ring-blue-500"
                                 />
                                 <label for="editIsLock" class="font-medium text-neutral-800 dark:text-neutral-200">
-                                    Kunci aktivitas ini (Terkunci dari revisi KRS/KHS)
+                                    {t('ad.kunciAktivitasIniTerkunciDariRevisi')}
                                 </label>
                             </div>
 
@@ -1509,7 +1510,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                     onClick={() => setShowEditModal(false)}
                                     class="px-4 py-2 text-xs font-semibold rounded border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700"
                                 >
-                                    Batal
+                                    {t('ad.batal')}
                                 </button>
                                 <button
                                     type="submit"
@@ -1522,7 +1523,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
                                     </Show>
-                                    <span>Simpan Perubahan</span>
+                                    <span>{t('ad.simpanPerubahan')}</span>
                                 </button>
                             </div>
                         </form>
@@ -1542,23 +1543,23 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                             </div>
                             <div>
                                 <h3 class="text-base font-bold text-neutral-900 dark:text-white">
-                                    Hapus Aktivitas Mahasiswa
+                                    {t('ad.hapusAktivitasMahasiswa')}
                                 </h3>
                                 <p class="text-xs text-neutral-500 mt-0.5">
-                                    Tindakan ini tidak dapat dibatalkan.
+                                    {t('ad.tindakanIniTidakDapatDibatalkan')}
                                 </p>
                             </div>
                         </div>
 
                         <div class="bg-neutral-50 dark:bg-neutral-850 p-3 rounded border border-neutral-200 dark:border-neutral-700 text-xs">
                             <p class="text-neutral-700 dark:text-neutral-300">
-                                Anda akan menghapus data aktivitas semester untuk:
+                                {t('ad.andaAkanMenghapusDataAktivitasSemester')}
                             </p>
                             <p class="font-bold text-neutral-900 dark:text-white mt-1">
                                 {selectedActivity()?.student_name || selectedActivity()?.name}
                             </p>
                             <p class="text-neutral-500 font-mono text-[11px]">
-                                NIM: {selectedActivity()?.student_code || '-'} • Periode: {selectedActivity()?.academic_year_name || '-'}
+                                {t('ad.nim')} {selectedActivity()?.student_code || '-'} • Periode: {selectedActivity()?.academic_year_name || '-'}
                             </p>
                         </div>
 
@@ -1568,7 +1569,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 onClick={() => setShowDeleteModal(false)}
                                 class="px-4 py-2 text-xs font-semibold rounded border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700"
                             >
-                                Batal
+                                {t('ad.batal')}
                             </button>
                             <button
                                 type="button"
@@ -1582,7 +1583,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
                                 </Show>
-                                <span>Ya, Hapus Data</span>
+                                <span>{t('ad.yaHapusData')}</span>
                             </button>
                         </div>
                     </div>

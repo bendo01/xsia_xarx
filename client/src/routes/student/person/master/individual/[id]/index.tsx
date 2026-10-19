@@ -25,6 +25,7 @@ import { openOrDownloadPdf } from '~/lib/pdfHelper';
 import type { AcademicTrendPoint } from '~/components/chart/academic_performance_chart';
 import StudentCreditChart from '~/components/chart/student_credit_chart';
 import PopupBlockedAlert from '~/components/alert/PopupBlockedAlert';
+import { t } from '../../../../../../i18n';
 
 const AcademicPerformanceChart = lazy(() => import('~/components/chart/academic_performance_chart'));
 
@@ -50,18 +51,18 @@ export default function StudentDashboardProfilePage() {
         setPrintingId(key);
         try {
             const semLabel = act.academic_year?.name || act.name || act.semester_name || 'Semester';
-            toast.info(`Generating KRS (${semLabel}) PDF...`);
+            toast.info(t('st.generatingKindNamePDF', { kind: 'KRS', name: semLabel }));
             const blob = await printActivityPlan(act.id);
             if (blob) {
                 const nim = studentRecord()?.code || 'Student';
                 const semName = semLabel.replace(/\s+/g, '_');
                 openOrDownloadPdf(blob, `KRS_${nim}_${semName}.pdf`, `KRS (${semLabel})`);
             } else {
-                toast.danger('Failed to generate KRS PDF.');
+                toast.danger(t('st.failedToGenerateKRSPDF'));
             }
         } catch (err) {
             console.error('Error printing KRS:', err);
-            toast.danger('An error occurred while generating KRS PDF.');
+            toast.danger(t('st.anErrorOccurredWhileGeneratingKRS'));
         } finally {
             setPrintingId(null);
         }
@@ -73,18 +74,18 @@ export default function StudentDashboardProfilePage() {
         setPrintingId(key);
         try {
             const semLabel = act.academic_year?.name || act.name || act.semester_name || 'Semester';
-            toast.info(`Generating KHS (${semLabel}) PDF...`);
+            toast.info(t('st.generatingKindNamePDF', { kind: 'KHS', name: semLabel }));
             const blob = await printActivityResult(act.id);
             if (blob) {
                 const nim = studentRecord()?.code || 'Student';
                 const semName = semLabel.replace(/\s+/g, '_');
                 openOrDownloadPdf(blob, `KHS_${nim}_${semName}.pdf`, `KHS (${semLabel})`);
             } else {
-                toast.danger('Failed to generate KHS PDF.');
+                toast.danger(t('st.failedToGenerateKHSPDF'));
             }
         } catch (err) {
             console.error('Error printing KHS:', err);
-            toast.danger('An error occurred while generating KHS PDF.');
+            toast.danger(t('st.anErrorOccurredWhileGeneratingKHS'));
         } finally {
             setPrintingId(null);
         }
@@ -172,7 +173,7 @@ export default function StudentDashboardProfilePage() {
             }
         } catch (error) {
             console.error('Error fetching student profile data:', error);
-            toast.danger('Failed to load student profile from server.');
+            toast.danger(t('st.failedToLoadStudentProfileFrom'));
         } finally {
             setIsLoading(false);
         }
@@ -216,7 +217,7 @@ export default function StudentDashboardProfilePage() {
         setActiveStudent(student.id, student.code);
         setSearchParams({ code: student.code });
 
-        toast.success(`Identitas mahasiswa aktif dialihkan ke NIM: ${student.code} (${student.unit_name || 'Program Studi'})`);
+        toast.success(`Identitas mahasiswa aktif dialihkan ke NIM: ${student.code} (${student.unit_name || t('st.programStudi')})`);
         await loadStudentSubRecords(student.id);
     };
 
@@ -255,7 +256,7 @@ export default function StudentDashboardProfilePage() {
     const ind = () => individualData()?.individual;
     const fullName = () => {
         const item = ind();
-        if (!item) return currentUserSignal()?.name || 'Student Account';
+        if (!item) return currentUserSignal()?.name || t('st.studentAccount');
         return [item.front_title, item.name, item.last_title].filter(Boolean).join(' ') || item.name;
     };
 
@@ -426,7 +427,7 @@ export default function StudentDashboardProfilePage() {
         return list.map((act, idx) => {
             const ips = Number(getActIps(act));
             const ipk = Number(getActIpk(act));
-            const semName = act.academic_year?.name || act.name || act.semester_name || `Sem ${idx + 1}`;
+            const semName = act.academic_year?.name || act.name || act.semester_name || t('st.semN', { n: idx + 1 });
             return {
                 semName,
                 ips,
@@ -481,7 +482,7 @@ export default function StudentDashboardProfilePage() {
         const fallbackKey = 'other';
         map.set(fallbackKey, {
             varietyId: fallbackKey,
-            varietyName: 'Mata Kuliah Umum / Lainnya',
+            varietyName: t('st.mataKuliahUmumLainnya'),
             courseCount: 0,
             totalCredits: 0,
             gradedCredits: 0,
@@ -577,7 +578,7 @@ export default function StudentDashboardProfilePage() {
                                     </div>
                                 </div>
                                 <span class="absolute -bottom-2 -right-2 px-2.5 py-0.5 rounded-xs bg-emerald-500 text-[10px] font-bold tracking-wider uppercase text-white shadow-xs border-2 border-white dark:border-neutral-800">
-                                    {studentRecord()?.status_name || 'Active Student'}
+                                    {studentRecord()?.status_name || t('st.activeStudent')}
                                 </span>
                             </div>
 
@@ -585,7 +586,7 @@ export default function StudentDashboardProfilePage() {
                                 <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
                                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-xs bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/80 text-blue-600 dark:text-blue-400 text-xs font-mono font-bold">
                                         <span class="size-2 rounded-xs bg-blue-400 animate-pulse"></span>
-                                        <span>NIM: {studentRecord()?.code || ind()?.code || '-'}</span>
+                                        <span>{t('st.nim')} {studentRecord()?.code || ind()?.code || '-'}</span>
                                     </div>
 
                                     {/* Multiple student identities badge */}
@@ -609,17 +610,17 @@ export default function StudentDashboardProfilePage() {
                         {/* Quick Stats Badges */}
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                             <div class="p-3.5 bg-neutral-100 dark:bg-neutral-700 backdrop-blur-md rounded-xs border border-neutral-200 dark:border-neutral-600 text-center">
-                                <span class="block text-[11px] text-blue-700 dark:text-blue-300 font-mono uppercase tracking-wider">Cumulative GPA (IPK)</span>
+                                <span class="block text-[11px] text-blue-700 dark:text-blue-300 font-mono uppercase tracking-wider">{t('st.cumulativeGPAIPK')}</span>
                                 <span class="text-xl sm:text-2xl font-black text-neutral-900 dark:text-white">{gpa()}</span>
-                                <span class="block text-[10px] text-neutral-500 dark:text-neutral-400 font-mono mt-0.5">IPS: {semesterGpa()}</span>
+                                <span class="block text-[10px] text-neutral-500 dark:text-neutral-400 font-mono mt-0.5">{t('st.ips')} {semesterGpa()}</span>
                             </div>
                             <div class="p-3.5 bg-neutral-100 dark:bg-neutral-700 backdrop-blur-md rounded-xs border border-neutral-200 dark:border-neutral-600 text-center">
-                                <span class="block text-[11px] text-blue-700 dark:text-blue-300 font-mono uppercase tracking-wider">Total Credits (SKS)</span>
-                                <span class="text-xl sm:text-2xl font-black text-neutral-900 dark:text-white">{totalCredits()} <span class="text-xs font-normal text-neutral-500 dark:text-neutral-400">SKS</span></span>
-                                <span class="block text-[10px] text-neutral-500 dark:text-neutral-400 font-mono mt-0.5">Sem: {semesterCredits()} SKS</span>
+                                <span class="block text-[11px] text-blue-700 dark:text-blue-300 font-mono uppercase tracking-wider">{t('st.totalCreditsSKS')}</span>
+                                <span class="text-xl sm:text-2xl font-black text-neutral-900 dark:text-white">{totalCredits()} <span class="text-xs font-normal text-neutral-500 dark:text-neutral-400">{t('st.sks')}</span></span>
+                                <span class="block text-[10px] text-neutral-500 dark:text-neutral-400 font-mono mt-0.5">{t('st.sem')} {semesterCredits()} SKS</span>
                             </div>
                             <div class="p-3.5 bg-neutral-100 dark:bg-neutral-700 backdrop-blur-md rounded-xs border border-neutral-200 dark:border-neutral-600 text-center col-span-2 sm:col-span-1 flex flex-col justify-center">
-                                <span class="block text-[11px] text-blue-700 dark:text-blue-300 font-mono uppercase tracking-wider">Academic Status</span>
+                                <span class="block text-[11px] text-blue-700 dark:text-blue-300 font-mono uppercase tracking-wider">{t('st.academicStatus')}</span>
                                 <span class="text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-300">{studentRecord()?.status_name || 'Active'}</span>
                                 <span class="block text-[10px] text-neutral-600 dark:text-neutral-300 font-mono mt-0.5 truncate">{studentRecord()?.academic_year_name || 'Reguler'}</span>
                             </div>
@@ -639,18 +640,18 @@ export default function StudentDashboardProfilePage() {
                                 </div>
                                 <div>
                                     <h2 class="text-sm font-bold text-neutral-900 dark:text-white flex items-center gap-2">
-                                        <span>Pilih Identitas Akademik Mahasiswa</span>
+                                        <span>{t('st.pilihIdentitasAkademikMahasiswa')}</span>
                                         <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
                                             {availableStudents().length} Identitas
                                         </span>
                                     </h2>
                                     <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                        Akun ini terdaftar pada multi program studi/identitas. Klik salah satu kartu identitas untuk beralih.
+                                        {t('st.akunIniTerdaftarPadaMultiProgram')}
                                     </p>
                                 </div>
                             </div>
                             <div class="text-xs font-mono text-neutral-400 dark:text-neutral-500 self-start sm:self-auto">
-                                Identitas Aktif: <span class="font-bold text-blue-600 dark:text-blue-400">NIM {studentRecord()?.code || '-'}</span>
+                                {t('st.identitasAktif')} <span class="font-bold text-blue-600 dark:text-blue-400">{t('st.nim2')} {studentRecord()?.code || '-'}</span>
                             </div>
                         </div>
 
@@ -676,7 +677,7 @@ export default function StudentDashboardProfilePage() {
                                                     <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                                                         <polyline points="20 6 9 17 4 12" />
                                                     </svg>
-                                                    <span>Identitas Aktif</span>
+                                                    <span>{t('st.identitasAktif2')}</span>
                                                 </div>
                                             </Show>
 
@@ -693,25 +694,25 @@ export default function StudentDashboardProfilePage() {
                                                     <div>
                                                         <div class="flex items-center gap-2">
                                                             <span class="text-xs font-mono font-bold text-neutral-900 dark:text-white">
-                                                                NIM: {std.code}
+                                                                {t('st.nim')} {std.code}
                                                             </span>
                                                             <span class="px-2 py-0.5 rounded-xs text-[10px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                                                                {std.status_name || 'Terdaftar'}
+                                                                {std.status_name || t('st.terdaftar')}
                                                             </span>
                                                         </div>
                                                         <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                                            {std.unit_name || 'Program Studi Mahasiswa'}
+                                                            {std.unit_name || t('st.programStudiMahasiswa')}
                                                         </h3>
                                                     </div>
                                                 </div>
 
                                                 <div class="pt-2 border-t border-neutral-100 dark:border-neutral-700/60 grid grid-cols-2 gap-2 text-xs text-neutral-600 dark:text-neutral-300">
                                                     <div>
-                                                        <span class="text-neutral-400 block text-[10px] font-mono uppercase">Angkatan:</span>
+                                                        <span class="text-neutral-400 block text-[10px] font-mono uppercase">{t('st.angkatan')}</span>
                                                         <span class="font-semibold">{std.academic_year_name || std.registered?.substring(0, 4) || '-'}</span>
                                                     </div>
                                                     <div>
-                                                        <span class="text-neutral-400 block text-[10px] font-mono uppercase">Tgl Registrasi:</span>
+                                                        <span class="text-neutral-400 block text-[10px] font-mono uppercase">{t('st.tglRegistrasi')}</span>
                                                         <span class="font-semibold">{std.registered || '-'}</span>
                                                     </div>
                                                 </div>
@@ -724,14 +725,14 @@ export default function StudentDashboardProfilePage() {
                                                         onClick={(e) => { e.stopPropagation(); handleSelectStudent(std); }}
                                                         class="w-full py-2 px-3 bg-neutral-100 dark:bg-neutral-700 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 rounded-xs text-xs font-bold transition-colors text-center"
                                                     >
-                                                        Gunakan Identitas NIM {std.code} →
+                                                        {t('st.gunakanIdentitasNIM')} {std.code} →
                                                     </button>
                                                 }>
                                                     <div class="w-full py-2 px-3 bg-blue-600 text-white rounded-xs text-xs font-bold text-center flex items-center justify-center gap-1.5 shadow-xs">
                                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                                             <polyline points="20 6 9 17 4 12" />
                                                         </svg>
-                                                        <span>Identitas Sedang Aktif</span>
+                                                        <span>{t('st.identitasSedangAktif')}</span>
                                                     </div>
                                                 </Show>
                                             </div>
@@ -754,8 +755,8 @@ export default function StudentDashboardProfilePage() {
                                 <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>
                             </div>
                             <div>
-                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Course Enrollment</h3>
-                                <p class="text-[11px] text-neutral-500 dark:text-neutral-400">Select & Enroll in KRS Classes</p>
+                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{t('st.courseEnrollment')}</h3>
+                                <p class="text-[11px] text-neutral-500 dark:text-neutral-400">{t('st.selectEnrollInKRSClasses')}</p>
                             </div>
                         </div>
                         <span class="text-neutral-400 group-hover:translate-x-1 transition-transform">→</span>
@@ -770,8 +771,8 @@ export default function StudentDashboardProfilePage() {
                                 <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" /><path d="M6 6h10M6 10h10M6 14h6" /></svg>
                             </div>
                             <div>
-                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Semester Activities</h3>
-                                <p class="text-[11px] text-neutral-500 dark:text-neutral-400">View Study Plan & Grades (KHS)</p>
+                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{t('st.semesterActivities')}</h3>
+                                <p class="text-[11px] text-neutral-500 dark:text-neutral-400">{t('st.viewStudyPlanGradesKHS')}</p>
                             </div>
                         </div>
                         <span class="text-neutral-400 group-hover:translate-x-1 transition-transform">→</span>
@@ -786,8 +787,8 @@ export default function StudentDashboardProfilePage() {
                                 <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                             </div>
                             <div>
-                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Academic Advisers</h3>
-                                <p class="text-[11px] text-neutral-500 dark:text-neutral-400">Consultation & Guidance</p>
+                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">{t('st.academicAdvisers')}</h3>
+                                <p class="text-[11px] text-neutral-500 dark:text-neutral-400">{t('st.consultationGuidance')}</p>
                             </div>
                         </div>
                         <span class="text-neutral-400 group-hover:translate-x-1 transition-transform">→</span>
@@ -802,8 +803,8 @@ export default function StudentDashboardProfilePage() {
                                 <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" /></svg>
                             </div>
                             <div>
-                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Admitted Students</h3>
-                                <p class="text-[11px] text-neutral-500 dark:text-neutral-400">Student Directory & Master</p>
+                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{t('st.admittedStudents')}</h3>
+                                <p class="text-[11px] text-neutral-500 dark:text-neutral-400">{t('st.studentDirectoryMaster')}</p>
                             </div>
                         </div>
                         <span class="text-neutral-400 group-hover:translate-x-1 transition-transform">→</span>
@@ -817,8 +818,8 @@ export default function StudentDashboardProfilePage() {
                         <button
                             type="button"
                             onClick={() => setActiveTab('overview')}
-                            title="Overview & Academic History"
-                            aria-label="Overview & Academic History"
+                            title={t('st.overviewAcademicHistory')}
+                            aria-label={t('st.overviewAcademicHistory')}
                             class={`flex items-center gap-2 pb-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap px-1 ${activeTab() === 'overview'
                                     ? 'border-blue-600 text-blue-600 dark:text-blue-400'
                                     : 'border-transparent text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200'
@@ -827,13 +828,13 @@ export default function StudentDashboardProfilePage() {
                             <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
                             </svg>
-                            <span class="hidden sm:inline">Overview & Academic History</span>
+                            <span class="hidden sm:inline">{t('st.overviewAcademicHistory')}</span>
                         </button>
                         <button
                             type="button"
                             onClick={() => setActiveTab('biodata')}
-                            title="Personal Biodata & Address"
-                            aria-label="Personal Biodata & Address"
+                            title={t('st.personalBiodataAddress')}
+                            aria-label={t('st.personalBiodataAddress')}
                             class={`flex items-center gap-2 pb-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap px-1 ${activeTab() === 'biodata'
                                     ? 'border-blue-600 text-blue-600 dark:text-blue-400'
                                     : 'border-transparent text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200'
@@ -842,13 +843,13 @@ export default function StudentDashboardProfilePage() {
                             <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z" />
                             </svg>
-                            <span class="hidden sm:inline">Personal Biodata & Address</span>
+                            <span class="hidden sm:inline">{t('st.personalBiodataAddress')}</span>
                         </button>
                         <button
                             type="button"
                             onClick={() => setActiveTab('academic')}
-                            title="Advisers & Guidance"
-                            aria-label="Advisers & Guidance"
+                            title={t('st.advisersGuidance')}
+                            aria-label={t('st.advisersGuidance')}
                             class={`flex items-center gap-2 pb-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap px-1 ${activeTab() === 'academic'
                                     ? 'border-blue-600 text-blue-600 dark:text-blue-400'
                                     : 'border-transparent text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200'
@@ -857,7 +858,7 @@ export default function StudentDashboardProfilePage() {
                             <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
                             </svg>
-                            <span class="hidden sm:inline">Advisers & Guidance</span>
+                            <span class="hidden sm:inline">{t('st.advisersGuidance')}</span>
                         </button>
                     </div>
 
@@ -865,7 +866,7 @@ export default function StudentDashboardProfilePage() {
                         <Show when={!isLoading()} fallback={
                             <div class="py-12 flex flex-col items-center justify-center gap-3 text-neutral-400">
                                 <div class="size-8 border-3 border-blue-500 border-t-transparent rounded-xs animate-spin"></div>
-                                <p class="text-xs font-mono">Loading student profile details from server...</p>
+                                <p class="text-xs font-mono">{t('st.loadingStudentProfileDetailsFromServer')}</p>
                             </div>
                         }>
                             {/* TAB 1: OVERVIEW */}
@@ -876,27 +877,27 @@ export default function StudentDashboardProfilePage() {
                                         <div class="p-5 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 space-y-3">
                                             <div class="flex items-center justify-between">
                                                 <h3 class="text-xs font-bold font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                                                    Enrollment Summary
+                                                    {t('st.enrollmentSummary')}
                                                 </h3>
                                                 <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-mono">
-                                                    NIM: {studentRecord()?.code || '-'}
+                                                    {t('st.nim')} {studentRecord()?.code || '-'}
                                                 </span>
                                             </div>
                                             <div class="grid grid-cols-2 gap-3 text-xs">
                                                 <div>
-                                                    <span class="text-neutral-400 block">Student NIM</span>
+                                                    <span class="text-neutral-400 block">{t('st.studentNIM')}</span>
                                                     <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{studentRecord()?.code || '-'}</span>
                                                 </div>
                                                 <div>
-                                                    <span class="text-neutral-400 block">Registration Date</span>
+                                                    <span class="text-neutral-400 block">{t('st.registrationDate')}</span>
                                                     <span class="font-bold text-neutral-800 dark:text-neutral-100">{studentRecord()?.registered || '-'}</span>
                                                 </div>
                                                 <div>
-                                                    <span class="text-neutral-400 block">Study Program</span>
+                                                    <span class="text-neutral-400 block">{t('st.studyProgram')}</span>
                                                     <span class="font-bold text-neutral-800 dark:text-neutral-100">{studentRecord()?.unit_name || '-'}</span>
                                                 </div>
                                                 <div>
-                                                    <span class="text-neutral-400 block">Current Status</span>
+                                                    <span class="text-neutral-400 block">{t('st.currentStatus')}</span>
                                                     <span class="font-bold text-emerald-600 dark:text-emerald-400">{studentRecord()?.status_name || 'Active / Terdaftar'}</span>
                                                 </div>
                                             </div>
@@ -905,25 +906,25 @@ export default function StudentDashboardProfilePage() {
                                         {/* Identity Summary Card */}
                                         <div class="p-5 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80 space-y-3">
                                             <h3 class="text-xs font-bold font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                                                Identity & Citizenship
+                                                {t('st.identityCitizenship')}
                                             </h3>
                                             <div class="grid grid-cols-2 gap-3 text-xs">
                                                 <div>
-                                                    <span class="text-neutral-400 block">National ID (NIK)</span>
+                                                    <span class="text-neutral-400 block">{t('st.nationalIDNIK2')}</span>
                                                     <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{ind()?.code || '-'}</span>
                                                 </div>
                                                 <div>
-                                                    <span class="text-neutral-400 block">NISN</span>
+                                                    <span class="text-neutral-400 block">{t('st.nisn2')}</span>
                                                     <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{studentRecord()?.nisn || '-'}</span>
                                                 </div>
                                                 <div>
-                                                    <span class="text-neutral-400 block">Birth Place & Date</span>
+                                                    <span class="text-neutral-400 block">{t('st.birthPlaceDate2')}</span>
                                                     <span class="font-bold text-neutral-800 dark:text-neutral-100">
                                                         {ind()?.birth_place ? `${ind()?.birth_place}, ${ind()?.birth_date || '-'}` : (ind()?.birth_date || '-')}
                                                     </span>
                                                 </div>
                                                 <div>
-                                                    <span class="text-neutral-400 block">Gender</span>
+                                                    <span class="text-neutral-400 block">{t('st.gender')}</span>
                                                     <span class="font-bold text-neutral-800 dark:text-neutral-100">
                                                         {individualData()?.gender?.name || '-'}
                                                     </span>
@@ -942,11 +943,11 @@ export default function StudentDashboardProfilePage() {
                                                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
                                                         </div>
                                                         <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                                            Academic Performance Trend
+                                                            {t('st.academicPerformanceTrend')}
                                                         </h3>
                                                     </div>
                                                     <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
-                                                        Semester IPS & Cumulative IPK over Academic Years (Scale: 0.0 - 4.0)
+                                                        {t('st.semesterIPSCumulativeIPKOverAcademic')}
                                                     </p>
                                                 </div>
 
@@ -954,11 +955,11 @@ export default function StudentDashboardProfilePage() {
                                                 <div class="flex items-center gap-3 text-[11px] font-mono shrink-0">
                                                     <div class="flex items-center gap-1.5">
                                                         <span class="size-2.5 rounded-xs bg-blue-600"></span>
-                                                        <span class="text-neutral-700 dark:text-neutral-300 font-semibold">IPK</span>
+                                                        <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('st.ipk')}</span>
                                                     </div>
                                                     <div class="flex items-center gap-1.5">
                                                         <span class="size-2.5 rounded-xs bg-sky-500"></span>
-                                                        <span class="text-neutral-700 dark:text-neutral-300 font-semibold">IPS</span>
+                                                        <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('st.ips2')}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -966,13 +967,13 @@ export default function StudentDashboardProfilePage() {
                                             <Show when={chartData().length > 0} fallback={
                                                 <div class="py-16 text-center text-neutral-400 font-mono text-xs flex flex-col items-center justify-center gap-2">
                                                     <svg class="size-8 text-neutral-300 dark:text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-                                                    <span>No academic semester activity records found to plot trends.</span>
+                                                    <span>{t('st.noAcademicSemesterActivityRecordsFound')}</span>
                                                 </div>
                                             }>
                                                 <Suspense fallback={
                                                     <div class="py-16 text-center flex flex-col items-center justify-center gap-2">
                                                         <div class="size-6 border-2 border-blue-600 border-t-transparent rounded-xs animate-spin"></div>
-                                                        <span class="text-xs font-mono text-neutral-400">Loading chart...</span>
+                                                        <span class="text-xs font-mono text-neutral-400">{t('st.loadingChart')}</span>
                                                     </div>
                                                 }>
                                                     <AcademicPerformanceChart data={chartData()} />
@@ -989,21 +990,21 @@ export default function StudentDashboardProfilePage() {
                                                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
                                                         </div>
                                                         <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                                            Progres Beban Kredit SKS
+                                                            {t('st.progresBebanKreditSKS')}
                                                         </h3>
                                                     </div>
                                                     <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
-                                                        Akumulasi SKS lulus kumulatif dan SKS diambil per semester.
+                                                        {t('st.akumulasiSKSLulusKumulatifDanSKS')}
                                                     </p>
                                                 </div>
                                                 <div class="flex items-center gap-3 text-[11px] font-mono shrink-0">
                                                     <div class="flex items-center gap-1.5">
                                                         <span class="size-2.5 rounded-xs bg-blue-600"></span>
-                                                        <span class="text-neutral-700 dark:text-neutral-300 font-semibold">SKS Kumulatif</span>
+                                                        <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('st.sksKumulatif')}</span>
                                                     </div>
                                                     <div class="flex items-center gap-1.5">
                                                         <span class="size-2.5 rounded-xs bg-amber-500"></span>
-                                                        <span class="text-neutral-700 dark:text-neutral-300 font-semibold">SKS Semester</span>
+                                                        <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('st.sksSemester')}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1011,7 +1012,7 @@ export default function StudentDashboardProfilePage() {
                                             <Show when={academicTrendData().length > 0} fallback={
                                                 <div class="py-16 text-center text-neutral-400 font-mono text-xs flex flex-col items-center justify-center gap-2">
                                                     <svg class="size-8 text-neutral-300 dark:text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
-                                                    <span>No academic credit records found to plot trends.</span>
+                                                    <span>{t('st.noAcademicCreditRecordsFoundTo')}</span>
                                                 </div>
                                             }>
                                                 <StudentCreditChart data={academicTrendData()} />
@@ -1027,11 +1028,11 @@ export default function StudentDashboardProfilePage() {
                                                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
                                                         </div>
                                                         <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                                            Course Variety & IPK Scope
+                                                            {t('st.courseVarietyIPKScope')}
                                                         </h3>
                                                     </div>
                                                     <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
-                                                        Cumulative Index Breakdown by Course Classification Varieties
+                                                        {t('st.cumulativeIndexBreakdownByCourseClassification')}
                                                     </p>
                                                 </div>
 
@@ -1043,7 +1044,7 @@ export default function StudentDashboardProfilePage() {
                                             <Show when={varietyScopeData().length > 0} fallback={
                                                 <div class="py-16 text-center text-neutral-400 font-mono text-xs flex flex-col items-center justify-center gap-2">
                                                     <svg class="size-8 text-neutral-300 dark:text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
-                                                    <span>No course variety records or grade details enrolled yet.</span>
+                                                    <span>{t('st.noCourseVarietyRecordsOrGrade')}</span>
                                                 </div>
                                             }>
                                                 <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
@@ -1087,7 +1088,7 @@ export default function StudentDashboardProfilePage() {
                                                                     text-anchor="middle"
                                                                     class="font-mono uppercase text-[9px] fill-neutral-400 tracking-wider"
                                                                 >
-                                                                    {hoveredVarietyIdx() !== null ? 'Variety IPK' : 'Overall IPK'}
+                                                                    {hoveredVarietyIdx() !== null ? t('st.varietyIPK') : t('st.overallIPK')}
                                                                 </text>
                                                             </g>
                                                         </svg>
@@ -1119,7 +1120,7 @@ export default function StudentDashboardProfilePage() {
                                                                                 </span>
                                                                             </div>
                                                                             <span class="font-mono font-extrabold text-blue-600 dark:text-blue-400 shrink-0">
-                                                                                IPK {slice.cumulativeIndex.toFixed(2)}
+                                                                                {t('st.ipk')} {slice.cumulativeIndex.toFixed(2)}
                                                                             </span>
                                                                         </div>
                                                                         <div class="flex items-center justify-between text-[10px] text-neutral-400 font-mono mt-1 pl-4.5">
@@ -1141,14 +1142,14 @@ export default function StudentDashboardProfilePage() {
                                         <div class="flex items-center justify-between">
                                             <div class="flex items-center gap-2">
                                                 <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                                    Recent Academic Semesters
+                                                    {t('st.recentAcademicSemesters')}
                                                 </h3>
                                                 <Show when={isSubLoading()}>
                                                     <div class="size-3.5 border-2 border-blue-500 border-t-transparent rounded-xs animate-spin"></div>
                                                 </Show>
                                             </div>
                                             <A href="/student/academic/student/campaign/activity" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
-                                                View All Semesters →
+                                                {t('st.viewAllSemesters')}
                                             </A>
                                         </div>
 
@@ -1157,20 +1158,20 @@ export default function StudentDashboardProfilePage() {
                                             <table class="w-full text-xs text-start">
                                                 <thead class="bg-neutral-100 dark:bg-neutral-900/50 text-neutral-500 font-mono uppercase text-[10px]">
                                                     <tr>
-                                                        <th class="py-2.5 px-3 text-start rounded-xs">Semester / Campaign</th>
-                                                        <th class="py-2.5 px-3 text-center">Semester SKS</th>
-                                                        <th class="py-2.5 px-3 text-center">Total SKS</th>
-                                                        <th class="py-2.5 px-3 text-center">Semester IPS</th>
-                                                        <th class="py-2.5 px-3 text-center">Cumulative IPK</th>
-                                                        <th class="py-2.5 px-3 text-center">Lock Status</th>
-                                                        <th class="py-2.5 px-3 text-end rounded-xs">Action</th>
+                                                        <th class="py-2.5 px-3 text-start rounded-xs">{t('st.semesterCampaign')}</th>
+                                                        <th class="py-2.5 px-3 text-center">{t('st.semesterSKS')}</th>
+                                                        <th class="py-2.5 px-3 text-center">{t('st.totalSKS')}</th>
+                                                        <th class="py-2.5 px-3 text-center">{t('st.semesterIPS')}</th>
+                                                        <th class="py-2.5 px-3 text-center">{t('st.cumulativeIPK')}</th>
+                                                        <th class="py-2.5 px-3 text-center">{t('st.lockStatus')}</th>
+                                                        <th class="py-2.5 px-3 text-end rounded-xs">{t('st.action')}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="divide-y divide-neutral-100 dark:divide-neutral-700/50">
                                                     <Show when={recentActivities().length > 0} fallback={
                                                         <tr>
                                                             <td colspan="7" class="py-8 text-center text-neutral-400 font-mono">
-                                                                No semester academic activities recorded for NIM {studentRecord()?.code || '-'}.
+                                                                {t('st.noSemesterAcademicActivitiesRecordedFor')} {studentRecord()?.code || '-'}.
                                                             </td>
                                                         </tr>
                                                     }>
@@ -1178,7 +1179,7 @@ export default function StudentDashboardProfilePage() {
                                                             {(act) => (
                                                                 <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900/30 transition-colors">
                                                                     <td class="py-3 px-3 font-semibold text-neutral-900 dark:text-white">
-                                                                        {act.academic_year?.name || act.name || act.semester_name || 'Academic Semester'}
+                                                                        {act.academic_year?.name || act.name || act.semester_name || t('st.academicSemester')}
                                                                     </td>
                                                                     <td class="py-3 px-3 text-center font-mono">{getActSemesterSks(act)}</td>
                                                                     <td class="py-3 px-3 text-center font-mono">{getActTotalSks(act)}</td>
@@ -1193,7 +1194,7 @@ export default function StudentDashboardProfilePage() {
                                                                                 ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
                                                                                 : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
                                                                             }`}>
-                                                                            {act.is_lock ? 'Locked' : 'Unlocked'}
+                                                                            {act.is_lock ? t('st.locked') : t('st.unlocked')}
                                                                         </span>
                                                                     </td>
                                                                     <td class="py-3 px-3 text-end">
@@ -1202,7 +1203,7 @@ export default function StudentDashboardProfilePage() {
                                                                                 type="button"
                                                                                 onClick={() => handlePrintKRS(act)}
                                                                                 disabled={printingId() === `krs-${act.id}`}
-                                                                                title="Print / Download KRS (Study Plan Card)"
+                                                                                title={t('st.printDownloadKRSStudyPlanCard')}
                                                                                 class="px-2 py-1 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-xs text-[11px] font-semibold inline-flex items-center gap-1 transition-colors disabled:opacity-50"
                                                                             >
                                                                                 <Show when={printingId() === `krs-${act.id}`} fallback={
@@ -1210,13 +1211,13 @@ export default function StudentDashboardProfilePage() {
                                                                                 }>
                                                                                     <div class="size-3 border-2 border-current border-t-transparent rounded-xs animate-spin"></div>
                                                                                 </Show>
-                                                                                <span>KRS</span>
+                                                                                <span>{t('st.krs')}</span>
                                                                             </button>
                                                                             <button
                                                                                 type="button"
                                                                                 onClick={() => handlePrintKHS(act)}
                                                                                 disabled={printingId() === `khs-${act.id}`}
-                                                                                title="Print / Download KHS (Study Result Card)"
+                                                                                title={t('st.printDownloadKHSStudyResultCard')}
                                                                                 class="px-2 py-1 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-xs text-[11px] font-semibold inline-flex items-center gap-1 transition-colors disabled:opacity-50"
                                                                             >
                                                                                 <Show when={printingId() === `khs-${act.id}`} fallback={
@@ -1224,13 +1225,13 @@ export default function StudentDashboardProfilePage() {
                                                                                 }>
                                                                                     <div class="size-3 border-2 border-current border-t-transparent rounded-xs animate-spin"></div>
                                                                                 </Show>
-                                                                                <span>KHS</span>
+                                                                                <span>{t('st.khs')}</span>
                                                                             </button>
                                                                             <A
                                                                                 href={`/student/academic/student/campaign/activity/${act.id}/show`}
                                                                                 class="px-2.5 py-1 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-xs text-xs font-semibold"
                                                                             >
-                                                                                Details
+                                                                                {t('st.details')}
                                                                             </A>
                                                                         </div>
                                                                     </td>
@@ -1246,7 +1247,7 @@ export default function StudentDashboardProfilePage() {
                                         <div class="block md:hidden space-y-3">
                                             <Show when={recentActivities().length > 0} fallback={
                                                 <div class="p-6 text-center text-neutral-400 font-mono text-xs rounded-xs bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200/80 dark:border-neutral-700/80">
-                                                    No semester academic activities recorded for NIM {studentRecord()?.code || '-'}.
+                                                    {t('st.noSemesterAcademicActivitiesRecordedFor')} {studentRecord()?.code || '-'}.
                                                 </div>
                                             }>
                                                 <For each={recentActivities()}>
@@ -1260,10 +1261,10 @@ export default function StudentDashboardProfilePage() {
                                                                     </div>
                                                                     <div>
                                                                         <h4 class="text-xs font-bold text-neutral-900 dark:text-white leading-snug">
-                                                                            {act.academic_year?.name || act.name || act.semester_name || 'Academic Semester'}
+                                                                            {act.academic_year?.name || act.name || act.semester_name || t('st.academicSemester')}
                                                                         </h4>
                                                                         <span class="text-[10px] text-neutral-400 font-mono">
-                                                                            ID: {act.id ? `${act.id.slice(0, 8)}...` : '-'}
+                                                                            {t('st.id')} {act.id ? `${act.id.slice(0, 8)}...` : '-'}
                                                                         </span>
                                                                     </div>
                                                                 </div>
@@ -1272,32 +1273,32 @@ export default function StudentDashboardProfilePage() {
                                                                         : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
                                                                     }`}>
                                                                     <span class={`size-1.5 rounded-xs ${act.is_lock ? 'bg-amber-500' : 'bg-emerald-500'}`}></span>
-                                                                    {act.is_lock ? 'Locked' : 'Unlocked'}
+                                                                    {act.is_lock ? t('st.locked') : t('st.unlocked')}
                                                                 </span>
                                                             </div>
 
                                                             {/* Metric Grid: Semester SKS, Total SKS, IPS, IPK */}
                                                             <div class="grid grid-cols-4 gap-2 pt-2 border-t border-neutral-200/60 dark:border-neutral-800 text-center">
                                                                 <div class="p-2 rounded-xs bg-white dark:bg-neutral-800/80 border border-neutral-200/60 dark:border-neutral-700/60">
-                                                                    <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">Sem. SKS</span>
+                                                                    <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('st.semSKS')}</span>
                                                                     <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
                                                                         {getActSemesterSks(act)}
                                                                     </span>
                                                                 </div>
                                                                 <div class="p-2 rounded-xs bg-white dark:bg-neutral-800/80 border border-neutral-200/60 dark:border-neutral-700/60">
-                                                                    <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">Total SKS</span>
+                                                                    <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('st.totalSKS')}</span>
                                                                     <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
                                                                         {getActTotalSks(act)}
                                                                     </span>
                                                                 </div>
                                                                 <div class="p-2 rounded-xs bg-white dark:bg-neutral-800/80 border border-neutral-200/60 dark:border-neutral-700/60">
-                                                                    <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">IPS</span>
+                                                                    <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('st.ips2')}</span>
                                                                     <span class="font-mono font-bold text-xs text-blue-600 dark:text-blue-400">
                                                                         {Number(getActIps(act)).toFixed(2)}
                                                                     </span>
                                                                 </div>
                                                                 <div class="p-2 rounded-xs bg-white dark:bg-neutral-800/80 border border-neutral-200/60 dark:border-neutral-700/60">
-                                                                    <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">IPK</span>
+                                                                    <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('st.ipk')}</span>
                                                                     <span class="font-mono font-bold text-xs text-blue-600 dark:text-blue-400">
                                                                         {Number(getActIpk(act)).toFixed(2)}
                                                                     </span>
@@ -1310,7 +1311,7 @@ export default function StudentDashboardProfilePage() {
                                                                     type="button"
                                                                     onClick={() => handlePrintKRS(act)}
                                                                     disabled={printingId() === `krs-${act.id}`}
-                                                                    title="Print / Download KRS (Study Plan Card)"
+                                                                    title={t('st.printDownloadKRSStudyPlanCard')}
                                                                     class="flex-1 py-1.5 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-xs text-xs font-semibold inline-flex items-center justify-center gap-1 transition-colors disabled:opacity-50"
                                                                 >
                                                                     <Show when={printingId() === `krs-${act.id}`} fallback={
@@ -1318,13 +1319,13 @@ export default function StudentDashboardProfilePage() {
                                                                     }>
                                                                         <div class="size-3 border-2 border-current border-t-transparent rounded-xs animate-spin"></div>
                                                                     </Show>
-                                                                    <span>KRS</span>
+                                                                    <span>{t('st.krs')}</span>
                                                                 </button>
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => handlePrintKHS(act)}
                                                                     disabled={printingId() === `khs-${act.id}`}
-                                                                    title="Print / Download KHS (Study Result Card)"
+                                                                    title={t('st.printDownloadKHSStudyResultCard')}
                                                                     class="flex-1 py-1.5 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-xs text-xs font-semibold inline-flex items-center justify-center gap-1 transition-colors disabled:opacity-50"
                                                                 >
                                                                     <Show when={printingId() === `khs-${act.id}`} fallback={
@@ -1332,13 +1333,13 @@ export default function StudentDashboardProfilePage() {
                                                                     }>
                                                                         <div class="size-3 border-2 border-current border-t-transparent rounded-xs animate-spin"></div>
                                                                     </Show>
-                                                                    <span>KHS</span>
+                                                                    <span>{t('st.khs')}</span>
                                                                 </button>
                                                                 <A
                                                                     href={`/student/academic/student/campaign/activity/${act.id}/show`}
                                                                     class="flex-1 py-1.5 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-xs text-xs font-semibold text-center transition-colors"
                                                                 >
-                                                                    Details
+                                                                    {t('st.details')}
                                                                 </A>
                                                             </div>
                                                         </div>
@@ -1355,27 +1356,27 @@ export default function StudentDashboardProfilePage() {
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
                                     <div class="space-y-4 p-5 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80">
                                         <h3 class="text-xs font-bold font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                                            Personal Details
+                                            {t('st.personalDetails')}
                                         </h3>
                                         <div class="space-y-2.5">
                                             <div class="flex justify-between py-1 border-b border-neutral-200/60 dark:border-neutral-800">
-                                                <span class="text-neutral-400">Full Name</span>
+                                                <span class="text-neutral-400">{t('st.fullName')}</span>
                                                 <span class="font-bold text-neutral-800 dark:text-neutral-100">{fullName()}</span>
                                             </div>
                                             <div class="flex justify-between py-1 border-b border-neutral-200/60 dark:border-neutral-800">
-                                                <span class="text-neutral-400">Email</span>
+                                                <span class="text-neutral-400">{t('st.email2')}</span>
                                                 <span class="font-bold text-neutral-800 dark:text-neutral-100">{individualData()?.user?.email || currentUserSignal()?.email || '-'}</span>
                                             </div>
                                             <div class="flex justify-between py-1 border-b border-neutral-200/60 dark:border-neutral-800">
-                                                <span class="text-neutral-400">Phone Number</span>
+                                                <span class="text-neutral-400">{t('st.phoneNumber')}</span>
                                                 <span class="font-bold text-neutral-800 dark:text-neutral-100">{individualData()?.biodata?.phone_number || '-'}</span>
                                             </div>
                                             <div class="flex justify-between py-1 border-b border-neutral-200/60 dark:border-neutral-800">
-                                                <span class="text-neutral-400">Blood Type</span>
+                                                <span class="text-neutral-400">{t('st.bloodType')}</span>
                                                 <span class="font-bold text-neutral-800 dark:text-neutral-100">{individualData()?.biodata?.blood_type?.name || '-'}</span>
                                             </div>
                                             <div class="flex justify-between py-1 border-b border-neutral-200/60 dark:border-neutral-800">
-                                                <span class="text-neutral-400">Religion</span>
+                                                <span class="text-neutral-400">{t('st.religion')}</span>
                                                 <span class="font-bold text-neutral-800 dark:text-neutral-100">{individualData()?.religion?.name || '-'}</span>
                                             </div>
                                         </div>
@@ -1383,26 +1384,26 @@ export default function StudentDashboardProfilePage() {
 
                                     <div class="space-y-4 p-5 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-700/80">
                                         <h3 class="text-xs font-bold font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                                            Permanent Address & Residency
+                                            {t('st.permanentAddressResidency')}
                                         </h3>
                                         <div class="space-y-2.5">
                                             <div class="flex justify-between py-1 border-b border-neutral-200/60 dark:border-neutral-800">
-                                                <span class="text-neutral-400">Address Line</span>
+                                                <span class="text-neutral-400">{t('st.addressLine')}</span>
                                                 <span class="font-bold text-neutral-800 dark:text-neutral-100">{individualData()?.biodata?.address || '-'}</span>
                                             </div>
                                             <div class="flex justify-between py-1 border-b border-neutral-200/60 dark:border-neutral-800">
-                                                <span class="text-neutral-400">Postal Code</span>
+                                                <span class="text-neutral-400">{t('st.postalCode')}</span>
                                                 <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{individualData()?.biodata?.postal_code || '-'}</span>
                                             </div>
                                             <div class="flex justify-between py-1 border-b border-neutral-200/60 dark:border-neutral-800">
-                                                <span class="text-neutral-400">RT / RW</span>
+                                                <span class="text-neutral-400">{t('st.rtRW')}</span>
                                                 <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">
                                                     {individualData()?.biodata?.rt && individualData()?.biodata?.rw ? `${individualData()?.biodata?.rt} / ${individualData()?.biodata?.rw}` : '-'}
                                                 </span>
                                             </div>
                                             <div class="flex justify-between py-1 border-b border-neutral-200/60 dark:border-neutral-800">
-                                                <span class="text-neutral-400">Country</span>
-                                                <span class="font-bold text-neutral-800 dark:text-neutral-100">Indonesia</span>
+                                                <span class="text-neutral-400">{t('st.country')}</span>
+                                                <span class="font-bold text-neutral-800 dark:text-neutral-100">{t('st.indonesia')}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -1415,20 +1416,20 @@ export default function StudentDashboardProfilePage() {
                                     <div class="flex items-center justify-between">
                                         <div class="flex items-center gap-2">
                                             <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                                Assigned Academic Advisers & Counsellors
+                                                {t('st.assignedAcademicAdvisersCounsellors')}
                                             </h3>
                                             <Show when={isSubLoading()}>
                                                 <div class="size-3.5 border-2 border-blue-500 border-t-transparent rounded-xs animate-spin"></div>
                                             </Show>
                                         </div>
                                         <A href="/student/academic/student/adviser" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
-                                            Adviser Workspace →
+                                            {t('st.adviserWorkspace2')}
                                         </A>
                                     </div>
 
                                     <Show when={advisers().length > 0} fallback={
                                         <div class="p-8 text-center text-neutral-400 font-mono bg-neutral-50 dark:bg-neutral-900/60 rounded-xs border border-neutral-200/80 dark:border-neutral-700/80">
-                                            No academic advisers assigned yet for NIM {studentRecord()?.code || '-'}.
+                                            {t('st.noAcademicAdvisersAssignedYetFor')} {studentRecord()?.code || '-'}.
                                         </div>
                                     }>
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1443,10 +1444,10 @@ export default function StudentDashboardProfilePage() {
                                                                 {adv.lecturer_name || '-'}
                                                             </h4>
                                                             <p class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
-                                                                NIDN: {adv.lecturer_nidn || '-'}
+                                                                {t('st.nidn')} {adv.lecturer_nidn || '-'}
                                                             </p>
                                                             <span class="inline-block mt-2 px-2 py-0.5 rounded-xs text-[10px] font-semibold bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300">
-                                                                {adv.role_type || 'Academic Advisor (PA)'}
+                                                                {adv.role_type || t('st.academicAdvisorPA')}
                                                             </span>
                                                         </div>
                                                     </div>

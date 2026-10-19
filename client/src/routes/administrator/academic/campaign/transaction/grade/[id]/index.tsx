@@ -7,6 +7,7 @@ import {
     type GradeItem,
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionGradeController';
 import { masterApiShow } from '~/controllers/master/masterApiController';
+import { t } from '../../../../../../../i18n';
 
 export default function AcademicCampaignTransactionGradeDetailPage() {
     const basePath = "/administrator/academic/campaign/transaction/grade";
@@ -32,12 +33,12 @@ export default function AcademicCampaignTransactionGradeDetailPage() {
                 setRecord(res);
             } else {
                 setRecord(null);
-                toast.danger('Grade record not found.');
+                toast.danger(t('ad.gradeRecordNotFound'));
             }
         } catch (error) {
             console.error('Error fetching grade detail:', error);
             setRecord(null);
-            toast.danger('Failed to load grade record from server.');
+            toast.danger(t('ad.failedToLoadGradeRecordFrom'));
         } finally {
             setIsLoading(false);
         }
@@ -59,7 +60,7 @@ export default function AcademicCampaignTransactionGradeDetailPage() {
     const copyToClipboard = (text: string, label: string) => {
         if (!text) return;
         navigator.clipboard.writeText(text);
-        toast.success(`Copied ${label} to clipboard`, 3000);
+        toast.success(t('ad.copiedLabelToClipboard', { label }), 3000);
     };
 
     return (
@@ -71,20 +72,20 @@ export default function AcademicCampaignTransactionGradeDetailPage() {
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div class="min-w-0">
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
-                            <a href="/" class="hover:text-blue-600 transition-colors shrink-0">Home</a>
+                            <a href="/" class="hover:text-blue-600 transition-colors shrink-0">{t('ad.home')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="shrink-0">Academic</span>
+                            <span class="shrink-0">{t('ad.academic')}</span>
                             <span class="shrink-0">/</span>
-                            <span class="shrink-0">Campaign</span>
+                            <span class="shrink-0">{t('ad.campaign')}</span>
                             <span class="shrink-0">/</span>
-                            <span class="shrink-0">Transaction</span>
+                            <span class="shrink-0">{t('ad.transaction')}</span>
                             <span class="shrink-0">/</span>
-                            <a href={basePath} class="hover:text-blue-600 transition-colors shrink-0">Grade</a>
+                            <a href={basePath} class="hover:text-blue-600 transition-colors shrink-0">{t('ad.grade')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white shrink-0">Detail</span>
+                            <span class="font-medium text-neutral-900 dark:text-white shrink-0">{t('ad.detail2')}</span>
                         </nav>
                         <h1 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono truncate">
-                            Grade Details
+                            {t('ad.gradeDetails')}
                         </h1>
                     </div>
 
@@ -96,7 +97,7 @@ export default function AcademicCampaignTransactionGradeDetailPage() {
                             <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6" />
                             </svg>
-                            <span>Back to Workspace</span>
+                            <span>{t('ad.backToWorkspace')}</span>
                         </a>
                     </div>
                 </div>
@@ -122,8 +123,8 @@ export default function AcademicCampaignTransactionGradeDetailPage() {
                             when={record()}
                             fallback={
                                 <div class="py-12 text-center text-neutral-500">
-                                    <p class="text-base font-semibold">No grade details found.</p>
-                                    <p class="text-xs mt-1">Check if the ID parameter in the URL is valid.</p>
+                                    <p class="text-base font-semibold">{t('ad.noGradeDetailsFound')}</p>
+                                    <p class="text-xs mt-1">{t('ad.checkIfTheIDParameterIn')}</p>
                                 </div>
                             }
                         >
@@ -131,14 +132,14 @@ export default function AcademicCampaignTransactionGradeDetailPage() {
                                 {/* Title and Badge Banner */}
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-100 dark:border-neutral-700 pb-4">
                                     <div class="min-w-0">
-                                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 block mb-0.5">Grade Letter / Name</span>
+                                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 block mb-0.5">{t('ad.gradeLetterName')}</span>
                                         <h2 class="text-lg sm:text-xl font-bold text-neutral-900 dark:text-white font-mono break-all sm:break-normal">
                                             {record()?.alphabet_code || record()?.name || '-'}
                                         </h2>
                                     </div>
                                     <div class="flex flex-wrap items-center gap-2 shrink-0">
                                         <span class="px-2.5 py-1 text-xs font-mono font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/80">
-                                            Score: {record()?.grade ?? '-'}
+                                            {t('ad.score')} {record()?.grade ?? '-'}
                                         </span>
                                     </div>
                                 </div>
@@ -146,7 +147,7 @@ export default function AcademicCampaignTransactionGradeDetailPage() {
                                 {/* Key Metrics / Highlights Grid */}
                                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 text-xs">
                                     <div class="p-3.5 sm:p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 min-w-0">
-                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">UUID</span>
+                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">{t('ad.uuid2')}</span>
                                         <div class="flex items-center justify-between gap-2 min-w-0">
                                             <span class="font-mono text-neutral-800 dark:text-neutral-200 truncate">{record()?.id || '-'}</span>
                                             <button
@@ -154,25 +155,25 @@ export default function AcademicCampaignTransactionGradeDetailPage() {
                                                 onClick={() => copyToClipboard(record()?.id, 'ID')}
                                                 class="text-blue-600 hover:text-blue-700 cursor-pointer font-mono shrink-0 text-xs font-medium"
                                             >
-                                                Copy
+                                                {t('ad.copy')}
                                             </button>
                                         </div>
                                     </div>
 
                                     <div class="p-3.5 sm:p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 min-w-0">
-                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">Score Range</span>
+                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">{t('ad.scoreRange')}</span>
                                         <span class="font-mono text-neutral-800 dark:text-neutral-200 block truncate">
                                             {record()?.minimum ?? 0} - {record()?.maximum ?? 100}
                                         </span>
                                     </div>
 
                                     <div class="p-3.5 sm:p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 min-w-0">
-                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">Weight Value</span>
+                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">{t('ad.weightValue')}</span>
                                         <span class="font-mono text-neutral-800 dark:text-neutral-200 block truncate">{record()?.grade ?? '-'}</span>
                                     </div>
 
                                     <div class="p-3.5 sm:p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 min-w-0">
-                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">Unit</span>
+                                        <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">{t('ad.unit')}</span>
                                         <span class="font-mono text-neutral-800 dark:text-neutral-200 block truncate">{record()?.unit_name || record()?.unit?.name || '-'}</span>
                                     </div>
                                 </div>
@@ -180,7 +181,7 @@ export default function AcademicCampaignTransactionGradeDetailPage() {
                                 {/* All Entity Attributes: Dual Desktop Table & Mobile Card View */}
                                 <div class="mt-6">
                                     <div class="flex items-center justify-between mb-3">
-                                        <h3 class="text-sm font-bold font-mono text-neutral-900 dark:text-white">All Entity Attributes</h3>
+                                        <h3 class="text-sm font-bold font-mono text-neutral-900 dark:text-white">{t('ad.allEntityAttributes')}</h3>
                                         <span class="text-[11px] font-mono text-neutral-500 dark:text-neutral-400">
                                             {Object.keys(record() || {}).length} fields
                                         </span>

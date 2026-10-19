@@ -10,6 +10,7 @@ import {
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionGradeController';
 import { getUnitOptions } from '~/controllers/institution/master/InstitutionMasterUnitController';
 import { InstitutionReferenceControllerUnitTypeIndex } from '~/controllers/institution/reference/InstitutionReferenceUnitTypeController';
+import { t } from '../../../../../../../../i18n';
 
 interface UnitOption {
     id: string;
@@ -142,7 +143,7 @@ export default function RectoratInstitutionGradeIndex() {
             setTotalPages(res.total_pages || Math.max(1, Math.ceil((res.total || 0) / itemsPerPage())));
         } catch (e) {
             console.error('Error fetching grades:', e);
-            toast.danger('Gagal memuat daftar skala nilai.');
+            toast.danger(t('rt.gagalMemuatDaftarSkalaNilai'));
             setGrades([]);
             setTotalData(0);
         } finally {
@@ -239,19 +240,19 @@ export default function RectoratInstitutionGradeIndex() {
                 <div class="space-y-4">
                     <nav class="flex items-center gap-2 text-xs font-mono text-neutral-500 dark:text-neutral-400 overflow-x-auto scrollbar-none whitespace-nowrap pb-1">
                         <A href="/rectorat" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                            Rektorat
+                            {t('rt.rektorat')}
                         </A>
                         <span>/</span>
                         <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                            Institusi
+                            {t('rt.institusi')}
                         </A>
                         <span>/</span>
                         <A href={`/rectorat/institution/${institutionId()}/academic`} class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                            Akademik
+                            {t('rt.akademik')}
                         </A>
                         <span>/</span>
                         <span class="text-neutral-700 dark:text-neutral-300 font-semibold">
-                            Skala Nilai
+                            {t('rt.skalaNilai')}
                         </span>
                     </nav>
 
@@ -261,13 +262,13 @@ export default function RectoratInstitutionGradeIndex() {
                             <div class="space-y-2">
                                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-semibold uppercase tracking-wider border border-emerald-200 dark:border-emerald-800/80">
                                     <span class="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                                    <span>Academic / Campaign / Transaction</span>
+                                    <span>{t('rt.academicCampaignTransaction')}</span>
                                 </div>
                                 <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
-                                    Unit Skala Nilai
+                                    {t('rt.unitSkalaNilai')}
                                 </h1>
                                 <p class="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 max-w-2xl leading-relaxed">
-                                    Konfigurasi standar bobot indeks prestasi, rentang skor minimum-maksimum, dan lambang nilai huruf per Program Studi pada institusi ini.
+                                    {t('rt.konfigurasiStandarBobotIndeksPrestasiRentang')}
                                 </p>
                             </div>
 
@@ -276,7 +277,7 @@ export default function RectoratInstitutionGradeIndex() {
                                     type="button"
                                     onClick={() => fetchGrades()}
                                     class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 text-sm font-medium transition-all shadow-2xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-                                    title="Segarkan Data"
+                                    title={t('rt.segarkanData')}
                                 >
                                     <svg
                                         class={`size-4 text-neutral-600 dark:text-neutral-300 ${isLoading() ? 'animate-spin' : ''}`}
@@ -288,7 +289,7 @@ export default function RectoratInstitutionGradeIndex() {
                                     >
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
                                     </svg>
-                                    <span>Segarkan</span>
+                                    <span>{t('rt.segarkan')}</span>
                                 </button>
                             </div>
                         </div>
@@ -306,7 +307,7 @@ export default function RectoratInstitutionGradeIndex() {
                     {/* Card 1: Total Skala Nilai */}
                     <div class="bg-white dark:bg-neutral-900 rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs relative overflow-hidden group hover:border-emerald-400 dark:hover:border-emerald-700 transition-all duration-200">
                         <div class="flex items-center justify-between">
-                            <span class="text-2xs sm:text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Total Skala Nilai</span>
+                            <span class="text-2xs sm:text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{t('rt.totalSkalaNilai')}</span>
                             <div class="p-2 sm:p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60">
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
@@ -317,14 +318,14 @@ export default function RectoratInstitutionGradeIndex() {
                             <span class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-neutral-900 dark:text-white">
                                 {totalData()}
                             </span>
-                            <span class="text-2xs sm:text-xs text-neutral-500 dark:text-neutral-400 block mt-0.5">Aturan Penilaian</span>
+                            <span class="text-2xs sm:text-xs text-neutral-500 dark:text-neutral-400 block mt-0.5">{t('rt.aturanPenilaian')}</span>
                         </div>
                     </div>
 
                     {/* Card 2: Bobot Tertinggi */}
                     <div class="bg-white dark:bg-neutral-900 rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs relative overflow-hidden group hover:border-blue-400 dark:hover:border-blue-700 transition-all duration-200">
                         <div class="flex items-center justify-between">
-                            <span class="text-2xs sm:text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Bobot Maksimal</span>
+                            <span class="text-2xs sm:text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{t('rt.bobotMaksimal')}</span>
                             <div class="p-2 sm:p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60">
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
@@ -335,14 +336,14 @@ export default function RectoratInstitutionGradeIndex() {
                             <span class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-neutral-900 dark:text-white font-mono">
                                 {summaryStats().maxGrade.toFixed(2)}
                             </span>
-                            <span class="text-2xs sm:text-xs text-neutral-500 dark:text-neutral-400 block mt-0.5">Indeks Prestasi (A)</span>
+                            <span class="text-2xs sm:text-xs text-neutral-500 dark:text-neutral-400 block mt-0.5">{t('rt.indeksPrestasiA')}</span>
                         </div>
                     </div>
 
                     {/* Card 3: Bobot Terendah */}
                     <div class="bg-white dark:bg-neutral-900 rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs relative overflow-hidden group hover:border-rose-400 dark:hover:border-rose-700 transition-all duration-200">
                         <div class="flex items-center justify-between">
-                            <span class="text-2xs sm:text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Bobot Minimum</span>
+                            <span class="text-2xs sm:text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{t('rt.bobotMinimum')}</span>
                             <div class="p-2 sm:p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800/60">
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
@@ -353,14 +354,14 @@ export default function RectoratInstitutionGradeIndex() {
                             <span class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-neutral-900 dark:text-white font-mono">
                                 {summaryStats().minGrade.toFixed(2)}
                             </span>
-                            <span class="text-2xs sm:text-xs text-neutral-500 dark:text-neutral-400 block mt-0.5">Batas Bawah (E)</span>
+                            <span class="text-2xs sm:text-xs text-neutral-500 dark:text-neutral-400 block mt-0.5">{t('rt.batasBawahE')}</span>
                         </div>
                     </div>
 
                     {/* Card 4: Unit / Program Studi */}
                     <div class="bg-white dark:bg-neutral-900 rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs relative overflow-hidden group hover:border-purple-400 dark:hover:border-purple-700 transition-all duration-200">
                         <div class="flex items-center justify-between">
-                            <span class="text-2xs sm:text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Unit / Prodi Terdata</span>
+                            <span class="text-2xs sm:text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{t('rt.unitProdiTerdata')}</span>
                             <div class="p-2 sm:p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800/60">
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.333A1.5 1.5 0 0 0 18 8.833H6a1.5 1.5 0 0 0-1.5 1.5V21" />
@@ -371,7 +372,7 @@ export default function RectoratInstitutionGradeIndex() {
                             <span class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-neutral-900 dark:text-white">
                                 {selectedUnitId() ? 1 : units().length}
                             </span>
-                            <span class="text-2xs sm:text-xs text-neutral-500 dark:text-neutral-400 block mt-0.5">Program Studi Terdata</span>
+                            <span class="text-2xs sm:text-xs text-neutral-500 dark:text-neutral-400 block mt-0.5">{t('rt.programStudiTerdata')}</span>
                         </div>
                     </div>
                 </div>
@@ -382,12 +383,12 @@ export default function RectoratInstitutionGradeIndex() {
                         {/* Search Input */}
                         <div class="relative">
                             <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-1.5">
-                                Cari Predikat / Nilai Huruf
+                                {t('rt.cariPredikatNilaiHuruf')}
                             </label>
                             <div class="relative">
                                 <input
                                     type="text"
-                                    placeholder="Ketik nilai huruf atau nama predikat..."
+                                    placeholder={t('rt.ketikNilaiHurufAtauNamaPredikat')}
                                     onInput={handleSearchInput}
                                     value={searchQuery()}
                                     class="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm bg-neutral-50 dark:bg-neutral-800/80 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
@@ -404,7 +405,7 @@ export default function RectoratInstitutionGradeIndex() {
                         <div>
                             <div class="flex items-center justify-between mb-1.5">
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                                    Filter Program Studi / Unit
+                                    {t('rt.filterProgramStudiUnit')}
                                 </label>
                                 <Show when={units().length > 0}>
                                     <span class="text-2xs font-mono text-neutral-400 dark:text-neutral-500">
@@ -424,7 +425,7 @@ export default function RectoratInstitutionGradeIndex() {
                                             : 'border-neutral-300 dark:border-neutral-700'
                                         }`}
                                 >
-                                    <option value="">Semua Program Studi / Unit</option>
+                                    <option value="">{t('rt.semuaProgramStudiUnit')}</option>
                                     <For each={units()}>
                                         {(u) => <option value={u.id}>{u.name}</option>}
                                     </For>
@@ -437,7 +438,7 @@ export default function RectoratInstitutionGradeIndex() {
                                             setCurrentPage(1);
                                         }}
                                         class="absolute right-8 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-red-500 text-xs px-1 cursor-pointer"
-                                        title="Hapus filter Program Studi"
+                                        title={t('rt.hapusFilterProgramStudi')}
                                     >
                                         ✕
                                     </button>
@@ -448,7 +449,7 @@ export default function RectoratInstitutionGradeIndex() {
                         {/* Quick Count Badge */}
                         <div class="flex items-end">
                             <div class="w-full p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-200 dark:border-neutral-700/80 flex items-center justify-between">
-                                <span class="text-xs text-neutral-500 dark:text-neutral-400">Total Ditampilkan:</span>
+                                <span class="text-xs text-neutral-500 dark:text-neutral-400">{t('rt.totalDitampilkan')}</span>
                                 <span class="text-sm font-bold font-mono text-emerald-600 dark:text-emerald-400">
                                     {grades().length} dari {totalData()} record
                                 </span>
@@ -459,16 +460,16 @@ export default function RectoratInstitutionGradeIndex() {
                     {/* Active Filter Tags */}
                     <Show when={searchQuery() || selectedUnitId()}>
                         <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-neutral-200 dark:border-neutral-800 text-xs">
-                            <span class="text-neutral-500 dark:text-neutral-400 font-medium">Filter Aktif:</span>
+                            <span class="text-neutral-500 dark:text-neutral-400 font-medium">{t('rt.filterAktif')}</span>
                             <Show when={searchQuery()}>
                                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                                    Pencarian: "{searchQuery()}"
+                                    {t('rt.pencarian')}{searchQuery()}"
                                     <button onClick={() => setSearchQuery('')} class="hover:text-emerald-900 dark:hover:text-white ml-0.5 cursor-pointer">×</button>
                                 </span>
                             </Show>
                             <Show when={selectedUnitId()}>
                                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
-                                    Unit: {units().find((u) => u.id === selectedUnitId())?.name || selectedUnitId()}
+                                    {t('rt.unit')} {units().find((u) => u.id === selectedUnitId())?.name || selectedUnitId()}
                                     <button onClick={() => setSelectedUnitId('')} class="hover:text-purple-900 dark:hover:text-white ml-0.5 cursor-pointer">×</button>
                                 </span>
                             </Show>
@@ -480,7 +481,7 @@ export default function RectoratInstitutionGradeIndex() {
                                 }}
                                 class="text-neutral-500 hover:text-red-600 dark:hover:text-red-400 font-medium ml-2 underline cursor-pointer"
                             >
-                                Reset Filter
+                                {t('rt.resetFilter')}
                             </button>
                         </div>
                     </Show>
@@ -492,12 +493,12 @@ export default function RectoratInstitutionGradeIndex() {
                         <table class="w-full text-left text-sm">
                             <thead class="bg-neutral-50/80 dark:bg-neutral-800/50 border-b border-neutral-200 dark:border-neutral-800 text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
                                 <tr>
-                                    <th class="px-6 py-4">Nilai Huruf & Predikat</th>
-                                    <th class="px-6 py-4 text-center">Bobot Indeks</th>
-                                    <th class="px-6 py-4">Rentang Skor</th>
-                                    <th class="px-6 py-4">Program Studi</th>
-                                    <th class="px-6 py-4">Masa Berlaku</th>
-                                    <th class="px-6 py-4 text-right">Aksi</th>
+                                    <th class="px-6 py-4">{t('rt.nilaiHurufPredikat')}</th>
+                                    <th class="px-6 py-4 text-center">{t('rt.bobotIndeks')}</th>
+                                    <th class="px-6 py-4">{t('rt.rentangSkor')}</th>
+                                    <th class="px-6 py-4">{t('rt.programStudi')}</th>
+                                    <th class="px-6 py-4">{t('rt.masaBerlaku')}</th>
+                                    <th class="px-6 py-4 text-right">{t('rt.aksi')}</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-neutral-200/80 dark:divide-neutral-800/80">
@@ -509,7 +510,7 @@ export default function RectoratInstitutionGradeIndex() {
                                                 <div class="flex flex-col items-center justify-center gap-3">
                                                     <div class="size-8 rounded-full border-2 border-emerald-600 border-t-transparent animate-spin" />
                                                     <span class="text-sm text-neutral-500 dark:text-neutral-400 font-medium">
-                                                        Memuat data skala nilai...
+                                                        {t('rt.memuatDataSkalaNilai')}
                                                     </span>
                                                 </div>
                                             </td>
@@ -528,10 +529,10 @@ export default function RectoratInstitutionGradeIndex() {
                                                             </svg>
                                                         </div>
                                                         <h3 class="text-base font-bold text-neutral-900 dark:text-white mb-1">
-                                                            Tidak ada skala nilai ditemukan
+                                                            {t('rt.tidakAdaSkalaNilaiDitemukan')}
                                                         </h3>
                                                         <p class="text-xs text-neutral-500 dark:text-neutral-400 mb-4">
-                                                            Tidak ada rekaman skala nilai untuk Program Studi / Institusi ini dengan filter yang dipilih.
+                                                            {t('rt.tidakAdaRekamanSkalaNilaiUntuk')}
                                                         </p>
                                                         <Show when={searchQuery() || selectedUnitId()}>
                                                             <button
@@ -541,7 +542,7 @@ export default function RectoratInstitutionGradeIndex() {
                                                                 }}
                                                                 class="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 transition-colors cursor-pointer"
                                                             >
-                                                                Hapus Filter
+                                                                {t('rt.hapusFilter')}
                                                             </button>
                                                         </Show>
                                                     </div>
@@ -570,7 +571,7 @@ export default function RectoratInstitutionGradeIndex() {
                                                                     </A>
                                                                     <div class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 font-mono">
                                                                         <Show when={item.code !== undefined && item.code !== null}>
-                                                                            <span>Kode: #{item.code}</span>
+                                                                            <span>{t('rt.kode2')}{item.code}</span>
                                                                         </Show>
                                                                     </div>
                                                                 </div>
@@ -622,13 +623,13 @@ export default function RectoratInstitutionGradeIndex() {
                                                             <div class="text-xs space-y-0.5 font-mono">
                                                                 <Show
                                                                     when={item.start_date || item.end_date}
-                                                                    fallback={<span class="text-neutral-400">Permanen (Tanpa batas)</span>}
+                                                                    fallback={<span class="text-neutral-400">{t('rt.permanenTanpaBatas')}</span>}
                                                                 >
                                                                     <div class="text-neutral-800 dark:text-neutral-200">
                                                                         {formatDate(item.start_date)}
                                                                     </div>
                                                                     <div class="text-neutral-500 dark:text-neutral-400 text-2xs">
-                                                                        s/d {item.end_date ? formatDate(item.end_date) : 'Sekarang'}
+                                                                        s/d {item.end_date ? formatDate(item.end_date) : t('rt.sekarang')}
                                                                     </div>
                                                                 </Show>
                                                             </div>
@@ -641,7 +642,7 @@ export default function RectoratInstitutionGradeIndex() {
                                                                     type="button"
                                                                     onClick={() => setSelectedItemForModal(item)}
                                                                     class="p-2 rounded-lg bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-300 transition-colors cursor-pointer"
-                                                                    title="Pratinjau Cepat"
+                                                                    title={t('rt.pratinjauCepat')}
                                                                 >
                                                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
@@ -652,7 +653,7 @@ export default function RectoratInstitutionGradeIndex() {
                                                                     href={`/rectorat/institution/${institutionId()}/academic/campaign/transaction/grade/${item.id}`}
                                                                     class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/80 text-emerald-700 dark:text-emerald-300 font-semibold text-xs border border-emerald-200 dark:border-emerald-800/80 transition-all hover:scale-105"
                                                                 >
-                                                                    <span>Detail</span>
+                                                                    <span>{t('rt.detail')}</span>
                                                                     <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                                                                     </svg>
@@ -678,7 +679,7 @@ export default function RectoratInstitutionGradeIndex() {
                                     <div class="flex flex-col items-center justify-center gap-3">
                                         <div class="size-8 rounded-full border-2 border-emerald-600 border-t-transparent animate-spin" />
                                         <span class="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
-                                            Memuat data skala nilai...
+                                            {t('rt.memuatDataSkalaNilai')}
                                         </span>
                                     </div>
                                 </div>
@@ -695,10 +696,10 @@ export default function RectoratInstitutionGradeIndex() {
                                                 </svg>
                                             </div>
                                             <h3 class="text-sm font-bold text-neutral-900 dark:text-white mb-1">
-                                                Tidak ada skala nilai ditemukan
+                                                {t('rt.tidakAdaSkalaNilaiDitemukan')}
                                             </h3>
                                             <p class="text-xs text-neutral-500 dark:text-neutral-400 mb-3">
-                                                Tidak ada rekaman data sesuai filter saat ini.
+                                                {t('rt.tidakAdaRekamanDataSesuaiFilter')}
                                             </p>
                                             <Show when={searchQuery() || selectedUnitId()}>
                                                 <button
@@ -708,7 +709,7 @@ export default function RectoratInstitutionGradeIndex() {
                                                     }}
                                                     class="px-3 py-1.5 rounded-lg text-xs font-medium bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 transition-colors cursor-pointer"
                                                 >
-                                                    Hapus Filter
+                                                    {t('rt.hapusFilter')}
                                                 </button>
                                             </Show>
                                         </div>
@@ -736,7 +737,7 @@ export default function RectoratInstitutionGradeIndex() {
                                                             </A>
                                                             <div class="flex items-center gap-2 text-2xs text-neutral-500 dark:text-neutral-400 font-mono mt-0.5">
                                                                 <Show when={item.code !== undefined && item.code !== null}>
-                                                                    <span>Kode: #{item.code}</span>
+                                                                    <span>{t('rt.kode2')}{item.code}</span>
                                                                     <span>•</span>
                                                                 </Show>
                                                                 <span class="truncate max-w-[140px]">{unitName}</span>
@@ -753,7 +754,7 @@ export default function RectoratInstitutionGradeIndex() {
                                                 {/* Score Range & Progress Bar */}
                                                 <div class="p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800/80 space-y-1.5">
                                                     <div class="flex items-center justify-between text-xs">
-                                                        <span class="text-neutral-500 dark:text-neutral-400 text-2xs uppercase tracking-wider font-semibold">Rentang Skor:</span>
+                                                        <span class="text-neutral-500 dark:text-neutral-400 text-2xs uppercase tracking-wider font-semibold">{t('rt.rentangSkor2')}</span>
                                                         <span class="font-mono font-bold text-neutral-800 dark:text-neutral-200">
                                                             {item.minimum.toFixed(2)} <span class="text-neutral-400 font-normal">s/d</span> {item.maximum.toFixed(2)}
                                                         </span>
@@ -770,13 +771,13 @@ export default function RectoratInstitutionGradeIndex() {
 
                                                 {/* Meta details: Masa Berlaku */}
                                                 <div class="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400 font-mono pt-0.5">
-                                                    <span class="text-2xs uppercase tracking-wider">Masa Berlaku:</span>
+                                                    <span class="text-2xs uppercase tracking-wider">{t('rt.masaBerlaku2')}</span>
                                                     <Show
                                                         when={item.start_date || item.end_date}
-                                                        fallback={<span class="text-neutral-400">Permanen (Tanpa batas)</span>}
+                                                        fallback={<span class="text-neutral-400">{t('rt.permanenTanpaBatas')}</span>}
                                                     >
                                                         <span class="text-neutral-700 dark:text-neutral-300">
-                                                            {formatDate(item.start_date)} - {item.end_date ? formatDate(item.end_date) : 'Sekarang'}
+                                                            {formatDate(item.start_date)} - {item.end_date ? formatDate(item.end_date) : t('rt.sekarang')}
                                                         </span>
                                                     </Show>
                                                 </div>
@@ -792,13 +793,13 @@ export default function RectoratInstitutionGradeIndex() {
                                                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
                                                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                                         </svg>
-                                                        <span>Pratinjau</span>
+                                                        <span>{t('rt.pratinjau')}</span>
                                                     </button>
                                                     <A
                                                         href={`/rectorat/institution/${institutionId()}/academic/campaign/transaction/grade/${item.id}`}
                                                         class="flex-1 py-2 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/80 text-emerald-700 dark:text-emerald-300 font-semibold text-xs text-center inline-flex items-center justify-center gap-1.5 border border-emerald-200 dark:border-emerald-800/80 transition-colors"
                                                     >
-                                                        <span>Detail Lengkap</span>
+                                                        <span>{t('rt.detailLengkap')}</span>
                                                         <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                                                         </svg>
@@ -816,7 +817,7 @@ export default function RectoratInstitutionGradeIndex() {
                     <div class="px-4 sm:px-6 py-3.5 sm:py-4 bg-neutral-50/60 dark:bg-neutral-800/40 border-t border-neutral-200 dark:border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
                         <div class="flex flex-wrap items-center justify-between sm:justify-start gap-3 text-xs text-neutral-500 dark:text-neutral-400 w-full sm:w-auto">
                             <div class="flex items-center gap-1.5">
-                                <span>Per hal:</span>
+                                <span>{t('rt.perHal')}</span>
                                 <select
                                     value={itemsPerPage()}
                                     onChange={(e) => {
@@ -832,7 +833,7 @@ export default function RectoratInstitutionGradeIndex() {
                                 </select>
                             </div>
                             <span class="ml-auto sm:ml-0">
-                                Total <strong>{totalData()}</strong> data
+                                {t('rt.total')} <strong>{totalData()}</strong> data
                             </span>
                         </div>
 
@@ -842,7 +843,7 @@ export default function RectoratInstitutionGradeIndex() {
                                 disabled={currentPage() <= 1}
                                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                                 class="p-2 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
-                                title="Halaman Sebelumnya"
+                                title={t('rt.halamanSebelumnya')}
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
@@ -858,7 +859,7 @@ export default function RectoratInstitutionGradeIndex() {
                                 disabled={currentPage() >= totalPages()}
                                 onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
                                 class="p-2 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
-                                title="Halaman Selanjutnya"
+                                title={t('rt.halamanSelanjutnya')}
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
@@ -884,7 +885,7 @@ export default function RectoratInstitutionGradeIndex() {
                                             {item().name}
                                         </h3>
                                         <p class="text-xs text-neutral-500 font-mono">
-                                            Bobot IPK: {item().grade.toFixed(2)}
+                                            {t('rt.bobotIPK')} {item().grade.toFixed(2)}
                                         </p>
                                     </div>
                                 </div>
@@ -899,27 +900,27 @@ export default function RectoratInstitutionGradeIndex() {
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs">
                                 <div class="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 space-y-1">
-                                    <span class="text-neutral-500 text-2xs uppercase">Program Studi</span>
+                                    <span class="text-neutral-500 text-2xs uppercase">{t('rt.programStudi')}</span>
                                     <p class="font-semibold text-neutral-800 dark:text-neutral-200">
                                         {units().find((u) => u.id === item().unit_id)?.name || 'Tidak tercatat'}
                                     </p>
                                 </div>
                                 <div class="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 space-y-1">
-                                    <span class="text-neutral-500 text-2xs uppercase">Rentang Skor</span>
+                                    <span class="text-neutral-500 text-2xs uppercase">{t('rt.rentangSkor')}</span>
                                     <p class="font-bold text-emerald-600 dark:text-emerald-400 font-mono">
                                         {item().minimum.toFixed(2)} - {item().maximum.toFixed(2)}
                                     </p>
                                 </div>
                                 <div class="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 space-y-1">
-                                    <span class="text-neutral-500 text-2xs uppercase">Mulai Berlaku</span>
+                                    <span class="text-neutral-500 text-2xs uppercase">{t('rt.mulaiBerlaku')}</span>
                                     <p class="font-mono text-neutral-800 dark:text-neutral-200">
                                         {formatDate(item().start_date)}
                                     </p>
                                 </div>
                                 <div class="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 space-y-1">
-                                    <span class="text-neutral-500 text-2xs uppercase">Selesai Berlaku</span>
+                                    <span class="text-neutral-500 text-2xs uppercase">{t('rt.selesaiBerlaku')}</span>
                                     <p class="font-mono text-neutral-800 dark:text-neutral-200">
-                                        {item().end_date ? formatDate(item().end_date) : 'Berlaku Seterusnya'}
+                                        {item().end_date ? formatDate(item().end_date) : t('rt.berlakuSeterusnya')}
                                     </p>
                                 </div>
                             </div>
@@ -930,13 +931,13 @@ export default function RectoratInstitutionGradeIndex() {
                                     onClick={() => setSelectedItemForModal(null)}
                                     class="w-full sm:w-auto px-4 py-2.5 sm:py-2 rounded-xl text-xs font-semibold bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 text-center cursor-pointer transition-colors"
                                 >
-                                    Tutup
+                                    {t('rt.tutup')}
                                 </button>
                                 <A
                                     href={`/rectorat/institution/${institutionId()}/academic/campaign/transaction/grade/${item().id}`}
                                     class="w-full sm:w-auto px-4 py-2.5 sm:py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white text-center transition-colors"
                                 >
-                                    Buka Halaman Lengkap
+                                    {t('rt.bukaHalamanLengkap')}
                                 </A>
                             </div>
                         </div>

@@ -4,6 +4,7 @@ import TopBar from '~/components/navigation/TopBar';
 import { masterApiIndex } from '~/controllers/master/masterApiController';
 import { toast } from '~/components/toast/Toaster';
 import type { InstitutionMasterUnit } from '~/models/institution/master/Unit';
+import { t as tt } from '../../../../../i18n';
 
 interface UnitExtended extends InstitutionMasterUnit {
     unit_type?: { name: string };
@@ -53,7 +54,7 @@ export default function RectoratUnitsIndex() {
             console.error('Error loading units from server:', error);
             setAllItems([]);
             setTotalData(0);
-            toast.danger('Gagal memuat data unit dari server.');
+            toast.danger(tt('rt.gagalMemuatDataUnitDariServer'));
         } finally {
             setIsLoading(false);
         }
@@ -91,13 +92,13 @@ export default function RectoratUnitsIndex() {
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                                 <span class="relative inline-flex rounded-full size-2 bg-blue-500"></span>
                             </span>
-                            Master Data
+                            {tt('rt.masterData')}
                         </div>
                         <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
-                            Daftar Unit
+                            {tt('rt.daftarUnit')}
                         </h1>
                         <p class="text-sm text-neutral-500 dark:text-neutral-400 max-w-2xl">
-                            Kelola seluruh unit yang terdaftar pada institusi ini.
+                            {tt('rt.kelolaSeluruhUnitYangTerdaftarPada')}
                         </p>
                     </div>
                 </div>
@@ -113,7 +114,7 @@ export default function RectoratUnitsIndex() {
                         <input
                             type="text"
                             class="block w-full p-3 pl-11 text-sm text-neutral-900 border border-neutral-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-neutral-900 dark:border-neutral-800 dark:text-white transition-all shadow-sm placeholder:text-neutral-400"
-                            placeholder="Cari nama unit..."
+                            placeholder={tt('rt.cariNamaUnit')}
                             onInput={handleSearch}
                         />
                     </div>
@@ -127,9 +128,9 @@ export default function RectoratUnitsIndex() {
                                 setCurrentPage(1);
                             }}
                         >
-                            <option value={10}>10 Baris</option>
-                            <option value={25}>25 Baris</option>
-                            <option value={50}>50 Baris</option>
+                            <option value={10}>{tt('rt.n10Baris')}</option>
+                            <option value={25}>{tt('rt.n25Baris')}</option>
+                            <option value={50}>{tt('rt.n50Baris')}</option>
                         </select>
                     </div>
                 </div>
@@ -140,12 +141,12 @@ export default function RectoratUnitsIndex() {
                         <table class="w-full text-sm text-left">
                             <thead class="text-xs text-neutral-500 uppercase bg-neutral-50/80 dark:bg-neutral-800/50 dark:text-neutral-400 border-b border-neutral-200 dark:border-neutral-800 font-semibold tracking-wider">
                                 <tr>
-                                    <th class="px-6 py-4">ID / Kode</th>
-                                    <th class="px-6 py-4">Nama Unit</th>
-                                    <th class="px-6 py-4">Tipe Unit</th>
-                                    <th class="px-6 py-4">Induk (Parent)</th>
-                                    <th class="px-6 py-4 text-center">Status</th>
-                                    <th class="px-6 py-4 text-right">Aksi</th>
+                                    <th class="px-6 py-4">{tt('rt.idKode')}</th>
+                                    <th class="px-6 py-4">{tt('rt.namaUnit')}</th>
+                                    <th class="px-6 py-4">{tt('rt.tipeUnit')}</th>
+                                    <th class="px-6 py-4">{tt('rt.indukParent')}</th>
+                                    <th class="px-6 py-4 text-center">{tt('rt.status')}</th>
+                                    <th class="px-6 py-4 text-right">{tt('rt.aksi')}</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-neutral-100 dark:divide-neutral-800">
@@ -179,8 +180,8 @@ export default function RectoratUnitsIndex() {
                                                                 <line x1="12" y1="16" x2="12.01" y2="16" />
                                                             </svg>
                                                         </div>
-                                                        <span class="font-medium text-base text-neutral-700 dark:text-neutral-300">Tidak ada data ditemukan</span>
-                                                        <span class="text-sm">Silakan ubah kata kunci pencarian Anda.</span>
+                                                        <span class="font-medium text-base text-neutral-700 dark:text-neutral-300">{tt('rt.tidakAdaDataDitemukan')}</span>
+                                                        <span class="text-sm">{tt('rt.silakanUbahKataKunciPencarianAnda')}</span>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -206,11 +207,11 @@ export default function RectoratUnitsIndex() {
                                                     <td class="px-6 py-4 text-center">
                                                         {item.is_active ? (
                                                             <div class="inline-flex items-center justify-center h-6 px-2.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800/50">
-                                                                Aktif
+                                                                {tt('rt.aktif')}
                                                             </div>
                                                         ) : (
                                                             <div class="inline-flex items-center justify-center h-6 px-2.5 text-xs font-bold text-red-700 bg-red-50 border border-red-200 rounded-full dark:bg-red-900/30 dark:text-red-300 dark:border-red-800/50">
-                                                                Non-Aktif
+                                                                {tt('rt.nonAktif')}
                                                             </div>
                                                         )}
                                                     </td>
@@ -218,13 +219,13 @@ export default function RectoratUnitsIndex() {
                                                         <A
                                                             href={`/rectorat/institution/${institutionId()}/unit/${item.id}`}
                                                             class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 hover:text-white hover:bg-blue-600 border border-blue-200 hover:border-blue-600 rounded-md transition-all dark:text-blue-400 dark:border-blue-800/60 dark:hover:bg-blue-600 dark:hover:text-white dark:hover:border-blue-600 cursor-pointer shadow-sm group-hover:shadow focus:ring-2 focus:ring-blue-500/20"
-                                                            title="Lihat Detail Data"
+                                                            title={tt('rt.lihatDetailData')}
                                                         >
                                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
                                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                                             </svg>
-                                                            Detail
+                                                            {tt('rt.detail')}
                                                         </A>
                                                     </td>
                                                 </tr>
@@ -239,17 +240,17 @@ export default function RectoratUnitsIndex() {
                     {/* Pagination Footer */}
                     <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-4">
                         <div class="text-sm text-neutral-600 dark:text-neutral-400">
-                            Menampilkan <span class="font-medium text-neutral-900 dark:text-white">{totalData() > 0 ? startIndex() + 1 : 0}</span> sampai <span class="font-medium text-neutral-900 dark:text-white">{endIndex()}</span> dari <span class="font-medium text-neutral-900 dark:text-white">{totalData()}</span> total data
+                            {tt('rt.menampilkan')} <span class="font-medium text-neutral-900 dark:text-white">{totalData() > 0 ? startIndex() + 1 : 0}</span> sampai <span class="font-medium text-neutral-900 dark:text-white">{endIndex()}</span> dari <span class="font-medium text-neutral-900 dark:text-white">{totalData()}</span> {tt('rt.totalData')}
                         </div>
                         <div class="flex justify-center">
-                            <nav class="inline-flex -space-x-px shadow-sm rounded-lg overflow-hidden" aria-label="Pagination">
+                            <nav class="inline-flex -space-x-px shadow-sm rounded-lg overflow-hidden" aria-label={tt('rt.pagination')}>
                                 <button
                                     type="button"
                                     class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:bg-neutral-100 dark:disabled:bg-neutral-900 cursor-pointer transition-colors"
                                     disabled={currentPage() <= 1 || isLoading()}
                                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                                 >
-                                    Sebelumnya
+                                    {tt('rt.sebelumnya2')}
                                 </button>
                                 <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border-y border-neutral-300 dark:border-neutral-600">
                                     {currentPage()} / {totalPages()}
@@ -260,7 +261,7 @@ export default function RectoratUnitsIndex() {
                                     disabled={currentPage() >= totalPages() || isLoading()}
                                     onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
                                 >
-                                    Selanjutnya
+                                    {tt('rt.selanjutnya')}
                                 </button>
                             </nav>
                         </div>

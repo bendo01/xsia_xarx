@@ -2,6 +2,7 @@ import { createSignal, createEffect, For, Show } from 'solid-js';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { masterApiIndex } from '~/controllers/master/masterApiController';
+import { t } from '../../../../../i18n';
 
 export default function FeederMasterIndexPage() {
     const apiPath = "feeder/master/kelas-kuliah";
@@ -41,7 +42,7 @@ export default function FeederMasterIndexPage() {
             setItems([]);
             setTotalData(0);
             setTotalPages(1);
-            toast.danger('Failed to load records from server.');
+            toast.danger(t('ad.failedToLoadRecordsFromServer'));
         } finally {
             setIsLoading(false);
         }
@@ -84,19 +85,19 @@ export default function FeederMasterIndexPage() {
                 <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                            <a href="/" class="hover:text-blue-600 transition-colors">Home</a>
+                            <a href="/" class="hover:text-blue-600 transition-colors">{t('ad.home')}</a>
                             <span>/</span>
-                            <span>Feeder</span>
+                            <span>{t('ad.feeder')}</span>
                             <span>/</span>
-                            <span>Master</span>
+                            <span>{t('ad.master')}</span>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">Kelas Kuliah</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">{t('ad.kelasKuliah')}</span>
                         </nav>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Kelas Kuliah
+                            {t('ad.kelasKuliah')}
                         </h1>
                         <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
-                            Synchronized master dataset from PDDIKTI Feeder for Kelas Kuliah.
+                            {t('ad.synchronizedMasterDatasetFromPDDIKTIFeeder19')}
                         </p>
                     </div>
                 </div>
@@ -113,7 +114,7 @@ export default function FeederMasterIndexPage() {
                             <input
                                 type="text"
                                 class="block w-full p-2.5 pl-10 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
-                                placeholder="Search records..."
+                                placeholder={t('ad.searchRecords')}
                                 onInput={handleSearch}
                             />
                         </div>
@@ -128,8 +129,8 @@ export default function FeederMasterIndexPage() {
                                 setCurrentPage(1);
                             }}
                         >
-                            <option value="id-asc">ID (Ascending)</option>
-                            <option value="id-desc">ID (Descending)</option>
+                            <option value="id-asc">{t('ad.idAscending')}</option>
+                            <option value="id-desc">{t('ad.idDescending')}</option>
                         </select>
 
                         <select
@@ -140,9 +141,9 @@ export default function FeederMasterIndexPage() {
                                 setCurrentPage(1);
                             }}
                         >
-                            <option value={10}>10 / page</option>
-                            <option value={25}>25 / page</option>
-                            <option value={50}>50 / page</option>
+                            <option value={10}>{t('ad.n10Page')}</option>
+                            <option value={25}>{t('ad.n25Page')}</option>
+                            <option value={50}>{t('ad.n50Page')}</option>
                         </select>
                     </div>
                 </div>
@@ -172,8 +173,8 @@ export default function FeederMasterIndexPage() {
                                                 <line x1="12" y1="8" x2="12" y2="12" />
                                                 <line x1="12" y1="16" x2="12.01" y2="16" />
                                             </svg>
-                                            <span class="font-semibold text-sm text-neutral-700 dark:text-neutral-300">No feeder records found</span>
-                                            <span class="text-xs text-neutral-500">No data matches your query.</span>
+                                            <span class="font-semibold text-sm text-neutral-700 dark:text-neutral-300">{t('ad.noFeederRecordsFound')}</span>
+                                            <span class="text-xs text-neutral-500">{t('ad.noDataMatchesYourQuery')}</span>
                                         </div>
                                     </div>
                                 }
@@ -198,7 +199,7 @@ export default function FeederMasterIndexPage() {
                                                 <a
                                                     href={`${basePath}/${encodeURIComponent(item.id || item.id_feeder || item.uuid)}`}
                                                     class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 border border-neutral-200 dark:border-neutral-700 transition-colors"
-                                                    title="View Record"
+                                                    title={t('ad.viewRecord')}
                                                 >
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3.5">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
@@ -216,9 +217,9 @@ export default function FeederMasterIndexPage() {
                         <table class="w-full text-xs sm:text-sm text-left">
                             <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
                                 <tr>
-                                    <th class="px-4 py-3.5 w-40">Identifier / Code</th>
-                                    <th class="px-4 py-3.5">Name / Title</th>
-                                    <th class="px-4 py-3.5 text-right">Actions</th>
+                                    <th class="px-4 py-3.5 w-40">{t('ad.identifierCode')}</th>
+                                    <th class="px-4 py-3.5">{t('ad.nameTitle')}</th>
+                                    <th class="px-4 py-3.5 text-right">{t('ad.actions')}</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
@@ -247,8 +248,8 @@ export default function FeederMasterIndexPage() {
                                                             <line x1="12" y1="8" x2="12" y2="12" />
                                                             <line x1="12" y1="16" x2="12.01" y2="16" />
                                                         </svg>
-                                                        <span class="font-semibold text-sm text-neutral-700 dark:text-neutral-300">No feeder records found</span>
-                                                        <span class="text-xs text-neutral-500">No data matches your query on the server.</span>
+                                                        <span class="font-semibold text-sm text-neutral-700 dark:text-neutral-300">{t('ad.noFeederRecordsFound')}</span>
+                                                        <span class="text-xs text-neutral-500">{t('ad.noDataMatchesYourQueryOn')}</span>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -277,7 +278,7 @@ export default function FeederMasterIndexPage() {
                                                         <a
                                                             href={`${basePath}/${encodeURIComponent(item.id || item.id_feeder || item.uuid)}`}
                                                             class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 border border-neutral-200 dark:border-neutral-700 transition-colors"
-                                                            title="View Details"
+                                                            title={t('ad.viewDetails')}
                                                         >
                                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3.5">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
@@ -295,16 +296,16 @@ export default function FeederMasterIndexPage() {
 
                     <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-3">
                         <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                            Showing <span class="font-semibold text-neutral-900 dark:text-white">{totalData() > 0 ? startIndex() + 1 : 0}</span>–<span class="font-semibold text-neutral-900 dark:text-white">{endIndex()}</span> of <span class="font-semibold text-neutral-900 dark:text-white">{totalData().toLocaleString()}</span> results
+                            {t('ad.showing')} <span class="font-semibold text-neutral-900 dark:text-white">{totalData() > 0 ? startIndex() + 1 : 0}</span>–<span class="font-semibold text-neutral-900 dark:text-white">{endIndex()}</span> of <span class="font-semibold text-neutral-900 dark:text-white">{totalData().toLocaleString()}</span> results
                         </p>
-                        <nav class="inline-flex -space-x-px rounded-lg overflow-hidden shadow-sm" aria-label="Pagination">
+                        <nav class="inline-flex -space-x-px rounded-lg overflow-hidden shadow-sm" aria-label={t('ad.pagination')}>
                             <button
                                 type="button"
                                 class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
                                 disabled={currentPage() <= 1 || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                             >
-                                Previous
+                                {t('ad.previous')}
                             </button>
                             <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border-y border-neutral-300 dark:border-neutral-600">
                                 {currentPage()} / {totalPages()}
@@ -315,7 +316,7 @@ export default function FeederMasterIndexPage() {
                                 disabled={currentPage() >= totalPages() || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
                             >
-                                Next
+                                {t('ad.next')}
                             </button>
                         </nav>
                     </div>

@@ -6,6 +6,7 @@ import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
 import { LocationSubDistrictControllerUpsert } from '~/controllers/location/LocationSubDistrictController';
 import { LocationRegencyControllerList } from '~/controllers/location/LocationRegencyController';
 import { masterApiShow } from '~/controllers/master/masterApiController';
+import { t } from '../../../../../i18n';
 
 export default function LocationSubDistrictEditPage() {
     const params = useParams();
@@ -45,11 +46,11 @@ export default function LocationSubDistrictEditPage() {
                 setEpsbedCode(s.epsbed_code || '');
                 setDescription(s.description || '');
             } else {
-                toast.danger('Sub-district not found');
+                toast.danger(t('ad.subDistrictNotFound'));
             }
         } catch (e: any) {
             console.error('Error loading sub-district:', e);
-            toast.danger('Failed to load sub-district data');
+            toast.danger(t('ad.failedToLoadSubDistrictData2'));
         } finally {
             setIsLoading(false);
         }
@@ -70,15 +71,15 @@ export default function LocationSubDistrictEditPage() {
     const handleSubmit = async (e: Event) => {
         e.preventDefault();
         if (!name().trim()) {
-            toast.warning('Sub-district name is required');
+            toast.warning(t('ad.subDistrictNameIsRequired'));
             return;
         }
         if (!code().trim()) {
-            toast.warning('Sub-district code is required');
+            toast.warning(t('ad.subDistrictCodeIsRequired'));
             return;
         }
         if (!regencyId()) {
-            toast.warning('Regency is required');
+            toast.warning(t('ad.regencyIsRequired'));
             return;
         }
 
@@ -94,13 +95,13 @@ export default function LocationSubDistrictEditPage() {
             });
 
             if (!res.is_error) {
-                toast.success(res.message || 'Sub-district updated successfully!');
+                toast.success(res.message || t('ad.subDistrictUpdatedSuccessfully'));
                 navigate(`${basePath}/${id()}`);
             } else {
-                toast.danger(res.message || 'Failed to update sub-district.');
+                toast.danger(res.message || t('ad.failedToUpdateSubDistrict'));
             }
         } catch (err: any) {
-            toast.danger(err.message || 'Network error occurred.');
+            toast.danger(err.message || t('ad.networkErrorOccurred'));
         } finally {
             setIsSubmitting(false);
         }
@@ -114,18 +115,18 @@ export default function LocationSubDistrictEditPage() {
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div class="min-w-0">
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
-                            <a href="/" class="shrink-0 hover:text-blue-600 transition-colors">Home</a>
+                            <a href="/" class="shrink-0 hover:text-blue-600 transition-colors">{t('ad.home')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="shrink-0">Location</span>
+                            <span class="shrink-0">{t('ad.location')}</span>
                             <span class="shrink-0">/</span>
-                            <a href={basePath} class="shrink-0 hover:text-blue-600 transition-colors">Sub-District</a>
+                            <a href={basePath} class="shrink-0 hover:text-blue-600 transition-colors">{t('ad.subDistrict')}</a>
                             <span class="shrink-0">/</span>
-                            <a href={`${basePath}/${id()}`} class="shrink-0 hover:text-blue-600 transition-colors">Detail</a>
+                            <a href={`${basePath}/${id()}`} class="shrink-0 hover:text-blue-600 transition-colors">{t('ad.detail2')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="shrink-0 font-medium text-neutral-900 dark:text-white">Edit</span>
+                            <span class="shrink-0 font-medium text-neutral-900 dark:text-white">{t('ad.edit')}</span>
                         </nav>
                         <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Edit Sub-District
+                            {t('ad.editSubDistrict')}
                         </h1>
                     </div>
 
@@ -137,7 +138,7 @@ export default function LocationSubDistrictEditPage() {
                             <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6"/>
                             </svg>
-                            <span>Cancel</span>
+                            <span>{t('ad.cancel')}</span>
                         </a>
                     </div>
                 </div>
@@ -157,21 +158,21 @@ export default function LocationSubDistrictEditPage() {
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                        Sub-District Name <span class="text-red-500">*</span>
+                                        {t('ad.subDistrictName')} <span class="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="text"
                                         required
                                         value={name()}
                                         onInput={(e) => setName(e.currentTarget.value)}
-                                        placeholder="e.g. Coblong"
+                                        placeholder={t('ad.eGCoblong')}
                                         class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                     />
                                 </div>
 
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                        Code
+                                        {t('ad.code2')}
                                     </label>
                                     <input
                                         type="text"
@@ -184,14 +185,14 @@ export default function LocationSubDistrictEditPage() {
 
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                        Regency / City
+                                        {t('ad.regencyCity')}
                                     </label>
                                     <select
                                         value={regencyId()}
                                         onChange={(e) => setRegencyId(e.currentTarget.value)}
                                         class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                     >
-                                        <option value="">Select Regency</option>
+                                        <option value="">{t('ad.selectRegency2')}</option>
                                         <For each={regencyOptions()}>
                                             {(r) => <option value={r.value}>{r.label}</option>}
                                         </For>
@@ -200,7 +201,7 @@ export default function LocationSubDistrictEditPage() {
 
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                        DIKTI Code
+                                        {t('ad.diktiCode2')}
                                     </label>
                                     <input
                                         type="text"
@@ -213,7 +214,7 @@ export default function LocationSubDistrictEditPage() {
 
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                        EPSBED Code
+                                        {t('ad.epsbedCode')}
                                     </label>
                                     <input
                                         type="text"
@@ -226,13 +227,13 @@ export default function LocationSubDistrictEditPage() {
 
                                 <div class="sm:col-span-2">
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                        Description
+                                        {t('ad.description')}
                                     </label>
                                     <textarea
                                         rows="3"
                                         value={description()}
                                         onInput={(e) => setDescription(e.currentTarget.value)}
-                                        placeholder="Optional notes or description..."
+                                        placeholder={t('ad.optionalNotesOrDescription')}
                                         class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                     />
                                 </div>
@@ -243,14 +244,14 @@ export default function LocationSubDistrictEditPage() {
                                     href={`${basePath}/${id()}`}
                                     class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 text-xs sm:text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                                 >
-                                    Cancel
+                                    {t('ad.cancel')}
                                 </a>
                                 <button
                                     type="submit"
                                     disabled={isSubmitting()}
                                     class="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 transition-colors cursor-pointer"
                                 >
-                                    {isSubmitting() ? 'Updating...' : 'Save Changes'}
+                                    {isSubmitting() ? t('ad.updating') : t('ad.saveChanges')}
                                 </button>
                             </div>
                         </form>

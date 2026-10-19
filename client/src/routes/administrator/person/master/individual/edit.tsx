@@ -15,6 +15,7 @@ import { PersonReferenceControllerIncomeList } from '~/controllers/person/refere
 import { PersonReferenceControllerAgeClassificationList } from '~/controllers/person/reference/PersonReferenceAgeClassificationController';
 import { fetchEducationOptions } from '~/controllers/literate/LiterateEducationController';
 import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
+import { t } from '../../../../../i18n';
 
 export default function PersonMasterIndividualEditPage() {
     const [searchParams] = useSearchParams();
@@ -64,7 +65,7 @@ export default function PersonMasterIndividualEditPage() {
 
             // Prefill before reference defaults so existing values are kept
             if (existing.is_error || !existing.data) {
-                toast.danger(existing.message || 'Individual record not found.');
+                toast.danger(existing.message || t('ad.individualRecordNotFound'));
             } else {
                 const individual = existing.data.individual;
                 setFormData({
@@ -97,7 +98,7 @@ export default function PersonMasterIndividualEditPage() {
             }
         } catch (err) {
             console.error('Failed to load form reference options:', err);
-            toast.danger('Failed to load some reference options.');
+            toast.danger(t('ad.failedToLoadSomeReferenceOptions'));
         } finally {
             setIsLoadingReferences(false);
         }
@@ -148,7 +149,7 @@ export default function PersonMasterIndividualEditPage() {
     const handleSubmit = async (e: Event) => {
         e.preventDefault();
         if (!validateForm()) {
-            toast.danger('Please fill all required fields properly.');
+            toast.danger(t('ad.pleaseFillAllRequiredFieldsProperly'));
             return;
         }
 
@@ -190,16 +191,16 @@ export default function PersonMasterIndividualEditPage() {
 
             const res = await PersonMasterIndividualControllerUpsert(payload);
             if (!res.is_error) {
-                toast.success('Individual profile updated successfully!');
+                toast.success(t('ad.individualProfileUpdatedSuccessfully'));
                 window.location.href = `/administrator/person/master/individual/${individualId}`;
             } else {
-                toast.danger(res.message || 'Failed to update individual profile.');
+                toast.danger(res.message || t('ad.failedToUpdateIndividualProfile'));
                 if (res.errors) {
                     setErrors((prev) => ({ ...prev, ...res.errors }));
                 }
             }
         } catch (err: any) {
-            toast.danger(err.message || 'An unexpected error occurred while saving.');
+            toast.danger(err.message || t('ad.anUnexpectedErrorOccurredWhileSaving'));
         } finally {
             setIsSubmitting(false);
         }
@@ -233,19 +234,19 @@ export default function PersonMasterIndividualEditPage() {
                 <div class="border-b border-neutral-200 dark:border-neutral-800 pb-4 sm:flex sm:items-center sm:justify-between">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                            <a href="/" class="hover:text-blue-600 transition-colors">Home</a>
+                            <a href="/" class="hover:text-blue-600 transition-colors">{t('ad.home')}</a>
                             <span>/</span>
-                            <span>Person</span>
+                            <span>{t('ad.person')}</span>
                             <span>/</span>
-                            <a href="/administrator/person/master/individual" class="hover:text-blue-600 transition-colors">Master Individual</a>
+                            <a href="/administrator/person/master/individual" class="hover:text-blue-600 transition-colors">{t('ad.masterIndividual')}</a>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">Edit Individual</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">{t('ad.editIndividual')}</span>
                         </nav>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
-                            Edit Individual Record
+                            {t('ad.editIndividualRecord')}
                         </h1>
                         <p class="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
-                            Update this civil identity profile, personal demographics, and socio-economic information.
+                            {t('ad.updateThisCivilIdentityProfilePersonal')}
                         </p>
                     </div>
 
@@ -257,7 +258,7 @@ export default function PersonMasterIndividualEditPage() {
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6" />
                             </svg>
-                            <span>Back to Directory</span>
+                            <span>{t('ad.backToDirectory')}</span>
                         </a>
                     </div>
                 </div>
@@ -270,19 +271,19 @@ export default function PersonMasterIndividualEditPage() {
                             <div class="size-12 bg-neutral-100 dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 overflow-hidden flex items-center justify-center shrink-0">
                                 <img
                                     src="/img/Portrait_Placeholder.png"
-                                    alt="Thumbnail"
+                                    alt={t('ad.thumbnail')}
                                     class="w-full h-full object-cover object-top"
                                 />
                             </div>
                             <div>
                                 <div class="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
-                                    New Individual Profile Preview
+                                    {t('ad.newIndividualProfilePreview')}
                                 </div>
                                 <h3 class="text-base font-bold text-neutral-900 dark:text-white">
                                     {formattedFullNamePreview()}
                                 </h3>
                                 <div class="text-xs font-mono text-neutral-500 dark:text-neutral-400 flex items-center gap-2 mt-0.5">
-                                    <span>NIK: {formData().code || '—'}</span>
+                                    <span>{t('ad.nik')} {formData().code || '—'}</span>
                                     <span>•</span>
                                     <span>{formData().birth_place || 'Birth place'}, {formData().birth_date || 'YYYY-MM-DD'}</span>
                                     <Show when={calculateAge() !== null}>
@@ -297,17 +298,17 @@ export default function PersonMasterIndividualEditPage() {
                         <div class="flex items-center gap-2 self-start sm:self-center">
                             <Show when={formData().is_special_need}>
                                 <span class="px-2 py-0.5 text-[11px] font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
-                                    Special Need
+                                    {t('ad.specialNeed')}
                                 </span>
                             </Show>
                             <Show when={formData().is_social_protection_card_recipient}>
                                 <span class="px-2 py-0.5 text-[11px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
-                                    KPS Recipient
+                                    {t('ad.kpsRecipient')}
                                 </span>
                             </Show>
                             <Show when={formData().is_deceased}>
                                 <span class="px-2 py-0.5 text-[11px] font-semibold bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border border-rose-300 dark:border-rose-800">
-                                    Deceased
+                                    {t('ad.deceased')}
                                 </span>
                             </Show>
                         </div>
@@ -321,16 +322,16 @@ export default function PersonMasterIndividualEditPage() {
                                     <rect width="20" height="14" x="2" y="5" rx="2" />
                                     <line x1="2" x2="22" y1="10" y2="10" />
                                 </svg>
-                                <span>1. Civil Identity & Basic Demographics</span>
+                                <span>{t('ad.n1CivilIdentityBasicDemographics')}</span>
                             </h2>
-                            <span class="text-xs text-neutral-500 dark:text-neutral-400">* Required fields</span>
+                            <span class="text-xs text-neutral-500 dark:text-neutral-400">{t('ad.requiredFields')}</span>
                         </div>
 
                         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Code / NIK */}
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                    Civil ID / NIK / Code <span class="text-red-500">*</span>
+                                    {t('ad.civilIDNIKCode')} <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -345,14 +346,14 @@ export default function PersonMasterIndividualEditPage() {
                                     <p class="text-xs text-red-600 dark:text-red-400 mt-1">{errors().code}</p>
                                 </Show>
                                 <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
-                                    Official National Identification Number (NIK) or unique identifier.
+                                    {t('ad.officialNationalIdentificationNumberNIKOr')}
                                 </p>
                             </div>
 
                             {/* Identification Type */}
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                    Identification Type <span class="text-red-500">*</span>
+                                    {t('ad.identificationType')} <span class="text-red-500">*</span>
                                 </label>
                                 <select
                                     class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
@@ -368,13 +369,13 @@ export default function PersonMasterIndividualEditPage() {
                             {/* Full Name */}
                             <div class="md:col-span-2">
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                    Full Name <span class="text-red-500">*</span>
+                                    {t('ad.fullName')} <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
                                     class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().name ? 'border-red-500 focus:ring-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500'
                                         } text-neutral-900 dark:text-white rounded-xs transition-colors`}
-                                    placeholder="e.g. John Doe"
+                                    placeholder={t('ad.eGJohnDoe')}
                                     value={formData().name}
                                     onInput={(e) => updateField('name', (e.target as HTMLInputElement).value)}
                                     required
@@ -387,34 +388,34 @@ export default function PersonMasterIndividualEditPage() {
                             {/* Front Title */}
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                    Front Academic Title
+                                    {t('ad.frontAcademicTitle')}
                                 </label>
                                 <input
                                     type="text"
                                     class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="e.g. Dr., Prof., Ir., Drs."
+                                    placeholder={t('ad.eGDrProfIrDrs')}
                                     value={formData().front_title || ''}
                                     onInput={(e) => updateField('front_title', (e.target as HTMLInputElement).value)}
                                 />
                                 <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
-                                    Honorific or degree prefix (leave blank if none).
+                                    {t('ad.honorificOrDegreePrefixLeaveBlank')}
                                 </p>
                             </div>
 
                             {/* Last Title */}
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                    Last Academic Title
+                                    {t('ad.lastAcademicTitle')}
                                 </label>
                                 <input
                                     type="text"
                                     class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="e.g. S.Kom., M.T., Ph.D."
+                                    placeholder={t('ad.eGSKomMT')}
                                     value={formData().last_title || ''}
                                     onInput={(e) => updateField('last_title', (e.target as HTMLInputElement).value)}
                                 />
                                 <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
-                                    Post-nominal degree suffix (leave blank if none).
+                                    {t('ad.postNominalDegreeSuffixLeaveBlank')}
                                 </p>
                             </div>
                         </div>
@@ -428,7 +429,7 @@ export default function PersonMasterIndividualEditPage() {
                                     <circle cx="12" cy="12" r="10" />
                                     <path d="M12 6v6l4 2" />
                                 </svg>
-                                <span>2. Birth, Gender & Civil Status</span>
+                                <span>{t('ad.n2BirthGenderCivilStatus')}</span>
                             </h2>
                         </div>
 
@@ -436,13 +437,13 @@ export default function PersonMasterIndividualEditPage() {
                             {/* Birth Place */}
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                    Place of Birth <span class="text-red-500">*</span>
+                                    {t('ad.placeOfBirth')} <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
                                     class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().birth_place ? 'border-red-500 focus:ring-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500'
                                         } text-neutral-900 dark:text-white rounded-xs transition-colors`}
-                                    placeholder="e.g. Jakarta"
+                                    placeholder={t('ad.eGJakarta')}
                                     value={formData().birth_place}
                                     onInput={(e) => updateField('birth_place', (e.target as HTMLInputElement).value)}
                                     required
@@ -455,7 +456,7 @@ export default function PersonMasterIndividualEditPage() {
                             {/* Birth Date */}
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                    Date of Birth <span class="text-red-500">*</span>
+                                    {t('ad.dateOfBirth')} <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="date"
@@ -473,7 +474,7 @@ export default function PersonMasterIndividualEditPage() {
                             {/* Gender */}
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                    Gender <span class="text-red-500">*</span>
+                                    {t('ad.gender')} <span class="text-red-500">*</span>
                                 </label>
                                 <select
                                     class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().gender_id ? 'border-red-500' : 'border-neutral-300 dark:border-neutral-700'
@@ -482,7 +483,7 @@ export default function PersonMasterIndividualEditPage() {
                                     onChange={(e) => updateField('gender_id', (e.target as HTMLSelectElement).value)}
                                     required
                                 >
-                                    <option value="00000000-0000-0000-0000-000000000000">-- Select Gender --</option>
+                                    <option value="00000000-0000-0000-0000-000000000000">{t('ad.selectGender')}</option>
                                     <For each={genderOptions()}>
                                         {(opt) => <option value={opt.id}>{opt.label}</option>}
                                     </For>
@@ -495,7 +496,7 @@ export default function PersonMasterIndividualEditPage() {
                             {/* Religion */}
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                    Religion <span class="text-red-500">*</span>
+                                    {t('ad.religion')} <span class="text-red-500">*</span>
                                 </label>
                                 <select
                                     class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().religion_id ? 'border-red-500' : 'border-neutral-300 dark:border-neutral-700'
@@ -504,7 +505,7 @@ export default function PersonMasterIndividualEditPage() {
                                     onChange={(e) => updateField('religion_id', (e.target as HTMLSelectElement).value)}
                                     required
                                 >
-                                    <option value="00000000-0000-0000-0000-000000000000">-- Select Religion --</option>
+                                    <option value="00000000-0000-0000-0000-000000000000">{t('ad.selectReligion')}</option>
                                     <For each={religionOptions()}>
                                         {(opt) => <option value={opt.id}>{opt.label}</option>}
                                     </For>
@@ -517,14 +518,14 @@ export default function PersonMasterIndividualEditPage() {
                             {/* Marital Status */}
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                    Marital Status
+                                    {t('ad.maritalStatus')}
                                 </label>
                                 <select
                                     class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
                                     value={formData().marital_status_id}
                                     onChange={(e) => updateField('marital_status_id', (e.target as HTMLSelectElement).value)}
                                 >
-                                    <option value="00000000-0000-0000-0000-000000000000">-- Select Marital Status --</option>
+                                    <option value="00000000-0000-0000-0000-000000000000">{t('ad.selectMaritalStatus')}</option>
                                     <For each={maritalStatusOptions()}>
                                         {(opt) => <option value={opt.id}>{opt.label}</option>}
                                     </For>
@@ -534,14 +535,14 @@ export default function PersonMasterIndividualEditPage() {
                             {/* Age Classification */}
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                    Age Classification
+                                    {t('ad.ageClassification')}
                                 </label>
                                 <select
                                     class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
                                     value={formData().age_classification_id || ''}
                                     onChange={(e) => updateField('age_classification_id', (e.target as HTMLSelectElement).value || null)}
                                 >
-                                    <option value="">-- Auto / Select Classification --</option>
+                                    <option value="">{t('ad.autoSelectClassification')}</option>
                                     <For each={ageClassificationOptions()}>
                                         {(opt) => <option value={opt.id}>{opt.label}</option>}
                                     </For>
@@ -558,7 +559,7 @@ export default function PersonMasterIndividualEditPage() {
                                     <rect width="20" height="14" x="2" y="7" rx="2" ry="2" />
                                     <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
                                 </svg>
-                                <span>3. Socio-Economic & Education</span>
+                                <span>{t('ad.n3SocioEconomicEducation')}</span>
                             </h2>
                         </div>
 
@@ -566,14 +567,14 @@ export default function PersonMasterIndividualEditPage() {
                             {/* Occupation */}
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                    Occupation
+                                    {t('ad.occupation')}
                                 </label>
                                 <select
                                     class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
                                     value={formData().occupation_id || ''}
                                     onChange={(e) => updateField('occupation_id', (e.target as HTMLSelectElement).value || null)}
                                 >
-                                    <option value="">-- Select Occupation --</option>
+                                    <option value="">{t('ad.selectOccupation')}</option>
                                     <For each={occupationOptions()}>
                                         {(opt) => <option value={opt.id}>{opt.label}</option>}
                                     </For>
@@ -583,14 +584,14 @@ export default function PersonMasterIndividualEditPage() {
                             {/* Profession */}
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                    Profession
+                                    {t('ad.profession')}
                                 </label>
                                 <select
                                     class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
                                     value={formData().profession_id}
                                     onChange={(e) => updateField('profession_id', (e.target as HTMLSelectElement).value)}
                                 >
-                                    <option value="00000000-0000-0000-0000-000000000000">-- Select Profession --</option>
+                                    <option value="00000000-0000-0000-0000-000000000000">{t('ad.selectProfession')}</option>
                                     <For each={professionOptions()}>
                                         {(opt) => <option value={opt.id}>{opt.label}</option>}
                                     </For>
@@ -600,14 +601,14 @@ export default function PersonMasterIndividualEditPage() {
                             {/* Income Level */}
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                    Income Bracket
+                                    {t('ad.incomeBracket')}
                                 </label>
                                 <select
                                     class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
                                     value={formData().income_id}
                                     onChange={(e) => updateField('income_id', (e.target as HTMLSelectElement).value)}
                                 >
-                                    <option value="00000000-0000-0000-0000-000000000000">-- Select Income Range --</option>
+                                    <option value="00000000-0000-0000-0000-000000000000">{t('ad.selectIncomeRange')}</option>
                                     <For each={incomeOptions()}>
                                         {(opt) => <option value={opt.id}>{opt.label}</option>}
                                     </For>
@@ -617,14 +618,14 @@ export default function PersonMasterIndividualEditPage() {
                             {/* Education Level */}
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                    Highest Education Level
+                                    {t('ad.highestEducationLevel')}
                                 </label>
                                 <select
                                     class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
                                     value={formData().education_id || ''}
                                     onChange={(e) => updateField('education_id', (e.target as HTMLSelectElement).value || null)}
                                 >
-                                    <option value="">-- Select Education Level --</option>
+                                    <option value="">{t('ad.selectEducationLevel')}</option>
                                     <For each={educationOptions()}>
                                         {(opt: any) => <option value={opt.id || opt.value}>{opt.label || opt.name}</option>}
                                     </For>
@@ -640,7 +641,7 @@ export default function PersonMasterIndividualEditPage() {
                                 <svg class="size-4 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                                 </svg>
-                                <span>4. Special Needs & Protection Status</span>
+                                <span>{t('ad.n4SpecialNeedsProtectionStatus')}</span>
                             </h2>
                         </div>
 
@@ -654,9 +655,9 @@ export default function PersonMasterIndividualEditPage() {
                                     onChange={(e) => updateField('is_special_need', (e.target as HTMLInputElement).checked)}
                                 />
                                 <div>
-                                    <span class="block text-xs font-bold text-neutral-900 dark:text-white">Special Needs</span>
+                                    <span class="block text-xs font-bold text-neutral-900 dark:text-white">{t('ad.specialNeeds')}</span>
                                     <span class="block text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                        Check if individual requires disability accommodation.
+                                        {t('ad.checkIfIndividualRequiresDisabilityAccommodation')}
                                     </span>
                                 </div>
                             </label>
@@ -670,9 +671,9 @@ export default function PersonMasterIndividualEditPage() {
                                     onChange={(e) => updateField('is_social_protection_card_recipient', (e.target as HTMLInputElement).checked)}
                                 />
                                 <div>
-                                    <span class="block text-xs font-bold text-neutral-900 dark:text-white">KPS / Social Protection</span>
+                                    <span class="block text-xs font-bold text-neutral-900 dark:text-white">{t('ad.kpsSocialProtection')}</span>
                                     <span class="block text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                        Recipient of government assistance or smart cards.
+                                        {t('ad.recipientOfGovernmentAssistanceOrSmart')}
                                     </span>
                                 </div>
                             </label>
@@ -686,9 +687,9 @@ export default function PersonMasterIndividualEditPage() {
                                     onChange={(e) => updateField('is_deceased', (e.target as HTMLInputElement).checked)}
                                 />
                                 <div>
-                                    <span class="block text-xs font-bold text-neutral-900 dark:text-white">Deceased Status</span>
+                                    <span class="block text-xs font-bold text-neutral-900 dark:text-white">{t('ad.deceasedStatus')}</span>
                                     <span class="block text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                        Check if this individual record is marked as deceased.
+                                        {t('ad.checkIfThisIndividualRecordIs')}
                                     </span>
                                 </div>
                             </label>
@@ -701,7 +702,7 @@ export default function PersonMasterIndividualEditPage() {
                             href={`/administrator/person/master/individual/${individualId}`}
                             class="px-5 py-2.5 text-xs sm:text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
                         >
-                            Cancel
+                            {t('ad.cancel')}
                         </a>
                         <button
                             type="submit"
@@ -718,7 +719,7 @@ export default function PersonMasterIndividualEditPage() {
                                             <polyline points="17 21 17 13 7 13 7 21" />
                                             <polyline points="7 3 7 8 15 8" />
                                         </svg>
-                                        <span>Update Individual</span>
+                                        <span>{t('ad.updateIndividual')}</span>
                                     </>
                                 }
                             >
@@ -726,7 +727,7 @@ export default function PersonMasterIndividualEditPage() {
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
-                                <span>Saving...</span>
+                                <span>{t('ad.saving')}</span>
                             </Show>
                         </button>
                     </div>

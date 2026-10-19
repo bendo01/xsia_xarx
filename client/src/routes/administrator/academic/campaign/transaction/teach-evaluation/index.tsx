@@ -11,6 +11,7 @@ import {
     type TeachEvaluationItem,
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachEvaluationController';
 import { masterApiIndex, masterApiShow } from '~/controllers/master/masterApiController';
+import { t as tt } from '../../../../../../i18n';
 
 interface ReferenceOption {
     id: string;
@@ -131,7 +132,7 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
             resolveTeachNames(items);
         } catch (error) {
             console.error('Error fetching teach evaluations:', error);
-            toast.danger('Failed to load teach evaluations.');
+            toast.danger(tt('ad.failedToLoadTeachEvaluations'));
             setEvaluations([]);
             setTotalData(0);
         } finally {
@@ -166,7 +167,7 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
     const handleRefresh = async () => {
         setIsRefreshing(true);
         await Promise.all([loadOptions(), fetchData()]);
-        toast.success('Teach evaluations refreshed successfully.');
+        toast.success(tt('ad.teachEvaluationsRefreshedSuccessfully'));
     };
 
     // Weight composition is only meaningful when a single teaching class is selected
@@ -199,7 +200,7 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
     const copyToClipboard = (text: string, label: string) => {
         if (!text) return;
         navigator.clipboard.writeText(text);
-        toast.success(`Copied ${label} to clipboard`, 3000);
+        toast.success(tt('ad.copiedLabelToClipboard', { label }), 3000);
     };
 
     // Modal Openers
@@ -254,16 +255,16 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
         const form = formState();
 
         if (!form.teach_id) {
-            toast.danger('Teaching class is required.');
+            toast.danger(tt('ad.teachingClassIsRequired'));
             return;
         }
         if (!form.name.trim()) {
-            toast.danger('Component name is required.');
+            toast.danger(tt('ad.componentNameIsRequired'));
             return;
         }
         const weight = Number(form.evaluation_weight);
         if (form.evaluation_weight.trim() === '' || Number.isNaN(weight) || weight < 0 || weight > 100) {
-            toast.danger('Weight must be a number between 0 and 100.');
+            toast.danger(tt('ad.weightMustBeANumberBetween'));
             return;
         }
 
@@ -287,15 +288,15 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
             if (!res) return;
 
             if (!res.is_error) {
-                toast.success(`Evaluation component ${modalMode() === 'create' ? 'created' : 'updated'} successfully!`);
+                toast.success(modalMode() === 'create' ? tt('ad.evaluationComponentCreatedSuccessfully') : tt('ad.evaluationComponentUpdatedSuccessfully'));
                 setTeachNames({ ...teachNames(), [form.teach_id]: form.teach_label || teachNames()[form.teach_id] });
                 closeFormModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to save evaluation component.');
+                toast.danger(res.message || tt('ad.failedToSaveEvaluationComponent'));
             }
         } catch (err: any) {
-            toast.danger(err.message || 'An unexpected error occurred.');
+            toast.danger(err.message || tt('ad.anUnexpectedErrorOccurred'));
         } finally {
             setIsSubmitting(false);
         }
@@ -309,14 +310,14 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
         try {
             const res = await deleteTeachEvaluation(item.id);
             if (!res.is_error) {
-                toast.success(res.message || 'Evaluation component deleted successfully!');
+                toast.success(res.message || tt('ad.evaluationComponentDeletedSuccessfully'));
                 closeDeleteModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to delete evaluation component.');
+                toast.danger(res.message || tt('ad.failedToDeleteEvaluationComponent'));
             }
         } catch (err: any) {
-            toast.danger(err.message || 'An error occurred while deleting.');
+            toast.danger(err.message || tt('ad.anErrorOccurredWhileDeleting'));
         } finally {
             setIsSubmitting(false);
         }
@@ -346,27 +347,27 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-5">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1.5 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
-                            <a href="/" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Home</a>
+                            <a href="/" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{tt('ad.home')}</a>
                             <span>/</span>
-                            <span>Academic</span>
+                            <span>{tt('ad.academic')}</span>
                             <span>/</span>
-                            <span>Campaign</span>
+                            <span>{tt('ad.campaign')}</span>
                             <span>/</span>
-                            <span>Transaction</span>
+                            <span>{tt('ad.transaction')}</span>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">Teach Evaluation</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">{tt('ad.teachEvaluation')}</span>
                         </nav>
                         <div class="flex items-center gap-2 mb-1">
                             <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold border border-blue-200 dark:border-blue-800/80">
                                 <span class="size-1.5 rounded-full bg-blue-500"></span>
-                                Administrator Workspace
+                                {tt('ad.administratorWorkspace')}
                             </span>
                         </div>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Teach Evaluations
+                            {tt('ad.teachEvaluations')}
                         </h1>
                         <p class="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 max-w-2xl">
-                            Manage evaluation components (komponen evaluasi) of each teaching class: order, name, type and grading weight.
+                            {tt('ad.manageEvaluationComponentsKomponenEvaluasiOf')}
                         </p>
                     </div>
 
@@ -383,7 +384,7 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                                 <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
                                 <path d="M16 21h5v-5" />
                             </svg>
-                            <span>Refresh</span>
+                            <span>{tt('ad.refresh')}</span>
                         </button>
 
                         <button
@@ -395,21 +396,21 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                                 <path d="M5 12h14" />
                                 <path d="M12 5v14" />
                             </svg>
-                            <span>New Component</span>
+                            <span>{tt('ad.newComponent')}</span>
                         </button>
                     </div>
                 </div>
 
                 {/* Sub-Navigation Tabs */}
                 <div class="flex items-center gap-2 p-1.5 bg-white dark:bg-neutral-800/80 rounded-xs border border-neutral-200 dark:border-neutral-700/80 overflow-x-auto scrollbar-none shadow-2xs">
-                    <A href="/administrator/academic/campaign/transaction/activity" class={tabClass}><span>Activities</span></A>
-                    <A href="/administrator/academic/campaign/transaction/class-code" class={tabClass}><span>Class Codes</span></A>
-                    <A href="/administrator/academic/campaign/transaction/grade" class={tabClass}><span>Grades</span></A>
-                    <A href="/administrator/academic/campaign/transaction/teach" class={tabClass}><span>Teaching Activities</span></A>
-                    <A href="/administrator/academic/campaign/transaction/teach-decree" class={tabClass}><span>Teach Decrees</span></A>
-                    <A href="/administrator/academic/campaign/transaction/teach-lecturer" class={tabClass}><span>Teach Lecturers</span></A>
+                    <A href="/administrator/academic/campaign/transaction/activity" class={tabClass}><span>{tt('ad.activities')}</span></A>
+                    <A href="/administrator/academic/campaign/transaction/class-code" class={tabClass}><span>{tt('ad.classCodes')}</span></A>
+                    <A href="/administrator/academic/campaign/transaction/grade" class={tabClass}><span>{tt('ad.grades')}</span></A>
+                    <A href="/administrator/academic/campaign/transaction/teach" class={tabClass}><span>{tt('ad.teachingActivities')}</span></A>
+                    <A href="/administrator/academic/campaign/transaction/teach-decree" class={tabClass}><span>{tt('ad.teachDecrees')}</span></A>
+                    <A href="/administrator/academic/campaign/transaction/teach-lecturer" class={tabClass}><span>{tt('ad.teachLecturers')}</span></A>
                     <A href={basePath} class="px-3.5 py-1.5 rounded-xs text-xs font-mono font-medium transition-colors bg-blue-600 text-white shadow-2xs flex items-center gap-2 shrink-0">
-                        <span>Evaluations</span>
+                        <span>{tt('ad.evaluations')}</span>
                     </A>
                 </div>
 
@@ -417,7 +418,7 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="bg-white dark:bg-neutral-800 p-4 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">Total Components</span>
+                            <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">{tt('ad.totalComponents')}</span>
                             <span class="px-2 py-0.5 rounded-xs text-[10px] font-mono font-bold bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                                 {summaryStats().synced} synced
                             </span>
@@ -429,27 +430,27 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                     </div>
 
                     <div class="bg-white dark:bg-neutral-800 p-4 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">Teaching Classes</span>
+                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">{tt('ad.teachingClasses')}</span>
                         <div class="mt-2 flex items-baseline gap-2">
                             <span class="text-2xl font-bold font-mono text-neutral-900 dark:text-white">{summaryStats().teachCount}</span>
-                            <span class="text-xs text-neutral-500">on this page</span>
+                            <span class="text-xs text-neutral-500">{tt('ad.onThisPage')}</span>
                         </div>
                     </div>
 
                     <div class="bg-white dark:bg-neutral-800 p-4 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">Evaluation Types</span>
+                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">{tt('ad.evaluationTypes')}</span>
                         <div class="mt-2 flex items-baseline gap-2">
                             <span class="text-2xl font-bold font-mono text-neutral-900 dark:text-white">{summaryStats().typeCount}</span>
-                            <span class="text-xs text-neutral-500">in use on this page</span>
+                            <span class="text-xs text-neutral-500">{tt('ad.inUseOnThisPage')}</span>
                         </div>
                     </div>
 
                     <div class="bg-white dark:bg-neutral-800 p-4 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">Weight Total</span>
+                            <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">{tt('ad.weightTotal')}</span>
                             <Show
                                 when={isTeachSelected()}
-                                fallback={<span class="text-[10px] font-mono text-neutral-500">select a class</span>}
+                                fallback={<span class="text-[10px] font-mono text-neutral-500">{tt('ad.selectAClass')}</span>}
                             >
                                 <span class={`text-[10px] font-mono font-bold ${weightIsComplete() ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
                                     {weightIsComplete() ? 'COMPLETE' : summaryStats().totalWeight > 100 ? 'OVER 100%' : 'INCOMPLETE'}
@@ -460,7 +461,7 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                             <span class="text-2xl font-bold font-mono text-neutral-900 dark:text-white">
                                 {isTeachSelected() ? formatWeight(summaryStats().totalWeight) : '-'}
                             </span>
-                            <span class="text-xs text-neutral-500">of 100%</span>
+                            <span class="text-xs text-neutral-500">{tt('ad.of100')}</span>
                         </div>
                         <Show when={isTeachSelected()}>
                             <div class="w-full bg-neutral-200 dark:bg-neutral-700 h-1.5 rounded-full mt-2 overflow-hidden">
@@ -481,7 +482,7 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                                 apiPath="academic/campaign/transaction/teaches"
                                 value={filterTeach().id}
                                 selectedLabel={filterTeach().label}
-                                placeholder="Filter by teaching class (type a name)..."
+                                placeholder={tt('ad.filterByTeachingClassTypeA')}
                                 class={`${filterClass} pr-8`}
                                 getLabel={(t) => t.course?.name || t.name || 'Teach'}
                                 getSublabel={(t) => [t.class_code?.name, t.activity?.name].filter(Boolean).join(' • ')}
@@ -495,35 +496,35 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                             <input
                                 type="text"
                                 class={filterClass}
-                                placeholder="Search component name..."
+                                placeholder={tt('ad.searchComponentName')}
                                 value={searchQuery()}
                                 onInput={handleSearchInput}
                             />
                         </div>
                         <div class="md:col-span-2">
                             <select class={filterClass} value={selectedTypeId()} onChange={(e) => setSelectedTypeId((e.target as HTMLSelectElement).value)}>
-                                <option value="">All Types</option>
+                                <option value="">{tt('ad.allTypes')}</option>
                                 <For each={typeOptions()}>{(t) => <option value={t.id}>{t.name}</option>}</For>
                             </select>
                         </div>
                         <div class="md:col-span-1">
                             <button
                                 type="button"
-                                title="Reset all filters"
+                                title={tt('ad.resetAllFilters')}
                                 onClick={resetFilters}
                                 class="w-full p-2 text-xs flex items-center justify-center font-medium text-neutral-600 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xs transition-colors"
                             >
-                                Reset
+                                {tt('ad.reset')}
                             </button>
                         </div>
                     </div>
 
                     <div class="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400 pt-1 border-t border-neutral-100 dark:border-neutral-700/60">
                         <span>
-                            Showing <strong class="text-neutral-800 dark:text-neutral-200">{evaluations().length > 0 ? startIndex() + 1 : 0}</strong> - <strong class="text-neutral-800 dark:text-neutral-200">{endIndex()}</strong> of <strong class="text-neutral-800 dark:text-neutral-200">{totalData()}</strong> components
+                            {tt('ad.showing')} <strong class="text-neutral-800 dark:text-neutral-200">{evaluations().length > 0 ? startIndex() + 1 : 0}</strong> - <strong class="text-neutral-800 dark:text-neutral-200">{endIndex()}</strong> of <strong class="text-neutral-800 dark:text-neutral-200">{totalData()}</strong> components
                         </span>
                         <div class="flex items-center gap-2">
-                            <span>Per page:</span>
+                            <span>{tt('ad.perPage')}</span>
                             <select
                                 class="p-1 text-xs border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200"
                                 value={itemsPerPage()}
@@ -561,9 +562,9 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                             when={evaluations().length > 0}
                             fallback={
                                 <div class="px-4 py-16 text-center">
-                                    <h3 class="text-base font-bold font-mono text-neutral-900 dark:text-white">No Evaluation Components Found</h3>
+                                    <h3 class="text-base font-bold font-mono text-neutral-900 dark:text-white">{tt('ad.noEvaluationComponentsFound')}</h3>
                                     <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1 max-w-sm mx-auto font-mono">
-                                        There are no evaluation components matching your current filter criteria or database state.
+                                        {tt('ad.thereAreNoEvaluationComponentsMatching')}
                                     </p>
                                     <div class="mt-4 flex items-center justify-center gap-2">
                                         <button
@@ -571,14 +572,14 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                                             onClick={resetFilters}
                                             class="px-3.5 py-1.5 text-xs font-mono font-medium text-neutral-700 dark:text-neutral-200 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 rounded-xs transition-colors"
                                         >
-                                            Clear Filters
+                                            {tt('ad.clearFilters')}
                                         </button>
                                         <button
                                             type="button"
                                             onClick={openCreateModal}
                                             class="px-3.5 py-1.5 text-xs font-mono font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs transition-colors"
                                         >
-                                            + Add Component
+                                            {tt('ad.addComponent')}
                                         </button>
                                     </div>
                                 </div>
@@ -590,13 +591,13 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                                     <thead class="bg-neutral-50 dark:bg-neutral-900/60 border-b border-neutral-200 dark:border-neutral-700 font-mono text-neutral-600 dark:text-neutral-300 uppercase tracking-wider">
                                         <tr>
                                             <th class="px-4 py-3 font-semibold text-center">#</th>
-                                            <th class="px-4 py-3 font-semibold">Component</th>
-                                            <th class="px-4 py-3 font-semibold">Type</th>
-                                            <th class="px-4 py-3 font-semibold">Weight</th>
+                                            <th class="px-4 py-3 font-semibold">{tt('ad.component')}</th>
+                                            <th class="px-4 py-3 font-semibold">{tt('ad.type')}</th>
+                                            <th class="px-4 py-3 font-semibold">{tt('ad.weight')}</th>
                                             <Show when={!isTeachSelected()}>
-                                                <th class="px-4 py-3 font-semibold">Teaching Class</th>
+                                                <th class="px-4 py-3 font-semibold">{tt('ad.teachingClass')}</th>
                                             </Show>
-                                            <th class="px-4 py-3 font-semibold text-right">Actions</th>
+                                            <th class="px-4 py-3 font-semibold text-right">{tt('ad.actions')}</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
@@ -613,13 +614,13 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                                                                 <span class="text-[10px] font-mono text-neutral-500 italic">{item.english_name}</span>
                                                             </Show>
                                                             <Show when={item.feeder_id}>
-                                                                <span class="px-1.5 py-0.5 rounded-xs text-[9px] font-mono font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">FEEDER</span>
+                                                                <span class="px-1.5 py-0.5 rounded-xs text-[9px] font-mono font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">{tt('ad.feeder2')}</span>
                                                             </Show>
                                                             <button
                                                                 type="button"
                                                                 onClick={() => copyToClipboard(item.id, 'UUID')}
                                                                 class="px-1.5 py-0.5 rounded-xs text-[10px] font-mono text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-200/50 dark:hover:bg-neutral-700/50 transition-colors cursor-pointer"
-                                                                title="Click to copy UUID"
+                                                                title={tt('ad.clickToCopyUUID')}
                                                             >
                                                                 {item.id.substring(0, 8)}...
                                                             </button>
@@ -653,7 +654,7 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                                                             <A
                                                                 href={`${basePath}/${item.id}`}
                                                                 class="p-1.5 text-neutral-600 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-xs transition-colors"
-                                                                title="View Details"
+                                                                title={tt('ad.viewDetails')}
                                                             >
                                                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                                     <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
@@ -664,7 +665,7 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                                                                 type="button"
                                                                 onClick={() => openEditModal(item)}
                                                                 class="p-1.5 text-neutral-600 dark:text-neutral-300 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-xs transition-colors cursor-pointer"
-                                                                title="Edit Component"
+                                                                title={tt('ad.editComponent')}
                                                             >
                                                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                                     <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
@@ -674,7 +675,7 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                                                                 type="button"
                                                                 onClick={() => openDeleteModal(item)}
                                                                 class="p-1.5 text-neutral-600 dark:text-neutral-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-xs transition-colors cursor-pointer"
-                                                                title="Delete Component"
+                                                                title={tt('ad.deleteComponent')}
                                                             >
                                                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                                     <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
@@ -712,17 +713,17 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                                                     onClick={() => openEditModal(item)}
                                                     class="px-2.5 py-1 font-mono text-xs text-neutral-700 dark:text-neutral-200 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 rounded-xs"
                                                 >
-                                                    Edit
+                                                    {tt('ad.edit')}
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => openDeleteModal(item)}
                                                     class="px-2.5 py-1 font-mono text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xs"
                                                 >
-                                                    Delete
+                                                    {tt('ad.delete')}
                                                 </button>
                                                 <A href={`${basePath}/${item.id}`} class="px-2.5 py-1 font-mono text-xs text-white bg-blue-600 hover:bg-blue-700 rounded-xs">
-                                                    Detail →
+                                                    {tt('ad.detail')}
                                                 </A>
                                             </div>
                                         </div>
@@ -737,16 +738,16 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                 <Show when={totalPages() > 1}>
                     <div class="flex flex-col sm:flex-row items-center justify-between border rounded-lg border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-3">
                         <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                            Showing <span class="font-semibold text-neutral-900 dark:text-white">{totalData() > 0 ? startIndex() + 1 : 0}</span>–<span class="font-semibold text-neutral-900 dark:text-white">{endIndex()}</span> of <span class="font-semibold text-neutral-900 dark:text-white">{totalData().toLocaleString()}</span> components
+                            {tt('ad.showing')} <span class="font-semibold text-neutral-900 dark:text-white">{totalData() > 0 ? startIndex() + 1 : 0}</span>–<span class="font-semibold text-neutral-900 dark:text-white">{endIndex()}</span> of <span class="font-semibold text-neutral-900 dark:text-white">{totalData().toLocaleString()}</span> components
                         </p>
-                        <nav class="inline-flex -space-x-px rounded-lg overflow-hidden shadow-sm" aria-label="Pagination">
+                        <nav class="inline-flex -space-x-px rounded-lg overflow-hidden shadow-sm" aria-label={tt('ad.pagination')}>
                             <button
                                 type="button"
                                 class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
                                 disabled={currentPage() <= 1 || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                             >
-                                Previous
+                                {tt('ad.previous')}
                             </button>
                             <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border-y border-neutral-300 dark:border-neutral-600">
                                 {currentPage()} / {totalPages()}
@@ -757,7 +758,7 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                                 disabled={currentPage() >= totalPages() || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
                             >
-                                Next
+                                {tt('ad.next')}
                             </button>
                         </nav>
                     </div>
@@ -773,10 +774,10 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                     <div class="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-3">
                         <div>
                             <span class="text-xs font-mono uppercase tracking-wider text-blue-600 dark:text-blue-400 font-semibold">
-                                {modalMode() === 'create' ? 'Create Record' : 'Edit Record'}
+                                {modalMode() === 'create' ? tt('ad.createRecord') : tt('ad.editRecord')}
                             </span>
                             <h3 class="text-lg font-bold font-mono text-neutral-900 dark:text-white">
-                                {modalMode() === 'create' ? 'New Evaluation Component' : 'Update Evaluation Component'}
+                                {modalMode() === 'create' ? tt('ad.newEvaluationComponent') : tt('ad.updateEvaluationComponent')}
                             </h3>
                         </div>
                         <button type="button" onClick={closeFormModal} class="p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 rounded-xs cursor-pointer">
@@ -790,13 +791,13 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                     <div class="space-y-4 px-1">
                         <div>
                             <label class={labelClass}>
-                                Teaching Class <span class="text-red-500">*</span>
+                                {tt('ad.teachingClass')} <span class="text-red-500">*</span>
                             </label>
                             <RemoteSearchSelect<TeachOption>
                                 apiPath="academic/campaign/transaction/teaches"
                                 value={formState().teach_id}
                                 selectedLabel={formState().teach_label}
-                                placeholder="Type a teaching class name..."
+                                placeholder={tt('ad.typeATeachingClassName')}
                                 required
                                 getLabel={(t) => t.course?.name || t.name || 'Teach'}
                                 getSublabel={(t) => [t.class_code?.name, t.activity?.name].filter(Boolean).join(' • ')}
@@ -806,7 +807,7 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
 
                         <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
                             <div>
-                                <label class={labelClass}>Order</label>
+                                <label class={labelClass}>{tt('ad.order')}</label>
                                 <input
                                     type="number"
                                     min="1"
@@ -819,13 +820,13 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                             </div>
                             <div class="sm:col-span-3">
                                 <label class={labelClass}>
-                                    Component Name <span class="text-red-500">*</span>
+                                    {tt('ad.componentName')} <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
                                     required
                                     class={inputClass}
-                                    placeholder="e.g. Ujian Tengah Semester"
+                                    placeholder={tt('ad.eGUjianTengahSemester')}
                                     value={formState().name}
                                     onInput={(e) => updateForm('name', (e.target as HTMLInputElement).value)}
                                 />
@@ -833,11 +834,11 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                         </div>
 
                         <div>
-                            <label class={labelClass}>English Name</label>
+                            <label class={labelClass}>{tt('ad.englishName')}</label>
                             <input
                                 type="text"
                                 class={inputClass}
-                                placeholder="e.g. Midterm Exam"
+                                placeholder={tt('ad.eGMidtermExam')}
                                 value={formState().english_name}
                                 onInput={(e) => updateForm('english_name', (e.target as HTMLInputElement).value)}
                             />
@@ -845,15 +846,15 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class={labelClass}>Evaluation Type</label>
+                                <label class={labelClass}>{tt('ad.evaluationType')}</label>
                                 <select class={inputClass} value={formState().evaluation_type_id} onChange={(e) => updateForm('evaluation_type_id', (e.target as HTMLSelectElement).value)}>
-                                    <option value="">Select Type</option>
+                                    <option value="">{tt('ad.selectType')}</option>
                                     <For each={typeOptions()}>{(t) => <option value={t.id}>{t.name}</option>}</For>
                                 </select>
                             </div>
                             <div>
                                 <label class={labelClass}>
-                                    Weight (%) <span class="text-red-500">*</span>
+                                    {tt('ad.weight2')} <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="number"
@@ -866,7 +867,7 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                                     value={formState().evaluation_weight}
                                     onInput={(e) => updateForm('evaluation_weight', (e.target as HTMLInputElement).value)}
                                 />
-                                <p class="mt-1 text-[10px] font-mono text-neutral-500">All components of one class should add up to 100%.</p>
+                                <p class="mt-1 text-[10px] font-mono text-neutral-500">{tt('ad.allComponentsOfOneClassShould')}</p>
                             </div>
                         </div>
                     </div>
@@ -877,14 +878,14 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                             onClick={closeFormModal}
                             class="px-4 py-2 text-xs sm:text-sm font-mono font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 rounded-xs transition-colors cursor-pointer"
                         >
-                            Cancel
+                            {tt('ad.cancel')}
                         </button>
                         <button
                             type="submit"
                             disabled={isSubmitting()}
                             class="px-4 py-2 text-xs sm:text-sm font-mono font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xs transition-colors cursor-pointer disabled:opacity-50"
                         >
-                            {isSubmitting() ? 'Saving...' : modalMode() === 'create' ? 'Create Component' : 'Update Component'}
+                            {isSubmitting() ? tt('ad.saving') : modalMode() === 'create' ? tt('ad.createComponent') : tt('ad.updateComponent')}
                         </button>
                     </div>
                 </form>
@@ -896,9 +897,9 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                 class="fixed inset-0 m-auto w-full max-w-md bg-white dark:bg-neutral-900 rounded-xs border border-neutral-300 dark:border-neutral-700 shadow-2xl p-0 backdrop:bg-black/50 backdrop:backdrop-blur-xs text-neutral-900 dark:text-neutral-100"
             >
                 <div class="p-6 space-y-4">
-                    <h3 class="text-base font-bold font-mono text-neutral-900 dark:text-white">Delete Evaluation Component</h3>
+                    <h3 class="text-base font-bold font-mono text-neutral-900 dark:text-white">{tt('ad.deleteEvaluationComponent')}</h3>
                     <p class="text-xs text-neutral-600 dark:text-neutral-300 font-mono">
-                        Delete <strong class="text-neutral-900 dark:text-white">"{selectedEvaluation()?.name}"</strong> ({formatWeight(selectedEvaluation()?.evaluation_weight)})? Student scores recorded for this component may be affected, and the class weight total will no longer add up to 100%. This action cannot be reversed.
+                        {tt('ad.delete')} <strong class="text-neutral-900 dark:text-white">"{selectedEvaluation()?.name}"</strong> ({formatWeight(selectedEvaluation()?.evaluation_weight)})? Student scores recorded for this component may be affected, and the class weight total will no longer add up to 100%. This action cannot be reversed.
                     </p>
                     <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-neutral-200 dark:border-neutral-800">
                         <button
@@ -906,7 +907,7 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                             onClick={closeDeleteModal}
                             class="px-3.5 py-1.5 text-xs font-mono font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 rounded-xs transition-colors cursor-pointer"
                         >
-                            Cancel
+                            {tt('ad.cancel')}
                         </button>
                         <button
                             type="button"
@@ -914,7 +915,7 @@ export default function AcademicCampaignTransactionTeachevaluationPage() {
                             onClick={handleDeleteSubmit}
                             class="px-4 py-1.5 text-xs font-mono font-semibold text-white bg-red-600 hover:bg-red-700 rounded-xs transition-colors cursor-pointer disabled:opacity-50"
                         >
-                            {isSubmitting() ? 'Deleting...' : 'Confirm Delete'}
+                            {isSubmitting() ? tt('ad.deleting') : tt('ad.confirmDelete')}
                         </button>
                     </div>
                 </div>

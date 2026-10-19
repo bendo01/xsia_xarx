@@ -3,6 +3,7 @@ import { useParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { masterApiIndex } from '~/controllers/master/masterApiController';
 import { toast } from '~/components/toast/Toaster';
+import { t } from '../../../../../i18n';
 
 interface StaffRow {
     id: string;
@@ -109,7 +110,7 @@ export default function RectoratStaffIndex() {
         } catch (error) {
             console.error('Error loading staff:', error);
             setAllStaff([]);
-            toast.danger('Gagal memuat data staf dari server.');
+            toast.danger(t('rt.gagalMemuatDataStafDariServer'));
         } finally {
             setIsLoading(false);
         }
@@ -160,18 +161,18 @@ export default function RectoratStaffIndex() {
                 <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-6">
                     <div class="space-y-1">
                         <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
-                            <A href="/rectorat" class="hover:text-blue-600 transition-colors">Rektorat</A>
+                            <A href="/rectorat" class="hover:text-blue-600 transition-colors">{t('rt.rektorat')}</A>
                             <span>/</span>
-                            <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-blue-600 transition-colors">Institusi</A>
+                            <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-blue-600 transition-colors">{t('rt.institusi')}</A>
                             <span>/</span>
-                            <span class="text-neutral-700 dark:text-neutral-300 font-semibold">Staf</span>
+                            <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.staf')}</span>
                         </nav>
                         <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 text-xs font-semibold uppercase tracking-wider mb-2 border border-teal-200 dark:border-teal-800/50">
                             <span class="relative flex size-2">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
                                 <span class="relative inline-flex rounded-full size-2 bg-teal-500"></span>
                             </span>
-                            Master Data
+                            {t('rt.masterData')}
                         </div>
                         <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white flex items-center gap-3">
                             <span class="text-teal-600 dark:text-teal-400">
@@ -179,10 +180,10 @@ export default function RectoratStaffIndex() {
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
                                 </svg>
                             </span>
-                            Daftar Staf
+                            {t('rt.daftarStaf')}
                         </h1>
                         <p class="text-sm text-neutral-500 dark:text-neutral-400 max-w-2xl">
-                            Seluruh data kepegawaian (staf) yang terdaftar dalam institusi ini.
+                            {t('rt.seluruhDataKepegawaianStafYangTerdaftar')}
                         </p>
                     </div>
 
@@ -190,15 +191,15 @@ export default function RectoratStaffIndex() {
                     <div class="flex items-center gap-3 shrink-0">
                         <div class="text-center px-4 py-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm min-w-[80px]">
                             <p class="text-2xl font-black text-neutral-900 dark:text-white">{allStaff().length}</p>
-                            <p class="text-[11px] text-neutral-500 dark:text-neutral-400 font-medium uppercase tracking-wide">Total</p>
+                            <p class="text-[11px] text-neutral-500 dark:text-neutral-400 font-medium uppercase tracking-wide">{t('rt.total')}</p>
                         </div>
                         <div class="text-center px-4 py-2.5 rounded-xl bg-teal-50 dark:bg-teal-900/20 border border-teal-200 dark:border-teal-800/50 shadow-sm min-w-[80px]">
                             <p class="text-2xl font-black text-teal-700 dark:text-teal-400">{activeCount()}</p>
-                            <p class="text-[11px] text-teal-600 dark:text-teal-500 font-medium uppercase tracking-wide">Aktif</p>
+                            <p class="text-[11px] text-teal-600 dark:text-teal-500 font-medium uppercase tracking-wide">{t('rt.aktif')}</p>
                         </div>
                         <div class="text-center px-4 py-2.5 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 shadow-sm min-w-[80px]">
                             <p class="text-2xl font-black text-amber-700 dark:text-amber-400">{inactiveCount()}</p>
-                            <p class="text-[11px] text-amber-600 dark:text-amber-500 font-medium uppercase tracking-wide">Selesai</p>
+                            <p class="text-[11px] text-amber-600 dark:text-amber-500 font-medium uppercase tracking-wide">{t('rt.selesai2')}</p>
                         </div>
                     </div>
                 </div>
@@ -217,7 +218,7 @@ export default function RectoratStaffIndex() {
                                 type="text"
                                 id="staff-search-input"
                                 class="block w-full p-3 pl-11 text-sm text-neutral-900 border border-neutral-200 rounded-lg bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 dark:bg-neutral-900 dark:border-neutral-800 dark:text-white transition-all shadow-sm placeholder:text-neutral-400"
-                                placeholder="Cari nama, kode, atau nomor SK..."
+                                placeholder={t('rt.cariNamaKodeAtauNomorSK')}
                                 onInput={handleSearch}
                             />
                         </div>
@@ -230,7 +231,7 @@ export default function RectoratStaffIndex() {
                                 class={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${filterStatus() === 'all' ? 'bg-teal-600 text-white shadow-sm' : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'}`}
                                 onClick={() => { setFilterStatus('all'); setCurrentPage(1); }}
                             >
-                                Semua
+                                {t('rt.semua')}
                             </button>
                             <button
                                 type="button"
@@ -238,7 +239,7 @@ export default function RectoratStaffIndex() {
                                 class={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${filterStatus() === 'active' ? 'bg-teal-600 text-white shadow-sm' : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'}`}
                                 onClick={() => { setFilterStatus('active'); setCurrentPage(1); }}
                             >
-                                Aktif
+                                {t('rt.aktif')}
                             </button>
                             <button
                                 type="button"
@@ -246,7 +247,7 @@ export default function RectoratStaffIndex() {
                                 class={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${filterStatus() === 'inactive' ? 'bg-amber-600 text-white shadow-sm' : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'}`}
                                 onClick={() => { setFilterStatus('inactive'); setCurrentPage(1); }}
                             >
-                                Selesai
+                                {t('rt.selesai2')}
                             </button>
                         </div>
                     </div>
@@ -260,9 +261,9 @@ export default function RectoratStaffIndex() {
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                             </svg>
-                            Tambah Staf
+                            {t('rt.tambahStaf')}
                         </A>
-                        <label class="text-xs text-neutral-500 dark:text-neutral-400 font-medium">Baris:</label>
+                        <label class="text-xs text-neutral-500 dark:text-neutral-400 font-medium">{t('rt.baris')}</label>
                         <select
                             id="staff-rows-per-page"
                             class="p-2.5 text-sm text-neutral-900 border border-neutral-200 rounded-lg bg-white focus:ring-teal-500 focus:border-teal-500 dark:bg-neutral-900 dark:border-neutral-800 dark:text-white transition-colors shadow-sm"
@@ -286,13 +287,13 @@ export default function RectoratStaffIndex() {
                         <table class="w-full text-sm text-left">
                             <thead class="text-xs text-neutral-500 uppercase bg-neutral-50/80 dark:bg-neutral-800/50 dark:text-neutral-400 border-b border-neutral-200 dark:border-neutral-800 font-semibold tracking-wider">
                                 <tr>
-                                    <th class="px-6 py-4">Kode</th>
-                                    <th class="px-6 py-4">Nama Staf / Pegawai</th>
-                                    <th class="px-6 py-4">No. SK</th>
-                                    <th class="px-6 py-4">Mulai Tugas</th>
-                                    <th class="px-6 py-4">Selesai Tugas</th>
-                                    <th class="px-6 py-4 text-center">Status</th>
-                                    <th class="px-6 py-4 text-right">Aksi</th>
+                                    <th class="px-6 py-4">{t('rt.kode')}</th>
+                                    <th class="px-6 py-4">{t('rt.namaStafPegawai')}</th>
+                                    <th class="px-6 py-4">{t('rt.noSK')}</th>
+                                    <th class="px-6 py-4">{t('rt.mulaiTugas')}</th>
+                                    <th class="px-6 py-4">{t('rt.selesaiTugas')}</th>
+                                    <th class="px-6 py-4 text-center">{t('rt.status')}</th>
+                                    <th class="px-6 py-4 text-right">{t('rt.aksi')}</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-neutral-100 dark:divide-neutral-800">
@@ -333,8 +334,8 @@ export default function RectoratStaffIndex() {
                                                                 <path d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
                                                             </svg>
                                                         </div>
-                                                        <span class="font-semibold text-base text-neutral-700 dark:text-neutral-300">Tidak ada data staf ditemukan</span>
-                                                        <span class="text-sm">Silakan ubah kata kunci atau filter Anda.</span>
+                                                        <span class="font-semibold text-base text-neutral-700 dark:text-neutral-300">{t('rt.tidakAdaDataStafDitemukan')}</span>
+                                                        <span class="text-sm">{t('rt.silakanUbahKataKunciAtauFilter')}</span>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -381,12 +382,12 @@ export default function RectoratStaffIndex() {
                                                         {!item.end_date ? (
                                                             <div class="inline-flex items-center justify-center gap-1.5 h-6 px-2.5 text-xs font-bold text-teal-700 bg-teal-50 border border-teal-200 rounded-full dark:bg-teal-900/30 dark:text-teal-300 dark:border-teal-800/50">
                                                                 <span class="size-1.5 rounded-full bg-teal-500"></span>
-                                                                Aktif
+                                                                {t('rt.aktif')}
                                                             </div>
                                                         ) : (
                                                             <div class="inline-flex items-center justify-center gap-1.5 h-6 px-2.5 text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-full dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800/50">
                                                                 <span class="size-1.5 rounded-full bg-amber-500"></span>
-                                                                Selesai
+                                                                {t('rt.selesai2')}
                                                             </div>
                                                         )}
                                                     </td>
@@ -395,13 +396,13 @@ export default function RectoratStaffIndex() {
                                                             href={`/rectorat/institution/${institutionId()}/staff/${item.id}`}
                                                             id={`staff-detail-btn-${item.id}`}
                                                             class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-teal-600 hover:text-white hover:bg-teal-600 border border-teal-200 hover:border-teal-600 rounded-md transition-all dark:text-teal-400 dark:border-teal-800/60 dark:hover:bg-teal-600 dark:hover:text-white dark:hover:border-teal-600 cursor-pointer shadow-sm group-hover:shadow focus:ring-2 focus:ring-teal-500/20"
-                                                            title="Lihat Detail Staf"
+                                                            title={t('rt.lihatDetailStaf')}
                                                         >
                                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
                                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                                             </svg>
-                                                            Detail
+                                                            {t('rt.detail')}
                                                         </A>
                                                     </td>
                                                 </tr>
@@ -416,7 +417,7 @@ export default function RectoratStaffIndex() {
                     {/* Pagination Footer */}
                     <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-4">
                         <div class="text-sm text-neutral-600 dark:text-neutral-400">
-                            Menampilkan{' '}
+                            {t('rt.menampilkan')}{' '}
                             <span class="font-medium text-neutral-900 dark:text-white">{filteredItems().length > 0 ? startIndex() + 1 : 0}</span>
                             {' '}sampai{' '}
                             <span class="font-medium text-neutral-900 dark:text-white">{endIndex()}</span>
@@ -424,7 +425,7 @@ export default function RectoratStaffIndex() {
                             <span class="font-medium text-neutral-900 dark:text-white">{filteredItems().length}</span> data
                         </div>
                         <div class="flex justify-center">
-                            <nav class="inline-flex -space-x-px shadow-sm rounded-lg overflow-hidden" aria-label="Pagination">
+                            <nav class="inline-flex -space-x-px shadow-sm rounded-lg overflow-hidden" aria-label={t('rt.pagination')}>
                                 <button
                                     type="button"
                                     id="staff-prev-page"
@@ -432,7 +433,7 @@ export default function RectoratStaffIndex() {
                                     disabled={currentPage() <= 1 || isLoading()}
                                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                                 >
-                                    Sebelumnya
+                                    {t('rt.sebelumnya2')}
                                 </button>
                                 <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/20 border-y border-neutral-300 dark:border-neutral-600">
                                     {currentPage()} / {totalPages()}
@@ -444,7 +445,7 @@ export default function RectoratStaffIndex() {
                                     disabled={currentPage() >= totalPages() || isLoading()}
                                     onClick={() => setCurrentPage(p => Math.min(totalPages(), p + 1))}
                                 >
-                                    Selanjutnya
+                                    {t('rt.selanjutnya')}
                                 </button>
                             </nav>
                         </div>

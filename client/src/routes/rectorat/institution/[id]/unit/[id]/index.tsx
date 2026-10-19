@@ -5,6 +5,7 @@ import { toast } from '~/components/toast/Toaster';
 import { getBaseApiUrl, getAuthHeaders } from '~/controllers/master/masterApiController';
 import { getStorageItem } from '~/lib/storage';
 import EChart from '~/components/chart/echart_component';
+import { t } from '../../../../../../i18n';
 
 export default function RectoratUnitDetail() {
     const apiPath = "institution/master/units";
@@ -56,12 +57,12 @@ export default function RectoratUnitDetail() {
                 setUnit(data);
             } else {
                 setUnit(null);
-                toast.danger('Unit record not found.');
+                toast.danger(t('rt.unitRecordNotFound'));
             }
         } catch (error: any) {
             console.error('Error fetching unit detail:', error);
             setUnit(null);
-            toast.danger('Failed to load unit details from server.');
+            toast.danger(t('rt.failedToLoadUnitDetailsFrom'));
         } finally {
             setIsLoading(false);
         }
@@ -84,11 +85,11 @@ export default function RectoratUnitDetail() {
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-5">
                     <div>
                         <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
-                            <span class="hover:text-blue-600 cursor-pointer transition-colors">Rektorat</span>
+                            <span class="hover:text-blue-600 cursor-pointer transition-colors">{t('rt.rektorat')}</span>
                             <span>/</span>
-                            <span>Institution</span>
+                            <span>{t('rt.institution')}</span>
                             <span>/</span>
-                            <span>Unit Dashboard</span>
+                            <span>{t('rt.unitDashboard')}</span>
                         </nav>
                         <h1 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white flex items-center gap-3">
                             <span class="text-blue-600 dark:text-blue-400">
@@ -96,10 +97,10 @@ export default function RectoratUnitDetail() {
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
                                 </svg>
                             </span>
-                            Unit Dashboard
+                            {t('rt.unitDashboard')}
                         </h1>
                         <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-                            Overview and details of the selected organizational unit.
+                            {t('rt.overviewAndDetailsOfTheSelected')}
                         </p>
                     </div>
                     
@@ -108,7 +109,7 @@ export default function RectoratUnitDetail() {
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                             </svg>
-                            Back to Unit List
+                            {t('rt.backToUnitList')}
                         </A>
                     </div>
                 </div>
@@ -135,9 +136,9 @@ export default function RectoratUnitDetail() {
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                 </div>
-                                <h3 class="text-lg font-semibold text-neutral-900 dark:text-white">Unit not found</h3>
+                                <h3 class="text-lg font-semibold text-neutral-900 dark:text-white">{t('rt.unitNotFound')}</h3>
                                 <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1 max-w-md">
-                                    We couldn't find the unit data you're looking for. It might have been removed or the ID is incorrect.
+                                    {t('rt.weCouldnTFindTheUnit')}
                                 </p>
                             </div>
                         }
@@ -152,12 +153,12 @@ export default function RectoratUnitDetail() {
                                     <div class="relative z-10">
                                         <div class="flex items-center gap-3 mb-2">
                                             <span class="px-2.5 py-1 text-xs font-bold uppercase tracking-wide bg-blue-500/30 border border-blue-400/30 rounded-full backdrop-blur-sm">
-                                                Code: {item().code || '-'}
+                                                {t('rt.code')} {item().code || '-'}
                                             </span>
                                             <Show when={item().is_active}>
                                                 <span class="px-2.5 py-1 text-xs font-bold uppercase tracking-wide bg-emerald-500/30 border border-emerald-400/30 text-emerald-100 rounded-full backdrop-blur-sm flex items-center gap-1">
                                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                                                    Active
+                                                    {t('rt.active')}
                                                 </span>
                                             </Show>
                                         </div>
@@ -172,40 +173,40 @@ export default function RectoratUnitDetail() {
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-blue-500">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
                                             </svg>
-                                            Basic Information
+                                            {t('rt.basicInformation')}
                                         </h3>
                                         <dl class="space-y-4">
                                             <div>
-                                                <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">Unit ID</dt>
+                                                <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">{t('rt.unitID')}</dt>
                                                 <dd class="text-sm font-mono text-neutral-900 dark:text-neutral-200 bg-neutral-50 dark:bg-neutral-900 p-2 rounded border border-neutral-100 dark:border-neutral-700 break-all">{item().id}</dd>
                                             </div>
                                             <div class="grid grid-cols-2 gap-4">
                                                 <div>
-                                                    <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">Institution</dt>
+                                                    <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">{t('rt.institution')}</dt>
                                                     <dd class="text-sm font-medium text-neutral-900 dark:text-neutral-200">{item().institution?.name || '-'}</dd>
                                                 </div>
                                                 <div>
-                                                    <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">Unit Type</dt>
+                                                    <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">{t('rt.unitType')}</dt>
                                                     <dd class="text-sm font-medium text-neutral-900 dark:text-neutral-200">{item().unit_type?.name || '-'}</dd>
                                                 </div>
                                             </div>
                                             <div class="grid grid-cols-2 gap-4">
                                                 <div>
-                                                    <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">Education Level</dt>
+                                                    <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">{t('rt.educationLevel')}</dt>
                                                     <dd class="text-sm font-medium text-neutral-900 dark:text-neutral-200">{item().education?.name || '-'}</dd>
                                                 </div>
                                                 <div>
-                                                    <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">Parent Unit</dt>
+                                                    <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">{t('rt.parentUnit')}</dt>
                                                     <dd class="text-sm font-medium text-neutral-900 dark:text-neutral-200">{item().parent?.name || '-'}</dd>
                                                 </div>
                                             </div>
                                             <div class="grid grid-cols-2 gap-4">
                                                 <div>
-                                                    <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">Created At</dt>
+                                                    <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">{t('rt.createdAt')}</dt>
                                                     <dd class="text-sm font-medium text-neutral-900 dark:text-neutral-200">{item().created_at ? new Date(item().created_at).toLocaleDateString() : '-'}</dd>
                                                 </div>
                                                 <div>
-                                                    <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">Updated At</dt>
+                                                    <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">{t('rt.updatedAt')}</dt>
                                                     <dd class="text-sm font-medium text-neutral-900 dark:text-neutral-200">{item().updated_at ? new Date(item().updated_at).toLocaleDateString() : '-'}</dd>
                                                 </div>
                                             </div>
@@ -217,19 +218,19 @@ export default function RectoratUnitDetail() {
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-indigo-500">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" />
                                             </svg>
-                                            Academic Statistics
+                                            {t('rt.academicStatistics')}
                                         </h3>
                                         <div class="grid grid-cols-1 gap-4">
                                             <div class="flex items-center justify-between p-3 rounded-lg border border-neutral-100 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900/50">
-                                                <div class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Total Curriculum</div>
+                                                <div class="text-sm font-medium text-neutral-600 dark:text-neutral-400">{t('rt.totalCurriculum')}</div>
                                                 <div class="text-xl font-bold text-neutral-900 dark:text-white font-mono">{item().total_curriculum || 0}</div>
                                             </div>
                                             <div class="flex items-center justify-between p-3 rounded-lg border border-neutral-100 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900/50">
-                                                <div class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Total Courses</div>
+                                                <div class="text-sm font-medium text-neutral-600 dark:text-neutral-400">{t('rt.totalCourses')}</div>
                                                 <div class="text-xl font-bold text-neutral-900 dark:text-white font-mono">{item().matakuliah?.total_matakuliah || 0}</div>
                                             </div>
                                             <div class="flex items-center justify-between p-3 rounded-lg border border-neutral-100 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900/50">
-                                                <div class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Total Credits (SKS)</div>
+                                                <div class="text-sm font-medium text-neutral-600 dark:text-neutral-400">{t('rt.totalCreditsSKS')}</div>
                                                 <div class="text-xl font-bold text-neutral-900 dark:text-white font-mono">{item().matakuliah?.total_credit || 0}</div>
                                             </div>
                                         </div>
@@ -241,7 +242,7 @@ export default function RectoratUnitDetail() {
                                     <Show when={item().student_academic_year_chart}>
                                         <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow">
                                             <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
-                                                Student Trend by Academic Year
+                                                {t('rt.studentTrendByAcademicYear')}
                                             </h3>
                                             <div class="h-80 w-full relative">
                                                 <EChart
@@ -256,7 +257,7 @@ export default function RectoratUnitDetail() {
                                     <Show when={item().course_category_distribution}>
                                         <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow">
                                             <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
-                                                Course Category Distribution
+                                                {t('rt.courseCategoryDistribution')}
                                             </h3>
                                             <div class="h-80 w-full relative">
                                                 <EChart
@@ -271,7 +272,7 @@ export default function RectoratUnitDetail() {
                                     <Show when={item().registered_student_academic_year_chart}>
                                         <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow lg:col-span-2">
                                             <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
-                                                Registered Student by Gender Trend
+                                                {t('rt.registeredStudentByGenderTrend')}
                                             </h3>
                                             <div class="h-80 w-full relative">
                                                 <EChart
@@ -286,7 +287,7 @@ export default function RectoratUnitDetail() {
                                     <Show when={item().student_regency_distribution || item().student_sub_district_distribution}>
                                         <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow lg:col-span-2">
                                             <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
-                                                Student Distribution by Region
+                                                {t('rt.studentDistributionByRegion')}
                                             </h3>
                                             <div class="h-[400px] w-full relative">
                                                 <EChart
@@ -300,7 +301,7 @@ export default function RectoratUnitDetail() {
                                     <Show when={item().student_religion_distribution}>
                                         <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow lg:col-span-2">
                                             <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
-                                                Student Distribution by Religion
+                                                {t('rt.studentDistributionByReligion')}
                                             </h3>
                                             <div class="h-80 w-full relative">
                                                 <EChart
@@ -315,7 +316,7 @@ export default function RectoratUnitDetail() {
                                     <Show when={item().average_gpa_trend}>
                                         <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow lg:col-span-2">
                                             <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
-                                                Average GPA (IPK) Trend
+                                                {t('rt.averageGPAIPKTrend')}
                                             </h3>
                                             <div class="h-80 w-full relative">
                                                 <EChart
@@ -330,7 +331,7 @@ export default function RectoratUnitDetail() {
                                     <Show when={item().lecturer_academic_group_distribution}>
                                         <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow">
                                             <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
-                                                Lecturer Academic Group
+                                                {t('rt.lecturerAcademicGroup')}
                                             </h3>
                                             <div class="h-80 w-full relative">
                                                 <EChart
@@ -345,7 +346,7 @@ export default function RectoratUnitDetail() {
                                     <Show when={item().lecturer_academic_rank_distribution}>
                                         <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow">
                                             <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
-                                                Lecturer Academic Rank (Homebase)
+                                                {t('rt.lecturerAcademicRankHomebase')}
                                             </h3>
                                             <div class="h-80 w-full relative">
                                                 <EChart

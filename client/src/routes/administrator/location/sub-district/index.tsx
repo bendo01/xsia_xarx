@@ -15,6 +15,7 @@ import { LocationRegencyControllerIndex } from '~/controllers/location/LocationR
 import { LocationProvinceControllerIndex } from '~/controllers/location/LocationProvinceController';
 import { LocationCountryControllerIndex } from '~/controllers/location/LocationCountryController';
 import { getStorageItem } from '~/lib/storage';
+import { t } from '../../../../i18n';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
 
@@ -272,7 +273,7 @@ export default function LocationSubDistrictPage() {
             }
         } catch (error) {
             console.error('Error loading sub-district data:', error);
-            toast.danger('Failed to load sub-district data from server.');
+            toast.danger(t('ad.failedToLoadSubDistrictData'));
         } finally {
             setIsLoading(false);
         }
@@ -376,14 +377,14 @@ export default function LocationSubDistrictPage() {
         try {
             const res = await LocationSubDistrictControllerUpsert(formData());
             if (!res.is_error) {
-                toast.success(res.message || 'Sub-district created successfully!', 5000);
+                toast.success(res.message || t('ad.subDistrictCreatedSuccessfully'), 5000);
                 closeCreateModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to create sub-district.', 5000);
+                toast.danger(res.message || t('ad.failedToCreateSubDistrict'), 5000);
             }
         } catch (error: any) {
-            toast.danger(error.message || 'Error occurred while creating.', 5000);
+            toast.danger(error.message || t('ad.errorOccurredWhileCreating'), 5000);
         } finally {
             setIsSubmitting(false);
         }
@@ -397,14 +398,14 @@ export default function LocationSubDistrictPage() {
         try {
             const res = await LocationSubDistrictControllerUpsert(formData());
             if (!res.is_error) {
-                toast.success(res.message || 'Sub-district updated successfully!', 5000);
+                toast.success(res.message || t('ad.subDistrictUpdatedSuccessfully'), 5000);
                 closeEditModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to update sub-district.', 5000);
+                toast.danger(res.message || t('ad.failedToUpdateSubDistrict'), 5000);
             }
         } catch (error: any) {
-            toast.danger(error.message || 'Error occurred while updating.', 5000);
+            toast.danger(error.message || t('ad.errorOccurredWhileUpdating'), 5000);
         } finally {
             setIsSubmitting(false);
         }
@@ -418,14 +419,14 @@ export default function LocationSubDistrictPage() {
         try {
             const res = await LocationSubDistrictControllerDelete({ id: item.id });
             if (!res.is_error) {
-                toast.success(res.message || 'Sub-district deleted successfully!', 5000);
+                toast.success(res.message || t('ad.subDistrictDeletedSuccessfully'), 5000);
                 closeDeleteModal();
                 fetchData();
             } else {
-                toast.danger(res.message || 'Failed to delete sub-district.', 5000);
+                toast.danger(res.message || t('ad.failedToDeleteSubDistrict'), 5000);
             }
         } catch (error: any) {
-            toast.danger(error.message || 'Error occurred while deleting.', 5000);
+            toast.danger(error.message || t('ad.errorOccurredWhileDeleting'), 5000);
         } finally {
             setIsSubmitting(false);
         }
@@ -443,17 +444,17 @@ export default function LocationSubDistrictPage() {
                 <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                            <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">Administrator</a>
+                            <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">{t('ad.administrator')}</a>
                             <span>/</span>
-                            <span>Location</span>
+                            <span>{t('ad.location')}</span>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">Sub District</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">{t('ad.subDistrict2')}</span>
                         </nav>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Sub-District / Kecamatan
+                            {t('ad.subDistrictKecamatan2')}
                         </h1>
                         <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
-                            Manage third-level administrative subdivisions with complete location hierarchy (Regency, Province, Country).
+                            {t('ad.manageThirdLevelAdministrativeSubdivisionsWith')}
                         </p>
                     </div>
                     <div class="mt-4 sm:mt-0 flex items-center gap-2 justify-end">
@@ -467,7 +468,7 @@ export default function LocationSubDistrictPage() {
                                 <path d="M5 12h14" />
                                 <path d="M12 5v14" />
                             </svg>
-                            <span>Add Sub-District</span>
+                            <span>{t('ad.addSubDistrict')}</span>
                         </button>
                     </div>
                 </div>
@@ -484,7 +485,7 @@ export default function LocationSubDistrictPage() {
                             <input
                                 type="text"
                                 class="block w-full p-2.5 pl-10 text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:placeholder-neutral-400 dark:text-white transition-colors"
-                                placeholder="Search by sub-district / kecamatan name (e.g. Coblong, Sumur Bandung)..."
+                                placeholder={t('ad.searchBySubDistrictKecamatanName')}
                                 onInput={handleSearch}
                                 id="input-search-location-sub-district"
                             />
@@ -499,10 +500,10 @@ export default function LocationSubDistrictPage() {
                                 onChange={(e) => setSortParam((e.target as HTMLSelectElement).value)}
                                 id="select-sort-location-sub-district"
                             >
-                                <option value="name-asc">Name (A-Z)</option>
-                                <option value="name-desc">Name (Z-A)</option>
-                                <option value="code-asc">Code (Ascending)</option>
-                                <option value="code-desc">Code (Descending)</option>
+                                <option value="name-asc">{t('ad.nameAZ')}</option>
+                                <option value="name-desc">{t('ad.nameZA')}</option>
+                                <option value="code-asc">{t('ad.codeAscending')}</option>
+                                <option value="code-desc">{t('ad.codeDescending')}</option>
                             </select>
                         </div>
                         <div class="w-1/2">
@@ -512,10 +513,10 @@ export default function LocationSubDistrictPage() {
                                 onChange={handleItemsPerPageChange}
                                 id="select-per-page-location-sub-district"
                             >
-                                <option value={10}>10 / page</option>
-                                <option value={25}>25 / page</option>
-                                <option value={50}>50 / page</option>
-                                <option value={100}>100 / page</option>
+                                <option value={10}>{t('ad.n10Page')}</option>
+                                <option value={25}>{t('ad.n25Page')}</option>
+                                <option value={50}>{t('ad.n50Page')}</option>
+                                <option value={100}>{t('ad.n100Page')}</option>
                             </select>
                         </div>
                     </div>
@@ -529,13 +530,13 @@ export default function LocationSubDistrictPage() {
                             <table class="w-full text-xs sm:text-sm text-left whitespace-nowrap">
                                 <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
                                     <tr>
-                                        <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider w-28">Code</th>
-                                        <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">Sub-District Name</th>
-                                        <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">Regency / City</th>
-                                        <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">Province</th>
-                                        <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">Country</th>
-                                        <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">Dikti Code</th>
-                                        <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider text-right">Actions</th>
+                                        <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider w-28">{t('ad.code2')}</th>
+                                        <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">{t('ad.subDistrictName')}</th>
+                                        <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">{t('ad.regencyCity')}</th>
+                                        <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">{t('ad.province')}</th>
+                                        <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">{t('ad.country')}</th>
+                                        <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider">{t('ad.diktiCode')}</th>
+                                        <th scope="col" class="px-5 py-3.5 font-semibold tracking-wider text-right">{t('ad.actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
@@ -569,8 +570,8 @@ export default function LocationSubDistrictPage() {
                                                             <svg class="size-8 text-neutral-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                                                             </svg>
-                                                            <p class="text-sm font-medium">No sub-district records found</p>
-                                                            <p class="text-xs">Click "Add Sub-District" to add a new record.</p>
+                                                            <p class="text-sm font-medium">{t('ad.noSubDistrictRecordsFound')}</p>
+                                                            <p class="text-xs">{t('ad.clickAddSubDistrictToAdd')}</p>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -606,8 +607,8 @@ export default function LocationSubDistrictPage() {
                                                                     type="button"
                                                                     onClick={() => openEditModal(item)}
                                                                     class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
-                                                                    title="Edit Record"
-                                                                    aria-label={`Edit ${item.name}`}
+                                                                    title={t('ad.editRecord')}
+                                                                    aria-label={t('ad.editName', { name: item.name ?? '' })}
                                                                 >
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                                         <path d="M12 20h9" />
@@ -618,8 +619,8 @@ export default function LocationSubDistrictPage() {
                                                                     type="button"
                                                                     onClick={() => openDeleteModal(item)}
                                                                     class="size-8 inline-flex justify-center items-center text-neutral-700 hover:text-red-600 hover:border-red-500 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:border-red-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
-                                                                    title="Delete Record"
-                                                                    aria-label={`Delete ${item.name}`}
+                                                                    title={t('ad.deleteRecord')}
+                                                                    aria-label={t('ad.deleteName', { name: item.name ?? '' })}
                                                                 >
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                                         <path d="M3 6h18" />
@@ -664,7 +665,7 @@ export default function LocationSubDistrictPage() {
                                 when={items().length > 0}
                                 fallback={
                                     <div class="p-8 text-center text-neutral-500 dark:text-neutral-400">
-                                        No sub-district records found.
+                                        {t('ad.noSubDistrictRecordsFound2')}
                                     </div>
                                 }
                             >
@@ -673,10 +674,10 @@ export default function LocationSubDistrictPage() {
                                         <div class="p-4 space-y-2.5">
                                             <div class="flex items-center justify-between">
                                                 <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 font-mono">
-                                                    Code: {item.code}
+                                                    {t('ad.code')} {item.code}
                                                 </span>
                                                 <span class="text-xs font-mono text-neutral-500 dark:text-neutral-400">
-                                                    Dikti: {item.dikti_code || '-'}
+                                                    {t('ad.dikti')} {item.dikti_code || '-'}
                                                 </span>
                                             </div>
                                             <div>
@@ -687,15 +688,15 @@ export default function LocationSubDistrictPage() {
                                             {/* Location Hierarchy Grid */}
                                             <div class="grid grid-cols-3 gap-2 text-xs py-2 bg-neutral-50 dark:bg-neutral-800/40 px-2.5 border border-neutral-200/60 dark:border-neutral-700/60">
                                                 <div>
-                                                    <span class="text-neutral-500 dark:text-neutral-400 block text-[10px] uppercase font-semibold">Regency / City</span>
+                                                    <span class="text-neutral-500 dark:text-neutral-400 block text-[10px] uppercase font-semibold">{t('ad.regencyCity')}</span>
                                                     <span class="text-neutral-800 dark:text-neutral-200 font-medium">{getRegencyName(item.regency_id)}</span>
                                                 </div>
                                                 <div>
-                                                    <span class="text-neutral-500 dark:text-neutral-400 block text-[10px] uppercase font-semibold">Province</span>
+                                                    <span class="text-neutral-500 dark:text-neutral-400 block text-[10px] uppercase font-semibold">{t('ad.province')}</span>
                                                     <span class="text-neutral-800 dark:text-neutral-200">{getProvinceName(item.regency_id)}</span>
                                                 </div>
                                                 <div>
-                                                    <span class="text-neutral-500 dark:text-neutral-400 block text-[10px] uppercase font-semibold">Country</span>
+                                                    <span class="text-neutral-500 dark:text-neutral-400 block text-[10px] uppercase font-semibold">{t('ad.country')}</span>
                                                     <span class="text-neutral-800 dark:text-neutral-200">{getCountryName(item.regency_id)}</span>
                                                 </div>
                                             </div>
@@ -706,14 +707,14 @@ export default function LocationSubDistrictPage() {
                                                     onClick={() => openEditModal(item)}
                                                     class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-yellow-50 hover:text-yellow-600 hover:border-yellow-500 dark:text-blue-400 dark:bg-blue-950/50 dark:hover:text-yellow-400 dark:hover:border-yellow-500 border border-blue-200 dark:border-blue-800 transition-colors cursor-pointer"
                                                 >
-                                                    Edit
+                                                    {t('ad.edit')}
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => openDeleteModal(item)}
                                                     class="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-50 hover:text-red-600 hover:border-red-500 dark:text-red-400 dark:bg-red-950/50 dark:hover:text-red-400 dark:hover:border-red-500 border border-red-200 dark:border-red-800 transition-colors cursor-pointer"
                                                 >
-                                                    Delete
+                                                    {t('ad.delete')}
                                                 </button>
                                             </div>
                                         </div>
@@ -726,16 +727,16 @@ export default function LocationSubDistrictPage() {
                     {/* Pagination Footer */}
                     <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/80 px-4 py-3 sm:px-6 gap-3 sm:gap-0">
                         <p class="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300">
-                            Showing <span class="font-medium">{totalData() > 0 ? startIndex() + 1 : 0}</span> to <span class="font-medium">{endIndex()}</span> of <span class="font-medium">{totalData().toLocaleString()}</span> results
+                            {t('ad.showing')} <span class="font-medium">{totalData() > 0 ? startIndex() + 1 : 0}</span> to <span class="font-medium">{endIndex()}</span> of <span class="font-medium">{totalData().toLocaleString()}</span> results
                         </p>
-                        <nav class="inline-flex -space-x-px shadow-2xs" aria-label="Pagination">
+                        <nav class="inline-flex -space-x-px shadow-2xs" aria-label={t('ad.pagination')}>
                             <button
                                 type="button"
                                 class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 cursor-pointer"
                                 disabled={currentPage() <= 1 || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                             >
-                                Previous
+                                {t('ad.previous')}
                             </button>
                             <span class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 border border-blue-600">
                                 {currentPage()} / {totalPages()}
@@ -746,7 +747,7 @@ export default function LocationSubDistrictPage() {
                                 disabled={currentPage() >= totalPages() || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
                             >
-                                Next
+                                {t('ad.next')}
                             </button>
                         </nav>
                     </div>
@@ -765,17 +766,17 @@ export default function LocationSubDistrictPage() {
                     <div class="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-700">
                         <div>
                             <h2 class="text-lg font-bold text-neutral-900 dark:text-white">
-                                Add Sub-District
+                                {t('ad.addSubDistrict')}
                             </h2>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                Create a new sub-district / kecamatan location record.
+                                {t('ad.createANewSubDistrictKecamatan')}
                             </p>
                         </div>
                         <button
                             type="button"
                             onClick={closeCreateModal}
                             class="size-8 inline-flex items-center justify-center text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
-                            aria-label="Close dialog"
+                            aria-label={t('ad.closeDialog')}
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -786,7 +787,7 @@ export default function LocationSubDistrictPage() {
                     <form onSubmit={handleCreateSubmit} class="space-y-4 pt-4">
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Sub-District Code <span class="text-red-500">*</span>
+                                {t('ad.subDistrictCode')} <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
@@ -804,14 +805,14 @@ export default function LocationSubDistrictPage() {
 
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Sub-District Name <span class="text-red-500">*</span>
+                                {t('ad.subDistrictName')} <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
                                 class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
                                     formErrors().name ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
                                 }`}
-                                placeholder="e.g. Coblong"
+                                placeholder={t('ad.eGCoblong')}
                                 value={formData().name}
                                 onInput={(e) => setFormData({ ...formData(), name: e.currentTarget.value })}
                             />
@@ -822,7 +823,7 @@ export default function LocationSubDistrictPage() {
 
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Regency / Kabupaten / Kota <span class="text-red-500">*</span>
+                                {t('ad.regencyKabupatenKota2')} <span class="text-red-500">*</span>
                             </label>
                             <select
                                 class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
@@ -831,7 +832,7 @@ export default function LocationSubDistrictPage() {
                                 value={formData().regency_id}
                                 onChange={(e) => setFormData({ ...formData(), regency_id: e.currentTarget.value })}
                             >
-                                <option value="">Select Regency / City</option>
+                                <option value="">{t('ad.selectRegencyCity')}</option>
                                 <For each={regencyOptions()}>
                                     {(opt) => <option value={opt.id}>{opt.label}</option>}
                                 </For>
@@ -844,11 +845,11 @@ export default function LocationSubDistrictPage() {
                             <Show when={formData().regency_id}>
                                 <div class="mt-2.5 p-2.5 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-xs space-y-1">
                                     <div class="text-neutral-600 dark:text-neutral-400">
-                                        <span class="font-medium text-neutral-800 dark:text-neutral-200">Province:</span>{' '}
+                                        <span class="font-medium text-neutral-800 dark:text-neutral-200">{t('ad.province2')}</span>{' '}
                                         {getProvinceName(formData().regency_id)}
                                     </div>
                                     <div class="text-neutral-600 dark:text-neutral-400">
-                                        <span class="font-medium text-neutral-800 dark:text-neutral-200">Country:</span>{' '}
+                                        <span class="font-medium text-neutral-800 dark:text-neutral-200">{t('ad.country2')}</span>{' '}
                                         {getCountryName(formData().regency_id)}
                                     </div>
                                 </div>
@@ -858,7 +859,7 @@ export default function LocationSubDistrictPage() {
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                    Dikti Code
+                                    {t('ad.diktiCode')}
                                 </label>
                                 <input
                                     type="text"
@@ -871,12 +872,12 @@ export default function LocationSubDistrictPage() {
 
                             <div>
                                 <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                    Slug
+                                    {t('ad.slug')}
                                 </label>
                                 <input
                                     type="text"
                                     class="block w-full p-2.5 text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
-                                    placeholder="e.g. coblong"
+                                    placeholder={t('ad.eGCoblong2')}
                                     value={formData().slug ?? ''}
                                     onInput={(e) => setFormData({ ...formData(), slug: e.currentTarget.value })}
                                 />
@@ -889,14 +890,14 @@ export default function LocationSubDistrictPage() {
                                 onClick={closeCreateModal}
                                 class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xs transition-colors cursor-pointer"
                             >
-                                Cancel
+                                {t('ad.cancel')}
                             </button>
                             <button
                                 type="submit"
                                 disabled={isSubmitting()}
                                 class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-xs transition-colors cursor-pointer"
                             >
-                                {isSubmitting() ? 'Creating...' : 'Save Sub-District'}
+                                {isSubmitting() ? t('ad.creating') : t('ad.saveSubDistrict')}
                             </button>
                         </div>
                     </form>
@@ -915,17 +916,17 @@ export default function LocationSubDistrictPage() {
                     <div class="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-700">
                         <div>
                             <h2 class="text-lg font-bold text-neutral-900 dark:text-white">
-                                Edit Sub-District
+                                {t('ad.editSubDistrict')}
                             </h2>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                Modify sub-district properties.
+                                {t('ad.modifySubDistrictProperties')}
                             </p>
                         </div>
                         <button
                             type="button"
                             onClick={closeEditModal}
                             class="size-8 inline-flex items-center justify-center text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
-                            aria-label="Close dialog"
+                            aria-label={t('ad.closeDialog')}
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -936,7 +937,7 @@ export default function LocationSubDistrictPage() {
                     <form onSubmit={handleEditSubmit} class="space-y-4 pt-4">
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Sub-District Code <span class="text-red-500">*</span>
+                                {t('ad.subDistrictCode')} <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
@@ -954,14 +955,14 @@ export default function LocationSubDistrictPage() {
 
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Sub-District Name <span class="text-red-500">*</span>
+                                {t('ad.subDistrictName')} <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
                                 class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
                                     formErrors().name ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
                                 }`}
-                                placeholder="e.g. Coblong"
+                                placeholder={t('ad.eGCoblong')}
                                 value={formData().name}
                                 onInput={(e) => setFormData({ ...formData(), name: e.currentTarget.value })}
                             />
@@ -972,7 +973,7 @@ export default function LocationSubDistrictPage() {
 
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Regency / Kabupaten / Kota <span class="text-red-500">*</span>
+                                {t('ad.regencyKabupatenKota2')} <span class="text-red-500">*</span>
                             </label>
                             <select
                                 class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
@@ -981,7 +982,7 @@ export default function LocationSubDistrictPage() {
                                 value={formData().regency_id}
                                 onChange={(e) => setFormData({ ...formData(), regency_id: e.currentTarget.value })}
                             >
-                                <option value="">Select Regency / City</option>
+                                <option value="">{t('ad.selectRegencyCity')}</option>
                                 <For each={regencyOptions()}>
                                     {(opt) => <option value={opt.id}>{opt.label}</option>}
                                 </For>
@@ -994,11 +995,11 @@ export default function LocationSubDistrictPage() {
                             <Show when={formData().regency_id}>
                                 <div class="mt-2.5 p-2.5 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-xs space-y-1">
                                     <div class="text-neutral-600 dark:text-neutral-400">
-                                        <span class="font-medium text-neutral-800 dark:text-neutral-200">Province:</span>{' '}
+                                        <span class="font-medium text-neutral-800 dark:text-neutral-200">{t('ad.province2')}</span>{' '}
                                         {getProvinceName(formData().regency_id)}
                                     </div>
                                     <div class="text-neutral-600 dark:text-neutral-400">
-                                        <span class="font-medium text-neutral-800 dark:text-neutral-200">Country:</span>{' '}
+                                        <span class="font-medium text-neutral-800 dark:text-neutral-200">{t('ad.country2')}</span>{' '}
                                         {getCountryName(formData().regency_id)}
                                     </div>
                                 </div>
@@ -1008,7 +1009,7 @@ export default function LocationSubDistrictPage() {
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                    Dikti Code
+                                    {t('ad.diktiCode')}
                                 </label>
                                 <input
                                     type="text"
@@ -1021,12 +1022,12 @@ export default function LocationSubDistrictPage() {
 
                             <div>
                                 <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                    Slug
+                                    {t('ad.slug')}
                                 </label>
                                 <input
                                     type="text"
                                     class="block w-full p-2.5 text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
-                                    placeholder="e.g. coblong"
+                                    placeholder={t('ad.eGCoblong2')}
                                     value={formData().slug ?? ''}
                                     onInput={(e) => setFormData({ ...formData(), slug: e.currentTarget.value })}
                                 />
@@ -1039,14 +1040,14 @@ export default function LocationSubDistrictPage() {
                                 onClick={closeEditModal}
                                 class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xs transition-colors cursor-pointer"
                             >
-                                Cancel
+                                {t('ad.cancel')}
                             </button>
                             <button
                                 type="submit"
                                 disabled={isSubmitting()}
                                 class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-xs transition-colors cursor-pointer"
                             >
-                                {isSubmitting() ? 'Updating...' : 'Update Sub-District'}
+                                {isSubmitting() ? t('ad.updating') : t('ad.updateSubDistrict')}
                             </button>
                         </div>
                     </form>
@@ -1070,10 +1071,10 @@ export default function LocationSubDistrictPage() {
                         </div>
                         <div>
                             <h3 class="text-base font-bold text-neutral-900 dark:text-white">
-                                Confirm Delete
+                                {t('ad.confirmDelete')}
                             </h3>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                Are you sure you want to delete this sub-district?
+                                {t('ad.areYouSureYouWantTo23')}
                             </p>
                         </div>
                     </div>
@@ -1088,7 +1089,7 @@ export default function LocationSubDistrictPage() {
                             onClick={closeDeleteModal}
                             class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xs transition-colors cursor-pointer"
                         >
-                            Cancel
+                            {t('ad.cancel')}
                         </button>
                         <button
                             type="button"
@@ -1096,7 +1097,7 @@ export default function LocationSubDistrictPage() {
                             disabled={isSubmitting()}
                             class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 rounded-xs transition-colors cursor-pointer"
                         >
-                            {isSubmitting() ? 'Deleting...' : 'Delete'}
+                            {isSubmitting() ? t('ad.deleting') : t('ad.delete')}
                         </button>
                     </div>
                 </div>

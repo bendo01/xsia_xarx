@@ -1,4 +1,5 @@
 import TopBar from '~/components/navigation/TopBar';
+import { t } from '../../../../../../../../i18n';
 
 export default function AcademicCampaignTransactionSchedulePage() {
     return (
@@ -11,13 +12,13 @@ export default function AcademicCampaignTransactionSchedulePage() {
                         <div>
                             <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold mb-2 border border-blue-200 dark:border-blue-800/80">
                                 <span class="size-1.5 rounded-xs bg-blue-500"></span>
-                                <span>Academic / Campaign / Transaction</span>
+                                <span>{t('rt.academicCampaignTransaction')}</span>
                             </div>
                             <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                                Schedule
+                                {t('rt.schedule')}
                             </h1>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1 font-mono">
-                                Route: <span class="text-blue-600 dark:text-blue-400">/academic/campaign/transaction/schedule</span>
+                                {t('rt.route')} <span class="text-blue-600 dark:text-blue-400">/academic/campaign/transaction/schedule</span>
                             </p>
                         </div>
                     </div>
@@ -32,10 +33,10 @@ export default function AcademicCampaignTransactionSchedulePage() {
                         </svg>
                     </div>
                     <h3 class="text-base font-bold text-neutral-900 dark:text-white mb-1.5 font-mono">
-                        Schedule Workspace
+                        {t('rt.scheduleWorkspace')}
                     </h3>
                     <p class="text-xs text-neutral-500 dark:text-neutral-400 max-w-md font-mono leading-relaxed">
-                        Data management, registry entities, and operational records for Schedule.
+                        {t('rt.dataManagementRegistryEntitiesAndOperational')}
                     </p>
                 </div>
             </main>

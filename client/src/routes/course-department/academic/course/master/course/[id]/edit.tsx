@@ -4,6 +4,7 @@ import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { masterApiIndex, masterApiShow, masterApiUpdate } from '~/controllers/master/masterApiController';
 import { getLoggedInStaffUnit } from '~/lib/staffHelper';
+import { t } from '../../../../../../../i18n';
 
 export default function CourseMasterEditPage() {
     const apiPath = "academic/course/master/courses";
@@ -79,7 +80,7 @@ export default function CourseMasterEditPage() {
     const loadData = async (id: string) => {
         if (!id) {
             setIsLoading(false);
-            setErrorMessage('No course ID specified in URL.');
+            setErrorMessage(t('cd.noCourseIDSpecifiedInURL'));
             return;
         }
 
@@ -150,8 +151,8 @@ export default function CourseMasterEditPage() {
             }
         } catch (err: any) {
             console.error('Failed to load course details:', err);
-            setErrorMessage('Failed to load course record from server.');
-            toast.danger('Failed to load course record.');
+            setErrorMessage(t('cd.failedToLoadCourseRecordFrom'));
+            toast.danger(t('cd.failedToLoadCourseRecord'));
         } finally {
             setIsLoading(false);
         }
@@ -208,26 +209,26 @@ export default function CourseMasterEditPage() {
         const vId = varietyId().trim();
 
         if (!codeVal) {
-            setErrorMessage('Course Code is required.');
-            toast.danger('Course Code is required.');
+            setErrorMessage(t('cd.courseCodeIsRequired'));
+            toast.danger(t('cd.courseCodeIsRequired'));
             return;
         }
 
         if (!nameVal) {
-            setErrorMessage('Course Name is required.');
-            toast.danger('Course Name is required.');
+            setErrorMessage(t('cd.courseNameIsRequired'));
+            toast.danger(t('cd.courseNameIsRequired'));
             return;
         }
 
         if (!uId) {
-            setErrorMessage('Please select a Department / Program Studi.');
-            toast.danger('Please select a Department.');
+            setErrorMessage(t('cd.pleaseSelectADepartmentProgramStudi'));
+            toast.danger(t('cd.pleaseSelectADepartment'));
             return;
         }
 
         if (!vId) {
-            setErrorMessage('Please select a Course Variety.');
-            toast.danger('Please select a Course Variety.');
+            setErrorMessage(t('cd.pleaseSelectACourseVariety'));
+            toast.danger(t('cd.pleaseSelectACourseVariety'));
             return;
         }
 
@@ -258,17 +259,17 @@ export default function CourseMasterEditPage() {
             const res = await masterApiUpdate(apiPath, id, payload);
 
             if (res.success) {
-                toast.success(res.message || 'Course updated successfully!');
+                toast.success(res.message || t('cd.courseUpdatedSuccessfully'));
                 setTimeout(() => {
                     window.location.href = `${basePath}/${id}/show${uId ? `?unit_id=${uId}` : ''}`;
                 }, 500);
             } else {
-                setErrorMessage(res.message || 'Failed to update course record.');
-                toast.danger(res.message || 'Failed to update course record.');
+                setErrorMessage(res.message || t('cd.failedToUpdateCourseRecord'));
+                toast.danger(res.message || t('cd.failedToUpdateCourseRecord'));
             }
         } catch (err: any) {
-            setErrorMessage(err.message || 'Network error occurred while updating.');
-            toast.danger(err.message || 'Network error occurred.');
+            setErrorMessage(err.message || t('cd.networkErrorOccurredWhileUpdating'));
+            toast.danger(err.message || t('cd.networkErrorOccurred'));
         } finally {
             setIsSubmitting(false);
         }
@@ -291,23 +292,23 @@ export default function CourseMasterEditPage() {
                 <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                            <a href="/" class="hover:text-blue-600 transition-colors">Home</a>
+                            <a href="/" class="hover:text-blue-600 transition-colors">{t('cd.home')}</a>
                             <span>/</span>
-                            <span>Academic</span>
+                            <span>{t('cd.academic')}</span>
                             <span>/</span>
-                            <span>Course</span>
+                            <span>{t('cd.course')}</span>
                             <span>/</span>
-                            <span>Master</span>
+                            <span>{t('cd.master')}</span>
                             <span>/</span>
-                            <a href={unitId() ? `${basePath}?unit_id=${unitId()}` : basePath} class="hover:text-blue-600 transition-colors">Course</a>
+                            <a href={unitId() ? `${basePath}?unit_id=${unitId()}` : basePath} class="hover:text-blue-600 transition-colors">{t('cd.course')}</a>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">Edit</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">{t('cd.edit')}</span>
                         </nav>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Edit Course: <span class="text-blue-600 dark:text-blue-400">{code() || '...'}</span>
+                            {t('cd.editCourse')} <span class="text-blue-600 dark:text-blue-400">{code() || '...'}</span>
                         </h1>
                         <p class="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-                            Update course identity, credit allocation, and syllabus classifications.
+                            {t('cd.updateCourseIdentityCreditAllocationAnd')}
                         </p>
                     </div>
 
@@ -319,7 +320,7 @@ export default function CourseMasterEditPage() {
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6" />
                             </svg>
-                            <span>Cancel</span>
+                            <span>{t('cd.cancel')}</span>
                         </a>
                     </div>
                 </div>
@@ -353,17 +354,17 @@ export default function CourseMasterEditPage() {
                             <div class="border-b border-neutral-200 dark:border-neutral-700 pb-3">
                                 <h2 class="text-sm font-bold uppercase tracking-wider text-neutral-900 dark:text-white font-mono flex items-center gap-2">
                                     <span class="size-2 bg-blue-600 inline-block"></span>
-                                    Course Identification
+                                    {t('cd.courseIdentification')}
                                 </h2>
                                 <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                    Basic course identity and offering academic department.
+                                    {t('cd.basicCourseIdentityAndOfferingAcademic')}
                                 </p>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                 <div class="sm:col-span-2">
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-1.5">
-                                        Managing Department / Program Studi <span class="text-red-500">*</span>
+                                        {t('cd.managingDepartmentProgramStudi')} <span class="text-red-500">*</span>
                                     </label>
                                     <select
                                         required
@@ -371,7 +372,7 @@ export default function CourseMasterEditPage() {
                                         onChange={(e) => setUnitId(e.currentTarget.value)}
                                         class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                     >
-                                        <option value="">-- Select Department / Unit --</option>
+                                        <option value="">{t('cd.selectDepartmentUnit')}</option>
                                         <For each={units()}>
                                             {(u) => (
                                                 <option value={u.id} selected={u.id === unitId()}>
@@ -384,56 +385,56 @@ export default function CourseMasterEditPage() {
 
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-1.5">
-                                        Course Code <span class="text-red-500">*</span>
+                                        {t('cd.courseCode')} <span class="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="text"
                                         required
                                         value={code()}
                                         onInput={(e) => setCode(e.currentTarget.value)}
-                                        placeholder="e.g. IF101, TIS-204"
+                                        placeholder={t('cd.eGIF101TIS204')}
                                         class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                     />
-                                    <span class="text-[11px] text-neutral-500">Unique course identifier within the curriculum.</span>
+                                    <span class="text-[11px] text-neutral-500">{t('cd.uniqueCourseIdentifierWithinTheCurriculum')}</span>
                                 </div>
 
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-1.5">
-                                        Course Name / Title <span class="text-red-500">*</span>
+                                        {t('cd.courseNameTitle')} <span class="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="text"
                                         required
                                         value={name()}
                                         onInput={(e) => setName(e.currentTarget.value)}
-                                        placeholder="e.g. Algoritma dan Pemrograman"
+                                        placeholder={t('cd.eGAlgoritmaDanPemrograman')}
                                         class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-medium focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                     />
                                 </div>
 
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-1.5">
-                                        Implementation Method
+                                        {t('cd.implementationMethod')}
                                     </label>
                                     <select
                                         value={implementationMethod()}
                                         onChange={(e) => setImplementationMethod(e.currentTarget.value)}
                                         class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                     >
-                                        <option value="Kuliah">Kuliah (Lecture)</option>
-                                        <option value="Responsi">Responsi</option>
-                                        <option value="Tutorial">Tutorial</option>
-                                        <option value="Seminar">Seminar</option>
-                                        <option value="Praktikum">Praktikum (Laboratory)</option>
-                                        <option value="Praktik Lapangan">Praktik Lapangan (Field Practice)</option>
-                                        <option value="Simulasi">Simulasi</option>
-                                        <option value="Campuran">Campuran (Blended)</option>
+                                        <option value="Kuliah">{t('cd.kuliahLecture')}</option>
+                                        <option value="Responsi">{t('cd.responsi')}</option>
+                                        <option value="Tutorial">{t('cd.tutorial')}</option>
+                                        <option value="Seminar">{t('cd.seminar')}</option>
+                                        <option value="Praktikum">{t('cd.praktikumLaboratory')}</option>
+                                        <option value="Praktik Lapangan">{t('cd.praktikLapanganFieldPractice')}</option>
+                                        <option value="Simulasi">{t('cd.simulasi')}</option>
+                                        <option value="Campuran">{t('cd.campuranBlended')}</option>
                                     </select>
                                 </div>
 
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-1.5">
-                                        Course Variety (Jenis MK) <span class="text-red-500">*</span>
+                                        {t('cd.courseVarietyJenisMK')} <span class="text-red-500">*</span>
                                     </label>
                                     <select
                                         required
@@ -441,7 +442,7 @@ export default function CourseMasterEditPage() {
                                         onChange={(e) => setVarietyId(e.currentTarget.value)}
                                         class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                     >
-                                        <option value="">-- Select Variety --</option>
+                                        <option value="">{t('cd.selectVariety')}</option>
                                         <For each={varieties()}>
                                             {(v) => (
                                                 <option value={v.id} selected={v.id === varietyId()}>
@@ -450,19 +451,19 @@ export default function CourseMasterEditPage() {
                                             )}
                                         </For>
                                     </select>
-                                    <span class="text-[11px] text-neutral-500">e.g. Wajib Program Studi, Pilihan, Wajib Nasional.</span>
+                                    <span class="text-[11px] text-neutral-500">{t('cd.eGWajibProgramStudiPilihan')}</span>
                                 </div>
 
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-1.5">
-                                        Course Group (Kelompok MK)
+                                        {t('cd.courseGroupKelompokMK')}
                                     </label>
                                     <select
                                         value={groupId()}
                                         onChange={(e) => setGroupId(e.currentTarget.value)}
                                         class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                     >
-                                        <option value="">-- None / Optional --</option>
+                                        <option value="">{t('cd.noneOptional')}</option>
                                         <For each={groups()}>
                                             {(g) => (
                                                 <option value={g.id} selected={g.id === groupId()}>
@@ -471,19 +472,19 @@ export default function CourseMasterEditPage() {
                                             )}
                                         </For>
                                     </select>
-                                    <span class="text-[11px] text-neutral-500">e.g. MPK, MKK, MKB, MPB, MBB.</span>
+                                    <span class="text-[11px] text-neutral-500">{t('cd.eGMPKMKKMKBMPB')}</span>
                                 </div>
 
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-1.5">
-                                        Course Competence (Kompetensi)
+                                        {t('cd.courseCompetenceKompetensi')}
                                     </label>
                                     <select
                                         value={competenceId()}
                                         onChange={(e) => setCompetenceId(e.currentTarget.value)}
                                         class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                     >
-                                        <option value="">-- None / Optional --</option>
+                                        <option value="">{t('cd.noneOptional')}</option>
                                         <For each={competences()}>
                                             {(c) => (
                                                 <option value={c.id} selected={c.id === competenceId()}>
@@ -492,7 +493,7 @@ export default function CourseMasterEditPage() {
                                             )}
                                         </For>
                                     </select>
-                                    <span class="text-[11px] text-neutral-500">e.g. Utama, Pendukung, Khusus.</span>
+                                    <span class="text-[11px] text-neutral-500">{t('cd.eGUtamaPendukungKhusus')}</span>
                                 </div>
                             </div>
                         </div>
@@ -503,22 +504,22 @@ export default function CourseMasterEditPage() {
                                 <div>
                                     <h2 class="text-sm font-bold uppercase tracking-wider text-neutral-900 dark:text-white font-mono flex items-center gap-2">
                                         <span class="size-2 bg-emerald-600 inline-block"></span>
-                                        Credits Allocation (Beban SKS)
+                                        {t('cd.creditsAllocationBebanSKS')}
                                     </h2>
                                     <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                        Breakdown of theoretical, laboratory, field work, and simulation credits.
+                                        {t('cd.breakdownOfTheoreticalLaboratoryFieldWork')}
                                     </p>
                                 </div>
 
                                 <div class="px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 font-mono text-xs font-semibold">
-                                    Total: {totalCredit()} SKS
+                                    {t('cd.total')} {totalCredit()} SKS
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                                 <div>
                                     <label class="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 font-mono mb-1.5">
-                                        SKS Teori / Kuliah <span class="text-red-500">*</span>
+                                        {t('cd.sksTeoriKuliah')} <span class="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="number"
@@ -531,12 +532,12 @@ export default function CourseMasterEditPage() {
                                         }}
                                         class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors text-center"
                                     />
-                                    <span class="text-[11px] text-neutral-400 block text-center mt-1">Lecture</span>
+                                    <span class="text-[11px] text-neutral-400 block text-center mt-1">{t('cd.lecture')}</span>
                                 </div>
 
                                 <div>
                                     <label class="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 font-mono mb-1.5">
-                                        SKS Praktikum <span class="text-red-500">*</span>
+                                        {t('cd.sksPraktikum')} <span class="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="number"
@@ -549,12 +550,12 @@ export default function CourseMasterEditPage() {
                                         }}
                                         class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors text-center"
                                     />
-                                    <span class="text-[11px] text-neutral-400 block text-center mt-1">Lab / Practice</span>
+                                    <span class="text-[11px] text-neutral-400 block text-center mt-1">{t('cd.labPractice')}</span>
                                 </div>
 
                                 <div>
                                     <label class="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 font-mono mb-1.5">
-                                        SKS Lapangan <span class="text-red-500">*</span>
+                                        {t('cd.sksLapangan')} <span class="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="number"
@@ -567,12 +568,12 @@ export default function CourseMasterEditPage() {
                                         }}
                                         class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors text-center"
                                     />
-                                    <span class="text-[11px] text-neutral-400 block text-center mt-1">Field Work</span>
+                                    <span class="text-[11px] text-neutral-400 block text-center mt-1">{t('cd.fieldWork')}</span>
                                 </div>
 
                                 <div>
                                     <label class="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 font-mono mb-1.5">
-                                        SKS Simulasi <span class="text-red-500">*</span>
+                                        {t('cd.sksSimulasi')} <span class="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="number"
@@ -585,7 +586,7 @@ export default function CourseMasterEditPage() {
                                         }}
                                         class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors text-center"
                                     />
-                                    <span class="text-[11px] text-neutral-400 block text-center mt-1">Simulation</span>
+                                    <span class="text-[11px] text-neutral-400 block text-center mt-1">{t('cd.simulation')}</span>
                                 </div>
                             </div>
 
@@ -599,13 +600,13 @@ export default function CourseMasterEditPage() {
                                         class="rounded-xs border-neutral-300 text-blue-600 focus:ring-blue-500"
                                     />
                                     <label for="manualTotalCheckEdit" class="text-neutral-600 dark:text-neutral-400 cursor-pointer">
-                                        Manually override total SKS
+                                        {t('cd.manuallyOverrideTotalSKS')}
                                     </label>
                                 </div>
 
                                 <Show when={isManualTotalCredit()}>
                                     <div class="flex items-center gap-2">
-                                        <span class="font-mono font-medium">Custom Total:</span>
+                                        <span class="font-mono font-medium">{t('cd.customTotal')}</span>
                                         <input
                                             type="number"
                                             min="0"
@@ -624,17 +625,17 @@ export default function CourseMasterEditPage() {
                             <div class="border-b border-neutral-200 dark:border-neutral-700 pb-3">
                                 <h2 class="text-sm font-bold uppercase tracking-wider text-neutral-900 dark:text-white font-mono flex items-center gap-2">
                                     <span class="size-2 bg-indigo-600 inline-block"></span>
-                                    Attributes & Validity Range
+                                    {t('cd.attributesValidityRange')}
                                 </h2>
                                 <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                    Teaching indicators, material availability, and active date boundaries.
+                                    {t('cd.teachingIndicatorsMaterialAvailabilityAndActive')}
                                 </p>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div class="space-y-3">
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                        Pedagogical Features
+                                        {t('cd.pedagogicalFeatures')}
                                     </label>
 
                                     <div class="space-y-2 text-xs">
@@ -645,7 +646,7 @@ export default function CourseMasterEditPage() {
                                                 onChange={(e) => setHasSyllabus(e.currentTarget.checked)}
                                                 class="rounded-xs border-neutral-300 text-blue-600 focus:ring-blue-500"
                                             />
-                                            <span>Syllabus Available (Memiliki RPS / Silabus)</span>
+                                            <span>{t('cd.syllabusAvailableMemilikiRPSSilabus')}</span>
                                         </label>
 
                                         <label class="flex items-center gap-2.5 text-neutral-800 dark:text-neutral-200 cursor-pointer">
@@ -655,7 +656,7 @@ export default function CourseMasterEditPage() {
                                                 onChange={(e) => setHasMaterial(e.currentTarget.checked)}
                                                 class="rounded-xs border-neutral-300 text-blue-600 focus:ring-blue-500"
                                             />
-                                            <span>Learning Material / SAP (Memiliki Bahan Ajar)</span>
+                                            <span>{t('cd.learningMaterialSAPMemilikiBahanAjar')}</span>
                                         </label>
 
                                         <label class="flex items-center gap-2.5 text-neutral-800 dark:text-neutral-200 cursor-pointer">
@@ -665,7 +666,7 @@ export default function CourseMasterEditPage() {
                                                 onChange={(e) => setHasPractice(e.currentTarget.checked)}
                                                 class="rounded-xs border-neutral-300 text-blue-600 focus:ring-blue-500"
                                             />
-                                            <span>Has Practical Sessions (Ada Praktikum)</span>
+                                            <span>{t('cd.hasPracticalSessionsAdaPraktikum')}</span>
                                         </label>
 
                                         <label class="flex items-center gap-2.5 text-neutral-800 dark:text-neutral-200 cursor-pointer">
@@ -675,7 +676,7 @@ export default function CourseMasterEditPage() {
                                                 onChange={(e) => setHasDictation(e.currentTarget.checked)}
                                                 class="rounded-xs border-neutral-300 text-blue-600 focus:ring-blue-500"
                                             />
-                                            <span>Has Dictation / Module (Memiliki Diktat Kuliah)</span>
+                                            <span>{t('cd.hasDictationModuleMemilikiDiktatKuliah')}</span>
                                         </label>
 
                                         <label class="flex items-center gap-2.5 text-neutral-800 dark:text-neutral-200 cursor-pointer">
@@ -685,19 +686,19 @@ export default function CourseMasterEditPage() {
                                                 onChange={(e) => setHasUnit(e.currentTarget.checked)}
                                                 class="rounded-xs border-neutral-300 text-blue-600 focus:ring-blue-500"
                                             />
-                                            <span>Unit Specific Course (Memiliki Unit Pengampu)</span>
+                                            <span>{t('cd.unitSpecificCourseMemilikiUnitPengampu')}</span>
                                         </label>
                                     </div>
                                 </div>
 
                                 <div class="space-y-4">
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                        Validity Dates (Optional)
+                                        {t('cd.validityDatesOptional')}
                                     </label>
 
                                     <div>
                                         <label class="block text-xs text-neutral-600 dark:text-neutral-400 mb-1">
-                                            Start Date (Tanggal Berlaku)
+                                            {t('cd.startDateTanggalBerlaku')}
                                         </label>
                                         <input
                                             type="date"
@@ -709,7 +710,7 @@ export default function CourseMasterEditPage() {
 
                                     <div>
                                         <label class="block text-xs text-neutral-600 dark:text-neutral-400 mb-1">
-                                            End Date (Tanggal Berakhir)
+                                            {t('cd.endDateTanggalBerakhir')}
                                         </label>
                                         <input
                                             type="date"
@@ -728,7 +729,7 @@ export default function CourseMasterEditPage() {
                                 href={backUrl()}
                                 class="px-5 py-2.5 text-xs font-mono font-medium border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
                             >
-                                Cancel
+                                {t('cd.cancel')}
                             </a>
                             <button
                                 type="submit"
@@ -741,7 +742,7 @@ export default function CourseMasterEditPage() {
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
                                     </svg>
                                 </Show>
-                                <span>{isSubmitting() ? 'Updating Course...' : 'Update Course'}</span>
+                                <span>{isSubmitting() ? t('cd.updatingCourse') : t('cd.updateCourse')}</span>
                             </button>
                         </div>
                     </form>

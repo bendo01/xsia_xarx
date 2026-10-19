@@ -8,6 +8,7 @@ import {
     getGradeById,
     type GradeItem,
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionGradeController';
+import { t } from '../../../../../../../../../i18n';
 
 interface UnitDetail {
     id: string;
@@ -115,7 +116,7 @@ export default function RectoratGradeDetail() {
         } catch (e: any) {
             console.error('Error loading grade detail:', e);
             setError(e.message || 'Gagal memuat detail data skala nilai.');
-            toast.danger('Gagal memuat detail skala nilai.');
+            toast.danger(t('rt.gagalMemuatDetailSkalaNilai'));
         } finally {
             setIsLoading(false);
         }
@@ -129,7 +130,7 @@ export default function RectoratGradeDetail() {
         if (!text) return;
         navigator.clipboard.writeText(text);
         setIsCopied(true);
-        toast.info('ID berhasil disalin ke clipboard');
+        toast.info(t('rt.idBerhasilDisalinKeClipboard'));
         setTimeout(() => setIsCopied(false), 2000);
     };
 
@@ -187,23 +188,23 @@ export default function RectoratGradeDetail() {
                 <div class="space-y-4">
                     <nav class="flex items-center gap-2 text-xs font-mono text-neutral-500 dark:text-neutral-400">
                         <A href="/rectorat" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                            Rektorat
+                            {t('rt.rektorat')}
                         </A>
                         <span>/</span>
                         <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                            Institusi
+                            {t('rt.institusi')}
                         </A>
                         <span>/</span>
                         <A href={`/rectorat/institution/${institutionId()}/academic`} class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                            Akademik
+                            {t('rt.akademik')}
                         </A>
                         <span>/</span>
                         <A href={`/rectorat/institution/${institutionId()}/academic/campaign/transaction/grade`} class="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
-                            Skala Nilai
+                            {t('rt.skalaNilai')}
                         </A>
                         <span>/</span>
                         <span class="text-neutral-700 dark:text-neutral-300 font-semibold truncate max-w-xs">
-                            {grade()?.alphabet_code ? `Nilai ${grade()?.alphabet_code} (${grade()?.name})` : 'Detail Skala Nilai'}
+                            {grade()?.alphabet_code ? t('rt.gradeCodeName', { code: grade()?.alphabet_code ?? '', name: grade()?.name ?? '' }) : t('rt.detailSkalaNilai')}
                         </span>
                     </nav>
 
@@ -221,13 +222,13 @@ export default function RectoratGradeDetail() {
                                             <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
                                             </svg>
-                                            <span>Kembali ke Daftar</span>
+                                            <span>{t('rt.kembaliKeDaftar')}</span>
                                         </A>
 
                                         {/* Status Badge */}
                                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-semibold border border-emerald-200 dark:border-emerald-800/80">
                                             <span class="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                            Standar Skala Nilai Aktif
+                                            {t('rt.standarSkalaNilaiAktif')}
                                         </span>
                                     </div>
 
@@ -240,7 +241,7 @@ export default function RectoratGradeDetail() {
                                                 {grade()?.name}
                                             </h1>
                                             <p class="text-xs text-neutral-500 dark:text-neutral-400 font-mono mt-1">
-                                                ID Entitas: {grade()?.id}
+                                                {t('rt.idEntitas')} {grade()?.id}
                                             </p>
                                         </div>
                                     </div>
@@ -251,24 +252,24 @@ export default function RectoratGradeDetail() {
                                         type="button"
                                         onClick={() => copyToClipboard(grade()?.id || '')}
                                         class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 text-xs font-semibold transition-all cursor-pointer"
-                                        title="Salin ID"
+                                        title={t('rt.salinID')}
                                     >
                                         <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375-7.5-7.5" />
                                         </svg>
-                                        <span>{isCopied() ? 'Tersalin!' : 'Salin ID'}</span>
+                                        <span>{isCopied() ? t('rt.tersalin2') : t('rt.salinID')}</span>
                                     </button>
 
                                     <button
                                         type="button"
                                         onClick={() => fetchDetail()}
                                         class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 text-xs font-semibold transition-all cursor-pointer"
-                                        title="Segarkan Data"
+                                        title={t('rt.segarkanData')}
                                     >
                                         <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
                                         </svg>
-                                        <span>Segarkan</span>
+                                        <span>{t('rt.segarkan')}</span>
                                     </button>
                                 </div>
                             </div>
@@ -280,7 +281,7 @@ export default function RectoratGradeDetail() {
                 <Show when={isLoading()}>
                     <div class="bg-white dark:bg-neutral-900 rounded-2xl p-16 border border-neutral-200/80 dark:border-neutral-800 flex flex-col items-center justify-center gap-3">
                         <div class="size-9 rounded-full border-3 border-emerald-600 border-t-transparent animate-spin" />
-                        <span class="text-sm text-neutral-500 font-medium">Memuat detail data skala nilai...</span>
+                        <span class="text-sm text-neutral-500 font-medium">{t('rt.memuatDetailDataSkalaNilai')}</span>
                     </div>
                 </Show>
 
@@ -290,13 +291,13 @@ export default function RectoratGradeDetail() {
                         <div class="size-12 rounded-full bg-red-100 dark:bg-red-900/60 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto">
                             ✕
                         </div>
-                        <h3 class="text-base font-bold text-red-900 dark:text-red-200">Terjadi Kesalahan</h3>
+                        <h3 class="text-base font-bold text-red-900 dark:text-red-200">{t('rt.terjadiKesalahan')}</h3>
                         <p class="text-xs text-red-700 dark:text-red-300 max-w-md mx-auto">{error()}</p>
                         <A
                             href={`/rectorat/institution/${institutionId()}/academic/campaign/transaction/grade`}
                             class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 text-xs font-semibold border border-neutral-200 dark:border-neutral-700 shadow-2xs hover:bg-neutral-50"
                         >
-                            ← Kembali ke Daftar Skala Nilai
+                            {t('rt.kembaliKeDaftarSkalaNilai')}
                         </A>
                     </div>
                 </Show>
@@ -308,19 +309,19 @@ export default function RectoratGradeDetail() {
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             {/* Card 1: Bobot IPK */}
                             <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Bobot Indeks Prestasi</span>
+                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{t('rt.bobotIndeksPrestasi')}</span>
                                 <div class="mt-3 flex items-baseline gap-2">
                                     <span class="text-3xl font-extrabold text-neutral-900 dark:text-white font-mono">
                                         {grade()?.grade.toFixed(2)}
                                     </span>
-                                    <span class="text-xs text-neutral-500">Skala 4.00</span>
+                                    <span class="text-xs text-neutral-500">{t('rt.skala400')}</span>
                                 </div>
-                                <span class="text-2xs text-neutral-400 block mt-1">Konversi nilai mutu perkuliahan</span>
+                                <span class="text-2xs text-neutral-400 block mt-1">{t('rt.konversiNilaiMutuPerkuliahan')}</span>
                             </div>
 
                             {/* Card 2: Rentang Skor Angka */}
                             <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Rentang Skor Angka</span>
+                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{t('rt.rentangSkorAngka')}</span>
                                 <div class="mt-3 flex items-baseline gap-2">
                                     <span class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
                                         {grade()?.minimum.toFixed(2)}
@@ -330,31 +331,31 @@ export default function RectoratGradeDetail() {
                                         {grade()?.maximum.toFixed(2)}
                                     </span>
                                 </div>
-                                <span class="text-2xs text-neutral-400 block mt-1">Skor absolut nilai mahasiswa</span>
+                                <span class="text-2xs text-neutral-400 block mt-1">{t('rt.skorAbsolutNilaiMahasiswa')}</span>
                             </div>
 
                             {/* Card 3: Program Studi */}
                             <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Program Studi / Unit</span>
+                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{t('rt.programStudiUnit')}</span>
                                 <div class="mt-3">
                                     <span class="text-base font-bold text-neutral-900 dark:text-white block truncate">
                                         {unit()?.name || 'Unit Terdaftar'}
                                     </span>
                                     <span class="text-xs text-neutral-500 font-mono">
-                                        Kode: {unit()?.code || '-'}
+                                        {t('rt.kode4')} {unit()?.code || '-'}
                                     </span>
                                 </div>
                             </div>
 
                             {/* Card 4: Masa Berlaku */}
                             <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Masa Berlaku</span>
+                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{t('rt.masaBerlaku')}</span>
                                 <div class="mt-3 text-xs font-mono space-y-0.5">
                                     <div class="text-neutral-800 dark:text-neutral-200 font-medium">
                                         {formatDate(grade()?.start_date)}
                                     </div>
                                     <div class="text-neutral-500">
-                                        s/d {grade()?.end_date ? formatDate(grade()?.end_date) : 'Seterusnya'}
+                                        s/d {grade()?.end_date ? formatDate(grade()?.end_date) : t('rt.seterusnya')}
                                     </div>
                                 </div>
                             </div>
@@ -371,33 +372,33 @@ export default function RectoratGradeDetail() {
                                         </svg>
                                     </div>
                                     <h3 class="text-base font-bold text-neutral-900 dark:text-white">
-                                        Spesifikasi Standar Nilai
+                                        {t('rt.spesifikasiStandarNilai')}
                                     </h3>
                                 </div>
 
                                 <dl class="divide-y divide-neutral-100 dark:divide-neutral-800/80 text-xs">
                                     <div class="py-2.5 flex justify-between">
-                                        <dt class="text-neutral-500">Nilai Huruf</dt>
+                                        <dt class="text-neutral-500">{t('rt.nilaiHuruf')}</dt>
                                         <dd class="font-mono font-extrabold text-base text-emerald-600 dark:text-emerald-400">{grade()?.alphabet_code || '-'}</dd>
                                     </div>
                                     <div class="py-2.5 flex justify-between">
-                                        <dt class="text-neutral-500">Predikat / Keterangan</dt>
+                                        <dt class="text-neutral-500">{t('rt.predikatKeterangan')}</dt>
                                         <dd class="font-semibold text-neutral-900 dark:text-white">{grade()?.name}</dd>
                                     </div>
                                     <div class="py-2.5 flex justify-between">
-                                        <dt class="text-neutral-500">Bobot Nilai (IPK)</dt>
+                                        <dt class="text-neutral-500">{t('rt.bobotNilaiIPK')}</dt>
                                         <dd class="font-mono font-bold text-neutral-900 dark:text-white">{grade()?.grade.toFixed(2)}</dd>
                                     </div>
                                     <div class="py-2.5 flex justify-between">
-                                        <dt class="text-neutral-500">Batas Nilai Minimum</dt>
+                                        <dt class="text-neutral-500">{t('rt.batasNilaiMinimum')}</dt>
                                         <dd class="font-mono text-neutral-800 dark:text-neutral-200">{grade()?.minimum.toFixed(2)}</dd>
                                     </div>
                                     <div class="py-2.5 flex justify-between">
-                                        <dt class="text-neutral-500">Batas Nilai Maksimum</dt>
+                                        <dt class="text-neutral-500">{t('rt.batasNilaiMaksimum')}</dt>
                                         <dd class="font-mono text-neutral-800 dark:text-neutral-200">{grade()?.maximum.toFixed(2)}</dd>
                                     </div>
                                     <div class="py-2.5 flex justify-between">
-                                        <dt class="text-neutral-500">Kode Numerik</dt>
+                                        <dt class="text-neutral-500">{t('rt.kodeNumerik')}</dt>
                                         <dd class="font-mono text-neutral-500">{grade()?.code ?? '-'}</dd>
                                     </div>
                                 </dl>
@@ -405,9 +406,9 @@ export default function RectoratGradeDetail() {
                                 {/* Visual Score Distribution Meter */}
                                 <div class="pt-3 border-t border-neutral-100 dark:border-neutral-800 space-y-2">
                                     <div class="flex items-center justify-between text-2xs text-neutral-500 font-mono">
-                                        <span>Skor: 0</span>
-                                        <span>Batas Min: {grade()?.minimum.toFixed(1)}</span>
-                                        <span>Batas Max: {grade()?.maximum.toFixed(1)}</span>
+                                        <span>{t('rt.skor0')}</span>
+                                        <span>{t('rt.batasMin')} {grade()?.minimum.toFixed(1)}</span>
+                                        <span>{t('rt.batasMax')} {grade()?.maximum.toFixed(1)}</span>
                                         <span>100</span>
                                     </div>
                                     <div class="relative w-full h-3 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
@@ -431,7 +432,7 @@ export default function RectoratGradeDetail() {
                                         </svg>
                                     </div>
                                     <h3 class="text-base font-bold text-neutral-900 dark:text-white">
-                                        Unit & Integrasi Dikti
+                                        {t('rt.unitIntegrasiDikti')}
                                     </h3>
                                 </div>
 
@@ -439,9 +440,9 @@ export default function RectoratGradeDetail() {
                                     {/* Program Studi Box */}
                                     <div class="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-200 dark:border-neutral-700/80 space-y-2">
                                         <div class="flex items-center justify-between">
-                                            <span class="text-neutral-500 font-semibold uppercase text-2xs">Program Studi / Unit Pengelola</span>
+                                            <span class="text-neutral-500 font-semibold uppercase text-2xs">{t('rt.programStudiUnitPengelola')}</span>
                                             <span class="font-mono text-2xs px-2 py-0.5 rounded-md bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300">
-                                                ID: {grade()?.unit_id || '-'}
+                                                {t('rt.id')} {grade()?.unit_id || '-'}
                                             </span>
                                         </div>
                                         <p class="text-sm font-bold text-neutral-900 dark:text-white">
@@ -449,7 +450,7 @@ export default function RectoratGradeDetail() {
                                         </p>
                                         <Show when={unit()?.code}>
                                             <p class="text-2xs font-mono text-neutral-500">
-                                                Kode Unit: {unit()?.code}
+                                                {t('rt.kodeUnit')} {unit()?.code}
                                             </p>
                                         </Show>
                                     </div>
@@ -457,13 +458,13 @@ export default function RectoratGradeDetail() {
                                     {/* Feeder Dikti Box */}
                                     <div class="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-200 dark:border-neutral-700/80 space-y-2">
                                         <div class="flex items-center justify-between">
-                                            <span class="text-neutral-500 font-semibold uppercase text-2xs">Integrasi PD-Dikti Feeder</span>
+                                            <span class="text-neutral-500 font-semibold uppercase text-2xs">{t('rt.integrasiPDDiktiFeeder')}</span>
                                             <span class="inline-flex items-center gap-1 text-2xs font-medium px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
-                                                {grade()?.feeder_id ? 'Tersinkronisasi' : 'Lokal (Belum Sinkron)'}
+                                                {grade()?.feeder_id ? t('rt.tersinkronisasi') : t('rt.lokalBelumSinkron')}
                                             </span>
                                         </div>
                                         <div class="font-mono text-xs text-neutral-800 dark:text-neutral-200">
-                                            ID Feeder: {grade()?.feeder_id || 'Tidak ada ID Feeder'}
+                                            {t('rt.idFeeder')} {grade()?.feeder_id || 'Tidak ada ID Feeder'}
                                         </div>
                                     </div>
                                 </div>
@@ -473,23 +474,23 @@ export default function RectoratGradeDetail() {
                         {/* Audit Trail & Metadata */}
                         <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-4">
                             <h3 class="text-sm font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                                Metadata Sistem & Log Audit
+                                {t('rt.metadataSistemLogAudit')}
                             </h3>
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
                                 <div>
-                                    <span class="text-neutral-400 text-2xs block">DIBUAT PADA</span>
+                                    <span class="text-neutral-400 text-2xs block">{t('rt.dibuatPADA')}</span>
                                     <span class="text-neutral-800 dark:text-neutral-200">{formatDateTime(grade()?.created_at)}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 text-2xs block">DIPERBARUI PADA</span>
+                                    <span class="text-neutral-400 text-2xs block">{t('rt.diperbaruiPADA')}</span>
                                     <span class="text-neutral-800 dark:text-neutral-200">{formatDateTime(grade()?.updated_at)}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 text-2xs block">SINKRONISASI</span>
+                                    <span class="text-neutral-400 text-2xs block">{t('rt.sinkronisasi')}</span>
                                     <span class="text-neutral-800 dark:text-neutral-200">{formatDateTime(grade()?.sync_at)}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 text-2xs block">STATUS REKAMAN</span>
+                                    <span class="text-neutral-400 text-2xs block">{t('rt.statusREKAMAN')}</span>
                                     <span class="text-emerald-600 dark:text-emerald-400 font-semibold">{grade()?.deleted_at ? 'Dihapus' : 'Aktif (Normal)'}</span>
                                 </div>
                             </div>

@@ -6,6 +6,7 @@ import { LiterateEducationControllerIndex } from '~/controllers/literate/Literat
 import { LiterateGroupControllerIndex } from '~/controllers/literate/LiterateGroupController';
 import { LiterateLevelControllerIndex } from '~/controllers/literate/LiterateLevelController';
 import { LiterateVarietyControllerIndex } from '~/controllers/literate/LiterateVarietyController';
+import { t } from '../../../i18n';
 
 export default function LiterateHubPage() {
     const [counts, setCounts] = createSignal({
@@ -43,11 +44,11 @@ export default function LiterateHubPage() {
 
     const modules = () => [
         {
-            title: 'Education',
-            subtitle: 'Jenjang Pendidikan',
+            title: t('ad.education'),
+            subtitle: t('ad.jenjangPendidikan'),
             href: '/literate/education',
             count: counts().educations,
-            description: 'Master academic education degrees and study program references with linked relationships.',
+            description: t('ad.masterAcademicEducationDegreesAndStudy'),
             icon: (
                 <svg class="size-6 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
@@ -56,11 +57,11 @@ export default function LiterateHubPage() {
             ),
         },
         {
-            title: 'Category',
-            subtitle: 'Kategori Literat',
+            title: t('ad.category'),
+            subtitle: t('ad.kategoriLiterat'),
             href: '/literate/category',
             count: counts().categories,
-            description: 'Reference categories classification for academic literacy and education structures.',
+            description: t('ad.referenceCategoriesClassificationForAcademicLiteracy'),
             icon: (
                 <svg class="size-6 text-indigo-600 dark:text-indigo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect width="18" height="18" x="3" y="3" rx="2"/>
@@ -70,11 +71,11 @@ export default function LiterateHubPage() {
             ),
         },
         {
-            title: 'Group',
-            subtitle: 'Golongan Literat',
+            title: t('ad.group'),
+            subtitle: t('ad.golonganLiterat'),
             href: '/literate/group',
             count: counts().groups,
-            description: 'Grouping designations and functional tiers for literacy standards and registries.',
+            description: t('ad.groupingDesignationsAndFunctionalTiersFor'),
             icon: (
                 <svg class="size-6 text-emerald-600 dark:text-emerald-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
@@ -85,11 +86,11 @@ export default function LiterateHubPage() {
             ),
         },
         {
-            title: 'Level',
-            subtitle: 'Jenjang Literat',
+            title: t('ad.level'),
+            subtitle: t('ad.jenjangLiterat'),
             href: '/literate/level',
             count: counts().levels,
-            description: 'Hierarchical education levels and qualification frameworks.',
+            description: t('ad.hierarchicalEducationLevelsAndQualificationFrameworks'),
             icon: (
                 <svg class="size-6 text-purple-600 dark:text-purple-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M18 20V10"/>
@@ -99,11 +100,11 @@ export default function LiterateHubPage() {
             ),
         },
         {
-            title: 'Variety',
-            subtitle: 'Ragam Literat',
+            title: t('ad.variety'),
+            subtitle: t('ad.ragamLiterat'),
             href: '/literate/variety',
             count: counts().varieties,
-            description: 'Educational program varieties and track variations (regular, international, etc.).',
+            description: t('ad.educationalProgramVarietiesAndTrackVariations'),
             icon: (
                 <svg class="size-6 text-amber-600 dark:text-amber-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
@@ -121,15 +122,15 @@ export default function LiterateHubPage() {
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
                             <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                                <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">Administrator</a>
+                                <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">{t('ad.administrator')}</a>
                                 <span>/</span>
-                                <span class="font-medium text-neutral-900 dark:text-white">Literate</span>
+                                <span class="font-medium text-neutral-900 dark:text-white">{t('ad.literate')}</span>
                             </nav>
                             <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                                Literate & Education Management
+                                {t('ad.literateEducationManagement')}
                             </h1>
                             <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
-                                Manage educational references, categories, groups, levels, varieties, and degree registry.
+                                {t('ad.manageEducationalReferencesCategoriesGroupsLevels')}
                             </p>
                         </div>
                     </div>
@@ -162,7 +163,7 @@ export default function LiterateHubPage() {
                                     </p>
                                 </div>
                                 <div class="mt-4 pt-3 border-t border-neutral-100 dark:border-neutral-700 flex items-center justify-between text-xs font-semibold text-blue-600 dark:text-blue-400 group-hover:translate-x-0.5 transition-transform">
-                                    <span>Manage Data</span>
+                                    <span>{t('ad.manageData')}</span>
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M5 12h14"/>
                                         <path d="m12 5 7 7-7 7"/>

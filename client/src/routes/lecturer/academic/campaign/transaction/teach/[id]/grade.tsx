@@ -27,6 +27,7 @@ import {
     getGradesByUnit,
     GradeItem
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionGradeController';
+import { t } from '../../../../../../../i18n';
 
 interface StudentGradeRow {
     detail_activity_id: string;
@@ -158,9 +159,9 @@ export default function LecturerTeachGradePage() {
                     }
                 } else {
                     const defaultComponents = [
-                        { name: 'Tugas', evaluation_weight: 20, thread: 1 },
-                        { name: 'Kuis', evaluation_weight: 10, thread: 2 },
-                        { name: 'Kehadiran & Partisipasi', evaluation_weight: 10, thread: 3 },
+                        { name: t('lc.tugas'), evaluation_weight: 20, thread: 1 },
+                        { name: t('lc.kuis'), evaluation_weight: 10, thread: 2 },
+                        { name: t('lc.kehadiranPartisipasi'), evaluation_weight: 10, thread: 3 },
                         { name: 'UTS', evaluation_weight: 30, thread: 4 },
                         { name: 'UAS', evaluation_weight: 30, thread: 5 },
                     ];
@@ -263,7 +264,7 @@ export default function LecturerTeachGradePage() {
             console.error('Error loading teach grade data:', err);
             setActionMessage({
                 type: 'error',
-                text: 'Gagal memuat data penilaian pengajaran. Silakan coba lagi.',
+                text: t('lc.gagalMemuatDataPenilaianPengajaranSilakan'),
             });
         } finally {
             setIsLoading(false);
@@ -387,7 +388,7 @@ export default function LecturerTeachGradePage() {
 
             setActionMessage({
                 type: 'success',
-                text: `Nilai ${row.student_name} berhasil disimpan.`,
+                text: t('lc.gradeForNameWasSavedSuccessfully', { name: row.student_name }),
             });
         } catch (err: any) {
             console.error('Error saving student row:', err);
@@ -397,7 +398,7 @@ export default function LecturerTeachGradePage() {
 
             setActionMessage({
                 type: 'error',
-                text: `Gagal menyimpan nilai ${row.student_name}.`,
+                text: t('lc.failedToSaveTheGradeFor', { name: row.student_name }),
             });
         }
     };
@@ -461,12 +462,12 @@ export default function LecturerTeachGradePage() {
         if (failCount === 0) {
             setActionMessage({
                 type: 'success',
-                text: `Semua nilai mahasiswa (${successCount} data) berhasil disimpan ke sistem.`,
+                text: t('lc.allStudentGradesCountRecordsWere', { count: successCount }),
             });
         } else {
             setActionMessage({
                 type: 'error',
-                text: `Tersimpan: ${successCount}, Gagal: ${failCount}. Silakan periksa kembali.`,
+                text: t('lc.savedSuccessFailedFailedPleaseReview', { success: successCount, failed: failCount }),
             });
         }
     };
@@ -486,12 +487,12 @@ export default function LecturerTeachGradePage() {
             setStudentRows(prev => prev.map(r => ({ ...r, is_lock: true, is_dirty: false })));
             setActionMessage({
                 type: 'success',
-                text: 'Nilai kelas berhasil dikunci dan difinalisasi secara permanen. Pengubahan atau pembukaan kunci hanya dapat dilakukan oleh Administrator.',
+                text: t('lc.nilaiKelasBerhasilDikunciDanDifinalisasi'),
             });
         } catch {
             setActionMessage({
                 type: 'error',
-                text: 'Gagal mengunci nilai kelas. Silakan coba lagi.',
+                text: t('lc.gagalMengunciNilaiKelasSilakanCoba'),
             });
         } finally {
             setIsLoading(false);
@@ -540,12 +541,12 @@ export default function LecturerTeachGradePage() {
             await loadAllData();
             setActionMessage({
                 type: 'success',
-                text: 'Komponen evaluasi kelas berhasil diperbarui.',
+                text: t('lc.komponenEvaluasiKelasBerhasilDiperbarui'),
             });
         } catch {
             setActionMessage({
                 type: 'error',
-                text: 'Gagal menyimpan komponen evaluasi.',
+                text: t('lc.gagalMenyimpanKomponenEvaluasi'),
             });
         } finally {
             setIsSubmittingComp(false);
@@ -553,18 +554,18 @@ export default function LecturerTeachGradePage() {
     };
 
     const handleDeleteComponent = async (compId: string) => {
-        if (!confirm('Apakah Anda yakin ingin menghapus komponen penilaian ini?')) return;
+        if (!confirm(t('lc.apakahAndaYakinInginMenghapusKomponen'))) return;
         try {
             await deleteTeachEvaluation(compId);
             await loadAllData();
             setActionMessage({
                 type: 'success',
-                text: 'Komponen penilaian berhasil dihapus.',
+                text: t('lc.komponenPenilaianBerhasilDihapus'),
             });
         } catch {
             setActionMessage({
                 type: 'error',
-                text: 'Gagal menghapus komponen penilaian.',
+                text: t('lc.gagalMenghapusKomponenPenilaian'),
             });
         }
     };
@@ -608,15 +609,15 @@ export default function LecturerTeachGradePage() {
                 <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-neutral-200 dark:border-neutral-800">
                     <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
                         <A href="/lecturer/dashboard" class="hover:text-blue-600 transition-colors">
-                            Dashboard
+                            {t('lc.dashboard')}
                         </A>
                         <span>/</span>
                         <A href="/lecturer/academic/campaign/transaction/teach" class="hover:text-blue-600 transition-colors">
-                            Pengajaran
+                            {t('lc.pengajaran')}
                         </A>
                         <span>/</span>
                         <span class="font-medium text-neutral-900 dark:text-white">
-                            Form Penilaian Mahasiswa
+                            {t('lc.formPenilaianMahasiswa')}
                         </span>
                     </nav>
 
@@ -628,13 +629,13 @@ export default function LecturerTeachGradePage() {
                             <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                             </svg>
-                            Kembali ke Daftar Kelas
+                            {t('lc.kembaliKeDaftarKelas')}
                         </A>
                         <A
                             href={`/lecturer/academic/campaign/transaction/teach/${teachId()}/attendance`}
                             class="px-3 py-1.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 text-xs font-semibold transition-colors inline-flex items-center gap-1.5"
                         >
-                            Presensi & Roster →
+                            {t('lc.presensiRoster2')}
                         </A>
                     </div>
                 </div>
@@ -691,10 +692,10 @@ export default function LecturerTeachGradePage() {
                             </div>
 
                             <h1 class="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white tracking-tight">
-                                Form Penilaian & Evaluasi Perkuliahan
+                                {t('lc.formPenilaianEvaluasiPerkuliahan')}
                             </h1>
                             <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                Kelola bobot penilaian dan input nilai akhir mahasiswa per komponen evaluasi perkuliahan.
+                                {t('lc.kelolaBobotPenilaianDanInputNilai')}
                             </p>
                         </div>
 
@@ -709,7 +710,7 @@ export default function LecturerTeachGradePage() {
                                     <svg class="size-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                     </svg>
-                                    Kelola Komponen
+                                    {t('lc.kelolaKomponen')}
                                 </button>
 
                                 <button
@@ -718,7 +719,7 @@ export default function LecturerTeachGradePage() {
                                     disabled={isSavingAll() || studentRows().length === 0}
                                     class="px-4 py-2.5 rounded-xs border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 dark:hover:bg-amber-900 text-xs font-bold text-amber-800 dark:text-amber-200 transition-colors inline-flex items-center gap-2 disabled:opacity-50"
                                 >
-                                    🔒 Kunci Nilai Kelas
+                                    {t('lc.kunciNilaiKelas')}
                                 </button>
 
                                 <button
@@ -727,9 +728,9 @@ export default function LecturerTeachGradePage() {
                                     disabled={isSavingAll()}
                                     class="px-5 py-2.5 rounded-xs bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs shadow-xs disabled:opacity-50 disabled:cursor-not-allowed transition-all inline-flex items-center gap-2"
                                 >
-                                    <Show when={isSavingAll()} fallback={<span>💾 Simpan Semua Nilai</span>}>
+                                    <Show when={isSavingAll()} fallback={<span>{t('lc.simpanSemuaNilai')}</span>}>
                                         <div class="size-3.5 border-2 border-white border-t-transparent rounded-xs animate-spin"></div>
-                                        <span>Menyimpan...</span>
+                                        <span>{t('lc.menyimpan')}</span>
                                     </Show>
                                 </button>
                             </div>
@@ -741,9 +742,9 @@ export default function LecturerTeachGradePage() {
                         <div class="p-4 rounded-xs bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-3 shadow-2xs">
                             <span class="text-lg shrink-0">🔒</span>
                             <div class="space-y-0.5">
-                                <h4 class="font-bold">Nilai Perkuliahan Telah Dikunci & Difinalisasi</h4>
+                                <h4 class="font-bold">{t('lc.nilaiPerkuliahanTelahDikunciDifinalisasi')}</h4>
                                 <p class="text-amber-800 dark:text-amber-300 text-[11px] leading-relaxed">
-                                    Sesuai aturan akademik, dosen tidak dapat membuka kunci atau mengubah nilai yang telah dikunci. Jika diperlukan perbaikan nilai, silakan hubungi <strong>Administrator / Bagian Akademik</strong> untuk membuka kunci kelas ini.
+                                    {t('lc.sesuaiAturanAkademikDosenTidakDapat')} <strong>{t('lc.administratorBagianAkademik')}</strong> {t('lc.untukMembukaKunciKelasIni')}
                                 </p>
                             </div>
                         </div>
@@ -752,32 +753,32 @@ export default function LecturerTeachGradePage() {
                     {/* Class Stats Row */}
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-neutral-100 dark:border-neutral-700/60">
                         <div class="p-4 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60">
-                            <span class="text-[11px] font-medium text-neutral-500 dark:text-neutral-400 block">Rata-Rata Kelas</span>
+                            <span class="text-[11px] font-medium text-neutral-500 dark:text-neutral-400 block">{t('lc.rataRataKelas')}</span>
                             <span class="text-xl font-bold font-mono text-blue-600 dark:text-blue-400 mt-0.5 block">
                                 {classStats().avg}
                             </span>
                         </div>
                         <div class="p-4 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60">
-                            <span class="text-[11px] font-medium text-neutral-500 dark:text-neutral-400 block">Nilai Tertinggi</span>
+                            <span class="text-[11px] font-medium text-neutral-500 dark:text-neutral-400 block">{t('lc.nilaiTertinggi')}</span>
                             <span class="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-0.5 block">
                                 {classStats().highest}
                             </span>
                         </div>
                         <div class="p-4 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60">
-                            <span class="text-[11px] font-medium text-neutral-500 dark:text-neutral-400 block">Mahasiswa Dinilai</span>
+                            <span class="text-[11px] font-medium text-neutral-500 dark:text-neutral-400 block">{t('lc.mahasiswaDinilai')}</span>
                             <span class="text-xl font-bold font-mono text-purple-600 dark:text-purple-400 mt-0.5 block">
                                 {classStats().gradedCount} / {studentRows().length}
                             </span>
                         </div>
                         <div class="p-4 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60">
-                            <span class="text-[11px] font-medium text-neutral-500 dark:text-neutral-400 block">Total Bobot Evaluasi</span>
+                            <span class="text-[11px] font-medium text-neutral-500 dark:text-neutral-400 block">{t('lc.totalBobotEvaluasi')}</span>
                             <div class="flex items-center gap-1.5 mt-0.5">
                                 <span class={`text-xl font-bold font-mono ${isWeightValid() ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
                                     }`}>
                                     {totalEvaluationWeight()}%
                                 </span>
                                 <Show when={!isWeightValid()}>
-                                    <span class="text-[10px] text-rose-500 font-bold">(Wajib 100%)</span>
+                                    <span class="text-[10px] text-rose-500 font-bold">{t('lc.wajib100')}</span>
                                 </Show>
                             </div>
                         </div>
@@ -789,11 +790,11 @@ export default function LecturerTeachGradePage() {
                     <div class="flex items-center justify-between gap-4 flex-wrap">
                         <div class="flex items-center gap-2">
                             <span class="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                                Komponen Evaluasi Perkuliahan:
+                                {t('lc.komponenEvaluasiPerkuliahan')}
                             </span>
                             <Show when={!isWeightValid()}>
                                 <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300">
-                                    Total bobot {totalEvaluationWeight()}% (Harus 100%)
+                                    {t('lc.totalBobot')} {totalEvaluationWeight()}% (Harus 100%)
                                 </span>
                             </Show>
                         </div>
@@ -802,7 +803,7 @@ export default function LecturerTeachGradePage() {
                             onClick={openAddComponentModal}
                             class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
                         >
-                            + Tambah / Edit Komponen
+                            {t('lc.tambahEditKomponen')}
                         </button>
                     </div>
 
@@ -820,7 +821,7 @@ export default function LecturerTeachGradePage() {
                                         type="button"
                                         onClick={() => openEditComponentModal(ev)}
                                         class="text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity ml-1"
-                                        title="Edit Komponen"
+                                        title={t('lc.editKomponen')}
                                     >
                                         ✏️
                                     </button>
@@ -828,7 +829,7 @@ export default function LecturerTeachGradePage() {
                                         type="button"
                                         onClick={() => ev.id && handleDeleteComponent(ev.id)}
                                         class="text-neutral-400 hover:text-rose-600 dark:hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"
-                                        title="Hapus Komponen"
+                                        title={t('lc.hapusKomponen')}
                                     >
                                         🗑️
                                     </button>
@@ -843,7 +844,7 @@ export default function LecturerTeachGradePage() {
                     <div class="relative flex-1 max-w-md">
                         <input
                             type="text"
-                            placeholder="Cari mahasiswa berdasarkan nama, NIM, atau Grade..."
+                            placeholder={t('lc.cariMahasiswaBerdasarkanNamaNIMAtau')}
                             value={searchQuery()}
                             onInput={(e) => setSearchQuery(e.currentTarget.value)}
                             class="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 rounded-xs text-xs text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-2xs"
@@ -864,7 +865,7 @@ export default function LecturerTeachGradePage() {
 
                     <div class="flex items-center gap-2 self-end sm:self-auto">
                         <span class="text-xs text-neutral-500 font-mono">
-                            Menampilkan {filteredStudents().length} dari {studentRows().length} mahasiswa
+                            {t('lc.menampilkan')} {filteredStudents().length} dari {studentRows().length} mahasiswa
                         </span>
                     </div>
                 </div>
@@ -875,7 +876,7 @@ export default function LecturerTeachGradePage() {
                         when={!isLoading()}
                         fallback={
                             <Loader
-                                message="Memuat form penilaian mahasiswa..."
+                                message={t('lc.memuatFormPenilaianMahasiswa')}
                                 color="indigo"
                                 size="lg"
                             />
@@ -889,12 +890,12 @@ export default function LecturerTeachGradePage() {
                                         👥
                                     </div>
                                     <h3 class="text-base font-bold text-neutral-900 dark:text-white">
-                                        Belum Ada Mahasiswa Terdaftar
+                                        {t('lc.belumAdaMahasiswaTerdaftar')}
                                     </h3>
                                     <p class="text-xs text-neutral-500 dark:text-neutral-400 max-w-sm mx-auto">
                                         {searchQuery()
-                                            ? `Tidak ada mahasiswa yang cocok dengan pencarian "${searchQuery()}".`
-                                            : 'Kelas pengajaran ini belum memiliki mahasiswa yang terdaftar di rencana studi.'}
+                                            ? t('lc.noStudentsMatchTheSearchQuery', { query: searchQuery() })
+                                            : t('lc.kelasPengajaranIniBelumMemilikiMahasiswa')}
                                     </p>
                                 </div>
                             }
@@ -904,8 +905,8 @@ export default function LecturerTeachGradePage() {
                                 <table class="w-full text-left text-xs">
                                     <thead class="bg-neutral-50 dark:bg-neutral-900/60 border-b border-neutral-200 dark:border-neutral-700 text-neutral-500 font-mono uppercase tracking-wider text-[11px]">
                                         <tr>
-                                            <th class="px-4 py-4 font-bold text-center w-12">No.</th>
-                                            <th class="px-6 py-4 font-bold min-w-[220px]">Mahasiswa</th>
+                                            <th class="px-4 py-4 font-bold text-center w-12">{t('lc.no')}</th>
+                                            <th class="px-6 py-4 font-bold min-w-[220px]">{t('lc.mahasiswa')}</th>
                                             {/* Dynamic Component Headers */}
                                             <For each={evaluations()}>
                                                 {(ev) => (
@@ -918,13 +919,13 @@ export default function LecturerTeachGradePage() {
                                                 )}
                                             </For>
                                             <th class="px-4 py-4 font-bold text-center min-w-[90px] bg-blue-50/50 dark:bg-blue-950/20">
-                                                Nilai Akhir
+                                                {t('lc.nilaiAkhir')}
                                             </th>
                                             <th class="px-4 py-4 font-bold text-center min-w-[80px] bg-purple-50/50 dark:bg-purple-950/20">
-                                                Grade
+                                                {t('lc.grade')}
                                             </th>
-                                            <th class="px-4 py-4 font-bold text-center min-w-[80px]">Status</th>
-                                            <th class="px-4 py-4 font-bold text-right min-w-[90px]">Aksi</th>
+                                            <th class="px-4 py-4 font-bold text-center min-w-[80px]">{t('lc.status')}</th>
+                                            <th class="px-4 py-4 font-bold text-right min-w-[90px]">{t('lc.aksi')}</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-neutral-200/60 dark:divide-neutral-700/60">
@@ -1008,7 +1009,7 @@ export default function LecturerTeachGradePage() {
                                                                         ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300'
                                                                         : 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'
                                                                 }`}>
-                                                                {student.is_lock ? 'Locked' : student.is_dirty ? 'Unsaved' : 'Saved'}
+                                                                {student.is_lock ? t('lc.locked') : student.is_dirty ? t('lc.unsaved') : t('lc.saved')}
                                                             </span>
                                                         </td>
 
@@ -1020,7 +1021,7 @@ export default function LecturerTeachGradePage() {
                                                                 disabled={student.is_lock || !student.is_dirty || student.is_saving}
                                                                 class="px-2.5 py-1.5 rounded-xs bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900 text-blue-700 dark:text-blue-300 font-semibold text-xs transition-colors disabled:opacity-30 disabled:cursor-not-allowed inline-flex items-center gap-1"
                                                             >
-                                                                <Show when={student.is_saving} fallback={<span>Simpan</span>}>
+                                                                <Show when={student.is_saving} fallback={<span>{t('lc.simpan')}</span>}>
                                                                     <div class="size-3 border-2 border-blue-600 border-t-transparent rounded-xs animate-spin"></div>
                                                                 </Show>
                                                             </button>
@@ -1072,20 +1073,20 @@ export default function LecturerTeachGradePage() {
                                                                 ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700'
                                                                 : 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'
                                                     }`}>
-                                                        {student.is_lock ? 'Locked' : student.is_dirty ? 'Unsaved' : 'Saved'}
+                                                        {student.is_lock ? t('lc.locked') : student.is_dirty ? t('lc.unsaved') : t('lc.saved')}
                                                     </span>
                                                 </div>
 
                                                 {/* Calculated Mark & Grade Summary Box */}
                                                 <div class="grid grid-cols-2 gap-2 p-3 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60">
                                                     <div class="space-y-0.5">
-                                                        <span class="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Nilai Akhir</span>
+                                                        <span class="text-[10px] font-bold uppercase tracking-wider text-neutral-400">{t('lc.nilaiAkhir')}</span>
                                                         <div class="font-mono font-black text-lg text-blue-700 dark:text-blue-300">
                                                             {student.calculated_mark}
                                                         </div>
                                                     </div>
                                                     <div class="space-y-0.5 text-right">
-                                                        <span class="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Grade</span>
+                                                        <span class="text-[10px] font-bold uppercase tracking-wider text-neutral-400">{t('lc.grade')}</span>
                                                         <div>
                                                             <span class={`inline-block px-2.5 py-0.5 rounded-xs text-xs font-mono font-bold ${
                                                                 ['A', 'A-', 'B+'].includes(student.grade_letter || '')
@@ -1105,7 +1106,7 @@ export default function LecturerTeachGradePage() {
                                                 {/* Dynamic Evaluation Component Inputs */}
                                                 <Show when={evaluations().length > 0}>
                                                     <div class="space-y-2">
-                                                        <span class="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Komponen Penilaian</span>
+                                                        <span class="text-[10px] font-bold uppercase tracking-wider text-neutral-400">{t('lc.komponenPenilaian')}</span>
                                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                                             <For each={evaluations()}>
                                                                 {(ev) => {
@@ -1146,9 +1147,9 @@ export default function LecturerTeachGradePage() {
                                                     disabled={student.is_lock || !student.is_dirty || student.is_saving}
                                                     class="w-full py-2.5 px-3 rounded-xs bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-xs"
                                                 >
-                                                    <Show when={student.is_saving} fallback={<span>{student.is_dirty ? 'Simpan Perubahan' : 'Tersimpan'}</span>}>
+                                                    <Show when={student.is_saving} fallback={<span>{student.is_dirty ? t('lc.simpanPerubahan') : t('lc.tersimpan')}</span>}>
                                                         <div class="size-3.5 border-2 border-white border-t-transparent rounded-xs animate-spin"></div>
-                                                        <span>Menyimpan...</span>
+                                                        <span>{t('lc.menyimpan')}</span>
                                                     </Show>
                                                 </button>
                                             </div>
@@ -1165,15 +1166,15 @@ export default function LecturerTeachGradePage() {
                     <div class="flex items-center justify-between gap-2 flex-wrap">
                         <div class="space-y-0.5">
                             <h3 class="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                                Pedoman Skala Penilaian & Konversi Nilai (Grades Reference):
+                                {t('lc.pedomanSkalaPenilaianKonversiNilaiGrades')}
                             </h3>
                             <p class="text-[11px] text-neutral-400">
-                                Berdasarkan skala program studi / unit perkuliahan (<span class="font-mono font-semibold text-neutral-600 dark:text-neutral-300">academic_campaign_transaction.grades.unit_id</span>).
+                                {t('lc.berdasarkanSkalaProgramStudiUnitPerkuliahan')}<span class="font-mono font-semibold text-neutral-600 dark:text-neutral-300">academic_campaign_transaction.grades.unit_id</span>).
                             </p>
                         </div>
                         <Show when={courseData()?.unit_id}>
                             <span class="px-2.5 py-1 rounded-xs text-[10px] font-mono font-bold bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300">
-                                Unit ID: {courseData()?.unit_id}
+                                {t('lc.unitID')} {courseData()?.unit_id}
                             </span>
                         </Show>
                     </div>
@@ -1182,7 +1183,7 @@ export default function LecturerTeachGradePage() {
                         when={gradingScale().length > 0}
                         fallback={
                             <div class="p-6 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60 text-center text-xs text-neutral-500">
-                                Belum ada skala penilaian yang dikonfigurasi untuk unit program studi ini.
+                                {t('lc.belumAdaSkalaPenilaianYangDikonfigurasi')}
                             </div>
                         }
                     >
@@ -1197,7 +1198,7 @@ export default function LecturerTeachGradePage() {
                                             {g.minimum} - {g.maximum}
                                         </div>
                                         <div class="text-[10px] text-neutral-400 font-mono">
-                                            Indeks: {g.grade}
+                                            {t('lc.indeks')} {g.grade}
                                         </div>
                                     </div>
                                 )}
@@ -1213,7 +1214,7 @@ export default function LecturerTeachGradePage() {
                     <div class="w-full max-w-md bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200 dark:border-neutral-700 shadow-xl space-y-5">
                         <div class="flex items-center justify-between">
                             <h3 class="text-lg font-bold text-neutral-900 dark:text-white">
-                                {editingComponent() ? 'Edit Komponen Penilaian' : 'Tambah Komponen Penilaian'}
+                                {editingComponent() ? t('lc.editKomponenPenilaian') : t('lc.tambahKomponenPenilaian')}
                             </h3>
                             <button
                                 type="button"
@@ -1227,12 +1228,12 @@ export default function LecturerTeachGradePage() {
                         <form onSubmit={handleSaveComponent} class="space-y-4">
                             <div class="space-y-1.5">
                                 <label class="text-xs font-bold text-neutral-700 dark:text-neutral-300">
-                                    Nama Komponen (e.g. Tugas, UTS, UAS, Praktikum)
+                                    {t('lc.namaKomponenEGTugasUTS')}
                                 </label>
                                 <input
                                     type="text"
                                     required
-                                    placeholder="Contoh: Tugas Mandiri"
+                                    placeholder={t('lc.contohTugasMandiri')}
                                     value={newCompName()}
                                     onInput={(e) => setNewCompName(e.currentTarget.value)}
                                     class="w-full px-3.5 py-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xs text-xs text-neutral-900 dark:text-white focus:outline-none focus:border-blue-500"
@@ -1241,7 +1242,7 @@ export default function LecturerTeachGradePage() {
 
                             <div class="space-y-1.5">
                                 <label class="text-xs font-bold text-neutral-700 dark:text-neutral-300">
-                                    Bobot Penilaian (%)
+                                    {t('lc.bobotPenilaian')}
                                 </label>
                                 <input
                                     type="number"
@@ -1253,7 +1254,7 @@ export default function LecturerTeachGradePage() {
                                     class="w-full px-3.5 py-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xs text-xs text-neutral-900 dark:text-white focus:outline-none focus:border-blue-500 font-mono"
                                 />
                                 <span class="text-[11px] text-neutral-400">
-                                    Total akumulasi seluruh komponen harus mencapai 100%.
+                                    {t('lc.totalAkumulasiSeluruhKomponenHarusMencapai')}
                                 </span>
                             </div>
 
@@ -1263,14 +1264,14 @@ export default function LecturerTeachGradePage() {
                                     onClick={() => setIsComponentModalOpen(false)}
                                     class="px-4 py-2 rounded-xs border border-neutral-300 dark:border-neutral-700 text-xs font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                                 >
-                                    Batal
+                                    {t('lc.batal')}
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={isSubmittingComp() || !newCompName().trim()}
                                     class="px-5 py-2 rounded-xs bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-sm disabled:opacity-50 transition-colors"
                                 >
-                                    {isSubmittingComp() ? 'Menyimpan...' : 'Simpan Komponen'}
+                                    {isSubmittingComp() ? t('lc.menyimpan') : t('lc.simpanKomponen')}
                                 </button>
                             </div>
                         </form>
@@ -1287,17 +1288,17 @@ export default function LecturerTeachGradePage() {
                         </div>
                         <div class="space-y-2">
                             <h3 class="text-lg font-bold text-neutral-900 dark:text-white">
-                                Kunci & Finalisasi Nilai Kelas?
+                                {t('lc.kunciFinalisasiNilaiKelas')}
                             </h3>
                             <div class="text-xs text-neutral-600 dark:text-neutral-300 leading-relaxed text-left bg-amber-50 dark:bg-amber-950/50 p-4 rounded-xs border border-amber-200 dark:border-amber-800 space-y-1.5">
                                 <p class="font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
-                                    <span>⚠️</span> PERHATIAN PENTING:
+                                    <span>⚠️</span> {t('lc.perhatianPENTING')}
                                 </p>
                                 <p class="text-[11px] text-amber-800 dark:text-amber-300">
-                                    Setelah nilai dikunci, dosen <strong>TIDAK DAPAT MEMBUKA KUNCI</strong> atau mengubah nilai secara mandiri. Nilai akan berstatus resmi dan permanen.
+                                    {t('lc.setelahNilaiDikunciDosen')} <strong>{t('lc.tidakDAPATMEMBUKAKUNCI')}</strong> {t('lc.atauMengubahNilaiSecaraMandiriNilai')}
                                 </p>
                                 <p class="text-[11px] text-amber-800 dark:text-amber-300">
-                                    Pembukaan kunci dan revisi setelah penguncian hanya dapat dilakukan oleh pihak <strong>Administrator / Bagian Akademik</strong>.
+                                    {t('lc.pembukaanKunciDanRevisiSetelahPenguncian')} <strong>{t('lc.administratorBagianAkademik')}</strong>.
                                 </p>
                             </div>
                         </div>
@@ -1307,14 +1308,14 @@ export default function LecturerTeachGradePage() {
                                 onClick={() => setIsLockModalOpen(false)}
                                 class="flex-1 py-2.5 rounded-xs border border-neutral-300 dark:border-neutral-700 text-xs font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                             >
-                                Batal
+                                {t('lc.batal')}
                             </button>
                             <button
                                 type="button"
                                 onClick={handleLockGrades}
                                 class="flex-1 py-2.5 rounded-xs bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shadow-sm transition-colors"
                             >
-                                Ya, Kunci Nilai
+                                {t('lc.yaKunciNilai')}
                             </button>
                         </div>
                     </div>

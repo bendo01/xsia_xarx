@@ -1,4 +1,5 @@
 import TopBar from '~/components/navigation/TopBar';
+import { t } from '../../../../../i18n';
 
 export default function FeederAkumulasiEstimasiPage() {
     return (
@@ -9,19 +10,19 @@ export default function FeederAkumulasiEstimasiPage() {
                 <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                            <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">Administrator</a>
+                            <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">{t('ad.administrator')}</a>
                             <span>/</span>
-                            <span>Feeder</span>
+                            <span>{t('ad.feeder')}</span>
                             <span>/</span>
-                            <span>Akumulasi</span>
+                            <span>{t('ad.akumulasi')}</span>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">Estimasi</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">{t('ad.estimasi')}</span>
                         </nav>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Estimasi
+                            {t('ad.estimasi')}
                         </h1>
                         <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
-                            Data management, registry entities, and operational records for Estimasi.
+                            {t('ad.dataManagementRegistryEntitiesAndOperational22')}
                         </p>
                     </div>
                 </div>
@@ -35,10 +36,10 @@ export default function FeederAkumulasiEstimasiPage() {
                         </svg>
                     </div>
                     <h3 class="text-base font-bold text-neutral-900 dark:text-white mb-1.5 font-mono">
-                        Estimasi Workspace
+                        {t('ad.estimasiWorkspace')}
                     </h3>
                     <p class="text-xs text-neutral-500 dark:text-neutral-400 max-w-md font-mono leading-relaxed">
-                        Data management, registry entities, and operational records for Estimasi.
+                        {t('ad.dataManagementRegistryEntitiesAndOperational22')}
                     </p>
                 </div>
             </main>

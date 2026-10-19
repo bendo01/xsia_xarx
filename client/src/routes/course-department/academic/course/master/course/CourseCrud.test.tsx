@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from "vite-plus/test";
+import { setLocale } from "../../../../../../i18n";
 import { render, screen, waitFor } from "@solidjs/testing-library";
 import { Router, Route } from "@solidjs/router";
 import CourseMasterCreatePage from "./create";
@@ -53,6 +54,7 @@ const mockCourse = {
 
 describe("Course Department Course Master CRUD Operations", () => {
   beforeEach(() => {
+    setLocale("en");
     localStorage.clear();
     sessionStorage.clear();
     localStorage.setItem("unit_id", "unit-123");

@@ -5,6 +5,7 @@ import { masterApiIndex } from '~/controllers/master/masterApiController';
 import { toast } from '~/components/toast/Toaster';
 import { resolveInstitutionFromStaffRole } from '~/lib/rectoratHelper';
 import type { AcademicLecturerMasterLecturer } from '~/models/academic/lecturer/master/Lecturer';
+import { t } from '../../../../../../../../i18n';
 
 export default function RectoratLecturerIndex() {
     const params = useParams();
@@ -91,7 +92,7 @@ export default function RectoratLecturerIndex() {
         } catch (e) {
             console.error(e);
             setAllItems([]);
-            toast.danger('Gagal memuat data dosen dari server.');
+            toast.danger(t('rt.gagalMemuatDataDosenDariServer'));
         } finally {
             setIsLoading(false);
         }
@@ -139,20 +140,20 @@ export default function RectoratLecturerIndex() {
                 <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-6">
                     <div>
                         <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
-                            <A href="/rectorat" class="hover:text-violet-600 transition-colors">Rektorat</A>
+                            <A href="/rectorat" class="hover:text-violet-600 transition-colors">{t('rt.rektorat')}</A>
                             <span>/</span>
-                            <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-violet-600 transition-colors">Institusi</A>
+                            <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-violet-600 transition-colors">{t('rt.institusi')}</A>
                             <span>/</span>
-                            <A href={`/rectorat/institution/${institutionId()}/academic`} class="hover:text-violet-600 transition-colors">Akademik</A>
+                            <A href={`/rectorat/institution/${institutionId()}/academic`} class="hover:text-violet-600 transition-colors">{t('rt.akademik')}</A>
                             <span>/</span>
-                            <span class="text-neutral-700 dark:text-neutral-300 font-semibold">Dosen</span>
+                            <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.dosen')}</span>
                         </nav>
                         <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 text-xs font-semibold uppercase tracking-wider mb-2 border border-violet-200 dark:border-violet-800/50">
                             <span class="relative flex size-2">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
                                 <span class="relative inline-flex rounded-full size-2 bg-violet-500"></span>
                             </span>
-                            Akademik · Dosen
+                            {t('rt.akademikDosen')}
                         </div>
                         <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white flex items-center gap-3">
                             <span class="text-violet-600 dark:text-violet-400">
@@ -160,10 +161,10 @@ export default function RectoratLecturerIndex() {
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
                                 </svg>
                             </span>
-                            Daftar Dosen
+                            {t('rt.daftarDosen')}
                         </h1>
                         <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
-                            Seluruh dosen yang bertugas dalam institusi ini.
+                            {t('rt.seluruhDosenYangBertugasDalamInstitusi')}
                         </p>
                     </div>
 
@@ -171,15 +172,15 @@ export default function RectoratLecturerIndex() {
                     <div class="flex items-center gap-3 shrink-0">
                         <div class="text-center px-4 py-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm min-w-[72px]">
                             <p class="text-2xl font-black text-neutral-900 dark:text-white">{scopedItems().length}</p>
-                            <p class="text-[11px] text-neutral-500 dark:text-neutral-400 font-medium uppercase tracking-wide">Total</p>
+                            <p class="text-[11px] text-neutral-500 dark:text-neutral-400 font-medium uppercase tracking-wide">{t('rt.total')}</p>
                         </div>
                         <div class="text-center px-4 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 shadow-sm min-w-[72px]">
                             <p class="text-2xl font-black text-emerald-700 dark:text-emerald-400">{activeCount()}</p>
-                            <p class="text-[11px] text-emerald-600 dark:text-emerald-500 font-medium uppercase tracking-wide">Aktif</p>
+                            <p class="text-[11px] text-emerald-600 dark:text-emerald-500 font-medium uppercase tracking-wide">{t('rt.aktif')}</p>
                         </div>
                         <div class="text-center px-4 py-2.5 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 shadow-sm min-w-[72px]">
                             <p class="text-2xl font-black text-amber-700 dark:text-amber-400">{inactiveCount()}</p>
-                            <p class="text-[11px] text-amber-600 dark:text-amber-500 font-medium uppercase tracking-wide">Tidak Aktif</p>
+                            <p class="text-[11px] text-amber-600 dark:text-amber-500 font-medium uppercase tracking-wide">{t('rt.tidakAktif')}</p>
                         </div>
                     </div>
                 </div>
@@ -197,7 +198,7 @@ export default function RectoratLecturerIndex() {
                                 type="text"
                                 id="lecturer-search-input"
                                 class="block w-full p-3 pl-11 text-sm border border-neutral-200 rounded-lg bg-white focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 dark:bg-neutral-900 dark:border-neutral-800 dark:text-white transition-all placeholder:text-neutral-400 shadow-sm"
-                                placeholder="Cari nama, NIDN, atau NUPTK..."
+                                placeholder={t('rt.cariNamaNIDNAtauNUPTK')}
                                 onInput={handleSearch}
                             />
                         </div>
@@ -213,14 +214,14 @@ export default function RectoratLecturerIndex() {
                                         }`}
                                     onClick={() => { setFilterStatus(status); setCurrentPage(1); }}
                                 >
-                                    {status === 'all' ? 'Semua' : status === 'active' ? 'Aktif' : 'Tidak Aktif'}
+                                    {status === 'all' ? t('rt.semua') : status === 'active' ? t('rt.aktif') : t('rt.tidakAktif')}
                                 </button>
                             ))}
                         </div>
                     </div>
 
                     <div class="flex items-center gap-2 shrink-0">
-                        <label class="text-xs text-neutral-500 dark:text-neutral-400 font-medium">Baris:</label>
+                        <label class="text-xs text-neutral-500 dark:text-neutral-400 font-medium">{t('rt.baris')}</label>
                         <select
                             id="lecturer-rows-per-page"
                             class="p-2.5 text-sm border border-neutral-200 rounded-lg bg-white dark:bg-neutral-900 dark:border-neutral-800 dark:text-white shadow-sm"
@@ -244,12 +245,12 @@ export default function RectoratLecturerIndex() {
                         <table class="w-full text-sm text-left">
                             <thead class="text-xs uppercase bg-neutral-50/80 dark:bg-neutral-800/50 text-neutral-500 dark:text-neutral-400 border-b border-neutral-200 dark:border-neutral-800 font-semibold tracking-wider">
                                 <tr>
-                                    <th class="px-6 py-4">Dosen</th>
-                                    <th class="px-6 py-4">NIDN / Kode</th>
-                                    <th class="px-6 py-4">NUPTK</th>
-                                    <th class="px-6 py-4">Mulai Tugas</th>
-                                    <th class="px-6 py-4 text-center">Status</th>
-                                    <th class="px-6 py-4 text-right">Aksi</th>
+                                    <th class="px-6 py-4">{t('rt.dosen')}</th>
+                                    <th class="px-6 py-4">{t('rt.nidnKode')}</th>
+                                    <th class="px-6 py-4">{t('rt.nuptk')}</th>
+                                    <th class="px-6 py-4">{t('rt.mulaiTugas')}</th>
+                                    <th class="px-6 py-4 text-center">{t('rt.status')}</th>
+                                    <th class="px-6 py-4 text-right">{t('rt.aksi')}</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-neutral-100 dark:divide-neutral-800">
@@ -287,8 +288,8 @@ export default function RectoratLecturerIndex() {
                                                         <div class="p-4 rounded-full bg-violet-50 dark:bg-violet-900/20 text-violet-400">
                                                             <svg xmlns="http://www.w3.org/2000/svg" class="size-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" /></svg>
                                                         </div>
-                                                        <span class="font-semibold text-base text-neutral-700 dark:text-neutral-300">Tidak ada data dosen</span>
-                                                        <span class="text-sm">Coba ubah kata kunci atau filter.</span>
+                                                        <span class="font-semibold text-base text-neutral-700 dark:text-neutral-300">{t('rt.tidakAdaDataDosen')}</span>
+                                                        <span class="text-sm">{t('rt.cobaUbahKataKunciAtauFilter')}</span>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -323,12 +324,12 @@ export default function RectoratLecturerIndex() {
                                                         {!item.end_date ? (
                                                             <div class="inline-flex items-center justify-center gap-1.5 h-6 px-2.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800/50">
                                                                 <span class="size-1.5 rounded-full bg-emerald-500"></span>
-                                                                Aktif
+                                                                {t('rt.aktif')}
                                                             </div>
                                                         ) : (
                                                             <div class="inline-flex items-center justify-center gap-1.5 h-6 px-2.5 text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-full dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800/50">
                                                                 <span class="size-1.5 rounded-full bg-amber-500"></span>
-                                                                Tidak Aktif
+                                                                {t('rt.tidakAktif')}
                                                             </div>
                                                         )}
                                                     </td>
@@ -342,7 +343,7 @@ export default function RectoratLecturerIndex() {
                                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
                                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                                             </svg>
-                                                            Detail
+                                                            {t('rt.detail')}
                                                         </A>
                                                     </td>
                                                 </tr>
@@ -357,7 +358,7 @@ export default function RectoratLecturerIndex() {
                     {/* Pagination */}
                     <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-3">
                         <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                            Menampilkan <span class="font-semibold text-neutral-900 dark:text-white">{filteredItems().length > 0 ? startIndex() : 0}</span>–<span class="font-semibold text-neutral-900 dark:text-white">{endIndex()}</span> dari <span class="font-semibold text-neutral-900 dark:text-white">{filteredItems().length}</span> dosen
+                            {t('rt.menampilkan')} <span class="font-semibold text-neutral-900 dark:text-white">{filteredItems().length > 0 ? startIndex() : 0}</span>–<span class="font-semibold text-neutral-900 dark:text-white">{endIndex()}</span> dari <span class="font-semibold text-neutral-900 dark:text-white">{filteredItems().length}</span> dosen
                         </p>
                         <nav class="inline-flex -space-x-px rounded-lg overflow-hidden shadow-sm">
                             <button
@@ -367,7 +368,7 @@ export default function RectoratLecturerIndex() {
                                 disabled={currentPage() <= 1 || isLoading()}
                                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                             >
-                                Sebelumnya
+                                {t('rt.sebelumnya2')}
                             </button>
                             <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-violet-700 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20 border-y border-neutral-300 dark:border-neutral-600">
                                 {currentPage()} / {totalPages()}
@@ -379,7 +380,7 @@ export default function RectoratLecturerIndex() {
                                 disabled={currentPage() >= totalPages() || isLoading()}
                                 onClick={() => setCurrentPage(p => Math.min(totalPages(), p + 1))}
                             >
-                                Selanjutnya
+                                {t('rt.selanjutnya')}
                             </button>
                         </nav>
                     </div>

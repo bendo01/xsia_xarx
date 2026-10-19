@@ -24,6 +24,7 @@ import { resolveInstitutionFromStaffRole } from '~/lib/rectoratHelper';
 import EChart from '~/components/chart/echart_component';
 import PopupBlockedAlert from '~/components/alert/PopupBlockedAlert';
 import { Loader } from '~/components/loader';
+import { t } from '../../../../../../../../../i18n';
 
 export default function RectoratLecturerDetail() {
     const params = useParams();
@@ -131,7 +132,7 @@ export default function RectoratLecturerDetail() {
             const resolvedLecturer = await getLecturerById(lid);
             if (!resolvedLecturer) {
                 setError('Data dosen tidak ditemukan.');
-                toast.danger('Gagal memuat data dosen.');
+                toast.danger(t('rt.gagalMemuatDataDosen'));
                 return;
             }
             setLecturerMaster(resolvedLecturer);
@@ -235,7 +236,7 @@ export default function RectoratLecturerDetail() {
         const map = new Map<string, YearlyCreditTrend>();
         for (const item of assignedTeaches()) {
             const yId = item.academic_year_id || 'unknown';
-            const yName = item.academic_year_name || (item.academic_year_code ? `Tahun ${item.academic_year_code}` : 'Tahun Akademik');
+            const yName = item.academic_year_name || (item.academic_year_code ? `Tahun ${item.academic_year_code}` : t('rt.tahunAkademik'));
             const yCode = item.academic_year_code;
             const cr = Number(item.credit || item.course_total_credit) || 0;
 
@@ -330,15 +331,15 @@ export default function RectoratLecturerDetail() {
                 {/* Breadcrumb Navigation */}
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 font-medium">
-                        <A href="/rectorat" class="hover:text-violet-600 transition-colors">Rektorat</A>
+                        <A href="/rectorat" class="hover:text-violet-600 transition-colors">{t('rt.rektorat')}</A>
                         <span>/</span>
-                        <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-violet-600 transition-colors">Institusi</A>
+                        <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-violet-600 transition-colors">{t('rt.institusi')}</A>
                         <span>/</span>
-                        <A href={`/rectorat/institution/${institutionId()}/academic`} class="hover:text-violet-600 transition-colors">Akademik</A>
+                        <A href={`/rectorat/institution/${institutionId()}/academic`} class="hover:text-violet-600 transition-colors">{t('rt.akademik')}</A>
                         <span>/</span>
-                        <A href={`/rectorat/institution/${institutionId()}/academic/lecturer/master/lecturer`} class="hover:text-violet-600 transition-colors">Dosen</A>
+                        <A href={`/rectorat/institution/${institutionId()}/academic/lecturer/master/lecturer`} class="hover:text-violet-600 transition-colors">{t('rt.dosen')}</A>
                         <span>/</span>
-                        <span class="text-neutral-700 dark:text-neutral-300 font-semibold">Detail Dosen</span>
+                        <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.detailDosen')}</span>
                     </nav>
 
                     <A
@@ -348,7 +349,7 @@ export default function RectoratLecturerDetail() {
                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
                         </svg>
-                        <span>Kembali ke Daftar Dosen</span>
+                        <span>{t('rt.kembaliKeDaftarDosen')}</span>
                     </A>
                 </div>
 
@@ -380,7 +381,7 @@ export default function RectoratLecturerDetail() {
                                         class="size-20 sm:size-24 rounded-full object-cover shadow-lg border-2 border-violet-400/30"
                                     />
                                 </Show>
-                                <span class="absolute -bottom-1 -right-1 size-5 bg-emerald-500 border-2 border-violet-900 rounded-full" title="Active Lecturer"></span>
+                                <span class="absolute -bottom-1 -right-1 size-5 bg-emerald-500 border-2 border-violet-900 rounded-full" title={t('rt.activeLecturer')}></span>
                             </div>
 
                             <div class="text-center sm:text-start space-y-1">
@@ -402,7 +403,7 @@ export default function RectoratLecturerDetail() {
                         {/* Status Badge */}
                         <div class="flex items-center justify-center gap-3">
                             <div class="px-4 py-2 rounded-lg bg-white/10 backdrop-blur-xs border border-white/15 text-center">
-                                <p class="text-[10px] font-semibold uppercase tracking-wider text-violet-200">Status Kepegawaian</p>
+                                <p class="text-[10px] font-semibold uppercase tracking-wider text-violet-200">{t('rt.statusKepegawaian')}</p>
                                 <p class="text-sm font-bold text-white">{currentStatusName()}</p>
                             </div>
                         </div>
@@ -424,7 +425,7 @@ export default function RectoratLecturerDetail() {
                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z" />
                         </svg>
-                        <span>Ringkasan Profil</span>
+                        <span>{t('rt.ringkasanProfil')}</span>
                     </button>
                     <button
                         type="button"
@@ -440,7 +441,7 @@ export default function RectoratLecturerDetail() {
                             <circle cx="12" cy="8" r="5" />
                             <path d="M20 21a8 8 0 0 0-16 0" />
                         </svg>
-                        <span>Biodata Pribadi</span>
+                        <span>{t('rt.biodataPribadi')}</span>
                     </button>
                     <button
                         type="button"
@@ -456,7 +457,7 @@ export default function RectoratLecturerDetail() {
                             <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
                             <path d="M6 12v5c3 3 9 3 12 0v-5" />
                         </svg>
-                        <span>Detail Akademik & Riwayat</span>
+                        <span>{t('rt.detailAkademikRiwayat')}</span>
                     </button>
                 </div>
 
@@ -465,7 +466,7 @@ export default function RectoratLecturerDetail() {
                     when={!isLoading()}
                     fallback={
                         <Loader
-                            message="Memuat profil dosen..."
+                            message={t('rt.memuatProfilDosen')}
                             color="purple"
                             size="lg"
                             class="py-20"
@@ -480,7 +481,7 @@ export default function RectoratLecturerDetail() {
                                 <div class="p-5 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-3 shadow-sm">
                                     <div class="flex items-center justify-between">
                                         <h3 class="text-xs font-bold font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                                            Penugasan & Status Dosen
+                                            {t('rt.penugasanStatusDosen')}
                                         </h3>
                                         <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300 font-mono">
                                             {currentStatusName()}
@@ -488,32 +489,32 @@ export default function RectoratLecturerDetail() {
                                     </div>
                                     <div class="grid grid-cols-2 gap-3 text-xs">
                                         <div>
-                                            <span class="text-neutral-400 block">NIDN</span>
+                                            <span class="text-neutral-400 block">{t('rt.nidn')}</span>
                                             <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{lecturerNidn() || '-'}</span>
                                         </div>
                                         <div>
-                                            <span class="text-neutral-400 block">NUPTK</span>
+                                            <span class="text-neutral-400 block">{t('rt.nuptk')}</span>
                                             <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{lecturerNuptk() || '-'}</span>
                                         </div>
                                         <div>
-                                            <span class="text-neutral-400 block">Program Studi (Homebase)</span>
+                                            <span class="text-neutral-400 block">{t('rt.programStudiHomebase')}</span>
                                             <span class="font-bold text-neutral-800 dark:text-neutral-100">{currentUnitName()}</span>
                                         </div>
                                         <div>
-                                            <span class="text-neutral-400 block">Jabatan Fungsional</span>
+                                            <span class="text-neutral-400 block">{t('rt.jabatanFungsional')}</span>
                                             <span class="font-bold text-neutral-800 dark:text-neutral-100">{currentRankName()}</span>
                                         </div>
                                         <div>
-                                            <span class="text-neutral-400 block">Golongan / Pangkat</span>
+                                            <span class="text-neutral-400 block">{t('rt.golonganPangkat')}</span>
                                             <span class="font-bold text-neutral-800 dark:text-neutral-100">{currentGroupName() || '-'}</span>
                                         </div>
                                         <div>
-                                            <span class="text-neutral-400 block">Status Dosen</span>
+                                            <span class="text-neutral-400 block">{t('rt.statusDosen')}</span>
                                             <span class="font-bold text-emerald-600 dark:text-emerald-400">{currentStatusName()}</span>
                                         </div>
                                         <Show when={currentContractName()}>
                                             <div class="col-span-2">
-                                                <span class="text-neutral-400 block">Perjanjian Kontrak</span>
+                                                <span class="text-neutral-400 block">{t('rt.perjanjianKontrak')}</span>
                                                 <span class="font-bold text-neutral-800 dark:text-neutral-100">{currentContractName()}</span>
                                             </div>
                                         </Show>
@@ -523,27 +524,27 @@ export default function RectoratLecturerDetail() {
                                 {/* Identity Summary Card */}
                                 <div class="p-5 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-3 shadow-sm">
                                     <h3 class="text-xs font-bold font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                                        Identitas & Kontak
+                                        {t('rt.identitasKontak')}
                                     </h3>
                                     <div class="grid grid-cols-2 gap-3 text-xs">
                                         <div>
-                                            <span class="text-neutral-400 block">NIK (Nomor Induk Kependudukan)</span>
+                                            <span class="text-neutral-400 block">{t('rt.nikNomorIndukKependudukan')}</span>
                                             <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{ind()?.code || lecturerMaster()?.identification_number || '-'}</span>
                                         </div>
                                         <div>
-                                            <span class="text-neutral-400 block">Jenis Kelamin</span>
+                                            <span class="text-neutral-400 block">{t('rt.jenisKelamin')}</span>
                                             <span class="font-bold text-neutral-800 dark:text-neutral-100">
                                                 {individualData()?.gender?.name || '-'}
                                             </span>
                                         </div>
                                         <div>
-                                            <span class="text-neutral-400 block">Tempat & Tanggal Lahir</span>
+                                            <span class="text-neutral-400 block">{t('rt.tempatTanggalLahir')}</span>
                                             <span class="font-bold text-neutral-800 dark:text-neutral-100">
                                                 {ind()?.birth_place ? `${ind()?.birth_place}, ${ind()?.birth_date || '-'}` : ind()?.birth_date || '-'}
                                             </span>
                                         </div>
                                         <div>
-                                            <span class="text-neutral-400 block">Email Terdaftar</span>
+                                            <span class="text-neutral-400 block">{t('rt.emailTerdaftar')}</span>
                                             <span class="font-bold text-neutral-800 dark:text-neutral-100 truncate block">
                                                 {individualData()?.user?.email || '-'}
                                             </span>
@@ -563,11 +564,11 @@ export default function RectoratLecturerDetail() {
                                                 </svg>
                                             </div>
                                             <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                                Tren Beban SKS Mengajar Perkuliahan
+                                                {t('rt.trenBebanSKSMengajarPerkuliahan')}
                                             </h3>
                                         </div>
                                         <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                            Tren akumulasi beban SKS perkuliahan yang diampu di setiap Tahun Akademik berbasis Apache ECharts.
+                                            {t('rt.trenAkumulasiBebanSKSPerkuliahanYang')}
                                         </p>
                                     </div>
                                     <Show when={yearlyCreditTrends().length > 0}>
@@ -586,14 +587,14 @@ export default function RectoratLecturerDetail() {
                                             <svg class="size-8 text-neutral-300 dark:text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                                 <path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" />
                                             </svg>
-                                            <span>Belum ada data penugasan perkuliahan dengan Tahun Akademik untuk ditampilkan di grafik.</span>
+                                            <span>{t('rt.belumAdaDataPenugasanPerkuliahanDengan')}</span>
                                         </div>
                                     }
                                 >
                                     <Suspense
                                         fallback={
                                             <Loader
-                                                message="Memuat grafik..."
+                                                message={t('rt.memuatGrafik')}
                                                 color="purple"
                                                 size="md"
                                                 class="py-12"
@@ -619,48 +620,48 @@ export default function RectoratLecturerDetail() {
                         <div class="p-6 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-6 shadow-sm">
                             <div class="border-b border-neutral-200/80 dark:border-neutral-700/80 pb-4">
                                 <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                    Biodata Pribadi & Kependudukan
+                                    {t('rt.biodataPribadiKependudukan')}
                                 </h3>
                                 <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                    Data identitas kependudukan resmi yang tercatat di pangkalan data kampus.
+                                    {t('rt.dataIdentitasKependudukanResmiYangTercatat')}
                                 </p>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 text-xs">
                                 <div>
-                                    <span class="text-neutral-400 block mb-0.5">Nama Lengkap</span>
+                                    <span class="text-neutral-400 block mb-0.5">{t('rt.namaLengkap')}</span>
                                     <span class="font-bold text-neutral-900 dark:text-white">{formattedFullName()}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 block mb-0.5">Gelar Depan</span>
+                                    <span class="text-neutral-400 block mb-0.5">{t('rt.gelarDepan')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-200">{ind()?.front_title || lecturerMaster()?.front_title || '-'}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 block mb-0.5">Gelar Belakang</span>
+                                    <span class="text-neutral-400 block mb-0.5">{t('rt.gelarBelakang')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-200">{ind()?.last_title || lecturerMaster()?.last_title || '-'}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 block mb-0.5">NIK (Nomor Induk Kependudukan)</span>
+                                    <span class="text-neutral-400 block mb-0.5">{t('rt.nikNomorIndukKependudukan')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-200 font-mono">{ind()?.code || lecturerMaster()?.identification_number || '-'}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 block mb-0.5">Jenis Kelamin</span>
+                                    <span class="text-neutral-400 block mb-0.5">{t('rt.jenisKelamin')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-200">{individualData()?.gender?.name || '-'}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 block mb-0.5">Agama</span>
+                                    <span class="text-neutral-400 block mb-0.5">{t('rt.agama')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-200">{individualData()?.religion?.name || '-'}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 block mb-0.5">Tempat Lahir</span>
+                                    <span class="text-neutral-400 block mb-0.5">{t('rt.tempatLahir')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-200">{ind()?.birth_place || '-'}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 block mb-0.5">Tanggal Lahir</span>
+                                    <span class="text-neutral-400 block mb-0.5">{t('rt.tanggalLahir')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-200 font-mono">{ind()?.birth_date || '-'}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 block mb-0.5">Status Pernikahan</span>
+                                    <span class="text-neutral-400 block mb-0.5">{t('rt.statusPernikahan')}</span>
                                     <span class="font-bold text-neutral-800 dark:text-neutral-200">{individualData()?.marital_status?.name || '-'}</span>
                                 </div>
                             </div>
@@ -675,10 +676,10 @@ export default function RectoratLecturerDetail() {
                                 <div class="border-b border-neutral-200/80 dark:border-neutral-700/80 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                     <div>
                                         <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                            Status Kepegawaian Akademik & Registrasi Dosen
+                                            {t('rt.statusKepegawaianAkademikRegistrasiDosen')}
                                         </h3>
                                         <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                            Kredensial mengajar di pendidikan tinggi, penugasan homebase, dan jabatan fungsional.
+                                            {t('rt.kredensialMengajarDiPendidikanTinggiPenugasan')}
                                         </p>
                                     </div>
                                     <span class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-violet-50 dark:bg-violet-950/60 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-800 self-start sm:self-auto">
@@ -688,39 +689,39 @@ export default function RectoratLecturerDetail() {
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 text-xs">
                                     <div>
-                                        <span class="text-neutral-400 block mb-0.5">NIDN (Nomor Induk Dosen Nasional)</span>
+                                        <span class="text-neutral-400 block mb-0.5">{t('rt.nidnNomorIndukDosenNasional')}</span>
                                         <span class="font-bold text-neutral-900 dark:text-white font-mono">{lecturerNidn() || '-'}</span>
                                     </div>
                                     <div>
-                                        <span class="text-neutral-400 block mb-0.5">NUPTK / NUPN</span>
+                                        <span class="text-neutral-400 block mb-0.5">{t('rt.nuptkNUPN')}</span>
                                         <span class="font-bold text-neutral-900 dark:text-white font-mono">{lecturerNuptk() || '-'}</span>
                                     </div>
                                     <div>
-                                        <span class="text-neutral-400 block mb-0.5">Jabatan Fungsional</span>
+                                        <span class="text-neutral-400 block mb-0.5">{t('rt.jabatanFungsional')}</span>
                                         <span class="font-bold text-neutral-800 dark:text-neutral-200">{currentRankName()}</span>
                                     </div>
                                     <div>
-                                        <span class="text-neutral-400 block mb-0.5">Golongan / Pangkat</span>
+                                        <span class="text-neutral-400 block mb-0.5">{t('rt.golonganPangkat')}</span>
                                         <span class="font-bold text-neutral-800 dark:text-neutral-200">{currentGroupName() || '-'}</span>
                                     </div>
                                     <div>
-                                        <span class="text-neutral-400 block mb-0.5">Program Studi Homebase</span>
+                                        <span class="text-neutral-400 block mb-0.5">{t('rt.programStudiHomebase2')}</span>
                                         <span class="font-bold text-neutral-800 dark:text-neutral-200">{currentUnitName()}</span>
                                     </div>
                                     <div>
-                                        <span class="text-neutral-400 block mb-0.5">Status Kepegawaian</span>
+                                        <span class="text-neutral-400 block mb-0.5">{t('rt.statusKepegawaian')}</span>
                                         <span class="font-bold text-emerald-600 dark:text-emerald-400">{currentStatusName()}</span>
                                     </div>
                                     <div>
-                                        <span class="text-neutral-400 block mb-0.5">Perjanjian Kontrak</span>
+                                        <span class="text-neutral-400 block mb-0.5">{t('rt.perjanjianKontrak')}</span>
                                         <span class="font-bold text-neutral-800 dark:text-neutral-200">{currentContractName() || '-'}</span>
                                     </div>
                                     <div>
-                                        <span class="text-neutral-400 block mb-0.5">Jenjang Pendidikan Tertinggi</span>
+                                        <span class="text-neutral-400 block mb-0.5">{t('rt.jenjangPendidikanTertinggi')}</span>
                                         <span class="font-bold text-neutral-800 dark:text-neutral-200">{individualData()?.education?.name || 'Magister (S2)'}</span>
                                     </div>
                                     <div>
-                                        <span class="text-neutral-400 block mb-0.5">Email Terdaftar</span>
+                                        <span class="text-neutral-400 block mb-0.5">{t('rt.emailTerdaftar')}</span>
                                         <span class="font-bold text-neutral-800 dark:text-neutral-200 font-mono">{individualData()?.user?.email || '-'}</span>
                                     </div>
                                 </div>
@@ -733,10 +734,10 @@ export default function RectoratLecturerDetail() {
                                     <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
                                         <div class="flex items-center gap-2">
                                             <div class="size-8 rounded-lg bg-violet-50 dark:bg-violet-950/60 text-violet-600 dark:text-violet-400 flex items-center justify-center font-bold text-xs">
-                                                HB
+                                                {t('rt.hb')}
                                             </div>
                                             <div>
-                                                <h4 class="text-xs font-bold text-neutral-900 dark:text-white">Riwayat Homebase Dosen</h4>
+                                                <h4 class="text-xs font-bold text-neutral-900 dark:text-white">{t('rt.riwayatHomebaseDosen')}</h4>
                                                 <p class="text-[10px] text-neutral-500 font-mono">academic_lecturer_transaction.homebases</p>
                                             </div>
                                         </div>
@@ -749,7 +750,7 @@ export default function RectoratLecturerDetail() {
                                         when={allHomebases().length > 0}
                                         fallback={
                                             <div class="py-6 text-center text-xs text-neutral-400 font-mono">
-                                                Homebase aktif: <span class="font-bold text-neutral-700 dark:text-neutral-300">{currentUnitName()}</span>
+                                                {t('rt.homebaseAktif')} <span class="font-bold text-neutral-700 dark:text-neutral-300">{currentUnitName()}</span>
                                             </div>
                                         }
                                     >
@@ -761,7 +762,7 @@ export default function RectoratLecturerDetail() {
                                                             <div class="flex items-center gap-2">
                                                                 <span class="font-bold text-neutral-900 dark:text-white">{hb.unit_name || 'Program Studi'}</span>
                                                                 <Show when={idx() === 0}>
-                                                                    <span class="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">Aktif</span>
+                                                                    <span class="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">{t('rt.aktif')}</span>
                                                                 </Show>
                                                             </div>
                                                             <div class="flex items-center gap-2 text-[11px] text-neutral-500">
@@ -787,10 +788,10 @@ export default function RectoratLecturerDetail() {
                                     <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
                                         <div class="flex items-center gap-2">
                                             <div class="size-8 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-xs">
-                                                JF
+                                                {t('rt.jf')}
                                             </div>
                                             <div>
-                                                <h4 class="text-xs font-bold text-neutral-900 dark:text-white">Riwayat Jabatan Fungsional & Golongan</h4>
+                                                <h4 class="text-xs font-bold text-neutral-900 dark:text-white">{t('rt.riwayatJabatanFungsionalGolongan')}</h4>
                                                 <p class="text-[10px] text-neutral-500 font-mono">academic_ranks & academic_groups</p>
                                             </div>
                                         </div>
@@ -803,7 +804,7 @@ export default function RectoratLecturerDetail() {
                                         when={allAcademicRanks().length > 0 || allAcademicGroups().length > 0}
                                         fallback={
                                             <div class="py-6 text-center text-xs text-neutral-400 font-mono">
-                                                Jabatan fungsional: <span class="font-bold text-neutral-700 dark:text-neutral-300">{currentRankName()}</span> {currentGroupName() ? `• ${currentGroupName()}` : ''}
+                                                {t('rt.jabatanFungsional2')} <span class="font-bold text-neutral-700 dark:text-neutral-300">{currentRankName()}</span> {currentGroupName() ? `• ${currentGroupName()}` : ''}
                                             </div>
                                         }
                                     >
@@ -815,13 +816,13 @@ export default function RectoratLecturerDetail() {
                                                             <div class="flex items-center gap-2">
                                                                 <span class="font-bold text-neutral-900 dark:text-white">{rk.rank_name || 'Jabatan Fungsional'}</span>
                                                                 <Show when={idx() === 0}>
-                                                                    <span class="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300">Terbaru</span>
+                                                                    <span class="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300">{t('rt.terbaru')}</span>
                                                                 </Show>
                                                             </div>
-                                                            <span class="text-[10px] text-neutral-500 font-mono">SK: {rk.decree_number || '-'} {rk.decree_date ? `(${rk.decree_date})` : ''}</span>
+                                                            <span class="text-[10px] text-neutral-500 font-mono">{t('rt.sk')} {rk.decree_number || '-'} {rk.decree_date ? `(${rk.decree_date})` : ''}</span>
                                                         </div>
                                                         <div class="text-[10px] font-mono text-neutral-400">
-                                                            TMT: {rk.start_date || '-'}
+                                                            {t('rt.tmt')} {rk.start_date || '-'}
                                                         </div>
                                                     </div>
                                                 )}
@@ -831,15 +832,15 @@ export default function RectoratLecturerDetail() {
                                                     <div class="p-3 rounded-lg bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60 flex items-center justify-between text-xs">
                                                         <div class="space-y-0.5">
                                                             <div class="flex items-center gap-2">
-                                                                <span class="font-bold text-neutral-900 dark:text-white">Golongan: {gp.group_name || 'Golongan'}</span>
+                                                                <span class="font-bold text-neutral-900 dark:text-white">{t('rt.golongan')} {gp.group_name || 'Golongan'}</span>
                                                                 <Show when={idx() === 0}>
-                                                                    <span class="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">Terbaru</span>
+                                                                    <span class="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">{t('rt.terbaru')}</span>
                                                                 </Show>
                                                             </div>
-                                                            <span class="text-[10px] text-neutral-500 font-mono">SK: {gp.decree_number || '-'} {gp.decree_date ? `(${gp.decree_date})` : ''}</span>
+                                                            <span class="text-[10px] text-neutral-500 font-mono">{t('rt.sk')} {gp.decree_number || '-'} {gp.decree_date ? `(${gp.decree_date})` : ''}</span>
                                                         </div>
                                                         <div class="text-[10px] font-mono text-neutral-400">
-                                                            TMT: {gp.start_date || '-'}
+                                                            {t('rt.tmt')} {gp.start_date || '-'}
                                                         </div>
                                                     </div>
                                                 )}

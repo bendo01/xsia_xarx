@@ -3,6 +3,7 @@ import { useSearchParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { masterApiShow, masterApiUpdate } from '~/controllers/master/masterApiController';
+import { t } from '../../../../../../../i18n';
 
 type FieldValue = string | number | boolean | null;
 
@@ -41,7 +42,7 @@ export default function CourseEditPage() {
                 toast.danger(res.error || 'Record not found.');
             }
         } catch {
-            toast.danger('Failed to load record details.');
+            toast.danger(t('ad.failedToLoadRecordDetails'));
         } finally {
             setIsLoading(false);
         }
@@ -79,12 +80,12 @@ export default function CourseEditPage() {
         try {
             const res = await masterApiUpdate(apiPath, id, fields());
             if (res.success) {
-                toast.success(res.message || 'Record updated successfully!');
+                toast.success(res.message || t('ad.recordUpdatedSuccessfully'));
                 setTimeout(() => {
                     window.location.href = `${basePath}/${encodeURIComponent(id)}`;
                 }, 500);
             } else {
-                toast.danger(res.message || 'Failed to update record.');
+                toast.danger(res.message || t('ad.failedToUpdateRecord'));
                 if (res.errors && typeof res.errors === 'object') {
                     const serverErrors: Record<string, string> = {};
                     Object.entries(res.errors).forEach(([k, v]) => {
@@ -94,7 +95,7 @@ export default function CourseEditPage() {
                 }
             }
         } catch (err: any) {
-            toast.danger(err.message || 'Network error occurred.');
+            toast.danger(err.message || t('ad.networkErrorOccurred'));
         } finally {
             setIsSubmitting(false);
         }
@@ -111,20 +112,20 @@ export default function CourseEditPage() {
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div class="min-w-0">
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
-                            <a href="/" class="hover:text-blue-600 transition-colors shrink-0">Home</a>
+                            <a href="/" class="hover:text-blue-600 transition-colors shrink-0">{t('ad.home')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="shrink-0">Academic</span>
+                            <span class="shrink-0">{t('ad.academic')}</span>
                             <span class="shrink-0">/</span>
-                            <span class="shrink-0">Course</span>
+                            <span class="shrink-0">{t('ad.course')}</span>
                             <span class="shrink-0">/</span>
-                            <span class="shrink-0">Master</span>
+                            <span class="shrink-0">{t('ad.master')}</span>
                             <span class="shrink-0">/</span>
-                            <a href={basePath} class="hover:text-blue-600 transition-colors shrink-0">Course</a>
+                            <a href={basePath} class="hover:text-blue-600 transition-colors shrink-0">{t('ad.course')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white shrink-0">Edit</span>
+                            <span class="font-medium text-neutral-900 dark:text-white shrink-0">{t('ad.edit')}</span>
                         </nav>
                         <h1 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono truncate">
-                            Edit Course
+                            {t('ad.editCourse')}
                         </h1>
                     </div>
 
@@ -136,7 +137,7 @@ export default function CourseEditPage() {
                             <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6" />
                             </svg>
-                            <span>Cancel</span>
+                            <span>{t('ad.cancel')}</span>
                         </a>
                     </div>
                 </div>
@@ -156,8 +157,8 @@ export default function CourseEditPage() {
                             when={Object.keys(fields()).length > 0}
                             fallback={
                                 <div class="py-12 text-center text-neutral-500">
-                                    <p class="text-base font-semibold">No editable fields found.</p>
-                                    <p class="text-xs mt-1">Check if the ID parameter in the URL is valid.</p>
+                                    <p class="text-base font-semibold">{t('ad.noEditableFieldsFound')}</p>
+                                    <p class="text-xs mt-1">{t('ad.checkIfTheIDParameterIn')}</p>
                                 </div>
                             }
                         >
@@ -210,14 +211,14 @@ export default function CourseEditPage() {
                                         href={`${basePath}/${encodeURIComponent(selectedId())}`}
                                         class="px-4 py-2 text-xs font-mono font-medium border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                                     >
-                                        Cancel
+                                        {t('ad.cancel')}
                                     </a>
                                     <button
                                         type="submit"
                                         disabled={isSubmitting()}
                                         class="inline-flex items-center gap-2 px-5 py-2 text-xs font-mono font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs disabled:opacity-50 transition-colors cursor-pointer"
                                     >
-                                        <span>{isSubmitting() ? 'Updating...' : 'Update Course'}</span>
+                                        <span>{isSubmitting() ? t('ad.updating') : t('ad.updateCourse')}</span>
                                     </button>
                                 </div>
                             </form>

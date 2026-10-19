@@ -6,6 +6,7 @@ import { masterApiShow } from '~/controllers/master/masterApiController';
 import { listActivities, type CampaignActivityItem } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionActivityController';
 import { listTeaches, type TeachItem } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachController';
 import { listStudents, type StudentMasterItem } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
+import { t } from '../../../../../../../i18n';
 
 export default function ClassCodeDetailPage() {
     const params = useParams();
@@ -41,11 +42,11 @@ export default function ClassCodeDetailPage() {
             if (res.data) {
                 setItemData(res.data);
             } else {
-                toast.danger('Failed to load class code data');
+                toast.danger(t('cd.failedToLoadClassCodeData'));
                 navigate('/course-department/academic/campaign/transaction/class-code');
             }
         } catch {
-            toast.danger('Failed to load class code data');
+            toast.danger(t('cd.failedToLoadClassCodeData'));
             navigate('/course-department/academic/campaign/transaction/class-code');
         } finally {
             setIsLoading(false);
@@ -134,22 +135,22 @@ export default function ClassCodeDetailPage() {
                 <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                            <a href="/" class="hover:text-blue-600 transition-colors">Home</a>
+                            <a href="/" class="hover:text-blue-600 transition-colors">{t('cd.home')}</a>
                             <span>/</span>
-                            <span>Course Department</span>
+                            <span>{t('cd.courseDepartment')}</span>
                             <span>/</span>
-                            <span>Academic</span>
+                            <span>{t('cd.academic')}</span>
                             <span>/</span>
-                            <span>Campaign</span>
+                            <span>{t('cd.campaign')}</span>
                             <span>/</span>
-                            <span>Transaction</span>
+                            <span>{t('cd.transaction')}</span>
                             <span>/</span>
-                            <a href="/course-department/academic/campaign/transaction/class-code" class="hover:text-blue-600 transition-colors">Class Code</a>
+                            <a href="/course-department/academic/campaign/transaction/class-code" class="hover:text-blue-600 transition-colors">{t('cd.classCode')}</a>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">Detail</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">{t('cd.detail')}</span>
                         </nav>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Class Code Detail
+                            {t('cd.classCodeDetail')}
                         </h1>
                     </div>
                     <div class="mt-4 sm:mt-0 flex gap-2">
@@ -158,14 +159,14 @@ export default function ClassCodeDetailPage() {
                             onClick={() => navigate('/course-department/academic/campaign/transaction/class-code')}
                             class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-600 rounded-md shadow-sm transition-colors cursor-pointer"
                         >
-                            Back to List
+                            {t('cd.backToList')}
                         </button>
                         <button
                             type="button"
                             onClick={() => navigate(`/course-department/academic/campaign/transaction/class-code/${params.id}/edit`)}
                             class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md shadow-sm transition-colors cursor-pointer"
                         >
-                            Edit
+                            {t('cd.edit')}
                         </button>
                     </div>
                 </div>
@@ -183,41 +184,41 @@ export default function ClassCodeDetailPage() {
                     <Show when={!isLoading() && itemData()}>
                         <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6">
                             <div class="sm:col-span-1">
-                                <dt class="text-sm font-medium text-neutral-500 dark:text-neutral-400">Class Code Name</dt>
+                                <dt class="text-sm font-medium text-neutral-500 dark:text-neutral-400">{t('cd.classCodeName')}</dt>
                                 <dd class="mt-1 text-base text-neutral-900 dark:text-white font-semibold uppercase">{itemData().name}</dd>
                             </div>
 
                             <div class="sm:col-span-1">
-                                <dt class="text-sm font-medium text-neutral-500 dark:text-neutral-400">Code</dt>
+                                <dt class="text-sm font-medium text-neutral-500 dark:text-neutral-400">{t('cd.code')}</dt>
                                 <dd class="mt-1 text-base text-neutral-900 dark:text-white">{itemData().code}</dd>
                             </div>
 
                             <div class="sm:col-span-1">
-                                <dt class="text-sm font-medium text-neutral-500 dark:text-neutral-400">Alphabet Code</dt>
+                                <dt class="text-sm font-medium text-neutral-500 dark:text-neutral-400">{t('cd.alphabetCode')}</dt>
                                 <dd class="mt-1 text-base text-neutral-900 dark:text-white">{itemData().alphabet_code || '-'}</dd>
                             </div>
 
                             <div class="sm:col-span-1">
-                                <dt class="text-sm font-medium text-neutral-500 dark:text-neutral-400">Activity</dt>
+                                <dt class="text-sm font-medium text-neutral-500 dark:text-neutral-400">{t('cd.activity')}</dt>
                                 <dd class="mt-1 text-base text-neutral-900 dark:text-white">{getActivityName(itemData().activity_id)}</dd>
                             </div>
 
                             <div class="sm:col-span-1">
-                                <dt class="text-sm font-medium text-neutral-500 dark:text-neutral-400">Start Effective Date</dt>
+                                <dt class="text-sm font-medium text-neutral-500 dark:text-neutral-400">{t('cd.startEffectiveDate')}</dt>
                                 <dd class="mt-1 text-base text-neutral-900 dark:text-white">
                                     {itemData().start_effective_date ? new Date(itemData().start_effective_date).toLocaleDateString() : '-'}
                                 </dd>
                             </div>
 
                             <div class="sm:col-span-1">
-                                <dt class="text-sm font-medium text-neutral-500 dark:text-neutral-400">End Effective Date</dt>
+                                <dt class="text-sm font-medium text-neutral-500 dark:text-neutral-400">{t('cd.endEffectiveDate')}</dt>
                                 <dd class="mt-1 text-base text-neutral-900 dark:text-white">
                                     {itemData().end_effective_date ? new Date(itemData().end_effective_date).toLocaleDateString() : '-'}
                                 </dd>
                             </div>
 
                             <div class="sm:col-span-1">
-                                <dt class="text-sm font-medium text-neutral-500 dark:text-neutral-400">Capacity</dt>
+                                <dt class="text-sm font-medium text-neutral-500 dark:text-neutral-400">{t('cd.capacity')}</dt>
                                 <dd class="mt-1 text-base text-neutral-900 dark:text-white">{itemData().capacity}</dd>
                             </div>
                         </dl>
@@ -227,9 +228,9 @@ export default function ClassCodeDetailPage() {
                 <Show when={!isLoading() && itemData()}>
                     <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-md shadow-sm p-6 space-y-4">
                         <div class="flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-700 pb-3">
-                            <h2 class="text-lg font-semibold text-neutral-900 dark:text-white">Teaches in This Class</h2>
+                            <h2 class="text-lg font-semibold text-neutral-900 dark:text-white">{t('cd.teachesInThisClass')}</h2>
                             <span class="font-mono text-xs px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300">
-                                {teaches().length} courses · {totalTeachCredit()} credits
+                                {teaches().length} {t('cd.courses')} {totalTeachCredit()} {t('cd.credits2')}
                             </span>
                         </div>
 
@@ -237,11 +238,11 @@ export default function ClassCodeDetailPage() {
                             <table class="w-full text-sm">
                                 <thead>
                                     <tr class="text-left text-xs uppercase tracking-wider text-neutral-500 dark:text-neutral-400 border-b border-neutral-200 dark:border-neutral-700">
-                                        <th class="py-2.5 pr-3 font-medium w-12">No</th>
-                                        <th class="py-2.5 pr-3 font-medium">Course Code</th>
-                                        <th class="py-2.5 pr-3 font-medium">Course</th>
-                                        <th class="py-2.5 pr-3 font-medium text-right">Credits</th>
-                                        <th class="py-2.5 font-medium text-right">Participants</th>
+                                        <th class="py-2.5 pr-3 font-medium w-12">{t('cd.no')}</th>
+                                        <th class="py-2.5 pr-3 font-medium">{t('cd.courseCode')}</th>
+                                        <th class="py-2.5 pr-3 font-medium">{t('cd.course')}</th>
+                                        <th class="py-2.5 pr-3 font-medium text-right">{t('cd.credits')}</th>
+                                        <th class="py-2.5 font-medium text-right">{t('cd.participants')}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-neutral-100 dark:divide-neutral-700/80">
@@ -252,7 +253,7 @@ export default function ClassCodeDetailPage() {
                                                 <td colspan="5" class="py-10 text-center text-neutral-500">
                                                     <div class="inline-flex items-center gap-2">
                                                         <div class="size-4 rounded-full border-2 border-blue-600 border-t-transparent animate-spin" />
-                                                        Loading teaches...
+                                                        {t('cd.loadingTeaches')}
                                                     </div>
                                                 </td>
                                             </tr>
@@ -263,7 +264,7 @@ export default function ClassCodeDetailPage() {
                                             fallback={
                                                 <tr>
                                                     <td colspan="5" class="py-10 text-center text-neutral-500">
-                                                        No teaches are assigned to this class yet.
+                                                        {t('cd.noTeachesAreAssignedToThis')}
                                                     </td>
                                                 </tr>
                                             }
@@ -300,14 +301,14 @@ export default function ClassCodeDetailPage() {
                     <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-md shadow-sm p-6 space-y-4">
                         <div class="sm:flex sm:items-center sm:justify-between gap-3 border-b border-neutral-200 dark:border-neutral-700 pb-3">
                             <div class="flex items-center gap-2">
-                                <h2 class="text-lg font-semibold text-neutral-900 dark:text-white">Students in This Class</h2>
+                                <h2 class="text-lg font-semibold text-neutral-900 dark:text-white">{t('cd.studentsInThisClass')}</h2>
                                 <span class="font-mono text-xs px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300">
                                     {studentTotal()} / {itemData()?.capacity || 0}
                                 </span>
                             </div>
                             <input
                                 type="search"
-                                placeholder="Search NIM or name..."
+                                placeholder={t('cd.searchNIMOrName')}
                                 onInput={(e) => onStudentSearchInput(e.currentTarget.value)}
                                 class="mt-3 sm:mt-0 w-full sm:w-64 px-3 py-2 text-sm rounded-md bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                             />
@@ -317,12 +318,12 @@ export default function ClassCodeDetailPage() {
                             <table class="w-full text-sm">
                                 <thead>
                                     <tr class="text-left text-xs uppercase tracking-wider text-neutral-500 dark:text-neutral-400 border-b border-neutral-200 dark:border-neutral-700">
-                                        <th class="py-2.5 pr-3 font-medium w-12">No</th>
-                                        <th class="py-2.5 pr-3 font-medium">NIM</th>
-                                        <th class="py-2.5 pr-3 font-medium">Name</th>
-                                        <th class="py-2.5 pr-3 font-medium">Academic Year</th>
-                                        <th class="py-2.5 pr-3 font-medium">Status</th>
-                                        <th class="py-2.5 font-medium text-right">Action</th>
+                                        <th class="py-2.5 pr-3 font-medium w-12">{t('cd.no')}</th>
+                                        <th class="py-2.5 pr-3 font-medium">{t('cd.nim')}</th>
+                                        <th class="py-2.5 pr-3 font-medium">{t('cd.name')}</th>
+                                        <th class="py-2.5 pr-3 font-medium">{t('cd.academicYear')}</th>
+                                        <th class="py-2.5 pr-3 font-medium">{t('cd.status')}</th>
+                                        <th class="py-2.5 font-medium text-right">{t('cd.action')}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-neutral-100 dark:divide-neutral-700/80">
@@ -333,7 +334,7 @@ export default function ClassCodeDetailPage() {
                                                 <td colspan="6" class="py-10 text-center text-neutral-500">
                                                     <div class="inline-flex items-center gap-2">
                                                         <div class="size-4 rounded-full border-2 border-blue-600 border-t-transparent animate-spin" />
-                                                        Loading students...
+                                                        {t('cd.loadingStudents')}
                                                     </div>
                                                 </td>
                                             </tr>
@@ -344,7 +345,7 @@ export default function ClassCodeDetailPage() {
                                             fallback={
                                                 <tr>
                                                     <td colspan="6" class="py-10 text-center text-neutral-500">
-                                                        {studentSearch() ? 'No students match your search.' : 'No students are assigned to this class yet.'}
+                                                        {studentSearch() ? t('cd.noStudentsMatchYourSearch') : t('cd.noStudentsAreAssignedToThis')}
                                                     </td>
                                                 </tr>
                                             }
@@ -373,7 +374,7 @@ export default function ClassCodeDetailPage() {
                                                             href={`/course-department/academic/student/master/student/${student.id}`}
                                                             class="text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium"
                                                         >
-                                                            Detail →
+                                                            {t('cd.detail2')}
                                                         </A>
                                                     </td>
                                                 </tr>
@@ -387,7 +388,7 @@ export default function ClassCodeDetailPage() {
                         <Show when={studentTotalPages() > 1}>
                             <div class="flex items-center justify-between pt-2 text-sm text-neutral-500">
                                 <span class="font-mono text-xs">
-                                    Page {studentPage()} of {studentTotalPages()}
+                                    {t('cd.page')} {studentPage()} {t('cd.of')} {studentTotalPages()}
                                 </span>
                                 <div class="flex items-center gap-2">
                                     <button
@@ -396,7 +397,7 @@ export default function ClassCodeDetailPage() {
                                         onClick={() => setStudentPage((p) => Math.max(1, p - 1))}
                                         class="px-3 py-1.5 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-600 rounded-md disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                                     >
-                                        ← Previous
+                                        {t('cd.previous2')}
                                     </button>
                                     <button
                                         type="button"
@@ -404,7 +405,7 @@ export default function ClassCodeDetailPage() {
                                         onClick={() => setStudentPage((p) => Math.min(studentTotalPages(), p + 1))}
                                         class="px-3 py-1.5 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-600 rounded-md disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                                     >
-                                        Next →
+                                        {t('cd.next2')}
                                     </button>
                                 </div>
                             </div>

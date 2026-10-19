@@ -5,6 +5,7 @@ import { useParams, useSearchParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { masterApiShow, masterApiUpdate } from '~/controllers/master/masterApiController';
+import { t } from '../../../../../../../i18n';
 
 export default function MasterEditPage() {
     const apiPath = "academic/course/master/curriculums";
@@ -51,7 +52,7 @@ export default function MasterEditPage() {
                 toast.danger(res.error || 'Record not found.');
             }
         } catch {
-            toast.danger('Failed to load record details.');
+            toast.danger(t('cd.failedToLoadRecordDetails'));
         } finally {
             setIsLoading(false);
         }
@@ -129,15 +130,15 @@ export default function MasterEditPage() {
             });
 
             if (res.success) {
-                toast.success(res.message || 'Record updated successfully!');
+                toast.success(res.message || t('cd.recordUpdatedSuccessfully'));
                 setTimeout(() => {
                     window.location.href = basePath;
                 }, 500);
             } else {
-                toast.danger(res.message || 'Failed to update record.');
+                toast.danger(res.message || t('cd.failedToUpdateRecord'));
             }
         } catch (err: any) {
-            toast.danger(err.message || 'Network error occurred.');
+            toast.danger(err.message || t('cd.networkErrorOccurred'));
         } finally {
             setIsSubmitting(false);
         }
@@ -151,20 +152,20 @@ export default function MasterEditPage() {
                 <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                            <a href="/" class="hover:text-blue-600 transition-colors">Home</a>
+                            <a href="/" class="hover:text-blue-600 transition-colors">{t('cd.home')}</a>
                             <span>/</span>
-                            <span>Academic</span>
+                            <span>{t('cd.academic')}</span>
                             <span>/</span>
-                            <span>Course</span>
+                            <span>{t('cd.course')}</span>
                             <span>/</span>
-                            <span>Master</span>
+                            <span>{t('cd.master')}</span>
                             <span>/</span>
-                            <a href={basePath} class="hover:text-blue-600 transition-colors">Curriculum</a>
+                            <a href={basePath} class="hover:text-blue-600 transition-colors">{t('cd.curriculum')}</a>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">Edit</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">{t('cd.edit')}</span>
                         </nav>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Edit Curriculum
+                            {t('cd.editCurriculum')}
                         </h1>
                     </div>
 
@@ -176,7 +177,7 @@ export default function MasterEditPage() {
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6" />
                             </svg>
-                            <span>Cancel</span>
+                            <span>{t('cd.cancel')}</span>
                         </a>
                     </div>
                 </div>
@@ -196,7 +197,7 @@ export default function MasterEditPage() {
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                        Academic Year <span class="text-red-500">*</span>
+                                        {t('cd.academicYear')} <span class="text-red-500">*</span>
                                     </label>
                                     <select
                                         required
@@ -204,7 +205,7 @@ export default function MasterEditPage() {
                                         onChange={(e) => setAcademicYearId(e.currentTarget.value)}
                                         class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                     >
-                                        <option value="" disabled>Select Academic Year</option>
+                                        <option value="" disabled>{t('cd.selectAcademicYear')}</option>
                                         <For each={academicYears()}>
                                             {(opt) => <option value={opt.id}>{opt.name}</option>}
                                         </For>
@@ -213,7 +214,7 @@ export default function MasterEditPage() {
 
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                        Curriculum Type <span class="text-red-500">*</span>
+                                        {t('cd.curriculumType')} <span class="text-red-500">*</span>
                                     </label>
                                     <select
                                         required
@@ -221,7 +222,7 @@ export default function MasterEditPage() {
                                         onChange={(e) => setCurriculumTypeId(e.currentTarget.value)}
                                         class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                     >
-                                        <option value="" disabled>Select Curriculum Type</option>
+                                        <option value="" disabled>{t('cd.selectCurriculumType')}</option>
                                         <For each={curriculumTypes()}>
                                             {(opt) => <option value={opt.id}>{opt.name}</option>}
                                         </For>
@@ -231,14 +232,14 @@ export default function MasterEditPage() {
                             <div class="grid grid-cols-1 sm:grid-cols-1 gap-6">
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                        Name / Title <span class="text-red-500">*</span>
+                                        {t('cd.nameTitle')} <span class="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="text"
                                         required
                                         value={name()}
                                         onInput={(e) => setName(e.currentTarget.value)}
-                                        placeholder="Enter name"
+                                        placeholder={t('cd.enterName')}
                                         class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                     />
                                 </div>
@@ -246,13 +247,13 @@ export default function MasterEditPage() {
                             <div class="grid grid-cols-1 sm:grid-cols-1 gap-6">
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                        Description / Notes
+                                        {t('cd.descriptionNotes')}
                                     </label>
                                     <textarea
                                         rows={4}
                                         value={description()}
                                         onInput={(e) => setDescription(e.currentTarget.value)}
-                                        placeholder="Additional details or remarks..."
+                                        placeholder={t('cd.additionalDetailsOrRemarks')}
                                         class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                     ></textarea>
                                 </div>
@@ -262,14 +263,14 @@ export default function MasterEditPage() {
                                     href={basePath}
                                     class="px-4 py-2 text-xs font-mono font-medium border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                                 >
-                                    Cancel
+                                    {t('cd.cancel')}
                                 </a>
                                 <button
                                     type="submit"
                                     disabled={isSubmitting()}
                                     class="inline-flex items-center gap-2 px-5 py-2 text-xs font-mono font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs disabled:opacity-50 transition-colors cursor-pointer"
                                 >
-                                    <span>{isSubmitting() ? 'Updating...' : 'Update Curriculum'}</span>
+                                    <span>{isSubmitting() ? t('cd.updating') : t('cd.updateCurriculum')}</span>
                                 </button>
                             </div>
                         </form>

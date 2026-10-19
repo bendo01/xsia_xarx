@@ -10,6 +10,7 @@ import {
     fetchCountryOptions,
     fetchAcademicYearOptions,
 } from '~/controllers/institution/master/InstitutionMasterInstitutionController';
+import { t } from '../../../../../i18n';
 
 export default function InstitutionMasterInstitutionCreatePage() {
     const [formData, setFormData] = createSignal({
@@ -67,7 +68,7 @@ export default function InstitutionMasterInstitutionCreatePage() {
             }
         } catch (err) {
             console.error('Failed to load institution reference options:', err);
-            toast.danger('Failed to load some reference options.');
+            toast.danger(t('ad.failedToLoadSomeReferenceOptions'));
         } finally {
             setIsLoadingReferences(false);
         }
@@ -115,7 +116,7 @@ export default function InstitutionMasterInstitutionCreatePage() {
         e.preventDefault();
 
         if (!validateForm()) {
-            toast.danger('Please fill out all required fields marked in red.');
+            toast.danger(t('ad.pleaseFillOutAllRequiredFields'));
             return;
         }
 
@@ -138,12 +139,12 @@ export default function InstitutionMasterInstitutionCreatePage() {
             const res = await InstitutionMasterInstitutionControllerCreate(payload);
 
             if (!res.is_error) {
-                toast.success(res.message || 'Institution created successfully!');
+                toast.success(res.message || t('ad.institutionCreatedSuccessfully'));
                 setTimeout(() => {
                     window.location.href = '/administrator/institution/master/institution';
                 }, 1000);
             } else {
-                toast.danger(res.message || 'Failed to create institution record.');
+                toast.danger(res.message || t('ad.failedToCreateInstitutionRecord'));
                 if (res.errors) {
                     const serverErrors: Record<string, string> = {};
                     Object.entries(res.errors).forEach(([k, v]) => {
@@ -154,7 +155,7 @@ export default function InstitutionMasterInstitutionCreatePage() {
             }
         } catch (err: any) {
             console.error('Error submitting create institution form:', err);
-            toast.danger(err.message || 'Network error occurred while saving.');
+            toast.danger(err.message || t('ad.networkErrorOccurredWhileSaving'));
         } finally {
             setIsSubmitting(false);
         }
@@ -168,28 +169,28 @@ export default function InstitutionMasterInstitutionCreatePage() {
                 {/* Header with Breadcrumbs */}
                 <div class="border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                        <a href="/" class="hover:text-blue-600 transition-colors">Home</a>
+                        <a href="/" class="hover:text-blue-600 transition-colors">{t('ad.home')}</a>
                         <span>/</span>
-                        <span>Institution</span>
+                        <span>{t('ad.institution')}</span>
                         <span>/</span>
-                        <a href="/administrator/institution/master/institution" class="hover:text-blue-600 transition-colors">Master Institution</a>
+                        <a href="/administrator/institution/master/institution" class="hover:text-blue-600 transition-colors">{t('ad.masterInstitution')}</a>
                         <span>/</span>
-                        <span class="font-medium text-neutral-900 dark:text-white">Create</span>
+                        <span class="font-medium text-neutral-900 dark:text-white">{t('ad.create')}</span>
                     </nav>
                     <div class="flex items-center justify-between">
                         <div>
                             <h1 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
-                                Create New Institution
+                                {t('ad.createNewInstitution')}
                             </h1>
                             <p class="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
-                                Register a new institution entity with classification and affiliation details.
+                                {t('ad.registerANewInstitutionEntityWith')}
                             </p>
                         </div>
                         <a
                             href="/administrator/institution/master/institution"
                             class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
                         >
-                            Cancel
+                            {t('ad.cancel')}
                         </a>
                     </div>
                 </div>
@@ -197,7 +198,7 @@ export default function InstitutionMasterInstitutionCreatePage() {
                 <Show when={isLoadingReferences()}>
                     <div class="p-8 text-center bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 space-y-2">
                         <div class="animate-spin size-6 border-2 border-blue-600 border-t-transparent rounded-xs mx-auto"></div>
-                        <p class="text-xs text-neutral-500">Loading form reference data...</p>
+                        <p class="text-xs text-neutral-500">{t('ad.loadingFormReferenceData')}</p>
                     </div>
                 </Show>
 
@@ -214,7 +215,7 @@ export default function InstitutionMasterInstitutionCreatePage() {
                                         <path d="M19 21V10.85" />
                                         <path d="M9 21v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4" />
                                     </svg>
-                                    <span>1. Basic Details</span>
+                                    <span>{t('ad.n1BasicDetails')}</span>
                                 </h2>
                             </div>
 
@@ -222,12 +223,12 @@ export default function InstitutionMasterInstitutionCreatePage() {
                                 {/* Name */}
                                 <div class="md:col-span-2">
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Institution Name <span class="text-red-500">*</span>
+                                        {t('ad.institutionName')} <span class="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="text"
                                         class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().name ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500 focus:border-blue-500'} text-neutral-900 dark:text-white rounded-xs`}
-                                        placeholder="e.g. Institut Teknologi dan Kesehatan Tri Tunas Nasional"
+                                        placeholder={t('ad.eGInstitutTeknologiDanKesehatan')}
                                         value={formData().name}
                                         onInput={(e) => updateField('name', (e.target as HTMLInputElement).value)}
                                         required
@@ -240,7 +241,7 @@ export default function InstitutionMasterInstitutionCreatePage() {
                                 {/* Code */}
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Institution Code <span class="text-red-500">*</span>
+                                        {t('ad.institutionCode')} <span class="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="text"
@@ -258,12 +259,12 @@ export default function InstitutionMasterInstitutionCreatePage() {
                                 {/* Alphabet Code */}
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Alphabet Code / Acronym
+                                        {t('ad.alphabetCodeAcronym')}
                                     </label>
                                     <input
                                         type="text"
                                         class="block w-full p-2.5 text-xs sm:text-sm font-mono bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
-                                        placeholder="e.g. ITEKES TTN"
+                                        placeholder={t('ad.eGITEKESTTN')}
                                         value={formData().alphabet_code}
                                         onInput={(e) => updateField('alphabet_code', (e.target as HTMLInputElement).value)}
                                     />
@@ -279,8 +280,8 @@ export default function InstitutionMasterInstitutionCreatePage() {
                                             onChange={(e) => updateField('is_active', (e.target as HTMLInputElement).checked)}
                                         />
                                         <div>
-                                            <span class="text-xs font-semibold uppercase tracking-wider text-neutral-900 dark:text-white">Operational Status</span>
-                                            <p class="text-xs text-neutral-500">Institution is currently active and operating</p>
+                                            <span class="text-xs font-semibold uppercase tracking-wider text-neutral-900 dark:text-white">{t('ad.operationalStatus')}</span>
+                                            <p class="text-xs text-neutral-500">{t('ad.institutionIsCurrentlyActiveAndOperating')}</p>
                                         </div>
                                     </label>
                                 </div>
@@ -297,7 +298,7 @@ export default function InstitutionMasterInstitutionCreatePage() {
                                         <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
                                         <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                                     </svg>
-                                    <span>2. Classification & Hierarchy</span>
+                                    <span>{t('ad.n2ClassificationHierarchy')}</span>
                                 </h2>
                             </div>
 
@@ -305,7 +306,7 @@ export default function InstitutionMasterInstitutionCreatePage() {
                                 {/* Variety */}
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Variety <span class="text-red-500">*</span>
+                                        {t('ad.variety')} <span class="text-red-500">*</span>
                                     </label>
                                     <select
                                         class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().variety_id ? 'border-red-500' : 'border-neutral-300 dark:border-neutral-700'} text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500`}
@@ -313,7 +314,7 @@ export default function InstitutionMasterInstitutionCreatePage() {
                                         onChange={(e) => updateField('variety_id', (e.target as HTMLSelectElement).value)}
                                         required
                                     >
-                                        <option value="">-- Select Variety --</option>
+                                        <option value="">{t('ad.selectVariety')}</option>
                                         <For each={varietyOptions()}>
                                             {(opt) => <option value={opt.id}>{opt.label}</option>}
                                         </For>
@@ -326,7 +327,7 @@ export default function InstitutionMasterInstitutionCreatePage() {
                                 {/* Category */}
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Category <span class="text-red-500">*</span>
+                                        {t('ad.category')} <span class="text-red-500">*</span>
                                     </label>
                                     <select
                                         class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().category_id ? 'border-red-500' : 'border-neutral-300 dark:border-neutral-700'} text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500`}
@@ -334,7 +335,7 @@ export default function InstitutionMasterInstitutionCreatePage() {
                                         onChange={(e) => updateField('category_id', (e.target as HTMLSelectElement).value)}
                                         required
                                     >
-                                        <option value="">-- Select Category --</option>
+                                        <option value="">{t('ad.selectCategory')}</option>
                                         <For each={categoryOptions()}>
                                             {(opt) => <option value={opt.id}>{opt.label}</option>}
                                         </For>
@@ -347,7 +348,7 @@ export default function InstitutionMasterInstitutionCreatePage() {
                                 {/* Country */}
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Country <span class="text-red-500">*</span>
+                                        {t('ad.country')} <span class="text-red-500">*</span>
                                     </label>
                                     <select
                                         class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().country_id ? 'border-red-500' : 'border-neutral-300 dark:border-neutral-700'} text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500`}
@@ -355,7 +356,7 @@ export default function InstitutionMasterInstitutionCreatePage() {
                                         onChange={(e) => updateField('country_id', (e.target as HTMLSelectElement).value)}
                                         required
                                     >
-                                        <option value="">-- Select Country --</option>
+                                        <option value="">{t('ad.selectCountry')}</option>
                                         <For each={countryOptions()}>
                                             {(opt) => <option value={opt.id}>{opt.label}</option>}
                                         </For>
@@ -368,14 +369,14 @@ export default function InstitutionMasterInstitutionCreatePage() {
                                 {/* Parent Institution */}
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Parent Institution (Optional)
+                                        {t('ad.parentInstitutionOptional')}
                                     </label>
                                     <select
                                         class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
                                         value={formData().parent_id}
                                         onChange={(e) => updateField('parent_id', (e.target as HTMLSelectElement).value)}
                                     >
-                                        <option value="">-- Top Level / No Parent --</option>
+                                        <option value="">{t('ad.topLevelNoParent')}</option>
                                         <For each={parentOptions()}>
                                             {(opt) => <option value={opt.id}>{opt.label}</option>}
                                         </For>
@@ -385,14 +386,14 @@ export default function InstitutionMasterInstitutionCreatePage() {
                                 {/* Academic Year */}
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Academic Year (Optional)
+                                        {t('ad.academicYearOptional')}
                                     </label>
                                     <select
                                         class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
                                         value={formData().academic_year_id}
                                         onChange={(e) => updateField('academic_year_id', (e.target as HTMLSelectElement).value)}
                                     >
-                                        <option value="">-- Select Academic Year --</option>
+                                        <option value="">{t('ad.selectAcademicYear2')}</option>
                                         <For each={academicYearOptions()}>
                                             {(opt) => <option value={opt.id}>{opt.label}</option>}
                                         </For>
@@ -402,12 +403,12 @@ export default function InstitutionMasterInstitutionCreatePage() {
                                 {/* Feeder ID */}
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Feeder ID (Optional)
+                                        {t('ad.feederIDOptional')}
                                     </label>
                                     <input
                                         type="text"
                                         class="block w-full p-2.5 text-xs sm:text-sm font-mono bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
-                                        placeholder="External system sync UUID"
+                                        placeholder={t('ad.externalSystemSyncUUID')}
                                         value={formData().feeder_id}
                                         onInput={(e) => updateField('feeder_id', (e.target as HTMLInputElement).value)}
                                     />
@@ -421,7 +422,7 @@ export default function InstitutionMasterInstitutionCreatePage() {
                                 href="/administrator/institution/master/institution"
                                 class="px-5 py-2.5 text-xs sm:text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
                             >
-                                Cancel
+                                {t('ad.cancel')}
                             </a>
                             <button
                                 type="submit"
@@ -434,7 +435,7 @@ export default function InstitutionMasterInstitutionCreatePage() {
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
                                     </svg>
                                 </Show>
-                                <span>{isSubmitting() ? 'Saving Institution...' : 'Save Institution'}</span>
+                                <span>{isSubmitting() ? t('ad.savingInstitution') : t('ad.saveInstitution')}</span>
                             </button>
                         </div>
                     </form>

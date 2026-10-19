@@ -19,6 +19,7 @@ import type { PersonMasterIndividualDataObject } from '~/models/person/master/In
 import AcademicPerformanceChart, { type AcademicTrendPoint } from '~/components/chart/academic_performance_chart';
 import StudentCreditChart from '~/components/chart/student_credit_chart';
 import { resolveInstitutionFromStaffRole } from '~/lib/rectoratHelper';
+import { t } from '../../../../../../../../../i18n';
 
 export default function RectoratStudentDetail() {
     const params = useParams();
@@ -109,7 +110,7 @@ export default function RectoratStudentDetail() {
             const stdRecord = await getStudentById(sid);
             if (!stdRecord) {
                 setError('Data mahasiswa tidak ditemukan.');
-                toast.danger('Gagal memuat data mahasiswa.');
+                toast.danger(t('rt.gagalMemuatDataMahasiswa'));
                 return;
             }
             setStudent(stdRecord);
@@ -127,7 +128,7 @@ export default function RectoratStudentDetail() {
         } catch (e: any) {
             console.error('Error loading student details:', e);
             setError(e.message || 'Terjadi kesalahan saat memuat data mahasiswa.');
-            toast.danger('Gagal memuat data mahasiswa dari server.');
+            toast.danger(t('rt.gagalMemuatDataMahasiswaDariServer'));
         } finally {
             setIsLoading(false);
         }
@@ -250,7 +251,7 @@ export default function RectoratStudentDetail() {
         if (list.length === 0) return [];
 
         return list.map((act, idx) => {
-            const semName = act.academic_year?.name || act.academic_year_name || act.name || act.semester_name || `Sem ${idx + 1}`;
+            const semName = act.academic_year?.name || act.academic_year_name || act.name || act.semester_name || t('rt.semN', { n: idx + 1 });
             const ips = Number(act.cumulative_index || 0);
             const ipk = Number(act.grand_cumulative_index || act.cumulative_index || 0);
             const sks = Number(act.total_credit || 0);
@@ -304,7 +305,7 @@ export default function RectoratStudentDetail() {
     const handlePrintKRS = async (targetAct?: StudentActivityItem) => {
         const act = targetAct || latestActivity() || sortedActivities()[sortedActivities().length - 1];
         if (!act?.id) {
-            toast.danger('Activity ID is missing.');
+            toast.danger(t('rt.activityIDIsMissing'));
             return;
         }
 
@@ -312,18 +313,18 @@ export default function RectoratStudentDetail() {
         setPrintingKey(key);
         try {
             const semLabel = act.academic_year?.name || act.academic_year_name || act.name || act.semester_name || 'Semester';
-            toast.info(`Generating KRS (${semLabel}) PDF...`);
+            toast.info(t('rt.generatingKRSNamePDF', { name: semLabel }));
             const blob = await printActivityPlan(act.id);
             if (blob) {
                 const nim = student()?.code || 'Student';
                 const semName = (act.name || semLabel).replace(/\s+/g, '_');
                 openOrDownloadPdf(blob, `KRS_${nim}_${semName}.pdf`, `KRS (${semLabel})`, true);
             } else {
-                toast.danger('Failed to generate KRS PDF.');
+                toast.danger(t('rt.failedToGenerateKRSPDF'));
             }
         } catch (err) {
             console.error('Error printing KRS:', err);
-            toast.danger('An error occurred while generating KRS PDF.');
+            toast.danger(t('rt.anErrorOccurredWhileGeneratingKRS'));
         } finally {
             setPrintingKey(null);
         }
@@ -332,7 +333,7 @@ export default function RectoratStudentDetail() {
     const handlePrintKHS = async (targetAct?: StudentActivityItem) => {
         const act = targetAct || latestActivity() || sortedActivities()[sortedActivities().length - 1];
         if (!act?.id) {
-            toast.danger('Activity ID is missing.');
+            toast.danger(t('rt.activityIDIsMissing'));
             return;
         }
 
@@ -340,18 +341,18 @@ export default function RectoratStudentDetail() {
         setPrintingKey(key);
         try {
             const semLabel = act.academic_year?.name || act.academic_year_name || act.name || act.semester_name || 'Semester';
-            toast.info(`Generating KHS (${semLabel}) PDF...`);
+            toast.info(t('rt.generatingKHSNamePDF', { name: semLabel }));
             const blob = await printActivityResult(act.id);
             if (blob) {
                 const nim = student()?.code || 'Student';
                 const semName = (act.name || semLabel).replace(/\s+/g, '_');
                 openOrDownloadPdf(blob, `KHS_${nim}_${semName}.pdf`, `KHS (${semLabel})`, true);
             } else {
-                toast.danger('Failed to generate KHS PDF.');
+                toast.danger(t('rt.failedToGenerateKHSPDF'));
             }
         } catch (err) {
             console.error('Error printing KHS:', err);
-            toast.danger('An error occurred while generating KHS PDF.');
+            toast.danger(t('rt.anErrorOccurredWhileGeneratingKHS'));
         } finally {
             setPrintingKey(null);
         }
@@ -401,15 +402,15 @@ export default function RectoratStudentDetail() {
 
                 {/* Breadcrumb Navigation */}
                 <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 font-medium flex-wrap">
-                    <A href="/rectorat" class="hover:text-blue-600 transition-colors">Rektorat</A>
+                    <A href="/rectorat" class="hover:text-blue-600 transition-colors">{t('rt.rektorat')}</A>
                     <span>/</span>
-                    <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-blue-600 transition-colors">Institusi</A>
+                    <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-blue-600 transition-colors">{t('rt.institusi')}</A>
                     <span>/</span>
-                    <A href={`/rectorat/institution/${institutionId()}/academic`} class="hover:text-blue-600 transition-colors">Akademik</A>
+                    <A href={`/rectorat/institution/${institutionId()}/academic`} class="hover:text-blue-600 transition-colors">{t('rt.akademik')}</A>
                     <span>/</span>
-                    <A href={`/rectorat/institution/${institutionId()}/academic/student/master/student`} class="hover:text-blue-600 transition-colors">Mahasiswa</A>
+                    <A href={`/rectorat/institution/${institutionId()}/academic/student/master/student`} class="hover:text-blue-600 transition-colors">{t('rt.mahasiswa')}</A>
                     <span>/</span>
-                    <span class="text-neutral-700 dark:text-neutral-300 font-semibold">Detail Mahasiswa</span>
+                    <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.detailMahasiswa')}</span>
                 </nav>
 
                 {/* Loading skeleton */}
@@ -445,7 +446,7 @@ export default function RectoratStudentDetail() {
                             </svg>
                         </div>
                         <div>
-                            <p class="font-bold text-lg text-neutral-800 dark:text-neutral-200">Gagal Memuat Detail Mahasiswa</p>
+                            <p class="font-bold text-lg text-neutral-800 dark:text-neutral-200">{t('rt.gagalMemuatDetailMahasiswa')}</p>
                             <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1">{error()}</p>
                         </div>
                         <div class="flex items-center gap-3">
@@ -455,13 +456,13 @@ export default function RectoratStudentDetail() {
                                 onClick={fetchStudentDetail}
                                 class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-sm"
                             >
-                                Coba Lagi
+                                {t('rt.cobaLagi')}
                             </button>
                             <A
                                 href={`/rectorat/institution/${institutionId()}/academic/student/master/student`}
                                 class="px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-lg transition-colors"
                             >
-                                Kembali
+                                {t('rt.kembali')}
                             </A>
                         </div>
                     </div>
@@ -483,7 +484,7 @@ export default function RectoratStudentDetail() {
                                         <div class="space-y-1 min-w-0">
                                             <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-mono font-semibold border border-blue-200 dark:border-blue-800/80">
                                                 <span class="size-1.5 rounded-full bg-blue-500"></span>
-                                                <span>NIM: {student()?.code || '-'}</span>
+                                                <span>{t('rt.nim2')} {student()?.code || '-'}</span>
                                             </div>
                                             <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900 dark:text-white truncate">
                                                 {student()?.name || 'Detail Mahasiswa'}
@@ -503,7 +504,7 @@ export default function RectoratStudentDetail() {
                                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                 <path d="m15 18-6-6 6-6" />
                                             </svg>
-                                            <span>Kembali ke Daftar Mahasiswa</span>
+                                            <span>{t('rt.kembaliKeDaftarMahasiswa')}</span>
                                         </A>
                                     </div>
                                 </div>
@@ -515,7 +516,7 @@ export default function RectoratStudentDetail() {
                             {/* IPK Kumulatif */}
                             <div class="p-5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm space-y-2">
                                 <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
-                                    <span class="text-xs font-mono font-semibold uppercase tracking-wider">IPK Kumulatif</span>
+                                    <span class="text-xs font-mono font-semibold uppercase tracking-wider">{t('rt.ipkKumulatif')}</span>
                                     <div class="size-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
@@ -529,14 +530,14 @@ export default function RectoratStudentDetail() {
                                     <span class="text-xs text-neutral-400 font-mono">/ 4.00</span>
                                 </div>
                                 <div class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
-                                    Indeks Prestasi Kumulatif
+                                    {t('rt.indeksPrestasiKumulatif')}
                                 </div>
                             </div>
 
                             {/* IPS Terakhir */}
                             <div class="p-5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm space-y-2">
                                 <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
-                                    <span class="text-xs font-mono font-semibold uppercase tracking-wider">IPS Terakhir</span>
+                                    <span class="text-xs font-mono font-semibold uppercase tracking-wider">{t('rt.ipsTerakhir')}</span>
                                     <div class="size-8 rounded-lg bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="m19 9-5 5-4-4-3 3" />
@@ -551,14 +552,14 @@ export default function RectoratStudentDetail() {
                                     <span class="text-xs text-neutral-400 font-mono">/ 4.00</span>
                                 </div>
                                 <div class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
-                                    Indeks Prestasi Semester
+                                    {t('rt.indeksPrestasiSemester')}
                                 </div>
                             </div>
 
                             {/* Total SKS Lulus */}
                             <div class="p-5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm space-y-2">
                                 <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
-                                    <span class="text-xs font-mono font-semibold uppercase tracking-wider">Total SKS Lulus</span>
+                                    <span class="text-xs font-mono font-semibold uppercase tracking-wider">{t('rt.totalSKSLulus')}</span>
                                     <div class="size-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
@@ -569,17 +570,17 @@ export default function RectoratStudentDetail() {
                                     <span class="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white font-mono">
                                         {currentTotalSks()}
                                     </span>
-                                    <span class="text-xs text-neutral-400 font-medium">SKS</span>
+                                    <span class="text-xs text-neutral-400 font-medium">{t('rt.sks')}</span>
                                 </div>
                                 <div class="text-[11px] text-blue-600 dark:text-blue-400 font-mono">
-                                    Kredit Kumulatif Selesai
+                                    {t('rt.kreditKumulatifSelesai')}
                                 </div>
                             </div>
 
                             {/* Status & Semester */}
                             <div class="p-5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm space-y-2">
                                 <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
-                                    <span class="text-xs font-mono font-semibold uppercase tracking-wider">Status & Semester</span>
+                                    <span class="text-xs font-mono font-semibold uppercase tracking-wider">{t('rt.statusSemester')}</span>
                                     <div class="size-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
@@ -604,16 +605,16 @@ export default function RectoratStudentDetail() {
                                 <div>
                                     <h2 class="text-base font-bold text-neutral-900 dark:text-white flex items-center gap-2">
                                         <span class="size-2.5 rounded-full bg-blue-500"></span>
-                                        Visualisasi Akademik Mahasiswa
+                                        {t('rt.visualisasiAkademikMahasiswa')}
                                     </h2>
                                     <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                        Grafik perkembangan indeks prestasi (IPS & IPK) dan beban kredit SKS mahasiswa berbasis Apache ECharts.
+                                        {t('rt.grafikPerkembanganIndeksPrestasiIPSIPK')}
                                     </p>
                                 </div>
                                 {/*
                                 <div class="flex items-center gap-2">
                                     <span class="px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-mono text-[11px] font-semibold border border-blue-200 dark:border-blue-800">
-                                        Apache ECharts
+                                        {t('rt.apacheECharts')}
                                     </span>
                                 </div>
                                 */}
@@ -629,9 +630,9 @@ export default function RectoratStudentDetail() {
                                                 <path d="M3 3v18h18" />
                                             </svg>
                                         </div>
-                                        <h3 class="text-sm font-bold text-neutral-900 dark:text-white">Belum Ada Riwayat Aktivitas & Nilai</h3>
+                                        <h3 class="text-sm font-bold text-neutral-900 dark:text-white">{t('rt.belumAdaRiwayatAktivitasNilai')}</h3>
                                         <p class="text-xs text-neutral-500 dark:text-neutral-400 max-w-md mx-auto">
-                                            Data aktivitas perkuliahan mahasiswa dengan NIM <span class="font-mono font-bold text-blue-600 dark:text-blue-400">{student()?.code || '-'}</span> belum tercatat di sistem akademik. Grafik ECharts akan otomatis muncul setelah nilai semester diinput.
+                                            {t('rt.dataAktivitasPerkuliahanMahasiswaDenganNIM')} <span class="font-mono font-bold text-blue-600 dark:text-blue-400">{student()?.code || '-'}</span> {t('rt.belumTercatatDiSistemAkademikGrafik')}
                                         </p>
                                     </div>
                                 }
@@ -642,20 +643,20 @@ export default function RectoratStudentDetail() {
                                         <div class="flex items-center justify-between">
                                             <div>
                                                 <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                                    Tren Indeks Prestasi (IPS & IPK)
+                                                    {t('rt.trenIndeksPrestasiIPSIPK')}
                                                 </h3>
                                                 <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                                    Grafik fluktuasi IP Semester dan IP Kumulatif per semester.
+                                                    {t('rt.grafikFluktuasiIPSemesterDanIP')}
                                                 </p>
                                             </div>
                                             <div class="flex items-center gap-3 text-xs font-mono">
                                                 <div class="flex items-center gap-1.5">
                                                     <span class="size-2.5 rounded-full bg-indigo-500"></span>
-                                                    <span class="text-neutral-600 dark:text-neutral-300">IPK</span>
+                                                    <span class="text-neutral-600 dark:text-neutral-300">{t('rt.ipk2')}</span>
                                                 </div>
                                                 <div class="flex items-center gap-1.5">
                                                     <span class="size-2.5 rounded-full bg-sky-500"></span>
-                                                    <span class="text-neutral-600 dark:text-neutral-300">IPS</span>
+                                                    <span class="text-neutral-600 dark:text-neutral-300">{t('rt.ips')}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -668,20 +669,20 @@ export default function RectoratStudentDetail() {
                                         <div class="flex items-center justify-between">
                                             <div>
                                                 <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                                    Progres Beban Kredit SKS
+                                                    {t('rt.progresBebanKreditSKS')}
                                                 </h3>
                                                 <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                                    Akumulasi SKS lulus kumulatif dan SKS diambil per semester.
+                                                    {t('rt.akumulasiSKSLulusKumulatifDanSKS')}
                                                 </p>
                                             </div>
                                             <div class="flex items-center gap-3 text-xs font-mono">
                                                 <div class="flex items-center gap-1.5">
                                                     <span class="size-2.5 rounded-full bg-teal-600"></span>
-                                                    <span class="text-neutral-600 dark:text-neutral-300">SKS Kumulatif</span>
+                                                    <span class="text-neutral-600 dark:text-neutral-300">{t('rt.sksKumulatif')}</span>
                                                 </div>
                                                 <div class="flex items-center gap-1.5">
                                                     <span class="size-2.5 rounded-full bg-amber-500"></span>
-                                                    <span class="text-neutral-600 dark:text-neutral-300">SKS Semester</span>
+                                                    <span class="text-neutral-600 dark:text-neutral-300">{t('rt.sksSemester')}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -698,10 +699,10 @@ export default function RectoratStudentDetail() {
                                 <div class="p-5 border-b border-neutral-200 dark:border-neutral-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                     <div>
                                         <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
-                                            Riwayat Aktivitas Semester & Nilai (KHS)
+                                            {t('rt.riwayatAktivitasSemesterNilaiKHS')}
                                         </h3>
                                         <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                                            Rincian capaian akademik per semester mahasiswa.
+                                            {t('rt.rincianCapaianAkademikPerSemesterMahasiswa')}
                                         </p>
                                     </div>
                                 </div>
@@ -710,14 +711,14 @@ export default function RectoratStudentDetail() {
                                     <table class="w-full text-xs text-left border-collapse">
                                         <thead class="bg-neutral-50 dark:bg-neutral-800/60 text-neutral-500 dark:text-neutral-400 uppercase font-mono text-[10px] tracking-wider border-b border-neutral-200 dark:border-neutral-800">
                                             <tr>
-                                                <th class="px-5 py-3">No</th>
-                                                <th class="px-5 py-3">Semester / Tahun Ajaran</th>
-                                                <th class="px-5 py-3 text-center">SKS Semester</th>
-                                                <th class="px-5 py-3 text-center">SKS Kumulatif</th>
-                                                <th class="px-5 py-3 text-center">IPS</th>
-                                                <th class="px-5 py-3 text-center">IPK</th>
-                                                <th class="px-5 py-3 text-center">Status</th>
-                                                <th class="px-5 py-3 text-center">Aksi / Cetak</th>
+                                                <th class="px-5 py-3">{t('rt.no')}</th>
+                                                <th class="px-5 py-3">{t('rt.semesterTahunAjaran')}</th>
+                                                <th class="px-5 py-3 text-center">{t('rt.sksSemester')}</th>
+                                                <th class="px-5 py-3 text-center">{t('rt.sksKumulatif')}</th>
+                                                <th class="px-5 py-3 text-center">{t('rt.ips')}</th>
+                                                <th class="px-5 py-3 text-center">{t('rt.ipk2')}</th>
+                                                <th class="px-5 py-3 text-center">{t('rt.status')}</th>
+                                                <th class="px-5 py-3 text-center">{t('rt.aksiCetak')}</th>
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-neutral-100 dark:divide-neutral-800">
@@ -726,7 +727,7 @@ export default function RectoratStudentDetail() {
                                                     <tr class="hover:bg-neutral-50/80 dark:hover:bg-neutral-800/40 transition-colors">
                                                         <td class="px-5 py-3 font-mono text-neutral-400">{idx() + 1}</td>
                                                         <td class="px-5 py-3 font-medium text-neutral-900 dark:text-white">
-                                                            {act.academic_year?.name || act.academic_year_name || act.name || act.semester_name || `Semester ${idx() + 1}`}
+                                                            {act.academic_year?.name || act.academic_year_name || act.name || act.semester_name || t('rt.semesterN', { n: idx() + 1 })}
                                                         </td>
                                                         <td class="px-5 py-3 text-center font-mono font-bold text-neutral-700 dark:text-neutral-300">
                                                             {act.total_credit || 0}
@@ -750,20 +751,20 @@ export default function RectoratStudentDetail() {
                                                                 <A
                                                                     href={`/rectorat/institution/${institutionId()}/academic/student/campaign/student-activity/${act.id}`}
                                                                     class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/80 rounded-md text-[11px] font-bold inline-flex items-center gap-1 transition-colors"
-                                                                    title="Lihat Detail Aktivitas Semester"
+                                                                    title={t('rt.lihatDetailAktivitasSemester')}
                                                                 >
                                                                     <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                                         <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
                                                                         <circle cx="12" cy="12" r="3" />
                                                                     </svg>
-                                                                    <span>Detail</span>
+                                                                    <span>{t('rt.detail')}</span>
                                                                 </A>
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => handlePrintKRS(act)}
                                                                     disabled={isPrintingKRS(act.id)}
                                                                     class="px-2.5 py-1 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-md text-[11px] font-bold inline-flex items-center gap-1 transition-colors disabled:opacity-50"
-                                                                    title="Cetak KRS (Kartu Rencana Studi)"
+                                                                    title={t('rt.cetakKRSKartuRencanaStudi')}
                                                                 >
                                                                     <Show
                                                                         when={!isPrintingKRS(act.id)}
@@ -771,14 +772,14 @@ export default function RectoratStudentDetail() {
                                                                     >
                                                                         <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect width="12" height="8" x="6" y="14" /></svg>
                                                                     </Show>
-                                                                    <span>KRS</span>
+                                                                    <span>{t('rt.krs')}</span>
                                                                 </button>
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => handlePrintKHS(act)}
                                                                     disabled={isPrintingKHS(act.id)}
                                                                     class="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/80 rounded-md text-[11px] font-bold inline-flex items-center gap-1 transition-colors disabled:opacity-50"
-                                                                    title="Cetak KHS (Kartu Hasil Studi)"
+                                                                    title={t('rt.cetakKHSKartuHasilStudi')}
                                                                 >
                                                                     <Show
                                                                         when={!isPrintingKHS(act.id)}
@@ -786,7 +787,7 @@ export default function RectoratStudentDetail() {
                                                                     >
                                                                         <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
                                                                     </Show>
-                                                                    <span>KHS</span>
+                                                                    <span>{t('rt.khs')}</span>
                                                                 </button>
                                                             </div>
                                                         </td>
@@ -811,7 +812,7 @@ export default function RectoratStudentDetail() {
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 3.741-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
                                             </svg>
                                         </div>
-                                        <h3 class="text-sm font-bold text-neutral-900 dark:text-white">Informasi Akademik & Pendaftaran</h3>
+                                        <h3 class="text-sm font-bold text-neutral-900 dark:text-white">{t('rt.informasiAkademikPendaftaran')}</h3>
                                     </div>
                                     <Show when={student()?.status_name}>
                                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
@@ -821,15 +822,15 @@ export default function RectoratStudentDetail() {
                                 </div>
 
                                 <div class="space-y-1">
-                                    <Field label="NIM / Kode Mahasiswa" value={student()?.code} mono />
-                                    <Field label="Nomor Registrasi" value={student()?.registration_id} mono />
-                                    <Field label="Jalur Masuk / Seleksi" value={student()?.selection_type_name} />
-                                    <Field label="Tanggal Terdaftar" value={formatDate(student()?.registered)} />
-                                    <Field label="Program Studi (Unit)" value={student()?.unit_name} />
-                                    <Field label="Tahun Akademik / Angkatan" value={student()?.academic_year_name} />
-                                    <Field label="Kurikulum" value={student()?.curriculum_name || student()?.curriculum_id} />
-                                    <Field label="Biaya Kuliah (Finance Fee)" value={student()?.finance_fee} isCurrency mono />
-                                    <Field label="Status Mahasiswa" value={student()?.status_name} />
+                                    <Field label={t('rt.nimKodeMahasiswa')} value={student()?.code} mono />
+                                    <Field label={t('rt.nomorRegistrasi')} value={student()?.registration_id} mono />
+                                    <Field label={t('rt.jalurMasukSeleksi')} value={student()?.selection_type_name} />
+                                    <Field label={t('rt.tanggalTerdaftar')} value={formatDate(student()?.registered)} />
+                                    <Field label={t('rt.programStudiUnit2')} value={student()?.unit_name} />
+                                    <Field label={t('rt.tahunAkademikAngkatan')} value={student()?.academic_year_name} />
+                                    <Field label={t('rt.kurikulum')} value={student()?.curriculum_name || student()?.curriculum_id} />
+                                    <Field label={t('rt.biayaKuliahFinanceFee')} value={student()?.finance_fee} isCurrency mono />
+                                    <Field label={t('rt.statusMahasiswa')} value={student()?.status_name} />
                                 </div>
                             </div>
 
@@ -842,17 +843,17 @@ export default function RectoratStudentDetail() {
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                                             </svg>
                                         </div>
-                                        <h3 class="text-sm font-bold text-neutral-900 dark:text-white">Biodata Pribadi & Identitas</h3>
+                                        <h3 class="text-sm font-bold text-neutral-900 dark:text-white">{t('rt.biodataPribadiIdentitas')}</h3>
                                     </div>
-                                    <span class="text-xs text-neutral-400 font-mono">Registry</span>
+                                    <span class="text-xs text-neutral-400 font-mono">{t('rt.registry')}</span>
                                 </div>
 
                                 <div class="space-y-1">
-                                    <Field label="Nama Lengkap" value={student()?.name} />
-                                    <Field label="Nomor Induk Kependudukan (NIK)" value={ind()?.code} mono />
-                                    <Field label="NISN" value={student()?.nisn} mono />
+                                    <Field label={t('rt.namaLengkap')} value={student()?.name} />
+                                    <Field label={t('rt.nomorIndukKependudukanNIK')} value={ind()?.code} mono />
+                                    <Field label={t('rt.nisn2')} value={student()?.nisn} mono />
                                     <Field
-                                        label="Tempat & Tanggal Lahir"
+                                        label={t('rt.tempatTanggalLahir')}
                                         value={
                                             ind()?.birth_place
                                                 ? `${ind()?.birth_place}, ${formatDate(ind()?.birth_date)}`
@@ -860,12 +861,12 @@ export default function RectoratStudentDetail() {
                                         }
                                     />
                                     <Show when={individual()?.gender?.name}>
-                                        <Field label="Jenis Kelamin" value={individual()?.gender?.name} />
+                                        <Field label={t('rt.jenisKelamin')} value={individual()?.gender?.name} />
                                     </Show>
                                     <Show when={individual()?.religion?.name}>
-                                        <Field label="Agama" value={individual()?.religion?.name} />
+                                        <Field label={t('rt.agama')} value={individual()?.religion?.name} />
                                     </Show>
-                                    <Field label="Alamat Tetap" value={individual()?.biodata?.address} />
+                                    <Field label={t('rt.alamatTetap')} value={individual()?.biodata?.address} />
                                 </div>
                             </div>
                         </div>
@@ -878,19 +879,19 @@ export default function RectoratStudentDetail() {
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                     </svg>
                                 </div>
-                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white">Informasi Sistem & Audit</h3>
+                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white">{t('rt.informasiSistemAudit')}</h3>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                                 <div>
-                                    <span class="text-neutral-400 font-mono text-[11px] uppercase tracking-wider block">ID Mahasiswa</span>
+                                    <span class="text-neutral-400 font-mono text-[11px] uppercase tracking-wider block">{t('rt.idMahasiswa')}</span>
                                     <span class="font-mono text-neutral-700 dark:text-neutral-300 font-medium break-all">{student()?.id || '-'}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 font-mono text-[11px] uppercase tracking-wider block">Waktu Dibuat</span>
+                                    <span class="text-neutral-400 font-mono text-[11px] uppercase tracking-wider block">{t('rt.waktuDibuat')}</span>
                                     <span class="font-medium text-neutral-700 dark:text-neutral-300">{formatDate(student()?.created_at)}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 font-mono text-[11px] uppercase tracking-wider block">Terakhir Diperbarui</span>
+                                    <span class="text-neutral-400 font-mono text-[11px] uppercase tracking-wider block">{t('rt.terakhirDiperbarui')}</span>
                                     <span class="font-medium text-neutral-700 dark:text-neutral-300">{formatDate(student()?.updated_at)}</span>
                                 </div>
                             </div>

@@ -8,13 +8,9 @@ import {
     printActivityResult,
     StudentActivityItem
 } from '~/controllers/academic/student/campaign/AcademicStudentCampaignActivityController';
-import {
-    listDetailActivities,
-    DetailActivityItem
-} from '~/controllers/academic/student/campaign/AcademicStudentCampaignDetailActivityController';
-import { listCourses } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachController';
-import { listGrades } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionGradeController';
+import { DetailActivityItem } from '~/controllers/academic/student/campaign/AcademicStudentCampaignDetailActivityController';
 import { openOrDownloadPdf } from '~/lib/pdfHelper';
+import { t } from '../../../../../../../i18n';
 
 const gradeBadgeClass = (grade?: string) => {
     const g = (grade || '').trim().toUpperCase();
@@ -42,22 +38,16 @@ export default function CourseDepartmentStudentCampaignActivityShowPage() {
     const fetchDetail = async (activityId: string) => {
         setIsLoading(true);
         try {
-            const [act, detailRes, courseList, gradesRes] = await Promise.all([
-                getStudentActivityById(activityId),
-                listDetailActivities({ page: 1, page_size: 100, activity_id: activityId }),
-                listCourses(),
-                listGrades({ page: 1, page_size: 100 }),
-            ]);
+            const act = await getStudentActivityById(activityId);
 
             setActivity(act);
 
-            const grades = gradesRes.data || [];
-            const rawDetails = (detailRes.data || []).filter((d) => d.activity_id === activityId);
+            const rawDetails: DetailActivityItem[] = act?.detail_activities || [];
 
             setCourses(
                 rawDetails.map((detail) => {
-                    const course = detail.course || (courseList || []).find((c: any) => c.id === detail.course_id);
-                    const grade = detail.grade || grades.find((g: any) => g.id === detail.grade_id);
+                    const course = detail.course;
+                    const grade = detail.grade;
 
                     const lecturers = (detail.teach_lecturers || [])
                         .map((tl: any) => ({
@@ -82,7 +72,7 @@ export default function CourseDepartmentStudentCampaignActivityShowPage() {
             );
         } catch (err) {
             console.error('Error fetching activity details:', err);
-            toast.danger('Failed to load semester course details from server.');
+            toast.danger(t('cd.failedToLoadSemesterCourseDetails'));
         } finally {
             setIsLoading(false);
         }
@@ -122,7 +112,7 @@ export default function CourseDepartmentStudentCampaignActivityShowPage() {
     ) => {
         const act = activity();
         if (!act?.id) {
-            toast.danger('Activity ID is missing.');
+            toast.danger(t('cd.activityIDIsMissing'));
             return;
         }
         setBusy(true);
@@ -132,11 +122,11 @@ export default function CourseDepartmentStudentCampaignActivityShowPage() {
                 const semName = (act.name || 'Semester').replace(/\s+/g, '_');
                 openOrDownloadPdf(blob, `${kind}_${semName}.pdf`, kind);
             } else {
-                toast.danger(`Failed to generate ${kind} PDF.`);
+                toast.danger(t('cd.failedToGenerateKindPDF', { kind }));
             }
         } catch (err) {
             console.error(`Error printing ${kind}:`, err);
-            toast.danger(`An error occurred while generating ${kind} PDF.`);
+            toast.danger(t('cd.anErrorOccurredWhileGeneratingKind', { kind }));
         } finally {
             setBusy(false);
         }
@@ -154,9 +144,9 @@ export default function CourseDepartmentStudentCampaignActivityShowPage() {
                 <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div class="space-y-1">
-                            <p class="text-xs font-mono font-semibold text-blue-700 dark:text-blue-300">Academic Student Activity</p>
+                            <p class="text-xs font-mono font-semibold text-blue-700 dark:text-blue-300">{t('cd.academicStudentActivity')}</p>
                             <h1 class="text-2xl font-black tracking-tight text-neutral-900 dark:text-white">
-                                {activity()?.name || activity()?.semester_name || 'Activity Detail'}
+                                {activity()?.name || activity()?.semester_name || t('cd.activityDetail')}
                             </h1>
                             <Show when={activity()?.student_name}>
                                 <p class="text-xs text-neutral-500 dark:text-neutral-400">
@@ -166,12 +156,12 @@ export default function CourseDepartmentStudentCampaignActivityShowPage() {
                             </Show>
                         </div>
                         <div class="flex flex-wrap items-center gap-3">
-                            <A href={backHref()} class={btn}>← Back to Student</A>
+                            <A href={backHref()} class={btn}>{t('cd.backToStudent')}</A>
                             <button type="button" class={btn} disabled={isPrintingKRS()} onClick={() => print('KRS', printActivityPlan, setIsPrintingKRS)}>
-                                {isPrintingKRS() ? 'Generating KRS...' : 'Print KRS'}
+                                {isPrintingKRS() ? t('cd.generatingKRS') : t('cd.printKRS')}
                             </button>
                             <button type="button" class={btn} disabled={isPrintingKHS()} onClick={() => print('KHS', printActivityResult, setIsPrintingKHS)}>
-                                {isPrintingKHS() ? 'Generating KHS...' : 'Print KHS'}
+                                {isPrintingKHS() ? t('cd.generatingKHS') : t('cd.printKHS')}
                             </button>
                         </div>
                     </div>
@@ -180,21 +170,21 @@ export default function CourseDepartmentStudentCampaignActivityShowPage() {
                 {/* Summary */}
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="bg-white dark:bg-neutral-800 rounded-xs p-4 border border-neutral-200 dark:border-neutral-700">
-                        <p class="text-[10px] uppercase font-mono text-neutral-500 dark:text-neutral-400">SKS Semester</p>
+                        <p class="text-[10px] uppercase font-mono text-neutral-500 dark:text-neutral-400">{t('cd.sksSemester')}</p>
                         <p class="text-2xl font-black font-mono text-neutral-800 dark:text-white">{totalSks()}</p>
                     </div>
                     <div class="bg-white dark:bg-neutral-800 rounded-xs p-4 border border-neutral-200 dark:border-neutral-700">
-                        <p class="text-[10px] uppercase font-mono text-neutral-500 dark:text-neutral-400">SKS Kumulatif</p>
+                        <p class="text-[10px] uppercase font-mono text-neutral-500 dark:text-neutral-400">{t('cd.sksKumulatif')}</p>
                         <p class="text-2xl font-black font-mono text-teal-600 dark:text-teal-400">
                             {activity()?.grand_total_credit || totalSks()}
                         </p>
                     </div>
                     <div class="bg-white dark:bg-neutral-800 rounded-xs p-4 border border-neutral-200 dark:border-neutral-700">
-                        <p class="text-[10px] uppercase font-mono text-neutral-500 dark:text-neutral-400">IPS</p>
+                        <p class="text-[10px] uppercase font-mono text-neutral-500 dark:text-neutral-400">{t('cd.ips')}</p>
                         <p class="text-2xl font-black font-mono text-sky-600 dark:text-sky-400">{ips()}</p>
                     </div>
                     <div class="bg-white dark:bg-neutral-800 rounded-xs p-4 border border-neutral-200 dark:border-neutral-700">
-                        <p class="text-[10px] uppercase font-mono text-neutral-500 dark:text-neutral-400">IPK</p>
+                        <p class="text-[10px] uppercase font-mono text-neutral-500 dark:text-neutral-400">{t('cd.ipk')}</p>
                         <p class="text-2xl font-black font-mono text-indigo-600 dark:text-indigo-400">{ipk()}</p>
                     </div>
                 </div>
@@ -202,27 +192,27 @@ export default function CourseDepartmentStudentCampaignActivityShowPage() {
                 {/* Courses */}
                 <div class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
                     <div class="px-5 py-4 border-b border-neutral-200 dark:border-neutral-700 flex items-center justify-between">
-                        <h2 class="text-sm font-bold">Mata Kuliah</h2>
-                        <span class="text-xs font-mono text-neutral-500 dark:text-neutral-400">{courses().length} Mata Kuliah</span>
+                        <h2 class="text-sm font-bold">{t('cd.mataKuliah')}</h2>
+                        <span class="text-xs font-mono text-neutral-500 dark:text-neutral-400">{courses().length} {t('cd.mataKuliah')}</span>
                     </div>
 
-                    <Show when={!isLoading()} fallback={<div class="p-8 text-center text-xs text-neutral-500">Loading...</div>}>
+                    <Show when={!isLoading()} fallback={<div class="p-8 text-center text-xs text-neutral-500">{t('cd.loading')}</div>}>
                         <Show
                             when={courses().length > 0}
-                            fallback={<div class="p-8 text-center text-xs text-neutral-500">Belum ada mata kuliah pada semester ini.</div>}
+                            fallback={<div class="p-8 text-center text-xs text-neutral-500">{t('cd.belumAdaMataKuliahPadaSemester')}</div>}
                         >
                             {/* Desktop table */}
                             <div class="hidden md:block overflow-x-auto">
                                 <table class="w-full text-xs text-left border-collapse">
                                     <thead class="bg-neutral-50 dark:bg-neutral-900/60 text-neutral-500 dark:text-neutral-400 uppercase font-mono text-[10px] tracking-wider border-b border-neutral-200 dark:border-neutral-700">
                                         <tr>
-                                            <th class="px-5 py-3">No</th>
-                                            <th class="px-5 py-3">Kode</th>
-                                            <th class="px-5 py-3">Mata Kuliah</th>
-                                            <th class="px-5 py-3">Dosen</th>
-                                            <th class="px-5 py-3 text-center">SKS</th>
-                                            <th class="px-5 py-3 text-center">Nilai Angka</th>
-                                            <th class="px-5 py-3 text-center">Nilai</th>
+                                            <th class="px-5 py-3">{t('cd.no')}</th>
+                                            <th class="px-5 py-3">{t('cd.kode')}</th>
+                                            <th class="px-5 py-3">{t('cd.mataKuliah')}</th>
+                                            <th class="px-5 py-3">{t('cd.dosen')}</th>
+                                            <th class="px-5 py-3 text-center">{t('cd.sks')}</th>
+                                            <th class="px-5 py-3 text-center">{t('cd.nilaiAngka')}</th>
+                                            <th class="px-5 py-3 text-center">{t('cd.nilai')}</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-neutral-100 dark:divide-neutral-700/60">
@@ -273,8 +263,8 @@ export default function CourseDepartmentStudentCampaignActivityShowPage() {
                                             </div>
                                             <p class="text-xs text-neutral-500 dark:text-neutral-400">{c.lecturer_name || '-'}</p>
                                             <div class="flex gap-4 text-xs font-mono">
-                                                <span>SKS: <b>{c.credit ?? 0}</b></span>
-                                                <span>Nilai: <b>{c.grade_point != null ? Number(c.grade_point).toFixed(2) : '-'}</b></span>
+                                                <span>{t('cd.sks2')} <b>{c.credit ?? 0}</b></span>
+                                                <span>{t('cd.nilai2')} <b>{c.grade_point != null ? Number(c.grade_point).toFixed(2) : '-'}</b></span>
                                             </div>
                                         </div>
                                     )}

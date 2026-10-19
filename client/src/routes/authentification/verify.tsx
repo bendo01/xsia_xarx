@@ -4,6 +4,7 @@ import { useSearchParams, A } from '@solidjs/router';
 import { getInstitutionLogo } from '~/lib/institutionLogo';
 import { toast } from '~/components/toast/Toaster';
 import ThemeToggle from '../../components/navigation/ThemeToggle';
+import { t } from '../../i18n';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0.1:5800/api/v1").replace(/\/+$/, "");
 
@@ -20,12 +21,12 @@ export default function VerifyEmail() {
         },
         onSubmit: async ({ value }) => {
             if (!value.token) {
-                setErrorMessage("Token verifikasi wajib diisi");
+                setErrorMessage(t('au.tokenVerifikasiWajibDiisi'));
                 return;
             }
             const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
             if (!uuidRegex.test(value.token)) {
-                setErrorMessage("Format token tidak valid");
+                setErrorMessage(t('au.formatTokenTidakValid'));
                 return;
             }
 
@@ -53,11 +54,11 @@ export default function VerifyEmail() {
                     setErrorMessage(errorMsg);
                     toast.danger(errorMsg);
                 } else {
-                    toast.success(data?.message || "Akun berhasil diverifikasi");
+                    toast.success(data?.message || t('au.akunBerhasilDiverifikasi'));
                     setSuccessMessage(data?.message || "Akun Anda berhasil diverifikasi. Silakan masuk.");
                 }
             } catch (err: any) {
-                const msg = err?.message || "Network Error";
+                const msg = err?.message || t('au.networkError');
                 setErrorMessage(msg);
                 toast.danger(msg);
             } finally {
@@ -178,17 +179,17 @@ export default function VerifyEmail() {
                     {(logo) => (
                         <img
                             src={logo()}
-                            alt="Logo"
+                            alt={t('au.logo')}
                             class="size-20 object-contain mb-4 drop-shadow-lg transition-transform duration-300 hover:scale-105"
                         />
                     )}
                 </Show>
 
                 <h1 class="text-[26px] sm:text-[30px] font-bold text-neutral-900 dark:text-white tracking-wide mb-1 font-sans">
-                    Verifikasi Akun
+                    {t('au.verifikasiAkun')}
                 </h1>
                 <p class="text-neutral-600 dark:text-white/60 text-xs font-semibold tracking-wider uppercase mb-6 font-mono text-center">
-                    Silakan masukkan token verifikasi Anda
+                    {t('au.silakanMasukkanTokenVerifikasiAnda')}
                 </p>
 
                 <Show when={errorMessage()}>
@@ -220,7 +221,7 @@ export default function VerifyEmail() {
                         </svg>
                         <div class="flex-1 leading-snug">
                             <p>{successMessage()}</p>
-                            <A href="/authentification/login" class="mt-4 text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 underline font-semibold block">Kembali ke Halaman Masuk</A>
+                            <A href="/authentification/login" class="mt-4 text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 underline font-semibold block">{t('au.kembaliKeHalamanMasuk')}</A>
                         </div>
                     </div>
                 </Show>
@@ -237,11 +238,11 @@ export default function VerifyEmail() {
                         <form.Field name="token">
                             {(field) => (
                                 <div class="space-y-1">
-                                    <label class="block text-xs font-medium text-neutral-700 dark:text-white/80 px-1">Token Verifikasi</label>
+                                    <label class="block text-xs font-medium text-neutral-700 dark:text-white/80 px-1">{t('au.tokenVerifikasi')}</label>
                                     <div class="relative flex items-center">
                                         <input
                                             type="text"
-                                            placeholder="Masukkan token dari email/WA"
+                                            placeholder={t('au.masukkanTokenDariEmailWA')}
                                             required
                                             value={field().state.value}
                                             onBlur={field().handleBlur}
@@ -265,7 +266,7 @@ export default function VerifyEmail() {
                                 >
                                     <Show when={isLoading()} fallback={
                                         <>
-                                            <span>Verifikasi</span>
+                                            <span>{t('au.verifikasi')}</span>
                                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                                 <path d="M5 12h14" />
                                                 <path d="m12 5 7 7-7 7" />
@@ -277,7 +278,7 @@ export default function VerifyEmail() {
                                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                             </svg>
-                                            <span>Memproses...</span>
+                                            <span>{t('au.memproses')}</span>
                                         </>
                                     )}</Show>
                                 </button>
@@ -291,7 +292,7 @@ export default function VerifyEmail() {
                         <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="m15 18-6-6 6-6" />
                         </svg>
-                        Kembali ke Login
+                        {t('au.kembaliKeLogin')}
                     </A>
                 </div>
             </div>

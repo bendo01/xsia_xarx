@@ -1,4 +1,5 @@
 import LecturerDecreeAssignmentPage from '~/components/admin/LecturerDecreeAssignmentPage';
+import { t } from '../../../../../../i18n';
 
 export default function AcademicLecturerTransactionAcademicgroupPage() {
     return (
@@ -8,11 +9,11 @@ export default function AcademicLecturerTransactionAcademicgroupPage() {
                 referenceApiPath: 'academic/lecturer/reference/groups',
                 referenceKey: 'group_id',
                 basePath: '/administrator/academic/lecturer/transaction/academic-group',
-                breadcrumb: 'Academic Group',
-                title: 'Lecturer Academic Groups',
-                description: 'Manage lecturer academic group history (golongan / pangkat): assigned group, decree (SK) number and date, and validity period.',
-                referenceLabel: 'Group',
-                recordLabel: 'Academic Group',
+                breadcrumb: t('ad.academicGroup'),
+                title: t('ad.lecturerAcademicGroups'),
+                description: t('ad.manageLecturerAcademicGroupHistoryGolongan'),
+                referenceLabel: t('ad.group'),
+                recordLabel: t('ad.academicGroup'),
             }}
         />
     );

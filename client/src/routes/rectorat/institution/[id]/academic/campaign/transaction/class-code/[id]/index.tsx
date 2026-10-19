@@ -20,6 +20,7 @@ import {
     listStudents,
     type StudentMasterItem,
 } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
+import { t as tt } from '../../../../../../../../../i18n';
 
 interface UnitDetail {
     id: string;
@@ -157,7 +158,7 @@ export default function RectoratClassCodeDetail() {
         } catch (e: any) {
             console.error('Error loading class code detail:', e);
             setError(e.message || 'Gagal memuat detail data kode kelas.');
-            toast.danger('Gagal memuat detail kode kelas.');
+            toast.danger(tt('rt.gagalMemuatDetailKodeKelas'));
         } finally {
             setIsLoading(false);
         }
@@ -236,7 +237,7 @@ export default function RectoratClassCodeDetail() {
         if (!text) return;
         navigator.clipboard.writeText(text);
         setIsCopied(true);
-        toast.info('ID berhasil disalin ke clipboard');
+        toast.info(tt('rt.idBerhasilDisalinKeClipboard'));
         setTimeout(() => setIsCopied(false), 2000);
     };
 
@@ -295,19 +296,19 @@ export default function RectoratClassCodeDetail() {
                 <div class="space-y-4">
                     <nav class="flex items-center gap-2 text-xs font-mono text-neutral-500 dark:text-neutral-400">
                         <A href="/rectorat" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                            Rektorat
+                            {tt('rt.rektorat')}
                         </A>
                         <span>/</span>
                         <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                            Institusi
+                            {tt('rt.institusi')}
                         </A>
                         <span>/</span>
                         <A href={`/rectorat/institution/${institutionId()}/academic`} class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                            Akademik
+                            {tt('rt.akademik')}
                         </A>
                         <span>/</span>
                         <A href={`/rectorat/institution/${institutionId()}/academic/campaign/transaction/class-code`} class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                            Kode Kelas
+                            {tt('rt.kodeKelas')}
                         </A>
                         <span>/</span>
                         <span class="text-neutral-700 dark:text-neutral-300 font-semibold truncate max-w-xs">
@@ -329,7 +330,7 @@ export default function RectoratClassCodeDetail() {
                                             <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
                                             </svg>
-                                            <span>Kembali ke Daftar</span>
+                                            <span>{tt('rt.kembaliKeDaftar')}</span>
                                         </A>
 
                                         {/* Status Badge */}
@@ -338,13 +339,13 @@ export default function RectoratClassCodeDetail() {
                                             fallback={
                                                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 text-xs font-semibold border border-amber-200 dark:border-amber-800/80">
                                                     <span class="size-1.5 rounded-full bg-amber-500" />
-                                                    Di Luar Periode Efektif
+                                                    {tt('rt.diLuarPeriodeEfektif')}
                                                 </span>
                                             }
                                         >
                                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-semibold border border-emerald-200 dark:border-emerald-800/80">
                                                 <span class="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                Periode Aktif Berlaku
+                                                {tt('rt.periodeAktifBerlaku')}
                                             </span>
                                         </Show>
                                     </div>
@@ -358,7 +359,7 @@ export default function RectoratClassCodeDetail() {
                                                 {classCode()?.name}
                                             </h1>
                                             <p class="text-xs text-neutral-500 dark:text-neutral-400 font-mono mt-1">
-                                                ID Entitas: {classCode()?.id}
+                                                {tt('rt.idEntitas')} {classCode()?.id}
                                             </p>
                                         </div>
                                     </div>
@@ -369,24 +370,24 @@ export default function RectoratClassCodeDetail() {
                                         type="button"
                                         onClick={() => copyToClipboard(classCode()?.id || '')}
                                         class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 text-xs font-semibold transition-all cursor-pointer"
-                                        title="Salin ID"
+                                        title={tt('rt.salinID')}
                                     >
                                         <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375-7.5-7.5" />
                                         </svg>
-                                        <span>{isCopied() ? 'Tersalin!' : 'Salin ID'}</span>
+                                        <span>{isCopied() ? tt('rt.tersalin2') : tt('rt.salinID')}</span>
                                     </button>
 
                                     <button
                                         type="button"
                                         onClick={() => fetchDetail()}
                                         class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 text-xs font-semibold transition-all cursor-pointer"
-                                        title="Segarkan Data"
+                                        title={tt('rt.segarkanData')}
                                     >
                                         <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
                                         </svg>
-                                        <span>Segarkan</span>
+                                        <span>{tt('rt.segarkan')}</span>
                                     </button>
                                 </div>
                             </div>
@@ -398,7 +399,7 @@ export default function RectoratClassCodeDetail() {
                 <Show when={isLoading()}>
                     <div class="bg-white dark:bg-neutral-900 rounded-2xl p-16 border border-neutral-200/80 dark:border-neutral-800 flex flex-col items-center justify-center gap-3">
                         <div class="size-9 rounded-full border-3 border-indigo-600 border-t-transparent animate-spin" />
-                        <span class="text-sm text-neutral-500 font-medium">Memuat detail data kode kelas...</span>
+                        <span class="text-sm text-neutral-500 font-medium">{tt('rt.memuatDetailDataKodeKelas')}</span>
                     </div>
                 </Show>
 
@@ -408,13 +409,13 @@ export default function RectoratClassCodeDetail() {
                         <div class="size-12 rounded-full bg-red-100 dark:bg-red-900/60 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto">
                             ✕
                         </div>
-                        <h3 class="text-base font-bold text-red-900 dark:text-red-200">Terjadi Kesalahan</h3>
+                        <h3 class="text-base font-bold text-red-900 dark:text-red-200">{tt('rt.terjadiKesalahan')}</h3>
                         <p class="text-xs text-red-700 dark:text-red-300 max-w-md mx-auto">{error()}</p>
                         <A
                             href={`/rectorat/institution/${institutionId()}/academic/campaign/transaction/class-code`}
                             class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 text-xs font-semibold border border-neutral-200 dark:border-neutral-700 shadow-2xs hover:bg-neutral-50"
                         >
-                            ← Kembali ke Daftar Kode Kelas
+                            {tt('rt.kembaliKeDaftarKodeKelas')}
                         </A>
                     </div>
                 </Show>
@@ -426,46 +427,46 @@ export default function RectoratClassCodeDetail() {
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             {/* Card 1: Kapasitas */}
                             <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Daya Tampung</span>
+                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{tt('rt.dayaTampung')}</span>
                                 <div class="mt-3 flex items-baseline gap-2">
                                     <span class="text-3xl font-extrabold text-neutral-900 dark:text-white font-mono">
                                         {classCode()?.capacity || 0}
                                     </span>
-                                    <span class="text-xs text-neutral-500">Mahasiswa / Kelas</span>
+                                    <span class="text-xs text-neutral-500">{tt('rt.mahasiswaKelas')}</span>
                                 </div>
-                                <span class="text-2xs text-neutral-400 block mt-1">Kuota rombongan belajar</span>
+                                <span class="text-2xs text-neutral-400 block mt-1">{tt('rt.kuotaRombonganBelajar')}</span>
                             </div>
 
                             {/* Card 2: Kode Huruf & Angka */}
                             <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Pengidentifikasi</span>
+                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{tt('rt.pengidentifikasi')}</span>
                                 <div class="mt-3 flex items-baseline gap-3">
                                     <span class="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400 font-mono">
                                         {classCode()?.alphabet_code || '-'}
                                     </span>
                                     <span class="text-xs text-neutral-500 font-mono">
-                                        Kode #{classCode()?.code ?? '-'}
+                                        {tt('rt.kode3')}{classCode()?.code ?? '-'}
                                     </span>
                                 </div>
-                                <span class="text-2xs text-neutral-400 block mt-1">Kode identitas operasional</span>
+                                <span class="text-2xs text-neutral-400 block mt-1">{tt('rt.kodeIdentitasOperasional')}</span>
                             </div>
 
                             {/* Card 3: Program Studi */}
                             <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Program Studi / Unit</span>
+                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{tt('rt.programStudiUnit')}</span>
                                 <div class="mt-3">
                                     <span class="text-base font-bold text-neutral-900 dark:text-white block truncate">
                                         {unit()?.name || 'Unit Terdaftar'}
                                     </span>
                                     <span class="text-xs text-neutral-500 font-mono">
-                                        Kode: {unit()?.code || '-'}
+                                        {tt('rt.kode4')} {unit()?.code || '-'}
                                     </span>
                                 </div>
                             </div>
 
                             {/* Card 4: Periode Efektif */}
                             <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Masa Efektif</span>
+                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{tt('rt.masaEfektif')}</span>
                                 <div class="mt-3 text-xs font-mono space-y-0.5">
                                     <div class="text-neutral-800 dark:text-neutral-200 font-medium">
                                         {formatDate(classCode()?.start_effective_date)}
@@ -489,33 +490,33 @@ export default function RectoratClassCodeDetail() {
                                         </svg>
                                     </div>
                                     <h3 class="text-base font-bold text-neutral-900 dark:text-white">
-                                        Spesifikasi Kode Kelas
+                                        {tt('rt.spesifikasiKodeKelas')}
                                     </h3>
                                 </div>
 
                                 <dl class="divide-y divide-neutral-100 dark:divide-neutral-800/80 text-xs">
                                     <div class="py-2.5 flex justify-between">
-                                        <dt class="text-neutral-500">Nama Kelas</dt>
+                                        <dt class="text-neutral-500">{tt('rt.namaKelas')}</dt>
                                         <dd class="font-semibold text-neutral-900 dark:text-white">{classCode()?.name}</dd>
                                     </div>
                                     <div class="py-2.5 flex justify-between">
-                                        <dt class="text-neutral-500">Kode Huruf (Alphabet)</dt>
+                                        <dt class="text-neutral-500">{tt('rt.kodeHurufAlphabet')}</dt>
                                         <dd class="font-mono font-bold text-indigo-600 dark:text-indigo-400">{classCode()?.alphabet_code || '-'}</dd>
                                     </div>
                                     <div class="py-2.5 flex justify-between">
-                                        <dt class="text-neutral-500">Kode Angka (Numeric)</dt>
+                                        <dt class="text-neutral-500">{tt('rt.kodeAngkaNumeric')}</dt>
                                         <dd class="font-mono font-semibold text-neutral-800 dark:text-neutral-200">{classCode()?.code ?? '-'}</dd>
                                     </div>
                                     <div class="py-2.5 flex justify-between">
-                                        <dt class="text-neutral-500">Daya Tampung (Capacity)</dt>
+                                        <dt class="text-neutral-500">{tt('rt.dayaTampungCapacity')}</dt>
                                         <dd class="font-mono font-bold text-emerald-600 dark:text-emerald-400">{classCode()?.capacity || 0} Mahasiswa</dd>
                                     </div>
                                     <div class="py-2.5 flex justify-between">
-                                        <dt class="text-neutral-500">Tanggal Mulai Efektif</dt>
+                                        <dt class="text-neutral-500">{tt('rt.tanggalMulaiEfektif')}</dt>
                                         <dd class="font-mono text-neutral-800 dark:text-neutral-200">{formatDate(classCode()?.start_effective_date)}</dd>
                                     </div>
                                     <div class="py-2.5 flex justify-between">
-                                        <dt class="text-neutral-500">Tanggal Selesai Efektif</dt>
+                                        <dt class="text-neutral-500">{tt('rt.tanggalSelesaiEfektif')}</dt>
                                         <dd class="font-mono text-neutral-800 dark:text-neutral-200">{formatDate(classCode()?.end_effective_date)}</dd>
                                     </div>
                                 </dl>
@@ -530,7 +531,7 @@ export default function RectoratClassCodeDetail() {
                                         </svg>
                                     </div>
                                     <h3 class="text-base font-bold text-neutral-900 dark:text-white">
-                                        Unit & Aktivitas Kampanye
+                                        {tt('rt.unitAktivitasKampanye')}
                                     </h3>
                                 </div>
 
@@ -538,9 +539,9 @@ export default function RectoratClassCodeDetail() {
                                     {/* Program Studi Box */}
                                     <div class="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-200 dark:border-neutral-700/80 space-y-2">
                                         <div class="flex items-center justify-between">
-                                            <span class="text-neutral-500 font-semibold uppercase text-2xs">Program Studi / Unit Pengelola</span>
+                                            <span class="text-neutral-500 font-semibold uppercase text-2xs">{tt('rt.programStudiUnitPengelola')}</span>
                                             <span class="font-mono text-2xs px-2 py-0.5 rounded-md bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300">
-                                                ID: {classCode()?.unit_id || '-'}
+                                                {tt('rt.id')} {classCode()?.unit_id || '-'}
                                             </span>
                                         </div>
                                         <p class="text-sm font-bold text-neutral-900 dark:text-white">
@@ -548,7 +549,7 @@ export default function RectoratClassCodeDetail() {
                                         </p>
                                         <Show when={unit()?.code}>
                                             <p class="text-2xs font-mono text-neutral-500">
-                                                Kode Unit: {unit()?.code}
+                                                {tt('rt.kodeUnit')} {unit()?.code}
                                             </p>
                                         </Show>
                                     </div>
@@ -556,13 +557,13 @@ export default function RectoratClassCodeDetail() {
                                     {/* Activity Box */}
                                     <div class="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-200 dark:border-neutral-700/80 space-y-2">
                                         <div class="flex items-center justify-between">
-                                            <span class="text-neutral-500 font-semibold uppercase text-2xs">Aktivitas Kampanye Terkait</span>
+                                            <span class="text-neutral-500 font-semibold uppercase text-2xs">{tt('rt.aktivitasKampanyeTerkait')}</span>
                                             <Show when={classCode()?.activity_id}>
                                                 <A
                                                     href={`/rectorat/institution/${institutionId()}/academic/campaign/transaction/activity/${classCode()?.activity_id}`}
                                                     class="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium inline-flex items-center gap-1"
                                                 >
-                                                    Lihat Detail Aktivitas →
+                                                    {tt('rt.lihatDetailAktivitas2')}
                                                 </A>
                                             </Show>
                                         </div>
@@ -571,10 +572,10 @@ export default function RectoratClassCodeDetail() {
                                         </p>
                                         <div class="flex items-center gap-3 text-2xs text-neutral-500">
                                             <Show when={activity()?.student_target}>
-                                                <span>Target: {activity()?.student_target} Mahasiswa</span>
+                                                <span>{tt('rt.target2')} {activity()?.student_target} Mahasiswa</span>
                                             </Show>
                                             <Show when={activity()?.became_student}>
-                                                <span>Terealisasi: {activity()?.became_student} Mahasiswa</span>
+                                                <span>{tt('rt.terealisasi')} {activity()?.became_student} Mahasiswa</span>
                                             </Show>
                                         </div>
                                     </div>
@@ -591,7 +592,7 @@ export default function RectoratClassCodeDetail() {
                                     </svg>
                                 </div>
                                 <h3 class="text-base font-bold text-neutral-900 dark:text-white">
-                                    Pengajaran di Kelas Ini
+                                    {tt('rt.pengajaranDiKelasIni')}
                                 </h3>
                                 <span class="font-mono text-2xs px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300">
                                     {teaches().length} MK · {totalTeachCredit()} SKS
@@ -602,12 +603,12 @@ export default function RectoratClassCodeDetail() {
                                 <table class="w-full text-xs">
                                     <thead>
                                         <tr class="text-left text-2xs uppercase tracking-wider text-neutral-500 dark:text-neutral-400 border-b border-neutral-200 dark:border-neutral-800">
-                                            <th class="py-2.5 pr-3 font-semibold w-12">No</th>
-                                            <th class="py-2.5 pr-3 font-semibold">Kode MK</th>
-                                            <th class="py-2.5 pr-3 font-semibold">Mata Kuliah</th>
-                                            <th class="py-2.5 pr-3 font-semibold text-right">SKS</th>
-                                            <th class="py-2.5 pr-3 font-semibold text-right">Peserta</th>
-                                            <th class="py-2.5 font-semibold text-right">Aksi</th>
+                                            <th class="py-2.5 pr-3 font-semibold w-12">{tt('rt.no')}</th>
+                                            <th class="py-2.5 pr-3 font-semibold">{tt('rt.kodeMK')}</th>
+                                            <th class="py-2.5 pr-3 font-semibold">{tt('rt.mataKuliah')}</th>
+                                            <th class="py-2.5 pr-3 font-semibold text-right">{tt('rt.sks')}</th>
+                                            <th class="py-2.5 pr-3 font-semibold text-right">{tt('rt.peserta')}</th>
+                                            <th class="py-2.5 font-semibold text-right">{tt('rt.aksi')}</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-neutral-100 dark:divide-neutral-800/80">
@@ -618,7 +619,7 @@ export default function RectoratClassCodeDetail() {
                                                     <td colspan="6" class="py-10 text-center text-neutral-500">
                                                         <div class="inline-flex items-center gap-2">
                                                             <div class="size-4 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
-                                                            Memuat data pengajaran...
+                                                            {tt('rt.memuatDataPengajaran')}
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -629,7 +630,7 @@ export default function RectoratClassCodeDetail() {
                                                 fallback={
                                                     <tr>
                                                         <td colspan="6" class="py-10 text-center text-neutral-500">
-                                                            Belum ada pengajaran untuk kelas ini.
+                                                            {tt('rt.belumAdaPengajaranUntukKelasIni')}
                                                         </td>
                                                     </tr>
                                                 }
@@ -657,7 +658,7 @@ export default function RectoratClassCodeDetail() {
                                                                 href={`/rectorat/institution/${institutionId()}/academic/campaign/transaction/teach/${teach.id}`}
                                                                 class="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium"
                                                             >
-                                                                Detail →
+                                                                {tt('rt.detail2')}
                                                             </A>
                                                         </td>
                                                     </tr>
@@ -679,7 +680,7 @@ export default function RectoratClassCodeDetail() {
                                         </svg>
                                     </div>
                                     <h3 class="text-base font-bold text-neutral-900 dark:text-white">
-                                        Mahasiswa di Kelas Ini
+                                        {tt('rt.mahasiswaDiKelasIni')}
                                     </h3>
                                     <span class="font-mono text-2xs px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300">
                                         {studentTotal()} / {classCode()?.capacity || 0}
@@ -687,7 +688,7 @@ export default function RectoratClassCodeDetail() {
                                 </div>
                                 <input
                                     type="search"
-                                    placeholder="Cari NIM atau nama..."
+                                    placeholder={tt('rt.cariNIMAtauNama')}
                                     onInput={(e) => onStudentSearchInput(e.currentTarget.value)}
                                     class="w-full sm:w-64 px-3 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-xs text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
                                 />
@@ -697,12 +698,12 @@ export default function RectoratClassCodeDetail() {
                                 <table class="w-full text-xs">
                                     <thead>
                                         <tr class="text-left text-2xs uppercase tracking-wider text-neutral-500 dark:text-neutral-400 border-b border-neutral-200 dark:border-neutral-800">
-                                            <th class="py-2.5 pr-3 font-semibold w-12">No</th>
-                                            <th class="py-2.5 pr-3 font-semibold">NIM</th>
-                                            <th class="py-2.5 pr-3 font-semibold">Nama</th>
-                                            <th class="py-2.5 pr-3 font-semibold">Angkatan</th>
-                                            <th class="py-2.5 pr-3 font-semibold">Status</th>
-                                            <th class="py-2.5 font-semibold text-right">Aksi</th>
+                                            <th class="py-2.5 pr-3 font-semibold w-12">{tt('rt.no')}</th>
+                                            <th class="py-2.5 pr-3 font-semibold">{tt('rt.nim')}</th>
+                                            <th class="py-2.5 pr-3 font-semibold">{tt('rt.nama')}</th>
+                                            <th class="py-2.5 pr-3 font-semibold">{tt('rt.angkatan')}</th>
+                                            <th class="py-2.5 pr-3 font-semibold">{tt('rt.status')}</th>
+                                            <th class="py-2.5 font-semibold text-right">{tt('rt.aksi')}</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-neutral-100 dark:divide-neutral-800/80">
@@ -713,7 +714,7 @@ export default function RectoratClassCodeDetail() {
                                                     <td colspan="6" class="py-10 text-center text-neutral-500">
                                                         <div class="inline-flex items-center gap-2">
                                                             <div class="size-4 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
-                                                            Memuat data mahasiswa...
+                                                            {tt('rt.memuatDataMahasiswa')}
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -724,7 +725,7 @@ export default function RectoratClassCodeDetail() {
                                                 fallback={
                                                     <tr>
                                                         <td colspan="6" class="py-10 text-center text-neutral-500">
-                                                            {studentSearch() ? 'Tidak ada mahasiswa yang cocok dengan pencarian.' : 'Belum ada mahasiswa yang terdaftar di kelas ini.'}
+                                                            {studentSearch() ? tt('rt.tidakAdaMahasiswaYangCocokDengan') : tt('rt.belumAdaMahasiswaYangTerdaftarDi')}
                                                         </td>
                                                     </tr>
                                                 }
@@ -753,7 +754,7 @@ export default function RectoratClassCodeDetail() {
                                                                 href={`/rectorat/institution/${institutionId()}/academic/student/master/student/${student.id}`}
                                                                 class="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium"
                                                             >
-                                                                Detail →
+                                                                {tt('rt.detail2')}
                                                             </A>
                                                         </td>
                                                     </tr>
@@ -767,7 +768,7 @@ export default function RectoratClassCodeDetail() {
                             <Show when={studentTotalPages() > 1}>
                                 <div class="flex items-center justify-between pt-2 text-xs text-neutral-500">
                                     <span class="font-mono">
-                                        Halaman {studentPage()} dari {studentTotalPages()}
+                                        {tt('rt.halaman')} {studentPage()} dari {studentTotalPages()}
                                     </span>
                                     <div class="flex items-center gap-2">
                                         <button
@@ -776,7 +777,7 @@ export default function RectoratClassCodeDetail() {
                                             onClick={() => setStudentPage((p) => Math.max(1, p - 1))}
                                             class="px-3 py-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 font-semibold disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                                         >
-                                            ← Sebelumnya
+                                            {tt('rt.sebelumnya')}
                                         </button>
                                         <button
                                             type="button"
@@ -784,7 +785,7 @@ export default function RectoratClassCodeDetail() {
                                             onClick={() => setStudentPage((p) => Math.min(studentTotalPages(), p + 1))}
                                             class="px-3 py-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 font-semibold disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                                         >
-                                            Berikutnya →
+                                            {tt('rt.berikutnya')}
                                         </button>
                                     </div>
                                 </div>
@@ -794,23 +795,23 @@ export default function RectoratClassCodeDetail() {
                         {/* Audit Trail & Metadata */}
                         <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-4">
                             <h3 class="text-sm font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                                Metadata Sistem & Log Audit
+                                {tt('rt.metadataSistemLogAudit')}
                             </h3>
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
                                 <div>
-                                    <span class="text-neutral-400 text-2xs block">DIBUAT PADA</span>
+                                    <span class="text-neutral-400 text-2xs block">{tt('rt.dibuatPADA')}</span>
                                     <span class="text-neutral-800 dark:text-neutral-200">{formatDateTime(classCode()?.created_at)}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 text-2xs block">DIPERBARUI PADA</span>
+                                    <span class="text-neutral-400 text-2xs block">{tt('rt.diperbaruiPADA')}</span>
                                     <span class="text-neutral-800 dark:text-neutral-200">{formatDateTime(classCode()?.updated_at)}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 text-2xs block">SINKRONISASI</span>
+                                    <span class="text-neutral-400 text-2xs block">{tt('rt.sinkronisasi')}</span>
                                     <span class="text-neutral-800 dark:text-neutral-200">{formatDateTime(classCode()?.sync_at)}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-400 text-2xs block">STATUS PENGHAPUSAN</span>
+                                    <span class="text-neutral-400 text-2xs block">{tt('rt.statusPENGHAPUSAN')}</span>
                                     <span class="text-emerald-600 dark:text-emerald-400 font-semibold">{classCode()?.deleted_at ? 'Dihapus' : 'Aktif (Normal)'}</span>
                                 </div>
                             </div>

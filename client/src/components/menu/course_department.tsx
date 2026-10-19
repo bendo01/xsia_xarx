@@ -43,7 +43,21 @@ export default function MenuCourseDepartment() {
                         <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
                         <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                     </svg>
-                    <span>Student Directory</span>
+                    <span>{t('menu.courseDepartment.studentDirectory')}</span>
+                </A>
+            </li>
+
+            {/* Student Campaign Activity */}
+            <li>
+                <A
+                    href="/course-department/academic/student/campaign/activity"
+                    activeClass="bg-teal-600/15 text-teal-600 dark:text-teal-400 font-semibold"
+                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                >
+                    <svg class="size-4 shrink-0 text-teal-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                    </svg>
+                    <span>{t('menu.courseDepartment.studentActivity')}</span>
                 </A>
             </li>
 
@@ -58,7 +72,7 @@ export default function MenuCourseDepartment() {
                         <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
                         <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
                     </svg>
-                    <span>Course Directory</span>
+                    <span>{t('menu.courseDepartment.courseDirectory')}</span>
                 </A>
             </li>
 
@@ -75,7 +89,7 @@ export default function MenuCourseDepartment() {
                         <path d="M8 8v12" />
                         <path d="M4 4v16" />
                     </svg>
-                    <span>Curriculum Directory</span>
+                    <span>{t('menu.courseDepartment.curriculumDirectory')}</span>
                 </A>
             </li>
 
@@ -91,7 +105,7 @@ export default function MenuCourseDepartment() {
                         <polyline points="2 12 12 17 22 12" />
                         <polyline points="2 17 12 22 22 17" />
                     </svg>
-                    <span>Class Code Directory</span>
+                    <span>{t('menu.courseDepartment.classCodeDirectory')}</span>
                 </A>
             </li>
 
@@ -106,7 +120,7 @@ export default function MenuCourseDepartment() {
                         <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
                         <circle cx="12" cy="7" r="4" />
                     </svg>
-                    <span>Lecturer Directory</span>
+                    <span>{t('menu.courseDepartment.lecturerDirectory')}</span>
                 </A>
             </li>
 
@@ -121,7 +135,7 @@ export default function MenuCourseDepartment() {
                         <rect width="20" height="14" x="2" y="7" rx="2" ry="2" />
                         <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
                     </svg>
-                    <span>Staff Directory</span>
+                    <span>{t('menu.courseDepartment.staffDirectory')}</span>
                 </A>
             </li>
         </ul>

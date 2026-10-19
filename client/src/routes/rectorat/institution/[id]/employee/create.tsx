@@ -3,6 +3,7 @@ import { useParams, useNavigate, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { getBaseApiUrl, getAuthHeaders } from '~/controllers/master/masterApiController';
+import { t } from '../../../../../i18n';
 
 type CreateMode = 'existing' | 'new';
 
@@ -200,7 +201,7 @@ export default function RectoratEmployeeCreate() {
         } catch (err: any) {
             if (seq === lookupSeq) {
                 setLookupResults([]);
-                toast.danger(err.message || 'Gagal mencari data individu.');
+                toast.danger(err.message || t('rt.gagalMencariDataIndividu'));
             }
         } finally {
             if (seq === lookupSeq) setIsSearching(false);
@@ -232,11 +233,11 @@ export default function RectoratEmployeeCreate() {
         if (mode() === 'existing') {
             const ind = selected();
             if (!ind) {
-                toast.danger('Pilih individu terlebih dahulu.');
+                toast.danger(t('rt.pilihIndividuTerlebihDahulu'));
                 return;
             }
             if (ind.is_employee) {
-                toast.danger('Individu ini sudah terdaftar sebagai pegawai di institusi ini.');
+                toast.danger(t('rt.individuIniSudahTerdaftarSebagaiPegawai'));
                 return;
             }
             payload = { ...base, individual_id: ind.id };
@@ -246,7 +247,7 @@ export default function RectoratEmployeeCreate() {
         } else {
             const f = form();
             if (!f.gender_id || !f.religion_id) {
-                toast.danger('Jenis kelamin dan agama wajib dipilih.');
+                toast.danger(t('rt.jenisKelaminDanAgamaWajibDipilih'));
                 return;
             }
             payload = {
@@ -268,10 +269,10 @@ export default function RectoratEmployeeCreate() {
         setIsSubmitting(true);
         try {
             const created = await postJson<{ id: string }>('institution/master/employees/register', payload);
-            toast.success('Pegawai berhasil ditambahkan.');
+            toast.success(t('rt.pegawaiBerhasilDitambahkan'));
             navigate(`${listPath()}/${created.id}`);
         } catch (err: any) {
-            toast.danger(err.message || 'Gagal menyimpan data pegawai.');
+            toast.danger(err.message || t('rt.gagalMenyimpanDataPegawai'));
         } finally {
             setIsSubmitting(false);
         }
@@ -292,24 +293,24 @@ export default function RectoratEmployeeCreate() {
                 <div class="flex flex-col md:flex-row md:items-end md:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-6 gap-4">
                     <div>
                         <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
-                            <A href="/rectorat" class="hover:text-indigo-600 transition-colors">Rektorat</A>
+                            <A href="/rectorat" class="hover:text-indigo-600 transition-colors">{t('rt.rektorat')}</A>
                             <span>/</span>
-                            <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-indigo-600 transition-colors">Institusi</A>
+                            <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-indigo-600 transition-colors">{t('rt.institusi')}</A>
                             <span>/</span>
-                            <A href={listPath()} class="hover:text-indigo-600 transition-colors">Pegawai</A>
+                            <A href={listPath()} class="hover:text-indigo-600 transition-colors">{t('rt.pegawai')}</A>
                             <span>/</span>
-                            <span class="text-neutral-700 dark:text-neutral-300 font-semibold">Tambah</span>
+                            <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.tambah')}</span>
                         </nav>
-                        <h1 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">Tambah Pegawai</h1>
+                        <h1 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">{t('rt.tambahPegawai')}</h1>
                         <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
-                            Daftarkan pegawai dari individu yang sudah ada, atau buat individu dan akun baru.
+                            {t('rt.daftarkanPegawaiDariIndividuYangSudah')}
                         </p>
                     </div>
                     <A
                         href={listPath()}
                         class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all shadow-sm w-fit"
                     >
-                        Batal
+                        {t('rt.batal')}
                     </A>
                 </div>
 
@@ -318,12 +319,12 @@ export default function RectoratEmployeeCreate() {
                     {/* Mode Switch */}
                     <div class="flex flex-col sm:flex-row gap-3">
                         <button type="button" id="mode-existing" class={modeButtonClass('existing')} onClick={() => setMode('existing')}>
-                            <p class="font-bold text-sm text-neutral-900 dark:text-white">Individu Sudah Terdaftar</p>
-                            <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Sudah memiliki data individu dan akun pengguna.</p>
+                            <p class="font-bold text-sm text-neutral-900 dark:text-white">{t('rt.individuSudahTerdaftar')}</p>
+                            <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">{t('rt.sudahMemilikiDataIndividuDanAkun')}</p>
                         </button>
                         <button type="button" id="mode-new" class={modeButtonClass('new')} onClick={() => setMode('new')}>
-                            <p class="font-bold text-sm text-neutral-900 dark:text-white">Individu Baru</p>
-                            <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Buat data individu, akun, alamat, telepon, dan email sekaligus.</p>
+                            <p class="font-bold text-sm text-neutral-900 dark:text-white">{t('rt.individuBaru')}</p>
+                            <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">{t('rt.buatDataIndividuAkunAlamatTelepon')}</p>
                         </button>
                     </div>
 
@@ -331,8 +332,8 @@ export default function RectoratEmployeeCreate() {
                     <Show when={mode() === 'existing'}>
                         <div class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-sm overflow-hidden">
                             <div class="px-6 py-4 border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-800/30">
-                                <h3 class="font-bold text-sm text-neutral-900 dark:text-white">Pilih Individu</h3>
-                                <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">Cari berdasarkan nama, NIK, atau email akun (minimal 3 karakter).</p>
+                                <h3 class="font-bold text-sm text-neutral-900 dark:text-white">{t('rt.pilihIndividu')}</h3>
+                                <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">{t('rt.cariBerdasarkanNamaNIKAtauEmail')}</p>
                             </div>
                             <div class="p-6 space-y-4">
                                 <Show
@@ -343,16 +344,16 @@ export default function RectoratEmployeeCreate() {
                                                 type="text"
                                                 id="individual-lookup-input"
                                                 class={inputClass}
-                                                placeholder="Ketik nama, NIK, atau email..."
+                                                placeholder={t('rt.ketikNamaNIKAtauEmail')}
                                                 value={lookupQuery()}
                                                 onInput={handleLookupInput}
                                             />
                                             <Show when={isSearching()}>
-                                                <p class="text-xs text-neutral-500">Mencari...</p>
+                                                <p class="text-xs text-neutral-500">{t('rt.mencari')}</p>
                                             </Show>
                                             <Show when={!isSearching() && lookupQuery().trim().length >= 3 && lookupResults().length === 0}>
                                                 <p class="text-xs text-neutral-500">
-                                                    Tidak ditemukan. Gunakan opsi <button type="button" class="text-indigo-600 font-semibold underline cursor-pointer" onClick={() => setMode('new')}>Individu Baru</button>.
+                                                    {t('rt.tidakDitemukanGunakanOpsi')} <button type="button" class="text-indigo-600 font-semibold underline cursor-pointer" onClick={() => setMode('new')}>{t('rt.individuBaru')}</button>.
                                                 </p>
                                             </Show>
                                             <div class="divide-y divide-neutral-100 dark:divide-neutral-800 border border-neutral-100 dark:border-neutral-800 rounded-lg overflow-hidden empty:hidden">
@@ -371,10 +372,10 @@ export default function RectoratEmployeeCreate() {
                                                                 </p>
                                                             </div>
                                                             <Show when={item.is_employee}>
-                                                                <span class="shrink-0 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800/50">Sudah pegawai</span>
+                                                                <span class="shrink-0 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800/50">{t('rt.sudahPegawai')}</span>
                                                             </Show>
                                                             <Show when={!item.is_employee && !item.user_id}>
-                                                                <span class="shrink-0 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-600 border border-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:border-neutral-700">Tanpa akun</span>
+                                                                <span class="shrink-0 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-600 border border-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:border-neutral-700">{t('rt.tanpaAkun')}</span>
                                                             </Show>
                                                         </button>
                                                     )}
@@ -388,16 +389,16 @@ export default function RectoratEmployeeCreate() {
                                             <div class="min-w-0">
                                                 <p class="font-semibold text-neutral-900 dark:text-white truncate">{individualLabel(ind())}</p>
                                                 <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                                    NIK <span class="font-mono">{ind().code}</span> · {ind().birth_place}, {ind().birth_date}
+                                                    {t('rt.nik')} <span class="font-mono">{ind().code}</span> · {ind().birth_place}, {ind().birth_date}
                                                 </p>
-                                                <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">Akun: {ind().user_email || '-'}</p>
+                                                <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">{t('rt.akun')} {ind().user_email || '-'}</p>
                                             </div>
                                             <button
                                                 type="button"
                                                 class="shrink-0 px-3 py-1.5 text-xs font-medium rounded-md border border-neutral-300 dark:border-neutral-700 hover:bg-white dark:hover:bg-neutral-800 cursor-pointer"
                                                 onClick={() => setSelected(null)}
                                             >
-                                                Ganti
+                                                {t('rt.ganti')}
                                             </button>
                                         </div>
                                     )}
@@ -406,11 +407,11 @@ export default function RectoratEmployeeCreate() {
                         </div>
 
                         <Show when={needsAccount()}>
-                            <Section title="Akun Login" description="Individu ini belum memiliki akun. Buat akun agar pegawai dapat login dan diberi peran.">
-                                <Field label="Email" required>
+                            <Section title={t('rt.akunLogin')} description={t('rt.individuIniBelumMemilikiAkunBuat')}>
+                                <Field label={t('rt.email')} required>
                                     <input type="email" class={inputClass} required autocomplete="off" value={accountEmail()} onInput={(e) => setAccountEmail(e.currentTarget.value)} />
                                 </Field>
-                                <Field label="Kata Sandi" required>
+                                <Field label={t('rt.kataSandi')} required>
                                     <input type="password" class={inputClass} required minLength={8} autocomplete="new-password" value={accountPassword()} onInput={(e) => setAccountPassword(e.currentTarget.value)} />
                                 </Field>
                             </Section>
@@ -419,85 +420,85 @@ export default function RectoratEmployeeCreate() {
 
                     {/* New Individual */}
                     <Show when={mode() === 'new'}>
-                        <Section title="Data Individu" description="Data pribadi sesuai KTP.">
-                            <Field label="NIK" required>
+                        <Section title={t('rt.dataIndividu')} description={t('rt.dataPribadiSesuaiKTP')}>
+                            <Field label={t('rt.nik')} required>
                                 <input class={inputClass} required inputmode="numeric" value={form().code} onInput={(e) => setField('code', e.currentTarget.value)} />
                             </Field>
-                            <Field label="Nama Lengkap" required>
+                            <Field label={t('rt.namaLengkap')} required>
                                 <input class={inputClass} required value={form().name} onInput={(e) => setField('name', e.currentTarget.value)} />
                             </Field>
-                            <Field label="Gelar Depan">
+                            <Field label={t('rt.gelarDepan')}>
                                 <input class={inputClass} value={form().front_title} onInput={(e) => setField('front_title', e.currentTarget.value)} />
                             </Field>
-                            <Field label="Gelar Belakang">
+                            <Field label={t('rt.gelarBelakang')}>
                                 <input class={inputClass} value={form().last_title} onInput={(e) => setField('last_title', e.currentTarget.value)} />
                             </Field>
-                            <Field label="Tempat Lahir" required>
+                            <Field label={t('rt.tempatLahir')} required>
                                 <input class={inputClass} required value={form().birth_place} onInput={(e) => setField('birth_place', e.currentTarget.value)} />
                             </Field>
-                            <Field label="Tanggal Lahir" required>
+                            <Field label={t('rt.tanggalLahir')} required>
                                 <input type="date" class={inputClass} required value={form().birth_date} onInput={(e) => setField('birth_date', e.currentTarget.value)} />
                             </Field>
-                            <Field label="Jenis Kelamin" required>
-                                <OptionSelect required value={form().gender_id} options={genders()} placeholder="Pilih jenis kelamin" onChange={(v) => setField('gender_id', v)} />
+                            <Field label={t('rt.jenisKelamin')} required>
+                                <OptionSelect required value={form().gender_id} options={genders()} placeholder={t('rt.pilihJenisKelamin')} onChange={(v) => setField('gender_id', v)} />
                             </Field>
-                            <Field label="Agama" required>
-                                <OptionSelect required value={form().religion_id} options={religions()} placeholder="Pilih agama" onChange={(v) => setField('religion_id', v)} />
+                            <Field label={t('rt.agama')} required>
+                                <OptionSelect required value={form().religion_id} options={religions()} placeholder={t('rt.pilihAgama')} onChange={(v) => setField('religion_id', v)} />
                             </Field>
                         </Section>
 
-                        <Section title="Akun & Kontak" description="Email digunakan untuk login dan disimpan sebagai email kontak.">
-                            <Field label="Email" required>
+                        <Section title={t('rt.akunKontak')} description={t('rt.emailDigunakanUntukLoginDanDisimpan')}>
+                            <Field label={t('rt.email')} required>
                                 <input type="email" class={inputClass} required autocomplete="off" value={form().email} onInput={(e) => setField('email', e.currentTarget.value)} />
                             </Field>
-                            <Field label="Kata Sandi" required>
+                            <Field label={t('rt.kataSandi')} required>
                                 <input type="password" class={inputClass} required minLength={8} autocomplete="new-password" value={form().password} onInput={(e) => setField('password', e.currentTarget.value)} />
                             </Field>
-                            <Field label="Nomor Telepon" required>
+                            <Field label={t('rt.nomorTelepon')} required>
                                 <input type="tel" class={inputClass} required minLength={8} maxLength={20} value={form().phone_number} onInput={(e) => setField('phone_number', e.currentTarget.value)} />
                             </Field>
                         </Section>
 
-                        <Section title="Alamat">
-                            <Field label="Jalan" required class="sm:col-span-2">
+                        <Section title={t('rt.alamat')}>
+                            <Field label={t('rt.jalan')} required class="sm:col-span-2">
                                 <input class={inputClass} required value={form().street} onInput={(e) => setField('street', e.currentTarget.value)} />
                             </Field>
-                            <Field label="RT">
+                            <Field label={t('rt.rt')}>
                                 <input type="number" min="0" class={inputClass} value={form().citizens_association} onInput={(e) => setField('citizens_association', e.currentTarget.value)} />
                             </Field>
-                            <Field label="RW">
+                            <Field label={t('rt.rw')}>
                                 <input type="number" min="0" class={inputClass} value={form().neighborhood_association} onInput={(e) => setField('neighborhood_association', e.currentTarget.value)} />
                             </Field>
-                            <Field label="Provinsi">
-                                <OptionSelect value={form().province_id} options={provinces()} placeholder="Pilih provinsi" onChange={onProvinceChange} />
+                            <Field label={t('rt.provinsi')}>
+                                <OptionSelect value={form().province_id} options={provinces()} placeholder={t('rt.pilihProvinsi')} onChange={onProvinceChange} />
                             </Field>
-                            <Field label="Kabupaten / Kota">
-                                <OptionSelect value={form().regency_id} options={regencies()} placeholder="Pilih kabupaten/kota" disabled={!form().province_id} onChange={onRegencyChange} />
+                            <Field label={t('rt.kabupatenKota')}>
+                                <OptionSelect value={form().regency_id} options={regencies()} placeholder={t('rt.pilihKabupatenKota')} disabled={!form().province_id} onChange={onRegencyChange} />
                             </Field>
-                            <Field label="Kecamatan">
-                                <OptionSelect value={form().sub_district_id} options={subDistricts()} placeholder="Pilih kecamatan" disabled={!form().regency_id} onChange={onSubDistrictChange} />
+                            <Field label={t('rt.kecamatan')}>
+                                <OptionSelect value={form().sub_district_id} options={subDistricts()} placeholder={t('rt.pilihKecamatan')} disabled={!form().regency_id} onChange={onSubDistrictChange} />
                             </Field>
-                            <Field label="Kelurahan / Desa">
-                                <OptionSelect value={form().village_id} options={villages()} placeholder="Pilih kelurahan/desa" disabled={!form().sub_district_id} onChange={(v) => setField('village_id', v)} />
+                            <Field label={t('rt.kelurahanDesa')}>
+                                <OptionSelect value={form().village_id} options={villages()} placeholder={t('rt.pilihKelurahanDesa')} disabled={!form().sub_district_id} onChange={(v) => setField('village_id', v)} />
                             </Field>
                         </Section>
                     </Show>
 
                     {/* Employee Data */}
-                    <Section title="Data Kepegawaian">
-                        <Field label="Kode Pegawai" required>
+                    <Section title={t('rt.dataKepegawaian')}>
+                        <Field label={t('rt.kodePegawai')} required>
                             <input id="employee-code" class={`${inputClass} font-mono`} required value={code()} onInput={(e) => setCode(e.currentTarget.value)} />
                         </Field>
-                        <Field label="Status">
+                        <Field label={t('rt.status')}>
                             <label class="inline-flex items-center gap-2 h-[10.5] text-sm cursor-pointer">
                                 <input type="checkbox" class="size-4 accent-indigo-600" checked={isActive()} onChange={(e) => setIsActive(e.currentTarget.checked)} />
-                                Aktif
+                                {t('rt.aktif')}
                             </label>
                         </Field>
-                        <Field label="Nomor SK">
+                        <Field label={t('rt.nomorSK')}>
                             <input class={`${inputClass} font-mono`} value={decreeNumber()} onInput={(e) => setDecreeNumber(e.currentTarget.value)} />
                         </Field>
-                        <Field label="Tanggal SK">
+                        <Field label={t('rt.tanggalSK')}>
                             <input type="date" class={inputClass} value={decreeDate()} onInput={(e) => setDecreeDate(e.currentTarget.value)} />
                         </Field>
                     </Section>
@@ -507,7 +508,7 @@ export default function RectoratEmployeeCreate() {
                             href={listPath()}
                             class="px-4 py-2 text-sm font-medium rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all"
                         >
-                            Batal
+                            {t('rt.batal')}
                         </A>
                         <button
                             type="submit"
@@ -515,7 +516,7 @@ export default function RectoratEmployeeCreate() {
                             disabled={isSubmitting() || (mode() === 'existing' && !selected())}
                             class="inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                         >
-                            {isSubmitting() ? 'Menyimpan...' : 'Simpan Pegawai'}
+                            {isSubmitting() ? t('rt.menyimpan') : t('rt.simpanPegawai')}
                         </button>
                     </div>
                 </form>

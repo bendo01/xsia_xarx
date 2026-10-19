@@ -3,6 +3,7 @@ import { useParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { getBaseApiUrl, getAuthHeaders } from '~/controllers/master/masterApiController';
+import { t } from '../../../../../../i18n';
 
 interface IndividualDetail {
     id?: string;
@@ -61,7 +62,7 @@ interface EmployeeDetailData {
 function InfoRow(props: { label: string; value?: string | null | boolean; mono?: boolean; badge?: boolean; badgeVariant?: 'green' | 'red' | 'blue' | 'neutral' }) {
     const display = () => {
         if (props.value === null || props.value === undefined || props.value === '') return '-';
-        if (typeof props.value === 'boolean') return props.value ? 'Ya' : 'Tidak';
+        if (typeof props.value === 'boolean') return props.value ? t('rt.ya') : t('rt.tidak');
         return String(props.value);
     };
 
@@ -130,12 +131,12 @@ export default function RectoratEmployeeDetail() {
                 setEmployee(data);
             } else {
                 setEmployee(null);
-                toast.danger('Data pegawai tidak ditemukan.');
+                toast.danger(t('rt.dataPegawaiTidakDitemukan'));
             }
         } catch (error: any) {
             console.error('Error fetching employee detail:', error);
             setEmployee(null);
-            toast.danger('Gagal memuat data pegawai dari server.');
+            toast.danger(t('rt.gagalMemuatDataPegawaiDariServer'));
         } finally {
             setIsLoading(false);
         }
@@ -182,13 +183,13 @@ export default function RectoratEmployeeDetail() {
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-6 gap-4">
                     <div>
                         <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
-                            <A href="/rectorat" class="hover:text-indigo-600 transition-colors">Rektorat</A>
+                            <A href="/rectorat" class="hover:text-indigo-600 transition-colors">{t('rt.rektorat')}</A>
                             <span>/</span>
-                            <A href={`/rectorat/institution/${getInstitutionId()}`} class="hover:text-indigo-600 transition-colors">Institusi</A>
+                            <A href={`/rectorat/institution/${getInstitutionId()}`} class="hover:text-indigo-600 transition-colors">{t('rt.institusi')}</A>
                             <span>/</span>
-                            <A href={`/rectorat/institution/${getInstitutionId()}/employee`} class="hover:text-indigo-600 transition-colors">Pegawai</A>
+                            <A href={`/rectorat/institution/${getInstitutionId()}/employee`} class="hover:text-indigo-600 transition-colors">{t('rt.pegawai')}</A>
                             <span>/</span>
-                            <span class="text-neutral-700 dark:text-neutral-300 font-semibold">Detail</span>
+                            <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.detail')}</span>
                         </nav>
                         <h1 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white flex items-center gap-3">
                             <span class="text-indigo-600 dark:text-indigo-400">
@@ -196,11 +197,11 @@ export default function RectoratEmployeeDetail() {
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                                 </svg>
                             </span>
-                            Detail Pegawai
+                            {t('rt.detailPegawai')}
                         </h1>
                         <Show when={employee()}>
                             <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
-                                Menampilkan informasi lengkap pegawai.
+                                {t('rt.menampilkanInformasiLengkapPegawai')}
                             </p>
                         </Show>
                     </div>
@@ -214,7 +215,7 @@ export default function RectoratEmployeeDetail() {
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" />
                             </svg>
-                            Ubah
+                            {t('rt.ubah')}
                         </A>
                         <A
                             href={`/rectorat/institution/${getInstitutionId()}/employee`}
@@ -224,7 +225,7 @@ export default function RectoratEmployeeDetail() {
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
                             </svg>
-                            Kembali ke Daftar
+                            {t('rt.kembaliKeDaftar')}
                         </A>
                     </div>
                 </div>
@@ -236,7 +237,7 @@ export default function RectoratEmployeeDetail() {
                             <div class="absolute inset-0 rounded-full border-4 border-indigo-200 dark:border-indigo-900/40"></div>
                             <div class="absolute inset-0 rounded-full border-4 border-indigo-600 border-t-transparent animate-spin"></div>
                         </div>
-                        <p class="text-sm text-neutral-500 dark:text-neutral-400 font-medium">Memuat data pegawai...</p>
+                        <p class="text-sm text-neutral-500 dark:text-neutral-400 font-medium">{t('rt.memuatDataPegawai')}</p>
                     </div>
                 </Show>
 
@@ -250,13 +251,13 @@ export default function RectoratEmployeeDetail() {
                                 <line x1="12" y1="16" x2="12.01" y2="16" />
                             </svg>
                         </div>
-                        <h2 class="text-xl font-bold text-neutral-700 dark:text-neutral-300">Data Tidak Ditemukan</h2>
-                        <p class="text-sm text-neutral-500 dark:text-neutral-400 text-center max-w-sm">Data pegawai tidak dapat ditemukan atau mungkin telah dihapus.</p>
+                        <h2 class="text-xl font-bold text-neutral-700 dark:text-neutral-300">{t('rt.dataTidakDitemukan')}</h2>
+                        <p class="text-sm text-neutral-500 dark:text-neutral-400 text-center max-w-sm">{t('rt.dataPegawaiTidakDapatDitemukanAtau')}</p>
                         <A
                             href={`/rectorat/institution/${getInstitutionId()}/employee`}
                             class="mt-2 inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors shadow-sm"
                         >
-                            Kembali ke Daftar Pegawai
+                            {t('rt.kembaliKeDaftarPegawai')}
                         </A>
                     </div>
                 </Show>
@@ -288,12 +289,12 @@ export default function RectoratEmployeeDetail() {
                                         {employee()?.is_active ? (
                                             <div class="inline-flex items-center gap-1.5 h-6 px-3 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800/50">
                                                 <span class="size-1.5 rounded-full bg-emerald-500"></span>
-                                                Aktif
+                                                {t('rt.aktif')}
                                             </div>
                                         ) : (
                                             <div class="inline-flex items-center gap-1.5 h-6 px-3 text-xs font-bold text-red-700 bg-red-50 border border-red-200 rounded-full dark:bg-red-900/30 dark:text-red-300 dark:border-red-800/50">
                                                 <span class="size-1.5 rounded-full bg-red-500"></span>
-                                                Non-Aktif
+                                                {t('rt.nonAktif')}
                                             </div>
                                         )}
                                     </div>
@@ -302,7 +303,7 @@ export default function RectoratEmployeeDetail() {
                                 {/* Institution Info */}
                                 <Show when={employee()?.institution}>
                                     <div class="border-t border-neutral-100 dark:border-neutral-800 px-5 py-4">
-                                        <p class="text-[11px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 mb-2">Institusi</p>
+                                        <p class="text-[11px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 mb-2">{t('rt.institusi')}</p>
                                         <div class="flex items-start gap-2">
                                             <div class="size-8 rounded-md bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
@@ -319,18 +320,18 @@ export default function RectoratEmployeeDetail() {
 
                                 {/* Meta Timestamps */}
                                 <div class="border-t border-neutral-100 dark:border-neutral-800 px-5 py-4 space-y-2">
-                                    <p class="text-[11px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 mb-2">Metadata</p>
+                                    <p class="text-[11px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 mb-2">{t('rt.metadata')}</p>
                                     <div class="flex justify-between text-xs">
-                                        <span class="text-neutral-500 dark:text-neutral-400">Dibuat</span>
+                                        <span class="text-neutral-500 dark:text-neutral-400">{t('rt.dibuat')}</span>
                                         <span class="font-medium text-neutral-700 dark:text-neutral-300 font-mono">{formatDate(employee()?.created_at) || '-'}</span>
                                     </div>
                                     <div class="flex justify-between text-xs">
-                                        <span class="text-neutral-500 dark:text-neutral-400">Diperbarui</span>
+                                        <span class="text-neutral-500 dark:text-neutral-400">{t('rt.diperbarui')}</span>
                                         <span class="font-medium text-neutral-700 dark:text-neutral-300 font-mono">{formatDate(employee()?.updated_at) || '-'}</span>
                                     </div>
                                     <Show when={employee()?.sync_at}>
                                         <div class="flex justify-between text-xs">
-                                            <span class="text-neutral-500 dark:text-neutral-400">Sinkronisasi</span>
+                                            <span class="text-neutral-500 dark:text-neutral-400">{t('rt.sinkronisasi2')}</span>
                                             <span class="font-medium text-neutral-700 dark:text-neutral-300 font-mono">{formatDate(employee()?.sync_at) || '-'}</span>
                                         </div>
                                     </Show>
@@ -349,15 +350,15 @@ export default function RectoratEmployeeDetail() {
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                                         </svg>
                                     </div>
-                                    <h3 class="font-bold text-sm text-neutral-900 dark:text-white">Informasi Pegawai</h3>
+                                    <h3 class="font-bold text-sm text-neutral-900 dark:text-white">{t('rt.informasiPegawai')}</h3>
                                 </div>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6">
-                                    <InfoRow label="Kode Pegawai" value={employee()?.code} mono />
-                                    <InfoRow label="Nama Pegawai" value={employee()?.name} />
-                                    <InfoRow label="Nomor SK" value={employee()?.decree_number} mono />
-                                    <InfoRow label="Tanggal SK" value={formatDate(employee()?.decree_date)} />
-                                    <InfoRow label="Status" value={employee()?.is_active ? 'Aktif' : 'Non-Aktif'} badge badgeVariant={employee()?.is_active ? 'green' : 'red'} />
-                                    <InfoRow label="ID Pegawai" value={employee()?.id} mono />
+                                    <InfoRow label={t('rt.kodePegawai')} value={employee()?.code} mono />
+                                    <InfoRow label={t('rt.namaPegawai')} value={employee()?.name} />
+                                    <InfoRow label={t('rt.nomorSK')} value={employee()?.decree_number} mono />
+                                    <InfoRow label={t('rt.tanggalSK')} value={formatDate(employee()?.decree_date)} />
+                                    <InfoRow label={t('rt.status')} value={employee()?.is_active ? t('rt.aktif') : t('rt.nonAktif')} badge badgeVariant={employee()?.is_active ? 'green' : 'red'} />
+                                    <InfoRow label={t('rt.idPegawai')} value={employee()?.id} mono />
                                 </div>
                             </div>
 
@@ -370,17 +371,17 @@ export default function RectoratEmployeeDetail() {
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z" />
                                             </svg>
                                         </div>
-                                        <h3 class="font-bold text-sm text-neutral-900 dark:text-white">Data Individu / Personal</h3>
+                                        <h3 class="font-bold text-sm text-neutral-900 dark:text-white">{t('rt.dataIndividuPersonal')}</h3>
                                     </div>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6">
-                                        <InfoRow label="Nama Lengkap" value={fullName()} />
-                                        <InfoRow label="Gelar Depan" value={employee()?.individual?.front_title} />
-                                        <InfoRow label="Gelar Belakang" value={employee()?.individual?.last_title} />
-                                        <InfoRow label="Tempat Lahir" value={employee()?.individual?.birth_place} />
-                                        <InfoRow label="Tanggal Lahir" value={formatDate(employee()?.individual?.birth_date)} />
-                                        <InfoRow label="Kebutuhan Khusus" value={employee()?.individual?.is_special_need} badge badgeVariant={employee()?.individual?.is_special_need ? 'blue' : 'neutral'} />
-                                        <InfoRow label="Status Meninggal" value={employee()?.individual?.is_deceased} badge badgeVariant={employee()?.individual?.is_deceased ? 'red' : 'neutral'} />
-                                        <InfoRow label="ID Individu" value={employee()?.individual?.id} mono />
+                                        <InfoRow label={t('rt.namaLengkap')} value={fullName()} />
+                                        <InfoRow label={t('rt.gelarDepan')} value={employee()?.individual?.front_title} />
+                                        <InfoRow label={t('rt.gelarBelakang')} value={employee()?.individual?.last_title} />
+                                        <InfoRow label={t('rt.tempatLahir')} value={employee()?.individual?.birth_place} />
+                                        <InfoRow label={t('rt.tanggalLahir')} value={formatDate(employee()?.individual?.birth_date)} />
+                                        <InfoRow label={t('rt.kebutuhanKhusus')} value={employee()?.individual?.is_special_need} badge badgeVariant={employee()?.individual?.is_special_need ? 'blue' : 'neutral'} />
+                                        <InfoRow label={t('rt.statusMeninggal')} value={employee()?.individual?.is_deceased} badge badgeVariant={employee()?.individual?.is_deceased ? 'red' : 'neutral'} />
+                                        <InfoRow label={t('rt.idIndividu')} value={employee()?.individual?.id} mono />
                                     </div>
                                 </div>
                             </Show>
@@ -393,7 +394,7 @@ export default function RectoratEmployeeDetail() {
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
                                         </svg>
                                     </div>
-                                    <h3 class="font-bold text-sm text-neutral-900 dark:text-white">Riwayat Kepegawaian (Staf)</h3>
+                                    <h3 class="font-bold text-sm text-neutral-900 dark:text-white">{t('rt.riwayatKepegawaianStaf')}</h3>
                                     <span class="ml-auto inline-flex items-center justify-center size-5 text-[10px] font-bold rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">
                                         {employee()?.staffes?.length ?? 0}
                                     </span>
@@ -407,7 +408,7 @@ export default function RectoratEmployeeDetail() {
                                                 <rect width="18" height="18" x="3" y="3" rx="2" />
                                                 <path d="M3 9h18M9 21V9" />
                                             </svg>
-                                            <p class="text-sm font-medium text-neutral-500 dark:text-neutral-400">Belum ada data kepegawaian (staf).</p>
+                                            <p class="text-sm font-medium text-neutral-500 dark:text-neutral-400">{t('rt.belumAdaDataKepegawaianStaf')}</p>
                                         </div>
                                     }
                                 >
@@ -415,12 +416,12 @@ export default function RectoratEmployeeDetail() {
                                         <table class="w-full text-xs text-left">
                                             <thead class="bg-neutral-50/60 dark:bg-neutral-800/30 text-neutral-400 dark:text-neutral-500 uppercase tracking-wider font-semibold">
                                                 <tr>
-                                                    <th class="px-5 py-3">Kode</th>
-                                                    <th class="px-5 py-3">Nama</th>
-                                                    <th class="px-5 py-3">No. SK</th>
-                                                    <th class="px-5 py-3">Tanggal SK</th>
-                                                    <th class="px-5 py-3">Mulai</th>
-                                                    <th class="px-5 py-3">Selesai</th>
+                                                    <th class="px-5 py-3">{t('rt.kode')}</th>
+                                                    <th class="px-5 py-3">{t('rt.nama')}</th>
+                                                    <th class="px-5 py-3">{t('rt.noSK')}</th>
+                                                    <th class="px-5 py-3">{t('rt.tanggalSK')}</th>
+                                                    <th class="px-5 py-3">{t('rt.mulai2')}</th>
+                                                    <th class="px-5 py-3">{t('rt.selesai2')}</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="divide-y divide-neutral-100 dark:divide-neutral-800">
@@ -438,7 +439,7 @@ export default function RectoratEmployeeDetail() {
                                                                 ) : (
                                                                     <span class="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold">
                                                                         <span class="size-1.5 rounded-full bg-emerald-500"></span>
-                                                                        Aktif
+                                                                        {t('rt.aktif')}
                                                                     </span>
                                                                 )}
                                                             </td>

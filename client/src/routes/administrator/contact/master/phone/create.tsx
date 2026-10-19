@@ -4,6 +4,7 @@ import { toast } from '~/components/toast/Toaster';
 import RemoteSearchSelect from '~/components/form/RemoteSearchSelect';
 import { CONTACT_OWNER_TYPES, findContactOwnerType, type ContactOwnerOption } from '~/components/form/contactOwnerTypes';
 import { masterApiCreate, masterApiOptions, type MasterOptionItem } from '~/controllers/master/masterApiController';
+import { t } from '../../../../../i18n';
 
 export default function ContactMasterPhoneCreatePage() {
     const apiPath = 'contact/master/phones';
@@ -30,7 +31,7 @@ export default function ContactMasterPhoneCreatePage() {
     const handleSubmit = async (e: Event) => {
         e.preventDefault();
         if (!ownerId()) {
-            toast.danger('Please select the owner of this phone number.');
+            toast.danger(t('ad.pleaseSelectTheOwnerOfThis2'));
             return;
         }
         setIsSubmitting(true);
@@ -43,15 +44,15 @@ export default function ContactMasterPhoneCreatePage() {
             });
 
             if (res.success) {
-                toast.success(res.message || 'Phone created successfully!');
+                toast.success(res.message || t('ad.phoneCreatedSuccessfully'));
                 setTimeout(() => {
                     window.location.href = res.data?.id ? `${basePath}/${res.data.id}` : basePath;
                 }, 500);
             } else {
-                toast.danger(res.message || 'Failed to create phone.');
+                toast.danger(res.message || t('ad.failedToCreatePhone'));
             }
         } catch (err: any) {
-            toast.danger(err.message || 'Network error occurred.');
+            toast.danger(err.message || t('ad.networkErrorOccurred'));
         } finally {
             setIsSubmitting(false);
         }
@@ -69,18 +70,18 @@ export default function ContactMasterPhoneCreatePage() {
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div class="min-w-0">
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
-                            <a href="/" class="hover:text-blue-600 transition-colors shrink-0">Home</a>
+                            <a href="/" class="hover:text-blue-600 transition-colors shrink-0">{t('ad.home')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="shrink-0">Contact</span>
+                            <span class="shrink-0">{t('ad.contact')}</span>
                             <span class="shrink-0">/</span>
-                            <span class="shrink-0">Master</span>
+                            <span class="shrink-0">{t('ad.master')}</span>
                             <span class="shrink-0">/</span>
-                            <a href={basePath} class="hover:text-blue-600 transition-colors shrink-0">Phone</a>
+                            <a href={basePath} class="hover:text-blue-600 transition-colors shrink-0">{t('ad.phone')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white shrink-0">Create</span>
+                            <span class="font-medium text-neutral-900 dark:text-white shrink-0">{t('ad.create')}</span>
                         </nav>
                         <h1 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono truncate">
-                            Add New Phone
+                            {t('ad.addNewPhone')}
                         </h1>
                     </div>
 
@@ -92,7 +93,7 @@ export default function ContactMasterPhoneCreatePage() {
                             <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6" />
                             </svg>
-                            <span>Cancel</span>
+                            <span>{t('ad.cancel')}</span>
                         </a>
                     </div>
                 </div>
@@ -102,7 +103,7 @@ export default function ContactMasterPhoneCreatePage() {
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                             <div>
                                 <label class={labelClass}>
-                                    Phone Number <span class="text-red-500">*</span>
+                                    {t('ad.phoneNumber')} <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="tel"
@@ -115,16 +116,16 @@ export default function ContactMasterPhoneCreatePage() {
                             </div>
 
                             <div>
-                                <label class={labelClass}>Phone Type</label>
+                                <label class={labelClass}>{t('ad.phoneType')}</label>
                                 <select value={phoneTypeId()} onChange={(e) => setPhoneTypeId(e.currentTarget.value)} class={inputClass}>
-                                    <option value="">-- None --</option>
+                                    <option value="">{t('ad.none')}</option>
                                     <For each={phoneTypeOptions()}>{(opt) => <option value={opt.id}>{opt.name}</option>}</For>
                                 </select>
                             </div>
 
                             <div>
                                 <label class={labelClass}>
-                                    Owner Type <span class="text-red-500">*</span>
+                                    {t('ad.ownerType')} <span class="text-red-500">*</span>
                                 </label>
                                 <select value={ownerType()} onChange={(e) => selectOwnerType(e.currentTarget.value)} class={inputClass}>
                                     <For each={CONTACT_OWNER_TYPES}>{(type) => <option value={type.value}>{type.label}</option>}</For>
@@ -133,19 +134,19 @@ export default function ContactMasterPhoneCreatePage() {
 
                             <div>
                                 <label class={labelClass}>
-                                    Owner <span class="text-red-500">*</span>
+                                    {t('ad.owner')} <span class="text-red-500">*</span>
                                 </label>
                                 <Show
                                     when={findContactOwnerType(ownerType())}
                                     keyed
-                                    fallback={<input type="text" disabled placeholder="Select an owner type first" class={inputClass} />}
+                                    fallback={<input type="text" disabled placeholder={t('ad.selectAnOwnerTypeFirst')} class={inputClass} />}
                                 >
                                     {(type) => (
                                         <RemoteSearchSelect<ContactOwnerOption>
                                             apiPath={type.apiPath}
                                             value={ownerId()}
                                             selectedLabel={ownerLabel()}
-                                            placeholder={`Search ${type.label.toLowerCase()} by name...`}
+                                            placeholder={t('ad.searchTypeByName', { type: type.label.toLowerCase() })}
                                             getLabel={(item) => item.name || item.id}
                                             getSublabel={(item) => item.code || ''}
                                             onSelect={(item) => {
@@ -165,14 +166,14 @@ export default function ContactMasterPhoneCreatePage() {
                                 href={basePath}
                                 class="px-4 py-2 text-xs font-mono font-medium border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                             >
-                                Cancel
+                                {t('ad.cancel')}
                             </a>
                             <button
                                 type="submit"
                                 disabled={isSubmitting()}
                                 class="inline-flex items-center gap-2 px-5 py-2 text-xs font-mono font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs disabled:opacity-50 transition-colors cursor-pointer"
                             >
-                                <span>{isSubmitting() ? 'Saving...' : 'Save Phone'}</span>
+                                <span>{isSubmitting() ? t('ad.saving') : t('ad.savePhone')}</span>
                             </button>
                         </div>
                     </form>

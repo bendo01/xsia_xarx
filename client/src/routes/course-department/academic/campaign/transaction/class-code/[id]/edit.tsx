@@ -5,6 +5,7 @@ import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { masterApiUpdate, masterApiShow } from '~/controllers/master/masterApiController';
 import { listActivities, type CampaignActivityItem } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionActivityController';
+import { t } from '../../../../../../../i18n';
 
 export default function ClassCodeEditPage() {
     const params = useParams();
@@ -46,11 +47,11 @@ export default function ClassCodeEditPage() {
                     capacity: item.capacity ?? 0
                 });
             } else {
-                toast.danger('Failed to load class code data');
+                toast.danger(t('cd.failedToLoadClassCodeData'));
                 navigate('/course-department/academic/campaign/transaction/class-code');
             }
         } catch {
-            toast.danger('Failed to load class code data');
+            toast.danger(t('cd.failedToLoadClassCodeData'));
             navigate('/course-department/academic/campaign/transaction/class-code');
         } finally {
             setIsLoading(false);
@@ -72,13 +73,13 @@ export default function ClassCodeEditPage() {
 
             const res = await masterApiUpdate(apiPath, params.id as string, payload);
             if (res.success) {
-                toast.success('Class code updated successfully!');
+                toast.success(t('cd.classCodeUpdatedSuccessfully'));
                 navigate('/course-department/academic/campaign/transaction/class-code');
             } else {
-                toast.danger(res.message || 'Failed to update class code.');
+                toast.danger(res.message || t('cd.failedToUpdateClassCode'));
             }
         } catch (err: any) {
-            toast.danger(err.message || 'Error occurred while saving.');
+            toast.danger(err.message || t('cd.errorOccurredWhileSaving'));
         } finally {
             setIsSubmitting(false);
         }
@@ -92,22 +93,22 @@ export default function ClassCodeEditPage() {
                 <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div>
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                            <a href="/" class="hover:text-blue-600 transition-colors">Home</a>
+                            <a href="/" class="hover:text-blue-600 transition-colors">{t('cd.home')}</a>
                             <span>/</span>
-                            <span>Course Department</span>
+                            <span>{t('cd.courseDepartment')}</span>
                             <span>/</span>
-                            <span>Academic</span>
+                            <span>{t('cd.academic')}</span>
                             <span>/</span>
-                            <span>Campaign</span>
+                            <span>{t('cd.campaign')}</span>
                             <span>/</span>
-                            <span>Transaction</span>
+                            <span>{t('cd.transaction')}</span>
                             <span>/</span>
-                            <a href="/course-department/academic/campaign/transaction/class-code" class="hover:text-blue-600 transition-colors">Class Code</a>
+                            <a href="/course-department/academic/campaign/transaction/class-code" class="hover:text-blue-600 transition-colors">{t('cd.classCode')}</a>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">Edit</span>
+                            <span class="font-medium text-neutral-900 dark:text-white">{t('cd.edit')}</span>
                         </nav>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
-                            Edit Class Code
+                            {t('cd.editClassCode')}
                         </h1>
                     </div>
                 </div>
@@ -127,7 +128,7 @@ export default function ClassCodeEditPage() {
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Code
+                                        {t('cd.code')}
                                     </label>
                                     <input
                                         type="number"
@@ -139,25 +140,25 @@ export default function ClassCodeEditPage() {
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Alphabet Code
+                                        {t('cd.alphabetCode')}
                                     </label>
                                     <input
                                         type="text"
                                         maxlength="5"
                                         value={formData().alphabet_code}
                                         onInput={(e) => setFormData({ ...formData(), alphabet_code: e.currentTarget.value })}
-                                        placeholder="Enter up to 5 characters..."
+                                        placeholder={t('cd.enterUpTo5Characters')}
                                         class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white uppercase"
                                     />
                                     <p class="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
-                                        Maximum 5 characters allowed.
+                                        {t('cd.maximum5CharactersAllowed')}
                                     </p>
                                 </div>
                             </div>
 
                             <div>
                                 <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                    Class Code Name
+                                    {t('cd.classCodeName')}
                                 </label>
                                 <input
                                     type="text"
@@ -170,7 +171,7 @@ export default function ClassCodeEditPage() {
 
                             <div>
                                 <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                    Activity
+                                    {t('cd.activity')}
                                 </label>
                                 <select
                                     required
@@ -178,7 +179,7 @@ export default function ClassCodeEditPage() {
                                     onChange={(e) => setFormData({ ...formData(), activity_id: e.currentTarget.value })}
                                     class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
                                 >
-                                    <option value="" disabled>Select Activity</option>
+                                    <option value="" disabled>{t('cd.selectActivity')}</option>
                                     <For each={activities()}>
                                         {(act) => <option value={act.id}>{act.name}</option>}
                                     </For>
@@ -188,7 +189,7 @@ export default function ClassCodeEditPage() {
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                        Start Effective Date
+                                        {t('cd.startEffectiveDate')}
                                     </label>
                                     <input
                                         type="date"
@@ -199,7 +200,7 @@ export default function ClassCodeEditPage() {
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                        End Effective Date
+                                        {t('cd.endEffectiveDate')}
                                     </label>
                                     <input
                                         type="date"
@@ -212,7 +213,7 @@ export default function ClassCodeEditPage() {
 
                             <div>
                                 <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                    Capacity
+                                    {t('cd.capacity')}
                                 </label>
                                 <input
                                     type="number"
@@ -230,7 +231,7 @@ export default function ClassCodeEditPage() {
                                     onClick={() => navigate('/course-department/academic/campaign/transaction/class-code')}
                                     class="px-4 py-2 text-sm font-medium text-neutral-700 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-600 rounded-md transition-colors cursor-pointer"
                                 >
-                                    Cancel
+                                    {t('cd.cancel')}
                                 </button>
                                 <button
                                     type="submit"
@@ -243,7 +244,7 @@ export default function ClassCodeEditPage() {
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
                                     </Show>
-                                    {isSubmitting() ? 'Saving...' : 'Save Class Code'}
+                                    {isSubmitting() ? t('cd.saving') : t('cd.saveClassCode')}
                                 </button>
                             </div>
                         </form>

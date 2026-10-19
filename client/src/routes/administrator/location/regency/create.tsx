@@ -6,6 +6,7 @@ import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
 import { LocationRegencyControllerUpsert } from '~/controllers/location/LocationRegencyController';
 import { LocationProvinceControllerList } from '~/controllers/location/LocationProvinceController';
 import { LocationRegencyTypeControllerList } from '~/controllers/location/LocationRegencyTypeController';
+import { t as tt } from '../../../../i18n';
 
 export default function LocationRegencyCreatePage() {
     const navigate = useNavigate();
@@ -39,15 +40,15 @@ export default function LocationRegencyCreatePage() {
     const handleSubmit = async (e: Event) => {
         e.preventDefault();
         if (!name().trim()) {
-            toast.warning('Regency name is required');
+            toast.warning(tt('ad.regencyNameIsRequired'));
             return;
         }
         if (!provinceId()) {
-            toast.warning('Province is required');
+            toast.warning(tt('ad.provinceIsRequired'));
             return;
         }
         if (!regencyTypeId()) {
-            toast.warning('Regency type is required');
+            toast.warning(tt('ad.regencyTypeIsRequired'));
             return;
         }
 
@@ -64,13 +65,13 @@ export default function LocationRegencyCreatePage() {
             });
 
             if (!res.is_error) {
-                toast.success(res.message || 'Regency created successfully!');
+                toast.success(res.message || tt('ad.regencyCreatedSuccessfully'));
                 navigate(basePath);
             } else {
-                toast.danger(res.message || 'Failed to create regency.');
+                toast.danger(res.message || tt('ad.failedToCreateRegency'));
             }
         } catch (err: any) {
-            toast.danger(err.message || 'Network error occurred.');
+            toast.danger(err.message || tt('ad.networkErrorOccurred'));
         } finally {
             setIsSubmitting(false);
         }
@@ -84,16 +85,16 @@ export default function LocationRegencyCreatePage() {
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-neutral-200 dark:border-neutral-800 pb-4">
                     <div class="min-w-0">
                         <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
-                            <a href="/" class="hover:text-blue-600 transition-colors shrink-0">Home</a>
+                            <a href="/" class="hover:text-blue-600 transition-colors shrink-0">{tt('ad.home')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="shrink-0">Location</span>
+                            <span class="shrink-0">{tt('ad.location')}</span>
                             <span class="shrink-0">/</span>
-                            <a href={basePath} class="hover:text-blue-600 transition-colors shrink-0">Regency</a>
+                            <a href={basePath} class="hover:text-blue-600 transition-colors shrink-0">{tt('ad.regency')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white shrink-0">Create</span>
+                            <span class="font-medium text-neutral-900 dark:text-white shrink-0">{tt('ad.create')}</span>
                         </nav>
                         <h1 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono truncate">
-                            Add New Regency
+                            {tt('ad.addNewRegency')}
                         </h1>
                     </div>
 
@@ -105,7 +106,7 @@ export default function LocationRegencyCreatePage() {
                             <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6"/>
                             </svg>
-                            <span>Cancel</span>
+                            <span>{tt('ad.cancel')}</span>
                         </a>
                     </div>
                 </div>
@@ -115,21 +116,21 @@ export default function LocationRegencyCreatePage() {
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                    Regency Name <span class="text-red-500">*</span>
+                                    {tt('ad.regencyName')} <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
                                     required
                                     value={name()}
                                     onInput={(e) => setName(e.currentTarget.value)}
-                                    placeholder="e.g. Bandung, Surabaya"
+                                    placeholder={tt('ad.eGBandungSurabaya')}
                                     class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                 />
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                    Code
+                                    {tt('ad.code2')}
                                 </label>
                                 <input
                                     type="text"
@@ -142,14 +143,14 @@ export default function LocationRegencyCreatePage() {
 
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                    Province
+                                    {tt('ad.province')}
                                 </label>
                                 <select
                                     value={provinceId()}
                                     onChange={(e) => setProvinceId(e.currentTarget.value)}
                                     class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                 >
-                                    <option value="">Select Province</option>
+                                    <option value="">{tt('ad.selectProvince2')}</option>
                                     <For each={provinceOptions()}>
                                         {(p) => <option value={p.value}>{p.label}</option>}
                                     </For>
@@ -158,14 +159,14 @@ export default function LocationRegencyCreatePage() {
 
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                    Regency Type
+                                    {tt('ad.regencyType')}
                                 </label>
                                 <select
                                     value={regencyTypeId()}
                                     onChange={(e) => setRegencyTypeId(e.currentTarget.value)}
                                     class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                 >
-                                    <option value="">Select Regency Type</option>
+                                    <option value="">{tt('ad.selectRegencyType')}</option>
                                     <For each={regencyTypeOptions()}>
                                         {(t) => <option value={t.value}>{t.label}</option>}
                                     </For>
@@ -174,7 +175,7 @@ export default function LocationRegencyCreatePage() {
 
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                    DIKTI Code
+                                    {tt('ad.diktiCode2')}
                                 </label>
                                 <input
                                     type="text"
@@ -187,7 +188,7 @@ export default function LocationRegencyCreatePage() {
 
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                    EPSBED Code
+                                    {tt('ad.epsbedCode')}
                                 </label>
                                 <input
                                     type="text"
@@ -200,13 +201,13 @@ export default function LocationRegencyCreatePage() {
 
                             <div class="sm:col-span-2">
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
-                                    Description
+                                    {tt('ad.description')}
                                 </label>
                                 <textarea
                                     rows="3"
                                     value={description()}
                                     onInput={(e) => setDescription(e.currentTarget.value)}
-                                    placeholder="Optional notes or description..."
+                                    placeholder={tt('ad.optionalNotesOrDescription')}
                                     class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                 />
                             </div>
@@ -217,14 +218,14 @@ export default function LocationRegencyCreatePage() {
                                 href={basePath}
                                 class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 text-xs sm:text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                             >
-                                Cancel
+                                {tt('ad.cancel')}
                             </a>
                             <button
                                 type="submit"
                                 disabled={isSubmitting()}
                                 class="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 transition-colors cursor-pointer"
                             >
-                                {isSubmitting() ? 'Saving...' : 'Save Regency'}
+                                {isSubmitting() ? tt('ad.saving') : tt('ad.saveRegency')}
                             </button>
                         </div>
                     </form>

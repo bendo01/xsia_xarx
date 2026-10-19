@@ -4,6 +4,7 @@ import { toast } from '~/components/toast/Toaster';
 import { A } from '@solidjs/router';
 import { getInstitutionLogo } from '~/lib/institutionLogo';
 import ThemeToggle from '../../components/navigation/ThemeToggle';
+import { t } from '../../i18n';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0.1:5800/api/v1").replace(/\/+$/, "");
 
@@ -25,7 +26,7 @@ export default function AccountAcquisitionRequest() {
         },
         onSubmit: async ({ value }) => {
             if (!value.nik || !value.student_code || !value.email || !value.phone_number || !value.password) {
-                setErrorMessage("Semua kolom harus diisi");
+                setErrorMessage(t('au.semuaKolomHarusDiisi'));
                 return;
             }
 
@@ -36,7 +37,7 @@ export default function AccountAcquisitionRequest() {
             try {
                 const institution_id = import.meta.env.VITE_CURRENT_INSTITUTION_ID || import.meta.env.CURRENT_INSTITUTION_ID;
                 if (!institution_id) {
-                    setErrorMessage("Institution ID not configured in .env");
+                    setErrorMessage(t('au.institutionIDNotConfiguredInEnv'));
                     setIsLoading(false);
                     return;
                 }
@@ -66,19 +67,19 @@ export default function AccountAcquisitionRequest() {
                 }
 
                 if (!response.ok) {
-                    const errorMsg = data?.brief || data?.message || data?.error?.message || "Gagal memproses permintaan";
+                    const errorMsg = data?.brief || data?.message || data?.error?.message || t('au.gagalMemprosesPermintaan');
                     setErrorMessage(errorMsg);
                     toast.danger(errorMsg);
                 } else {
-                    toast.success(data?.message || "Akun berhasil dibuat");
-                    setSuccessMessage(data?.message || "Akun berhasil dibuat");
+                    toast.success(data?.message || t('au.akunBerhasilDibuat'));
+                    setSuccessMessage(data?.message || t('au.akunBerhasilDibuat'));
                     setSuccessWaLink(data?.wa_link || null);
                     if (data?.wa_link) {
                         window.open(data.wa_link, "_blank");
                     }
                 }
             } catch (err: any) {
-                const msg = err?.message || "Network Error";
+                const msg = err?.message || t('au.networkError');
                 setErrorMessage(msg);
                 toast.danger(msg);
             } finally {
@@ -199,17 +200,17 @@ export default function AccountAcquisitionRequest() {
                     {(logo) => (
                         <img
                             src={logo()}
-                            alt="Logo"
+                            alt={t('au.logo')}
                             class="size-20 object-contain mb-4 drop-shadow-lg transition-transform duration-300 hover:scale-105"
                         />
                     )}
                 </Show>
 
                 <h1 class="text-[26px] sm:text-[30px] font-bold text-neutral-900 dark:text-white tracking-wide mb-1 font-sans">
-                    Dapatkan Akun
+                    {t('au.dapatkanAkun')}
                 </h1>
                 <p class="text-neutral-600 dark:text-white/60 text-xs font-semibold tracking-wider uppercase mb-6 font-mono text-center">
-                    Isi detail Anda untuk memperoleh akun
+                    {t('au.isiDetailAndaUntukMemperolehAkun')}
                 </p>
 
                 <Show when={errorMessage()}>
@@ -241,7 +242,7 @@ export default function AccountAcquisitionRequest() {
                         </svg>
                         <div class="flex-1 leading-snug">
                             <p>{successMessage()}</p>
-                            <a href={successWaLink()!} target="_blank" class="mt-2 text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 underline font-semibold block">Buka Tautan WhatsApp</a>
+                            <a href={successWaLink()!} target="_blank" class="mt-2 text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 underline font-semibold block">{t('au.bukaTautanWhatsApp')}</a>
                         </div>
                     </div>
                 </Show>
@@ -257,10 +258,10 @@ export default function AccountAcquisitionRequest() {
                     <form.Field name="nik">
                         {(field) => (
                             <div class="space-y-1">
-                                <label class="block text-xs font-medium text-neutral-700 dark:text-white/80 px-1">NIK</label>
+                                <label class="block text-xs font-medium text-neutral-700 dark:text-white/80 px-1">{t('au.nik')}</label>
                                 <input
                                     type="text"
-                                    placeholder="Nomor Induk Kependudukan"
+                                    placeholder={t('au.nomorIndukKependudukan')}
                                     required
                                     value={field().state.value}
                                     onBlur={field().handleBlur}
@@ -277,10 +278,10 @@ export default function AccountAcquisitionRequest() {
                     <form.Field name="student_code">
                         {(field) => (
                             <div class="space-y-1">
-                                <label class="block text-xs font-medium text-neutral-700 dark:text-white/80 px-1">Student Code</label>
+                                <label class="block text-xs font-medium text-neutral-700 dark:text-white/80 px-1">{t('au.studentCode')}</label>
                                 <input
                                     type="text"
-                                    placeholder="NIM / NISN"
+                                    placeholder={t('au.nimNISN')}
                                     required
                                     value={field().state.value}
                                     onBlur={field().handleBlur}
@@ -297,10 +298,10 @@ export default function AccountAcquisitionRequest() {
                     <form.Field name="email">
                         {(field) => (
                             <div class="space-y-1">
-                                <label class="block text-xs font-medium text-neutral-700 dark:text-white/80 px-1">Email</label>
+                                <label class="block text-xs font-medium text-neutral-700 dark:text-white/80 px-1">{t('au.email')}</label>
                                 <input
                                     type="email"
-                                    placeholder="Alamat Email Aktif"
+                                    placeholder={t('au.alamatEmailAktif')}
                                     required
                                     value={field().state.value}
                                     onBlur={field().handleBlur}
@@ -317,10 +318,10 @@ export default function AccountAcquisitionRequest() {
                     <form.Field name="phone_number">
                         {(field) => (
                             <div class="space-y-1">
-                                <label class="block text-xs font-medium text-neutral-700 dark:text-white/80 px-1">Nomor WhatsApp</label>
+                                <label class="block text-xs font-medium text-neutral-700 dark:text-white/80 px-1">{t('au.nomorWhatsApp')}</label>
                                 <input
                                     type="tel"
-                                    placeholder="Contoh: 62812..."
+                                    placeholder={t('au.contoh62812')}
                                     required
                                     value={field().state.value}
                                     onBlur={field().handleBlur}
@@ -337,11 +338,11 @@ export default function AccountAcquisitionRequest() {
                     <form.Field name="password">
                         {(field) => (
                             <div class="space-y-1">
-                                <label class="block text-xs font-medium text-neutral-700 dark:text-white/80 px-1">Kata Sandi</label>
+                                <label class="block text-xs font-medium text-neutral-700 dark:text-white/80 px-1">{t('au.kataSandi')}</label>
                                 <div class="relative flex items-center">
                                     <input
                                         type={showPassword() ? "text" : "password"}
-                                        placeholder="Kata Sandi Minimal 6 Karakter"
+                                        placeholder={t('au.kataSandiMinimal6Karakter')}
                                         required
                                         minlength={6}
                                         value={field().state.value}
@@ -385,7 +386,7 @@ export default function AccountAcquisitionRequest() {
                             >
                                 <Show when={isLoading()} fallback={
                                     <>
-                                        <span>Dapatkan Akun</span>
+                                        <span>{t('au.dapatkanAkun')}</span>
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M5 12h14" />
                                             <path d="m12 5 7 7-7 7" />
@@ -397,7 +398,7 @@ export default function AccountAcquisitionRequest() {
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
-                                        <span>Memproses...</span>
+                                        <span>{t('au.memproses')}</span>
                                     </>
                                 )}</Show>
                             </button>
@@ -410,7 +411,7 @@ export default function AccountAcquisitionRequest() {
                         <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="m15 18-6-6 6-6" />
                         </svg>
-                        Kembali ke Login
+                        {t('au.kembaliKeLogin')}
                     </A>
                 </div>
             </div>

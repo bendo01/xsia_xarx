@@ -215,7 +215,7 @@ export default function LoginWithSession() {
                     {(logo) => (
                         <img
                             src={logo()}
-                            alt="Logo"
+                            alt={t('au.logo')}
                             class="size-20 object-contain mb-4 drop-shadow-lg transition-transform duration-300 hover:scale-105"
                         />
                     )}
@@ -254,7 +254,7 @@ export default function LoginWithSession() {
                             type="button"
                             onClick={() => setErrorMessage(null)}
                             class="text-red-600 dark:text-red-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
-                            aria-label="Dismiss error"
+                            aria-label={t('au.dismissError')}
                         >
                             <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -360,7 +360,7 @@ export default function LoginWithSession() {
                     {/* Options */}
                     <div class="flex items-center justify-end pt-1 text-xs">
                         <A href="/authentification/forgot-password" class="text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors">
-                            Forgot Password?
+                            {t('au.forgotPassword')}
                         </A>
                     </div>
 

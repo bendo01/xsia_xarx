@@ -254,7 +254,7 @@ export default function Login() {
                     {(logo) => (
                         <img
                             src={logo()}
-                            alt="Logo"
+                            alt={t('au.logo')}
                             class="size-20 object-contain mb-5 drop-shadow-lg transition-transform duration-300 hover:scale-105"
                         />
                     )}
@@ -285,7 +285,7 @@ export default function Login() {
                             type="button"
                             onClick={() => setErrorMessage(null)}
                             class="text-red-600 dark:text-red-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
-                            aria-label="Dismiss error"
+                            aria-label={t('au.dismissError')}
                         >
                             <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -402,7 +402,7 @@ export default function Login() {
                             <span>{t('auth.login.rememberMe')}</span>
                         </label>
                         <A href="/authentification/forgot-password" class="text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
-                            Forgot Password?
+                            {t('au.forgotPassword')}
                         </A>
                     </div>
 
