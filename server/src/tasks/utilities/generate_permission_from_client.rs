@@ -213,6 +213,9 @@ async fn lookup_route(router: &Router, method: &str, path: &str) -> RouteLookup 
     }
 }
 
+/// Shipped next to the binary in production (see DEPLOYMENT.md).
+const DEFAULT_USAGE_FILE: &str = "api-usage.json";
+
 fn load_usage(args: &[String]) -> Result<ApiUsage, Box<dyn std::error::Error>> {
     let flag = |name: &str| {
         args.iter()
@@ -220,17 +223,31 @@ fn load_usage(args: &[String]) -> Result<ApiUsage, Box<dyn std::error::Error>> {
             .and_then(|i| args.get(i + 1))
             .cloned()
     };
+    let read = |path: &str| {
+        println!("==> Reading client API usage from {}", path);
+        std::fs::read_to_string(path)
+            .map_err(|e| format!("cannot read client API usage file '{}': {}", path, e))
+    };
+    let client_dir = PathBuf::from(flag("--client").unwrap_or_else(|| "../client".to_string()));
+    let script = client_dir.join("scripts/extract-api-usage.mjs");
     let json = if let Some(input) = flag("--input") {
-        println!("==> Reading client API usage from {}", input);
-        std::fs::read_to_string(input)?
+        read(&input)?
+    } else if !script.exists() && std::path::Path::new(DEFAULT_USAGE_FILE).exists() {
+        // Production has no client source; use the api-usage.json shipped with the release.
+        read(DEFAULT_USAGE_FILE)?
     } else {
-        let client_dir = PathBuf::from(flag("--client").unwrap_or_else(|| "../client".to_string()));
-        let script = client_dir.join("scripts/extract-api-usage.mjs");
         println!("==> Tracing client API usage with {}", script.display());
         let output = Command::new("bun")
             .arg(&script)
             .current_dir(&client_dir)
-            .output()?;
+            .output()
+            .map_err(|e| {
+                format!(
+                    "cannot run bun on '{}': {} (no client source? pass --input <api-usage.json>)",
+                    script.display(),
+                    e
+                )
+            })?;
         if !output.status.success() {
             return Err(format!(
                 "extract-api-usage.mjs failed: {}",

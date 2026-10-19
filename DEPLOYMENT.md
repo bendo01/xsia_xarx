@@ -1107,11 +1107,45 @@ systemctl is-active xsia-api xsia-web
 
 ### E. Permissions sync without the client source
 
-`utility:generate-permission-from-client` normally runs `client/scripts/extract-api-usage.mjs` against the client source. The build step above already ran it and shipped the result as `api-usage.json`, so pass it with `--input`:
+`utility:generate-permission-from-client` normally runs `client/scripts/extract-api-usage.mjs` against the client source, which the server doesn't have. The build step above already ran it and shipped the result as `api-usage.json` (next to the binary, in `server/`). When no client source is found, the task falls back to `./api-usage.json` automatically; `--input <path>` points it at a different file:
 
 ```bash
-asxsia 'cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task utility:generate-permission-from-client --input api-usage.json --prune'
+# uses ./api-usage.json (run from server/)
+asxsia 'cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task utility:generate-permission-from-client --area course-department --dry-run'
+
+# explicit path
+asxsia 'cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task utility:generate-permission-from-client --input /path/to/api-usage.json --prune'
 ```
+
+If it fails with `cannot read client API usage file`, the file was not shipped (older deploy). Regenerate it on the workstation and install it:
+
+```bash
+cd client && bun scripts/extract-api-usage.mjs > /tmp/api-usage.json
+scp /tmp/api-usage.json you@server:/tmp/
+# on the server
+sudo install -o xsia -g xsia -m 0644 /tmp/api-usage.json /var/www/ferron/xsia_xarx/server/api-usage.json
+```
+
+Use `--area <name>` to limit the sync to one client area and `--dry-run` to preview. Add `--prune` only when you want to revoke grants the client no longer needs. Run `utility:generate-permission-from-route` first if a new route's permission row doesn't exist yet.
+
+**Where the file comes from and where it goes**
+
+- It is not a compile output. It is generated from the client source by `client/scripts/extract-api-usage.mjs`; `deploy/build-release.sh` runs that and ships it in the release.
+- It lives at `/var/www/ferron/xsia_xarx/server/api-usage.json`, next to the `xsia_xarx` binary, readable by `xsia`. Run the task from that directory, because the automatic fallback is relative to the working directory.
+- `generate_permission_from_client.rs` is the Rust source of the task, compiled into the binary. You never run it directly; you run it as `./xsia_xarx task utility:generate-permission-from-client`.
+- A binary built before the fallback was added always needs `--input api-usage.json`.
+
+**Fixing a 403 on one area (example: `course-department`)**
+
+```bash
+cd /var/www/ferron/xsia_xarx/server
+# 1. Preview. Check that the route's permission is listed for the position type.
+sudo -u xsia -H ./xsia_xarx task utility:generate-permission-from-client --input api-usage.json --area course-department --dry-run
+# 2. Apply
+sudo -u xsia -H ./xsia_xarx task utility:generate-permission-from-client --input api-usage.json --area course-department
+```
+
+If the preview says the permission doesn't exist, run `utility:generate-permission-from-route` first. Then reload the page as a user of that role.
 
 ---
 
@@ -1142,6 +1176,7 @@ Copy backups off the server (rsync / object storage) — a backup on the same di
 | API exits with `password authentication failed for user "bendo01"` | `server/.env` isn't readable, so the built-in default credentials are used. Usually it's owned by `root` (created/edited with plain `sudo`), or the binary was run as your login user. `chown xsia:xsia` + `chmod 600` it and run as `xsia` ([6.C](#c-production-env)). |
 | API exits with `Failed to connect to PGMQ` | Wrong `DATABASE_URL`, `pg_hba.conf` still on `ident`, or role lacks rights on schema `pgmq`. |
 | `extension "pg_uuidv7" is not available` (or `"age"`) | Built against the wrong PostgreSQL — rebuild with `PATH=/usr/pgsql-18/bin:$PATH` (for AGE, use the `release/PG18/…` branch). |
+| `403 Forbidden` on a page's API call for a staff role | The role's position type lacks the route's permission — run [14.E](#e-permissions-sync-without-the-client-source) with `--area <name>`. |
 | Migration fails: `permission denied for schema ag_catalog` / `for table ag_graph` | AGE grants missing — run the AGE lines of [2.C](#c-create-the-database-role-and-enable-extensions) as `postgres`. |
 | `access to library "age" is not allowed` | Something ran `LOAD 'age'` as `xsia` (non-superusers can't). Rely on `session_preload_libraries` from [2.C](#c-create-the-database-role-and-enable-extensions) instead. |
 | `unhandled cypher(cstring) function call` | AGE isn't loaded in that connection — check `SHOW session_preload_libraries;` returns `age`, then restart `xsia-api` so the pool reconnects. |
