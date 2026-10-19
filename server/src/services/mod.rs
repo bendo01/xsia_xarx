@@ -4,3 +4,4 @@ pub mod pdf;
 pub mod feeder_dikti;
 pub mod messenger;
 pub mod ai;
+pub mod compliance;

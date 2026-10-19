@@ -3,6 +3,7 @@ pub mod ai;
 pub mod auth;
 pub mod building;
 pub mod chart;
+pub mod compliance;
 pub mod contact;
 pub mod document;
 pub mod feeder;

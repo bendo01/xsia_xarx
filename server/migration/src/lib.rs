@@ -5,6 +5,7 @@ pub mod academic;
 pub mod ai;
 pub mod auth;
 pub mod building;
+pub mod compliance;
 pub mod contact;
 pub mod document;
 pub mod feeder;
@@ -132,6 +133,12 @@ impl MigratorTrait for Migrator {
             Box::new(building::reference::m20260806_145338_schema_building_reference_table_conditions::Migration),
             Box::new(building::reference::m20260806_145343_schema_building_reference_table_room_types::Migration),
             Box::new(building::reference::m20260806_145350_schema_building_reference_table_varieties::Migration),
+            Box::new(compliance::m20260901_000001_schema_compliance_table_experiment_runs::Migration),
+            Box::new(compliance::m20260901_000002_schema_compliance_table_experiment_metrics::Migration),
+            Box::new(compliance::m20260901_000003_schema_compliance_table_duplicate_candidates::Migration),
+            Box::new(compliance::m20260901_000004_schema_compliance_table_regulation_documents::Migration),
+            Box::new(compliance::m20260901_000005_schema_compliance_table_anomaly_events::Migration),
+            Box::new(compliance::m20260901_000006_schema_compliance_table_gold_labels::Migration),
             Box::new(contact::master::m20260806_145501_schema_contact_master_table_electronic_mails::Migration),
             Box::new(contact::master::m20260806_145507_schema_contact_master_table_phones::Migration),
             Box::new(contact::master::m20260806_145511_schema_contact_master_table_residences::Migration),
