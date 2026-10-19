@@ -1,4 +1,4 @@
-import { createSignal, createEffect, onMount, For, Show, createMemo } from 'solid-js';
+import { createSignal, createEffect,  For, Show, createMemo } from 'solid-js';
 import { useParams, useNavigate } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { masterApiIndex, masterApiShow, getBaseApiUrl, getAuthHeaders } from '~/controllers/master/masterApiController';

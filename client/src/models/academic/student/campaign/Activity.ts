@@ -1,4 +1,4 @@
-import type { AcademicStudentCampaignDetailActivity, AcademicStudentCampaignDetailActivityDataObject } from "./DetailActivity";
+import type {  AcademicStudentCampaignDetailActivityDataObject } from "./DetailActivity";
 
 export interface AcademicStudentCampaignActivity {
     id: string;

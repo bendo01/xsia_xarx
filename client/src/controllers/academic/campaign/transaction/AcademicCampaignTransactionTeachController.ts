@@ -429,7 +429,7 @@ export async function academicCampaignTransactionTeachList(unit_activity_id: str
             };
         }
         return { code: 200, message: data };
-    } catch (error) {
+    } catch {
         return { code: 500, message: 'Internal server error' };
     }
 }

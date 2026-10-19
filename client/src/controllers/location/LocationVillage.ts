@@ -40,7 +40,7 @@ export async function getVillageLists(sub_district_id: string): Promise<{
                 code: 200,
                 message: data
             };
-        } catch (error) {
+        } catch {
             return {
                 code: 500,
                 message: "Internal server error"
@@ -88,7 +88,7 @@ export async function getVillageIndex(paginationData: {
             code: 200,
             message: data
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Internal server error"
@@ -122,7 +122,7 @@ export async function getVillageById(id: string): Promise<{
             code: 200,
             message: data
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Internal server error"
@@ -171,7 +171,7 @@ export async function createVillage(villageData: {
             code: 200,
             message: data
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Internal server error"
@@ -220,7 +220,7 @@ export async function updateVillage(id: string, villageData: {
             code: 200,
             message: data
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Internal server error"
@@ -253,7 +253,7 @@ export async function deleteVillage(id: string): Promise<{
             code: 200,
             message: "Data Desa/Kelurahan berhasil dihapus"
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Internal server error"

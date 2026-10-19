@@ -301,8 +301,8 @@ export default function StudentDashboardProfilePage() {
             const nameA = a.academic_year?.name || a.name || a.semester_name || '';
             const nameB = b.academic_year?.name || b.name || b.semester_name || '';
 
-            const matchA = nameA.match(/(\d{4})\s*[\/-]?\s*(\d+)/);
-            const matchB = nameB.match(/(\d{4})\s*[\/-]?\s*(\d+)/);
+            const matchA = nameA.match(/(\d{4})\s*[/-]?\s*(\d+)/);
+            const matchB = nameB.match(/(\d{4})\s*[/-]?\s*(\d+)/);
 
             if (matchA && matchB) {
                 const yearA = parseInt(matchA[1], 10);

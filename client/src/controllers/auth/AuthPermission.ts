@@ -21,7 +21,7 @@ export async function AuthPermissionIndex(pagination : TypePaginationForm): Prom
         const response_data: ModelCommonReferencePaginationResponse = await response.json();
         return response_data;
     }
-    catch (error) {
+    catch {
         // console.error("Error:", error);
         return {
             pagination: {
@@ -98,7 +98,7 @@ export async function AuthPermissionUpsert(data: TypeInputEntityReferenceForm): 
         // console.log(returned);
         return returned;
 
-    } catch (error) {
+    } catch {
         // Return a default error message in case of exception
         returned.is_error = true;
         returned.code = 502;
@@ -168,7 +168,7 @@ export async function AuthPermissionAttachPositionType(data: TypeAttachDetachPos
         }
         return returned;
 
-    } catch (error) {
+    } catch {
         // Return a default error message in case of exception
         returned.is_error = true;
         returned.code = 502;
@@ -203,7 +203,7 @@ export async function AuthPermissionDetachPositionType(data: TypeAttachDetachPos
         }
         return returned;
 
-    } catch (error) {
+    } catch {
         // Return a default error message in case of exception
         returned.is_error = true;
         returned.code = 502;
@@ -239,7 +239,7 @@ export async function AuthPermissionAttachUser(data: TypeAttachDetachUserInput):
         }
         return returned;
 
-    } catch (error) {
+    } catch {
         // Return a default error message in case of exception
         returned.is_error = true;
         returned.code = 502;
@@ -274,7 +274,7 @@ export async function AuthPermissionDetachUser(data: TypeAttachDetachUserInput):
         }
         return returned;
 
-    } catch (error) {
+    } catch {
         // Return a default error message in case of exception
         returned.is_error = true;
         returned.code = 502;
@@ -297,7 +297,7 @@ export async function AuthPermissionAll(): Promise<Permission[]> {
         const response_data: Permission[] = await response.json();
         return response_data;
     }
-    catch (error) {
+    catch {
         // console.error("Error:", error);
         return [];
     }

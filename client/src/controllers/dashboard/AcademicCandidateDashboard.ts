@@ -28,7 +28,7 @@ export async function getSummary(institution_id: string, academic_year_id: strin
             code: 200,
             message: data
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Internal server error"
@@ -71,7 +71,7 @@ export async function exportExcel(institution_id: string): Promise<{
             code: 200,
             message: "Berhasil mengekspor data"
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Internal server error"

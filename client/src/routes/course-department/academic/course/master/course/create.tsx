@@ -2,16 +2,7 @@ import { createSignal, onMount, createEffect, For, Show } from 'solid-js';
 import { useSearchParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
-import { masterApiIndex, masterApiCreate, masterApiShow } from '~/controllers/master/masterApiController';
-import {
-    currentUserSignal,
-    userRolesSignal,
-    activeRoleSignal,
-    refreshAuthState,
-    isStaffProgramStudi
-} from '~/lib/authStore';
-import { getStorageItem } from '~/lib/storage';
-import { GetCurrentUser } from '~/controllers/auth/AuthUser';
+import { masterApiIndex, masterApiCreate } from '~/controllers/master/masterApiController';
 import { getLoggedInStaffUnit, LoggedInStaffUnitResult } from '~/lib/staffHelper';
 
 export default function CourseMasterCreatePage() {

@@ -23,7 +23,7 @@ export default function PopupBlockedAlert() {
 
             testWin.close();
             return true; // Allowed
-        } catch (_) {
+        } catch {
             return false; // Blocked
         }
     };
@@ -37,7 +37,7 @@ export default function PopupBlockedAlert() {
             setIsBlocked(false);
             try {
                 sessionStorage.setItem('popup_alert_dismissed', 'true');
-            } catch (_) {}
+            } catch {}
             toast.success('Izin pop-up aktif! Sekarang dokumen PDF dari server dapat dibuka dan diunduh dengan lancar.');
         } else {
             setIsBlocked(true);
@@ -49,7 +49,7 @@ export default function PopupBlockedAlert() {
         setDismissed(true);
         try {
             sessionStorage.setItem('popup_alert_dismissed', 'true');
-        } catch (_) {}
+        } catch {}
     };
 
     onMount(() => {
@@ -60,7 +60,7 @@ export default function PopupBlockedAlert() {
             if (sessionStorage.getItem('popup_alert_dismissed') === 'true') {
                 setDismissed(true);
             }
-        } catch (_) {}
+        } catch {}
 
         // Initial check on mount
         const allowed = testPopupPermission(false);
@@ -74,7 +74,7 @@ export default function PopupBlockedAlert() {
             setDismissed(false); // Force show if a real download was just blocked
             try {
                 sessionStorage.removeItem('popup_alert_dismissed');
-            } catch (_) {}
+            } catch {}
         };
 
         window.addEventListener('popup-blocked', handleBlockedEvent);

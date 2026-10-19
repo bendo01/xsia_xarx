@@ -1,13 +1,13 @@
-import { createSignal, onMount, Show, For, Switch, Match } from 'solid-js';
+import { createSignal, onMount,   Switch, Match } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 import {
     isAuthenticatedSignal,
     userRolesSignal,
     activeRoleSignal,
-    currentUserSignal,
-    activeStudentCodeSignal,
-    activeStudentIdSignal,
-    currentRoleIdSignal,
+    
+    
+    
+    
     setActiveRole,
     setActiveInstitution,
     setActiveStudent,
@@ -81,7 +81,7 @@ export default function DynamicMenu() {
             try {
                 const instId = await resolveInstitutionFromStaffRole(undefined, role || roleId);
                 if (instId) {
-                    resolvedRole = { ...(role || {}), id: roleId, name: roleName, institution_id: instId };
+                    resolvedRole = { ...role, id: roleId, name: roleName, institution_id: instId };
                     setActiveInstitution(instId);
                 }
             } catch (e) {

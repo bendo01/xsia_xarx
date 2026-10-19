@@ -20,7 +20,7 @@ export async function index(pagination: TypePaginationForm) {
         const response_data: ModelInstitutionMasterStaffPaginationResponse = await response.json();
         return response_data;
     }
-    catch (error) {
+    catch {
         // console.error("Error:", error);
         return {
             pagination: {
@@ -66,7 +66,7 @@ export async function store(data: InstitutionMasterStaff) {
             message: "Staff stored successfully",
             data: responseData
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"
@@ -101,7 +101,7 @@ export async function update(id: string, data: InstitutionMasterStaff) {
             message: "Staff updated successfully",
             data: responseData
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"
@@ -135,7 +135,7 @@ export async function show(id: string) {
             message: "Staff shown successfully",
             data: responseData
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"
@@ -169,7 +169,7 @@ export async function destroy(id: string) {
             message: "Staff destroyed successfully",
             data: responseData
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"
@@ -204,7 +204,7 @@ export async function connectAccount(data: ConnectAccountParams) {
             message: "Account connected successfully",
             data: responseData
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"
@@ -239,7 +239,7 @@ export async function generateAccount(data: GenerateAccountParams) {
             message: "Account generated successfully",
             data: responseData
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"

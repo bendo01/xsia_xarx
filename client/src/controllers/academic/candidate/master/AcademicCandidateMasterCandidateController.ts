@@ -30,7 +30,7 @@ export async function candidateRegister(registration: AcademicCandidateMasterCan
             code: data.code || 200,
             message: data.message || "Registration successful"
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"
@@ -62,7 +62,7 @@ export async function candidateValidate(id: string) {
             code: 200,
             message: data
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"
@@ -99,7 +99,7 @@ export async function candidateCreateProfile(id: string, data: PersonMasterIndiv
             data: responseData.data
         };
 
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"
@@ -136,7 +136,7 @@ export async function candidateCreateGuardian(candidate_id: string, relative_typ
             data: responseData.data
         };
 
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"
@@ -177,7 +177,7 @@ export async function candidateIndex(institution_id: string, academic_year_id: s
             data: responseData // Return full object: { pagination: ..., data: ... }
         };
 
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"
@@ -212,7 +212,7 @@ export async function candidateShow(id: string) {
             data: responseData
         };
 
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"

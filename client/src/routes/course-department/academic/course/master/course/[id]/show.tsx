@@ -2,7 +2,7 @@ import { createSignal, onMount, createEffect, Show } from 'solid-js';
 import { useParams, useSearchParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
-import { masterApiShow, masterApiIndex, masterApiDelete } from '~/controllers/master/masterApiController';
+import { masterApiShow,  masterApiDelete } from '~/controllers/master/masterApiController';
 
 export default function CourseMasterShowPage() {
     const apiPath = "academic/course/master/courses";

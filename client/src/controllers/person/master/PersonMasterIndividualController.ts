@@ -290,7 +290,7 @@ export async function PersonMasterIndividualControllerList(params?: { search?: s
             code: 200,
             message: items,
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Internal server error",

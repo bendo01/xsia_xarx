@@ -187,7 +187,7 @@ export async function academicCampaignTransactionActivityShow(id: string): Promi
             code: 200,
             message: data,
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: 'Internal server error',

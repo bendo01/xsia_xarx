@@ -28,7 +28,7 @@ export async function familyCardCreate(id: string, code: string) {
             message: responseData.message || "Family card created successfully",
             data: responseData.data
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"

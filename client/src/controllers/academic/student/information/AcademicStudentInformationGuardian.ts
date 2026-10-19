@@ -32,7 +32,7 @@ export async function candidateCreateGuardian(student_id: string, relative_type_
             data: responseData.data
         };
 
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"

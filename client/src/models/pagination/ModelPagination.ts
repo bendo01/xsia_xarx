@@ -1,6 +1,5 @@
 import type { ModelCommonReference } from "../common/reference/ModelCommonReference";
 import type { InstitutionMasterInstitution } from "../institution/master/Institution";
-import type { InstitutionMasterEmployee } from "../institution/master/Employee";
 import type { LocationProvince } from "../location/Province";
 import type { LocationRegency } from "../location/Regency";
 import type { LocationRegencyType } from "../location/RegencyType";
@@ -10,7 +9,7 @@ import type { LocationRegencyWithRelations } from "../location/Regency";
 import type { FeederMasterMahasiswa } from "../feeder/master/Mahasiswa";
 import { InstitutionReferencePositionType } from "../institution/reference/PositionType";
 import { AuthUser } from "../auth/User";
-import { PersonMasterIndividual, PersonMasterIndividualDataObject } from "../person/master/Individual";
+import {  PersonMasterIndividualDataObject } from "../person/master/Individual";
 
 export interface ModelPagination {
   search: string;

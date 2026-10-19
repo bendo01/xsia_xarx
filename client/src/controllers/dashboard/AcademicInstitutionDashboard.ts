@@ -43,7 +43,7 @@ export async function academicInstitutionDashboardIndex(): Promise<{
             code: 200,
             message: data
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Internal server error"

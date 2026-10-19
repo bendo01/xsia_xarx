@@ -43,7 +43,7 @@ export default function RemoteSearchSelect<T extends { id: string }>(props: Remo
                 page: 1,
                 per_page: 20,
                 ...(text ? { [props.searchParam || 'name']: text } : {}),
-                ...(props.extraParams || {}),
+                ...props.extraParams,
             });
             // Ignore responses that arrive after a newer search was started
             if (seq === requestSeq) setResults(res.data || []);

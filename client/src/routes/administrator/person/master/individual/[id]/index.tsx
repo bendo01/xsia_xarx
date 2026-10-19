@@ -2,7 +2,7 @@ import { createSignal, onMount, createEffect, Show, For } from 'solid-js';
 import { useSearchParams, useParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
-import type { PersonMasterIndividual, PersonMasterIndividualDataObject } from '~/models/person/master/Individual';
+import type {  PersonMasterIndividualDataObject } from '~/models/person/master/Individual';
 import { PersonMasterIndividualControllerShow } from '~/controllers/person/master/PersonMasterIndividualController';
 
 export default function PersonMasterIndividualDetailPage() {

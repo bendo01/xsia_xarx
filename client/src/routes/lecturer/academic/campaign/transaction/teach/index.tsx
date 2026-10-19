@@ -11,7 +11,6 @@ import {
     LecturerAssignedTeachItem
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachController';
 import type { AcademicLecturerMasterLecturer } from '~/models/academic/lecturer/master/Lecturer';
-import type { YearlyCreditTrend } from '~/components/chart/teach_credit_chart';
 
 const TeachCreditChart = lazy(() => import('~/components/chart/teach_credit_chart'));
 

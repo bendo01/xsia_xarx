@@ -38,7 +38,7 @@ export async function getSubDistrictLists(regency_id: string): Promise<{
                 code: 200,
                 message: data
             };
-        } catch (error) {
+        } catch {
             return {
                 code: 500,
                 message: "Internal server error"
@@ -86,7 +86,7 @@ export async function getSubDistrictIndex(paginationData: {
             code: 200,
             message: data
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Internal server error"
@@ -120,7 +120,7 @@ export async function getSubDistrictById(id: string): Promise<{
             code: 200,
             message: data
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Internal server error"
@@ -172,7 +172,7 @@ export async function createSubDistrict(subDistrictData: {
             code: 200,
             message: data
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Internal server error"
@@ -224,7 +224,7 @@ export async function updateSubDistrict(id: string, subDistrictData: {
             code: 200,
             message: data
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Internal server error"
@@ -257,7 +257,7 @@ export async function deleteSubDistrict(id: string): Promise<{
             code: 200,
             message: "Data Kecamatan berhasil dihapus"
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Internal server error"

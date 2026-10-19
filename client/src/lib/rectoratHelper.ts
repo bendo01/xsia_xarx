@@ -4,13 +4,12 @@ import {
     currentRoleIdSignal,
     getStoredUser,
     currentUserSignal,
-    activeInstitutionIdSignal,
+    
     setActiveInstitution,
     setUserRolesSignal,
     institutionCache,
-    lookupInstitutionName,
-    type UserRoleItem,
-} from './authStore';
+    
+    type UserRoleItem } from './authStore';
 import { getStorageItem, setStorageItem } from './storage';
 import { masterApiShow } from '~/controllers/master/masterApiController';
 
@@ -168,7 +167,7 @@ async function lookupStaffInstitution(staffId: string): Promise<string | undefin
                 const instName = unitRes.data?.institution?.name || unitRes.data?.institution_name;
                 if (instId && instName) institutionCache[instId] = instName;
                 if (isValidUuid(instId)) return instId;
-            } catch (e) {
+            } catch {
                 // Ignore
             }
         }
@@ -181,7 +180,7 @@ async function lookupStaffInstitution(staffId: string): Promise<string | undefin
                 const instName = empRes.data?.institution?.name || empRes.data?.institution_name;
                 if (instId && instName) institutionCache[instId] = instName;
                 if (isValidUuid(instId)) return instId;
-            } catch (e) {
+            } catch {
                 // Ignore
             }
         }

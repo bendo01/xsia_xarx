@@ -1,4 +1,4 @@
-import { createSignal, createEffect, createMemo, onMount, For, Show } from 'solid-js';
+import { createSignal,  createMemo, onMount, For, Show } from 'solid-js';
 import { useParams, useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import Loader from '~/components/loader';
@@ -17,15 +17,11 @@ import {
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachEvaluationController';
 import {
     listDetailActivities,
-    updateDetailActivity,
-    DetailActivityItem
-} from '~/controllers/academic/student/campaign/AcademicStudentCampaignDetailActivityController';
+    updateDetailActivity } from '~/controllers/academic/student/campaign/AcademicStudentCampaignDetailActivityController';
 import {
-    listDetailActivityEvaluationComponents,
+    
     createDetailActivityEvaluationComponent,
-    updateDetailActivityEvaluationComponent,
-    DetailActivityEvaluationComponentItem
-} from '~/controllers/academic/student/campaign/AcademicStudentCampaignDetailActivityEvaluationComponentController';
+    updateDetailActivityEvaluationComponent } from '~/controllers/academic/student/campaign/AcademicStudentCampaignDetailActivityEvaluationComponentController';
 import {
     listGrades,
     getGradesByUnit,
@@ -454,7 +450,7 @@ export default function LecturerTeachGradePage() {
 
                 row.is_dirty = false;
                 successCount++;
-            } catch (err) {
+            } catch {
                 failCount++;
             }
         }
@@ -492,7 +488,7 @@ export default function LecturerTeachGradePage() {
                 type: 'success',
                 text: 'Nilai kelas berhasil dikunci dan difinalisasi secara permanen. Pengubahan atau pembukaan kunci hanya dapat dilakukan oleh Administrator.',
             });
-        } catch (err) {
+        } catch {
             setActionMessage({
                 type: 'error',
                 text: 'Gagal mengunci nilai kelas. Silakan coba lagi.',
@@ -546,7 +542,7 @@ export default function LecturerTeachGradePage() {
                 type: 'success',
                 text: 'Komponen evaluasi kelas berhasil diperbarui.',
             });
-        } catch (err) {
+        } catch {
             setActionMessage({
                 type: 'error',
                 text: 'Gagal menyimpan komponen evaluasi.',
@@ -565,7 +561,7 @@ export default function LecturerTeachGradePage() {
                 type: 'success',
                 text: 'Komponen penilaian berhasil dihapus.',
             });
-        } catch (err) {
+        } catch {
             setActionMessage({
                 type: 'error',
                 text: 'Gagal menghapus komponen penilaian.',

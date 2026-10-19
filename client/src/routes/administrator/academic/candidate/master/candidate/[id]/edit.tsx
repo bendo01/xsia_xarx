@@ -40,7 +40,7 @@ export default function CandidateEditPage() {
             } else {
                 toast.danger(res.error || 'Record not found.');
             }
-        } catch (err: any) {
+        } catch {
             toast.danger('Failed to load record details.');
         } finally {
             setIsLoading(false);

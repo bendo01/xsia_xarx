@@ -1,5 +1,5 @@
 import { getStorageItem, setStorageItem } from '~/lib/storage';
-import { AcademicStudentMasterStudent, ModelPagination, StudentDataObject } from '~/models/academic/student/master/Student';
+import {   StudentDataObject } from '~/models/academic/student/master/Student';
 import { AcademicStudentMasterStudentValidate } from '~/models/academic/student/master/Student';
 import type { PersonMasterIndividual } from '~/models/person/master/Individual';
 
@@ -197,7 +197,7 @@ export async function academicStudentMasterStudentValidate(id: string): Promise<
         }
         setStorageItem('student', JSON.stringify(data));
         return data;
-    } catch (error) {
+    } catch {
         return null;
     }
 }

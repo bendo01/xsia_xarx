@@ -9,7 +9,7 @@ import type { AcademicLecturerMasterLecturer } from '~/models/academic/lecturer/
 import type { AcademicLecturerTransactionHomebase } from '~/models/academic/lecturer/transaction/Homebase';
 import type { AcademicLecturerTransactionAcademicRank } from '~/models/academic/lecturer/transaction/AcademicRank';
 import type { AcademicLecturerTransactionAcademicGroup } from '~/models/academic/lecturer/transaction/AcademicGroup';
-import { masterApiShow, getBaseApiUrl, getAuthHeaders } from '~/controllers/master/masterApiController';
+import {  getBaseApiUrl, getAuthHeaders } from '~/controllers/master/masterApiController';
 import { PersonMasterIndividualControllerShow } from '~/controllers/person/master/PersonMasterIndividualController';
 import {
     getLecturerById,

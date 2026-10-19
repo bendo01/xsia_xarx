@@ -3,16 +3,14 @@ import { useParams, useLocation, useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { resolveInstitutionFromStaffRole } from '~/lib/rectoratHelper';
-import { masterApiShow } from '~/controllers/master/masterApiController';
 import {
     getTeachById,
-    getCourseById,
-    getClassCodeById,
-    getActivityById,
-    listTeachLecturers,
-    listLecturers,
-    type TeachItem,
-} from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachController';
+    
+    
+    
+    
+    
+    type TeachItem } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachController';
 
 interface UnitDetail {
     id: string;

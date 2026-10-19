@@ -37,7 +37,7 @@ export async function getSummaryData(): Promise<{
             code: 200,
             message: data
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Internal server error"
@@ -62,7 +62,7 @@ export async function list(search: string = "") {
 
         const data = await response.json();
         return data;
-    } catch (error) {
+    } catch {
         return [];
     }
 }

@@ -152,7 +152,7 @@ export async function academicStudentCampaignActivityIndex(id: string): Promise<
             };
         }
         return { code: 200, message: data };
-    } catch (error) {
+    } catch {
         return { code: 500, message: 'Internal server error' };
     }
 }
@@ -174,7 +174,7 @@ export async function academicStudentCampaignActivityShow(id: string): Promise<{
             };
         }
         return { code: 200, message: data };
-    } catch (error) {
+    } catch {
         return { code: 500, message: 'Internal server error' };
     }
 }
@@ -196,7 +196,7 @@ export async function toggleIsLocked(id: string): Promise<{
             };
         }
         return { code: 200, message: data };
-    } catch (error) {
+    } catch {
         return { code: 500, message: 'Internal server error' };
     }
 }

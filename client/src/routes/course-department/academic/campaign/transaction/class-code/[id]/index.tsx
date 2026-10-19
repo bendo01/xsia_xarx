@@ -44,7 +44,7 @@ export default function ClassCodeDetailPage() {
                 toast.danger('Failed to load class code data');
                 navigate('/course-department/academic/campaign/transaction/class-code');
             }
-        } catch (err: any) {
+        } catch {
             toast.danger('Failed to load class code data');
             navigate('/course-department/academic/campaign/transaction/class-code');
         } finally {

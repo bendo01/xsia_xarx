@@ -1,5 +1,5 @@
-import { AuthLogin, AuthUser, initialAuthUser, ResetPassword, UserClaim, UserWithRole, AuthUserDetail } from "../../models/auth/User";
-import { isKeyExists, removeStorageItem, setStorageItem, getStorageItem } from "../../lib/storage";
+import { AuthLogin,   ResetPassword, UserClaim,  AuthUserDetail } from "../../models/auth/User";
+import {  removeStorageItem, setStorageItem, getStorageItem } from "../../lib/storage";
 import { TypePaginationForm } from "../../lib/types";
 import { ModelAuthUserPaginationResponse } from "../../models/pagination/ModelPagination";
 
@@ -190,7 +190,7 @@ export async function GetUserRoles(userId?: string) {
             message: "Get Role successful",
             data
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"
@@ -233,7 +233,7 @@ export async function GetCurrentUser() {
             message: "Get Current User successful",
             data
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"
@@ -282,7 +282,7 @@ export async function ChangeUserRole(role_id: string) {
             message: "Ubah peran berhasil",
             data
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"
@@ -343,7 +343,7 @@ export async function claimAccount(userClaim: UserClaim) {
             message: responseData?.message || responseData?.brief || "Klaim akun gagal",
             errors: responseData?.errors
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"
@@ -383,7 +383,7 @@ export async function verifyAccount(token: string) {
             code: response.status || responseData?.code || 400,
             message: responseData?.message || responseData?.brief || "Verifikasi Gagal"
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"
@@ -423,7 +423,7 @@ export async function forgotPassword(email: string) {
             code: response.status || responseData?.code || 500,
             message: responseData?.message || responseData?.brief || "Permintaan reset gagal"
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"
@@ -466,7 +466,7 @@ export async function resetPassword(resetPayload: ResetPassword) {
             code: response.status || responseData?.code || 500,
             message: responseData?.message || responseData?.brief || "Reset Password Gagal"
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"
@@ -507,7 +507,7 @@ export async function AuthUserIndex(pagination: TypePaginationForm): Promise<Mod
             };
         }
         return response_data;
-    } catch (error) {
+    } catch {
         return {
             pagination: {
                 search: "",
@@ -537,7 +537,7 @@ export async function AuthUserShow(id: string): Promise<AuthUserDetail | null> {
         });
         const response_data: AuthUserDetail = await response.json();
         return response_data;
-    } catch (error) {
+    } catch {
         return null;
     }
 }
@@ -563,7 +563,7 @@ export async function AuthUserSyncPermission(id: string) {
             code: 200,
             message: "Sync Permission successful"
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"

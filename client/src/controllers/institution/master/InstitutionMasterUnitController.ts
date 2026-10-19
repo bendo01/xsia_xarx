@@ -71,7 +71,7 @@ export async function getUnitLists(): Promise<{
             code: 200,
             message: data
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Internal server error"
@@ -118,7 +118,7 @@ export async function getUnitSummary(unit_id: string): Promise<{
             code: 200,
             message: data
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Internal server error"
@@ -207,7 +207,7 @@ export async function getLatestCurriculum(unit_id: string): Promise<{
             code: 200,
             message: data
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Internal server error"
@@ -240,7 +240,7 @@ export async function list(institution_id: string): Promise<{
             code: 200,
             message: data
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Internal server error"

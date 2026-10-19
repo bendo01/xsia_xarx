@@ -94,6 +94,11 @@ export default defineConfig(({ mode }) => {
       },
       rules: {
         "vite-plus/prefer-vite-plus-imports": "error",
+        // Solid assigns `let ref!: HTMLElement` through the JSX `ref` prop, which the linter cannot see.
+        "eslint/no-unassigned-vars": "off",
+        // Display-only String(value) on loosely typed API payloads.
+        "typescript/no-base-to-string": "off",
+        "typescript/no-redundant-type-constituents": "off",
       },
     },
     test: {

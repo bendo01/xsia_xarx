@@ -1,5 +1,5 @@
 import { createSignal, onMount, createEffect, Show, For } from 'solid-js';
-import { useParams, A } from '@solidjs/router';
+import { useParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import {

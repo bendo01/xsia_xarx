@@ -189,7 +189,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
             } else {
                 toast.danger(res.message || 'Gagal mengubah status kunci');
             }
-        } catch (err) {
+        } catch {
             toast.danger('Gagal memproses perubahan status kunci');
         } finally {
             setLockingId(null);

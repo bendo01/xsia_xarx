@@ -1,5 +1,5 @@
 import { ModelPagination as PaginateResult } from "../../../pagination/ModelPagination";
-import { PersonMasterIndividual, PersonMasterIndividualDataObject } from "../../../person/master/Individual";
+import {  PersonMasterIndividualDataObject } from "../../../person/master/Individual";
 import { InstitutionMasterUnit } from "../../../institution/master/Unit";
 import { AcademicYear } from "../../general/AcademicYear";
 

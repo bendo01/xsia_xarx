@@ -1,6 +1,5 @@
 import { createSignal, For, Match, Switch } from "solid-js";
 import { Portal } from "solid-js/web";
-import { TransitionGroup } from "solid-transition-group";
 
 export type ToastType = "default" | "info" | "success" | "danger" | "warning";
 export type ToastPosition =

@@ -368,7 +368,7 @@ export default function StudentCourseEnrollmentPage() {
             } else {
                 toast.danger(res.message || 'Failed to enroll class.');
             }
-        } catch (err) {
+        } catch {
             toast.danger('Failed to enroll class.');
         } finally {
             setEnrollingTeachId(null);
@@ -419,7 +419,7 @@ export default function StudentCourseEnrollmentPage() {
             } else {
                 toast.danger(res.message || 'Failed to drop class.');
             }
-        } catch (err) {
+        } catch {
             toast.danger('Failed to drop class.');
         } finally {
             setDroppingDetailId(null);

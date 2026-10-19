@@ -20,7 +20,7 @@ export async function index(pagination: TypePaginationForm) {
         const response_data: ModelInstitutionMasterEmployeePaginationResponse = await response.json();
         return response_data;
     }
-    catch (error) {
+    catch {
         // console.error("Error:", error);
         return {
             pagination: {
@@ -66,7 +66,7 @@ export async function store(data: InstitutionMasterEmployee) {
             message: "Employee stored successfully",
             data: responseData
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"
@@ -101,7 +101,7 @@ export async function update(id: string, data: InstitutionMasterEmployee) {
             message: "Employee updated successfully",
             data: responseData
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"
@@ -135,7 +135,7 @@ export async function show(id: string) {
             message: "Employee shown successfully",
             data: responseData
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"
@@ -169,7 +169,7 @@ export async function destroy(id: string) {
             message: "Employee destroyed successfully",
             data: responseData
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"
@@ -195,7 +195,7 @@ export async function list(params: { search?: string, institution_id?: string })
 
         const data = await response.json();
         return data;
-    } catch (error) {
+    } catch {
         return [];
     }
 }

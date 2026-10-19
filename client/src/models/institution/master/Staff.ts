@@ -1,5 +1,3 @@
-import { PersonMasterIndividual } from "../../person/master/Individual";
-import { InstitutionMasterInstitution } from "./Institution";
 import { InstitutionMasterEmployee } from "./Employee";
 
 export interface InstitutionMasterStaff {

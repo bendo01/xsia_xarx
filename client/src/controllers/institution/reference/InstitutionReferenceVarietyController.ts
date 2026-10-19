@@ -189,7 +189,7 @@ export async function InstitutionReferenceControllerVarietyList(): Promise<{
             code: 200,
             message: items,
         };
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Internal server error",
@@ -211,7 +211,7 @@ export async function InstitutionReferenceControllerVarietyOptions(search?: stri
             value: item.id,
             label: item.name,
         }));
-    } catch (error) {
+    } catch {
         return [];
     }
 }

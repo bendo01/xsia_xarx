@@ -19,9 +19,6 @@ import {
     getStudentById,
     type StudentMasterItem
 } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
-import {
-    PersonMasterIndividualControllerShow
-} from '~/controllers/person/master/PersonMasterIndividualController';
 import type { PersonMasterIndividualDataObject } from '~/models/person/master/Individual';
 import { openOrDownloadPdf } from '~/lib/pdfHelper';
 import { resolveInstitutionFromStaffRole } from '~/lib/rectoratHelper';

@@ -1,5 +1,4 @@
 import type { TypePaginationForm, TypePaginationResponse } from '~/lib/types';
-import type { AuthUser } from '~/models/auth/User';
 import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
 import { getStorageItem } from '~/lib/storage';
 

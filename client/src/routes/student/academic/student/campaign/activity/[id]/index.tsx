@@ -138,7 +138,7 @@ export default function StudentCampaignActivityShowPage() {
             } else {
                 toast.danger(res.message || 'Failed to drop course.');
             }
-        } catch (err) {
+        } catch {
             toast.danger('Failed to drop course.');
         } finally {
             setIsDropping(null);

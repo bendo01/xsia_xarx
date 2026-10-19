@@ -36,7 +36,7 @@ export async function storeAddress(id: string, data: ContactMasterResidence) {
             data: responseData.data
         };
 
-    } catch (error) {
+    } catch {
         return {
             code: 500,
             message: "Gagal terhubung ke server"

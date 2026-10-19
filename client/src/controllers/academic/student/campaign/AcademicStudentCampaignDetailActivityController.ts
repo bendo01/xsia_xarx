@@ -256,7 +256,7 @@ export async function academicStudentCampaignDetailActivityAttend(student_activi
             };
         }
         return { code: 200, message: data };
-    } catch (error) {
+    } catch {
         return { code: 500, message: 'Internal server error' };
     }
 }
