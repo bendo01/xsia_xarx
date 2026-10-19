@@ -4,6 +4,7 @@ import { toast } from '~/components/toast/Toaster';
 import { A, useNavigate } from '@solidjs/router';
 import { getInstitutionLogo } from '~/lib/institutionLogo';
 import ThemeToggle from '../../components/navigation/ThemeToggle';
+import LocaleToggle from '../../components/navigation/LocaleToggle';
 import { t } from '../../i18n';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0.1:5800/api/v1").replace(/\/+$/, "");
@@ -172,7 +173,7 @@ export default function ForgotPasswordRequest() {
 
     return (
         <div class="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-neutral-50 dark:bg-[#0A0F1D] px-4 py-8 select-none">
-            <div class="absolute top-4 right-4 z-20"><ThemeToggle /></div>
+            <div class="absolute top-4 right-4 z-20 flex items-center gap-2"><ThemeToggle /><LocaleToggle /></div>
             {/* Ambient Background Gradient Spheres */}
             <div class="absolute inset-0 w-full h-full pointer-events-none z-0">
                 <div class="absolute top-[-15%] left-[-10%] w-[65%] h-[65%] bg-[#0d9488]/30 rounded-xs mix-blend-screen filter blur-[120px] opacity-35 dark:opacity-70"></div>

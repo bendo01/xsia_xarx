@@ -11,14 +11,13 @@ import {
     fetchPublicOptions,
     type OptionItem,
 } from '~/controllers/academic/candidate/AcademicCandidateAdmissionController';
-import { t } from '../../i18n';
+import { t, getLocale, toggleLocale } from '../../i18n';
 
 const inputClass = "w-full bg-white dark:bg-[#111827]/70 border border-neutral-300 dark:border-emerald-500/20 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-white/30 px-4 py-3 rounded-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400/50 transition-all text-sm shadow-inner";
 
 function FieldShell(props: { label: string; error?: string; children: JSX.Element }) {
     return (
         <div class="space-y-1">
-            <div class="absolute top-4 right-4 z-20"><ThemeToggle /></div>
             <label class="block text-xs font-medium text-neutral-700 dark:text-white/80 px-1">{props.label}</label>
             {props.children}
             <Show when={props.error}>
@@ -110,6 +109,19 @@ export default function CandidateAdmissionForm() {
 
     return (
         <div class="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-neutral-50 dark:bg-[#0A0F1D] px-4 py-8">
+            <div class="absolute top-4 right-4 z-20 flex items-center gap-2">
+                <ThemeToggle />
+                <button
+                    onClick={toggleLocale}
+                    type="button"
+                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-xs bg-neutral-900/5 dark:bg-white/10 hover:bg-neutral-900/10 dark:hover:bg-white/20 border border-neutral-200 dark:border-white/15 text-neutral-900 dark:text-white text-xs font-semibold backdrop-blur-md transition-all shadow-lg"
+                    aria-label={t('nav.selectLanguage')}
+                    title={t('nav.selectLanguage')}
+                >
+                    <span class="text-sm">{getLocale() === 'id' ? '🇮🇩' : '🇬🇧'}</span>
+                    <span class="font-mono text-xs uppercase font-bold">{getLocale()}</span>
+                </button>
+            </div>
             {/* Ambient Background Gradient Spheres */}
             <div class="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-50 dark:opacity-100">
                 <div class="absolute top-[-15%] left-[-10%] w-[65%] h-[65%] bg-[#0d9488]/30 rounded-xs mix-blend-screen filter blur-[120px] opacity-70"></div>
