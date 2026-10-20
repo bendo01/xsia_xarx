@@ -18,6 +18,14 @@ pub const REGULATION_CHUNKABLE_TYPE: &str = "Regulation";
 
 const DEFAULT_DIR: &str = "../legislation_regulation";
 
+/// `ai.chunks.chunkable_type` of non-legal reference material (user guides); never searched as regulation
+pub const GUIDE_CHUNKABLE_TYPE: &str = "Guide";
+
+/// Stable id for a guide, derived from its file name so re-runs replace the same chunks
+fn guide_id(file_name: &str) -> Uuid {
+    Uuid::new_v5(&Uuid::NAMESPACE_URL, format!("xsia:guide:{file_name}").as_bytes())
+}
+
 /// Regulations known to be replaced; everything else is registered as active
 const REVOKED: &[(&str, i16)] = &[("53", 2023)];
 
@@ -44,7 +52,7 @@ impl Task for IngestRegulationsTask {
     }
 
     fn description(&self) -> &str {
-        "Registers every PDF in a directory (default ../legislation_regulation) in compliance.regulation_documents and embeds it into ai.chunks as chunkable_type=Regulation (--dir=PATH, --only=TEXT filters by file name, --force re-embeds documents that already have chunks)"
+        "Registers every PDF in a directory (default ../legislation_regulation) in compliance.regulation_documents and embeds it into ai.chunks as chunkable_type=Regulation (--dir=PATH, --only=TEXT filters by file name, --force re-embeds documents that already have chunks, --type=Guide embeds user guides as chunkable_type=Guide without a regulation row)"
     }
 
     async fn run(&self, db: &DatabaseConnection, args: &[String]) -> Result<(), Box<dyn std::error::Error>> {
@@ -52,6 +60,8 @@ impl Task for IngestRegulationsTask {
         let dir = PathBuf::from(arg("--dir=").unwrap_or(DEFAULT_DIR));
         let only = arg("--only=").map(str::to_lowercase);
         let force = args.iter().any(|a| a == "--force");
+        let guide = arg("--type=").is_some_and(|t| t.eq_ignore_ascii_case("guide"));
+        let chunkable_type = if guide { GUIDE_CHUNKABLE_TYPE } else { REGULATION_CHUNKABLE_TYPE };
 
         let mut files: Vec<PathBuf> = std::fs::read_dir(&dir)?
             .filter_map(|e| e.ok().map(|e| e.path()))
@@ -65,9 +75,9 @@ impl Task for IngestRegulationsTask {
         for (i, path) in files.iter().enumerate() {
             let file_name = path.file_name().unwrap().to_string_lossy().into_owned();
             let label = format!("[{}/{}] {file_name}", i + 1, files.len());
-            let id = register(db, path, &file_name).await?;
+            let id = if guide { guide_id(&file_name) } else { register(db, path, &file_name).await? };
             let existing = chunk::Entity::find()
-                .filter(chunk::Column::ChunkableType.eq(REGULATION_CHUNKABLE_TYPE))
+                .filter(chunk::Column::ChunkableType.eq(chunkable_type))
                 .filter(chunk::Column::ChunkableId.eq(id))
                 .filter(chunk::Column::DeletedAt.is_null())
                 .count(db)
@@ -81,7 +91,7 @@ impl Task for IngestRegulationsTask {
                 pdf_path: path.to_string_lossy().into_owned(),
                 file_name: file_name.clone(),
                 file_size: std::fs::metadata(path)?.len(),
-                chunkable_type: REGULATION_CHUNKABLE_TYPE.to_owned(),
+                chunkable_type: chunkable_type.to_owned(),
                 chunkable_id: id,
                 user_id: None,
             };
@@ -143,6 +153,12 @@ mod tests {
         assert_eq!(number_and_year("permendiktisaintek-no-10-tahun-2026"), (Some("10".into()), Some(2026)));
         assert_eq!(number_and_year("7 tahun 2020"), (Some("7".into()), Some(2020)));
         assert_eq!(number_and_year("UUD45_SatuNaskah"), (None, None));
+    }
+
+    #[test]
+    fn guide_id_is_stable_per_file_name() {
+        assert_eq!(guide_id("a.pdf"), guide_id("a.pdf"));
+        assert_ne!(guide_id("a.pdf"), guide_id("b.pdf"));
     }
 
     #[test]
