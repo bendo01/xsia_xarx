@@ -4,7 +4,7 @@ import TopBar from '~/components/navigation/TopBar';
 import { Loader } from '~/components/loader';
 import { toast } from '~/components/toast/Toaster';
 import { getLoggedInStaffUnit } from '~/lib/staffHelper';
-import { listAcademicYears } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
+import { listAcademicYearOptions } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
 import {
     listStudentActivities,
     StudentActivityItem
@@ -28,8 +28,9 @@ export default function CourseDepartmentStudentCampaignActivityPage() {
 
     const [search, setSearch] = createSignal('');
     const [academicYearId, setAcademicYearId] = createSignal('');
+    const [sortBy, setSortBy] = createSignal('student_name-asc');
     const [page, setPage] = createSignal(1);
-    const [pageSize] = createSignal(10);
+    const [pageSize, setPageSize] = createSignal(10);
     const [totalPages, setTotalPages] = createSignal(1);
     const [totalItems, setTotalItems] = createSignal(0);
 
@@ -51,6 +52,8 @@ export default function CourseDepartmentStudentCampaignActivityPage() {
                 unit_id: uId,
                 search: search().trim() || undefined,
                 academic_year_id: academicYearId() || undefined,
+                sort_by: sortBy().split('-')[0],
+                sort_dir: sortBy().split('-')[1],
             });
             // Defensive: never show rows outside the staff's unit
             setActivities(res.data.filter((a) => !a.unit_id || a.unit_id === uId));
@@ -67,7 +70,7 @@ export default function CourseDepartmentStudentCampaignActivityPage() {
 
     onMount(async () => {
         try {
-            const [staffRes, years] = await Promise.all([getLoggedInStaffUnit(), listAcademicYears()]);
+            const [staffRes, years] = await Promise.all([getLoggedInStaffUnit(), listAcademicYearOptions()]);
             setAcademicYears(years);
             setUnitId(staffRes.unitId || '');
             setUnitName(staffRes.unit?.name || '');
@@ -81,6 +84,8 @@ export default function CourseDepartmentStudentCampaignActivityPage() {
     createEffect(() => {
         page();
         academicYearId();
+        pageSize();
+        sortBy();
         if (!isResolvingUnit()) fetchActivities();
     });
 
@@ -140,6 +145,19 @@ export default function CourseDepartmentStudentCampaignActivityPage() {
                         >
                             <option value="">{t('cd.semuaTahunAjaran')}</option>
                             <For each={academicYears()}>{(y) => <option value={y.id}>{y.name}</option>}</For>
+                        </select>
+                        <select
+                            value={sortBy()}
+                            onChange={(e) => {
+                                setSortBy(e.currentTarget.value);
+                                setPage(1);
+                            }}
+                            class="px-3 py-2 text-xs rounded-xs border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900"
+                        >
+                            <option value="student_name-asc">{t('cd.fullNameAZ')}</option>
+                            <option value="student_name-desc">{t('cd.fullNameZA')}</option>
+                            <option value="student_code-asc">{t('cd.nimCodeAscending')}</option>
+                            <option value="student_code-desc">{t('cd.nimCodeDescending')}</option>
                         </select>
                         <Show when={search() || academicYearId()}>
                             <button type="button" onClick={handleReset} class={pageBtn}>{t('cd.reset')}</button>
@@ -259,6 +277,17 @@ export default function CourseDepartmentStudentCampaignActivityPage() {
                                         {t('cd.page')} {page()} {t('cd.of')} {totalPages()} ({totalItems()} total)
                                     </span>
                                     <div class="flex items-center gap-1.5">
+                                        <span class="text-xs text-neutral-400 font-mono">{t('cd.rowsPerPage')}</span>
+                                        <select
+                                            value={pageSize()}
+                                            onChange={(e) => {
+                                                setPageSize(Number(e.currentTarget.value));
+                                                setPage(1);
+                                            }}
+                                            class="px-2.5 py-1.5 text-xs rounded-xs bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700"
+                                        >
+                                            <For each={[10, 25, 50, 100]}>{(n) => <option value={n}>{n}</option>}</For>
+                                        </select>
                                         <button type="button" class={pageBtn} disabled={page() <= 1} onClick={() => setPage(page() - 1)}>
                                             {t('cd.previous')}
                                         </button>

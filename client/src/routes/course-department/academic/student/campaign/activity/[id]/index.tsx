@@ -30,6 +30,9 @@ const cleanName = (val?: string) => {
 export default function CourseDepartmentStudentCampaignActivityShowPage() {
     const params = useParams();
     const [activity, setActivity] = createSignal<StudentActivityItem | null>(null);
+    const teachHref = (id: string) => `/course-department/academic/campaign/transaction/teach/${id}`;
+    const teachBtn =
+        'inline-flex items-center px-2.5 py-1 rounded-xs text-[10px] font-bold bg-sky-100 text-sky-800 hover:bg-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:hover:bg-sky-900 transition-colors';
     const [courses, setCourses] = createSignal<DetailActivityItem[]>([]);
     const [isLoading, setIsLoading] = createSignal(true);
     const [isPrintingKRS, setIsPrintingKRS] = createSignal(false);
@@ -213,6 +216,7 @@ export default function CourseDepartmentStudentCampaignActivityShowPage() {
                                             <th class="px-5 py-3 text-center">{t('cd.sks')}</th>
                                             <th class="px-5 py-3 text-center">{t('cd.nilaiAngka')}</th>
                                             <th class="px-5 py-3 text-center">{t('cd.nilai')}</th>
+                                            <th class="px-5 py-3 text-center">{t('cd.aksi')}</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-neutral-100 dark:divide-neutral-700/60">
@@ -237,6 +241,11 @@ export default function CourseDepartmentStudentCampaignActivityShowPage() {
                                                         <span class={`px-2 py-0.5 rounded-xs text-[10px] font-bold ${gradeBadgeClass(c.grade_letter)}`}>
                                                             {c.grade_letter || '-'}
                                                         </span>
+                                                    </td>
+                                                    <td class="px-5 py-3 text-center">
+                                                        <Show when={c.teach_id} fallback={<span class="text-neutral-400">-</span>}>
+                                                            <A href={teachHref(c.teach_id!)} class={teachBtn}>{t('cd.detail')}</A>
+                                                        </Show>
                                                     </td>
                                                 </tr>
                                             )}
@@ -266,6 +275,9 @@ export default function CourseDepartmentStudentCampaignActivityShowPage() {
                                                 <span>{t('cd.sks2')} <b>{c.credit ?? 0}</b></span>
                                                 <span>{t('cd.nilai2')} <b>{c.grade_point != null ? Number(c.grade_point).toFixed(2) : '-'}</b></span>
                                             </div>
+                                            <Show when={c.teach_id}>
+                                                <A href={teachHref(c.teach_id!)} class={`${teachBtn} w-full justify-center py-2`}>{t('cd.lihatDetail')}</A>
+                                            </Show>
                                         </div>
                                     )}
                                 </For>
