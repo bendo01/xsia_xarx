@@ -197,6 +197,9 @@ export interface TranslationSchema {
             courseDirectory: string;
             curriculumDirectory: string;
             classCodeDirectory: string;
+            activityDirectory: string;
+            gradeDirectory: string;
+            teachDirectory: string;
             lecturerDirectory: string;
             staffDirectory: string;
             classEncounters: string;

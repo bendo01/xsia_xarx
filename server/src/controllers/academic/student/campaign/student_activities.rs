@@ -121,6 +121,17 @@ pub async fn index(
     let paginator = match (sort_by, sort_dir) {
         ("name", "asc") => select.order_by_asc(entity_mod::Column::Name),
         ("name", "desc") => select.order_by_desc(entity_mod::Column::Name),
+        ("student_name", dir) | ("student_code", dir) => {
+            let col = if sort_by == "student_code" { "code" } else { "name" };
+            let sub = Expr::cust(format!(
+                "(SELECT s.{col} FROM academic_student_master.students s WHERE s.id = student_activities.student_id)"
+            ));
+            if dir == "desc" {
+                select.order_by_desc(sub).order_by_asc(entity_mod::Column::CreatedAt)
+            } else {
+                select.order_by_asc(sub).order_by_asc(entity_mod::Column::CreatedAt)
+            }
+        }
         ("created_at", "asc") => select.order_by_asc(entity_mod::Column::CreatedAt),
         _ => select.order_by_desc(entity_mod::Column::CreatedAt).order_by_asc(entity_mod::Column::Name),
     }.paginate(db, page_size);
