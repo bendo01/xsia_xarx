@@ -93,6 +93,21 @@ export default function MenuCourseDepartment() {
                 </A>
             </li>
 
+            {/* Campaign Activity */}
+            <li>
+                <A
+                    href="/course-department/academic/campaign/transaction/activity"
+                    activeClass="bg-teal-600/15 text-teal-600 dark:text-teal-400 font-semibold"
+                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                >
+                    <svg class="size-4 shrink-0 text-teal-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="18" height="18" x="3" y="4" rx="2" />
+                        <path d="M16 2v4M8 2v4M3 10h18" />
+                    </svg>
+                    <span>{t('menu.courseDepartment.activityDirectory')}</span>
+                </A>
+            </li>
+
             {/* Class Code */}
             <li>
                 <A
@@ -106,6 +121,35 @@ export default function MenuCourseDepartment() {
                         <polyline points="2 17 12 22 22 17" />
                     </svg>
                     <span>{t('menu.courseDepartment.classCodeDirectory')}</span>
+                </A>
+            </li>
+
+            {/* Grade Scale */}
+            <li>
+                <A
+                    href="/course-department/academic/campaign/transaction/grade"
+                    activeClass="bg-teal-600/15 text-teal-600 dark:text-teal-400 font-semibold"
+                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                >
+                    <svg class="size-4 shrink-0 text-teal-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                    <span>{t('menu.courseDepartment.gradeDirectory')}</span>
+                </A>
+            </li>
+
+            {/* Teaching Classes */}
+            <li>
+                <A
+                    href="/course-department/academic/campaign/transaction/teach"
+                    activeClass="bg-teal-600/15 text-teal-600 dark:text-teal-400 font-semibold"
+                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                >
+                    <svg class="size-4 shrink-0 text-teal-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 10 12 5 2 10l10 5 10-5z" />
+                        <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                    </svg>
+                    <span>{t('menu.courseDepartment.teachDirectory')}</span>
                 </A>
             </li>
 
