@@ -4,6 +4,7 @@ use sea_orm::DatabaseConnection;
 use std::collections::BTreeMap;
 
 use crate::services::compliance::anomaly::{self, Inputs, loaders, rules::RuleConfig};
+use crate::services::compliance::rag::evidence;
 use crate::tasks::Task;
 
 pub struct DetectComplianceAnomaliesTask;
@@ -15,7 +16,7 @@ impl Task for DetectComplianceAnomaliesTask {
     }
 
     fn description(&self) -> &str {
-        "Runs rule + Isolation Forest/LOF anomaly detection over feeder_master and prints a report (read-only; --top=0.02 sets the ML flag fraction, --samples=5 the rows shown per group)"
+        "Runs rule + Isolation Forest/LOF anomaly detection over feeder_master and prints a report (read-only; --top=0.02 sets the ML flag fraction, --samples=5 the rows shown per group, --cite adds the governing regulation text per rule)"
     }
 
     async fn run(&self, db: &DatabaseConnection, args: &[String]) -> Result<(), Box<dyn std::error::Error>> {
@@ -47,6 +48,21 @@ impl Task for DetectComplianceAnomaliesTask {
             println!("\n{entity} / {key}: {}", items.len());
             for d in items.iter().take(samples) {
                 println!("  {} score={:.3} {} {}", d.entity_id, d.score, d.severity.as_str(), d.evidence);
+            }
+        }
+        if args.iter().any(|a| a == "--cite") {
+            println!("\n==> Governing regulations");
+            let mut seen = std::collections::HashSet::new();
+            for d in detections.iter().filter(|d| d.rule_code.is_some_and(|c| seen.insert(c))) {
+                println!("\n{}:", d.rule_code.unwrap_or_default());
+                let hits = evidence::regulation_for(db, d, 3).await?;
+                if hits.is_empty() {
+                    println!("  (no regulation found)");
+                }
+                for h in hits {
+                    let text: String = h.body().split_whitespace().collect::<Vec<_>>().join(" ").chars().take(200).collect();
+                    println!("  - {}: {text}", h.citation());
+                }
             }
         }
         Ok(())
