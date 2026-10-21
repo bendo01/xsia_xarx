@@ -1,12 +1,12 @@
-use salvo::prelude::*;
-use salvo::oapi::{OpenApi, swagger_ui::SwaggerUi};
-use sea_orm::DatabaseConnection;
 use clap::{Parser, Subcommand};
-use xsia_xarx::{controllers, db};
-use xsia_xarx::config::database::DatabaseConfig;
-use xsia_xarx::jobs::email::{start_email_worker, init_email_queue};
-use xsia_xarx::jobs::embedding::embed::{init_pdf_embedding_queue, start_pdf_embedding_worker};
 use pgmq::PGMQueueExt;
+use salvo::oapi::{OpenApi, swagger_ui::SwaggerUi};
+use salvo::prelude::*;
+use sea_orm::DatabaseConnection;
+use xsia_xarx::config::database::DatabaseConfig;
+use xsia_xarx::jobs::email::{init_email_queue, start_email_worker};
+use xsia_xarx::jobs::embedding::embed::{init_pdf_embedding_queue, start_pdf_embedding_worker};
+use xsia_xarx::{controllers, db};
 
 struct InjectDb(DatabaseConnection);
 
@@ -53,7 +53,7 @@ enum Commands {
     Task {
         /// The name of the task to run
         name: Option<String>,
-        
+
         /// Task arguments
         #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
@@ -74,14 +74,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         match command {
             Commands::RouteList { filter } => {
                 let args = filter.map(|f| vec![f]).unwrap_or_default();
-                xsia_xarx::tasks::utilities::route_list::print_route_list(&args);
+                xsia_xarx::tasks::utilities::utility_02_route_list::print_route_list(&args);
                 return Ok(());
             }
             Commands::Task { name, args } => {
                 // Writes the .env the database connection needs, so it runs without one
-                use xsia_xarx::tasks::utilities::generate_env;
-                if name.as_deref().is_some_and(|n| n == generate_env::NAME || n == generate_env::NAME.replace(':', "_")) {
-                    return generate_env::generate_env(&args);
+                use xsia_xarx::tasks::utilities::utility_01_generate_env;
+                if name.as_deref().is_some_and(|n| {
+                    n == utility_01_generate_env::NAME
+                        || n == utility_01_generate_env::NAME.replace(':', "_")
+                }) {
+                    return utility_01_generate_env::generate_env(&args);
                 }
                 let db = db::connect_db().await?;
                 println!("Database connection successful");
@@ -116,9 +119,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     start_email_worker(queue.clone(), db.clone());
     println!("PGMQ email worker started");
 
-    init_pdf_embedding_queue(&queue)
-        .await
-        .map_err(|e| std::io::Error::other(format!("Failed to initialize PDF embedding queue: {e}")))?;
+    init_pdf_embedding_queue(&queue).await.map_err(|e| {
+        std::io::Error::other(format!("Failed to initialize PDF embedding queue: {e}"))
+    })?;
 
     start_pdf_embedding_worker(queue.clone(), db.clone());
     println!("PGMQ PDF embedding worker started");
