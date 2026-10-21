@@ -3,41 +3,46 @@ use sea_orm::DatabaseConnection;
 
 pub mod example;
 pub mod feeder_dikti;
+pub mod rag;
 pub mod utilities;
 
 #[async_trait]
 pub trait Task: Send + Sync {
     /// The name of the task
     fn name(&self) -> &str;
-    
+
     /// Description of the task
     fn description(&self) -> &str;
-    
+
     /// Execute the task
-    async fn run(&self, db: &DatabaseConnection, args: &[String]) -> Result<(), Box<dyn std::error::Error>>;
+    async fn run(
+        &self,
+        db: &DatabaseConnection,
+        args: &[String],
+    ) -> Result<(), Box<dyn std::error::Error>>;
 }
 
 pub fn get_tasks() -> Vec<Box<dyn Task>> {
     vec![
         Box::new(example::ExampleTask),
-        Box::new(utilities::sync_permissions::SyncPermissionsTask),
-        Box::new(utilities::route_list::RouteListTask),
-        Box::new(utilities::generate_permission_from_route::GeneratePermissionFromRouteTask),
-        Box::new(utilities::generate_permission_from_client::GeneratePermissionFromClientTask),
-        Box::new(utilities::add_feeder_credential::AddFeederCredentialTask),
-        Box::new(utilities::add_preference_mail_server::AddPreferenceMailServerTask),
-        Box::new(utilities::add_preference_openwa::AddPreferenceOpenWaTask),
-        Box::new(utilities::generate_webhook_secret::GenerateWebhookSecretTask),
-        Box::new(utilities::generate_env::GenerateEnvTask),
-        Box::new(utilities::hash_password::HashPasswordTask),
-        Box::new(utilities::sync_staff_roles::SyncStaffRolesTask),
-        Box::new(utilities::sync_student_roles::SyncStudentRolesTask),
-        Box::new(utilities::cleanup_student_detail_activity::CleanupStudentDetailActivityTask),
-        Box::new(utilities::sync_student_class_codes::SyncStudentClassCodesTask),
-        Box::new(utilities::ingest_regulations::IngestRegulationsTask),
-        Box::new(utilities::retrieve_regulations::RetrieveRegulationsTask),
-        Box::new(utilities::eval_retrieval::EvalRetrievalTask),
-        Box::new(utilities::detect_compliance_anomalies::DetectComplianceAnomaliesTask),
+        Box::new(utilities::utility_04_sync_permissions::SyncPermissionsTask),
+        Box::new(utilities::utility_02_route_list::RouteListTask),
+        Box::new(utilities::utility_13_generate_permission_from_route::GeneratePermissionFromRouteTask),
+        Box::new(utilities::utility_12_generate_permission_from_client::GeneratePermissionFromClientTask),
+        Box::new(utilities::utility_09_add_feeder_credential::AddFeederCredentialTask),
+        Box::new(utilities::utility_10_add_preference_mail_server::AddPreferenceMailServerTask),
+        Box::new(utilities::utility_11_add_preference_openwa::AddPreferenceOpenWaTask),
+        Box::new(utilities::utility_14_generate_webhook_secret::GenerateWebhookSecretTask),
+        Box::new(utilities::utility_01_generate_env::GenerateEnvTask),
+        Box::new(utilities::utility_03_hash_password::HashPasswordTask),
+        Box::new(utilities::utility_05_sync_staff_roles::SyncStaffRolesTask),
+        Box::new(utilities::utility_07_sync_student_roles::SyncStudentRolesTask),
+        Box::new(utilities::utility_08_cleanup_student_detail_activity::CleanupStudentDetailActivityTask),
+        Box::new(utilities::utility_06_sync_student_class_codes::SyncStudentClassCodesTask),
+        Box::new(rag::rag_02_ingest_regulations::IngestRegulationsTask),
+        Box::new(rag::rag_01_retrieve_regulations::RetrieveRegulationsTask),
+        Box::new(rag::rag_03_eval_retrieval::EvalRetrievalTask),
+        Box::new(rag::rag_04_detect_compliance_anomalies::DetectComplianceAnomaliesTask),
         // Feeder Dikti Downstream Master Synchronization Tasks
         Box::new(feeder_dikti::synchronize::downstream::master::upsert_00_all::SyncAllMasterData),
         Box::new(feeder_dikti::synchronize::downstream::master::upsert_01_biodata_mahasiswa_and_mahasiswa_to_individual_and_student::SyncBiodataMahasiswaToAcademicStudentMasterStudent),
@@ -143,11 +148,23 @@ pub fn get_tasks() -> Vec<Box<dyn Task>> {
 /// with a warning, so existing scripts and cron jobs keep working.
 const RENAMED_TASKS: &[(&str, &str)] = &[
     ("feeder:add-credential", "utility:feeder-add-credential"),
-    ("preference:add-mail-server", "utility:preference-add-mail-server"),
+    (
+        "preference:add-mail-server",
+        "utility:preference-add-mail-server",
+    ),
     ("preference:add-openwa", "utility:preference-add-openwa"),
-    ("preference:generate-webhook-secret", "utility:preference-generate-webhook-secret"),
-    ("generate:permission-from-client", "utility:generate-permission-from-client"),
-    ("generate:permission-from-route", "utility:generate-permission-from-route"),
+    (
+        "preference:generate-webhook-secret",
+        "utility:preference-generate-webhook-secret",
+    ),
+    (
+        "generate:permission-from-client",
+        "utility:generate-permission-from-client",
+    ),
+    (
+        "generate:permission-from-route",
+        "utility:generate-permission-from-route",
+    ),
     ("sync:permissions", "utility:sync-permissions"),
     ("sync:staff-roles", "utility:sync-staff-roles"),
     ("sync:student-roles", "utility:sync-student-roles"),
@@ -164,19 +181,28 @@ fn renamed_task(task_name: &str) -> Option<&'static str> {
         .map(|(_, new)| *new)
 }
 
-pub async fn run_task(name: Option<String>, args: &[String], db: &DatabaseConnection) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn run_task(
+    name: Option<String>,
+    args: &[String],
+    db: &DatabaseConnection,
+) -> Result<(), Box<dyn std::error::Error>> {
     let tasks = get_tasks();
-    
+
     if let Some(mut task_name) = name {
         if let Some(new_name) = renamed_task(&task_name) {
-            eprintln!("⚠️  Task '{task_name}' was renamed to '{new_name}'; the old name will be removed in a future release.");
+            eprintln!(
+                "⚠️  Task '{task_name}' was renamed to '{new_name}'; the old name will be removed in a future release."
+            );
             task_name = new_name.to_string();
         }
         for task in &tasks {
-            if task.name() == task_name 
-                || task.name().replace(':', "_") == task_name 
-                || task.name().replace('_', ":") == task_name 
-                || (task.name() == "SyncAllMasterData" && (task_name == "SyncUpsertAllMasterData" || task_name == "upsert_00_all" || task_name == "sync_all_master_data"))
+            if task.name() == task_name
+                || task.name().replace(':', "_") == task_name
+                || task.name().replace('_', ":") == task_name
+                || (task.name() == "SyncAllMasterData"
+                    && (task_name == "SyncUpsertAllMasterData"
+                        || task_name == "upsert_00_all"
+                        || task_name == "sync_all_master_data"))
             {
                 println!("Running task: {}", task.name());
                 return task.run(db, args).await;
@@ -192,7 +218,7 @@ pub async fn run_task(name: Option<String>, args: &[String], db: &DatabaseConnec
             println!("  {:<20} {}", task.name(), task.description());
         }
     }
-    
+
     Ok(())
 }
 
@@ -204,15 +230,27 @@ mod tests {
     fn renamed_tasks_point_to_existing_tasks() {
         let names: Vec<String> = get_tasks().iter().map(|t| t.name().to_string()).collect();
         for (old, new) in RENAMED_TASKS {
-            assert!(names.iter().any(|n| n == new), "{old} -> {new}: no such task");
-            assert!(!names.iter().any(|n| n == old), "{old} is still a task name");
+            assert!(
+                names.iter().any(|n| n == new),
+                "{old} -> {new}: no such task"
+            );
+            assert!(
+                !names.iter().any(|n| n == old),
+                "{old} is still a task name"
+            );
         }
     }
 
     #[test]
     fn renamed_task_accepts_old_and_underscore_forms() {
-        assert_eq!(renamed_task("sync:permissions"), Some("utility:sync-permissions"));
-        assert_eq!(renamed_task("sync_permissions"), Some("utility:sync-permissions"));
+        assert_eq!(
+            renamed_task("sync:permissions"),
+            Some("utility:sync-permissions")
+        );
+        assert_eq!(
+            renamed_task("sync_permissions"),
+            Some("utility:sync-permissions")
+        );
         assert_eq!(renamed_task("utility:sync-permissions"), None);
         assert_eq!(renamed_task("SyncAllMasterData"), None);
     }
