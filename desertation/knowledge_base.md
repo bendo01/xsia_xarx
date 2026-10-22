@@ -430,6 +430,11 @@ CONV -[hidden]down- CH
 
 ### 5.6 Catatan
 
+- memperbnaiki font
+  ```sh
+    plantuml -tsvg diagram/er_knowledge_base.puml
+    rsvg-convert -f svg -o tmp.svg diagram/er_knowledge_base.svg && mv tmp.svg diagram/er_knowledge_base.svg
+  ```
 - `ai.chunks.chunkable_id` tidak punya FK; integritas ke `regulation_nodes` dijaga di kode ingest.
 - Dimensi vektor saat ini 384. Mengganti model embedding berarti embed ulang semua chunk; `ingest_runs.embedding_model` mencatat model yang dipakai.
 - Migrator CLI rusak di dev DB (nama migrasi lama), jadi migrasi diterapkan satu per satu.
