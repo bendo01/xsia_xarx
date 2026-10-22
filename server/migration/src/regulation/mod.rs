@@ -1,0 +1,5 @@
+pub mod m20261022_100000_schema_regulation_table_regulation_types;
+pub mod m20261022_100100_schema_regulation_table_pillars;
+pub mod m20261022_100200_schema_regulation_table_regulations;
+pub mod m20261022_100300_schema_regulation_table_regulation_relations;
+pub mod m20261022_100400_schema_regulation_table_regulation_nodes;
