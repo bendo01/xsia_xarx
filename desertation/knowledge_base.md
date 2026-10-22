@@ -17,7 +17,7 @@ Sumber diagram ada di `diagram/*.puml` (render SVG di folder yang sama). Render 
 ```plantuml
 @startuml hierarki_regulasi
 skinparam shadowing false
-skinparam defaultFontName Sans
+skinparam defaultFontName Arial
 skinparam rectangle {
   RoundCorner 8
   BorderColor #555555
@@ -110,7 +110,7 @@ BKN --> FEEDER
 ```plantuml
 @startuml pilar_regulasi
 skinparam shadowing false
-skinparam defaultFontName Sans
+skinparam defaultFontName Arial
 skinparam rectangle {
   RoundCorner 8
   BorderColor #555555
