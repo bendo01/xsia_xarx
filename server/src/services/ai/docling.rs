@@ -32,3 +32,13 @@ pub async fn pdf_to_markdown(pdf: &Path, output_dir: &Path) -> Result<String> {
         .await
         .with_context(|| format!("docling produced no {}", markdown_path.display()))
 }
+
+/// Whether the `docling` CLI can be run (honours `DOCLING_BIN`)
+pub async fn is_available() -> bool {
+    let docling = std::env::var("DOCLING_BIN").unwrap_or_else(|_| "docling".to_string());
+    let run = Command::new(&docling).arg("--version").kill_on_drop(true).output();
+    matches!(
+        tokio::time::timeout(std::time::Duration::from_secs(60), run).await,
+        Ok(Ok(output)) if output.status.success()
+    )
+}

@@ -26,6 +26,9 @@ pub struct PdfEmbeddingJob {
     pub chunkable_id: Uuid,
     /// Uploader, recorded as `created_by` / `updated_by`
     pub user_id: Option<Uuid>,
+    /// When set, the docling Markdown is also written to this path (next to the source PDF)
+    #[serde(default)]
+    pub markdown_path: Option<String>,
 }
 
 /// Ensures the PDF embedding queue exists in PGMQ.

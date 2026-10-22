@@ -3819,6 +3819,18 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "document.transaction.archives.delete",
         },
         RouteDefinition {
+            url: "/api/v1/document/transaction/archives/upload",
+            method: "POST",
+            handler: "archives::upload",
+            name: "document.transaction.archives.upload",
+        },
+        RouteDefinition {
+            url: "/api/v1/document/transaction/archives/{id}/reindex",
+            method: "POST",
+            handler: "archives::reindex",
+            name: "document.transaction.archives.reindex",
+        },
+        RouteDefinition {
             url: "/api/v1/feeder/akumulasi/estimasi",
             method: "GET",
             handler: "estimasi::index",

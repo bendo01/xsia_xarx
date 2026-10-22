@@ -72,3 +72,20 @@ pub struct ArchiveOptionRequest {
     pub search: Option<String>,
     pub archive_type_id: Option<Uuid>,
 }
+
+/// Result of uploading a file as an archive
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct UploadArchiveResponse {
+    pub archive: ArchiveResponse,
+    /// `queued` when the document was sent for embedding, `skipped` when it was requested but could not be
+    pub knowledge_status: Option<String>,
+    /// Why the document was not added to the knowledge base
+    pub warning: Option<String>,
+}
+
+/// Result of (re-)queueing an archive for the knowledge base
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct ReindexArchiveResponse {
+    pub msg_id: i64,
+    pub message: String,
+}

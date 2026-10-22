@@ -1,4 +1,7 @@
+use std::path::PathBuf;
+
 use chrono::Utc;
+use pgmq::PGMQueueExt;
 use salvo::prelude::*;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
@@ -9,11 +12,12 @@ use validator::Validate;
 
 use crate::dtos::document::transaction::archives::{
     CreateArchiveRequest, ArchiveQuery, ArchiveResponse, PaginatedArchiveResponse,
-    UpdateArchiveRequest, ArchiveOptionRequest,
+    UpdateArchiveRequest, ArchiveOptionRequest, UploadArchiveResponse, ReindexArchiveResponse,
 };
 use crate::dtos::common::reference::{MessageResponse, OptionItem};
 use crate::models::document::transaction::archives as entity_mod;
 use crate::middleware::auth::auth_user_id;
+use crate::services::ai::knowledge;
 
 #[endpoint(tags("Document - Transaction - Archive"), status_codes(200, 500))]
 pub async fn index(
@@ -224,6 +228,11 @@ pub async fn update(
         }
     if let Some(is_knowledge) = payload.is_knowledge {
             active_model.is_knowledge = Set(is_knowledge);
+            if !is_knowledge {
+                knowledge::remove_archive_chunks(db, id, auth_user_id(depot))
+                    .await
+                    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+            }
         }
     active_model.updated_at = Set(Some(now));
     active_model.updated_by = Set(auth_user_id(depot));
@@ -277,6 +286,9 @@ pub async fn delete(
         active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        knowledge::remove_archive_chunks(db, id, auth_user_id(depot))
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
 
         Ok(Json(MessageResponse {
             message: "Archive deleted successfully".to_string(),
@@ -327,4 +339,184 @@ pub async fn option_select(
         .collect();
 
     Ok(Json(data))
+}
+
+/// Largest file accepted by [`upload`]
+const MAX_UPLOAD_BYTES: usize = 50 * 1024 * 1024;
+
+const UPLOAD_ROOT: &str = "public/upload/document/archives";
+
+fn to_response(item: entity_mod::Model) -> ArchiveResponse {
+    ArchiveResponse {
+        id: item.id,
+        name: item.name,
+        dir: item.dir,
+        mimetype: item.mimetype,
+        size: item.size,
+        archiveable_id: item.archiveable_id,
+        archiveable_type: item.archiveable_type,
+        archive_type_id: item.archive_type_id,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+        deleted_at: item.deleted_at,
+        sync_at: item.sync_at,
+        created_by: item.created_by,
+        updated_by: item.updated_by,
+        description: item.description,
+        is_knowledge: item.is_knowledge,
+    }
+}
+
+/// Keeps only the file name, with characters that are safe on disk and in URLs
+fn sanitize_file_name(name: &str) -> String {
+    let base = name.rsplit(['/', '\\']).next().unwrap_or(name);
+    let cleaned: String = base
+        .chars()
+        .map(|c| if c.is_alphanumeric() || matches!(c, '.' | '-' | '_' | ' ') { c } else { '_' })
+        .collect();
+    let cleaned = cleaned.trim().trim_start_matches('.').to_string();
+    if cleaned.is_empty() { "document".to_string() } else { cleaned }
+}
+
+/// Upload a file as an archive (multipart). Fields: `file` (required), `archive_type_id` (required),
+/// `description`, `is_knowledge`, `archiveable_id`, `archiveable_type`.
+/// When `is_knowledge` is true and the file is a PDF, it is converted to Markdown with docling,
+/// embedded with paraphrase-multilingual-MiniLM-L12-v2 and stored in `ai.chunks`. If docling is not
+/// installed the archive is still saved and the response carries a warning.
+#[endpoint(tags("Document - Transaction - Archive"), status_codes(200, 400, 500))]
+pub async fn upload(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<UploadArchiveResponse>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+    let internal = |e: &dyn std::fmt::Display| StatusError::internal_server_error().brief(e.to_string());
+
+    let form = req
+        .form_data_max_size(MAX_UPLOAD_BYTES)
+        .await
+        .map_err(|e| StatusError::bad_request().brief(format!("Invalid multipart form: {}", e)))?;
+
+    let file = form
+        .files
+        .get("file")
+        .ok_or_else(|| StatusError::bad_request().brief("Missing file in field 'file'"))?;
+    let size = file.size();
+    if size == 0 || size > MAX_UPLOAD_BYTES as u64 {
+        return Err(StatusError::bad_request().brief("File size must be between 1 byte and 50 MB"));
+    }
+
+    let field = |key: &str| form.fields.get(key).map(|s| s.trim().to_string()).filter(|s| !s.is_empty());
+    let parse_uuid = |key: &str| -> Result<Option<Uuid>, StatusError> {
+        field(key)
+            .map(|v| Uuid::parse_str(&v).map_err(|_| StatusError::bad_request().brief(format!("Invalid {key}"))))
+            .transpose()
+    };
+
+    let archive_type_id = parse_uuid("archive_type_id")?
+        .ok_or_else(|| StatusError::bad_request().brief("archive_type_id is required"))?;
+    let archiveable_id = parse_uuid("archiveable_id")?;
+    let is_knowledge = matches!(field("is_knowledge").as_deref(), Some("true" | "1" | "on"));
+
+    let bytes = tokio::fs::read(file.path()).await.map_err(|e| internal(&e))?;
+    let is_pdf = bytes.starts_with(b"%PDF-");
+    if is_knowledge && !is_pdf {
+        return Err(StatusError::bad_request().brief("Only PDF files can be added to the knowledge base"));
+    }
+    let mimetype = if is_pdf {
+        "application/pdf".to_string()
+    } else {
+        file.content_type()
+            .map(|m| m.essence_str().to_string())
+            .unwrap_or_else(|| "application/octet-stream".to_string())
+    };
+
+    let new_id = Uuid::now_v7();
+    let name = sanitize_file_name(file.name().unwrap_or("document"));
+    let dir = format!("{UPLOAD_ROOT}/{new_id}/");
+    tokio::fs::create_dir_all(&dir).await.map_err(|e| internal(&e))?;
+    tokio::fs::write(PathBuf::from(&dir).join(&name), &bytes).await.map_err(|e| internal(&e))?;
+
+    let now = Utc::now().naive_utc();
+    let user_id = auth_user_id(depot);
+    let item = entity_mod::ActiveModel {
+        id: Set(new_id),
+        name: Set(name),
+        dir: Set(dir.clone()),
+        mimetype: Set(mimetype),
+        size: Set(Some(size.min(i32::MAX as u64) as i32)),
+        archiveable_id: Set(archiveable_id),
+        archiveable_type: Set(field("archiveable_type")),
+        archive_type_id: Set(archive_type_id),
+        created_at: Set(Some(now)),
+        updated_at: Set(Some(now)),
+        deleted_at: Set(None),
+        sync_at: Set(None),
+        created_by: Set(user_id),
+        updated_by: Set(user_id),
+        description: Set(field("description")),
+        is_knowledge: Set(is_knowledge),
+    }
+    .insert(db)
+    .await
+    .map_err(|e| {
+        let _ = std::fs::remove_dir_all(&dir);
+        internal(&e)
+    })?;
+
+    let (mut knowledge_status, mut warning) = (None, None);
+    if is_knowledge {
+        let queue = depot.get_typed::<PGMQueueExt>().map_err(|_| {
+            StatusError::internal_server_error().brief("Queue connection missing")
+        })?;
+        match knowledge::enqueue_archive(queue, &item, user_id).await {
+            Ok(_) => knowledge_status = Some("queued".to_string()),
+            Err(e) => {
+                tracing::warn!("Archive {} not queued for knowledge base: {:#}", item.id, e);
+                knowledge_status = Some("skipped".to_string());
+                warning = Some(e.to_string());
+            }
+        }
+    }
+
+    Ok(Json(UploadArchiveResponse { archive: to_response(item), knowledge_status, warning }))
+}
+
+/// (Re-)build the knowledge base chunks of a PDF archive in the background.
+/// Fails with a warning message when docling is not installed.
+#[endpoint(tags("Document - Transaction - Archive"), status_codes(200, 400, 404, 500))]
+pub async fn reindex(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<ReindexArchiveResponse>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+    let queue = depot.get_typed::<PGMQueueExt>().map_err(|_| {
+        StatusError::internal_server_error().brief("Queue connection missing")
+    })?;
+
+    let id_str = req.param::<String>("id").ok_or_else(|| StatusError::bad_request().brief("Missing parameter id"))?;
+    let id = Uuid::parse_str(&id_str).map_err(|_| StatusError::bad_request().brief("Invalid UUID format"))?;
+
+    let item = entity_mod::Entity::find_by_id(id)
+        .filter(entity_mod::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .ok_or_else(|| StatusError::not_found().brief("Archive not found"))?;
+
+    if !item.is_knowledge {
+        return Err(StatusError::bad_request().brief("Archive is not marked as knowledge"));
+    }
+
+    let msg_id = knowledge::enqueue_archive(queue, &item, auth_user_id(depot))
+        .await
+        .map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+
+    Ok(Json(ReindexArchiveResponse {
+        msg_id,
+        message: "Archive queued for the knowledge base".to_string(),
+    }))
 }

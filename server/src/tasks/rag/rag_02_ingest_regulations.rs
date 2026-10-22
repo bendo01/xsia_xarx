@@ -94,6 +94,7 @@ impl Task for IngestRegulationsTask {
                 chunkable_type: chunkable_type.to_owned(),
                 chunkable_id: id,
                 user_id: None,
+                markdown_path: None,
             };
             match ingest_pdf(db, &job).await {
                 Ok(n) => {
