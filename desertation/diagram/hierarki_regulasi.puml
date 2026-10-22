@@ -36,7 +36,7 @@ package "Regulasi ASN" {
   rectangle "Peraturan / Juknis BKN\nKinerja & Angka Kredit SIASN\n(belum ada di folder)" as BKN #EEEEEE
 }
 
-rectangle "Permendiktisaintek 1/2024\nOrganisasi & Tata Kerja\n(file berstatus RANCANGAN)" as ORG #FFF9C4
+rectangle "Permendiktisaintek 1/2024\nOrganisasi & Tata Kerja" as ORG
 
 package "Peraturan Menteri (4 pilar, lihat diagram 2)" {
   rectangle "Pilar 1\nSDM & Karier Dosen" as PIL1 #E3F2FD
