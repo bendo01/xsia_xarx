@@ -1,0 +1,123 @@
+@startuml er_knowledge_base
+skinparam shadowing false
+skinparam defaultFontName Arial
+hide circle
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 50
+
+package "regulation (registri relasional)" {
+  entity "regulation_types" as RT {
+    * id : uuid <<PK>>
+    --
+    * code : varchar
+    * name : varchar
+    * level : smallint
+    * rank_order : smallint
+  }
+  entity "pillars" as PIL {
+    * id : uuid <<PK>>
+    --
+    * code : varchar
+    * name : varchar
+    description : text
+  }
+  entity "regulations" as REG {
+    * id : uuid <<PK>>
+    --
+    * type_id : uuid <<FK>>
+    pillar_id : uuid <<FK>>
+    * number : varchar
+    * year : smallint
+    * title : text
+    issuer : varchar
+    enacted_on, effective_on, revoked_on : date
+    * status : berlaku | dicabut | diubah | verifikasi
+    * is_historical : bool
+    audit_valid_from, audit_valid_until : date
+    source_file, file_sha256
+    ingest_order : smallint
+    verification_note : text
+  }
+  entity "regulation_relations" as REL {
+    * id : uuid <<PK>>
+    --
+    * source_id : uuid <<FK>>
+    * target_id : uuid <<FK>>
+    * relation : mencabut | mengubah | melaksanakan | ...
+    article_ref : varchar
+    effective_on : date
+    note : text
+  }
+  entity "regulation_nodes" as NODE {
+    * id : uuid <<PK>>
+    --
+    * regulation_id : uuid <<FK>>
+    parent_id : uuid <<FK self>>
+    * node_type : bab | pasal | ayat | ...
+    number, heading
+    * path : text
+    * seq : int
+    body : text
+    is_revoked : bool
+  }
+}
+
+package "ai" {
+  entity "chunks (sudah ada)" as CH {
+    * id : uuid <<PK>>
+    --
+    * chunkable_type : varchar
+    * chunkable_id : uuid
+    * content : text
+    heading_context, title_hierarchy
+    metadata : jsonb
+    embedding : vector(384)
+  }
+  entity "conversations (sudah ada)" as CONV {
+    * id : uuid <<PK>>
+  }
+  entity "messages (sudah ada)" as MSG {
+    * id : uuid <<PK>>
+    --
+    * conversation_id : uuid
+    * role, content
+  }
+  entity "message_citations" as CIT {
+    * id : uuid <<PK>>
+    --
+    * message_id : uuid <<FK>>
+    * chunk_id : uuid <<FK>>
+    * regulation_id : uuid <<FK>>
+    node_id : uuid <<FK>>
+    rank : smallint
+    score : real
+    quote : text
+  }
+  entity "ingest_runs" as RUN {
+    * id : uuid <<PK>>
+    --
+    * regulation_id : uuid <<FK>>
+    * status : running | ok | failed
+    chunk_count : int
+    embedding_model, chunker_version
+    error : text
+  }
+}
+
+RT ||-down-o{ REG
+PIL |o-down-o{ REG
+REG ||-down-o{ NODE
+REG ||-left-o{ REL : source
+REG ||-left-o{ REL : target
+REG ||-right-o{ RUN
+NODE ||.down.o{ CH : "chunkable\n(polimorfik)"
+CH ||-down-o{ CIT
+CONV ||-right-o{ MSG
+MSG ||-down-o{ CIT
+CIT }o-up-|| REG
+CIT }o-up-o| NODE
+
+RT -[hidden]right- PIL
+CONV -[hidden]down- CH
+@enduml

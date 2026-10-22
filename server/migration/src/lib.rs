@@ -3,6 +3,7 @@
 
 pub mod academic;
 pub mod ai;
+pub mod regulation;
 pub mod auth;
 pub mod building;
 pub mod compliance;
@@ -284,6 +285,14 @@ impl MigratorTrait for Migrator {
             Box::new(preference::m20261014_120817_schema_preference_table_applications::Migration),
             Box::new(webhook::m20261014_130000_schema_webhook_table_mail_in_a_box_events::Migration),
             Box::new(webhook::m20261014_140000_schema_webhook_table_open_wa_events::Migration),
+            Box::new(regulation::m20261022_100000_schema_regulation_table_regulation_types::Migration),
+            Box::new(regulation::m20261022_100100_schema_regulation_table_pillars::Migration),
+            Box::new(regulation::m20261022_100200_schema_regulation_table_regulations::Migration),
+            Box::new(regulation::m20261022_100300_schema_regulation_table_regulation_relations::Migration),
+            Box::new(regulation::m20261022_100400_schema_regulation_table_regulation_nodes::Migration),
+            Box::new(ai::m20261022_100500_schema_ai_table_ingest_runs::Migration),
+            Box::new(ai::m20261022_100600_schema_ai_table_message_citations::Migration),
+            Box::new(ai::m20261022_100700_schema_ai_index_chunks_metadata::Migration),
         ]
     }
 }

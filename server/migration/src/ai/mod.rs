@@ -1,3 +1,6 @@
 pub mod m20260228_145611_schema_ai_table_chunks;
 pub mod m20260309_212227_schema_ai_table_conversations;
 pub mod m20260309_212339_schema_ai_table_messages;
+pub mod m20261022_100500_schema_ai_table_ingest_runs;
+pub mod m20261022_100600_schema_ai_table_message_citations;
+pub mod m20261022_100700_schema_ai_index_chunks_metadata;

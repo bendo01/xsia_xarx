@@ -244,3 +244,192 @@ Prinsip: induk dahulu, turunan kemudian; dalam satu pilar urutkan historis ke be
 - Permenpan 13/2019 mengatur pengusulan, penetapan, dan pembinaan jabatan fungsional PNS.
 - Permenristekdikti 51 dan 52/2018 mengatur kelembagaan/pendirian PT, bukan SN-Dikti atau SPMI.
 - Isi metadata `status` (berlaku/dicabut) dan `dicabut_oleh` di tiap chunk sesuai tabel bagian 2.
+
+## 5. Rancangan ER-Diagram Basis Pengetahuan RAG
+
+Sumber diagram: `diagram/er_knowledge_base.puml`. Migrasi ada di `server/migration/src/regulation/` dan `server/migration/src/ai/` (prefiks `m20261022_`).
+
+![ER basis pengetahuan](diagram/er_knowledge_base.svg)
+
+<details><summary>Kode PlantUML</summary>
+
+```plantuml
+@startuml er_knowledge_base
+skinparam shadowing false
+skinparam defaultFontName Arial
+hide circle
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 50
+
+package "regulation (registri relasional)" {
+  entity "regulation_types" as RT {
+    * id : uuid <<PK>>
+    --
+    * code : varchar
+    * name : varchar
+    * level : smallint
+    * rank_order : smallint
+  }
+  entity "pillars" as PIL {
+    * id : uuid <<PK>>
+    --
+    * code : varchar
+    * name : varchar
+    description : text
+  }
+  entity "regulations" as REG {
+    * id : uuid <<PK>>
+    --
+    * type_id : uuid <<FK>>
+    pillar_id : uuid <<FK>>
+    * number : varchar
+    * year : smallint
+    * title : text
+    issuer : varchar
+    enacted_on, effective_on, revoked_on : date
+    * status : berlaku | dicabut | diubah | verifikasi
+    * is_historical : bool
+    audit_valid_from, audit_valid_until : date
+    source_file, file_sha256
+    ingest_order : smallint
+    verification_note : text
+  }
+  entity "regulation_relations" as REL {
+    * id : uuid <<PK>>
+    --
+    * source_id : uuid <<FK>>
+    * target_id : uuid <<FK>>
+    * relation : mencabut | mengubah | melaksanakan | ...
+    article_ref : varchar
+    effective_on : date
+    note : text
+  }
+  entity "regulation_nodes" as NODE {
+    * id : uuid <<PK>>
+    --
+    * regulation_id : uuid <<FK>>
+    parent_id : uuid <<FK self>>
+    * node_type : bab | pasal | ayat | ...
+    number, heading
+    * path : text
+    * seq : int
+    body : text
+    is_revoked : bool
+  }
+}
+
+package "ai" {
+  entity "chunks (sudah ada)" as CH {
+    * id : uuid <<PK>>
+    --
+    * chunkable_type : varchar
+    * chunkable_id : uuid
+    * content : text
+    heading_context, title_hierarchy
+    metadata : jsonb
+    embedding : vector(384)
+  }
+  entity "conversations (sudah ada)" as CONV {
+    * id : uuid <<PK>>
+  }
+  entity "messages (sudah ada)" as MSG {
+    * id : uuid <<PK>>
+    --
+    * conversation_id : uuid
+    * role, content
+  }
+  entity "message_citations" as CIT {
+    * id : uuid <<PK>>
+    --
+    * message_id : uuid <<FK>>
+    * chunk_id : uuid <<FK>>
+    * regulation_id : uuid <<FK>>
+    node_id : uuid <<FK>>
+    rank : smallint
+    score : real
+    quote : text
+  }
+  entity "ingest_runs" as RUN {
+    * id : uuid <<PK>>
+    --
+    * regulation_id : uuid <<FK>>
+    * status : running | ok | failed
+    chunk_count : int
+    embedding_model, chunker_version
+    error : text
+  }
+}
+
+RT ||-down-o{ REG
+PIL |o-down-o{ REG
+REG ||-down-o{ NODE
+REG ||-left-o{ REL : source
+REG ||-left-o{ REL : target
+REG ||-right-o{ RUN
+NODE ||.down.o{ CH : "chunkable\n(polimorfik)"
+CH ||-down-o{ CIT
+CONV ||-right-o{ MSG
+MSG ||-down-o{ CIT
+CIT }o-up-|| REG
+CIT }o-up-o| NODE
+
+RT -[hidden]right- PIL
+CONV -[hidden]down- CH
+@enduml
+```
+
+</details>
+
+### 5.1 Prinsip
+
+1. Hierarki, status, dan pencabutan disimpan sebagai data relasional (`regulation.*`), bukan hanya `metadata` di chunk. Perubahan status cukup di satu baris `regulations`.
+2. `ai.chunks` tidak diubah. Chunk menunjuk ke `regulation_nodes` lewat `chunkable_type`/`chunkable_id` (polimorfik). `metadata` menyimpan salinan ringan (`level`, `status`, `pilar`) untuk pre-filter.
+3. Struktur pasal (BAB, Bagian, Pasal, Ayat) disimpan sebagai pohon `regulation_nodes` agar sitasi tepat ("Pasal 67 ayat 2"). Unit chunk setingkat pasal; ayat panjang dipecah lagi.
+4. Relasi antar-regulasi (mencabut, mengubah, melaksanakan, dst.) ada di `regulation_relations`. Bisa disinkronkan ke graf AGE `ai_graph` bila perlu traversal.
+
+### 5.2 Tabel
+
+| Skema | Tabel | Fungsi |
+|---|---|---|
+| `regulation` | `regulation_types` | Jenis dan level (L0 sampai L5) |
+| `regulation` | `pillars` | Pilar 1 sampai 4 dan ASN |
+| `regulation` | `regulations` | Registri dokumen: nomor, tahun, status, masa berlaku audit, file sumber |
+| `regulation` | `regulation_relations` | Edge antar-regulasi beserta rujukan pasal |
+| `regulation` | `regulation_nodes` | Pohon struktur pasal |
+| `ai` | `chunks` (sudah ada) | Teks, embedding `vector(384)`, metadata |
+| `ai` | `message_citations` | Sitasi jawaban ke chunk, regulasi, dan pasal |
+| `ai` | `ingest_runs` | Riwayat ingest: model embedding, versi chunker, galat |
+
+### 5.3 Pemetaan dari dokumen ini
+
+- Level L0 sampai L5 (bagian 3) ke `regulation_types.level`; Pilar 1 sampai 4 ke `pillars`.
+- Tabel rantai pencabutan (bagian 2) ke `regulation_relations`, misalnya Permendikbudristek 44/2024 `mencabut`-ke Permendiktisaintek 52/2025 (Pasal 67).
+- Penanda **(verifikasi)** ke `status = 'verifikasi'` dan `verification_note`.
+- Dokumen yang belum ada di folder (bagian 4) tetap dibuat sebagai baris `regulations` tanpa `source_file`, supaya relasinya tidak putus.
+- Urutan unggah (bagian 3) ke `regulations.ingest_order`.
+
+### 5.4 Isi `ai.chunks.metadata`
+
+```json
+{
+  "regulation_id": "...", "type": "PERMEN", "level": 4,
+  "number": "52", "year": 2025, "pillar": "SDM",
+  "status": "berlaku", "is_historical": false,
+  "dicabut_oleh": null, "pasal": "67", "ayat": "2"
+}
+```
+
+### 5.5 Alur retrieval
+
+1. Filter kandidat `status = 'berlaku'`, atau pakai `audit_valid_from`/`audit_valid_until` untuk audit periode lampau (mis. Permendikbudristek 44/2024 untuk audit < 2025).
+2. Cari top-k dengan pgvector (cosine, indeks HNSW).
+3. Naik hierarki lewat `regulation_relations` (`melaksanakan`) untuk menarik pasal induk (UU/PP) sebagai konteks.
+4. Cek `mencabut`/`mengubah` untuk menyisipkan peringatan, mis. "diubah oleh Permendiktisaintek 10/2026".
+5. Simpan hasil ke `message_citations`.
+
+### 5.6 Catatan
+
+- `ai.chunks.chunkable_id` tidak punya FK; integritas ke `regulation_nodes` dijaga di kode ingest.
+- Dimensi vektor saat ini 384. Mengganti model embedding berarti embed ulang semua chunk; `ingest_runs.embedding_model` mencatat model yang dipakai.
+- Migrator CLI rusak di dev DB (nama migrasi lama), jadi migrasi diterapkan satu per satu.
