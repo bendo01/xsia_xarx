@@ -53,7 +53,7 @@ package "Regulasi ASN" {
   rectangle "Peraturan / Juknis BKN\nKinerja & Angka Kredit SIASN\n(belum ada di folder)" as BKN #EEEEEE
 }
 
-rectangle "Permendiktisaintek 1/2024\nOrganisasi & Tata Kerja\n(file berstatus RANCANGAN)" as ORG #FFF9C4
+rectangle "Permendiktisaintek 1/2024\nOrganisasi & Tata Kerja" as ORG
 
 package "Peraturan Menteri (4 pilar, lihat diagram 2)" {
   rectangle "Pilar 1\nSDM & Karier Dosen" as PIL1 #E3F2FD
@@ -260,7 +260,7 @@ Prinsip: induk dahulu, turunan kemudian; dalam satu pilar urutkan historis ke be
 ## 4. Catatan
 
 - Belum ada di folder: Juknis BKN/BKD.
-- Permendiktisaintek No. 1/2024 sudah ada, tetapi **(verifikasi)** file di folder berjudul "RANCANGAN"; ganti dengan salinan resmi bila tersedia.
+- Permendiktisaintek No. 1/2024 (Organisasi dan Tata Kerja Kementerian, ditetapkan 30 Desember 2024) sudah ada di folder. Pasal 233 mencabut Permendikbudristek 28/2021 jo. 16/2024.
 - Kepmendiktisaintek 63/M/KEP/2025 (juknis layanan karier dosen) sudah ada, tetapi PDF-nya hasil pindai tanpa lapisan teks; pastikan docling melakukan OCR (bawaan CLI) dan periksa jumlah chunk-nya.
 - Nama file di `legislation_regulation/` sudah diseragamkan (pola `Jenis_Tahun_YYYY_No_NN.pdf`; Permenristekdikti dan Permendikbudristek 56/2022 memakai `No_NN_Tahun_YYYY`). Tabel bagian 3 memakai nama terbaru dan cocok dengan isi folder (35 file).
 - Dokumen baru di folder: PP 11/2017 (Manajemen PNS, **(verifikasi)** perubahan/penggantinya karena UU 20/2023), Permenristekdikti 62/2016, 59/2018, dan Permendikbudristek 56/2022.
