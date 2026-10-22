@@ -26,17 +26,37 @@ fn guide_id(file_name: &str) -> Uuid {
     Uuid::new_v5(&Uuid::NAMESPACE_URL, format!("xsia:guide:{file_name}").as_bytes())
 }
 
-/// Regulations known to be replaced; everything else is registered as active
-const REVOKED: &[(&str, i16)] = &[("53", 2023)];
+/// Regulations known to be replaced (see `desertation/knowledge_base.md`, section 2); everything else is registered as active.
+/// 44/2024 is still needed for audits before 2025, so retrieval opts in with `include_revoked`.
+const REVOKED: &[(&str, i16)] = &[
+    ("44", 2015), // replaced by Permendikbud 3/2020
+    ("62", 2016), // replaced by Permendikbudristek 53/2023 (Pasal 106)
+    ("51", 2018), // replaced by Permendikbud 7/2020 (Pasal 93)
+    ("59", 2018), // replaced by Permendikbudristek 6/2022 (Pasal 35)
+    ("3", 2020),  // replaced by Permendikbudristek 53/2023 (Pasal 106)
+    ("6", 2022),  // replaced by Permendikbudristek 50/2024 (Pasal 27)
+    ("56", 2022), // replaced by Permendikbudristek 53/2023 (Pasal 106)
+    ("53", 2023), // replaced by Permendiktisaintek 39/2025 (Pasal 117)
+    ("44", 2024), // replaced by Permendiktisaintek 52/2025 (Pasal 67)
+];
 
+/// `UU_Tahun_2003_No_20`: year before number
+static YEAR_NUMBER: Lazy<Regex> = Lazy::new(|| Regex::new(r"(?i)tahun\D*(\d{4})\D+(?:no|nomor)\D*(\d{1,3})").unwrap());
+/// `Permenristekdikti Nomor 51 Tahun 2018`: number before year
 static NUMBER_YEAR: Lazy<Regex> = Lazy::new(|| Regex::new(r"(\d{1,3})\D+?(\d{4})").unwrap());
 
-/// Number and year from a file name such as `Permenristekdikti Nomor 51 Tahun 2018.pdf` or `PP_No_37_2009.pdf`
+/// Number and year from a file name such as `UU_Tahun_2003_No_20.pdf`, `Permenristekdikti Nomor 51 Tahun 2018.pdf` or `PP_No_37_2009.pdf`.
+/// Leading zeros of the number are dropped (`No_04` is `4`).
 fn number_and_year(stem: &str) -> (Option<String>, Option<i16>) {
-    NUMBER_YEAR
-        .captures(stem)
-        .map(|c| (Some(c[1].to_owned()), c[2].parse().ok()))
-        .unwrap_or((None, None))
+    let (number, year) = match YEAR_NUMBER.captures(stem) {
+        Some(c) => (c[2].to_owned(), c[1].to_owned()),
+        None => match NUMBER_YEAR.captures(stem) {
+            Some(c) => (c[1].to_owned(), c[2].to_owned()),
+            None => return (None, None),
+        },
+    };
+    let number = number.trim_start_matches('0');
+    (Some(if number.is_empty() { "0" } else { number }.to_owned()), year.parse().ok())
 }
 
 fn title_from(stem: &str) -> String {
@@ -154,6 +174,25 @@ mod tests {
         assert_eq!(number_and_year("permendiktisaintek-no-10-tahun-2026"), (Some("10".into()), Some(2026)));
         assert_eq!(number_and_year("7 tahun 2020"), (Some("7".into()), Some(2020)));
         assert_eq!(number_and_year("UUD45_SatuNaskah"), (None, None));
+        assert_eq!(number_and_year("UU_Tahun_2003_No_20"), (Some("20".into()), Some(2003)));
+        assert_eq!(number_and_year("PP_Tahun_2014_No_04"), (Some("4".into()), Some(2014)));
+        assert_eq!(number_and_year("Perpres_Tahun_2026_No_007"), (Some("7".into()), Some(2026)));
+        assert_eq!(number_and_year("permendiktisaintek_Tahun_2025_No_39"), (Some("39".into()), Some(2025)));
+        assert_eq!(number_and_year("Permenristekdikti_No_44_Tahun_2015"), (Some("44".into()), Some(2015)));
+        assert_eq!(number_and_year("UUD_1945"), (None, None));
+    }
+
+    #[test]
+    fn revoked_list_matches_file_names() {
+        let revoked = |stem: &str| {
+            let (n, y) = number_and_year(stem);
+            REVOKED.iter().any(|(rn, ry)| n.as_deref() == Some(*rn) && y == Some(*ry))
+        };
+        assert!(revoked("Permendikbud_Tahun_2020_No_03"));
+        assert!(revoked("Permen_Tahun_2022_No_06"));
+        assert!(revoked("Permenristekdikti_No_44_Tahun_2015"));
+        assert!(!revoked("permendiktisaintek_Tahun_2025_No_52"));
+        assert!(!revoked("Permendikbud_Tahun_2020_No_07"));
     }
 
     #[test]

@@ -23,6 +23,7 @@ package "Peraturan Pemerintah" {
   rectangle "PP 57/2021 jo. 4/2022\nStandar Nasional Pendidikan" as PP2021
   rectangle "PP 37/2009\nDosen" as PP2009
   rectangle "PP 4/2014\nPenyelenggaraan Dikti & PT" as PP2014
+  rectangle "PP 11/2017\nManajemen PNS" as PP2017
 }
 
 package "Perpres" {
@@ -35,7 +36,7 @@ package "Regulasi ASN" {
   rectangle "Peraturan / Juknis BKN\nKinerja & Angka Kredit SIASN\n(belum ada di folder)" as BKN #EEEEEE
 }
 
-rectangle "Permendiktisaintek 1/2024\nOrganisasi & Tata Kerja\n(belum ada di folder)" as ORG #EEEEEE
+rectangle "Permendiktisaintek 1/2024\nOrganisasi & Tata Kerja\n(file berstatus RANCANGAN)" as ORG #FFF9C4
 
 package "Peraturan Menteri (4 pilar, lihat diagram 2)" {
   rectangle "Pilar 1\nSDM & Karier Dosen" as PIL1 #E3F2FD
@@ -59,6 +60,7 @@ UU2003 --> PP2021
 UU2005 --> PP2009
 UU2012 --> PP2014
 UU2008 --> PERPRES
+UU2023 --> PP2017
 UU2023 --> PAN13
 UU2023 --> PAN1
 PAN1 --> BKN
