@@ -10,6 +10,10 @@ pub fn router() -> Router {
                 .get_named("document.transaction.archives.index", archives::index)
                 .post_named("document.transaction.archives.store", archives::store)
                 .push(
+                    Router::with_path("upload")
+                        .post_named("document.transaction.archives.upload", archives::upload),
+                )
+                .push(
                     Router::with_path("options")
                         .post_named("document.transaction.archives.option_select", archives::option_select),
                 )
@@ -17,7 +21,11 @@ pub fn router() -> Router {
                     Router::with_path("{id}")
                         .get_named("document.transaction.archives.show", archives::show)
                         .put_named("document.transaction.archives.update", archives::update)
-                        .delete_named("document.transaction.archives.delete", archives::delete),
+                        .delete_named("document.transaction.archives.delete", archives::delete)
+                        .push(
+                            Router::with_path("reindex")
+                                .post_named("document.transaction.archives.reindex", archives::reindex),
+                        ),
                 ),
         )
 }

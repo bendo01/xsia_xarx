@@ -39,6 +39,13 @@ pub async fn ingest_pdf(db: &DatabaseConnection, job: &PdfEmbeddingJob) -> Resul
     let _ = tokio::fs::remove_dir_all(&work_dir).await;
     let markdown = markdown?;
 
+    if let Some(path) = &job.markdown_path {
+        // A failed copy must not lose the embeddings, so only log it
+        if let Err(e) = tokio::fs::write(path, &markdown).await {
+            tracing::warn!("Failed to save converted Markdown to {path}: {e}");
+        }
+    }
+
     let sections = split_markdown(&markdown);
     if sections.is_empty() {
         bail!("No text could be extracted from {}", job.file_name);

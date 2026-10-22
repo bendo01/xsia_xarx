@@ -158,3 +158,65 @@ export async function DocumentArchiveControllerDelete(
         };
     }
 }
+
+export interface DocumentArchiveUploadResult {
+    is_error: boolean;
+    message: string;
+    data?: DocumentArchive;
+    /** `queued` or `skipped` when the file was meant for the knowledge base */
+    knowledge_status?: string | null;
+    /** Why the file was not added to the knowledge base (e.g. docling is not installed) */
+    warning?: string | null;
+}
+
+export async function DocumentArchiveControllerUpload(form: {
+    file: File;
+    archive_type_id: string;
+    description?: string | null;
+    is_knowledge?: boolean;
+}): Promise<DocumentArchiveUploadResult> {
+    try {
+        const body = new FormData();
+        body.append('file', form.file);
+        body.append('archive_type_id', form.archive_type_id);
+        if (form.description) body.append('description', form.description);
+        body.append('is_knowledge', String(Boolean(form.is_knowledge)));
+
+        // Let the browser set the multipart boundary
+        const headers = getHeaders();
+        delete headers['Content-Type'];
+
+        const res = await fetch(`${getBaseUrl()}/${path}/upload`, { method: 'POST', headers, body });
+        const resJson = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            return { is_error: true, message: resJson.message || resJson.brief || 'Failed to upload archive.' };
+        }
+        return {
+            is_error: false,
+            message: 'Archive uploaded successfully.',
+            data: resJson.archive,
+            knowledge_status: resJson.knowledge_status ?? null,
+            warning: resJson.warning ?? null,
+        };
+    } catch (error: any) {
+        return { is_error: true, message: error.message || 'Network error while uploading archive.' };
+    }
+}
+
+export async function DocumentArchiveControllerReindex(
+    props: { id: string },
+): Promise<{ is_error: boolean; message: string }> {
+    try {
+        const res = await fetch(`${getBaseUrl()}/${path}/${props.id}/reindex`, {
+            method: 'POST',
+            headers: getHeaders(),
+        });
+        const resJson = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            return { is_error: true, message: resJson.message || resJson.brief || 'Failed to queue archive.' };
+        }
+        return { is_error: false, message: resJson.message || 'Archive queued for the knowledge base.' };
+    } catch (error: any) {
+        return { is_error: true, message: error.message || 'Network error while queueing archive.' };
+    }
+}

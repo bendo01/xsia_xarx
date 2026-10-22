@@ -6,6 +6,8 @@ import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
 import {
     DocumentArchiveControllerIndex,
     DocumentArchiveControllerUpsert,
+    DocumentArchiveControllerUpload,
+    DocumentArchiveControllerReindex,
     DocumentArchiveControllerDelete,
 } from '~/controllers/document/DocumentArchiveController';
 import { DocumentArchiveTypeControllerList } from '~/controllers/document/DocumentArchiveTypeController';
@@ -55,6 +57,7 @@ export default function DocumentTransactionArchivePage() {
     });
     const [formErrors, setFormErrors] = createSignal<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = createSignal(false);
+    const [selectedFile, setSelectedFile] = createSignal<File | null>(null);
 
     // Selected item for Delete
     const [selectedItem, setSelectedItem] = createSignal<DocumentArchive | null>(null);
@@ -162,6 +165,9 @@ export default function DocumentTransactionArchivePage() {
             archiveable_id: '',
         });
         setFormErrors({});
+        setSelectedFile(null);
+        const fileInput = document.getElementById('create-archive-file') as HTMLInputElement | null;
+        if (fileInput) fileInput.value = '';
         createDialogRef.showModal();
     };
 
@@ -169,7 +175,10 @@ export default function DocumentTransactionArchivePage() {
         createDialogRef.close();
     };
 
+    const [wasKnowledge, setWasKnowledge] = createSignal(false);
+
     const openEditModal = (item: DocumentArchive) => {
+        setWasKnowledge(Boolean(item.is_knowledge));
         setFormData({
             id: item.id,
             name: item.name || '',
@@ -226,18 +235,36 @@ export default function DocumentTransactionArchivePage() {
 
     const handleCreateSubmit = async (e: Event) => {
         e.preventDefault();
-        if (!validateForm()) return;
+        const form = formData();
+        const file = selectedFile();
+        const errors: Record<string, string> = {};
+        if (!file) errors.file = t('ad.archiveFileRequired');
+        if (!form.archive_type_id) errors.archive_type_id = 'Archive type is required.';
+        setFormErrors(errors);
+        if (!file || Object.keys(errors).length > 0) return;
 
         setIsSubmitting(true);
         try {
-            const res = await DocumentArchiveControllerUpsert(formData());
-            if (!res.is_error) {
-                toast.success(res.message || t('ad.archiveCreatedSuccessfully'), 5000);
-                closeCreateModal();
-                fetchData();
-            } else {
+            const res = await DocumentArchiveControllerUpload({
+                file,
+                archive_type_id: form.archive_type_id,
+                description: form.description,
+                is_knowledge: form.is_knowledge,
+            });
+            if (res.is_error) {
                 toast.danger(res.message || t('ad.failedToCreateArchive'), 5000);
+                return;
             }
+            if (res.warning) {
+                // Saved, but docling is missing (or the file is not indexable)
+                toast.danger(`${t('ad.archiveUploadedNotIndexed')}: ${res.warning}`, 10000);
+            } else if (res.knowledge_status === 'queued') {
+                toast.success(t('ad.archiveUploadedQueued'), 5000);
+            } else {
+                toast.success(res.message || t('ad.archiveCreatedSuccessfully'), 5000);
+            }
+            closeCreateModal();
+            fetchData();
         } catch (error: any) {
             toast.danger(error.message || t('ad.errorOccurredWhileCreating'), 5000);
         } finally {
@@ -253,7 +280,17 @@ export default function DocumentTransactionArchivePage() {
         try {
             const res = await DocumentArchiveControllerUpsert(formData());
             if (!res.is_error) {
-                toast.success(res.message || t('ad.archiveUpdatedSuccessfully'), 5000);
+                const id = formData().id;
+                if (formData().is_knowledge && !wasKnowledge() && id) {
+                    const queued = await DocumentArchiveControllerReindex({ id });
+                    if (queued.is_error) {
+                        toast.danger(`${t('ad.archiveUploadedNotIndexed')}: ${queued.message}`, 10000);
+                    } else {
+                        toast.success(t('ad.archiveQueuedForKnowledge'), 5000);
+                    }
+                } else {
+                    toast.success(res.message || t('ad.archiveUpdatedSuccessfully'), 5000);
+                }
                 closeEditModal();
                 fetchData();
             } else {
@@ -644,19 +681,18 @@ export default function DocumentTransactionArchivePage() {
                     <form onSubmit={handleCreateSubmit} class="space-y-4 pt-4">
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                {t('ad.documentFileName')} <span class="text-red-500">*</span>
+                                {t('ad.archiveFile')} <span class="text-red-500">*</span>
                             </label>
                             <input
-                                type="text"
-                                class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
-                                    formErrors().name ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
+                                type="file"
+                                id="create-archive-file"
+                                class={`block w-full text-sm text-neutral-900 border rounded-xs bg-white file:mr-3 file:px-3 file:py-2.5 file:border-0 file:bg-neutral-100 file:text-neutral-700 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:file:bg-neutral-700 dark:file:text-neutral-200 ${
+                                    formErrors().file ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
                                 }`}
-                                placeholder={t('ad.eGIjazahS12023Pdf')}
-                                value={formData().name}
-                                onInput={(e) => setFormData({ ...formData(), name: e.currentTarget.value })}
+                                onChange={(e) => setSelectedFile(e.currentTarget.files?.[0] ?? null)}
                             />
-                            {formErrors().name && (
-                                <p class="text-xs text-red-500 mt-1">{formErrors().name}</p>
+                            {formErrors().file && (
+                                <p class="text-xs text-red-500 mt-1">{formErrors().file}</p>
                             )}
                         </div>
 
@@ -679,44 +715,6 @@ export default function DocumentTransactionArchivePage() {
                             {formErrors().archive_type_id && (
                                 <p class="text-xs text-red-500 mt-1">{formErrors().archive_type_id}</p>
                             )}
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                    {t('ad.directoryPath')} <span class="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
-                                        formErrors().dir ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
-                                    }`}
-                                    placeholder="/uploads/documents"
-                                    value={formData().dir}
-                                    onInput={(e) => setFormData({ ...formData(), dir: e.currentTarget.value })}
-                                />
-                                {formErrors().dir && (
-                                    <p class="text-xs text-red-500 mt-1">{formErrors().dir}</p>
-                                )}
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                    {t('ad.mimeType')} <span class="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    class={`block w-full p-2.5 text-sm text-neutral-900 border rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors ${
-                                        formErrors().mimetype ? 'border-red-500 dark:border-red-500' : 'border-neutral-300'
-                                    }`}
-                                    placeholder="application/pdf"
-                                    value={formData().mimetype}
-                                    onInput={(e) => setFormData({ ...formData(), mimetype: e.currentTarget.value })}
-                                />
-                                {formErrors().mimetype && (
-                                    <p class="text-xs text-red-500 mt-1">{formErrors().mimetype}</p>
-                                )}
-                            </div>
                         </div>
 
                         <div>
@@ -744,6 +742,9 @@ export default function DocumentTransactionArchivePage() {
                                 {t('ad.includeInKnowledgeBase')}
                             </label>
                         </div>
+                        <Show when={formData().is_knowledge}>
+                            <p class="text-xs text-neutral-500 dark:text-neutral-400">{t('ad.archiveKnowledgeHint')}</p>
+                        </Show>
 
                         <div class="flex items-center justify-end gap-3 pt-4 border-t border-neutral-200 dark:border-neutral-700">
                             <button
@@ -944,7 +945,7 @@ export default function DocumentTransactionArchivePage() {
                         </div>
                     </div>
 
-                    <p class="text-sm text-neutral-600 dark:text-neutral-300 bg-neutral-50 dark:bg-neutral-800/60 p-3 rounded-xs border border-neutral-200 dark:border-neutral-700 mb-4 font-mono text-xs">
+                    <p class="text-neutral-600 dark:text-neutral-300 bg-neutral-50 dark:bg-neutral-800/60 p-3 rounded-xs border border-neutral-200 dark:border-neutral-700 mb-4 font-mono text-xs">
                         {selectedItem()?.name} ({selectedItem()?.dir})
                     </p>
 

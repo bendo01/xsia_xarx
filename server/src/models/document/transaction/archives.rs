@@ -2,6 +2,9 @@
 
 use sea_orm::entity::prelude::*;
 
+/// `chunkable_type` of the `ai.chunks` rows built from an archive
+pub const CHUNKABLE_TYPE: &str = "App\\Model\\Document\\Transaction\\Archive";
+
 #[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(schema_name = "document_transaction", table_name = "archives")]

@@ -1,0 +1,82 @@
+@startuml hierarki_regulasi
+skinparam shadowing false
+skinparam defaultFontName Sans
+skinparam rectangle {
+  RoundCorner 8
+  BorderColor #555555
+}
+skinparam package {
+  BorderColor #888888
+}
+
+rectangle "**UUD NRI 1945**\nPasal 31 (1, 3, 5): Hak Pendidikan & IPTEK\nPasal 17 (3): Kewenangan Kementerian\nPasal 20 & 21: Pembentukan UU" as UUD #E8EAF6
+
+package "Undang-Undang" {
+  rectangle "UU 20/2003\nSistem Pendidikan Nasional" as UU2003
+  rectangle "UU 14/2005\nGuru dan Dosen" as UU2005
+  rectangle "UU 12/2012\nPendidikan Tinggi" as UU2012
+  rectangle "UU 39/2008 jo. 61/2024\nKementerian Negara" as UU2008
+  rectangle "UU 20/2023\nAparatur Sipil Negara" as UU2023
+}
+
+package "Peraturan Pemerintah" {
+  rectangle "PP 57/2021 jo. 4/2022\nStandar Nasional Pendidikan" as PP2021
+  rectangle "PP 37/2009\nDosen" as PP2009
+  rectangle "PP 4/2014\nPenyelenggaraan Dikti & PT" as PP2014
+}
+
+package "Perpres" {
+  rectangle "Perpres 189/2024 jo. 7/2026\nKelembagaan Kemendiktisaintek" as PERPRES
+}
+
+package "Regulasi ASN" {
+  rectangle "PermenPAN-RB 13/2019\nPengusulan & Pembinaan Jabfung" as PAN13
+  rectangle "PermenPAN-RB 1/2023\nKerangka Jabatan Fungsional" as PAN1
+  rectangle "Peraturan / Juknis BKN\nKinerja & Angka Kredit SIASN\n(belum ada di folder)" as BKN #EEEEEE
+}
+
+rectangle "Permendiktisaintek 1/2024\nOrganisasi & Tata Kerja\n(belum ada di folder)" as ORG #EEEEEE
+
+package "Peraturan Menteri (4 pilar, lihat diagram 2)" {
+  rectangle "Pilar 1\nSDM & Karier Dosen" as PIL1 #E3F2FD
+  rectangle "Pilar 2\nMutu & Akreditasi" as PIL2 #FFF8E1
+  rectangle "Pilar 3\nKelembagaan PT" as PIL3 #F3E5F5
+  rectangle "Pilar 4\nIjazah, Sertifikat & Gelar" as PIL4 #E0F2F1
+}
+
+package "Teknis Operasional & Internal Institusi" {
+  rectangle "Juknis BKD & Manual FEEDER PDDikti\nRubrik Kinerja Dosen, Validation Rules" as FEEDER
+  rectangle "Peraturan Rektor / Statuta PT / SOP\nBatas IPK/SKS, Cuti, MBKM Kampus" as INTERNAL
+}
+
+UUD --> UU2003
+UUD --> UU2005
+UUD --> UU2012
+UUD --> UU2008
+UUD --> UU2023
+
+UU2003 --> PP2021
+UU2005 --> PP2009
+UU2012 --> PP2014
+UU2008 --> PERPRES
+UU2023 --> PAN13
+UU2023 --> PAN1
+PAN1 --> BKN
+
+PERPRES --> ORG
+PP2014 --> ORG
+ORG --> PIL1
+ORG --> PIL2
+ORG --> PIL3
+ORG --> PIL4
+PP2009 --> PIL1
+PP2021 --> PIL2
+PP2014 --> PIL3
+PP2014 --> PIL4
+
+PIL1 --> FEEDER
+PIL4 --> FEEDER
+PIL2 --> INTERNAL
+PIL3 --> INTERNAL
+BKN --> FEEDER
+@enduml

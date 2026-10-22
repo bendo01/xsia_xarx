@@ -88,6 +88,7 @@ pub async fn upload(
         chunkable_type: chunkable_type.clone(),
         chunkable_id,
         user_id: auth_user_id(depot),
+        markdown_path: None,
     };
 
     let msg_id = match enqueue_pdf_embedding(queue, &job).await {

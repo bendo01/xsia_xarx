@@ -1,0 +1,51 @@
+@startuml pilar_regulasi
+skinparam shadowing false
+skinparam defaultFontName Sans
+skinparam rectangle {
+  RoundCorner 8
+  BorderColor #555555
+}
+skinparam package {
+  BorderColor #888888
+}
+
+package "Pilar 1: SDM & Karier Dosen" #E3F2FD {
+  rectangle "Permendikbudristek 44/2024\nProfesi, Karier, Penghasilan Dosen\n//historis (audit < 2025)//" as P44_24 #FFCDD2
+  rectangle "Permendiktisaintek 52/2025\nProfesi, Karier, Penghasilan Dosen\n**berlaku**" as P52_25 #C8E6C9
+}
+
+package "Pilar 2: Mutu & Akreditasi" #FFF8E1 {
+  rectangle "Permenristekdikti 44/2015\nSN-Dikti\n//historis//" as P44_15 #FFCDD2
+  rectangle "Permendikbud 3/2020\nSN-Dikti\n//historis//" as P3_20 #FFCDD2
+  rectangle "Permendikbudristek 53/2023\nPenjaminan Mutu Dikti\n//historis//" as P53_23 #FFCDD2
+  rectangle "Permendiktisaintek 39/2025\nPenjaminan Mutu Dikti\n**berlaku**" as P39_25 #C8E6C9
+  rectangle "Permendiktisaintek 10/2026\nPerubahan atas 39/2025\n**berlaku**" as P10_26 #C8E6C9
+}
+
+package "Pilar 3: Kelembagaan PT" #F3E5F5 {
+  rectangle "Permenristekdikti 51/2018\nPendirian PTN/PTS\n//historis//" as P51_18 #FFCDD2
+  rectangle "Permenristekdikti 52/2018\nProsedur Pendirian PTS, Prodi, Joint Program\n//verifikasi//" as P52_18 #FFF9C4
+  rectangle "Permendikbud 7/2020\nPendirian PTN/PTS\n**berlaku**" as P7_20 #C8E6C9
+}
+
+package "Pilar 4: Ijazah, Sertifikat & Gelar" #E0F2F1 {
+  rectangle "Permendikbudristek 6/2022\nIjazah, Sertifikat, Gelar\n//historis//" as P6_22 #FFCDD2
+  rectangle "Permendikbudristek 50/2024\nIjazah, Sertifikat Kompetensi & Profesi\n**berlaku**" as P50_24 #C8E6C9
+}
+
+P44_24 -[#red,dashed]-> P52_25 : dicabut\n(Pasal 67)
+P44_15 -[#red,dashed]-> P3_20 : dicabut
+P3_20 -[#red,dashed]-> P53_23 : dicabut\n(Pasal 106)
+P53_23 -[#red,dashed]-> P39_25 : dicabut\n(Pasal 117)
+P39_25 --> P10_26 : diubah
+P51_18 -[#red,dashed]-> P7_20 : dicabut\n(Pasal 93)
+P6_22 -[#red,dashed]-> P50_24 : dicabut\n(Pasal 27)
+
+legend right
+  |= Warna |= Arti |
+  | <#C8E6C9> | Berlaku |
+  | <#FFCDD2> | Historis / dicabut |
+  | <#FFF9C4> | Perlu verifikasi |
+  Panah merah putus-putus = dicabut oleh
+endlegend
+@enduml
