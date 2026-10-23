@@ -237,8 +237,8 @@ Rantai pencabutan terbaca dari atas (historis) ke bawah (berlaku).
 | Peraturan | Tentang | Status |
 |---|---|---|
 | Permenristekdikti No. 51/2018 | Pendirian, Perubahan, Pembubaran PTN; Pendirian, Perubahan, Pencabutan Izin PTS | Historis. Dicabut Permendikbud 7/2020 (Pasal 93). |
-| Permenristekdikti No. 52/2018 | Prosedur Pendirian PTS, Pembukaan Prodi, Joint Program PTS | **(verifikasi)** Tidak termasuk daftar pencabutan Permendikbud 7/2020. |
-| Permendikbud No. 7/2020 | Pendirian, Perubahan, Pembubaran PTN; Pendirian, Perubahan, Pencabutan Izin PTS | Berlaku menurut dokumen yang ada di folder. **(verifikasi)** adanya perubahan/penggantinya. |
+| Permenristekdikti No. 52/2018 | Prosedur Pendirian PTS, Pembukaan Prodi, Joint Program PTS | Ditetapkan 17 Oktober 2018 (BN 2018/No. 1498), 10 pasal, mengatur prosedur izin lewat OSS. Teksnya tidak memuat pasal pencabutan. Tidak termasuk daftar pencabutan Permendikbud 7/2020 (BPK hanya mencatat 51/2018). Dianggap **berlaku** menurut folder. **(verifikasi)** pencabutan oleh peraturan lain: belum bisa dipastikan dari peraturan.bpk.go.id (pencarian tidak menemukan halaman detailnya). |
+| Permendikbud No. 7/2020 | Pendirian, Perubahan, Pembubaran PTN; Pendirian, Perubahan, Pencabutan Izin PTS | **Berlaku**. Per pengecekan peraturan.bpk.go.id (BN 2020/No. 51; ditetapkan 24 Januari 2020, diundangkan 28 Januari 2020) belum ada perubahan maupun peraturan pengganti. Mencabut Permenristekdikti 51/2018. |
 
 ### Pilar 4: Ijazah, Sertifikat & Gelar
 
@@ -279,7 +279,7 @@ Prinsip: induk dahulu, turunan kemudian; dalam satu pilar urutkan historis ke be
 | 19 | L3 ASN | `PermenPANRB_Tahun_2023_No_01.pdf` |
 | 20 | L3 Organisasi | `Permendiktisaintek_Tahun_2024_No_01.pdf` |
 | 21 | L4 Pilar 3 | `Permenristekdikti_No_51_Tahun_2018.pdf` |
-| 22 | L4 Pilar 3 | `Permenristekdikti_No_52_Tahun_2018.pdf` |
+| 22 | L4 Pilar 3 | `Permenristekdikti_Tahun_2018_No_52.pdf` |
 | 23 | L4 Pilar 3 | `Permendikbud_Tahun_2020_No_07.pdf` |
 | 24 | L4 Pilar 2 | `Permendikbud_Tahun_2014_No_50.pdf` |
 | 25 | L4 Pilar 2 | `Permenristekdikti_No_44_Tahun_2015.pdf` |
