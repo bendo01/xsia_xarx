@@ -1,7 +1,8 @@
 //! Retrieval for the compliance RAG: hybrid (dense + lexical) search over regulation chunks in
 //! `ai.chunks`, and the link from detected anomalies to the regulation text that governs them.
-//! No LLM is involved here; generation and citation checking build on [`Hit`].
+//! Retrieval itself uses no LLM; [`answer`] turns hits into the prompt for the generator.
 
+pub mod answer;
 pub mod eval;
 pub mod evidence;
 pub mod fusion;

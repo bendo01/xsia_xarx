@@ -1,7 +1,9 @@
 use salvo::prelude::*;
-use crate::middleware::rbac::NamedRouterExt;
+use crate::middleware::rbac::{NamedRouterExt, is_administrator};
+use crate::models::auth::role;
 
 pub mod chunks;
+pub mod rag;
 pub mod regulations;
 
 pub fn router() -> Router {
@@ -16,4 +18,23 @@ pub fn router() -> Router {
                 .push(Router::with_path("status").get_named("ai.regulations.status", regulations::status))
                 .push(Router::with_path("rebuild").post_named("ai.regulations.rebuild", regulations::rebuild)),
         )
+        .push(
+            Router::with_path("rag")
+                .push(Router::with_path("status").get_named("ai.rag.status", rag::status))
+                .push(Router::with_path("retrieve").post_named("ai.rag.retrieve", rag::retrieve))
+                .push(Router::with_path("ask").post_named("ai.rag.ask", rag::ask))
+                .push(
+                    Router::with_path("messages/{id}/feedback")
+                        .post_named("ai.rag.feedback", rag::feedback),
+                ),
+        )
+}
+
+/// The RAG and knowledge base tools are for administrators only
+pub(crate) fn require_administrator(depot: &Depot) -> Result<(), StatusError> {
+    if depot.get::<role::Model>("active_role").map(is_administrator).unwrap_or(false) {
+        Ok(())
+    } else {
+        Err(StatusError::forbidden().brief("Only administrators can use this tool"))
+    }
 }

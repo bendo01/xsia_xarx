@@ -9,10 +9,21 @@ use tokio::process::Command;
 pub async fn pdf_to_markdown(pdf: &Path, output_dir: &Path) -> Result<String> {
     let docling = std::env::var("DOCLING_BIN").unwrap_or_else(|_| "docling".to_string());
 
+    // CPU only: docling's default `--device auto` picks CUDA when torch can see a GPU, so pin the device and
+    // also hide the GPUs from the process. `DOCLING_NUM_THREADS` overrides docling's default of 4 threads.
+    let threads = std::env::var("DOCLING_NUM_THREADS")
+        .ok()
+        .and_then(|v| v.parse::<u32>().ok())
+        .filter(|n| *n > 0)
+        .unwrap_or_else(|| std::thread::available_parallelism().map_or(4, |n| n.get() as u32));
+
     let output = Command::new(&docling)
         .arg(pdf)
-        .args(["--from", "pdf", "--to", "md", "--image-export-mode", "placeholder", "--output"])
+        .args(["--from", "pdf", "--to", "md", "--image-export-mode", "placeholder", "--device", "cpu", "--num-threads"])
+        .arg(threads.to_string())
+        .arg("--output")
         .arg(output_dir)
+        .env("CUDA_VISIBLE_DEVICES", "")
         .kill_on_drop(true)
         .output()
         .await
