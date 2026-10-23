@@ -29,19 +29,27 @@ fn guide_id(file_name: &str) -> Uuid {
 /// Regulations known to be replaced (see `desertation/knowledge_base.md`, section 2); everything else is registered as active.
 /// 44/2024 is still needed for audits before 2025, so retrieval opts in with `include_revoked`.
 const REVOKED: &[(&str, i16)] = &[
+    ("5", 2014),  // UU ASN, replaced by UU 20/2023 (Pasal 76)
+    ("50", 2014), // replaced by Permenristekdikti 62/2016 (Pasal 10)
+    ("81", 2014), // replaced by Permenristekdikti 59/2018 (Pasal 25)
     ("44", 2015), // replaced by Permendikbud 3/2020
+    ("63", 2016), // replaced by Permenristekdikti 59/2018 (Pasal 25)
+    ("55", 2017), // replaced by Permendikbudristek 56/2022 (Pasal 33)
     ("62", 2016), // replaced by Permendikbudristek 53/2023 (Pasal 106)
     ("51", 2018), // replaced by Permendikbud 7/2020 (Pasal 93)
     ("59", 2018), // replaced by Permendikbudristek 6/2022 (Pasal 35)
+    ("13", 2019), // PermenPAN-RB, replaced by PermenPAN-RB 1/2023 (Pasal 62)
     ("3", 2020),  // replaced by Permendikbudristek 53/2023 (Pasal 106)
+    ("5", 2020),  // replaced by Permendikbudristek 53/2023 (Pasal 106)
     ("6", 2022),  // replaced by Permendikbudristek 50/2024 (Pasal 27)
     ("56", 2022), // replaced by Permendikbudristek 53/2023 (Pasal 106)
     ("53", 2023), // replaced by Permendiktisaintek 39/2025 (Pasal 117)
     ("44", 2024), // replaced by Permendiktisaintek 52/2025 (Pasal 67)
+    ("384", 2024), // Kepmen juknis karier dosen, replaced by Kepmendiktisaintek 63/2025
 ];
 
-/// `UU_Tahun_2003_No_20`: year before number
-static YEAR_NUMBER: Lazy<Regex> = Lazy::new(|| Regex::new(r"(?i)tahun\D*(\d{4})\D+(?:no|nomor)\D*(\d{1,3})").unwrap());
+/// `UU_Tahun_2003_No_20` or `Permendikbud_2014_No_81`: year before number
+static YEAR_NUMBER: Lazy<Regex> = Lazy::new(|| Regex::new(r"(?i)(?:tahun\D*)?(\d{4})\D+(?:no|nomor)\D*(\d{1,3})").unwrap());
 /// `Permenristekdikti Nomor 51 Tahun 2018`: number before year
 static NUMBER_YEAR: Lazy<Regex> = Lazy::new(|| Regex::new(r"(\d{1,3})\D+?(\d{4})").unwrap());
 
@@ -180,6 +188,8 @@ mod tests {
         assert_eq!(number_and_year("permendiktisaintek_Tahun_2025_No_39"), (Some("39".into()), Some(2025)));
         assert_eq!(number_and_year("Permenristekdikti_No_44_Tahun_2015"), (Some("44".into()), Some(2015)));
         assert_eq!(number_and_year("UUD_1945"), (None, None));
+        assert_eq!(number_and_year("Permendikbud_2014_No_81"), (Some("81".into()), Some(2014)));
+        assert_eq!(number_and_year("Kepmendikbudristek_Tahun_2024_No_384_P"), (Some("384".into()), Some(2024)));
     }
 
     #[test]
@@ -191,6 +201,10 @@ mod tests {
         assert!(revoked("Permendikbud_Tahun_2020_No_03"));
         assert!(revoked("Permen_Tahun_2022_No_06"));
         assert!(revoked("Permenristekdikti_No_44_Tahun_2015"));
+        assert!(revoked("Permendikbud_2014_No_81"));
+        assert!(revoked("PermenPANRB_Tahun_2019_No_13"));
+        assert!(!revoked("PermenPANRB_Tahun_2023_No_01"));
+        assert!(!revoked("Kepmendiktisaintek_Tahun_2025_No_63"));
         assert!(!revoked("permendiktisaintek_Tahun_2025_No_52"));
         assert!(!revoked("Permendikbud_Tahun_2020_No_07"));
     }

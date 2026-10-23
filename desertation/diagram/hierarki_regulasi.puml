@@ -16,6 +16,7 @@ package "Undang-Undang" {
   rectangle "UU 14/2005\nGuru dan Dosen" as UU2005
   rectangle "UU 12/2012\nPendidikan Tinggi" as UU2012
   rectangle "UU 39/2008 jo. 61/2024\nKementerian Negara" as UU2008
+  rectangle "UU 5/2014\nAparatur Sipil Negara\n//historis//" as UU2014 #FFCDD2
   rectangle "UU 20/2023\nAparatur Sipil Negara" as UU2023
 }
 
@@ -23,17 +24,18 @@ package "Peraturan Pemerintah" {
   rectangle "PP 57/2021 jo. 4/2022\nStandar Nasional Pendidikan" as PP2021
   rectangle "PP 37/2009\nDosen" as PP2009
   rectangle "PP 4/2014\nPenyelenggaraan Dikti & PT" as PP2014
-  rectangle "PP 11/2017\nManajemen PNS" as PP2017
+  rectangle "PP 11/2017 jo. 17/2020\nManajemen PNS" as PP2017
 }
 
 package "Perpres" {
+  rectangle "Perpres 8/2012\nKerangka Kualifikasi Nasional (KKNI)" as KKNI
   rectangle "Perpres 189/2024 jo. 7/2026\nKelembagaan Kemendiktisaintek" as PERPRES
 }
 
 package "Regulasi ASN" {
-  rectangle "PermenPAN-RB 13/2019\nPengusulan & Pembinaan Jabfung" as PAN13
+  rectangle "PermenPAN-RB 13/2019\nPengusulan & Pembinaan Jabfung\n//historis//" as PAN13 #FFCDD2
   rectangle "PermenPAN-RB 1/2023\nKerangka Jabatan Fungsional" as PAN1
-  rectangle "Peraturan / Juknis BKN\nKinerja & Angka Kredit SIASN\n(belum ada di folder)" as BKN #EEEEEE
+  rectangle "Peraturan BKN 3/2023\nAngka Kredit, Pangkat, Jenjang Jabfung\n(di folder baru buku panduan teknisnya)" as BKN #FFF9C4
 }
 
 rectangle "Permendiktisaintek 1/2024\nOrganisasi & Tata Kerja" as ORG
@@ -55,6 +57,7 @@ UUD --> UU2005
 UUD --> UU2012
 UUD --> UU2008
 UUD --> UU2023
+UU2014 -[#red,dashed]-> UU2023 : dicabut\n(Pasal 76)
 
 UU2003 --> PP2021
 UU2005 --> PP2009
@@ -62,9 +65,11 @@ UU2012 --> PP2014
 UU2008 --> PERPRES
 UU2023 --> PP2017
 UU2023 --> PAN13
+PAN13 -[#red,dashed]-> PAN1 : dicabut\n(Pasal 62)
 UU2023 --> PAN1
 PAN1 --> BKN
 
+KKNI --> PIL2
 PERPRES --> ORG
 PP2014 --> ORG
 ORG --> PIL1
