@@ -10,15 +10,20 @@ skinparam package {
 }
 
 package "Pilar 1: SDM & Karier Dosen" #E3F2FD {
+  rectangle "Kepmendikbudristek 384/P/2024\nJuknis Layanan Karier Dosen\n//historis//" as K384_24 #FFCDD2
+  rectangle "SE Mendiktisaintek 14/2024\nPenundaan Permendikbudristek 44/2024\n//konteks, historis//" as SE14_24 #FFCDD2
   rectangle "Permendikbudristek 44/2024\nProfesi, Karier, Penghasilan Dosen\n//historis (audit < 2025)//" as P44_24 #FFCDD2
   rectangle "Permendiktisaintek 52/2025\nProfesi, Karier, Penghasilan Dosen\n**berlaku**" as P52_25 #C8E6C9
   rectangle "Kepmendiktisaintek 63/M/KEP/2025\nJuknis Layanan Pembinaan & Pengembangan\nProfesi dan Karier Dosen\n**berlaku**" as K63_25 #C8E6C9
 }
 
 package "Pilar 2: Mutu & Akreditasi" #FFF8E1 {
+  rectangle "Permendikbud 50/2014\nSPM Dikti\n//historis//" as P50_14 #FFCDD2
   rectangle "Permenristekdikti 44/2015\nSN-Dikti\n//historis//" as P44_15 #FFCDD2
   rectangle "Permenristekdikti 62/2016\nSistem Penjaminan Mutu Dikti\n//historis//" as P62_16 #FFCDD2
+  rectangle "Permenristekdikti 55/2017\nStandar Pendidikan Guru\n//historis//" as P55_17 #FFCDD2
   rectangle "Permendikbud 3/2020\nSN-Dikti\n//historis//" as P3_20 #FFCDD2
+  rectangle "Permendikbud 5/2020\nAkreditasi Prodi & PT\n//historis//" as P5_20 #FFCDD2
   rectangle "Permendikbudristek 56/2022\nStandar Pendidikan Guru\n//historis//" as P56_22 #FFCDD2
   rectangle "Permendikbudristek 53/2023\nPenjaminan Mutu Dikti\n//historis//" as P53_23 #FFCDD2
   rectangle "Permendiktisaintek 39/2025\nPenjaminan Mutu Dikti\n**berlaku**" as P39_25 #C8E6C9
@@ -32,6 +37,8 @@ package "Pilar 3: Kelembagaan PT" #F3E5F5 {
 }
 
 package "Pilar 4: Ijazah, Sertifikat & Gelar" #E0F2F1 {
+  rectangle "Permendikbud 81/2014\nIjazah, Sertifikat\n//historis//" as P81_14 #FFCDD2
+  rectangle "Permenristekdikti 63/2016\nGelar & Penulisan Gelar\n//historis//" as P63_16 #FFCDD2
   rectangle "Permenristekdikti 59/2018\nIjazah, Sertifikat, Gelar\n//historis//" as P59_18 #FFCDD2
   rectangle "Permendikbudristek 6/2022\nIjazah, Sertifikat, Gelar\n//historis//" as P6_22 #FFCDD2
   rectangle "Permendikbudristek 50/2024\nIjazah, Sertifikat Kompetensi & Profesi\n**berlaku**" as P50_24 #C8E6C9
@@ -39,6 +46,13 @@ package "Pilar 4: Ijazah, Sertifikat & Gelar" #E0F2F1 {
 
 P44_24 -[#red,dashed]-> P52_25 : dicabut\n(Pasal 67)
 P52_25 --> K63_25 : juknis
+K384_24 -[#red,dashed]-> K63_25 : dicabut\n(Diktum KEDUA)
+SE14_24 ..> P44_24 : menunda
+P50_14 -[#red,dashed]-> P62_16 : dicabut\n(Pasal 10)
+P55_17 -[#red,dashed]-> P56_22 : dicabut\n(Pasal 33)
+P5_20 -[#red,dashed]-> P53_23 : dicabut\n(Pasal 106)
+P81_14 -[#red,dashed]-> P59_18 : dicabut\n(Pasal 25)
+P63_16 -[#red,dashed]-> P59_18 : dicabut\n(Pasal 25)
 P44_15 -[#red,dashed]-> P3_20 : dicabut
 P3_20 -[#red,dashed]-> P53_23 : dicabut\n(Pasal 106)
 P62_16 -[#red,dashed]-> P53_23 : dicabut\n(Pasal 106)
