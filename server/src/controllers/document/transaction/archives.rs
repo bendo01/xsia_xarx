@@ -4,8 +4,8 @@ use chrono::Utc;
 use pgmq::PGMQueueExt;
 use salvo::prelude::*;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
-    PaginatorTrait, QueryFilter, QueryOrder, Set,
+    ActiveModelTrait, ColumnTrait, DatabaseBackend, DatabaseConnection, EntityTrait,
+    FromQueryResult, IntoActiveModel, PaginatorTrait, QueryFilter, QueryOrder, Set, Statement,
 };
 use uuid::Uuid;
 use validator::Validate;
@@ -13,11 +13,13 @@ use validator::Validate;
 use crate::dtos::document::transaction::archives::{
     CreateArchiveRequest, ArchiveQuery, ArchiveResponse, PaginatedArchiveResponse,
     UpdateArchiveRequest, ArchiveOptionRequest, UploadArchiveResponse, ReindexArchiveResponse,
+    ReindexAllRequest, ReindexAllResponse, ReindexSkipped, KnowledgeItemStatus, KnowledgeStatusResponse,
 };
 use crate::dtos::common::reference::{MessageResponse, OptionItem};
 use crate::models::document::transaction::archives as entity_mod;
 use crate::middleware::auth::auth_user_id;
-use crate::services::ai::knowledge;
+use crate::jobs::embedding::embed::pdf_queue_length;
+use crate::services::ai::{docling, knowledge};
 
 #[endpoint(tags("Document - Transaction - Archive"), status_codes(200, 500))]
 pub async fn index(
@@ -518,5 +520,117 @@ pub async fn reindex(
     Ok(Json(ReindexArchiveResponse {
         msg_id,
         message: "Archive queued for the knowledge base".to_string(),
+    }))
+}
+
+/// Queues every PDF archive marked as knowledge (or only `ids`) for a rebuild of its chunks.
+/// Existing chunks of an archive are replaced when its job finishes, so the knowledge base stays
+/// searchable meanwhile. Archives that cannot be queued are listed in `skipped`.
+#[endpoint(tags("Document - Transaction - Archive"), status_codes(200, 400, 500))]
+pub async fn reindex_all(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<ReindexAllResponse>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+    let queue = depot.get_typed::<PGMQueueExt>().map_err(|_| {
+        StatusError::internal_server_error().brief("Queue connection missing")
+    })?;
+
+    let payload: ReindexAllRequest = req.parse_json().await.unwrap_or_default();
+
+    let mut select = entity_mod::Entity::find()
+        .filter(entity_mod::Column::DeletedAt.is_null())
+        .filter(entity_mod::Column::IsKnowledge.eq(true));
+    if let Some(ids) = payload.ids.filter(|ids| !ids.is_empty()) {
+        select = select.filter(entity_mod::Column::Id.is_in(ids));
+    }
+    let items = select
+        .order_by_asc(entity_mod::Column::Name)
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+    if items.is_empty() {
+        return Err(StatusError::bad_request().brief("No knowledge archives to rebuild"));
+    }
+    if !docling::is_available().await {
+        return Err(StatusError::bad_request().brief(knowledge::DOCLING_MISSING_WARNING));
+    }
+
+    let user_id = auth_user_id(depot);
+    let (mut queued, mut skipped) = (0, Vec::new());
+    for item in items {
+        match knowledge::enqueue_archive(queue, &item, user_id).await {
+            Ok(_) => queued += 1,
+            Err(e) => {
+                tracing::warn!("Archive {} not queued for rebuild: {:#}", item.id, e);
+                skipped.push(ReindexSkipped { id: item.id, name: item.name, reason: e.to_string() });
+            }
+        }
+    }
+
+    Ok(Json(ReindexAllResponse {
+        queued,
+        message: format!("{queued} archive(s) queued, {} skipped", skipped.len()),
+        skipped,
+    }))
+}
+
+#[derive(FromQueryResult)]
+struct ChunkStat {
+    chunkable_id: Uuid,
+    chunk_count: i64,
+    last_indexed_at: Option<chrono::NaiveDateTime>,
+}
+
+/// Knowledge archives with their chunk counts, the embedding queue length and whether docling is installed.
+#[endpoint(tags("Document - Transaction - Archive"), status_codes(200, 500))]
+pub async fn knowledge_overview(depot: &mut Depot) -> Result<Json<KnowledgeStatusResponse>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+    let internal = |e: &dyn std::fmt::Display| StatusError::internal_server_error().brief(e.to_string());
+
+    let archives = entity_mod::Entity::find()
+        .filter(entity_mod::Column::DeletedAt.is_null())
+        .filter(entity_mod::Column::IsKnowledge.eq(true))
+        .order_by_asc(entity_mod::Column::Name)
+        .all(db)
+        .await
+        .map_err(|e| internal(&e))?;
+
+    let stats = ChunkStat::find_by_statement(Statement::from_sql_and_values(
+        DatabaseBackend::Postgres,
+        "SELECT chunkable_id, COUNT(*)::bigint AS chunk_count, MAX(updated_at) AS last_indexed_at \
+         FROM ai.chunks WHERE chunkable_type = $1 AND deleted_at IS NULL GROUP BY chunkable_id",
+        [entity_mod::CHUNKABLE_TYPE.into()],
+    ))
+    .all(db)
+    .await
+    .map_err(|e| internal(&e))?;
+
+    let queue_length = pdf_queue_length(db).await;
+
+    let items: Vec<KnowledgeItemStatus> = archives
+        .into_iter()
+        .map(|a| {
+            let stat = stats.iter().find(|s| s.chunkable_id == a.id);
+            KnowledgeItemStatus {
+                id: a.id,
+                name: a.name,
+                size: a.size,
+                chunk_count: stat.map_or(0, |s| s.chunk_count),
+                last_indexed_at: stat.and_then(|s| s.last_indexed_at),
+            }
+        })
+        .collect();
+    let total_chunks = items.iter().map(|i| i.chunk_count).sum();
+
+    Ok(Json(KnowledgeStatusResponse {
+        items,
+        queue_length,
+        docling_available: docling::is_available().await,
+        total_chunks,
     }))
 }

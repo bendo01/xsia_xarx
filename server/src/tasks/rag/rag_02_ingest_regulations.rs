@@ -7,7 +7,7 @@ use salvo::async_trait;
 use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, PaginatorTrait, QueryFilter, Set};
 use uuid::Uuid;
 
-use crate::jobs::embedding::embed::PdfEmbeddingJob;
+use crate::jobs::embedding::embed::{PdfEmbeddingJob, enqueue_pdf_embedding, is_queued};
 use crate::models::ai::chunk;
 use crate::models::compliance::regulation_document;
 use crate::services::ai::ingest::ingest_pdf;
@@ -17,6 +17,9 @@ use crate::tasks::Task;
 pub const REGULATION_CHUNKABLE_TYPE: &str = "Regulation";
 
 const DEFAULT_DIR: &str = "../legislation_regulation";
+
+/// Where the embedding worker's private copies live; override with `AI_UPLOAD_DIR`
+const DEFAULT_UPLOAD_DIR: &str = "storage/ai/uploads";
 
 /// `ai.chunks.chunkable_type` of non-legal reference material (user guides); never searched as regulation
 pub const GUIDE_CHUNKABLE_TYPE: &str = "Guide";
@@ -80,6 +83,156 @@ fn title_from(stem: &str) -> String {
     stem.replace(['_', '-'], " ").split_whitespace().collect::<Vec<_>>().join(" ")
 }
 
+/// Where the regulation PDFs live; override with `REGULATION_DIR`
+pub fn default_dir() -> PathBuf {
+    PathBuf::from(std::env::var("REGULATION_DIR").unwrap_or_else(|_| DEFAULT_DIR.to_owned()))
+}
+
+/// PDFs directly inside `dir`, sorted by name; `only` keeps file names containing the (lower-case) text
+pub fn list_pdfs(dir: &Path, only: Option<&str>) -> std::io::Result<Vec<PathBuf>> {
+    let mut files: Vec<PathBuf> = std::fs::read_dir(dir)?
+        .filter_map(|e| e.ok().map(|e| e.path()))
+        .filter(|p| p.extension().is_some_and(|x| x.eq_ignore_ascii_case("pdf")))
+        .filter(|p| only.is_none_or(|o| p.file_name().is_some_and(|n| n.to_string_lossy().to_lowercase().contains(o))))
+        .collect();
+    files.sort();
+    Ok(files)
+}
+
+pub struct IngestOptions {
+    pub dir: PathBuf,
+    pub only: Option<String>,
+    pub force: bool,
+    pub guide: bool,
+    pub user_id: Option<Uuid>,
+}
+
+/// Registers every PDF of `opts.dir` and embeds it into `ai.chunks`. Returns (done, skipped, failed).
+/// Documents that already have chunks are skipped unless `opts.force` is set; with `force` a document's old
+/// chunks are replaced when its new ones are stored, so the knowledge base stays searchable meanwhile.
+pub async fn ingest_directory(
+    db: &DatabaseConnection,
+    opts: &IngestOptions,
+) -> Result<(usize, usize, usize), Box<dyn std::error::Error>> {
+    let chunkable_type = if opts.guide { GUIDE_CHUNKABLE_TYPE } else { REGULATION_CHUNKABLE_TYPE };
+    let files = list_pdfs(&opts.dir, opts.only.as_deref())?;
+    println!("==> {} PDF(s) in {}", files.len(), opts.dir.display());
+
+    let (mut done, mut skipped, mut failed) = (0, 0, 0);
+    for (i, path) in files.iter().enumerate() {
+        let file_name = path.file_name().unwrap().to_string_lossy().into_owned();
+        let label = format!("[{}/{}] {file_name}", i + 1, files.len());
+        let outcome = ingest_file(db, opts, path, &file_name, chunkable_type, &label).await;
+        match &outcome {
+            Ok(Some(_)) => done += 1,
+            Ok(None) => skipped += 1,
+            Err(e) => {
+                eprintln!("{label}: FAILED: {e:#}");
+                failed += 1;
+            }
+        }
+    }
+    println!("==> embedded {done}, skipped {skipped}, failed {failed}");
+    Ok((done, skipped, failed))
+}
+
+/// Embeds one file; `Ok(None)` when it already has chunks and `force` is off
+async fn ingest_file(
+    db: &DatabaseConnection,
+    opts: &IngestOptions,
+    path: &Path,
+    file_name: &str,
+    chunkable_type: &str,
+    label: &str,
+) -> Result<Option<usize>, Box<dyn std::error::Error>> {
+    let id = if opts.guide { guide_id(file_name) } else { register(db, path, file_name).await? };
+    let existing = chunk::Entity::find()
+        .filter(chunk::Column::ChunkableType.eq(chunkable_type))
+        .filter(chunk::Column::ChunkableId.eq(id))
+        .filter(chunk::Column::DeletedAt.is_null())
+        .count(db)
+        .await?;
+    if existing > 0 && !opts.force {
+        println!("{label}: already embedded ({existing} chunks), skipped");
+        return Ok(None);
+    }
+    let job = PdfEmbeddingJob {
+        pdf_path: path.to_string_lossy().into_owned(),
+        file_name: file_name.to_owned(),
+        file_size: std::fs::metadata(path)?.len(),
+        chunkable_type: chunkable_type.to_owned(),
+        chunkable_id: id,
+        user_id: opts.user_id,
+        markdown_path: None,
+    };
+    let n = ingest_pdf(db, &job).await?;
+    println!("{label}: {n} chunks");
+    Ok(Some(n))
+}
+
+/// A PDF that was not queued, with the reason
+pub struct SkippedFile {
+    pub name: String,
+    pub reason: String,
+}
+
+/// Registers every PDF of `dir` and queues it on the PGMQ embedding queue; the worker converts and embeds
+/// it (replacing the document's old chunks). Documents that already have chunks are skipped unless `force`,
+/// and so are documents that already wait in the queue. Returns the number of queued PDFs and the skipped ones.
+pub async fn enqueue_directory(
+    db: &DatabaseConnection,
+    queue: &pgmq::PGMQueueExt,
+    dir: &Path,
+    force: bool,
+    user_id: Option<Uuid>,
+) -> Result<(usize, Vec<SkippedFile>), Box<dyn std::error::Error>> {
+    let upload_dir = std::env::var("AI_UPLOAD_DIR").map(PathBuf::from).unwrap_or_else(|_| PathBuf::from(DEFAULT_UPLOAD_DIR));
+    tokio::fs::create_dir_all(&upload_dir).await?;
+
+    let (mut queued, mut skipped) = (0, Vec::new());
+    for path in list_pdfs(dir, None)? {
+        let file_name = path.file_name().unwrap().to_string_lossy().into_owned();
+        let skip = |reason: &str| SkippedFile { name: file_name.clone(), reason: reason.to_owned() };
+        let id = register(db, &path, &file_name).await?;
+
+        let existing = chunk::Entity::find()
+            .filter(chunk::Column::ChunkableType.eq(REGULATION_CHUNKABLE_TYPE))
+            .filter(chunk::Column::ChunkableId.eq(id))
+            .filter(chunk::Column::DeletedAt.is_null())
+            .count(db)
+            .await?;
+        if existing > 0 && !force {
+            skipped.push(skip("already embedded"));
+            continue;
+        }
+        if is_queued(db, id).await? {
+            skipped.push(skip("already in the queue"));
+            continue;
+        }
+
+        // The worker deletes its PDF when the job finishes, so it gets its own copy
+        let pdf_path = upload_dir.join(format!("{}.pdf", Uuid::now_v7()));
+        tokio::fs::copy(&path, &pdf_path).await?;
+        let job = PdfEmbeddingJob {
+            pdf_path: pdf_path.to_string_lossy().into_owned(),
+            file_name: file_name.clone(),
+            file_size: std::fs::metadata(&path)?.len(),
+            chunkable_type: REGULATION_CHUNKABLE_TYPE.to_owned(),
+            chunkable_id: id,
+            user_id,
+            markdown_path: None,
+        };
+        match enqueue_pdf_embedding(queue, &job).await {
+            Ok(_) => queued += 1,
+            Err(e) => {
+                let _ = tokio::fs::remove_file(&pdf_path).await;
+                skipped.push(skip(&e.to_string()));
+            }
+        }
+    }
+    Ok((queued, skipped))
+}
+
 pub struct IngestRegulationsTask;
 
 #[async_trait]
@@ -89,62 +242,19 @@ impl Task for IngestRegulationsTask {
     }
 
     fn description(&self) -> &str {
-        "Registers every PDF in a directory (default ../legislation_regulation) in compliance.regulation_documents and embeds it into ai.chunks as chunkable_type=Regulation (--dir=PATH, --only=TEXT filters by file name, --force re-embeds documents that already have chunks, --type=Guide embeds user guides as chunkable_type=Guide without a regulation row)"
+        "Registers every PDF in a directory (default ../legislation_regulation, or REGULATION_DIR) in compliance.regulation_documents and embeds it into ai.chunks as chunkable_type=Regulation (--dir=PATH, --only=TEXT filters by file name, --force re-embeds documents that already have chunks, --type=Guide embeds user guides as chunkable_type=Guide without a regulation row)"
     }
 
     async fn run(&self, db: &DatabaseConnection, args: &[String]) -> Result<(), Box<dyn std::error::Error>> {
         let arg = |key: &str| args.iter().find_map(|a| a.strip_prefix(key));
-        let dir = PathBuf::from(arg("--dir=").unwrap_or(DEFAULT_DIR));
-        let only = arg("--only=").map(str::to_lowercase);
-        let force = args.iter().any(|a| a == "--force");
-        let guide = arg("--type=").is_some_and(|t| t.eq_ignore_ascii_case("guide"));
-        let chunkable_type = if guide { GUIDE_CHUNKABLE_TYPE } else { REGULATION_CHUNKABLE_TYPE };
-
-        let mut files: Vec<PathBuf> = std::fs::read_dir(&dir)?
-            .filter_map(|e| e.ok().map(|e| e.path()))
-            .filter(|p| p.extension().is_some_and(|x| x.eq_ignore_ascii_case("pdf")))
-            .filter(|p| only.as_ref().is_none_or(|o| p.file_name().is_some_and(|n| n.to_string_lossy().to_lowercase().contains(o))))
-            .collect();
-        files.sort();
-        println!("==> {} PDF(s) in {}", files.len(), dir.display());
-
-        let (mut done, mut skipped, mut failed) = (0, 0, 0);
-        for (i, path) in files.iter().enumerate() {
-            let file_name = path.file_name().unwrap().to_string_lossy().into_owned();
-            let label = format!("[{}/{}] {file_name}", i + 1, files.len());
-            let id = if guide { guide_id(&file_name) } else { register(db, path, &file_name).await? };
-            let existing = chunk::Entity::find()
-                .filter(chunk::Column::ChunkableType.eq(chunkable_type))
-                .filter(chunk::Column::ChunkableId.eq(id))
-                .filter(chunk::Column::DeletedAt.is_null())
-                .count(db)
-                .await?;
-            if existing > 0 && !force {
-                println!("{label}: already embedded ({existing} chunks), skipped");
-                skipped += 1;
-                continue;
-            }
-            let job = PdfEmbeddingJob {
-                pdf_path: path.to_string_lossy().into_owned(),
-                file_name: file_name.clone(),
-                file_size: std::fs::metadata(path)?.len(),
-                chunkable_type: chunkable_type.to_owned(),
-                chunkable_id: id,
-                user_id: None,
-                markdown_path: None,
-            };
-            match ingest_pdf(db, &job).await {
-                Ok(n) => {
-                    println!("{label}: {n} chunks");
-                    done += 1;
-                }
-                Err(e) => {
-                    eprintln!("{label}: FAILED: {e:#}");
-                    failed += 1;
-                }
-            }
-        }
-        println!("==> embedded {done}, skipped {skipped}, failed {failed}");
+        let opts = IngestOptions {
+            dir: arg("--dir=").map(PathBuf::from).unwrap_or_else(default_dir),
+            only: arg("--only=").map(str::to_lowercase),
+            force: args.iter().any(|a| a == "--force"),
+            guide: arg("--type=").is_some_and(|t| t.eq_ignore_ascii_case("guide")),
+            user_id: None,
+        };
+        ingest_directory(db, &opts).await?;
         Ok(())
     }
 }
@@ -157,6 +267,18 @@ async fn register(db: &DatabaseConnection, path: &Path, file_name: &str) -> Resu
         .one(db)
         .await?
     {
+        // Keep the status in step with REVOKED so a rebuild fixes rows registered before the list grew
+        let stem = path.file_stem().map(|s| s.to_string_lossy().into_owned()).unwrap_or_default();
+        let (number, year) = number_and_year(&stem);
+        let status = if is_revoked(&stem, number.as_deref(), year) { "revoked" } else { "active" };
+        if row.status != status {
+            let id = row.id;
+            let mut active: regulation_document::ActiveModel = row.into();
+            active.status = Set(status.to_owned());
+            active.updated_at = Set(Some(Utc::now().naive_utc()));
+            active.update(db).await?;
+            return Ok(id);
+        }
         return Ok(row.id);
     }
     let stem = path.file_stem().map(|s| s.to_string_lossy().into_owned()).unwrap_or_default();

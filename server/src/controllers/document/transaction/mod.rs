@@ -18,6 +18,17 @@ pub fn router() -> Router {
                         .post_named("document.transaction.archives.option_select", archives::option_select),
                 )
                 .push(
+                    Router::with_path("knowledge")
+                        .push(
+                            Router::with_path("status")
+                                .get_named("document.transaction.archives.knowledge_status", archives::knowledge_overview),
+                        )
+                        .push(
+                            Router::with_path("reindex")
+                                .post_named("document.transaction.archives.reindex_all", archives::reindex_all),
+                        ),
+                )
+                .push(
                     Router::with_path("{id}")
                         .get_named("document.transaction.archives.show", archives::show)
                         .put_named("document.transaction.archives.update", archives::update)
