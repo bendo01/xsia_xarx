@@ -1,6 +1,7 @@
 @startuml hierarki_regulasi
 skinparam shadowing false
 skinparam defaultFontName Arial
+skinparam linetype ortho
 skinparam rectangle {
   RoundCorner 8
   BorderColor #555555
@@ -18,6 +19,7 @@ package "Undang-Undang" {
   rectangle "UU 39/2008 jo. 61/2024\nKementerian Negara" as UU2008
   rectangle "UU 5/2014\nAparatur Sipil Negara\n//historis//" as UU2014 #FFCDD2
   rectangle "UU 20/2023\nAparatur Sipil Negara" as UU2023
+  rectangle "UU 27/2022\nPelindungan Data Pribadi" as UUPDP #EEEEEE
 }
 
 package "Peraturan Pemerintah" {
@@ -25,6 +27,8 @@ package "Peraturan Pemerintah" {
   rectangle "PP 37/2009\nDosen" as PP2009
   rectangle "PP 4/2014\nPenyelenggaraan Dikti & PT" as PP2014
   rectangle "PP 11/2017 jo. 17/2020\nManajemen PNS" as PP2017
+  rectangle "PP 30/2019\nPenilaian Kinerja PNS" as PP2019
+  rectangle "PP 94/2021\nDisiplin PNS" as PP2021D
 }
 
 package "Perpres" {
@@ -34,8 +38,9 @@ package "Perpres" {
 
 package "Regulasi ASN" {
   rectangle "PermenPAN-RB 13/2019\nPengusulan & Pembinaan Jabfung\n//historis//" as PAN13 #FFCDD2
+  rectangle "PermenPAN-RB 6/2022\nPengelolaan Kinerja Pegawai ASN" as PAN6
   rectangle "PermenPAN-RB 1/2023\nKerangka Jabatan Fungsional" as PAN1
-  rectangle "Peraturan BKN 3/2023\nAngka Kredit, Pangkat, Jenjang Jabfung\n(di folder baru buku panduan teknisnya)" as BKN #FFF9C4
+  rectangle "Peraturan BKN 3/2023\nAngka Kredit, Pangkat, Jenjang Jabfung" as BKN
 }
 
 rectangle "Permendiktisaintek 1/2024\nOrganisasi & Tata Kerja" as ORG
@@ -64,7 +69,10 @@ UU2005 --> PP2009
 UU2012 --> PP2014
 UU2008 --> PERPRES
 UU2023 --> PP2017
+UU2023 --> PP2019
+UU2023 --> PP2021D
 UU2023 --> PAN13
+PP2019 --> PAN6
 PAN13 -[#red,dashed]-> PAN1 : dicabut\n(Pasal 62)
 UU2023 --> PAN1
 PAN1 --> BKN

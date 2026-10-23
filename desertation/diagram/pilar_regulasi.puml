@@ -10,6 +10,7 @@ skinparam package {
 }
 
 package "Pilar 1: SDM & Karier Dosen" #E3F2FD {
+  rectangle "Kepmendikbudristek 209/P/2024\nJuknis Layanan Karier Dosen\n//historis//" as K209_24 #FFCDD2
   rectangle "Kepmendikbudristek 384/P/2024\nJuknis Layanan Karier Dosen\n//historis//" as K384_24 #FFCDD2
   rectangle "SE Mendiktisaintek 14/2024\nPenundaan Permendikbudristek 44/2024\n//konteks, historis//" as SE14_24 #FFCDD2
   rectangle "Permendikbudristek 44/2024\nProfesi, Karier, Penghasilan Dosen\n//historis (audit < 2025)//" as P44_24 #FFCDD2
@@ -46,6 +47,7 @@ package "Pilar 4: Ijazah, Sertifikat & Gelar" #E0F2F1 {
 
 P44_24 -[#red,dashed]-> P52_25 : dicabut\n(Pasal 67)
 P52_25 --> K63_25 : juknis
+K209_24 -[#red,dashed]-> K384_24 : dicabut\n(Diktum KEDUA)
 K384_24 -[#red,dashed]-> K63_25 : dicabut\n(Diktum KEDUA)
 SE14_24 ..> P44_24 : menunda
 P50_14 -[#red,dashed]-> P62_16 : dicabut\n(Pasal 10)
