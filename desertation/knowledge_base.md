@@ -18,6 +18,7 @@ Sumber diagram ada di `diagram/*.puml` (render SVG di folder yang sama). Render 
 @startuml hierarki_regulasi
 skinparam shadowing false
 skinparam defaultFontName Arial
+skinparam linetype ortho
 skinparam rectangle {
   RoundCorner 8
   BorderColor #555555
@@ -35,6 +36,7 @@ package "Undang-Undang" {
   rectangle "UU 39/2008 jo. 61/2024\nKementerian Negara" as UU2008
   rectangle "UU 5/2014\nAparatur Sipil Negara\n//historis//" as UU2014 #FFCDD2
   rectangle "UU 20/2023\nAparatur Sipil Negara" as UU2023
+  rectangle "UU 27/2022\nPelindungan Data Pribadi" as UUPDP #EEEEEE
 }
 
 package "Peraturan Pemerintah" {
@@ -42,6 +44,8 @@ package "Peraturan Pemerintah" {
   rectangle "PP 37/2009\nDosen" as PP2009
   rectangle "PP 4/2014\nPenyelenggaraan Dikti & PT" as PP2014
   rectangle "PP 11/2017 jo. 17/2020\nManajemen PNS" as PP2017
+  rectangle "PP 30/2019\nPenilaian Kinerja PNS" as PP2019
+  rectangle "PP 94/2021\nDisiplin PNS" as PP2021D
 }
 
 package "Perpres" {
@@ -51,8 +55,9 @@ package "Perpres" {
 
 package "Regulasi ASN" {
   rectangle "PermenPAN-RB 13/2019\nPengusulan & Pembinaan Jabfung\n//historis//" as PAN13 #FFCDD2
+  rectangle "PermenPAN-RB 6/2022\nPengelolaan Kinerja Pegawai ASN" as PAN6
   rectangle "PermenPAN-RB 1/2023\nKerangka Jabatan Fungsional" as PAN1
-  rectangle "Peraturan BKN 3/2023\nAngka Kredit, Pangkat, Jenjang Jabfung\n(di folder baru buku panduan teknisnya)" as BKN #FFF9C4
+  rectangle "Peraturan BKN 3/2023\nAngka Kredit, Pangkat, Jenjang Jabfung" as BKN
 }
 
 rectangle "Permendiktisaintek 1/2024\nOrganisasi & Tata Kerja" as ORG
@@ -81,7 +86,10 @@ UU2005 --> PP2009
 UU2012 --> PP2014
 UU2008 --> PERPRES
 UU2023 --> PP2017
+UU2023 --> PP2019
+UU2023 --> PP2021D
 UU2023 --> PAN13
+PP2019 --> PAN6
 PAN13 -[#red,dashed]-> PAN1 : dicabut\n(Pasal 62)
 UU2023 --> PAN1
 PAN1 --> BKN
@@ -127,6 +135,7 @@ skinparam package {
 }
 
 package "Pilar 1: SDM & Karier Dosen" #E3F2FD {
+  rectangle "Kepmendikbudristek 209/P/2024\nJuknis Layanan Karier Dosen\n//historis//" as K209_24 #FFCDD2
   rectangle "Kepmendikbudristek 384/P/2024\nJuknis Layanan Karier Dosen\n//historis//" as K384_24 #FFCDD2
   rectangle "SE Mendiktisaintek 14/2024\nPenundaan Permendikbudristek 44/2024\n//konteks, historis//" as SE14_24 #FFCDD2
   rectangle "Permendikbudristek 44/2024\nProfesi, Karier, Penghasilan Dosen\n//historis (audit < 2025)//" as P44_24 #FFCDD2
@@ -163,6 +172,7 @@ package "Pilar 4: Ijazah, Sertifikat & Gelar" #E0F2F1 {
 
 P44_24 -[#red,dashed]-> P52_25 : dicabut\n(Pasal 67)
 P52_25 --> K63_25 : juknis
+K209_24 -[#red,dashed]-> K384_24 : dicabut\n(Diktum KEDUA)
 K384_24 -[#red,dashed]-> K63_25 : dicabut\n(Diktum KEDUA)
 SE14_24 ..> P44_24 : menunda
 P50_14 -[#red,dashed]-> P62_16 : dicabut\n(Pasal 10)
@@ -204,14 +214,20 @@ Rantai pencabutan terbaca dari atas (historis) ke bawah (berlaku).
 | UU No. 20/2023 | Aparatur Sipil Negara | **Berlaku** |
 | PP No. 11/2017 | Manajemen Pegawai Negeri Sipil | Berlaku sepanjang tidak bertentangan dengan UU 20/2023. **(verifikasi)** penggantinya. |
 | PP No. 17/2020 | Perubahan atas PP 11/2017 | Berlaku bersama PP 11/2017. |
+| PP No. 30/2019 | Penilaian Kinerja PNS | Berlaku menurut folder. Menggantikan PP 46/2011. **(verifikasi)** perubahan/penggantinya setelah UU 20/2023. |
+| PP No. 94/2021 | Disiplin PNS | **Berlaku** menurut folder. |
+| Peraturan BKN No. 3/2023 | Angka Kredit, Kenaikan Pangkat, dan Jenjang Jabatan Fungsional | **Berlaku** menurut folder. Mencabut Peraturan BKN 11/2022 (Pasal 27). Panduan teknisnya ada di `Buku-Panduan-Teknis-PerBKN_Tahun_2023_No_03.pdf`. |
+| UU No. 27/2022 | Pelindungan Data Pribadi | **Berlaku** menurut folder. Bukan regulasi pendidikan tinggi; relevan untuk data mahasiswa dan dosen. |
 | PermenPAN-RB No. 13/2019 | Pengusulan, Penetapan, dan Pembinaan Jabatan Fungsional PNS | Historis. Dicabut PermenPAN-RB 1/2023 (Pasal 62 huruf a). |
+| PermenPAN-RB No. 6/2022 (3 Februari 2022) | Pengelolaan Kinerja Pegawai ASN (SKP) | **Berlaku** menurut folder. Pelaksanaan PP 30/2019 Pasal 61 ayat (1). Mencabut PermenPAN-RB 8/2021 (Pasal 40). **(verifikasi)** perubahannya. |
 | PermenPAN-RB No. 1/2023 | Jabatan Fungsional | **Berlaku** |
 
 ### Pilar 1: SDM & Karier Dosen
 
 | Peraturan | Tentang | Status |
 |---|---|---|
-| Kepmendikbudristek No. 384/P/2024 (12 Agustus 2024) | Juknis Pelaksanaan Layanan Pembinaan dan Pengembangan Profesi dan Karier Dosen | Historis. Dicabut Kepmendiktisaintek 63/M/KEP/2025 (Diktum KEDUA). Mencabut Kepmen 209/P/2024 (tidak ada di folder). Dipakai selama penundaan Permendikbudristek 44/2024. |
+| Kepmendikbudristek No. 209/P/2024 (salinan dikirim 15 Mei 2024) | Juknis Pelaksanaan Layanan Pembinaan dan Pengembangan Profesi dan Karier Dosen | Historis. Dicabut Kepmen 384/P/2024 (Diktum KEDUA). Mencabut Pedoman Operasional Penilaian Angka Kredit Kenaikan Pangkat/Jabatan Akademik Dosen 2019 beserta perubahannya (tidak ada di folder). Dibuat karena belum ada peraturan jabfung dosen yang disesuaikan dengan PermenPAN-RB 1/2023. |
+| Kepmendikbudristek No. 384/P/2024 (12 Agustus 2024) | Juknis Pelaksanaan Layanan Pembinaan dan Pengembangan Profesi dan Karier Dosen | Historis. Dicabut Kepmendiktisaintek 63/M/KEP/2025 (Diktum KEDUA). Mencabut Kepmen 209/P/2024. Dipakai selama penundaan Permendikbudristek 44/2024. |
 | SE Mendiktisaintek No. 14/2024 (17 Desember 2024) | Penundaan Implementasi Permendikbudristek 44/2024 | Konteks historis, bukan peraturan. Menunda 44/2024 dan menunjuk Kepmen 384/P/2024 selama reviu. Kehilangan objek setelah 44/2024 dicabut. |
 | Permendikbudristek No. 44/2024 | Profesi, Karier, dan Penghasilan Dosen | Historis. Dicabut Permendiktisaintek 52/2025 (Pasal 67). Dipakai untuk audit < 2025. |
 | Permendiktisaintek No. 52/2025 | Profesi, Karier, dan Penghasilan Dosen | **Berlaku** |
@@ -266,56 +282,63 @@ Prinsip: induk dahulu, turunan kemudian; dalam satu pilar urutkan historis ke be
 | 6 | L1 UU | `UU_Tahun_2012_No_12.pdf` |
 | 7 | L1 UU | `UU_Tahun_2014_No_05.pdf` |
 | 8 | L1 UU | `UU_Tahun_2023_No_20.pdf` |
-| 9 | L2 PP | `PP_Tahun_2009_No_37.pdf` |
-| 10 | L2 PP | `PP_Tahun_2014_No_04.pdf` |
-| 11 | L2 PP | `PP_Tahun_2017_No_11.pdf` |
-| 12 | L2 PP | `PP_Tahun_2020_No_17.pdf` |
-| 13 | L2 PP | `PP_Tahun_2021_No_57.pdf` |
-| 14 | L2 PP | `PP_Tahun_2022_No_04.pdf` |
-| 15 | L3 Perpres | `Perpres_Tahun_2012_No_008.pdf` |
-| 16 | L3 Perpres | `Perpres_Tahun_2024_No_189.pdf` |
-| 17 | L3 Perpres | `Perpres_Tahun_2026_No_007.pdf` |
-| 18 | L3 ASN | `PermenPANRB_Tahun_2019_No_13.pdf` |
-| 19 | L3 ASN | `PermenPANRB_Tahun_2023_No_01.pdf` |
-| 20 | L3 Organisasi | `Permendiktisaintek_Tahun_2024_No_01.pdf` |
-| 21 | L4 Pilar 3 | `Permenristekdikti_No_51_Tahun_2018.pdf` |
-| 22 | L4 Pilar 3 | `Permenristekdikti_Tahun_2018_No_52.pdf` |
-| 23 | L4 Pilar 3 | `Permendikbud_Tahun_2020_No_07.pdf` |
-| 24 | L4 Pilar 2 | `Permendikbud_Tahun_2014_No_50.pdf` |
-| 25 | L4 Pilar 2 | `Permenristekdikti_No_44_Tahun_2015.pdf` |
-| 26 | L4 Pilar 2 | `Permenristekdikti_No_62_Tahun_2016.pdf` |
-| 27 | L4 Pilar 2 | `Permenristekdikti_Tahun_2017_No_55.pdf` |
-| 28 | L4 Pilar 2 | `Permendikbud_Tahun_2020_No_03.pdf` |
-| 29 | L4 Pilar 2 | `Permendikbud_Tahun_2020_No_05.pdf` |
-| 30 | L4 Pilar 2 | `Permenristekbudristek_Tahun_2022_No_56.pdf` |
-| 31 | L4 Pilar 2 | `Permendikbudristek_Tahun_2023_No_53.pdf` |
-| 32 | L4 Pilar 2 | `Permendiktisaintek_Tahun_2025_No_39.pdf` |
-| 33 | L4 Pilar 2 | `Permendiktisaintek_Tahun_2026_No_10.pdf` |
-| 34 | L4 Pilar 1 | `Permendikbudristek_Tahun_2024_No_44.pdf` |
-| 35 | L4 Pilar 1 | `Permendiktisaintek_Tahun_2025_No_52.pdf` |
-| 36 | L5 Pilar 1 | `SE_Permendikbud_Tahun_2024_No_14.pdf` |
-| 37 | L5 Pilar 1 | `Kepmendikbudristek_Tahun_2024_No_384_P.pdf` |
-| 38 | L5 Pilar 1 | `Kepmendiktisaintek_Tahun_2025_No_63.pdf` |
-| 39 | L4 Pilar 4 | `Permendikbud_2014_No_81.pdf` |
-| 40 | L4 Pilar 4 | `Permenristekdikti_Tahun_2016_No_63.pdf` |
-| 41 | L4 Pilar 4 | `Permenristekdikti_No_59_Tahun_2018.pdf` |
-| 42 | L4 Pilar 4 | `Permen_Tahun_2022_No_06.pdf` |
-| 43 | L4 Pilar 4 | `Permendikbudristek_Tahun_2024_No_50.pdf` |
-| 44 | L5 Teknis | `Buku-Panduan-Teknis-PerBKN_Tahun_2023_No_03.pdf` |
-| 45 | L5 Teknis | `User-Guide-WS-2-Feeder-PDDIKTI-07-12-2020.pdf` |
-| 46 | L5 Teknis | `guides/UG-UI-UX-FEEDER-PDDIKTI-VERSI-4.0-07-12-2020.pdf` |
+| 9 | L1 UU | `UU_Tahun_2022_No_27.pdf` |
+| 10 | L2 PP | `PP_Tahun_2009_No_37.pdf` |
+| 11 | L2 PP | `PP_Tahun_2014_No_04.pdf` |
+| 12 | L2 PP | `PP_Tahun_2017_No_11.pdf` |
+| 13 | L2 PP | `PP_Tahun_2019_No_30.pdf` |
+| 14 | L2 PP | `PP_Tahun_2020_No_17.pdf` |
+| 15 | L2 PP | `PP_Tahun_2021_No_57.pdf` |
+| 16 | L2 PP | `PP_Tahun_2021_No_94.pdf` |
+| 17 | L2 PP | `PP_Tahun_2022_No_04.pdf` |
+| 18 | L3 Perpres | `Perpres_Tahun_2012_No_008.pdf` |
+| 19 | L3 Perpres | `Perpres_Tahun_2024_No_189.pdf` |
+| 20 | L3 Perpres | `Perpres_Tahun_2026_No_007.pdf` |
+| 21 | L3 ASN | `PermenPANRB_Tahun_2019_No_13.pdf` |
+| 22 | L3 ASN | `PermenPANRB_Tahun_2022_No_6.pdf` |
+| 23 | L3 ASN | `PermenPANRB_Tahun_2023_No_01.pdf` |
+| 24 | L3 ASN | `Peraturan_BKN_Tahun 2023_Nomor_03.pdf` |
+| 25 | L3 Organisasi | `Permendiktisaintek_Tahun_2024_No_01.pdf` |
+| 26 | L4 Pilar 3 | `Permenristekdikti_Tahun_2018_No_51.pdf` |
+| 27 | L4 Pilar 3 | `Permenristekdikti_Tahun_2018_No_52.pdf` |
+| 28 | L4 Pilar 3 | `Permendikbud_Tahun_2020_No_07.pdf` |
+| 29 | L4 Pilar 2 | `Permendikbud_Tahun_2014_No_50.pdf` |
+| 30 | L4 Pilar 2 | `Permenristekdikti_Tahun_2015_No_44.pdf` |
+| 31 | L4 Pilar 2 | `Permenristekdikti_Tahun_2016_No_62.pdf` |
+| 32 | L4 Pilar 2 | `Permenristekdikti_Tahun_2017_No_55.pdf` |
+| 33 | L4 Pilar 2 | `Permendikbud_Tahun_2020_No_03.pdf` |
+| 34 | L4 Pilar 2 | `Permendikbud_Tahun_2020_No_05.pdf` |
+| 35 | L4 Pilar 2 | `Permenristekbudristek_Tahun_2022_No_56.pdf` |
+| 36 | L4 Pilar 2 | `Permendikbudristek_Tahun_2023_No_53.pdf` |
+| 37 | L4 Pilar 2 | `Permendiktisaintek_Tahun_2025_No_39.pdf` |
+| 38 | L4 Pilar 2 | `Permendiktisaintek_Tahun_2026_No_10.pdf` |
+| 39 | L4 Pilar 1 | `Permendikbudristek_Tahun_2024_No_44.pdf` |
+| 40 | L4 Pilar 1 | `Permendiktisaintek_Tahun_2025_No_52.pdf` |
+| 41 | L5 Pilar 1 | `SE_Permendikbud_Tahun_2024_No_14.pdf` |
+| 42 | L5 Pilar 1 | `Kepmendikbudristek_2024_No_209.pdf` |
+| 43 | L5 Pilar 1 | `Kepmendikbudristek_Tahun_2024_No_384_P.pdf` |
+| 44 | L5 Pilar 1 | `Kepmendiktisaintek_Tahun_2025_No_63.pdf` |
+| 45 | L4 Pilar 4 | `Permendikbud_Tahun_2014_No_81.pdf` |
+| 46 | L4 Pilar 4 | `Permenristekdikti_Tahun_2016_No_63.pdf` |
+| 47 | L4 Pilar 4 | `Permenristekdikti_Tahun_2018_No_59.pdf` |
+| 48 | L4 Pilar 4 | `Permendikbudristek_Tahun_2022_No_06.pdf` |
+| 49 | L4 Pilar 4 | `Permendikbudristek_Tahun_2024_No_50.pdf` |
+| 50 | L5 Teknis | `Buku-Panduan-Teknis-PerBKN_Tahun_2023_No_03.pdf` |
+| 51 | L5 Teknis | `User-Guide-WS-2-Feeder-PDDIKTI-07-12-2020.pdf` |
+| 52 | L5 Teknis | `guides/UG-UI-UX-FEEDER-PDDIKTI-VERSI-4.0-07-12-2020.pdf` |
 
 ## 4. Catatan
 
-- Belum ada di folder: teks Peraturan BKN 3/2023 itu sendiri (di folder baru buku panduan teknisnya, `L5 Teknis`), instrumen akreditasi BAN-PT/LAM, PP penilaian kinerja dan disiplin PNS, dan regulasi PDDikti.
-- Nama file di `legislation_regulation/` memakai pola `Jenis_Tahun_YYYY_No_NN.pdf`. Pengecualian: `Permenristekdikti_No_NN_Tahun_YYYY` dan `Permendikbud_2014_No_81`. Tabel bagian 3 cocok dengan isi folder (46 file).
+- Belum ada di folder: instrumen akreditasi BAN-PT/LAM dan regulasi PDDikti beserta manual Feeder terbaru.
+- Nama file di `legislation_regulation/` memakai pola `Jenis_Tahun_YYYY_No_NN.pdf`. Pengecualian: `Peraturan_BKN_Tahun 2023_Nomor_03` (memuat spasi dan kata "Nomor"). Tabel bagian 3 cocok dengan isi folder (52 file).
 - Permendiktisaintek No. 1/2024 (Organisasi dan Tata Kerja Kementerian, ditetapkan 30 Desember 2024): Pasal 233 mencabut Permendikbudristek 28/2021 jo. 16/2024.
-- Kepmendiktisaintek 63/M/KEP/2025 berupa PDF pindaian tanpa lapisan teks; pastikan docling melakukan OCR (bawaan CLI) dan periksa jumlah chunk-nya. Hal yang sama berlaku untuk `SE_Permendikbud_Tahun_2024_No_14.pdf`.
-- Rantai juknis karier dosen: Kepmen 209/P/2024 (tidak ada di folder), lalu Kepmen 384/P/2024 (12 Agustus 2024), lalu Kepmen 63/M/KEP/2025 (3 Maret 2025). Masing-masing mencabut pendahulunya.
+- Kepmendiktisaintek 63/M/KEP/2025 berupa PDF pindaian tanpa lapisan teks; pastikan docling melakukan OCR (bawaan CLI) dan periksa jumlah chunk-nya. Hal yang sama berlaku untuk `SE_Permendikbud_Tahun_2024_No_14.pdf` dan `Kepmendikbudristek_2024_No_209.pdf` (55 halaman, diawali surat pengantar 15 Mei 2024).
+- Rantai juknis karier dosen: Kepmen 209/P/2024 (salinan dikirim 15 Mei 2024), lalu Kepmen 384/P/2024 (12 Agustus 2024), lalu Kepmen 63/M/KEP/2025 (3 Maret 2025). Masing-masing mencabut pendahulunya.
 - Permendikbudristek 53/2023 Pasal 106 mencabut empat peraturan sekaligus: Permenristekdikti 62/2016, Permendikbud 3/2020, Permendikbud 5/2020, dan Permendikbudristek 56/2022.
 - Perpres 7/2026 adalah perubahan atas Perpres 189/2024. Perpres 8/2012 (KKNI) tidak memuat pasal pencabutan; **(verifikasi)** perubahannya.
 - PermenPAN-RB 13/2019 (jabatan fungsional PNS) sudah dicabut PermenPAN-RB 1/2023 (Pasal 62 huruf a). Hanya untuk audit riwayat.
 - Permenristekdikti 51 dan 52/2018 mengatur kelembagaan/pendirian PT, bukan SN-Dikti atau SPMI.
+- Nomor dan tahun saja tidak cukup untuk menentukan status: PermenPAN-RB 6/2022 (berlaku) bernomor sama dengan Permendikbudristek 6/2022 (dicabut). Daftar `REVOKED` di task ingest mencocokkan awalan nama file juga.
 - Isi metadata `status` (berlaku/dicabut) dan `dicabut_oleh` di tiap chunk sesuai tabel bagian 2.
 
 ## 5. Rancangan ER-Diagram Basis Pengetahuan RAG
@@ -508,7 +531,7 @@ CONV -[hidden]down- CH
   plantuml -tsvg diagram/er_knowledge_base.puml
   rsvg-convert -f svg -o tmp.svg diagram/er_knowledge_base.svg && mv tmp.svg diagram/er_knowledge_base.svg
   ```
-- Status implementasi: task `compliance:ingest-regulations` masih menulis ke `compliance.regulation_documents` dengan `chunkable_type = 'Regulation'`, belum ke tabel `regulation.*` di atas. Daftar `REVOKED` di task itu sudah memuat 9 regulasi historis bagian 2 (44/2015, 62/2016, 51/2018, 59/2018, 3/2020, 6/2022, 56/2022, 53/2023, 44/2024).
+- Status implementasi: task `compliance:ingest-regulations` masih menulis ke `compliance.regulation_documents` dengan `chunkable_type = 'Regulation'`, belum ke tabel `regulation.*` di atas. Daftar `REVOKED` di task itu sudah memuat 18 regulasi historis (bagian 2), dicocokkan dengan awalan nama file, nomor, dan tahun.
 - `ai.chunks.chunkable_id` tidak punya FK; integritas ke `regulation_nodes` dijaga di kode ingest.
 - Dimensi vektor saat ini 384. Mengganti model embedding berarti embed ulang semua chunk; `ingest_runs.embedding_model` mencatat model yang dipakai.
 - Migrator CLI rusak di dev DB (nama migrasi lama), jadi migrasi diterapkan satu per satu.
