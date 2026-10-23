@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use pgmq::PGMQueueExt;
 use pgmq::errors::PgmqError;
-use sea_orm::DatabaseConnection;
+use sea_orm::{DatabaseBackend, DatabaseConnection, FromQueryResult, Statement};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -119,4 +119,36 @@ async fn finish(queue: &PGMQueueExt, msg_id: i64, job: &PdfEmbeddingJob) {
     if let Err(e) = tokio::fs::remove_file(&job.pdf_path).await {
         tracing::warn!("Failed to remove {}: {}", job.pdf_path, e);
     }
+}
+
+#[derive(FromQueryResult)]
+struct CountRow {
+    count: i64,
+}
+
+/// Jobs still in the queue, including the one being processed (it is only hidden, not removed).
+/// 0 when the queue does not exist yet.
+pub async fn pdf_queue_length(db: &DatabaseConnection) -> i64 {
+    CountRow::find_by_statement(Statement::from_sql_and_values(
+        DatabaseBackend::Postgres,
+        "SELECT queue_length AS count FROM pgmq.metrics($1)",
+        [PDF_EMBEDDING_QUEUE.into()],
+    ))
+    .one(db)
+    .await
+    .ok()
+    .flatten()
+    .map_or(0, |r| r.count)
+}
+
+/// Whether a job for this document is already in the queue (waiting or being processed)
+pub async fn is_queued(db: &DatabaseConnection, chunkable_id: Uuid) -> Result<bool, sea_orm::DbErr> {
+    let row = CountRow::find_by_statement(Statement::from_sql_and_values(
+        DatabaseBackend::Postgres,
+        &format!("SELECT COUNT(*)::bigint AS count FROM pgmq.q_{PDF_EMBEDDING_QUEUE} WHERE message->>'chunkable_id' = $1"),
+        [chunkable_id.to_string().into()],
+    ))
+    .one(db)
+    .await?;
+    Ok(row.is_some_and(|r| r.count > 0))
 }

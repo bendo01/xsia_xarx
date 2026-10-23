@@ -1,5 +1,6 @@
 import { createSignal, createEffect, onMount, For, Show } from 'solid-js';
 import TopBar from '~/components/navigation/TopBar';
+import KnowledgeRebuildDialog from '~/components/document/KnowledgeRebuildDialog';
 import { toast } from '~/components/toast/Toaster';
 import type { DocumentArchive } from '~/models/document/Archive';
 import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
@@ -22,6 +23,7 @@ export default function DocumentTransactionArchivePage() {
     const [sortParam, setSortParam] = createSignal('name-asc');
     const [totalData, setTotalData] = createSignal(0);
     const [totalPages, setTotalPages] = createSignal(1);
+    const [isRebuildOpen, setIsRebuildOpen] = createSignal(false);
 
     // Archive Type options
     const [archiveTypeOptions, setArchiveTypeOptions] = createSignal<ModelSelectItem[]>([]);
@@ -352,6 +354,20 @@ export default function DocumentTransactionArchivePage() {
                         </p>
                     </div>
                     <div class="mt-4 sm:mt-0 flex items-center gap-2 justify-end">
+                        <button
+                            type="button"
+                            onClick={() => setIsRebuildOpen(true)}
+                            class="inline-flex items-center gap-x-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 focus:outline-hidden focus:ring-2 focus:ring-blue-500 rounded-xs shadow-xs transition-colors cursor-pointer"
+                            id="btn-rebuild-knowledge"
+                        >
+                            <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                                <path d="M21 3v5h-5" />
+                                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                                <path d="M8 16H3v5" />
+                            </svg>
+                            <span>{t('ad.kbRebuildButton')}</span>
+                        </button>
                         <button
                             type="button"
                             onClick={openCreateModal}
@@ -968,6 +984,8 @@ export default function DocumentTransactionArchivePage() {
                     </div>
                 </div>
             </dialog>
+
+            <KnowledgeRebuildDialog open={isRebuildOpen()} onClose={() => setIsRebuildOpen(false)} />
         </div>
     );
 }

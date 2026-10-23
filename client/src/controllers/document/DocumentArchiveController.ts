@@ -220,3 +220,131 @@ export async function DocumentArchiveControllerReindex(
         return { is_error: true, message: error.message || 'Network error while queueing archive.' };
     }
 }
+
+export interface KnowledgeItemStatus {
+    id: string;
+    name: string;
+    size?: number | null;
+    chunk_count: number;
+    last_indexed_at?: string | null;
+}
+
+export interface KnowledgeStatus {
+    items: KnowledgeItemStatus[];
+    queue_length: number;
+    docling_available: boolean;
+    total_chunks: number;
+}
+
+export interface KnowledgeRebuildResult {
+    queued: number;
+    skipped: { id: string; name: string; reason: string }[];
+    message: string;
+}
+
+export async function DocumentArchiveControllerKnowledgeStatus(): Promise<{
+    is_error: boolean;
+    message: string;
+    data?: KnowledgeStatus;
+}> {
+    try {
+        const res = await fetch(`${getBaseUrl()}/${path}/knowledge/status`, {
+            method: 'GET',
+            headers: getHeaders(),
+        });
+        const resJson = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            return { is_error: true, message: resJson.message || resJson.brief || 'Failed to load knowledge base status.' };
+        }
+        return { is_error: false, message: '', data: resJson as KnowledgeStatus };
+    } catch (error: any) {
+        return { is_error: true, message: error.message || 'Network error while loading knowledge base status.' };
+    }
+}
+
+/** Queues the given archives (all knowledge archives when `ids` is empty) for a rebuild of their chunks */
+export async function DocumentArchiveControllerKnowledgeRebuild(
+    props: { ids?: string[] },
+): Promise<{ is_error: boolean; message: string; data?: KnowledgeRebuildResult }> {
+    try {
+        const res = await fetch(`${getBaseUrl()}/${path}/knowledge/reindex`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({ ids: props.ids ?? [] }),
+        });
+        const resJson = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            return { is_error: true, message: resJson.message || resJson.brief || resJson.detail || 'Failed to rebuild the knowledge base.' };
+        }
+        return { is_error: false, message: resJson.message || '', data: resJson as KnowledgeRebuildResult };
+    } catch (error: any) {
+        return { is_error: true, message: error.message || 'Network error while rebuilding the knowledge base.' };
+    }
+}
+
+export interface RegulationItemStatus {
+    id: string;
+    title: string;
+    number?: string | null;
+    year?: number | null;
+    status: string;
+    source?: string | null;
+    chunk_count: number;
+}
+
+export interface RegulationRebuildResult {
+    queued: number;
+    skipped: { name: string; reason: string }[];
+    message: string;
+}
+
+export interface RegulationStatus {
+    items: RegulationItemStatus[];
+    folder_pdf_count: number;
+    unregistered: string[];
+    total_chunks: number;
+    docling_available: boolean;
+    folder_available: boolean;
+    indexed_count: number;
+    /** Embedding jobs in the shared queue, including the one being processed */
+    queue_length: number;
+}
+
+const aiBaseUrl = () => `${getBaseUrl()}/ai/regulations`;
+
+export async function RegulationKnowledgeStatus(): Promise<{
+    is_error: boolean;
+    message: string;
+    data?: RegulationStatus;
+}> {
+    try {
+        const res = await fetch(`${aiBaseUrl()}/status`, { method: 'GET', headers: getHeaders() });
+        const resJson = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            return { is_error: true, message: resJson.message || resJson.brief || 'Failed to load regulation status.' };
+        }
+        return { is_error: false, message: '', data: resJson as RegulationStatus };
+    } catch (error: any) {
+        return { is_error: true, message: error.message || 'Network error while loading regulation status.' };
+    }
+}
+
+/** Queues the regulation folder on the PGMQ embedding queue; `force` also re-embeds documents that already have chunks */
+export async function RegulationKnowledgeRebuild(
+    props: { force: boolean },
+): Promise<{ is_error: boolean; message: string; data?: RegulationRebuildResult }> {
+    try {
+        const res = await fetch(`${aiBaseUrl()}/rebuild`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({ force: props.force }),
+        });
+        const resJson = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            return { is_error: true, message: resJson.message || resJson.brief || resJson.detail || 'Failed to start the regulation rebuild.' };
+        }
+        return { is_error: false, message: resJson.message || '', data: resJson as RegulationRebuildResult };
+    } catch (error: any) {
+        return { is_error: true, message: error.message || 'Network error while starting the regulation rebuild.' };
+    }
+}

@@ -89,3 +89,46 @@ pub struct ReindexArchiveResponse {
     pub msg_id: i64,
     pub message: String,
 }
+
+/// Which knowledge archives to rebuild; all of them when `ids` is empty or missing
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Default)]
+pub struct ReindexAllRequest {
+    pub ids: Option<Vec<Uuid>>,
+}
+
+/// An archive that could not be queued while rebuilding the knowledge base
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct ReindexSkipped {
+    pub id: Uuid,
+    pub name: String,
+    pub reason: String,
+}
+
+/// Result of queueing several archives for the knowledge base
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct ReindexAllResponse {
+    pub queued: usize,
+    pub skipped: Vec<ReindexSkipped>,
+    pub message: String,
+}
+
+/// One knowledge archive with how much of it is currently indexed
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct KnowledgeItemStatus {
+    pub id: Uuid,
+    pub name: String,
+    pub size: Option<i32>,
+    /// Live (not deleted) chunks in `ai.chunks`; 0 means the archive is not indexed yet
+    pub chunk_count: i64,
+    pub last_indexed_at: Option<NaiveDateTime>,
+}
+
+/// State of the knowledge base: archives, queued embedding jobs and whether docling can run
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct KnowledgeStatusResponse {
+    pub items: Vec<KnowledgeItemStatus>,
+    /// Embedding jobs still waiting in the queue (jobs being processed are hidden from it)
+    pub queue_length: i64,
+    pub docling_available: bool,
+    pub total_chunks: i64,
+}

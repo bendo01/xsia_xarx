@@ -3831,6 +3831,18 @@ pub fn get_system_routes() -> Vec<RouteDefinition> {
             name: "document.transaction.archives.reindex",
         },
         RouteDefinition {
+            url: "/api/v1/document/transaction/archives/knowledge/status",
+            method: "GET",
+            handler: "archives::knowledge_overview",
+            name: "document.transaction.archives.knowledge_status",
+        },
+        RouteDefinition {
+            url: "/api/v1/document/transaction/archives/knowledge/reindex",
+            method: "POST",
+            handler: "archives::reindex_all",
+            name: "document.transaction.archives.reindex_all",
+        },
+        RouteDefinition {
             url: "/api/v1/feeder/akumulasi/estimasi",
             method: "GET",
             handler: "estimasi::index",
