@@ -143,6 +143,7 @@ export interface TranslationSchema {
         };
         administrator: {
             adminDashboard: string;
+            ragTester: string;
             modelsTree: string;
             entitiesCount: string;
             tree: Record<string, string>;

@@ -150,6 +150,7 @@ export const id: TranslationSchema = {
         },
         administrator: {
             adminDashboard: 'Dasbor Administrator',
+            ragTester: 'Uji Chatbot RAG',
             modelsTree: 'Pohon Model Data',
             entitiesCount: '{{count}} entitas',
             tree: {

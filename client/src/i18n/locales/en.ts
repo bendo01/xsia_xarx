@@ -150,6 +150,7 @@ export const en: TranslationSchema = {
         },
         administrator: {
             adminDashboard: 'Administrator Dashboard',
+            ragTester: 'RAG Chatbot Tester',
             modelsTree: 'Models Tree',
             entitiesCount: '{{count}} entities',
             tree: {

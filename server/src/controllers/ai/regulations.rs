@@ -11,9 +11,8 @@ use crate::dtos::ai::regulations::{
     RegulationStatusResponse,
 };
 use crate::jobs::embedding::embed::pdf_queue_length;
+use crate::controllers::ai::require_administrator;
 use crate::middleware::auth::auth_user_id;
-use crate::middleware::rbac::is_administrator;
-use crate::models::auth::role;
 use crate::models::compliance::regulation_document;
 use crate::services::ai::docling;
 use crate::tasks::rag::rag_02_ingest_regulations::{
@@ -24,14 +23,6 @@ use crate::tasks::rag::rag_02_ingest_regulations::{
 struct ChunkCount {
     chunkable_id: Uuid,
     chunk_count: i64,
-}
-
-fn require_administrator(depot: &Depot) -> Result<(), StatusError> {
-    if depot.get::<role::Model>("active_role").map(is_administrator).unwrap_or(false) {
-        Ok(())
-    } else {
-        Err(StatusError::forbidden().brief("Only administrators can manage the regulation knowledge base"))
-    }
 }
 
 /// Registered regulations with their chunk counts, the PDFs in the regulation folder and the

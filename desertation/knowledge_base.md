@@ -535,3 +535,11 @@ CONV -[hidden]down- CH
 - `ai.chunks.chunkable_id` tidak punya FK; integritas ke `regulation_nodes` dijaga di kode ingest.
 - Dimensi vektor saat ini 384. Mengganti model embedding berarti embed ulang semua chunk; `ingest_runs.embedding_model` mencatat model yang dipakai.
 - Migrator CLI rusak di dev DB (nama migrasi lama), jadi migrasi diterapkan satu per satu.
+- embedding model **`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`**
+  ```sh
+  hf download sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 --local-dir ./models
+  ```
+- RAG model `Qwen/Qwen2.5-1.5B-Instruct-GGUF qwen2.5-1.5b-instruct-q4_k_m.gguf`
+  ```sh
+  hf download Qwen/Qwen2.5-1.5B-Instruct-GGUF qwen2.5-1.5b-instruct-q4_k_m.gguf --local-dir ./models
+  ```

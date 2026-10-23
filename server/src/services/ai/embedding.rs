@@ -38,7 +38,7 @@ impl EmbeddingService {
         EMBEDDER.get_or_try_init(Self::load)
     }
 
-    fn model_dir() -> PathBuf {
+    pub fn model_dir() -> PathBuf {
         std::env::var("EMBEDDING_MODEL_DIR")
             .map(PathBuf::from)
             .unwrap_or_else(|_| PathBuf::from(DEFAULT_MODEL_DIR))

@@ -19,6 +19,23 @@ export default function MenuAdministrator() {
                 <span>{t('menu.administrator.adminDashboard')}</span>
             </A>
 
+            {/* RAG chatbot tester */}
+            <A
+                href="/administrator/agent/chatbot"
+                activeClass="bg-blue-600/15 text-blue-600 dark:text-blue-400 font-semibold"
+                class="flex items-center gap-x-2.5 py-2 px-2.5 text-xs font-semibold rounded-xl text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+            >
+                <svg class="size-4 shrink-0 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 8V4H8" />
+                    <rect width="16" height="12" x="4" y="8" rx="2" />
+                    <path d="M2 14h2" />
+                    <path d="M20 14h2" />
+                    <path d="M15 13v2" />
+                    <path d="M9 13v2" />
+                </svg>
+                <span>{t('menu.administrator.ragTester')}</span>
+            </A>
+
             {/* Tree Menu Models Exactly Matching server/tree_menu.md */}
             <div class="pt-1 border-t border-neutral-200 dark:border-neutral-800">
                 <div class="px-2 py-1 flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 font-mono">
