@@ -10,6 +10,12 @@ pub struct ArchiveQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
     pub name: Option<String>,
+    /// When true, only archives that belong to the knowledge base
+    pub is_knowledge: Option<bool>,
+    /// `name` (default), `created_at` or `updated_at`
+    pub sort_by: Option<String>,
+    /// `asc` (default) or `desc`
+    pub sort_dir: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]

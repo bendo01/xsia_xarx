@@ -73,8 +73,8 @@ pub async fn status(depot: &mut Depot) -> Result<Json<RagStatusResponse>, Status
 
     let counts = Count::find_by_statement(Statement::from_sql_and_values(
         DatabaseBackend::Postgres,
-        "SELECT d.status AS regulation_status, COUNT(*)::bigint AS count FROM ai.chunks c \\
-         JOIN compliance.regulation_documents d ON d.id = c.chunkable_id \\
+        "SELECT d.status AS regulation_status, COUNT(*)::bigint AS count FROM ai.chunks c \
+         JOIN compliance.regulation_documents d ON d.id = c.chunkable_id \
          WHERE c.chunkable_type = 'Regulation' AND c.deleted_at IS NULL AND d.deleted_at IS NULL GROUP BY d.status",
         [],
     ))

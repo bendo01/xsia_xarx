@@ -552,8 +552,7 @@ PRESIDEN REPUBLIK INDONESIA
 
 - 22 -
 - c. memberi teladan dan menjaga nama baik lembaga, profesi, dan kedudukan sesuai dengan kepercayaan yang diberikan kepadanya.
-- Pasal 41 (1) (2) Pendidik dan tenaga kependidikan dapat bekerja secara lintas daerah. Pengangkatan, penempatan, dan penyebaran pendidik dan tenaga kependidikan diatur oleh lembaga yang mengangkatnya berdasarkan kebutuhan satuan pendidikan formal. (3) Pemerintah dan Pemerintah Daerah wajib memfasilitasi satuan pendidikan dengan pendidik dan tenaga kependidikan yang diperlukan untuk menjamin terselenggaranya pendidikan yang bermutu. (4) Ketentuan mengenai pendidik dan tenaga kependidikan sebagaimana dimaksud dalam ayat (1), ayat (2), dan ayat (3) diatur lebih lanjut dengan
-- Peraturan Pemerintah.
+- Pasal 41 (1) (2) Pendidik dan tenaga kependidikan dapat bekerja secara lintas daerah. Pengangkatan, penempatan, dan penyebaran pendidik dan tenaga kependidikan diatur oleh lembaga yang mengangkatnya berdasarkan kebutuhan satuan pendidikan formal. (3) Pemerintah dan Pemerintah Daerah wajib memfasilitasi satuan pendidikan dengan pendidik dan tenaga kependidikan yang diperlukan untuk menjamin terselenggaranya pendidikan yang bermutu. (4) Ketentuan mengenai pendidik dan tenaga kependidikan sebagaimana dimaksud dalam ayat (1), ayat (2), dan ayat (3) diatur lebih lanjut dengan Peraturan Pemerintah.
 - Pasal 42 (1) Pendidik harus memiliki kualifikasi minimum dan sertifikasi sesuai dengan jenjang kewenangan mengajar, sehat jasmani dan rohani, serta memiliki kemampuan untuk mewujudkan tujuan pendidikan nasional. (2) Pendidik untuk pendidikan formal pada jenjang pendidikan usia dini, pendidikan dasar, pendidikan menengah, dan pendidikan tinggi dihasilkan oleh perguruan tinggi yang terakreditasi. (3) Ketentuan mengenai kualifikasi pendidik sebagaimana dimaksud dalam
 - ayat (1) dan ayat (2) diatur lebih lanjut dengan Peraturan Pemerintah.
 - (1) Promosi dan penghargaan bagi pendidik dan tenaga kependidikan dilakukan berdasarkan latar belakang pendidikan, pengalaman,
@@ -998,6 +997,8 @@ Pasal 23 Ayat (1) Guru besar atau professor adalah jabatan fungsional bagi dosen
 Ayat (4) …
 
 <!-- image -->
+
+大
 
 PRESIDEN REPUBLIK INDONESIA
 

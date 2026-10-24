@@ -14,4 +14,5 @@ pub mod location;
 pub mod payment;
 pub mod person;
 pub mod preference;
+pub mod regulation;
 pub mod webhook;

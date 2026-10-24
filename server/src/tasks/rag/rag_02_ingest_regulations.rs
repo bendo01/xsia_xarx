@@ -30,34 +30,36 @@ fn guide_id(file_name: &str) -> Uuid {
 }
 
 /// Regulations known to be replaced (see `desertation/knowledge_base.md`, section 2); everything else is registered as active.
-/// Each entry is (lower-case file name prefix, number, year): number and year alone collide across issuers
+/// Each entry is (lower-case issuer, number, year), where the issuer is one `_`-separated word of the file name
+/// (`Tahun_2022_Permendikbudristek_No_06`): number and year alone collide across issuers
 /// (Permendikbudristek 6/2022 is replaced, PermenPAN-RB 6/2022 is in force).
 /// 44/2024 is still needed for audits before 2025, so retrieval opts in with `include_revoked`.
 const REVOKED: &[(&str, &str, i16)] = &[
-    ("uu_", "5", 2014),                  // UU ASN, replaced by UU 20/2023 (Pasal 76)
-    ("permendikbud_", "50", 2014),       // replaced by Permenristekdikti 62/2016 (Pasal 10)
-    ("permendikbud_", "81", 2014),       // replaced by Permenristekdikti 59/2018 (Pasal 25)
-    ("permenristekdikti_", "44", 2015),  // replaced by Permendikbud 3/2020
-    ("permenristekdikti_", "62", 2016),  // replaced by Permendikbudristek 53/2023 (Pasal 106)
-    ("permenristekdikti_", "63", 2016),  // replaced by Permenristekdikti 59/2018 (Pasal 25)
-    ("permenristekdikti_", "55", 2017),  // replaced by Permendikbudristek 56/2022 (Pasal 33)
-    ("permenristekdikti_", "51", 2018),  // replaced by Permendikbud 7/2020 (Pasal 93)
-    ("permenristekdikti_", "59", 2018),  // replaced by Permendikbudristek 6/2022 (Pasal 35)
-    ("permenpanrb_", "13", 2019),        // replaced by PermenPAN-RB 1/2023 (Pasal 62)
-    ("permendikbud_", "3", 2020),        // replaced by Permendikbudristek 53/2023 (Pasal 106)
-    ("permendikbud_", "5", 2020),        // replaced by Permendikbudristek 53/2023 (Pasal 106)
-    ("permendikbudristek_", "6", 2022),  // replaced by Permendikbudristek 50/2024 (Pasal 27)
-    ("permenristekbudristek_", "56", 2022), // replaced by Permendikbudristek 53/2023 (Pasal 106)
-    ("permendikbudristek_", "53", 2023), // replaced by Permendiktisaintek 39/2025 (Pasal 117)
-    ("permendikbudristek_", "44", 2024), // replaced by Permendiktisaintek 52/2025 (Pasal 67)
-    ("kepmendikbudristek_", "209", 2024), // replaced by Kepmen 384/P/2024
-    ("kepmendikbudristek_", "384", 2024), // replaced by Kepmendiktisaintek 63/2025
+    ("uu", "5", 2014),                  // UU ASN, replaced by UU 20/2023 (Pasal 76)
+    ("permendikbud", "50", 2014),       // replaced by Permenristekdikti 62/2016 (Pasal 10)
+    ("permendikbud", "81", 2014),       // replaced by Permenristekdikti 59/2018 (Pasal 25)
+    ("permenristekdikti", "44", 2015),  // replaced by Permendikbud 3/2020
+    ("permenristekdikti", "62", 2016),  // replaced by Permendikbudristek 53/2023 (Pasal 106)
+    ("permenristekdikti", "63", 2016),  // replaced by Permenristekdikti 59/2018 (Pasal 25)
+    ("permenristekdikti", "55", 2017),  // replaced by Permendikbudristek 56/2022 (Pasal 33)
+    ("permenristekdikti", "51", 2018),  // replaced by Permendikbud 7/2020 (Pasal 93)
+    ("permenristekdikti", "59", 2018),  // replaced by Permendikbudristek 6/2022 (Pasal 35)
+    ("permenpanrb", "13", 2019),        // replaced by PermenPAN-RB 1/2023 (Pasal 62)
+    ("permendikbud", "3", 2020),        // replaced by Permendikbudristek 53/2023 (Pasal 106)
+    ("permendikbud", "5", 2020),        // replaced by Permendikbudristek 53/2023 (Pasal 106)
+    ("permendikbudristek", "6", 2022),  // replaced by Permendikbudristek 50/2024 (Pasal 27)
+    ("permenristekbudristek", "56", 2022), // replaced by Permendikbudristek 53/2023 (Pasal 106)
+    ("permendikbudristek", "53", 2023), // replaced by Permendiktisaintek 39/2025 (Pasal 117)
+    ("permendikbudristek", "44", 2024), // replaced by Permendiktisaintek 52/2025 (Pasal 67)
+    ("kepmendikbudristek", "209", 2024), // replaced by Kepmen 384/P/2024
+    ("kepmendikbudristek", "384", 2024), // replaced by Kepmendiktisaintek 63/2025
 ];
 
 /// Whether a file (stem) is a known replaced regulation
 fn is_revoked(stem: &str, number: Option<&str>, year: Option<i16>) -> bool {
     let stem = stem.to_lowercase();
-    REVOKED.iter().any(|(prefix, n, y)| stem.starts_with(prefix) && number == Some(*n) && year == Some(*y))
+    let words: Vec<&str> = stem.split(['_', ' ', '-']).collect();
+    REVOKED.iter().any(|(issuer, n, y)| words.contains(issuer) && number == Some(*n) && year == Some(*y))
 }
 
 /// `UU_Tahun_2003_No_20` or `Permendikbud_2014_No_81`: year before number
@@ -115,6 +117,12 @@ pub async fn ingest_directory(
     opts: &IngestOptions,
 ) -> Result<(usize, usize, usize), Box<dyn std::error::Error>> {
     let chunkable_type = if opts.guide { GUIDE_CHUNKABLE_TYPE } else { REGULATION_CHUNKABLE_TYPE };
+    if !opts.guide && opts.only.is_none() {
+        let retired = retire_missing_files(db, &opts.dir).await?;
+        if retired > 0 {
+            println!("==> retired {retired} registered regulation(s) whose file is gone and that have no chunks");
+        }
+    }
     let files = list_pdfs(&opts.dir, opts.only.as_deref())?;
     println!("==> {} PDF(s) in {}", files.len(), opts.dir.display());
 
@@ -189,6 +197,7 @@ pub async fn enqueue_directory(
     let upload_dir = std::env::var("AI_UPLOAD_DIR").map(PathBuf::from).unwrap_or_else(|_| PathBuf::from(DEFAULT_UPLOAD_DIR));
     tokio::fs::create_dir_all(&upload_dir).await?;
 
+    retire_missing_files(db, dir).await?;
     let (mut queued, mut skipped) = (0, Vec::new());
     for path in list_pdfs(dir, None)? {
         let file_name = path.file_name().unwrap().to_string_lossy().into_owned();
@@ -259,6 +268,40 @@ impl Task for IngestRegulationsTask {
     }
 }
 
+/// Soft-deletes registered regulations whose file is no longer in `dir` and that have no chunks, so a renamed
+/// file is registered once under its new name instead of leaving an empty row under the old one.
+/// A regulation that already has chunks is kept even when its file is gone. Returns how many rows were retired.
+pub async fn retire_missing_files(db: &DatabaseConnection, dir: &Path) -> Result<usize, sea_orm::DbErr> {
+    let rows = regulation_document::Entity::find()
+        .filter(regulation_document::Column::DeletedAt.is_null())
+        .filter(regulation_document::Column::Source.is_not_null())
+        .all(db)
+        .await?;
+    let mut retired = 0;
+    for row in rows {
+        let Some(source) = row.source.clone() else { continue };
+        if dir.join(&source).is_file() {
+            continue;
+        }
+        let chunks = chunk::Entity::find()
+            .filter(chunk::Column::ChunkableType.eq(REGULATION_CHUNKABLE_TYPE))
+            .filter(chunk::Column::ChunkableId.eq(row.id))
+            .filter(chunk::Column::DeletedAt.is_null())
+            .count(db)
+            .await?;
+        if chunks > 0 {
+            continue;
+        }
+        let now = Utc::now().naive_utc();
+        let mut active: regulation_document::ActiveModel = row.into();
+        active.deleted_at = Set(Some(now));
+        active.updated_at = Set(Some(now));
+        active.update(db).await?;
+        retired += 1;
+    }
+    Ok(retired)
+}
+
 /// Finds or creates the `regulation_documents` row for a file (matched on `source`), returning its id.
 async fn register(db: &DatabaseConnection, path: &Path, file_name: &str) -> Result<Uuid, sea_orm::DbErr> {
     if let Some(row) = regulation_document::Entity::find()
@@ -319,6 +362,13 @@ mod tests {
         assert_eq!(number_and_year("permendiktisaintek_Tahun_2025_No_39"), (Some("39".into()), Some(2025)));
         assert_eq!(number_and_year("Permenristekdikti_No_44_Tahun_2015"), (Some("44".into()), Some(2015)));
         assert_eq!(number_and_year("UUD_1945"), (None, None));
+        assert_eq!(number_and_year("Tahun_1945_UUD"), (None, None));
+        assert_eq!(number_and_year("Tahun_2003_UU_No_20"), (Some("20".into()), Some(2003)));
+        assert_eq!(number_and_year("Tahun_2014_PP_No_04"), (Some("4".into()), Some(2014)));
+        assert_eq!(number_and_year("Tahun_2026_Perpres_No_007"), (Some("7".into()), Some(2026)));
+        assert_eq!(number_and_year("Tahun_2023_Peraturan_BKN_Nomor_03"), (Some("3".into()), Some(2023)));
+        assert_eq!(number_and_year("Tahun_2024_Kepmendikbudristek_No_384_P"), (Some("384".into()), Some(2024)));
+        assert_eq!(number_and_year("Tahun_2022_PermenPANRB_No_6"), (Some("6".into()), Some(2022)));
         assert_eq!(number_and_year("Permendikbud_2014_No_81"), (Some("81".into()), Some(2014)));
         assert_eq!(number_and_year("Peraturan_BKN_Tahun 2023_Nomor_03"), (Some("3".into()), Some(2023)));
         assert_eq!(number_and_year("Kepmendikbudristek_Tahun_2024_No_384_P"), (Some("384".into()), Some(2024)));
@@ -336,6 +386,16 @@ mod tests {
         assert!(revoked("Permendikbud_Tahun_2014_No_81"));
         assert!(revoked("PermenPANRB_Tahun_2019_No_13"));
         assert!(revoked("Kepmendikbudristek_2024_No_209"));
+        // New file names: `Tahun_YYYY_Jenis_No_NN`
+        assert!(revoked("Tahun_2020_Permendikbud_No_03"));
+        assert!(revoked("Tahun_2022_Permendikbudristek_No_06"));
+        assert!(revoked("Tahun_2014_UU_No_05"));
+        assert!(revoked("Tahun_2022_Permenristekbudristek_No_56"));
+        assert!(revoked("Tahun_2024_Kepmendikbudristek_No_384_P"));
+        assert!(!revoked("Tahun_2022_PermenPANRB_No_6"));
+        assert!(!revoked("Tahun_2020_Permendikbud_No_07"));
+        assert!(!revoked("Tahun_2025_Kepmendiktisaintek_No_63"));
+        assert!(!revoked("Tahun_2023_UU_No_20"));
         assert!(!revoked("PermenPANRB_Tahun_2022_No_6"));
         assert!(!revoked("PermenPANRB_Tahun_2023_No_01"));
         assert!(!revoked("Permendiktisaintek_Tahun_2025_No_52"));

@@ -104,7 +104,7 @@ describe("Auth Store & Role Engine (White-Box Unit Tests)", () => {
   describe("getDashboardPathForRole", () => {
     it("maps roles to their respective primary dashboard route", () => {
       expect(getDashboardPathForRole("administrator")).toBe(
-        "/administrator/person/master/individual",
+        "/administrator/dashboard",
       );
       expect(getDashboardPathForRole("course_department")).toBe(
         "/course-department/institution/master/unit/[id]",
@@ -432,7 +432,7 @@ describe("Auth Store & Role Engine (White-Box Unit Tests)", () => {
       expect(getRequiredRoleForPath("/lecturer/academic/campaign/transaction/teach")).toBe(
         "lecturer",
       );
-      expect(getRequiredRoleForPath("/administrator/person/master/individual")).toBe(
+      expect(getRequiredRoleForPath("/administrator/dashboard")).toBe(
         "administrator",
       );
       expect(getRequiredRoleForPath("/candidate/academic/candidate/master/candidate")).toBe(
@@ -491,7 +491,7 @@ describe("Auth Store & Role Engine (White-Box Unit Tests)", () => {
       setStorageItem("roles", JSON.stringify([{ id: "role-mhs-1", name: "Mahasiswa" }]));
       refreshAuthState();
 
-      const result = canAccessRoute("/administrator/person/master/individual");
+      const result = canAccessRoute("/administrator/dashboard");
       expect(result.allowed).toBe(false);
       expect(result.reason).toBe("unauthorized");
       expect(result.redirectTo).toBe(

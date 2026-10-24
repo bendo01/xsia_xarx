@@ -20,7 +20,7 @@ const getHeaders = (): Record<string, string> => {
 };
 
 export async function DocumentArchiveControllerIndex(
-    props: TypePaginationForm,
+    props: TypePaginationForm & { is_knowledge?: boolean },
 ): Promise<TypePaginationResponse<DocumentArchive>> {
     try {
         const params = new URLSearchParams();
@@ -28,6 +28,9 @@ export async function DocumentArchiveControllerIndex(
         if (props.per_page) params.append('page_size', props.per_page.toString());
         if (props.search) params.append('name', props.search);
         if (props.name) params.append('name', props.name);
+        if (props.is_knowledge) params.append('is_knowledge', 'true');
+        if (props.sort_by) params.append('sort_by', props.sort_by);
+        if (props.sort_dir) params.append('sort_dir', props.sort_dir);
 
         const res = await fetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
             method: 'GET',
