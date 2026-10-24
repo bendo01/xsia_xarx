@@ -5,7 +5,7 @@ use pgmq::PGMQueueExt;
 use salvo::prelude::*;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseBackend, DatabaseConnection, EntityTrait,
-    FromQueryResult, IntoActiveModel, PaginatorTrait, QueryFilter, QueryOrder, Set, Statement,
+    FromQueryResult, IntoActiveModel, Order, PaginatorTrait, QueryFilter, QueryOrder, Set, Statement,
 };
 use uuid::Uuid;
 use validator::Validate;
@@ -40,8 +40,21 @@ pub async fn index(
         select = select.filter(entity_mod::Column::Name.contains(name));
     }
 
+    if query.is_knowledge == Some(true) {
+        select = select.filter(entity_mod::Column::IsKnowledge.eq(true));
+    }
+
+    let order = if query.sort_dir.as_deref() == Some("desc") { Order::Desc } else { Order::Asc };
+    let sort_column = match query.sort_by.as_deref() {
+        Some("created_at") => entity_mod::Column::CreatedAt,
+        Some("updated_at") => entity_mod::Column::UpdatedAt,
+        _ => entity_mod::Column::Name,
+    };
+
     let paginator = select
-        .order_by_asc(entity_mod::Column::Name)
+        .order_by(sort_column, order)
+        // a stable tie-breaker keeps pages consistent when timestamps are equal
+        .order_by_asc(entity_mod::Column::Id)
         .paginate(db, page_size);
 
     let total = paginator.num_items().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;

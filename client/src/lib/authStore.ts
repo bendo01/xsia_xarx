@@ -195,7 +195,7 @@ export function getDashboardPathForRole(
     const norm = normalizeRoleName(roleName, roleItem);
     switch (norm) {
         case 'administrator':
-            return '/administrator/person/master/individual';
+            return '/administrator/dashboard';
         case 'course_department': {
             const uId = resolveRoleItemUnitId(roleItem);
             return uId ? `/course-department/institution/master/unit/${uId}` : '/course-department/institution/master/unit/[id]';

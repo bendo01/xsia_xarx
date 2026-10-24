@@ -20,7 +20,7 @@ const ROLES = [
     key: "administrator",
     role: { id: "role-admin", name: "Administrator" },
     area: "/administrator/auth/user",
-    dashboard: "/administrator/person/master/individual",
+    dashboard: "/administrator/dashboard",
   },
   {
     key: "course_department",

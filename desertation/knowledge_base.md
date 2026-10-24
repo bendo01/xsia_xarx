@@ -202,6 +202,55 @@ endlegend
 
 </details>
 
+### 1.3 Asas Lex Superior Derogat Legi Inferiori
+
+Asas Lex Superior Derogat Legi Inferiori adalah salah satu prinsip/asas hukum universal yang menyatakan bahwa hukum atau peraturan perundang-undangan yang lebih tinggi kedudukannya mengesampingkan peraturan perundang-undangan yang lebih rendah.
+
+#### 1.3.1 Pengertian dan unsur kata
+
+Secara etimologis (bahasa Latin):
+
+- **Lex**: hukum / peraturan
+- **Superior**: lebih tinggi
+- **Derogat**: mengesampingkan / meniadakan
+- **Legi**: hukum / peraturan
+- **Inferiori**: lebih rendah
+
+Jika terjadi pertentangan antara dua peraturan perundang-undangan yang mengatur hal yang sama (conflict of norms), maka peraturan yang derajatnya lebih rendah batal demi hukum atau tidak memiliki kekuatan hukum mengikat sejauh pertentangan tersebut terjadi.
+
+#### 1.3.2 Syarat penerapan asas
+
+Asas ini berlaku apabila memenuhi kondisi berikut:
+
+1. **Objek pengaturan sama**: kedua peraturan mengatur substansi/materi yang sama.
+2. **Terjadi pertentangan konten**: norma hukum di peraturan yang lebih rendah bertentangan atau tidak sejalan dengan norma hukum di peraturan yang lebih tinggi.
+3. **Beda tingkatan hierarki**: kedua peraturan berada pada strata/tingkat hierarki yang berbeda.
+
+#### 1.3.3 Penerapan dalam tata hukum Indonesia
+
+Hierarki peraturan perundang-undangan diatur tegas dalam Pasal 7 ayat (1) UU No. 12 Tahun 2011 (sebagaimana diubah terakhir dengan UU No. 13 Tahun 2022):
+
+1. Undang-Undang Dasar Negara Republik Indonesia Tahun 1945 (UUD 1945) (tertinggi)
+2. Ketetapan Majelis Permusyawaratan Rakyat (TAP MPR)
+3. Undang-Undang (UU) / Peraturan Pemerintah Pengganti Undang-Undang (Perpu)
+4. Peraturan Pemerintah (PP)
+5. Peraturan Presiden (Perpres)
+6. Peraturan Daerah (Perda) Provinsi
+7. Peraturan Daerah (Perda) Kabupaten/Kota
+
+Peraturan Menteri/Lembaga berada di bawah Perpres dan diakui kekuatannya sepanjang diperintahkan oleh aturan yang lebih tinggi atau dibentuk berdasarkan kewenangan.
+
+Mekanisme penegakan asas di Indonesia (judicial review):
+
+- **Uji materiil UU terhadap UUD 1945**: dilakukan oleh Mahkamah Konstitusi (MK). Jika UU bertentangan dengan UUD 1945, MK menyatakan UU tersebut tidak mengikat secara hukum.
+- **Uji materiil peraturan di bawah UU terhadap UU**: dilakukan oleh Mahkamah Agung (MA). Jika Peraturan Menteri atau PP bertentangan dengan UU, MA akan membatalkan aturan tersebut.
+
+#### 1.3.4 Contoh sederhana
+
+**Skenario**: sebuah Peraturan Menteri (Permen) menetapkan bahwa dosen tidak berhak menerima tunjangan jika berusia di atas 60 tahun. Namun, Undang-Undang (UU Guru dan Dosen) menyatakan bahwa hak tunjangan tetap berlaku selama dosen berstatus aktif hingga usia pensiun 65 tahun.
+
+**Penerapan asas**: karena UU memiliki kedudukan lebih tinggi daripada Permen (Lex Superior), ketentuan dalam Permen yang membatasi usia 60 tahun tersebut harus dikesampingkan/dianggap tidak berlaku.
+
 ## 2. Peraturan Menteri per Pilar
 
 Rantai pencabutan terbaca dari atas (historis) ke bawah (berlaku).
@@ -274,63 +323,63 @@ Prinsip: induk dahulu, turunan kemudian; dalam satu pilar urutkan historis ke be
 
 | # | Level | File |
 |---|---|---|
-| 1 | L0 UUD | `UUD_1945.pdf` |
-| 2 | L1 UU | `UU_Tahun_2003_No_20.pdf` |
-| 3 | L1 UU | `UU_Tahun_2005_No_14.pdf` |
-| 4 | L1 UU | `UU_Tahun_2008_No_39.pdf` |
-| 5 | L1 UU | `UU_Tahun_2024_No_61.pdf` |
-| 6 | L1 UU | `UU_Tahun_2012_No_12.pdf` |
-| 7 | L1 UU | `UU_Tahun_2014_No_05.pdf` |
-| 8 | L1 UU | `UU_Tahun_2023_No_20.pdf` |
-| 9 | L1 UU | `UU_Tahun_2022_No_27.pdf` |
-| 10 | L2 PP | `PP_Tahun_2009_No_37.pdf` |
-| 11 | L2 PP | `PP_Tahun_2014_No_04.pdf` |
-| 12 | L2 PP | `PP_Tahun_2017_No_11.pdf` |
-| 13 | L2 PP | `PP_Tahun_2019_No_30.pdf` |
-| 14 | L2 PP | `PP_Tahun_2020_No_17.pdf` |
-| 15 | L2 PP | `PP_Tahun_2021_No_57.pdf` |
-| 16 | L2 PP | `PP_Tahun_2021_No_94.pdf` |
-| 17 | L2 PP | `PP_Tahun_2022_No_04.pdf` |
-| 18 | L3 Perpres | `Perpres_Tahun_2012_No_008.pdf` |
-| 19 | L3 Perpres | `Perpres_Tahun_2024_No_189.pdf` |
-| 20 | L3 Perpres | `Perpres_Tahun_2026_No_007.pdf` |
-| 21 | L3 ASN | `PermenPANRB_Tahun_2019_No_13.pdf` |
-| 22 | L3 ASN | `PermenPANRB_Tahun_2022_No_6.pdf` |
-| 23 | L3 ASN | `PermenPANRB_Tahun_2023_No_01.pdf` |
-| 24 | L3 ASN | `Peraturan_BKN_Tahun 2023_Nomor_03.pdf` |
-| 25 | L3 Organisasi | `Permendiktisaintek_Tahun_2024_No_01.pdf` |
-| 26 | L4 Pilar 3 | `Permenristekdikti_Tahun_2018_No_51.pdf` |
-| 27 | L4 Pilar 3 | `Permenristekdikti_Tahun_2018_No_52.pdf` |
-| 28 | L4 Pilar 3 | `Permendikbud_Tahun_2020_No_07.pdf` |
-| 29 | L4 Pilar 2 | `Permendikbud_Tahun_2014_No_50.pdf` |
-| 30 | L4 Pilar 2 | `Permenristekdikti_Tahun_2015_No_44.pdf` |
-| 31 | L4 Pilar 2 | `Permenristekdikti_Tahun_2016_No_62.pdf` |
-| 32 | L4 Pilar 2 | `Permenristekdikti_Tahun_2017_No_55.pdf` |
-| 33 | L4 Pilar 2 | `Permendikbud_Tahun_2020_No_03.pdf` |
-| 34 | L4 Pilar 2 | `Permendikbud_Tahun_2020_No_05.pdf` |
-| 35 | L4 Pilar 2 | `Permenristekbudristek_Tahun_2022_No_56.pdf` |
-| 36 | L4 Pilar 2 | `Permendikbudristek_Tahun_2023_No_53.pdf` |
-| 37 | L4 Pilar 2 | `Permendiktisaintek_Tahun_2025_No_39.pdf` |
-| 38 | L4 Pilar 2 | `Permendiktisaintek_Tahun_2026_No_10.pdf` |
-| 39 | L4 Pilar 1 | `Permendikbudristek_Tahun_2024_No_44.pdf` |
-| 40 | L4 Pilar 1 | `Permendiktisaintek_Tahun_2025_No_52.pdf` |
-| 41 | L5 Pilar 1 | `SE_Permendikbud_Tahun_2024_No_14.pdf` |
-| 42 | L5 Pilar 1 | `Kepmendikbudristek_2024_No_209.pdf` |
-| 43 | L5 Pilar 1 | `Kepmendikbudristek_Tahun_2024_No_384_P.pdf` |
-| 44 | L5 Pilar 1 | `Kepmendiktisaintek_Tahun_2025_No_63.pdf` |
-| 45 | L4 Pilar 4 | `Permendikbud_Tahun_2014_No_81.pdf` |
-| 46 | L4 Pilar 4 | `Permenristekdikti_Tahun_2016_No_63.pdf` |
-| 47 | L4 Pilar 4 | `Permenristekdikti_Tahun_2018_No_59.pdf` |
-| 48 | L4 Pilar 4 | `Permendikbudristek_Tahun_2022_No_06.pdf` |
-| 49 | L4 Pilar 4 | `Permendikbudristek_Tahun_2024_No_50.pdf` |
-| 50 | L5 Teknis | `Buku-Panduan-Teknis-PerBKN_Tahun_2023_No_03.pdf` |
-| 51 | L5 Teknis | `User-Guide-WS-2-Feeder-PDDIKTI-07-12-2020.pdf` |
+| 1 | L0 UUD | `Tahun_1945_UUD.pdf` |
+| 2 | L1 UU | `Tahun_2003_UU_No_20.pdf` |
+| 3 | L1 UU | `Tahun_2005_UU_No_14.pdf` |
+| 4 | L1 UU | `Tahun_2008_UU_No_39.pdf` |
+| 5 | L1 UU | `Tahun_2024_UU_No_61.pdf` |
+| 6 | L1 UU | `Tahun_2012_UU_No_12.pdf` |
+| 7 | L1 UU | `Tahun_2014_UU_No_05.pdf` |
+| 8 | L1 UU | `Tahun_2023_UU_No_20.pdf` |
+| 9 | L1 UU | `Tahun_2022_UU_No_27.pdf` |
+| 10 | L2 PP | `Tahun_2009_PP_No_37.pdf` |
+| 11 | L2 PP | `Tahun_2014_PP_No_04.pdf` |
+| 12 | L2 PP | `Tahun_2017_PP_No_11.pdf` |
+| 13 | L2 PP | `Tahun_2019_PP_No_30.pdf` |
+| 14 | L2 PP | `Tahun_2020_PP_No_17.pdf` |
+| 15 | L2 PP | `Tahun_2021_PP_No_57.pdf` |
+| 16 | L2 PP | `Tahun_2021_PP_No_94.pdf` |
+| 17 | L2 PP | `Tahun_2022_PP_No_04.pdf` |
+| 18 | L3 Perpres | `Tahun_2012_Perpres_No_008.pdf` |
+| 19 | L3 Perpres | `Tahun_2024_Perpres_No_189.pdf` |
+| 20 | L3 Perpres | `Tahun_2026_Perpres_No_007.pdf` |
+| 21 | L3 ASN | `Tahun_2019_PermenPANRB_No_13.pdf` |
+| 22 | L3 ASN | `Tahun_2022_PermenPANRB_No_6.pdf` |
+| 23 | L3 ASN | `Tahun_2023_PermenPANRB_No_01.pdf` |
+| 24 | L3 ASN | `Tahun_2023_Peraturan_BKN_Nomor_03.pdf` |
+| 25 | L3 Organisasi | `Tahun_2024_Permendiktisaintek_No_01.pdf` |
+| 26 | L4 Pilar 3 | `Tahun_2018_Permenristekdikti_No_51.pdf` |
+| 27 | L4 Pilar 3 | `Tahun_2018_Permenristekdikti_No_52.pdf` |
+| 28 | L4 Pilar 3 | `Tahun_2020_Permendikbud_No_07.pdf` |
+| 29 | L4 Pilar 2 | `Tahun_2014_Permendikbud_No_50.pdf` |
+| 30 | L4 Pilar 2 | `Tahun_2015_Permenristekdikti_No_44.pdf` |
+| 31 | L4 Pilar 2 | `Tahun_2016_Permenristekdikti_No_62.pdf` |
+| 32 | L4 Pilar 2 | `Tahun_2017_Permenristekdikti_No_55.pdf` |
+| 33 | L4 Pilar 2 | `Tahun_2020_Permendikbud_No_03.pdf` |
+| 34 | L4 Pilar 2 | `Tahun_2020_Permendikbud_No_05.pdf` |
+| 35 | L4 Pilar 2 | `Tahun_2022_Permenristekbudristek_No_56.pdf` |
+| 36 | L4 Pilar 2 | `Tahun_2023_Permendikbudristek_No_53.pdf` |
+| 37 | L4 Pilar 2 | `Tahun_2025_Permendiktisaintek_No_39.pdf` |
+| 38 | L4 Pilar 2 | `Tahun_2026_Permendiktisaintek_No_10.pdf` |
+| 39 | L4 Pilar 1 | `Tahun_2024_Permendikbudristek_No_44.pdf` |
+| 40 | L4 Pilar 1 | `Tahun_2025_Permendiktisaintek_No_52.pdf` |
+| 41 | L5 Pilar 1 | `Tahun_2024_SE_Permendikbud_No_14.pdf` |
+| 42 | L5 Pilar 1 | `Tahun_2024_Kepmendikbudristek_No_209.pdf` |
+| 43 | L5 Pilar 1 | `Tahun_2024_Kepmendikbudristek_No_384_P.pdf` |
+| 44 | L5 Pilar 1 | `Tahun_2025_Kepmendiktisaintek_No_63.pdf` |
+| 45 | L4 Pilar 4 | `Tahun_2014_Permendikbud_No_81.pdf` |
+| 46 | L4 Pilar 4 | `Tahun_2016_Permenristekdikti_No_63.pdf` |
+| 47 | L4 Pilar 4 | `Tahun_2018_Permenristekdikti_No_59.pdf` |
+| 48 | L4 Pilar 4 | `Tahun_2022_Permendikbudristek_No_06.pdf` |
+| 49 | L4 Pilar 4 | `Tahun_2024_Permendikbudristek_No_50.pdf` |
+| 50 | L5 Teknis | `Tahun_2023_Buku-Panduan-Teknis-PerBKN_No_03.pdf` |
+| 51 | L5 Teknis | `Tahun_2020_User-Guide-WS-2-Feeder-PDDIKTI.pdf` |
 | 52 | L5 Teknis | `guides/UG-UI-UX-FEEDER-PDDIKTI-VERSI-4.0-07-12-2020.pdf` |
 
 ## 4. Catatan
 
 - Belum ada di folder: instrumen akreditasi BAN-PT/LAM dan regulasi PDDikti beserta manual Feeder terbaru.
-- Nama file di `legislation_regulation/` memakai pola `Jenis_Tahun_YYYY_No_NN.pdf`. Pengecualian: `Peraturan_BKN_Tahun 2023_Nomor_03` (memuat spasi dan kata "Nomor"). Tabel bagian 3 cocok dengan isi folder (52 file).
+- Nama file di `legislation_regulation/` memakai pola `Tahun_YYYY_Jenis_No_NN.pdf` (urut menurut tahun saat diurutkan). Pengecualian: `Tahun_1945_UUD.pdf` tanpa nomor, `Tahun_2023_Peraturan_BKN_Nomor_03.pdf` (kata "Nomor"), dan `Tahun_2024_Kepmendikbudristek_No_384_P.pdf` (akhiran `_P`). Tabel bagian 3 cocok dengan isi folder (52 file).
 - Permendiktisaintek No. 1/2024 (Organisasi dan Tata Kerja Kementerian, ditetapkan 30 Desember 2024): Pasal 233 mencabut Permendikbudristek 28/2021 jo. 16/2024.
 - Kepmendiktisaintek 63/M/KEP/2025 berupa PDF pindaian tanpa lapisan teks; pastikan docling melakukan OCR (bawaan CLI) dan periksa jumlah chunk-nya. Hal yang sama berlaku untuk `SE_Permendikbud_Tahun_2024_No_14.pdf` dan `Kepmendikbudristek_2024_No_209.pdf` (55 halaman, diawali surat pengantar 15 Mei 2024).
 - Rantai juknis karier dosen: Kepmen 209/P/2024 (salinan dikirim 15 Mei 2024), lalu Kepmen 384/P/2024 (12 Agustus 2024), lalu Kepmen 63/M/KEP/2025 (3 Maret 2025). Masing-masing mencabut pendahulunya.

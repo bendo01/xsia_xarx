@@ -23,6 +23,7 @@ export default function DocumentTransactionArchivePage() {
     const [sortParam, setSortParam] = createSignal('name-asc');
     const [totalData, setTotalData] = createSignal(0);
     const [totalPages, setTotalPages] = createSignal(1);
+    const [knowledgeOnly, setKnowledgeOnly] = createSignal(false);
     const [isRebuildOpen, setIsRebuildOpen] = createSignal(false);
 
     // Archive Type options
@@ -87,19 +88,11 @@ export default function DocumentTransactionArchivePage() {
                 search: searchQuery(),
                 sort_by: field,
                 sort_dir: dir || 'asc',
+                is_knowledge: knowledgeOnly(),
             });
 
             if (response && response.data) {
                 let data = response.data as unknown as DocumentArchive[];
-                const order = dir === 'desc' ? -1 : 1;
-                data = [...data].sort((a, b) => {
-                    const aVal = String(a.name || '').toLowerCase();
-                    const bVal = String(b.name || '').toLowerCase();
-                    if (aVal < bVal) return -1 * order;
-                    if (aVal > bVal) return 1 * order;
-                    return 0;
-                });
-
                 setItems(data);
                 setTotalData(response.pagination?.total_data || data.length);
                 setTotalPages(response.pagination?.total_page || 1);
@@ -121,6 +114,7 @@ export default function DocumentTransactionArchivePage() {
         itemsPerPage();
         searchQuery();
         sortParam();
+        knowledgeOnly();
         fetchData();
     });
 
@@ -138,6 +132,37 @@ export default function DocumentTransactionArchivePage() {
         const value = Number((e.target as HTMLSelectElement).value);
         setItemsPerPage(value);
         setCurrentPage(1);
+    };
+
+    const archiveTypeColors = [
+        'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800',
+        'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800',
+        'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800',
+        'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-300 dark:border-purple-800',
+        'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950 dark:text-rose-300 dark:border-rose-800',
+        'bg-cyan-50 text-cyan-700 border-cyan-200 dark:bg-cyan-950 dark:text-cyan-300 dark:border-cyan-800',
+        'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-300 dark:border-orange-800',
+        'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-950 dark:text-teal-300 dark:border-teal-800',
+        'bg-pink-50 text-pink-700 border-pink-200 dark:bg-pink-950 dark:text-pink-300 dark:border-pink-800',
+        'bg-lime-50 text-lime-700 border-lime-200 dark:bg-lime-950 dark:text-lime-300 dark:border-lime-800',
+    ];
+    const neutralBadge = 'bg-neutral-50 text-neutral-600 border-neutral-200 dark:bg-neutral-900 dark:text-neutral-300 dark:border-neutral-700';
+
+    // Fixed colors for specific types, keyed by lowercase name because ids differ per database
+    const namedArchiveTypeColors: Record<string, string> = {
+        'pedoman teknis operasional':
+            'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950 dark:text-indigo-300 dark:border-indigo-800',
+    };
+
+    // Stable color per archive type: a fixed color by name, else the id hashed into the palette
+    const getArchiveTypeColor = (id?: string | null) => {
+        if (!id) return neutralBadge;
+        const name = String(getArchiveTypeName(id) ?? '').trim().toLowerCase();
+        const named = namedArchiveTypeColors[name];
+        if (named) return named;
+        let hash = 0;
+        for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+        return archiveTypeColors[hash % archiveTypeColors.length];
     };
 
     const getArchiveTypeName = (id?: string | null) => {
@@ -402,16 +427,36 @@ export default function DocumentTransactionArchivePage() {
                         </div>
                     </div>
 
-                    <div class="w-full md:w-1/3 flex gap-2">
+                    <div class="w-full md:w-1/3 flex items-center gap-2">
+                        <label class="inline-flex items-center gap-2 shrink-0 text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 cursor-pointer" for="filter-knowledge-only">
+                            <input
+                                type="checkbox"
+                                id="filter-knowledge-only"
+                                class="size-4 border-neutral-300 rounded-xs text-blue-600 focus:ring-blue-500 dark:bg-neutral-800 dark:border-neutral-600"
+                                checked={knowledgeOnly()}
+                                onChange={(e) => {
+                                    setKnowledgeOnly(e.currentTarget.checked);
+                                    setCurrentPage(1);
+                                }}
+                            />
+                            {t('ad.knowledgeBase')}
+                        </label>
                         <div class="w-1/2">
                             <select
                                 class="block w-full p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                                 value={sortParam()}
-                                onChange={(e) => setSortParam((e.target as HTMLSelectElement).value)}
+                                onChange={(e) => {
+                                    setSortParam((e.target as HTMLSelectElement).value);
+                                    setCurrentPage(1);
+                                }}
                                 id="select-sort-archive"
                             >
                                 <option value="name-asc">{t('ad.nameAZ')}</option>
                                 <option value="name-desc">{t('ad.nameZA')}</option>
+                                <option value="created_at-desc">{t('ad.archiveSortCreatedDesc')}</option>
+                                <option value="created_at-asc">{t('ad.archiveSortCreatedAsc')}</option>
+                                <option value="updated_at-desc">{t('ad.archiveSortUpdatedDesc')}</option>
+                                <option value="updated_at-asc">{t('ad.archiveSortUpdatedAsc')}</option>
                             </select>
                         </div>
                         <div class="w-1/2">
@@ -496,7 +541,7 @@ export default function DocumentTransactionArchivePage() {
                                                             <div class="text-xs text-neutral-500 dark:text-neutral-400 font-mono pl-6">{item.dir}</div>
                                                         </td>
                                                         <td class="px-4 py-3 text-xs text-neutral-600 dark:text-neutral-300">
-                                                            <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                                            <span class={`inline-flex items-center px-2 py-0.5 text-xs font-semibold border ${getArchiveTypeColor(item.archive_type_id)}`}>
                                                                 {getArchiveTypeName(item.archive_type_id)}
                                                             </span>
                                                         </td>
@@ -592,7 +637,7 @@ export default function DocumentTransactionArchivePage() {
                                     {(item) => (
                                         <div class="p-4 space-y-2">
                                             <div class="flex items-center justify-between">
-                                                <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                                <span class={`inline-flex items-center px-2 py-0.5 text-xs font-semibold border ${getArchiveTypeColor(item.archive_type_id)}`}>
                                                     {getArchiveTypeName(item.archive_type_id)}
                                                 </span>
                                                 <span class="text-xs font-mono text-neutral-500 dark:text-neutral-400">

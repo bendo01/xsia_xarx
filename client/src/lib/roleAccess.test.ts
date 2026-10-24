@@ -53,7 +53,7 @@ const ROLE_FIXTURES: RoleFixture[] = [
   {
     key: "administrator",
     role: { id: "role-admin", name: "Administrator" },
-    dashboard: "/administrator/person/master/individual",
+    dashboard: "/administrator/dashboard",
     samplePath: "/administrator/auth/user",
   },
   {

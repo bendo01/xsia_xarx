@@ -160,7 +160,8 @@ PRESIDEN REPUBLIK INDONESIA
 
 Pasal 11
 
-- (1) Sertifikat pendidik sebagaimana dimaksud dalam Pasal 8 diberikan kepada guru yang telah memenuhi persyaratan. (2) Sertifikasi pendidik diselenggarakan oleh pergunia.n tinggi yang memiliki program pengadaan tenaga kependidikan yang terakreditasi dan ditetapkan oleh Pemerintah. (3) Sertifikasi pendidik dilaksanakan secara objektif, transparan, dan akuntabel.
+(1) Sertifikat pendidik sebagaimana dimaksud dalam Pasal 8 diberikan kepada guru yang telah memenuhi persyaratan. (2) Sertifikasi pendidik diselenggarakan oleh pergunia.n tinggi yang memiliki program pengadaan tenaga kependidikan yang terakreditasi dan ditetapkan oleh Pemerintah. (3) Sertifikasi pendidik dilaksanakan secara objektif, transparan, dan akuntabel.
+
 - (4) Ketentuan lebih lanjut mengenai sertifikasi pendidik sebagaimana dimaksud pada ayat (2) dan ayat (3) diatur dengan Peraturan Pemerintah.
 
 Pasal 12
