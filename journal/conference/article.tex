@@ -1,0 +1,233 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+% Draft watermark: comment out the next three lines for the final version
+\usepackage{eso-pic}
+\AddToShipoutPictureBG{\AtPageCenter{\makebox(0,0){\rotatebox{55}{\scalebox{10}{\textcolor[gray]{0.88}{\textsf{DRAFT}}}}}}}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\begin{document}
+
+\title{Compliance Anomaly Detection in Higher Education Academic Data Using Rule-Based and Machine Learning Methods}
+
+\author{\parbox{\textwidth}{\centering
+\parbox[t]{0.45\textwidth}{\centering
+{\normalsize 1\textsuperscript{st} Benny Leonard Enrico Panggabean}\\
+{\small \textit{Informatics Engineering, Faculty of Engineering} \\
+\textit{Universitas Hasanuddin}\\
+Makassar, Indonesia \\
+bendo01@gmail.com \\
+ORCID: 0000-0001-6805-6463}}\hfill
+\parbox[t]{0.45\textwidth}{\centering
+{\normalsize 2\textsuperscript{nd} Amil Ahmad Ilham}\\
+{\small \textit{Informatics Engineering, Faculty of Engineering} \\
+\textit{Universitas Hasanuddin}\\
+Makassar, Indonesia \\
+amil@unhas.ac.id \\
+ORCID: 0000-0002-4755-6415}}\\[2ex]
+\parbox[t]{0.45\textwidth}{\centering
+{\normalsize 3\textsuperscript{rd} Novy N. R. A. Mokobombang}\\
+{\small \textit{Informatics Engineering, Faculty of Engineering} \\
+\textit{Universitas Hasanuddin}\\
+Makassar, Indonesia \\
+novy@unhas.ac.id \\
+ORCID: 0000-0001-5706-939X}}
+}}
+
+\maketitle
+
+\begin{abstract}
+Higher education institutions in Indonesia report their academic data to the national database PDDIKTI, and records that violate reporting rules weaken quality assurance and accreditation. This paper studies the detection of compliance anomalies in PDDIKTI data alone, without any institutional source system. Explicit validation rules taken from the Feeder PDDIKTI user guide are combined with three unsupervised outlier detectors: Isolation Forest, Local Outlier Factor, and an autoencoder. The data come from one institution with three study programs and cover 15 semesters, including 3,948 student-semester records, 348 courses, and 1,636 lecturer teaching activities. Because the data already satisfy the Feeder validation, anomalies are injected into a copy of the data, and detection is evaluated over 10 random injections. Rules detect explicit violations exactly but miss records that satisfy every threshold. The outlier detectors recover part of these records, and their performance depends on the entity: for teaching activities, Isolation Forest and Local Outlier Factor recover about two thirds of them, while for student-semester records the best detector recovers 39 percent. A combined detector reaches an area under the ROC curve of 0.982 for student-semester records. The results indicate that rule-based and machine learning detection are complementary for compliance checking of academic data.
+\end{abstract}
+
+\begin{IEEEkeywords}
+anomaly detection, regulatory compliance, higher education, PDDIKTI, outlier detection, data quality
+\end{IEEEkeywords}
+
+\section{Introduction}
+Higher education institutions in Indonesia are required to implement internal quality assurance and to report their academic data to the national higher education database, PDDIKTI \cite{permendikbudristek39_2025,permendikbudristek53_2023}. Institutions submit these data through the Feeder application, which applies a set of validation rules before synchronization \cite{feeder_guide}. The accuracy of the reported data affects accreditation, performance monitoring, and public accountability.
+
+Rule-based validation catches violations that can be written down, such as a grade point average above 4.0 or a semester credit load above 24. It cannot catch records that satisfy every threshold but are unusual in combination, and it requires a new rule for every new type of error. Unsupervised outlier detection can complement rules because it needs no labeled violations, but its behavior on academic reporting data has received little systematic study.
+
+This paper evaluates rule-based and machine learning detection of compliance anomalies using PDDIKTI data only. The questions are: (1) which violations can the Feeder validation rules detect, (2) how well do unsupervised detectors find records that satisfy all rules, and (3) does combining the two improve detection. The main contributions are a rule set derived from the Feeder guide and mapped to PDDIKTI attributes, an evaluation protocol based on injected anomalies, and an empirical comparison of rules, Isolation Forest, Local Outlier Factor, an autoencoder, and their combination.
+
+The rest of the paper is organized as follows. Section~\ref{sec:data} describes the data and rules, Section~\ref{sec:method} describes the methods and evaluation, Section~\ref{sec:results} presents the results, and the last section concludes.
+
+\section{Related Work}
+Outlier detection methods are commonly grouped into proximity-based, density-based, isolation-based, and reconstruction-based approaches \cite{aggarwal2017outlier}. Isolation Forest isolates a record by random splits and uses the path length as an anomaly score \cite{liu2008iforest}. Local Outlier Factor compares the local density of a record with that of its neighbors, which allows it to find outliers relative to local structure \cite{breunig2000lof}. Autoencoders learn to reconstruct typical records through a low-dimensional representation, and a large reconstruction error indicates an anomaly \cite{hinton2006reducing}. These detectors are implemented in widely used libraries \cite{scikit-learn}.
+
+In data quality management, explicit constraints and validation rules remain the standard way to enforce known requirements, and the Feeder application is an example for Indonesian higher education data \cite{feeder_guide}. Rules give exact and explainable results, but they cover only known violation types. This study therefore evaluates rules and unsupervised detectors on the same data and measures how much each contributes.
+
+\section{Data and Regulatory Rules}\label{sec:data}
+\subsection{PDDIKTI Dataset}
+The data are replicated from the Feeder PDDIKTI web service into a relational store, one table per Feeder entity. Table~\ref{tab:data} summarizes the entities used in this study.
+
+\begin{table}[htbp]
+\caption{PDDIKTI Entities and Attributes Used}
+\begin{center}
+\begin{tabular}{p{0.27\columnwidth}p{0.61\columnwidth}}
+\toprule
+\textbf{Entity} & \textbf{Attributes used} \\
+\midrule
+Student biodata & name, birth place, birth date \\
+Student education history & registration type, recognized credits, entry and exit period, entry and exit date \\
+Student transfer grades & recognized course credits, recognized grade \\
+Student semester activity & semester GPA, cumulative GPA, semester credits, total credits, status \\
+Course & total credits, lecture, practicum, field practice, and simulation credits \\
+Class & capacity, number of students, credits \\
+Lecturer teaching activity & planned and realized meetings, substance credits \\
+Study period & start and end date, number of meeting weeks, new-student target and re-registration counts \\
+\bottomrule
+\end{tabular}
+\label{tab:data}
+\end{center}
+\end{table}
+
+The extract covers one higher education institution with three study programs and 15 academic semesters (2020/1 to 2026/1). It contains 709 students (711 registrations), 3{,}948 student-semester records, 348 courses, 1{,}607 classes, 1{,}765 lecturer teaching activities by 90 lecturers, and 2{,}880 transfer-grade records.
+
+% TODO: anonymization procedure; permission/ethics statement for using the institutional PDDIKTI data.
+\subsection{Compliance Rules}
+The explicit rules are taken from the built-in validation of the Feeder PDDIKTI application \cite{feeder_guide}. Table~\ref{tab:rules} lists the rules that can be evaluated on PDDIKTI data alone.
+
+\begin{table}[htbp]
+\caption{Rule-Based Validation Criteria from the Feeder PDDIKTI Guide}
+\begin{center}
+\begin{tabular}{p{0.2\columnwidth}p{0.68\columnwidth}}
+\toprule
+\textbf{Entity} & \textbf{Violation condition} \\
+\midrule
+Student & Exit period earlier than entry period; entry date not before graduation date; age under 10 years \\
+Student & New admission with recognized credits $>0$; transfer or degree-conversion admission with recognized credits $=0$, or $>0$ without transfer grades \\
+Student activity & GPA $>4.0$; semester GPA $>4.0$; GPA $=0$ while semester GPA $>0$; total and semester credits both $0$ while enrollment exists \\
+Student activity & Semester credit load $>24$ \\
+Course & Sum of lecture, practicum, field practice, and simulation credits differs from course credits, equals $0$, or course credits $>9$ \\
+Lecturer activity & Realized meetings $>18$ \\
+Study period & Overlapping lecture periods within one study program \\
+Student & Duplicate records by name, birth date, and birth place \\
+\bottomrule
+\end{tabular}
+\label{tab:rules}
+\end{center}
+\end{table}
+
+All rules in Table~\ref{tab:rules} map to attributes available in the replicated schema, with one exception: the identity check against the civil registry (DUKCAPIL) requires an external source and is excluded. The experiments cover three entities for which the rules are directly evaluable: student-semester records, courses, and lecturer teaching activities (1{,}636 records with planned and realized meetings).
+
+% TODO: confirm which rules are applicable to the dataset; add regulation-based rules
+% (e.g., lecturer teaching load) only if the data fields exist in PDDIKTI.
+
+\section{Methodology}\label{sec:method}
+The pipeline has three stages: rule-based detection, machine learning outlier detection, and evaluation on data with injected anomalies.
+
+% TODO: replace with pipeline diagram (PDDIKTI tables -> rules / feature extraction -> detectors -> evaluation).
+%\begin{figure}[htbp]
+%\centerline{\includegraphics[width=\columnwidth]{pipeline.png}}
+%\caption{Detection pipeline.}
+%\label{fig:pipeline}
+%\end{figure}
+
+\subsection{Rule-Based Detection}
+Each rule in Table~\ref{tab:rules} is implemented as a predicate $r_k(x)\in\{0,1\}$ over a record $x$ of the relevant entity. A record is flagged when $\max_k r_k(x)=1$, and the set of violated rules is kept as the explanation. Rules are evaluated per entity table, so no join with an external system is required.
+
+\subsection{Machine Learning Outlier Detection}
+Three unsupervised detectors are applied to numeric features derived from the same tables:
+\begin{itemize}
+\item \textbf{Isolation Forest}, which isolates records by random axis-parallel splits; shorter average path length indicates a more anomalous record.
+\item \textbf{Local Outlier Factor (LOF)}, which compares the local density of a record with that of its $k$ nearest neighbors.
+\item \textbf{Autoencoder}, a dense network trained to reconstruct normal records; the reconstruction error is the anomaly score.
+\end{itemize}
+Features are built per entity from the attributes in Table~\ref{tab:data}. Student-semester records use semester GPA, cumulative GPA, semester credits, total credits, and an active-status indicator. Courses use total credits, the four credit components, and the difference between total credits and the component sum. Teaching activities use planned meetings, realized meetings, and their ratio. Features are standardized before fitting, and each detector is fitted separately for each entity on the unlabeled data. Isolation Forest uses 200 trees, LOF uses $k=20$ neighbors, and the autoencoder is a multilayer perceptron with three hidden layers (sizes $2d$, $\lfloor d/2\rfloor+1$, and $2d$ for $d$ input features) trained for at most 400 iterations; the autoencoder is implemented with scikit-learn \cite{scikit-learn}.
+
+\subsection{Evaluation with Injected Anomalies}
+The extracted data already pass the Feeder validation, so almost no rule violations remain (Section~\ref{sec:data}). Ground truth is therefore created by injecting anomalies into a copy of the data. For each rule in Table~\ref{tab:rules}, a fixed fraction of randomly chosen records is modified so that it violates that rule, for example setting cumulative GPA above 4.0, raising semester credits above 24, or setting an exit period before the entry period. Two further groups are injected to test the ML detectors beyond the explicit rules: records that stay within every rule threshold but deviate in combination (for example high credit load with very low GPA), and records with values shifted by a multiple of the attribute standard deviation. Injected records are labeled as anomalies and all others as normal. In total, 5\% of the records of each entity are injected, split equally among the injection types of that entity (student-semester: four rule-based types and one subtle type; course: three rule-based types; teaching: one rule-based and one subtle type). Subtle anomalies are defined only for student-semester and teaching records. The injection is repeated with 10 random seeds.
+
+\subsection{Experimental Setup and Evaluation Metrics}
+Rule-based detection is evaluated by precision, recall, and F1-score against the injected labels. The ML detectors are evaluated by the area under the ROC curve (AUC) and Precision@$k$, with $k$ equal to the number of injected anomalies. Results are reported as mean and standard deviation over the 10 injections. The rule-based method is scored by its binary flag. A combined detector ranks records flagged by any rule first and orders the rest by the mean percentile rank of the three ML scores; it flags a record when a rule fires or the record is among the top-$k$ ML-ranked records. The recall of the top-$k$ set is also reported separately for rule-based and subtle anomalies. Because the injected anomalies are synthetic, the results measure detection capability under controlled conditions rather than the prevalence of real violations.
+
+
+\section{Results and Discussion}\label{sec:results}
+No record in the original data violates any rule in Table~\ref{tab:rules} for the three entities studied. Table~\ref{tab:auc} reports AUC and Precision@$k$ on the data with injected anomalies, and Table~\ref{tab:subtle} reports the recall of the top-$k$ set by anomaly type.
+
+\begin{table}[htbp]
+\caption{AUC and Precision@$k$ (mean $\pm$ std over 10 injections)}
+\begin{center}
+\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{llcc}
+\toprule
+\textbf{Entity} & \textbf{Method} & \textbf{AUC} & \textbf{P@$k$} \\
+\midrule
+Student-semester & Rules & $0.904\pm0.004$ & $0.810\pm0.008$ \\
+ & Isolation Forest & $0.826\pm0.009$ & $0.237\pm0.044$ \\
+ & LOF & $0.884\pm0.015$ & $0.386\pm0.029$ \\
+ & Autoencoder & $0.888\pm0.033$ & $0.515\pm0.058$ \\
+ & Combined & $0.982\pm0.006$ & $0.823\pm0.018$ \\
+\midrule
+Course & Rules & $1.000\pm0.000$ & $1.000\pm0.000$ \\
+ & Isolation Forest & $0.983\pm0.005$ & $0.700\pm0.092$ \\
+ & LOF & $0.993\pm0.006$ & $0.906\pm0.027$ \\
+ & Autoencoder & $0.908\pm0.097$ & $0.506\pm0.173$ \\
+ & Combined & $1.000\pm0.000$ & $1.000\pm0.000$ \\
+\midrule
+Teaching & Rules & $0.750\pm0.000$ & $0.513\pm0.016$ \\
+ & Isolation Forest & $0.979\pm0.005$ & $0.818\pm0.041$ \\
+ & LOF & $0.865\pm0.037$ & $0.785\pm0.036$ \\
+ & Autoencoder & $0.872\pm0.077$ & $0.420\pm0.199$ \\
+ & Combined & $0.971\pm0.012$ & $0.820\pm0.043$ \\
+\bottomrule
+\end{tabular}
+\label{tab:auc}
+\end{center}
+\end{table}
+
+\begin{table}[htbp]
+\caption{Top-$k$ Recall by Anomaly Type (mean over 10 injections)}
+\begin{center}
+\begin{tabular}{llcc}
+\toprule
+\textbf{Entity} & \textbf{Method} & \textbf{Rule-based} & \textbf{Subtle} \\
+\midrule
+Student-semester & Rules & 1.000 & 0.049 \\
+ & Isolation Forest & 0.293 & 0.015 \\
+ & LOF & 0.405 & 0.308 \\
+ & Autoencoder & 0.547 & 0.390 \\
+ & Combined & 1.000 & 0.113 \\
+\midrule
+Teaching & Rules & 1.000 & 0.027 \\
+ & Isolation Forest & 0.976 & 0.661 \\
+ & LOF & 0.902 & 0.668 \\
+ & Autoencoder & 0.695 & 0.144 \\
+ & Combined & 1.000 & 0.639 \\
+\bottomrule
+\end{tabular}
+\label{tab:subtle}
+\end{center}
+\end{table}
+
+By construction, the rules detect every rule-based injected anomaly with precision 1.0, because those anomalies are generated from the same rules; this is not evidence of accuracy on real violations. The informative results concern the subtle anomalies, which satisfy every rule. The rules flag essentially none of them; the small nonzero rules entries in Table~\ref{tab:subtle} come from the binary rule score, whose ties are broken arbitrarily when the top-$k$ set is filled. The ML detectors recover a larger share, but the outcome depends on the entity: for teaching records, Isolation Forest and LOF recover about two thirds, while for student-semester records the best detector, the autoencoder, recovers 39\%, and Isolation Forest recovers almost none. The combined detector gives the best AUC for student-semester records (0.982) because the rules rank explicit violations first, but it recovers little of the subtle anomalies in that entity.
+
+These results indicate that rule-based and ML detection are complementary: rules provide exact, explainable detection of explicit violations, and the unsupervised detectors cover deviations that no rule describes. The conclusions are limited by the controlled setting. Subtle anomalies are defined by the authors, the data come from a single institution with three study programs, and the course entity has only 348 records, which explains the large variance of the autoencoder. Validation on naturally occurring violations remains future work.
+
+\section{Conclusion}
+This paper evaluated rule-based and machine learning detection of compliance anomalies on PDDIKTI data using rules from the Feeder validation guide and injected anomalies. Rules detect explicit violations exactly but miss deviations that satisfy all thresholds, while Isolation Forest, LOF, and an autoencoder recover part of those deviations to an extent that depends on the entity. Future work includes validation on naturally occurring violations, additional institutions, and the remaining entities such as enrollment history and study periods.
+
+\section*{Acknowledgment}
+% TODO or remove
+
+\begin{thebibliography}{00}
+\bibitem{permendikbudristek39_2025} Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi, ``Peraturan Menteri Pendidikan, Kebudayaan, Riset, dan Teknologi Nomor 39 Tahun 2025 tentang Penjaminan Mutu Pendidikan Tinggi,'' 2025.
+\bibitem{permendikbudristek53_2023} Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi, ``Peraturan Menteri Pendidikan, Kebudayaan, Riset, dan Teknologi Nomor 53 Tahun 2023 tentang Penjaminan Mutu Pendidikan Tinggi,'' 2023.
+\bibitem{feeder_guide} Kementerian Pendidikan dan Kebudayaan, ``User guide UI/UX Feeder PDDIKTI, version 4.0,'' Direktorat Jenderal Pendidikan Tinggi, Dec. 2020.
+\bibitem{aggarwal2017outlier} C. C. Aggarwal, \textit{Outlier Analysis}, 2nd ed. Cham, Switzerland: Springer, 2017.
+\bibitem{liu2008iforest} F. T. Liu, K. M. Ting, and Z.-H. Zhou, ``Isolation forest,'' in \textit{Proc. 8th IEEE Int. Conf. Data Mining (ICDM)}, 2008, pp. 413--422.
+\bibitem{breunig2000lof} M. M. Breunig, H.-P. Kriegel, R. T. Ng, and J. Sander, ``LOF: Identifying density-based local outliers,'' in \textit{Proc. ACM SIGMOD Int. Conf. Management of Data}, 2000, pp. 93--104.
+\bibitem{hinton2006reducing} G. E. Hinton and R. R. Salakhutdinov, ``Reducing the dimensionality of data with neural networks,'' \textit{Science}, vol. 313, no. 5786, pp. 504--507, 2006.
+\bibitem{scikit-learn} F. Pedregosa \textit{et al.}, ``Scikit-learn: Machine learning in Python,'' \textit{J. Mach. Learn. Res.}, vol. 12, pp. 2825--2830, 2011.
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,14 @@
+{
+  "records": {
+    "student_semester": 3948,
+    "course": 348,
+    "teaching": 1636
+  },
+  "violations_original": {
+    "student_semester": 0,
+    "course": 0,
+    "teaching": 0
+  },
+  "seeds": 10,
+  "frac": 0.05
+}
