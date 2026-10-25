@@ -279,6 +279,30 @@ Teaching & Rules & 1.000 & 0.027 \\
 \end{center}
 \end{table}
 
+\begin{table}[htbp]
+\caption{Precision, Recall, and F1-score of Flag-Based Detection (mean $\pm$ std over 10 injections)}
+\begin{center}
+\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{llccc}
+\toprule
+\textbf{Entity} & \textbf{Method} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} \\
+\midrule
+Student-semester & Rules & $1.000\pm0.000$ & $0.808\pm0.007$ & $0.894\pm0.004$ \\
+ & Combined & $0.638\pm0.038$ & $0.868\pm0.033$ & $0.735\pm0.036$ \\
+\midrule
+Course & Rules & $1.000\pm0.000$ & $1.000\pm0.000$ & $1.000\pm0.000$ \\
+ & Combined & $0.811\pm0.084$ & $1.000\pm0.000$ & $0.894\pm0.051$ \\
+\midrule
+Teaching & Rules & $1.000\pm0.000$ & $0.500\pm0.000$ & $0.667\pm0.000$ \\
+ & Combined & $0.410\pm0.146$ & $0.854\pm0.058$ & $0.536\pm0.121$ \\
+\bottomrule
+\end{tabular}
+\label{tab:prf}
+\end{center}
+\end{table}
+
+Table~\ref{tab:prf} reports precision, recall, and F1-score for the two methods that produce a binary flag. The rules never raise a false alarm (precision 1.0), but their recall is limited by the share of subtle anomalies: 0.808 for student-semester records and 0.500 for teaching records. The combined detector raises recall to 0.868 and 0.854 for these entities, at the cost of precision (0.638 and 0.410), because it also flags the top-$k$ ML-ranked records, a share of which are normal (about one third for student-semester records and about three fifths for teaching records). On courses, where every injected anomaly breaks a rule, the combined detector keeps recall at 1.000 but its precision (0.811) is below that of the rules alone.
+
 By construction, the rules detect every rule-based injected anomaly with precision 1.0, because those anomalies are generated from the same rules; this is not evidence of accuracy on real violations. The informative results concern the subtle anomalies, which satisfy every rule. The rules flag essentially none of them; the small nonzero rules entries in Table~\ref{tab:subtle} come from the binary rule score, whose ties are broken arbitrarily when the top-$k$ set is filled. The ML detectors recover a larger share, but the outcome depends on the entity: for teaching records, Isolation Forest and LOF recover about two thirds, while for student-semester records the best detector, the autoencoder, recovers 39\%, and Isolation Forest recovers almost none. The combined detector gives the best AUC for student-semester records (0.982) because the rules rank explicit violations first, but it recovers little of the subtle anomalies in that entity.
 
 \subsection{Analysis by Entity}
@@ -294,13 +318,13 @@ These results indicate that rule-based and ML detection are complementary: rules
 The results suggest a division of labor in a compliance workflow. Rules should remain the first line of defense because they are exact, cheap, and cite the governing criterion, which is what an auditor needs to act on a finding. The unsupervised detectors are best used as a second stage that ranks the records no rule describes, so that reviewers inspect the most unusual records first instead of the whole table. Because the detectors disagree on which subtle records are unusual, especially for student-semester data, showing the individual detector scores next to the combined score gives the reviewer more information than a single number. Detection can also be run per semester so that each record is compared with its contemporaries and not with the whole history, which avoids flagging records only because academic conditions changed over time.
 
 \subsection{Threats to Validity}
-Three limitations affect how far the results can be generalized. First, the anomalies are synthetic: rule-based injections are generated from the rules themselves, and subtle anomalies reflect the authors' assumptions about what an inconsistent record looks like, so the numbers describe detection capability and not the prevalence of real violations. Second, the data come from a single institution with three study programs, and the course entity has only 348 records, which makes the autoencoder unstable. Third, the detectors use default or lightly tuned hyperparameters; no search over the number of neighbors, the number of trees, or the network size was performed, and a different choice could change the ranking among detectors. Averaging over 10 random injections reduces the effect of a single draw, but it does not remove these biases.
+Three limitations affect how far the results can be generalized. First, the anomalies are synthetic: rule-based injections are generated from the rules themselves, and subtle anomalies reflect the authors' assumptions about what an inconsistent record looks like, so the numbers describe detection capability and not the prevalence of real violations. Second, the data come from a single institution with three study programs, and the course entity has only 348 records, which makes the autoencoder unstable. Third, the detectors use default or lightly tuned hyperparameters; no search over the number of neighbors, the number of trees, or the network size was performed, and a different choice could change the ranking among detectors. In the teaching data, 339 of the 1{,}636 original records (20.7\%) already have zero realized meetings, and the injected subtle values (at most 3 realized meetings) overlap with them; in addition, 25 of the 410 subtle injections (6.1\%) left the original value unchanged. Both effects limit the recall that any detector can reach on subtle teaching anomalies. Averaging over 10 random injections reduces the effect of a single draw, but it does not remove these biases.
 
 \section{Conclusion}
 This paper evaluated rule-based and machine learning detection of compliance anomalies on PDDIKTI data using rules from the Feeder validation guide and injected anomalies. Rules detect explicit violations exactly but miss deviations that satisfy all thresholds, while Isolation Forest, LOF, and an autoencoder recover part of those deviations to an extent that depends on the entity. The combined detector gives the best overall ranking when explicit violations dominate, while the choice of unsupervised detector matters most for subtle anomalies. Future work includes validation on naturally occurring violations and additional institutions, the remaining entities such as enrollment history and study periods, per-semester scoring with weighted voting tuned on labeled cases, and linking each flagged record to the text of the regulation it may violate so that findings are explained to auditors in natural language, for example with retrieval-augmented generation \cite{gao2023rag}.
 
 \section*{Acknowledgment}
-% TODO or remove
+The authors thank Institut Teknologi dan Kesehatan Tri Tunas Nasional for providing the PDDIKTI data used in this study. This research received no external funding.
 
 \begin{thebibliography}{00}
 \bibitem{permendikbudristek53_2023} Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi, ``Peraturan Menteri Pendidikan, Kebudayaan, Riset, dan Teknologi Nomor 53 Tahun 2023 tentang Penjaminan Mutu Pendidikan Tinggi,'' Berita Negara Republik Indonesia Tahun 2023 Nomor 638, Aug. 2023 (revoked by \cite{permendiktisaintek39_2025}).
