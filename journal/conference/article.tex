@@ -129,7 +129,7 @@ Student & Duplicate records by name, birth date, and birth place \\
 \end{center}
 \end{table}
 
-All rules in Table~\ref{tab:rules} map to attributes available in the replicated schema, with one exception: the identity check against the civil registry (DUKCAPIL) requires an external source and is excluded. The experiments cover three entities for which the rules are directly evaluable: student-semester records, courses, and lecturer teaching activities (1{,}636 records with planned and realized meetings).
+All rules in Table~\ref{tab:rules} map to attributes available in the replicated schema. Four further validations in the Feeder guide are excluded. The identity check against the civil registry (DUKCAPIL) requires an external source, because population data are administered by the civil registration authority under the population administration law \cite{uu24_2013} and are not part of the PDDIKTI replica. The check that a student's gender is consistent is not specified in the guide, so its reference value cannot be determined from PDDIKTI data alone. The check for students without a registration is an existence check across tables and not a check on the values of a record, and the check for study programs missing from the period settings concerns institutional configuration and not individual records; both fall outside the record-level entities studied here. The experiments cover three entities for which the rules are directly evaluable: student-semester records, courses, and lecturer teaching activities (1{,}636 records with planned and realized meetings).
 
 % TODO: confirm which rules are applicable to the dataset; add regulation-based rules
 % (e.g., lecturer teaching load) only if the data fields exist in PDDIKTI.
@@ -305,6 +305,7 @@ This paper evaluated rule-based and machine learning detection of compliance ano
 \begin{thebibliography}{00}
 \bibitem{permendikbudristek53_2023} Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi, ``Peraturan Menteri Pendidikan, Kebudayaan, Riset, dan Teknologi Nomor 53 Tahun 2023 tentang Penjaminan Mutu Pendidikan Tinggi,'' Berita Negara Republik Indonesia Tahun 2023 Nomor 638, Aug. 2023 (revoked by \cite{permendiktisaintek39_2025}).
 \bibitem{permendiktisaintek39_2025} Kementerian Pendidikan Tinggi, Sains, dan Teknologi, ``Peraturan Menteri Pendidikan Tinggi, Sains, dan Teknologi Nomor 39 Tahun 2025 tentang Penjaminan Mutu Pendidikan Tinggi,'' Berita Negara Republik Indonesia Tahun 2025, promulgated 25 Sep. 2025.
+\bibitem{uu24_2013} Republik Indonesia, ``Undang-Undang Nomor 24 Tahun 2013 tentang Perubahan atas Undang-Undang Nomor 23 Tahun 2006 tentang Administrasi Kependudukan,'' Lembaran Negara Republik Indonesia Tahun 2013 Nomor 232, Dec. 2013.
 \bibitem{feeder_guide} Kementerian Pendidikan dan Kebudayaan, ``User guide UI/UX Feeder PDDIKTI, version 4.0,'' Direktorat Jenderal Pendidikan Tinggi, Dec. 2020.
 \bibitem{liu2008iforest} F. T. Liu, K. M. Ting, and Z.-H. Zhou, ``Isolation forest,'' in \textit{Proc. 8th IEEE Int. Conf. Data Mining (ICDM)}, 2008, pp. 413--422.
 \bibitem{breunig2000lof} M. M. Breunig, H.-P. Kriegel, R. T. Ng, and J. Sander, ``LOF: Identifying density-based local outliers,'' in \textit{Proc. ACM SIGMOD Int. Conf. Management of Data}, 2000, pp. 93--104.
