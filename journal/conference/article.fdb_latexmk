@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1792921951.80534 "article.tex" "article.pdf" "article" 1792921953.99586 0
+["pdflatex"] 1792922363.2408 "article.tex" "article.pdf" "article" 1792922365.55739 0
   "/usr/share/texmf-dist/fonts/enc/dvips/base/8r.enc" 1775415801 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texmf-dist/fonts/map/fontname/texfonts.map" 1775415801 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texmf-dist/fonts/tfm/adobe/helvetic/phvr7t.tfm" 1775415801 2520 53e01eef820ca829e42c1333c3fd02b9 ""
@@ -152,8 +152,8 @@
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1789214508 5385779 47c0c393a77fd4a098bacfd57d66b88a ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1789214372 2328189 3452438f9de7f6ac5133eb83e17f685e ""
   "IEEEtran.cls" 1792893372.88455 288304 b67b6fc6c2abb39f9b461923f5199343 ""
-  "article.aux" 1792921953.61152 5627 cea1940eb495ba5144e5476f92a6b06d "pdflatex"
-  "article.tex" 1792921951.4933 34690 81e7812e2a43a01370b6c3ac6ee911f4 ""
+  "article.aux" 1792922365.22293 5672 e9f4d76d866e5365438d71902264365b "pdflatex"
+  "article.tex" 1792922360.87049 35588 d188629f46d3e53ddb4edbdf57b42ddd ""
   (generated)
   "article.aux"
   "article.log"
