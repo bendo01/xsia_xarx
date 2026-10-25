@@ -1,0 +1,71 @@
+@startuml "Diagram Usulan SULAN"
+    top to bottom direction
+    skinparam shadowing false
+    skinparam componentStyle rectangle
+    skinparam ArrowColor #1f4e79
+    skinparam RectangleBorderColor #1f4e79
+    skinparam RectangleBackgroundColor #eef2f7
+    skinparam DatabaseBorderColor #1f4e79
+    skinparam DatabaseBackgroundColor #eef5ff
+    skinparam PackageBorderColor #1f4e79
+    skinparam PackageBackgroundColor #f5f9ff
+
+    title SULAN
+
+    package "Sumber Data" {
+        rectangle "Feeder DIKTI" as FEEDER
+        rectangle "Validasi Internal" as VALID
+    }
+    database "PDDIKTI" as PDDIKTI
+
+    rectangle "Preprocessing Data" as PRE
+
+    rectangle "Rule Based\n(SN-DIKTI)" as RULE #fde5c8
+    rectangle "Isolation Forest\n(Global)" as IF #cdeeea
+    rectangle "Autoencoder\n(Latent)" as AE #cdeeea
+    rectangle "Local Outlier Factor\n(Contextual)" as LOF #cdeeea
+    rectangle "Soft Voting" as VOTE #fde5c8
+
+    rectangle "Daftar Anomali" as ANOM #dff0d0
+    rectangle "Proses Embedding\nData → Vector" as EMB
+
+    package "Basis Pengetahuan Regulasi" {
+        rectangle "Dokumen Peraturan\nPerundangan Pendidikan Tinggi" as DOC
+        rectangle "Docling" as DOCLING
+        rectangle "Embedding Model" as EMBMODEL
+        database "Knowledge Base" as KB
+    }
+
+    rectangle "RAG Engine\n(LLM + Vector Search)" as RAG #dce8fa
+    rectangle "Chat Interface\n(LLM Interaction)" as CHAT #dce8fa
+    rectangle "Pengguna\n(Auditor/Dosen)" as USER
+
+    FEEDER -[hidden]right- VALID
+    FEEDER --> PDDIKTI
+    VALID --> PRE
+
+    PRE --> RULE
+    PRE --> IF
+    PRE --> AE
+    PRE --> LOF
+
+    IF --> VOTE
+    AE --> VOTE
+    LOF --> VOTE
+
+    RULE --> ANOM
+    VOTE --> ANOM
+
+    ANOM --> EMB
+    EMB --> RAG
+
+    DOC --> DOCLING
+    DOCLING --> EMBMODEL
+    EMBMODEL --> KB
+    KB --> RAG
+
+    RAG --> CHAT
+    CHAT <--> USER : Query / Response
+
+    USER ..> FEEDER : Umpan balik
+@enduml

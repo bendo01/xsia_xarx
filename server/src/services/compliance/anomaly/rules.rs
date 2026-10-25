@@ -105,7 +105,7 @@ mod tests {
 
     #[test]
     fn capacity_ignores_unset_capacity() {
-        let c = |capacity, enrolled| ClassEnrolment { class_id: Uuid::nil(), capacity, enrolled };
+        let c = |capacity, enrolled| ClassEnrolment { class_id: Uuid::nil(), capacity, enrolled, semester: None, sks: None, graded_ratio: 1.0 };
         assert_eq!(class_over_capacity(&[c(0, 50), c(40, 40), c(40, 41)]).len(), 1);
     }
 
