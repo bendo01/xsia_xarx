@@ -1,0 +1,71 @@
+@startuml "Diagram SULAN"
+    top to bottom direction
+    skinparam shadowing false
+    skinparam componentStyle rectangle
+    skinparam ArrowColor #1f4e79
+    skinparam RectangleBorderColor #1f4e79
+    skinparam RectangleBackgroundColor #eef0f5
+    skinparam DatabaseBorderColor #1f4e79
+    skinparam DatabaseBackgroundColor #eef0f5
+    skinparam ActorBorderColor #1f4e79
+    skinparam ActorBackgroundColor #eef0f5
+
+    rectangle "Sumber Data" as SRC {
+        database "Feeder DIKTI" as FEEDER
+        rectangle "Validasi Internal" as VALID
+    }
+    database "PDDIKTI" as PDDIKTI
+
+    rectangle "Preprocessing Data" as PRE
+
+    rectangle "Rule Based\n(SN-DIKTI)" as RULE #fbd9a5
+    rectangle "Isolation Forest\n(Global)" as IFOR #a8dcd1
+    rectangle "Autoencoder\n(Latent)" as AE #a8dcd1
+    rectangle "Local Outlier Factor\n(Contextual)" as LOF #a8dcd1
+    rectangle "Soft Voting" as VOTE #fbd9a5
+
+    rectangle "Daftar Anomali" as ANOM #d5e8c8
+    database "Proses Embedding\nData → Vector" as EMB
+    rectangle "RAG Engine\n(LLM + Vector Search)" as RAG #dbe6f8
+    rectangle "Chat Interface\n(LLM Interaction)" as CHAT #dbe6f8
+    actor "Pengguna\n(Auditor/Dosen)" as USER
+
+    rectangle "Pipeline Knowledge Base" as KBP {
+        rectangle "Dokumen Peraturan\nPerundangan Pendidikan\nTinggi" as DOC
+        rectangle "Docling" as DOCLING
+        rectangle "Embedding Model" as EMBMODEL
+        database "Knowledge Base" as KB
+    }
+
+    FEEDER -[hidden]down- VALID
+    SRC --> PDDIKTI
+    SRC --> PRE
+
+    PRE --> RULE
+    PRE --> IFOR
+    PRE --> AE
+    PRE --> LOF
+
+    IFOR --> VOTE
+    AE --> VOTE
+    LOF --> VOTE
+
+    RULE --> ANOM
+    VOTE --> ANOM
+
+    ANOM --> EMB
+    EMB --> RAG
+    RAG --> CHAT
+
+    DOC --> DOCLING
+    DOCLING --> EMBMODEL
+    EMBMODEL --> KB
+    KB --> RAG
+
+    CHAT <--> USER : Query / Response
+    USER ..> SRC : umpan balik
+
+    RULE -[hidden]right- IFOR
+    IFOR -[hidden]right- AE
+    AE -[hidden]right- LOF
+@enduml
