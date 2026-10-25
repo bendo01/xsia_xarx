@@ -8,6 +8,8 @@
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
 % Draft watermark: comment out the next three lines for the final version
 \usepackage{eso-pic}
 \AddToShipoutPictureBG{\AtPageCenter{\makebox(0,0){\rotatebox{55}{\scalebox{10}{\textcolor[gray]{0.88}{\textsf{DRAFT}}}}}}}
@@ -52,7 +54,9 @@ anomaly detection, regulatory compliance, higher education, PDDIKTI, outlier det
 \end{IEEEkeywords}
 
 \section{Introduction}
-Higher education institutions in Indonesia are required to implement internal quality assurance and to report their academic data to the national higher education database, PDDIKTI \cite{permendikbudristek39_2025,permendikbudristek53_2023}. Institutions submit these data through the Feeder application, which applies a set of validation rules before synchronization \cite{feeder_guide}. The accuracy of the reported data affects accreditation, performance monitoring, and public accountability.
+Higher education institutions in Indonesia are required to implement internal quality assurance and to report its data and outputs to the national higher education database, PDDIKTI, at least once per semester \cite{permendikbudristek53_2023}. The current regulation keeps PDDIKTI as the main source of data for quality assurance and makes each institution responsible for the correctness and accuracy of the data in it \cite{permendiktisaintek39_2025}. Institutions submit these data through the Feeder application, which applies a set of validation rules before synchronization \cite{feeder_guide}. The accuracy of the reported data affects accreditation, performance monitoring, and public accountability.
+
+Data quality problems in administrative systems are well documented: errors enter through manual entry, system integration, and inconsistent interpretation of definitions, and they are costly to correct after they propagate \cite{whang2023dataquality,zha2025dcai}. Studies of PDDIKTI reporting at Indonesian institutions likewise trace poor data quality to weak data quality management and have catalogued hundreds of business and data quality rules \cite{sumadi2021dq}. In national reporting, a single inconsistent record can distort ratios such as lecturer-to-student ratio or study duration, so institutions need a systematic way to find suspicious records before submission.
 
 Rule-based validation catches violations that can be written down, such as a grade point average above 4.0 or a semester credit load above 24. It cannot catch records that satisfy every threshold but are unusual in combination, and it requires a new rule for every new type of error. Unsupervised outlier detection can complement rules because it needs no labeled violations, but its behavior on academic reporting data has received little systematic study.
 
@@ -61,9 +65,17 @@ This paper evaluates rule-based and machine learning detection of compliance ano
 The rest of the paper is organized as follows. Section~\ref{sec:data} describes the data and rules, Section~\ref{sec:method} describes the methods and evaluation, Section~\ref{sec:results} presents the results, and the last section concludes.
 
 \section{Related Work}
-Outlier detection methods are commonly grouped into proximity-based, density-based, isolation-based, and reconstruction-based approaches \cite{aggarwal2017outlier}. Isolation Forest isolates a record by random splits and uses the path length as an anomaly score \cite{liu2008iforest}. Local Outlier Factor compares the local density of a record with that of its neighbors, which allows it to find outliers relative to local structure \cite{breunig2000lof}. Autoencoders learn to reconstruct typical records through a low-dimensional representation, and a large reconstruction error indicates an anomaly \cite{hinton2006reducing}. These detectors are implemented in widely used libraries \cite{scikit-learn}.
+\subsection{Outlier Detection}
+Anomaly detection has been surveyed extensively, including deep approaches \cite{pang2021deep} and a unified view of deep and shallow methods \cite{ruff2021unifying}. Methods are commonly grouped into density-based, isolation-based, and reconstruction-based approaches. Isolation Forest isolates a record by random splits and uses the path length as an anomaly score \cite{liu2008iforest}; Extended Isolation Forest replaces the axis-parallel splits with random hyperplanes to remove the bias this creates in the scores \cite{hariri2021eif}. Local Outlier Factor compares the local density of a record with that of its neighbors, which allows it to find outliers relative to local structure \cite{breunig2000lof}. Autoencoders learn to reconstruct typical records through a low-dimensional representation, and a large reconstruction error indicates an anomaly \cite{pang2021deep,ruff2021unifying}. These detectors are available in widely used libraries \cite{scikit-learn,chen2024pyod2}.
 
-In data quality management, explicit constraints and validation rules remain the standard way to enforce known requirements, and the Feeder application is an example for Indonesian higher education data \cite{feeder_guide}. Rules give exact and explainable results, but they cover only known violation types. This study therefore evaluates rules and unsupervised detectors on the same data and measures how much each contributes.
+\subsection{Benchmarks and Ensembles}
+Large benchmarks on tabular data show that no unsupervised detector dominates: in the ADBench study of 30 algorithms on 57 datasets, no unsupervised algorithm statistically outperformed the others \cite{han2022adbench}. A recent re-evaluation of classical and deep detectors, including Isolation Forest and autoencoders, revisits whether tree-based methods can match deep ones \cite{mehta2024benchmark}, and interpretable tabular detectors have been proposed for settings where an auditor must understand a flag \cite{chang2023diad}. This variability motivates ensembles. Evaluations of heterogeneous unsupervised ensembles study how the normalization of detector scores affects the combination \cite{kluttermann2023ensembles}, and recent ensemble methods adjust each score using the scores of neighboring records \cite{yang2024regional}. The combination in this paper uses percentile ranks, which makes the three score scales comparable before averaging.
+
+\subsection{Data Quality and Rule-Based Checking}
+Data quality problems are a central obstacle for data-driven systems, and recent work treats data quality as a central concern of data-centric AI \cite{whang2023dataquality,zha2025dcai}. In Indonesian higher education, explicit validation rules remain the standard tool: the Feeder application applies built-in checks \cite{feeder_guide}, and an analysis at a statistics polytechnic derived 243 data quality rules and an assessment matrix for data reported to PDDIKTI \cite{sumadi2021dq}. Rules give exact and explainable results, but they cover only known violation types.
+
+\subsection{Anomaly Detection in Educational Data}
+Anomaly detection has been applied to aberrant student responses in intelligent tutoring systems with several unsupervised methods \cite{gorgun2022aberrant}, and distance-based measures have been used to detect sudden changes in educational records \cite{smith2021event}. To our knowledge, work that treats compliance of institutional reporting data with higher education regulations as an anomaly detection problem is scarce. This study therefore evaluates rules and unsupervised detectors on the same data and measures how much each contributes.
 
 \section{Data and Regulatory Rules}\label{sec:data}
 \subsection{PDDIKTI Dataset}
@@ -125,31 +137,89 @@ All rules in Table~\ref{tab:rules} map to attributes available in the replicated
 \section{Methodology}\label{sec:method}
 The pipeline has three stages: rule-based detection, machine learning outlier detection, and evaluation on data with injected anomalies.
 
-% TODO: replace with pipeline diagram (PDDIKTI tables -> rules / feature extraction -> detectors -> evaluation).
-%\begin{figure}[htbp]
-%\centerline{\includegraphics[width=\columnwidth]{pipeline.png}}
-%\caption{Detection pipeline.}
-%\label{fig:pipeline}
-%\end{figure}
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=4mm and 5mm,
+  box/.style={draw, rounded corners=2pt, align=center, font=\scriptsize, minimum height=7mm, text width=0.27\columnwidth},
+  arr/.style={-{Latex[length=1.6mm]}, thick}]
+\node[box] (db) {PDDIKTI tables\\(replicated Feeder data)};
+\node[box, right=of db] (inj) {Anomaly injection\\(10 seeds)};
+\node[box, below=of db] (rule) {Rule-based\\detection};
+\node[box, right=of rule] (ml) {IF, LOF,\\autoencoder};
+\node[box, below=of rule] (vote) {Percentile rank\\+ soft vote};
+\node[box, right=of vote] (eval) {Evaluation\\(AUC, P@$k$, recall)};
+\draw[arr] (db) -- (inj);
+\draw[arr] (inj) -- (rule);
+\draw[arr] (inj) -- (ml);
+\draw[arr] (rule) -- (vote);
+\draw[arr] (ml) -- (vote);
+\draw[arr] (vote) -- (eval);
+\end{tikzpicture}
+\caption{Detection and evaluation pipeline. Injected anomalies are added to a copy of the replicated tables, and rules and ML detectors are scored against the injected labels.}
+\label{fig:pipeline}
+\end{figure}
 
 \subsection{Rule-Based Detection}
 Each rule in Table~\ref{tab:rules} is implemented as a predicate $r_k(x)\in\{0,1\}$ over a record $x$ of the relevant entity. A record is flagged when $\max_k r_k(x)=1$, and the set of violated rules is kept as the explanation. Rules are evaluated per entity table, so no join with an external system is required.
 
 \subsection{Machine Learning Outlier Detection}
-Three unsupervised detectors are applied to numeric features derived from the same tables:
+Three unsupervised detectors are applied to numeric features derived from the same tables (Table~\ref{tab:detectors} summarizes their characteristics):
 \begin{itemize}
 \item \textbf{Isolation Forest}, which isolates records by random axis-parallel splits; shorter average path length indicates a more anomalous record.
 \item \textbf{Local Outlier Factor (LOF)}, which compares the local density of a record with that of its $k$ nearest neighbors.
 \item \textbf{Autoencoder}, a dense network trained to reconstruct normal records; the reconstruction error is the anomaly score.
 \end{itemize}
-Features are built per entity from the attributes in Table~\ref{tab:data}. Student-semester records use semester GPA, cumulative GPA, semester credits, total credits, and an active-status indicator. Courses use total credits, the four credit components, and the difference between total credits and the component sum. Teaching activities use planned meetings, realized meetings, and their ratio. Features are standardized before fitting, and each detector is fitted separately for each entity on the unlabeled data. Isolation Forest uses 200 trees, LOF uses $k=20$ neighbors, and the autoencoder is a multilayer perceptron with three hidden layers (sizes $2d$, $\lfloor d/2\rfloor+1$, and $2d$ for $d$ input features) trained for at most 400 iterations; the autoencoder is implemented with scikit-learn \cite{scikit-learn}.
+Features are built per entity from the attributes in Table~\ref{tab:data}. Student-semester records use semester GPA, cumulative GPA, semester credits, total credits, and an active-status indicator. Courses use total credits, the four credit components, and the difference between total credits and the component sum. Teaching activities use planned meetings, realized meetings, and their ratio. Let $x\in\mathbb{R}^d$ be the feature vector of a record. Isolation Forest scores $x$ by $s_{\mathrm{IF}}(x)=2^{-E[h(x)]/c(n)}$, where $E[h(x)]$ is the mean path length over the trees and $c(n)$ the average path length of an unsuccessful search in a binary tree of $n$ points \cite{liu2008iforest}. LOF scores $x$ by the ratio of the mean local reachability density of its neighbors to its own density, so values near 1 are normal and larger values are anomalous \cite{breunig2000lof}. The autoencoder scores $x$ by the squared reconstruction error $s_{\mathrm{AE}}(x)=\lVert x-\hat{x}\rVert_2^2$. Features are standardized before fitting, and each detector is fitted separately for each entity on the unlabeled data. Isolation Forest uses 200 trees, LOF uses $k=20$ neighbors, and the autoencoder is a multilayer perceptron with three hidden layers (sizes $2d$, $\lfloor d/2\rfloor+1$, and $2d$ for $d$ input features) trained for at most 400 iterations; the autoencoder is implemented with scikit-learn \cite{scikit-learn}.
+
+\begin{table}[htbp]
+\caption{Characteristics of the Detectors Compared}
+\begin{center}
+\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{p{0.17\columnwidth}p{0.2\columnwidth}p{0.25\columnwidth}p{0.25\columnwidth}}
+\toprule
+\textbf{Detector} & \textbf{Principle} & \textbf{Suited to} & \textbf{Weakness} \\
+\midrule
+Rules & explicit predicate & known violations, exact and explainable & misses unknown types \\
+Isolation Forest & random splits, path length & isolated global outliers & weak on anomalies inside dense regions \\
+LOF & local density ratio & local deviations, clusters of different density & sensitive to $k$, $O(n^2)$ neighbor search \\
+Autoencoder & reconstruction error & unusual feature combinations & needs enough data, unstable on small tables \\
+\bottomrule
+\end{tabular}
+\label{tab:detectors}
+\end{center}
+\end{table}
 
 \subsection{Evaluation with Injected Anomalies}
 The extracted data already pass the Feeder validation, so almost no rule violations remain (Section~\ref{sec:data}). Ground truth is therefore created by injecting anomalies into a copy of the data. For each rule in Table~\ref{tab:rules}, a fixed fraction of randomly chosen records is modified so that it violates that rule, for example setting cumulative GPA above 4.0, raising semester credits above 24, or setting an exit period before the entry period. Two further groups are injected to test the ML detectors beyond the explicit rules: records that stay within every rule threshold but deviate in combination (for example high credit load with very low GPA), and records with values shifted by a multiple of the attribute standard deviation. Injected records are labeled as anomalies and all others as normal. In total, 5\% of the records of each entity are injected, split equally among the injection types of that entity (student-semester: four rule-based types and one subtle type; course: three rule-based types; teaching: one rule-based and one subtle type). Subtle anomalies are defined only for student-semester and teaching records. The injection is repeated with 10 random seeds.
 
 \subsection{Experimental Setup and Evaluation Metrics}
-Rule-based detection is evaluated by precision, recall, and F1-score against the injected labels. The ML detectors are evaluated by the area under the ROC curve (AUC) and Precision@$k$, with $k$ equal to the number of injected anomalies. Results are reported as mean and standard deviation over the 10 injections. The rule-based method is scored by its binary flag. A combined detector ranks records flagged by any rule first and orders the rest by the mean percentile rank of the three ML scores; it flags a record when a rule fires or the record is among the top-$k$ ML-ranked records. The recall of the top-$k$ set is also reported separately for rule-based and subtle anomalies. Because the injected anomalies are synthetic, the results measure detection capability under controlled conditions rather than the prevalence of real violations.
+Rule-based detection is evaluated by precision, recall, and F1-score against the injected labels. The ML detectors are evaluated by the area under the ROC curve (AUC) and Precision@$k$, with $k$ equal to the number of injected anomalies. Results are reported as mean and standard deviation over the 10 injections. The rule-based method is scored by its binary flag. To make the three ML scores comparable, each is converted to its percentile rank $\rho_m(x)\in[0,1]$ within the entity table, and the ML score of a record is the mean $\bar{\rho}(x)=\frac{1}{3}\sum_{m}\rho_m(x)$, an unweighted soft vote. A combined detector ranks records flagged by any rule first and orders the rest by the mean percentile rank of the three ML scores; it flags a record when a rule fires or the record is among the top-$k$ ML-ranked records. Precision@$k$ is $|\{\text{top-}k\}\cap A|/k$ for the set $A$ of injected anomalies, and the AUC is the probability that a randomly chosen anomaly receives a higher score than a randomly chosen normal record, the metric also used in recent benchmarks \cite{han2022adbench}. The recall of the top-$k$ set is also reported separately for rule-based and subtle anomalies. Because the injected anomalies are synthetic, the results measure detection capability under controlled conditions rather than the prevalence of real violations.
 
+
+\begin{table}[htbp]
+\caption{Experimental Settings}
+\begin{center}
+\begin{tabular}{p{0.34\columnwidth}p{0.54\columnwidth}}
+\toprule
+\textbf{Item} & \textbf{Setting} \\
+\midrule
+Isolation Forest & 200 trees \\
+LOF & $k=20$ neighbors \\
+Autoencoder & MLP, layers $2d$, $\lfloor d/2\rfloor+1$, $2d$; at most 400 iterations \\
+Preprocessing & standardization per entity table \\
+Score combination & mean percentile rank of the three ML scores \\
+Injection rate & 5\% of records per entity, split equally among injection types \\
+Repetitions & 10 random injections \\
+Reported metrics & precision, recall, F1 (rules); AUC, Precision@$k$, top-$k$ recall (ML, combined) \\
+\bottomrule
+\end{tabular}
+\label{tab:settings}
+\end{center}
+\end{table}
+
+\subsection{Explainability of Findings}
+A flagged record is only useful to an auditor if the reason is visible. For rule-based detections the explanation is the set of violated rules, which refers directly to a criterion in Table~\ref{tab:rules}. For ML detections no rule exists, so the explanation is the feature vector of the record together with the three individual scores and their percentile ranks. A reviewer can then see, for example, that a record is unusual for the autoencoder but not for Isolation Forest, which usually points to an unusual combination of values rather than one extreme value. This distinction is useful because it tells the reviewer whether to look for a single wrong field or for an inconsistency between fields.
 
 \section{Results and Discussion}\label{sec:results}
 No record in the original data violates any rule in Table~\ref{tab:rules} for the three entities studied. Table~\ref{tab:auc} reports AUC and Precision@$k$ on the data with injected anomalies, and Table~\ref{tab:subtle} reports the recall of the top-$k$ set by anomaly type.
@@ -211,23 +281,49 @@ Teaching & Rules & 1.000 & 0.027 \\
 
 By construction, the rules detect every rule-based injected anomaly with precision 1.0, because those anomalies are generated from the same rules; this is not evidence of accuracy on real violations. The informative results concern the subtle anomalies, which satisfy every rule. The rules flag essentially none of them; the small nonzero rules entries in Table~\ref{tab:subtle} come from the binary rule score, whose ties are broken arbitrarily when the top-$k$ set is filled. The ML detectors recover a larger share, but the outcome depends on the entity: for teaching records, Isolation Forest and LOF recover about two thirds, while for student-semester records the best detector, the autoencoder, recovers 39\%, and Isolation Forest recovers almost none. The combined detector gives the best AUC for student-semester records (0.982) because the rules rank explicit violations first, but it recovers little of the subtle anomalies in that entity.
 
+\subsection{Analysis by Entity}
+\textit{Student-semester records.} The rules reach an AUC of 0.904 because they rank the rule-based injections (four fifths of the injected anomalies) perfectly, while the subtle fifth is tied with the normal records, which gives $0.8+0.2\times0.5=0.9$. Among the ML detectors the autoencoder is the best on this entity (AUC 0.888, Precision@$k$ 0.515), followed by LOF (0.884) and Isolation Forest (0.826). Isolation Forest recovers only 1.5\% of the subtle anomalies. A plausible reason is that a subtle record, such as a high credit load with a low GPA, has ordinary values on each single attribute, so random axis-parallel splits isolate it no faster than normal records; detectors that look at the joint structure do better. The combined detector raises the AUC to 0.982 because the rule flags push explicit violations to the top and the ML ranks order the rest.
+
+\textit{Courses.} Rules, and therefore the combined detector, are perfect on this entity because all injected anomalies are rule-based and each violates an arithmetic condition on the credit components. LOF is the strongest ML detector (AUC 0.993), and the autoencoder shows a large standard deviation (0.097) that is consistent with the small table of 348 records. This entity illustrates that a rule written for a known arithmetic constraint is hard to improve on, and that ML adds little when the violated constraint is already encoded.
+
+\textit{Teaching activities.} This is the entity where the ML detectors matter most. The rules reach an AUC of 0.750, but Isolation Forest reaches 0.979 and the combined detector 0.971. Isolation Forest and LOF recover about two thirds of the subtle anomalies (0.661 and 0.668), whereas the autoencoder recovers 14\%. The ratio of realized to planned meetings is likely a strong low-dimensional signal, which would suit isolation- and density-based detectors better than a reconstruction model with few input features, although this explanation was not tested. The combined detector is slightly below Isolation Forest in AUC here, which shows that an unweighted vote can be dragged down by a weaker member; weights tuned on labeled cases are a natural extension.
+
 These results indicate that rule-based and ML detection are complementary: rules provide exact, explainable detection of explicit violations, and the unsupervised detectors cover deviations that no rule describes. The conclusions are limited by the controlled setting. Subtle anomalies are defined by the authors, the data come from a single institution with three study programs, and the course entity has only 348 records, which explains the large variance of the autoencoder. Validation on naturally occurring violations remains future work.
 
+\subsection{Practical Implications}
+The results suggest a division of labor in a compliance workflow. Rules should remain the first line of defense because they are exact, cheap, and cite the governing criterion, which is what an auditor needs to act on a finding. The unsupervised detectors are best used as a second stage that ranks the records no rule describes, so that reviewers inspect the most unusual records first instead of the whole table. Because the detectors disagree on which subtle records are unusual, especially for student-semester data, showing the individual detector scores next to the combined score gives the reviewer more information than a single number. Detection can also be run per semester so that each record is compared with its contemporaries and not with the whole history, which avoids flagging records only because academic conditions changed over time.
+
+\subsection{Threats to Validity}
+Three limitations affect how far the results can be generalized. First, the anomalies are synthetic: rule-based injections are generated from the rules themselves, and subtle anomalies reflect the authors' assumptions about what an inconsistent record looks like, so the numbers describe detection capability and not the prevalence of real violations. Second, the data come from a single institution with three study programs, and the course entity has only 348 records, which makes the autoencoder unstable. Third, the detectors use default or lightly tuned hyperparameters; no search over the number of neighbors, the number of trees, or the network size was performed, and a different choice could change the ranking among detectors. Averaging over 10 random injections reduces the effect of a single draw, but it does not remove these biases.
+
 \section{Conclusion}
-This paper evaluated rule-based and machine learning detection of compliance anomalies on PDDIKTI data using rules from the Feeder validation guide and injected anomalies. Rules detect explicit violations exactly but miss deviations that satisfy all thresholds, while Isolation Forest, LOF, and an autoencoder recover part of those deviations to an extent that depends on the entity. Future work includes validation on naturally occurring violations, additional institutions, and the remaining entities such as enrollment history and study periods.
+This paper evaluated rule-based and machine learning detection of compliance anomalies on PDDIKTI data using rules from the Feeder validation guide and injected anomalies. Rules detect explicit violations exactly but miss deviations that satisfy all thresholds, while Isolation Forest, LOF, and an autoencoder recover part of those deviations to an extent that depends on the entity. The combined detector gives the best overall ranking when explicit violations dominate, while the choice of unsupervised detector matters most for subtle anomalies. Future work includes validation on naturally occurring violations and additional institutions, the remaining entities such as enrollment history and study periods, per-semester scoring with weighted voting tuned on labeled cases, and linking each flagged record to the text of the regulation it may violate so that findings are explained to auditors in natural language, for example with retrieval-augmented generation \cite{gao2023rag}.
 
 \section*{Acknowledgment}
 % TODO or remove
 
 \begin{thebibliography}{00}
-\bibitem{permendikbudristek39_2025} Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi, ``Peraturan Menteri Pendidikan, Kebudayaan, Riset, dan Teknologi Nomor 39 Tahun 2025 tentang Penjaminan Mutu Pendidikan Tinggi,'' 2025.
-\bibitem{permendikbudristek53_2023} Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi, ``Peraturan Menteri Pendidikan, Kebudayaan, Riset, dan Teknologi Nomor 53 Tahun 2023 tentang Penjaminan Mutu Pendidikan Tinggi,'' 2023.
+\bibitem{permendikbudristek53_2023} Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi, ``Peraturan Menteri Pendidikan, Kebudayaan, Riset, dan Teknologi Nomor 53 Tahun 2023 tentang Penjaminan Mutu Pendidikan Tinggi,'' Berita Negara Republik Indonesia Tahun 2023 Nomor 638, Aug. 2023 (revoked by \cite{permendiktisaintek39_2025}).
+\bibitem{permendiktisaintek39_2025} Kementerian Pendidikan Tinggi, Sains, dan Teknologi, ``Peraturan Menteri Pendidikan Tinggi, Sains, dan Teknologi Nomor 39 Tahun 2025 tentang Penjaminan Mutu Pendidikan Tinggi,'' Berita Negara Republik Indonesia Tahun 2025, promulgated 25 Sep. 2025.
 \bibitem{feeder_guide} Kementerian Pendidikan dan Kebudayaan, ``User guide UI/UX Feeder PDDIKTI, version 4.0,'' Direktorat Jenderal Pendidikan Tinggi, Dec. 2020.
-\bibitem{aggarwal2017outlier} C. C. Aggarwal, \textit{Outlier Analysis}, 2nd ed. Cham, Switzerland: Springer, 2017.
 \bibitem{liu2008iforest} F. T. Liu, K. M. Ting, and Z.-H. Zhou, ``Isolation forest,'' in \textit{Proc. 8th IEEE Int. Conf. Data Mining (ICDM)}, 2008, pp. 413--422.
 \bibitem{breunig2000lof} M. M. Breunig, H.-P. Kriegel, R. T. Ng, and J. Sander, ``LOF: Identifying density-based local outliers,'' in \textit{Proc. ACM SIGMOD Int. Conf. Management of Data}, 2000, pp. 93--104.
-\bibitem{hinton2006reducing} G. E. Hinton and R. R. Salakhutdinov, ``Reducing the dimensionality of data with neural networks,'' \textit{Science}, vol. 313, no. 5786, pp. 504--507, 2006.
 \bibitem{scikit-learn} F. Pedregosa \textit{et al.}, ``Scikit-learn: Machine learning in Python,'' \textit{J. Mach. Learn. Res.}, vol. 12, pp. 2825--2830, 2011.
+\bibitem{pang2021deep} G. Pang, C. Shen, L. Cao, and A. van den Hengel, ``Deep learning for anomaly detection: A review,'' \textit{ACM Comput. Surv.}, vol. 54, no. 2, pp. 38:1--38:38, Mar. 2022, doi: 10.1145/3439950.
+\bibitem{ruff2021unifying} L. Ruff \textit{et al.}, ``A unifying review of deep and shallow anomaly detection,'' \textit{Proc. IEEE}, vol. 109, no. 5, pp. 756--795, 2021.
+\bibitem{hariri2021eif} S. Hariri, M. C. Kind, and R. J. Brunner, ``Extended isolation forest,'' \textit{IEEE Trans. Knowl. Data Eng.}, vol. 33, no. 4, pp. 1479--1489, Apr. 2021, doi: 10.1109/TKDE.2019.2947676.
+\bibitem{chen2024pyod2} S. Chen \textit{et al.}, ``PyOD 2: A Python library for outlier detection with LLM-powered model selection,'' arXiv:2412.12154, 2024.
+\bibitem{han2022adbench} S. Han, X. Hu, H. Huang, M. Jiang, and Y. Zhao, ``ADBench: Anomaly detection benchmark,'' in \textit{Proc. 36th Conf. Neural Information Processing Systems (NeurIPS), Datasets and Benchmarks Track}, 2022.
+\bibitem{mehta2024benchmark} S. Mehta, S. Mehendale, N. Fernandes, J. Sarkar, S. Sarkar, and S. Saha, ``Benchmarking anomaly detection algorithms: Deep learning and beyond,'' arXiv:2402.07281, 2024.
+\bibitem{chang2023diad} C.-H. Chang, J. Yoon, S. Arik, M. Udell, and T. Pfister, ``Data-efficient and interpretable tabular anomaly detection,'' in \textit{Proc. 29th ACM SIGKDD Conf. Knowledge Discovery and Data Mining (KDD)}, 2023, pp. 190--201, doi: 10.1145/3580305.3599294.
+\bibitem{kluttermann2023ensembles} S. Kl\"uttermann and E. M\"uller, ``Evaluating and comparing heterogeneous ensemble methods for unsupervised anomaly detection,'' in \textit{Proc. Int. Joint Conf. Neural Networks (IJCNN)}, 2023, pp. 1--8, doi: 10.1109/IJCNN54540.2023.10191405.
+\bibitem{yang2024regional} J. Yang, S. Rahardja, and S. Rahardja, ``Regional ensemble for improving unsupervised outlier detectors,'' \textit{IEEE Trans. Artif. Intell.}, vol. 5, no. 9, pp. 4391--4402, Sep. 2024, doi: 10.1109/TAI.2024.3381102.
+\bibitem{whang2023dataquality} S. E. Whang, Y. Roh, H. Song, and J.-G. Lee, ``Data collection and quality challenges in deep learning: A data-centric AI perspective,'' \textit{VLDB J.}, vol. 32, no. 4, pp. 791--813, 2023, doi: 10.1007/s00778-022-00775-9.
+\bibitem{zha2025dcai} D. Zha, Z. P. Bhat, K.-H. Lai, F. Yang, Z. Jiang, S. Zhong, and X. Hu, ``Data-centric artificial intelligence: A survey,'' \textit{ACM Comput. Surv.}, vol. 57, no. 5, pp. 129:1--129:42, May 2025, doi: 10.1145/3711118.
+\bibitem{sumadi2021dq} A. R. Sumadi and N. Wilantika, ``Analisis kebutuhan kualitas data dan aturan bisnis data pendidikan,'' \textit{Sistemasi: Jurnal Sistem Informasi}, vol. 10, no. 3, pp. 726--740, Sep. 2021, doi: 10.32520/stmsi.v10i3.1381.
+\bibitem{gorgun2022aberrant} G. Gorgun and O. Bulut, ``Identifying aberrant responses in intelligent tutoring systems: An application of anomaly detection methods,'' \textit{Psychol. Test Assess. Model.}, vol. 64, no. 4, pp. 359--384, Dec. 2022.
+\bibitem{smith2021event} A. D. Smith, ``Event detection in educational records: An application of big data approaches,'' \textit{Int. J. Bus. Syst. Res.}, vol. 15, no. 3, pp. 271--291, 2021, doi: 10.1504/IJBSR.2021.114936.
+\bibitem{gao2023rag} Y. Gao \textit{et al.}, ``Retrieval-augmented generation for large language models: A survey,'' arXiv:2312.10997, 2023.
 \end{thebibliography}
 
 \end{document}
