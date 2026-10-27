@@ -43,6 +43,7 @@ pub fn get_tasks() -> Vec<Box<dyn Task>> {
         Box::new(rag::rag_01_retrieve_regulations::RetrieveRegulationsTask),
         Box::new(rag::rag_03_eval_retrieval::EvalRetrievalTask),
         Box::new(rag::rag_04_detect_compliance_anomalies::DetectComplianceAnomaliesTask),
+        Box::new(rag::rag_05_generate_knowledgebase_rag::GenerateKnowledgebaseTask),
         // Feeder Dikti Downstream Master Synchronization Tasks
         Box::new(feeder_dikti::synchronize::downstream::master::upsert_00_all::SyncAllMasterData),
         Box::new(feeder_dikti::synchronize::downstream::master::upsert_01_biodata_mahasiswa_and_mahasiswa_to_individual_and_student::SyncBiodataMahasiswaToAcademicStudentMasterStudent),
