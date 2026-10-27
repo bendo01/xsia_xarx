@@ -44,12 +44,33 @@ pub async fn pdf_to_markdown(pdf: &Path, output_dir: &Path) -> Result<String> {
         .with_context(|| format!("docling produced no {}", markdown_path.display()))
 }
 
-/// Whether the `docling` CLI can be run (honours `DOCLING_BIN`)
+/// Whether the `docling` CLI is installed (honours `DOCLING_BIN`). The binary is looked up, not run:
+/// `docling --version` imports torch and takes 25 to 70 seconds, which made the check time out and the
+/// status endpoints slow.
 pub async fn is_available() -> bool {
     let docling = std::env::var("DOCLING_BIN").unwrap_or_else(|_| "docling".to_string());
-    let run = Command::new(&docling).arg("--version").kill_on_drop(true).output();
-    matches!(
-        tokio::time::timeout(std::time::Duration::from_secs(60), run).await,
-        Ok(Ok(output)) if output.status.success()
-    )
+    tokio::task::spawn_blocking(move || is_executable_on_path(&docling)).await.unwrap_or(false)
+}
+
+fn is_executable_on_path(name: &str) -> bool {
+    use std::os::unix::fs::PermissionsExt;
+
+    let is_executable = |path: &Path| path.metadata().is_ok_and(|m| m.is_file() && m.permissions().mode() & 0o111 != 0);
+    if name.contains('/') {
+        return is_executable(Path::new(name));
+    }
+    std::env::var_os("PATH").is_some_and(|paths| std::env::split_paths(&paths).any(|dir| is_executable(&dir.join(name))))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn finds_binaries_on_the_path_and_by_path() {
+        assert!(is_executable_on_path("sh"));
+        assert!(is_executable_on_path("/bin/sh"));
+        assert!(!is_executable_on_path("definitely-not-installed-xsia"));
+        assert!(!is_executable_on_path("/nonexistent/docling"));
+    }
 }
