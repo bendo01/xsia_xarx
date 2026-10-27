@@ -15,10 +15,10 @@ use tokio_stream::wrappers::UnboundedReceiverStream;
 use uuid::Uuid;
 
 use crate::controllers::ai::require_administrator;
-use crate::dtos::ai::rag::{AskRequest, FeedbackRequest, HitResponse, RagStatusResponse, RetrieveResponse};
+use crate::dtos::ai::rag::{AskRequest, FeedbackRequest, HitResponse, LlmModelStatus, RagStatusResponse, RetrieveResponse};
 use crate::middleware::auth::auth_user_id;
 use crate::models::ai::{conversation, message};
-use crate::services::ai::generation::{self, GenParams, LLM_MODEL, LlmService};
+use crate::services::ai::generation::{self, GenParams, LlmKind, LlmService};
 use crate::services::ai::EmbeddingService;
 use crate::services::compliance::rag::answer::{DEFAULT_BODY_CHARS, build_prompt};
 use crate::services::compliance::rag::retrieve::{self as search, Options};
@@ -29,6 +29,7 @@ const MAX_QUESTION_CHARS: usize = 1000;
 /// Validated settings shared by the retrieval and answer endpoints
 struct Settings {
     question: String,
+    kind: LlmKind,
     retrieval: Options,
     params: GenParams,
 }
@@ -41,9 +42,14 @@ fn settings(payload: &AskRequest) -> Result<Settings, StatusError> {
     if question.chars().count() > MAX_QUESTION_CHARS {
         return Err(StatusError::bad_request().brief(format!("The question may have at most {MAX_QUESTION_CHARS} characters")));
     }
+    let kind = match payload.model.as_deref().filter(|m| !m.trim().is_empty()) {
+        None => LlmKind::default(),
+        Some(id) => LlmKind::parse(id).ok_or_else(|| StatusError::bad_request().brief("Unknown language model"))?,
+    };
     let defaults = GenParams::default();
     Ok(Settings {
         question,
+        kind,
         retrieval: Options {
             top_k: payload.top_k.unwrap_or(DEFAULT_TOP_K).clamp(1, 10),
             include_revoked: payload.include_revoked.unwrap_or(false),
@@ -85,15 +91,30 @@ pub async fn status(depot: &mut Depot) -> Result<Json<RagStatusResponse>, Status
         counts.iter().filter(|c| (c.regulation_status == "active") == in_force).map(|c| c.count).sum()
     };
 
-    let model = generation::model_path();
+    let models: Vec<LlmModelStatus> = LlmKind::ALL
+        .into_iter()
+        .map(|kind| {
+            let path = kind.model_path();
+            LlmModelStatus {
+                id: kind.id().to_owned(),
+                label: kind.label().to_owned(),
+                model_present: path.is_file(),
+                model_size: std::fs::metadata(&path).ok().map(|m| m.len()),
+                tokenizer_present: kind.tokenizer_path().is_file(),
+                loaded: generation::is_loaded(kind),
+            }
+        })
+        .collect();
+    let default = &models[0];
     Ok(Json(RagStatusResponse {
-        llm_model: LLM_MODEL.to_owned(),
-        llm_model_present: model.is_file(),
-        llm_model_size: std::fs::metadata(&model).ok().map(|m| m.len()),
-        tokenizer_present: generation::tokenizer_path().is_file(),
+        llm_model: default.label.clone(),
+        llm_model_present: default.model_present,
+        llm_model_size: default.model_size,
+        tokenizer_present: default.tokenizer_present,
         fast_prompt: std::env::var("CANDLE_DEQUANTIZE_ALL").is_ok_and(|v| v == "1" || v.eq_ignore_ascii_case("true")),
-        llm_loaded: generation::is_loaded(),
+        llm_loaded: default.loaded,
         embedder_present: EmbeddingService::model_dir().join("model.safetensors").exists(),
+        models,
         active_chunks: chunks(true),
         revoked_chunks: chunks(false),
     }))
@@ -146,7 +167,7 @@ pub async fn ask(req: &mut Request, depot: &mut Depot, res: &mut Response) -> Re
         .await
         .map_err(|e| StatusError::bad_request().brief(format!("Invalid request: {e}")))?;
     let s = settings(&payload)?;
-    if !generation::model_path().is_file() || !generation::tokenizer_path().is_file() {
+    if !s.kind.model_path().is_file() || !s.kind.tokenizer_path().is_file() {
         return Err(StatusError::bad_request().brief("The language model files are missing on the server"));
     }
     let user_id = auth_user_id(depot);
@@ -184,13 +205,14 @@ async fn run_ask(
         }),
     ));
 
-    let prompt = build_prompt(&s.question, &hits, DEFAULT_BODY_CHARS);
+    let kind = s.kind;
+    let prompt = build_prompt(kind, &s.question, &hits, DEFAULT_BODY_CHARS);
     let stream_tx = tx.clone();
     let params = s.params.clone();
     // Loading the model and generating are CPU bound, so they run off the async threads.
     // A closed connection makes `send` fail, which stops the generation.
     let stats = tokio::task::spawn_blocking(move || {
-        LlmService::global()?.generate(&prompt, &params, |piece| {
+        LlmService::global(kind)?.generate(&prompt, &params, |piece| {
             stream_tx.send(Event("token", json!({ "text": piece }))).is_ok()
         })
     })
@@ -213,7 +235,8 @@ async fn run_ask(
             "generation_ms": stats.generation_ms,
             "tokens_per_second": tokens_per_second,
             "finish_reason": stats.finish_reason,
-            "model": LLM_MODEL,
+            "model": kind.label(),
+            "model_id": kind.id(),
         }),
     ));
     Ok(())

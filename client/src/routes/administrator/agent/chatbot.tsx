@@ -52,6 +52,7 @@ export default function AgentChatbotPage() {
     const [rerank, setRerank] = createSignal(true);
     const [temperature, setTemperature] = createSignal(0.2);
     const [maxTokens, setMaxTokens] = createSignal(400);
+    const [modelId, setModelId] = createSignal('qwen');
 
     let abortController: AbortController | null = null;
     let scrollRef!: HTMLDivElement;
@@ -75,14 +76,18 @@ export default function AgentChatbotPage() {
         queueMicrotask(() => scrollRef?.scrollTo({ top: scrollRef.scrollHeight, behavior: 'smooth' }));
     });
 
+    // The model picked in the settings; `status().models` is missing on servers older than the model switch
+    const selectedModel = () => status()?.models?.find((m) => m.id === modelId());
+
     const modelProblem = () => {
         const s = status();
         if (!s) return null;
         if (!s.embedder_present) return t('ad.ragEmbedderMissing');
         if (s.active_chunks + s.revoked_chunks === 0) return t('ad.ragNoChunks');
         if (!retrievalOnly()) {
-            if (!s.llm_model_present) return t('ad.ragModelMissing');
-            if (!s.tokenizer_present) return t('ad.ragTokenizerMissing');
+            const m = selectedModel();
+            if (!(m?.model_present ?? s.llm_model_present)) return t('ad.ragModelMissing');
+            if (!(m?.tokenizer_present ?? s.tokenizer_present)) return t('ad.ragTokenizerMissing');
         }
         return null;
     };
@@ -120,6 +125,7 @@ export default function AgentChatbotPage() {
             rerank: rerank(),
             temperature: temperature(),
             max_new_tokens: maxTokens(),
+            model: modelId(),
             conversation_id: conversationId(),
         };
 
@@ -257,8 +263,11 @@ export default function AgentChatbotPage() {
                 <Show when={status()}>
                     <div class="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs text-neutral-600 dark:text-neutral-300">
                         <span>
-                            {t('ad.ragModel')}: <span class="font-mono">{status()!.llm_model}</span>
-                            <Show when={status()!.llm_model_size}> ({formatBytes(status()!.llm_model_size)})</Show>
+                            {t('ad.ragModel')}: <span class="font-mono">{selectedModel()?.label ?? status()!.llm_model}</span>
+                            <Show when={selectedModel()?.model_size ?? status()!.llm_model_size}>
+                                {' '}
+                                ({formatBytes(selectedModel()?.model_size ?? status()!.llm_model_size)})
+                            </Show>
                         </span>
                         <span>
                             {t('ad.ragActiveChunks')}: <span class="font-semibold">{status()!.active_chunks.toLocaleString()}</span>
@@ -267,7 +276,7 @@ export default function AgentChatbotPage() {
                             {t('ad.ragRevokedChunks')}: <span class="font-semibold">{status()!.revoked_chunks.toLocaleString()}</span>
                         </span>
                         <span class="text-neutral-500 dark:text-neutral-400">
-                            {status()!.llm_loaded ? t('ad.ragModelLoaded') : t('ad.ragModelColdStart')}
+                            {(selectedModel()?.loaded ?? status()!.llm_loaded) ? t('ad.ragModelLoaded') : t('ad.ragModelColdStart')}
                         </span>
                     </div>
                 </Show>
@@ -304,6 +313,26 @@ export default function AgentChatbotPage() {
                             </select>
                         </label>
                         <Show when={!retrievalOnly()}>
+                            <Show when={(status()?.models?.length ?? 0) > 1}>
+                                <label class="block space-y-1 text-xs">
+                                    <span class="font-medium">{t('ad.ragLanguageModel')}</span>
+                                    <select
+                                        class={selectClass}
+                                        value={modelId()}
+                                        onChange={(e) => setModelId(e.currentTarget.value)}
+                                        id="select-rag-model"
+                                    >
+                                        <For each={status()!.models}>
+                                            {(m) => (
+                                                <option value={m.id}>
+                                                    {m.id === 'gemma' ? 'Gemma 3 4B' : 'Qwen 2.5 1.5B'}
+                                                    {m.model_present && m.tokenizer_present ? '' : ' (n/a)'}
+                                                </option>
+                                            )}
+                                        </For>
+                                    </select>
+                                </label>
+                            </Show>
                             <label class="block space-y-1 text-xs">
                                 <span class="font-medium">{t('ad.ragTemperature')}</span>
                                 <select

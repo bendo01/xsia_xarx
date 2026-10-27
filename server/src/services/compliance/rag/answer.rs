@@ -2,6 +2,7 @@
 //! numbered context and to cite it, so an answer can be checked against the sources it was given.
 
 use super::Hit;
+use crate::services::ai::generation::LlmKind;
 
 /// Characters of a chunk's text put in the prompt; a CPU model slows down with every extra prompt token
 pub const DEFAULT_BODY_CHARS: usize = 800;
@@ -23,8 +24,9 @@ fn clip(text: &str, max: usize) -> String {
     format!("{}...", cut.trim_end())
 }
 
-/// Qwen ChatML prompt: system instructions, the numbered context, then the question.
-pub fn build_prompt(question: &str, hits: &[Hit], max_body_chars: usize) -> String {
+/// Chat prompt in the format of `kind` (Qwen ChatML or Gemma turns): system instructions, the numbered
+/// context, then the question.
+pub fn build_prompt(kind: LlmKind, question: &str, hits: &[Hit], max_body_chars: usize) -> String {
     let mut context = String::new();
     for (i, hit) in hits.iter().enumerate() {
         let status = if hit.status == "active" { "berlaku" } else { "DICABUT" };
@@ -38,10 +40,16 @@ pub fn build_prompt(question: &str, hits: &[Hit], max_body_chars: usize) -> Stri
     if context.is_empty() {
         context.push_str("(tidak ada konteks yang ditemukan)\n\n");
     }
-    format!(
-        "<|im_start|>system\n{SYSTEM}<|im_end|>\n<|im_start|>user\nKONTEKS:\n{context}PERTANYAAN: {}<|im_end|>\n<|im_start|>assistant\n",
-        question.trim()
-    )
+    let question = question.trim();
+    match kind {
+        LlmKind::Qwen => format!(
+            "<|im_start|>system\n{SYSTEM}<|im_end|>\n<|im_start|>user\nKONTEKS:\n{context}PERTANYAAN: {question}<|im_end|>\n<|im_start|>assistant\n"
+        ),
+        // Gemma has no system role, so the instructions open the user turn
+        LlmKind::Gemma => format!(
+            "<bos><start_of_turn>user\n{SYSTEM}\n\nKONTEKS:\n{context}PERTANYAAN: {question}<end_of_turn>\n<start_of_turn>model\n"
+        ),
+    }
 }
 
 #[cfg(test)]
@@ -67,10 +75,18 @@ mod tests {
     #[test]
     fn numbers_sources_and_marks_revoked_ones() {
         let hits = vec![hit("active", "Pasal 10", "Pasal 10\n\nDosen wajib mengajar."), hit("revoked", "Pasal 2", "Pasal 2\n\nIsi lama.")];
-        let prompt = build_prompt("Apa kewajiban dosen?", &hits, DEFAULT_BODY_CHARS);
+        let prompt = build_prompt(LlmKind::Qwen, "Apa kewajiban dosen?", &hits, DEFAULT_BODY_CHARS);
         assert!(prompt.contains("[1] PP No 37 2009, Pasal 10 (status: berlaku)\nDosen wajib mengajar."));
         assert!(prompt.contains("[2] PP No 37 2009, Pasal 2 (status: DICABUT)\nIsi lama."));
         assert!(prompt.ends_with("<|im_start|>assistant\n"));
+        assert!(prompt.contains("PERTANYAAN: Apa kewajiban dosen?"));
+    }
+
+    #[test]
+    fn gemma_prompt_uses_gemma_turns() {
+        let prompt = build_prompt(LlmKind::Gemma, "Apa kewajiban dosen?", &[hit("active", "Pasal 10", "Pasal 10\n\nDosen wajib mengajar.")], DEFAULT_BODY_CHARS);
+        assert!(prompt.starts_with("<bos><start_of_turn>user\n"));
+        assert!(prompt.ends_with("<end_of_turn>\n<start_of_turn>model\n"));
         assert!(prompt.contains("PERTANYAAN: Apa kewajiban dosen?"));
     }
 
@@ -83,7 +99,7 @@ mod tests {
 
     #[test]
     fn says_so_when_nothing_was_retrieved() {
-        assert!(build_prompt("x", &[], 100).contains("tidak ada konteks"));
+        assert!(build_prompt(LlmKind::Qwen, "x", &[], 100).contains("tidak ada konteks"));
     }
 
     /// Needs the Qwen model files; run with `cargo test -- --ignored --nocapture` to read the answers
@@ -99,10 +115,10 @@ mod tests {
              dilakukan melalui OSS dengan memenuhi komitmen yang disyaratkan, lalu Kementerian memverifikasi dokumen paling lama \
              30 (tiga puluh) hari kerja.",
         )];
-        let llm = LlmService::global().unwrap();
+        let llm = LlmService::global(LlmKind::Qwen).unwrap();
         let ask = |q: &str| {
             let stats = llm
-                .generate(&build_prompt(q, &hits, DEFAULT_BODY_CHARS), &GenParams { max_new_tokens: 120, ..Default::default() }, |_| true)
+                .generate(&build_prompt(LlmKind::Qwen, q, &hits, DEFAULT_BODY_CHARS), &GenParams { max_new_tokens: 120, ..Default::default() }, |_| true)
                 .unwrap();
             println!("Q: {q}\nA: {}\n({} prompt tokens, {} ms prompt, {} tokens, {} ms)\n", stats.text.trim(), stats.prompt_tokens, stats.prompt_ms, stats.new_tokens, stats.generation_ms);
             stats.text

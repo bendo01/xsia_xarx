@@ -15,6 +15,16 @@ const getHeaders = (): Record<string, string> => {
     return headers;
 };
 
+export interface RagLlmModel {
+    /** `qwen` or `gemma`, sent as `model` when asking */
+    id: string;
+    label: string;
+    model_present: boolean;
+    model_size?: number | null;
+    tokenizer_present: boolean;
+    loaded: boolean;
+}
+
 export interface RagStatus {
     llm_model: string;
     llm_model_present: boolean;
@@ -24,6 +34,7 @@ export interface RagStatus {
     fast_prompt: boolean;
     llm_loaded: boolean;
     embedder_present: boolean;
+    models: RagLlmModel[];
     active_chunks: number;
     revoked_chunks: number;
 }
@@ -49,6 +60,7 @@ export interface RagSettings {
     rerank: boolean;
     temperature: number;
     max_new_tokens: number;
+    model?: string;
     conversation_id?: string | null;
 }
 
@@ -71,6 +83,7 @@ export interface RagDone {
     /** `stop`, `length` or `cancelled` */
     finish_reason: string;
     model: string;
+    model_id?: string;
 }
 
 type Result<T> = { is_error: boolean; message: string; data?: T };
