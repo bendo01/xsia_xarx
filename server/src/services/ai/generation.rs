@@ -1,7 +1,8 @@
-//! Local text generation with Qwen2.5-1.5B-Instruct (GGUF, 4-bit `Q4_K_M`) on the CPU.
+//! Local text generation on the CPU with a quantized GGUF model: Qwen2.5-1.5B-Instruct or Gemma 3 4B.
 //!
-//! The model is loaded with candle's quantized Qwen2 implementation, so no GPU, Python or llama.cpp is
-//! needed. One generation runs at a time because the model keeps its KV cache between forward passes.
+//! The models are loaded with candle's quantized implementations, so no GPU, Python or llama.cpp is
+//! needed. Each model is loaded on first use and then stays in memory. One generation runs at a time per
+//! model because a model keeps its KV cache between forward passes.
 
 use std::path::PathBuf;
 use std::sync::Mutex;
@@ -11,31 +12,86 @@ use anyhow::{Context, Result, bail};
 use candle_core::quantized::gguf_file;
 use candle_core::{Device, Tensor};
 use candle_transformers::generation::{LogitsProcessor, Sampling};
-use candle_transformers::models::quantized_qwen2::ModelWeights;
+use candle_transformers::models::{quantized_gemma3, quantized_qwen2};
 use candle_transformers::utils::apply_repeat_penalty;
 use once_cell::sync::OnceCell;
 use tokenizers::Tokenizer;
 
-/// Default GGUF file, relative to the server's working directory (override with `LLM_MODEL_PATH`).
-/// Download with:
-/// `hf download Qwen/Qwen2.5-1.5B-Instruct-GGUF qwen2.5-1.5b-instruct-q4_k_m.gguf --local-dir models`
-const DEFAULT_MODEL_PATH: &str = "models/qwen2.5-1.5b-instruct-q4_k_m.gguf";
+/// The language models a question can be answered with
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum LlmKind {
+    #[default]
+    Qwen,
+    Gemma,
+}
 
-/// Folder holding Qwen's `tokenizer.json` (override with `LLM_TOKENIZER_DIR`). Download with:
-/// `hf download Qwen/Qwen2.5-1.5B-Instruct tokenizer.json --local-dir models/qwen2.5-1.5b-instruct`
-const DEFAULT_TOKENIZER_DIR: &str = "models/qwen2.5-1.5b-instruct";
+impl LlmKind {
+    pub const ALL: [LlmKind; 2] = [LlmKind::Qwen, LlmKind::Gemma];
 
-/// Recorded with every generated answer
-pub const LLM_MODEL: &str = "Qwen/Qwen2.5-1.5B-Instruct-GGUF qwen2.5-1.5b-instruct-q4_k_m.gguf";
+    /// Identifier used in requests and responses
+    pub fn id(self) -> &'static str {
+        match self {
+            Self::Qwen => "qwen",
+            Self::Gemma => "gemma",
+        }
+    }
 
-/// `<|im_end|>` and `<|endoftext|>`
-const STOP_TOKENS: [u32; 2] = [151645, 151643];
+    pub fn parse(id: &str) -> Option<Self> {
+        Self::ALL.into_iter().find(|k| k.id() == id.trim().to_ascii_lowercase())
+    }
+
+    /// Recorded with every generated answer
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::Qwen => "Qwen/Qwen2.5-1.5B-Instruct-GGUF qwen2.5-1.5b-instruct-q4_k_m.gguf",
+            Self::Gemma => "ggml-org/gemma-3-4b-it-GGUF gemma-3-4b-it-Q4_K_M.gguf",
+        }
+    }
+
+    /// GGUF file, relative to the server's working directory. Qwen: `LLM_MODEL_PATH`, Gemma: `GEMMA_MODEL_PATH`.
+    /// Download with:
+    /// `hf download Qwen/Qwen2.5-1.5B-Instruct-GGUF qwen2.5-1.5b-instruct-q4_k_m.gguf --local-dir models`
+    /// `hf download ggml-org/gemma-3-4b-it-GGUF gemma-3-4b-it-Q4_K_M.gguf --local-dir models`
+    pub fn model_path(self) -> PathBuf {
+        let (var, default) = match self {
+            Self::Qwen => ("LLM_MODEL_PATH", "models/qwen2.5-1.5b-instruct-q4_k_m.gguf"),
+            Self::Gemma => ("GEMMA_MODEL_PATH", "models/gemma-3-4b-it-Q4_K_M.gguf"),
+        };
+        PathBuf::from(std::env::var(var).unwrap_or_else(|_| default.to_owned()))
+    }
+
+    /// `tokenizer.json` of the model. Qwen: `LLM_TOKENIZER_DIR`, Gemma: `GEMMA_TOKENIZER_DIR`. Download with:
+    /// `hf download Qwen/Qwen2.5-1.5B-Instruct tokenizer.json --local-dir models/qwen2.5-1.5b-instruct`
+    /// `hf download google/gemma-3-4b-it tokenizer.json --local-dir models/gemma-3-4b-it` (gated)
+    pub fn tokenizer_path(self) -> PathBuf {
+        let (var, default) = match self {
+            Self::Qwen => ("LLM_TOKENIZER_DIR", "models/qwen2.5-1.5b-instruct"),
+            Self::Gemma => ("GEMMA_TOKENIZER_DIR", "models/gemma-3-4b-it"),
+        };
+        PathBuf::from(std::env::var(var).unwrap_or_else(|_| default.to_owned())).join("tokenizer.json")
+    }
+
+    /// Tokens that end an answer
+    fn stop_tokens(self) -> &'static [&'static str] {
+        match self {
+            Self::Qwen => &["<|im_end|>", "<|endoftext|>"],
+            Self::Gemma => &["<end_of_turn>", "<eos>"],
+        }
+    }
+
+    fn slot(self) -> &'static OnceCell<LlmService> {
+        static QWEN: OnceCell<LlmService> = OnceCell::new();
+        static GEMMA: OnceCell<LlmService> = OnceCell::new();
+        match self {
+            Self::Qwen => &QWEN,
+            Self::Gemma => &GEMMA,
+        }
+    }
+}
 
 /// Recent tokens a repetition penalty applies to
 const REPEAT_WINDOW: usize = 64;
 const REPEAT_PENALTY: f32 = 1.1;
-
-static LLM: OnceCell<LlmService> = OnceCell::new();
 
 #[derive(Clone, Debug)]
 pub struct GenParams {
@@ -62,44 +118,56 @@ pub struct GenStats {
     pub finish_reason: &'static str,
 }
 
+enum Weights {
+    Qwen(quantized_qwen2::ModelWeights),
+    Gemma(quantized_gemma3::ModelWeights),
+}
+
+impl Weights {
+    fn forward(&mut self, x: &Tensor, index_pos: usize) -> candle_core::Result<Tensor> {
+        match self {
+            Self::Qwen(m) => m.forward(x, index_pos),
+            Self::Gemma(m) => m.forward(x, index_pos),
+        }
+    }
+}
+
 pub struct LlmService {
-    model: Mutex<ModelWeights>,
+    model: Mutex<Weights>,
     tokenizer: Tokenizer,
     device: Device,
-}
-
-/// Where the model files are expected
-pub fn model_path() -> PathBuf {
-    PathBuf::from(std::env::var("LLM_MODEL_PATH").unwrap_or_else(|_| DEFAULT_MODEL_PATH.to_owned()))
-}
-
-pub fn tokenizer_path() -> PathBuf {
-    PathBuf::from(std::env::var("LLM_TOKENIZER_DIR").unwrap_or_else(|_| DEFAULT_TOKENIZER_DIR.to_owned()))
-        .join("tokenizer.json")
+    stop_tokens: Vec<u32>,
 }
 
 /// Whether the model has been loaded into memory yet (the first question loads it)
-pub fn is_loaded() -> bool {
-    LLM.get().is_some()
+pub fn is_loaded(kind: LlmKind) -> bool {
+    kind.slot().get().is_some()
 }
 
 impl LlmService {
     /// Shared instance, loaded on first use (a few seconds). Blocking: call from `spawn_blocking`.
-    pub fn global() -> Result<&'static Self> {
-        LLM.get_or_try_init(Self::load)
+    pub fn global(kind: LlmKind) -> Result<&'static Self> {
+        kind.slot().get_or_try_init(|| Self::load(kind))
     }
 
-    fn load() -> Result<Self> {
+    fn load(kind: LlmKind) -> Result<Self> {
         let device = Device::Cpu;
-        let path = model_path();
+        let path = kind.model_path();
         let mut file = std::fs::File::open(&path).with_context(|| format!("Failed to open {}", path.display()))?;
         let content = gguf_file::Content::read(&mut file).map_err(|e| e.with_path(&path))?;
-        let model = ModelWeights::from_gguf(content, &mut file, &device)?;
-        let tokenizer = Tokenizer::from_file(tokenizer_path()).map_err(anyhow::Error::msg)?;
-        Ok(Self { model: Mutex::new(model), tokenizer, device })
+        let model = match kind {
+            LlmKind::Qwen => Weights::Qwen(quantized_qwen2::ModelWeights::from_gguf(content, &mut file, &device)?),
+            LlmKind::Gemma => Weights::Gemma(quantized_gemma3::ModelWeights::from_gguf(content, &mut file, &device)?),
+        };
+        let tokenizer = Tokenizer::from_file(kind.tokenizer_path()).map_err(anyhow::Error::msg)?;
+        let stop_tokens: Vec<u32> = kind.stop_tokens().iter().filter_map(|t| tokenizer.token_to_id(t)).collect();
+        if stop_tokens.is_empty() {
+            bail!("The tokenizer has none of the stop tokens {:?}", kind.stop_tokens());
+        }
+        Ok(Self { model: Mutex::new(model), tokenizer, device, stop_tokens })
     }
 
-    /// Generates a completion for a ChatML prompt, calling `on_text` with each new piece of text.
+    /// Generates a completion for a prompt in the model's chat format, calling `on_text` with each new piece of text.
     /// `on_text` returns false to stop early. Blocking and CPU heavy: call from `spawn_blocking`.
     /// Fails when another generation is running.
     pub fn generate(&self, prompt: &str, params: &GenParams, mut on_text: impl FnMut(&str) -> bool) -> Result<GenStats> {
@@ -135,7 +203,7 @@ impl LlmService {
         let mut stream = TextStream::default();
         let mut finish_reason = "length";
         for step in 0..params.max_new_tokens {
-            if STOP_TOKENS.contains(&next) {
+            if self.stop_tokens.contains(&next) {
                 finish_reason = "stop";
                 break;
             }
@@ -222,7 +290,7 @@ mod tests {
     #[test]
     #[ignore]
     fn answers_in_indonesian_on_the_cpu() {
-        let llm = LlmService::global().unwrap();
+        let llm = LlmService::global(LlmKind::Qwen).unwrap();
         let prompt = "<|im_start|>system\nJawab singkat dalam Bahasa Indonesia.<|im_end|>\n\
                       <|im_start|>user\nApa kepanjangan UU PT?<|im_end|>\n<|im_start|>assistant\n";
         let mut streamed = String::new();

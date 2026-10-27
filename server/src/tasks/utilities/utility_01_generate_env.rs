@@ -97,7 +97,9 @@ const SECTIONS: &[(&str, &[Entry])] = &[
         optional("EMBEDDING_MODEL_DIR", Value::Literal("models/paraphrase-multilingual-MiniLM-L12-v2")),
         optional("AI_UPLOAD_DIR", Value::Literal("storage/ai/uploads")),
         optional("LLM_MODEL_PATH", Value::Literal("models/qwen2.5-1.5b-instruct-q4_k_m.gguf")),
+        optional("GEMMA_MODEL_PATH", Value::Literal("models/gemma-3-4b-it-Q4_K_M.gguf")),
         optional("LLM_TOKENIZER_DIR", Value::Literal("models/qwen2.5-1.5b-instruct")),
+        optional("GEMMA_TOKENIZER_DIR", Value::Literal("models/gemma-3-4b-it")),
         // Makes the CPU language model read long prompts about 5x faster for about 6 GB more RAM (answers get slower)
         optional("CANDLE_DEQUANTIZE_ALL", Value::Literal("1")),
         optional("DOCLING_NUM_THREADS", Value::Literal("8")),

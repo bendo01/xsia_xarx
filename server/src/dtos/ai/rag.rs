@@ -18,6 +18,8 @@ pub struct AskRequest {
     pub temperature: Option<f64>,
     /// 16 to 1024, default 400
     pub max_new_tokens: Option<usize>,
+    /// Language model: `qwen` (default) or `gemma`
+    pub model: Option<String>,
     /// Continue a test conversation; a new one is created when missing
     pub conversation_id: Option<Uuid>,
 }
@@ -70,9 +72,23 @@ pub struct FeedbackRequest {
     pub note: Option<String>,
 }
 
+/// A language model the chatbot can answer with
+#[derive(Serialize, ToSchema, Debug, Clone)]
+pub struct LlmModelStatus {
+    /// `qwen` or `gemma`, sent as `model` when asking
+    pub id: String,
+    pub label: String,
+    pub model_present: bool,
+    pub model_size: Option<u64>,
+    pub tokenizer_present: bool,
+    /// Loaded into memory by the first question
+    pub loaded: bool,
+}
+
 /// State of the pieces the RAG tester needs
 #[derive(Serialize, ToSchema, Debug, Clone)]
 pub struct RagStatusResponse {
+    /// The default model (`qwen`); `models` lists every model
     pub llm_model: String,
     pub llm_model_present: bool,
     pub llm_model_size: Option<u64>,
@@ -82,6 +98,7 @@ pub struct RagStatusResponse {
     /// The model is loaded into memory by the first question
     pub llm_loaded: bool,
     pub embedder_present: bool,
+    pub models: Vec<LlmModelStatus>,
     /// Searchable chunks of regulations in force
     pub active_chunks: i64,
     /// Searchable chunks of revoked regulations

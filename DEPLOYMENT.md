@@ -246,7 +246,7 @@ sudo -u xsia mkdir -p /var/www/ferron/xsia_xarx/server/logs /var/www/ferron/xsia
 ```
 
 ---
-
+  
 ## 6. Build & configure the backend
 
 ### A. Build release binaries
@@ -266,6 +266,17 @@ sudo -u xsia install -m 0755 /var/www/ferron/xsia_xarx/src/server/migration/targ
 sudo -u xsia cp -a /var/www/ferron/xsia_xarx/src/server/public /var/www/ferron/xsia_xarx/server/
 # Embedding model for AI chunks (gitignored, so not in the checkout); ≈ 460 MB
 asxsia 'cd /var/www/ferron/xsia_xarx/server && uvx --from huggingface_hub hf download sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 config.json tokenizer.json model.safetensors --local-dir models/paraphrase-multilingual-MiniLM-L12-v2'
+
+# Models for the AI features (gitignored); `hf` comes from huggingface_hub
+asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 --local-dir ./models'
+asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download Qwen/Qwen2.5-1.5B-Instruct-GGUF qwen2.5-1.5b-instruct-q4_k_m.gguf --local-dir ./models'
+asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download Qwen/Qwen2.5-1.5B-Instruct tokenizer.json --local-dir ./models/qwen2.5-1.5b-instruct'
+
+# Optional: Gemma 3 4B (≈ 2.5 GB). The server currently loads Qwen2 only, so these files are unused
+# until generation.rs gets a Gemma 3 loader. The google/* repo is gated: accept the licence at
+# https://huggingface.co/google/gemma-3-4b-it, then run `hf auth login` as the xsia user first.
+asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download ggml-org/gemma-3-4b-it-GGUF gemma-3-4b-it-Q4_K_M.gguf --local-dir ./models'
+asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download google/gemma-3-4b-it tokenizer.json --local-dir ./models/gemma-3-4b-it'
 
 # Check for missing shared libraries (e.g. libtensorflow from the tensorflow crate)
 ldd /var/www/ferron/xsia_xarx/server/xsia_xarx | grep 'not found' || echo "all libraries resolved"
