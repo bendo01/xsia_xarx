@@ -15,6 +15,7 @@ use uuid::Uuid;
 
 use super::Hit;
 use super::fusion::{query_terms, rrf};
+use crate::models::document::transaction::archives::CHUNKABLE_TYPE as ARCHIVE_TYPE;
 use crate::services::ai::EmbeddingService;
 
 /// Constant of Reciprocal Rank Fusion
@@ -70,14 +71,24 @@ impl Row {
     }
 }
 
-const SELECT: &str = "SELECT c.id AS chunk_id, d.id AS regulation_id, d.title AS regulation, d.number, d.year, d.status, \
-     c.title_hierarchy AS heading, c.content \
-     FROM ai.chunks c JOIN compliance.regulation_documents d ON d.id = c.chunkable_id";
+/// Regulation chunks, plus chunks of knowledge-base archives (which have no regulation row: always in force)
+fn select() -> String {
+    "SELECT c.id AS chunk_id, c.chunkable_id AS regulation_id, coalesce(d.title, a.name) AS regulation, d.number, d.year, \
+     coalesce(d.status, 'active') AS status, c.title_hierarchy AS heading, c.content \
+     FROM ai.chunks c \
+     LEFT JOIN compliance.regulation_documents d ON c.chunkable_type = 'Regulation' AND d.id = c.chunkable_id \
+     LEFT JOIN document_transaction.archives a ON c.chunkable_type = $ARCHIVE AND a.id = c.chunkable_id"
+        .replace("$ARCHIVE", &format!("'{ARCHIVE_TYPE}'"))
+}
 
 /// Shared filter: `$1` = include revoked, `$2` = minimum body length.
-const FILTER: &str = "c.chunkable_type = 'Regulation' AND c.deleted_at IS NULL AND d.deleted_at IS NULL \
-     AND ($1 OR d.status = 'active') \
-     AND length(regexp_replace(c.content, '^.*?\\n\\n', '')) >= $2";
+fn filter() -> String {
+    "((c.chunkable_type = 'Regulation' AND d.id IS NOT NULL AND d.deleted_at IS NULL AND ($1 OR d.status = 'active')) \
+      OR (c.chunkable_type = $ARCHIVE AND a.id IS NOT NULL AND a.deleted_at IS NULL)) \
+     AND c.deleted_at IS NULL \
+     AND length(regexp_replace(c.content, '^.*?\\n\\n', '')) >= $2"
+        .replace("$ARCHIVE", &format!("'{ARCHIVE_TYPE}'"))
+}
 
 async fn embed_query(query: &str) -> Result<String> {
     let text = query.to_owned();
@@ -92,7 +103,8 @@ async fn embed_query(query: &str) -> Result<String> {
 
 async fn dense(db: &DatabaseConnection, query: &str, opts: Options) -> Result<Vec<Hit>> {
     let vector = embed_query(query).await?;
-    let sql = format!("{SELECT} WHERE {FILTER} AND c.embedding IS NOT NULL ORDER BY c.embedding <=> $3::vector LIMIT {CANDIDATES}");
+    let (select, filter) = (select(), filter());
+    let sql = format!("{select} WHERE {filter} AND c.embedding IS NOT NULL ORDER BY c.embedding <=> $3::vector LIMIT {CANDIDATES}");
     let rows = Row::find_by_statement(Statement::from_sql_and_values(
         db.get_database_backend(),
         sql,
@@ -111,8 +123,9 @@ async fn lexical(db: &DatabaseConnection, query: &str, opts: Options) -> Result<
     // terms are alphanumeric only, so joining them cannot inject tsquery syntax
     let tsquery = terms.join(" | ");
     let doc = "to_tsvector('simple', c.content || ' ' || coalesce(c.title_hierarchy, ''))";
+    let (select, filter) = (select(), filter());
     let sql = format!(
-        "{SELECT} WHERE {FILTER} AND {doc} @@ to_tsquery('simple', $3) \
+        "{select} WHERE {filter} AND {doc} @@ to_tsquery('simple', $3) \
          ORDER BY ts_rank_cd({doc}, to_tsquery('simple', $3)) DESC LIMIT {CANDIDATES}"
     );
     let rows = Row::find_by_statement(Statement::from_sql_and_values(

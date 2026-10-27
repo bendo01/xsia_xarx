@@ -5,8 +5,8 @@ use chrono::Utc;
 use salvo::prelude::*;
 use salvo::sse::{self, SseEvent};
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, DatabaseBackend, EntityTrait, FromQueryResult, QueryFilter,
-    Set, Statement,
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, PaginatorTrait, QueryFilter, QuerySelect,
+    QueryTrait, Set,
 };
 use serde_json::json;
 use tokio::sync::mpsc;
@@ -17,7 +17,9 @@ use uuid::Uuid;
 use crate::controllers::ai::require_administrator;
 use crate::dtos::ai::rag::{AskRequest, FeedbackRequest, HitResponse, LlmModelStatus, RagStatusResponse, RetrieveResponse};
 use crate::middleware::auth::auth_user_id;
-use crate::models::ai::{conversation, message};
+use crate::models::ai::{chunk, conversation, message};
+use crate::models::compliance::regulation_document;
+use crate::models::document::transaction::archives;
 use crate::services::ai::generation::{self, GenParams, LlmKind, LlmService};
 use crate::services::ai::EmbeddingService;
 use crate::services::compliance::rag::answer::{DEFAULT_BODY_CHARS, build_prompt};
@@ -63,12 +65,6 @@ fn settings(payload: &AskRequest) -> Result<Settings, StatusError> {
     })
 }
 
-#[derive(FromQueryResult)]
-struct Count {
-    regulation_status: String,
-    count: i64,
-}
-
 /// What the tester needs to work: model files, whether the model is in memory and how many chunks are searchable.
 #[endpoint(tags("AI - RAG"), status_codes(200, 403, 500))]
 pub async fn status(depot: &mut Depot) -> Result<Json<RagStatusResponse>, StatusError> {
@@ -77,19 +73,36 @@ pub async fn status(depot: &mut Depot) -> Result<Json<RagStatusResponse>, Status
         StatusError::internal_server_error().brief("Database connection missing")
     })?;
 
-    let counts = Count::find_by_statement(Statement::from_sql_and_values(
-        DatabaseBackend::Postgres,
-        "SELECT d.status AS regulation_status, COUNT(*)::bigint AS count FROM ai.chunks c \
-         JOIN compliance.regulation_documents d ON d.id = c.chunkable_id \
-         WHERE c.chunkable_type = 'Regulation' AND c.deleted_at IS NULL AND d.deleted_at IS NULL GROUP BY d.status",
-        [],
-    ))
-    .all(db)
-    .await
-    .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
-    let chunks = |in_force: bool| -> i64 {
-        counts.iter().filter(|c| (c.regulation_status == "active") == in_force).map(|c| c.count).sum()
+    let live_chunks = |chunkable_type: &str, owners: sea_orm::sea_query::SelectStatement| {
+        chunk::Entity::find()
+            .filter(chunk::Column::ChunkableType.eq(chunkable_type))
+            .filter(chunk::Column::DeletedAt.is_null())
+            .filter(chunk::Column::ChunkableId.in_subquery(owners))
+            .count(db)
     };
+    let regulations = |in_force: bool| {
+        let owners = regulation_document::Entity::find()
+            .select_only()
+            .column(regulation_document::Column::Id)
+            .filter(regulation_document::Column::DeletedAt.is_null())
+            .filter(if in_force {
+                regulation_document::Column::Status.eq("active")
+            } else {
+                regulation_document::Column::Status.ne("active")
+            })
+            .into_query();
+        live_chunks("Regulation", owners)
+    };
+    let archive_owners = archives::Entity::find()
+        .select_only()
+        .column(archives::Column::Id)
+        .filter(archives::Column::DeletedAt.is_null())
+        .into_query();
+    let (active, revoked, from_archives) =
+        tokio::try_join!(regulations(true), regulations(false), live_chunks(archives::CHUNKABLE_TYPE, archive_owners))
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+    // archive chunks have no regulation status: they are always in force
+    let (active_chunks, revoked_chunks) = (active + from_archives, revoked);
 
     let models: Vec<LlmModelStatus> = LlmKind::ALL
         .into_iter()
@@ -115,8 +128,8 @@ pub async fn status(depot: &mut Depot) -> Result<Json<RagStatusResponse>, Status
         llm_loaded: default.loaded,
         embedder_present: EmbeddingService::model_dir().join("model.safetensors").exists(),
         models,
-        active_chunks: chunks(true),
-        revoked_chunks: chunks(false),
+        active_chunks: i64::try_from(active_chunks).unwrap_or(i64::MAX),
+        revoked_chunks: i64::try_from(revoked_chunks).unwrap_or(i64::MAX),
     }))
 }
 
