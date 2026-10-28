@@ -155,7 +155,7 @@ pub async fn retrieve(req: &mut Request, depot: &mut Depot) -> Result<Json<Retri
     // stored as a `retrieval` message (no answer, only the chunks) so the history can show the lookup again
     let user_id = auth_user_id(depot);
     let chunk_ids: Vec<Uuid> = hits.iter().map(|h| h.chunk_id).collect();
-    let conversation_id = match start_exchange(db, &s.question, user_id, payload.conversation_id).await {
+    let conversation_id = match start_exchange(db, &s, user_id, payload.conversation_id).await {
         Ok(id) => match insert_message(db, id, "retrieval", "", Some(&chunk_ids), user_id).await {
             Ok(_) => Some(id),
             Err(e) => {
@@ -227,7 +227,7 @@ async fn run_ask(
     let started = Instant::now();
     let hits = search::search(db, &s.question, s.retrieval).await?;
     let retrieval_ms = started.elapsed().as_millis();
-    let conversation_id = start_exchange(db, &s.question, user_id, conversation_id).await?;
+    let conversation_id = start_exchange(db, &s, user_id, conversation_id).await?;
     let _ = tx.send(Event(
         "sources",
         json!({
@@ -274,22 +274,48 @@ async fn run_ask(
     Ok(())
 }
 
-/// Creates the conversation when needed and stores the question
+/// Creates the conversation when needed and stores the question. The settings of the latest question are
+/// kept on the conversation.
 async fn start_exchange(
     db: &DatabaseConnection,
-    question: &str,
+    s: &Settings,
     user_id: Option<Uuid>,
     conversation_id: Option<Uuid>,
 ) -> anyhow::Result<Uuid> {
     let now = Utc::now().naive_utc();
+    let max_new_tokens = Set(Some(s.params.max_new_tokens as i32));
+    let model = Set(Some(s.kind.id().to_owned()));
+    let rerank = Set(Some(s.retrieval.rerank));
+    let temperature = Set(Some(s.params.temperature));
+    let top_k = Set(Some(s.retrieval.top_k as i32));
     let conversation_id = match conversation_id {
-        Some(id) => id,
+        Some(id) => {
+            conversation::ActiveModel {
+                id: Set(id),
+                max_new_tokens,
+                model,
+                rerank,
+                temperature,
+                top_k,
+                updated_at: Set(now),
+                updated_by: Set(user_id),
+                ..Default::default()
+            }
+            .update(db)
+            .await?;
+            id
+        }
         None => {
             let id = Uuid::now_v7();
             conversation::ActiveModel {
                 id: Set(id),
-                title: Set(Some(question.chars().take(80).collect())),
+                title: Set(Some(s.question.chars().take(80).collect())),
                 user_id: Set(user_id),
+                max_new_tokens,
+                model,
+                rerank,
+                temperature,
+                top_k,
                 created_at: Set(now),
                 updated_at: Set(now),
                 created_by: Set(user_id),
@@ -301,7 +327,7 @@ async fn start_exchange(
             id
         }
     };
-    insert_message(db, conversation_id, "user", question, None, user_id).await?;
+    insert_message(db, conversation_id, "user", &s.question, None, user_id).await?;
     Ok(conversation_id)
 }
 

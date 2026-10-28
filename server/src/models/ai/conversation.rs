@@ -2,7 +2,7 @@ use sea_orm::entity::prelude::*;
 
 /// A chat session between a user and the assistant
 #[sea_orm::model]
-#[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
+#[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(schema_name = "ai", table_name = "conversations")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
@@ -11,6 +11,15 @@ pub struct Model {
     pub user_id: Option<Uuid>,
     /// When the conversation was pinned, `None` if not pinned
     pub is_pinned: Option<DateTime>,
+    /// Maximum tokens generated per answer
+    pub max_new_tokens: Option<i32>,
+    /// Language model id (`qwen` or `gemma`)
+    pub model: Option<String>,
+    /// Whether retrieved candidates are reranked
+    pub rerank: Option<bool>,
+    pub temperature: Option<f64>,
+    /// Chunks put in the prompt
+    pub top_k: Option<i32>,
     pub created_at: DateTime,
     pub updated_at: DateTime,
     pub deleted_at: Option<DateTime>,
