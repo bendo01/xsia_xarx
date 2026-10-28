@@ -180,7 +180,44 @@ pub async fn hits_by_ids(db: &DatabaseConnection, ids: &[Uuid]) -> Result<Vec<Hi
         .await?;
     let mut hits: Vec<Hit> = rows.into_iter().map(Row::into_hit).collect();
     hits.sort_by_key(|h| ids.iter().position(|id| *id == h.chunk_id));
+    label_articles(db, &mut hits).await?;
     Ok(hits)
+}
+
+/// Docling emits "Pasal 13" as a plain paragraph, so ingestion leaves it as a tiny chunk of its own and the
+/// chunks of its body carry no heading. Give such hits the nearest preceding article label of their document,
+/// so the prompt (and the answer) can cite the article.
+async fn label_articles(db: &DatabaseConnection, hits: &mut [Hit]) -> Result<()> {
+    #[derive(FromQueryResult)]
+    struct Label {
+        chunk_id: Uuid,
+        label: Option<String>,
+    }
+    let unlabeled = |h: &Hit| !h.heading.as_deref().is_some_and(|t| t.to_lowercase().contains("pasal"));
+    let ids: Vec<String> = hits.iter().filter(|h| unlabeled(h)).map(|h| format!("'{}'", h.chunk_id)).collect();
+    if ids.is_empty() {
+        return Ok(());
+    }
+    let idx = |alias: &str| format!("({alias}.metadata->>'chunk_index')::int");
+    let (c, p) = (idx("c"), idx("p"));
+    let sql = format!(
+        "SELECT c.id AS chunk_id, \
+           (SELECT trim(both '- ' from p.content) FROM ai.chunks p \
+             WHERE p.chunkable_id = c.chunkable_id AND p.deleted_at IS NULL AND {p} < {c} \
+               AND p.content ~* '^\\s*(-\\s*)?pasal\\s+[0-9]+[a-z]?\\s*$' \
+             ORDER BY {p} DESC LIMIT 1) AS label \
+         FROM ai.chunks c WHERE c.id IN ({})",
+        ids.join(",")
+    );
+    let labels = Label::find_by_statement(Statement::from_sql_and_values(db.get_database_backend(), sql, []))
+        .all(db)
+        .await?;
+    for l in labels {
+        if let (Some(label), Some(hit)) = (l.label, hits.iter_mut().find(|h| h.chunk_id == l.chunk_id)) {
+            hit.heading = Some(label);
+        }
+    }
+    Ok(())
 }
 
 /// Hybrid search: dense + lexical candidates fused with RRF, duplicate chunks removed, then reranked.
@@ -205,6 +242,7 @@ pub async fn search(db: &DatabaseConnection, query: &str, opts: Options) -> Resu
     hits.retain(|h| !definitions.iter().any(|d| d.chunk_id == h.chunk_id));
     hits.splice(0..0, definitions);
     hits.truncate(opts.top_k);
+    label_articles(db, &mut hits).await?;
     Ok(hits)
 }
 
