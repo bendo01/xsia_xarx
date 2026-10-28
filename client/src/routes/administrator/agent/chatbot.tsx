@@ -4,6 +4,10 @@ import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import {
     RagControllerAsk,
+    RagControllerConversation,
+    RagControllerConversations,
+    RagControllerDeleteConversation,
+    type RagConversationSummary,
     RagControllerFeedback,
     RagControllerRetrieve,
     RagControllerStatus,
@@ -44,6 +48,7 @@ export default function AgentChatbotPage() {
     const [question, setQuestion] = createSignal('');
     const [isBusy, setIsBusy] = createSignal(false);
     const [conversationId, setConversationId] = createSignal<string | null>(null);
+    const [history, setHistory] = createSignal<RagConversationSummary[]>([]);
 
     // Settings
     const [retrievalOnly, setRetrievalOnly] = createSignal(false);
@@ -64,8 +69,15 @@ export default function AgentChatbotPage() {
         else setStatus(res.data);
     };
 
+    const loadHistory = async () => {
+        const res = await RagControllerConversations();
+        if (res.is_error || !res.data) toast.danger(res.message || t('ad.ragHistoryFailed'));
+        else setHistory(res.data);
+    };
+
     onMount(() => {
         void loadStatus();
+        void loadHistory();
     });
 
     // Keep the newest text in view while the answer streams in
@@ -141,7 +153,9 @@ export default function AgentChatbotPage() {
                     turn.retrievalMs = res.data.retrieval_ms;
                 }
             });
+            if (res.data?.conversation_id) setConversationId(res.data.conversation_id);
             setIsBusy(false);
+            void loadHistory();
             return;
         }
 
@@ -180,6 +194,7 @@ export default function AgentChatbotPage() {
         abortController = null;
         setIsBusy(false);
         void loadStatus();
+        void loadHistory();
     };
 
     const stop = () => abortController?.abort();
@@ -189,6 +204,40 @@ export default function AgentChatbotPage() {
         setTurns([]);
         setConversationId(null);
         setIsBusy(false);
+    };
+
+    const openConversation = async (id: string) => {
+        if (id === conversationId() || isBusy()) return;
+        const res = await RagControllerConversation(id);
+        if (res.is_error || !res.data) {
+            toast.danger(res.message || t('ad.ragHistoryFailed'));
+            return;
+        }
+        setTurns(
+            res.data.map((x) => ({
+                id: nextId++,
+                question: x.question,
+                retrievalOnly: x.retrieval_only,
+                status: x.retrieval_only || x.answer ? 'done' : 'stopped',
+                answer: x.answer,
+                hits: x.hits,
+                messageId: x.message_id,
+                feedback: x.feedback,
+                note: x.note,
+            })),
+        );
+        setConversationId(id);
+    };
+
+    const removeConversation = async (id: string) => {
+        if (!confirm(t('ad.ragHistoryDeleteConfirm'))) return;
+        const res = await RagControllerDeleteConversation(id);
+        if (res.is_error) {
+            toast.danger(res.message || t('ad.ragHistoryFailed'));
+            return;
+        }
+        if (id === conversationId()) newConversation();
+        void loadHistory();
     };
 
     const rate = async (turn: Turn, value: -1 | 1) => {
@@ -386,6 +435,48 @@ export default function AgentChatbotPage() {
                             <input type="checkbox" checked={rerank()} onChange={(e) => setRerank(e.currentTarget.checked)} />
                             <span>{t('ad.ragRerank')}</span>
                         </label>
+                        <div class="pt-3 mt-1 border-t border-neutral-200 dark:border-neutral-700 space-y-2">
+                            <h2 class="text-sm font-bold">{t('ad.ragHistory')}</h2>
+                            <Show
+                                when={history().length > 0}
+                                fallback={<p class="text-xs text-neutral-500 dark:text-neutral-400">{t('ad.ragHistoryEmpty')}</p>}
+                            >
+                                <ul class="space-y-1 max-h-64 overflow-y-auto">
+                                    <For each={history()}>
+                                        {(item) => (
+                                            <li
+                                                class="group flex items-center gap-1 border rounded-xs"
+                                                classList={{
+                                                    'border-blue-500 bg-blue-50 dark:bg-blue-950/50': item.id === conversationId(),
+                                                    'border-transparent hover:bg-neutral-100 dark:hover:bg-neutral-700': item.id !== conversationId(),
+                                                }}
+                                            >
+                                                <button
+                                                    type="button"
+                                                    onClick={() => void openConversation(item.id)}
+                                                    class="flex-1 min-w-0 text-left px-2 py-1.5 cursor-pointer"
+                                                    title={item.title ?? ''}
+                                                >
+                                                    <span class="block truncate text-xs">{item.title || '-'}</span>
+                                                    <span class="block text-[10px] text-neutral-500 dark:text-neutral-400">
+                                                        {new Date(item.updated_at).toLocaleString()}
+                                                    </span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => void removeConversation(item.id)}
+                                                    class="px-2 py-1 text-xs text-neutral-400 hover:text-red-600 cursor-pointer"
+                                                    aria-label={t('ad.ragHistoryDelete')}
+                                                    title={t('ad.ragHistoryDelete')}
+                                                >
+                                                    ✕
+                                                </button>
+                                            </li>
+                                        )}
+                                    </For>
+                                </ul>
+                            </Show>
+                        </div>
                     </aside>
 
                     {/* Conversation */}
@@ -426,7 +517,10 @@ export default function AgentChatbotPage() {
                                             {/* Answer */}
                                             <div class="space-y-2">
                                                 <Show when={turn.status === 'retrieving'}>
-                                                    <p class="text-xs text-neutral-500 animate-pulse">{t('ad.ragSearching')}</p>
+                                                    <p class="flex items-center gap-2 text-xs text-neutral-500">
+                                                        <span class="inline-block size-3.5 rounded-full border-2 border-neutral-300 dark:border-neutral-700 border-t-blue-600 dark:border-t-blue-400 animate-spin" role="status" aria-hidden="true"></span>
+                                                        <span class="animate-pulse">{t('ad.ragSearching')}</span>
+                                                    </p>
                                                 </Show>
                                                 <Show when={turn.retrievalOnly && turn.status === 'done'}>
                                                     <p class="text-xs font-semibold text-neutral-600 dark:text-neutral-300">
@@ -456,7 +550,10 @@ export default function AgentChatbotPage() {
                                                         </Show>
                                                     </div>
                                                     <Show when={turn.status === 'generating' && !turn.answer}>
-                                                        <p class="text-xs text-neutral-500 animate-pulse">{t('ad.ragGenerating')}</p>
+                                                        <p class="flex items-center gap-2 text-xs text-neutral-500">
+                                                            <span class="inline-block size-3.5 rounded-full border-2 border-neutral-300 dark:border-neutral-700 border-t-blue-600 dark:border-t-blue-400 animate-spin" role="status" aria-hidden="true"></span>
+                                                            <span class="animate-pulse">{t('ad.ragGenerating')}</span>
+                                                        </p>
                                                     </Show>
                                                 </Show>
                                                 <Show when={turn.status === 'stopped'}>

@@ -106,7 +106,7 @@ export async function RagControllerStatus(): Promise<Result<RagStatus>> {
 /** Retrieval only: the chunks the chatbot would be given, without running the language model */
 export async function RagControllerRetrieve(
     settings: RagSettings,
-): Promise<Result<{ hits: RagHit[]; retrieval_ms: number }>> {
+): Promise<Result<{ hits: RagHit[]; retrieval_ms: number; conversation_id?: string | null }>> {
     try {
         const res = await fetch(`${getBaseUrl()}/${path}/retrieve`, {
             method: 'POST',
@@ -202,5 +202,56 @@ export async function RagControllerFeedback(
         return { is_error: false, message: '' };
     } catch (error: any) {
         return { is_error: true, message: error.message || 'Network error while saving the feedback.' };
+    }
+}
+
+export interface RagConversationSummary {
+    id: string;
+    title?: string | null;
+    updated_at: string;
+}
+
+export interface RagStoredTurn {
+    question: string;
+    answer: string;
+    hits: RagHit[];
+    message_id?: string | null;
+    feedback: -1 | 0 | 1;
+    note: string;
+    /** A lookup without an answer, stored by the "retrieval only" mode */
+    retrieval_only: boolean;
+}
+
+/** The signed-in user's conversations, newest first */
+export async function RagControllerConversations(): Promise<Result<RagConversationSummary[]>> {
+    try {
+        const res = await fetch(`${getBaseUrl()}/${path}/conversations`, { method: 'GET', headers: getHeaders() });
+        if (!res.ok) return await failure(res, 'Failed to load the conversation history.');
+        const body = await res.json();
+        return { is_error: false, message: '', data: body.conversations as RagConversationSummary[] };
+    } catch (error: any) {
+        return { is_error: true, message: error.message || 'Network error while loading the history.' };
+    }
+}
+
+/** The turns of one stored conversation, with the sources each answer was given */
+export async function RagControllerConversation(id: string): Promise<Result<RagStoredTurn[]>> {
+    try {
+        const res = await fetch(`${getBaseUrl()}/${path}/conversations/${id}`, { method: 'GET', headers: getHeaders() });
+        if (!res.ok) return await failure(res, 'Failed to load the conversation.');
+        const body = await res.json();
+        return { is_error: false, message: '', data: body.turns as RagStoredTurn[] };
+    } catch (error: any) {
+        return { is_error: true, message: error.message || 'Network error while loading the conversation.' };
+    }
+}
+
+export async function RagControllerDeleteConversation(id: string): Promise<Result<undefined>> {
+    try {
+        const res = await fetch(`${getBaseUrl()}/${path}/conversations/${id}`, { method: 'DELETE', headers: getHeaders() });
+        if (!res.ok) return await failure(res, 'Failed to delete the conversation.');
+        return { is_error: false, message: '' };
+    } catch (error: any) {
+        return { is_error: true, message: error.message || 'Network error while deleting the conversation.' };
     }
 }

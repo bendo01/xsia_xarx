@@ -278,6 +278,10 @@ asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download Qwen/Qwen2.5-1.5B-Ins
 asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download ggml-org/gemma-3-4b-it-GGUF gemma-3-4b-it-Q4_K_M.gguf --local-dir ./models'
 asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download google/gemma-3-4b-it tokenizer.json --local-dir ./models/gemma-3-4b-it'
 
+# Optional: Llama 3.2 3B Instruct (≈ 2 GB). `LlmKind` in generation.rs only knows Qwen and Gemma,
+# so this file is unused until a Llama loader is added.
+asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download bartowski/Llama-3.2-3B-Instruct-GGUF Llama-3.2-3B-Instruct-Q4_K_M.gguf --local-dir ./models'
+
 # Check for missing shared libraries (e.g. libtensorflow from the tensorflow crate)
 ldd /var/www/ferron/xsia_xarx/server/xsia_xarx | grep 'not found' || echo "all libraries resolved"
 ```

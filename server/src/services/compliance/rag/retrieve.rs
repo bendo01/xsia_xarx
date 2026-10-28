@@ -22,7 +22,7 @@ use crate::services::ai::EmbeddingService;
 const RRF_K: f64 = 60.0;
 
 /// Candidates fetched from each retriever before fusion
-const CANDIDATES: i64 = 30;
+const CANDIDATES: i64 = 60;
 
 /// A chunk needs at least this many characters after its heading line to be searchable
 const MIN_BODY_CHARS: i32 = 30;
@@ -168,6 +168,21 @@ async fn referenced_archives(db: &DatabaseConnection, r: &Reference) -> Result<V
     Ok(rows.into_iter().map(|r| r.id).collect())
 }
 
+/// The chunks with these ids, in the order given; ids that no longer exist are skipped
+pub async fn hits_by_ids(db: &DatabaseConnection, ids: &[Uuid]) -> Result<Vec<Hit>> {
+    if ids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let list: Vec<String> = ids.iter().map(|id| format!("'{id}'")).collect();
+    let sql = format!("{} WHERE c.id IN ({})", select(), list.join(","));
+    let rows = Row::find_by_statement(Statement::from_sql_and_values(db.get_database_backend(), sql, []))
+        .all(db)
+        .await?;
+    let mut hits: Vec<Hit> = rows.into_iter().map(Row::into_hit).collect();
+    hits.sort_by_key(|h| ids.iter().position(|id| *id == h.chunk_id));
+    Ok(hits)
+}
+
 /// Hybrid search: dense + lexical candidates fused with RRF, duplicate chunks removed, then reranked.
 /// When the question cites a regulation ("undang undang nomor 12 tahun 2012") the citation is taken out of the
 /// query, and that regulation is searched again on its own so its chunks compete with the rest.
@@ -185,8 +200,38 @@ pub async fn search(db: &DatabaseConnection, query: &str, opts: Options) -> Resu
     let pool = if opts.rerank { opts.top_k.max(RERANK_POOL) } else { opts.top_k };
     let fused = fuse(db, &query, opts, pool, &scope).await?;
     let mut hits = if opts.rerank { super::rerank::rerank(&query, fused) } else { fused };
+    // a definition ("15. Mahasiswa adalah ...") is short and generic, so ranking buries it; put it first
+    let definitions = definitions(db, &query, opts, &scope).await?;
+    hits.retain(|h| !definitions.iter().any(|d| d.chunk_id == h.chunk_id));
+    hits.splice(0..0, definitions);
     hits.truncate(opts.top_k);
     Ok(hits)
+}
+
+/// Words that mark a question as asking for a definition
+const DEFINITION_CUES: &[&str] = &["pengertian", "definisi", "dimaksud", "didefinisikan", "arti", "maksud"];
+
+/// Chunks that define the term a "what is X" question asks about, i.e. numbered items of the form
+/// `15. Mahasiswa adalah ...`. Only searched inside a cited regulation, where the term is unambiguous.
+async fn definitions(db: &DatabaseConnection, query: &str, opts: Options, scope: &[Uuid]) -> Result<Vec<Hit>> {
+    let lower = query.to_lowercase();
+    let asks = DEFINITION_CUES.iter().any(|cue| lower.split(|c: char| !c.is_alphanumeric()).any(|w| w == *cue));
+    let terms = query_terms(query);
+    if !asks || scope.is_empty() || terms.is_empty() || terms.len() > 3 {
+        return Ok(Vec::new());
+    }
+    // terms are alphanumeric only, so they cannot inject regex syntax
+    let pattern = format!("(^|\\n)\\s*[0-9]+\\.\\s*{}\\s+adalah", terms.join("\\s+"));
+    let (select, filter) = (select(), filter(Some(scope)));
+    let sql = format!("{select} WHERE {filter} AND c.content ~* $3 ORDER BY c.id LIMIT 3");
+    let rows = Row::find_by_statement(Statement::from_sql_and_values(
+        db.get_database_backend(),
+        sql,
+        [opts.include_revoked.into(), MIN_BODY_CHARS.into(), pattern.into()],
+    ))
+    .all(db)
+    .await?;
+    Ok(rows.into_iter().map(Row::into_hit).collect())
 }
 
 /// Candidates reranked per query

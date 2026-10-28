@@ -5,7 +5,7 @@ use chrono::Utc;
 use salvo::prelude::*;
 use salvo::sse::{self, SseEvent};
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, PaginatorTrait, QueryFilter, QuerySelect,
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder, QuerySelect,
     QueryTrait, Set,
 };
 use serde_json::json;
@@ -150,9 +150,28 @@ pub async fn retrieve(req: &mut Request, depot: &mut Depot) -> Result<Json<Retri
     let hits = search::search(db, &s.question, s.retrieval)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(format!("{e:#}")))?;
+    let retrieval_ms = started.elapsed().as_millis();
+
+    // stored as a `retrieval` message (no answer, only the chunks) so the history can show the lookup again
+    let user_id = auth_user_id(depot);
+    let chunk_ids: Vec<Uuid> = hits.iter().map(|h| h.chunk_id).collect();
+    let conversation_id = match start_exchange(db, &s.question, user_id, payload.conversation_id).await {
+        Ok(id) => match insert_message(db, id, "retrieval", "", Some(&chunk_ids), user_id).await {
+            Ok(_) => Some(id),
+            Err(e) => {
+                tracing::warn!("Could not store the retrieval result: {e}");
+                Some(id)
+            }
+        },
+        Err(e) => {
+            tracing::warn!("Could not store the retrieval question: {e}");
+            None
+        }
+    };
     Ok(Json(RetrieveResponse {
         hits: hits.iter().map(HitResponse::from).collect(),
-        retrieval_ms: started.elapsed().as_millis(),
+        retrieval_ms,
+        conversation_id,
     }))
 }
 
@@ -364,4 +383,120 @@ pub async fn feedback(req: &mut Request, depot: &mut Depot) -> Result<Json<serde
     active.updated_by = Set(auth_user_id(depot));
     active.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
     Ok(Json(json!({ "message": "Feedback saved" })))
+}
+
+/// Conversations listed in the history panel
+const HISTORY_LIMIT: u64 = 50;
+
+/// The signed-in user's conversations, newest first
+#[endpoint(tags("AI - RAG"), status_codes(200, 403, 500))]
+pub async fn conversations(depot: &mut Depot) -> Result<Json<serde_json::Value>, StatusError> {
+    require_administrator(depot)?;
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+    let mut query = conversation::Entity::find().filter(conversation::Column::DeletedAt.is_null());
+    if let Some(user_id) = auth_user_id(depot) {
+        query = query.filter(conversation::Column::UserId.eq(user_id));
+    }
+    let rows = query
+        .order_by_desc(conversation::Column::UpdatedAt)
+        .limit(HISTORY_LIMIT)
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+    let items: Vec<_> = rows
+        .into_iter()
+        .map(|c| json!({ "id": c.id, "title": c.title, "updated_at": c.updated_at.and_utc().to_rfc3339() }))
+        .collect();
+    Ok(Json(json!({ "conversations": items })))
+}
+
+/// Finds a conversation the signed-in user may open
+async fn own_conversation(
+    db: &DatabaseConnection,
+    depot: &Depot,
+    req: &Request,
+) -> Result<conversation::Model, StatusError> {
+    let id = req
+        .param::<String>("id")
+        .and_then(|s| Uuid::parse_str(&s).ok())
+        .ok_or_else(|| StatusError::bad_request().brief("Invalid conversation id"))?;
+    let row = conversation::Entity::find_by_id(id)
+        .filter(conversation::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .ok_or_else(|| StatusError::not_found().brief("Conversation not found"))?;
+    match (auth_user_id(depot), row.user_id) {
+        (Some(me), Some(owner)) if me != owner => Err(StatusError::not_found().brief("Conversation not found")),
+        _ => Ok(row),
+    }
+}
+
+/// A conversation's turns: each question with its answer, the sources it was given and its rating
+#[endpoint(tags("AI - RAG"), status_codes(200, 400, 403, 404, 500))]
+pub async fn conversation_turns(req: &mut Request, depot: &mut Depot) -> Result<Json<serde_json::Value>, StatusError> {
+    require_administrator(depot)?;
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+    let conv = own_conversation(db, depot, req).await?;
+    let messages = message::Entity::find()
+        .filter(message::Column::ConversationId.eq(conv.id))
+        .filter(message::Column::DeletedAt.is_null())
+        .order_by_asc(message::Column::CreatedAt)
+        .all(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    let mut turns = Vec::new();
+    let mut question: Option<String> = None;
+    for m in messages {
+        if m.role == "user" {
+            // a question whose answer never arrived still shows up
+            if let Some(q) = question.replace(m.content) {
+                turns.push(json!({ "question": q, "answer": "", "hits": [], "message_id": null, "feedback": 0, "note": "", "retrieval_only": false }));
+            }
+            continue;
+        }
+        let ids: Vec<Uuid> = m
+            .context_reference
+            .as_ref()
+            .and_then(|v| serde_json::from_value(v.clone()).ok())
+            .unwrap_or_default();
+        let hits = search::hits_by_ids(db, &ids)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        turns.push(json!({
+            "question": question.take().unwrap_or_default(),
+            "answer": m.content,
+            "hits": hits.iter().map(HitResponse::from).collect::<Vec<_>>(),
+            "message_id": m.id,
+            "feedback": m.feedback.unwrap_or(0),
+            "note": m.feedback_note.unwrap_or_default(),
+            "retrieval_only": m.role == "retrieval",
+        }));
+    }
+    if let Some(q) = question {
+        turns.push(json!({ "question": q, "answer": "", "hits": [], "message_id": null, "feedback": 0, "note": "", "retrieval_only": false }));
+    }
+    Ok(Json(json!({ "id": conv.id, "title": conv.title, "turns": turns })))
+}
+
+/// Removes a conversation from the history (soft delete; its messages stay in the table)
+#[endpoint(tags("AI - RAG"), status_codes(200, 400, 403, 404, 500))]
+pub async fn delete_conversation(req: &mut Request, depot: &mut Depot) -> Result<Json<serde_json::Value>, StatusError> {
+    require_administrator(depot)?;
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+    let conv = own_conversation(db, depot, req).await?;
+    let now = Utc::now().naive_utc();
+    let mut active: conversation::ActiveModel = conv.into();
+    active.deleted_at = Set(Some(now));
+    active.updated_at = Set(now);
+    active.updated_by = Set(auth_user_id(depot));
+    active.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+    Ok(Json(json!({ "message": "Conversation deleted" })))
 }
