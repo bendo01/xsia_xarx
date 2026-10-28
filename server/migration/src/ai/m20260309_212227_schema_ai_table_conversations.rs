@@ -34,6 +34,11 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new("user_id").uuid())
                     .col(ColumnDef::new("is_pinned").date_time())
+                    .col(ColumnDef::new("max_new_tokens").integer())
+                    .col(ColumnDef::new("model").text())
+                    .col(ColumnDef::new("rerank").boolean())
+                    .col(ColumnDef::new("temperature").double())
+                    .col(ColumnDef::new("top_k").integer())
                     .col(
                         ColumnDef::new("created_at")
                             .date_time()
