@@ -63,6 +63,8 @@ impl From<&Hit> for HitResponse {
 pub struct RetrieveResponse {
     pub hits: Vec<HitResponse>,
     pub retrieval_ms: u128,
+    /// Conversation the lookup was stored in; `None` when storing it failed
+    pub conversation_id: Option<Uuid>,
 }
 
 /// Feedback on an answer: 1 good, -1 bad, 0 cleared

@@ -27,7 +27,8 @@ pub fn rrf<K: Hash + Eq + Clone>(lists: &[Vec<K>], k: f64) -> Vec<(K, f64)> {
 
 const STOPWORDS: &[&str] = &[
     "yang", "dan", "dengan", "untuk", "dari", "pada", "atau", "apa", "berapa", "adalah", "dalam", "itu", "ini", "oleh",
-    "ke", "di", "the", "of", "is", "a", "an",
+    "ke", "di", "the", "of", "is", "a", "an", "apakah", "pengertian", "definisi", "dimaksud", "berdasarkan", "menurut",
+    "tentang", "bagaimana", "jelaskan", "sebutkan",
 ];
 
 /// Search terms of a question: lowercase alphanumerics, minus stop words and one/two-letter words
@@ -123,6 +124,7 @@ mod tests {
             vec!["beban", "sks", "dosen", "paling", "banyak", "16", "per", "semester"]
         );
         assert!(query_terms("di ke a").is_empty());
+        assert_eq!(query_terms("apakah pengertian dari mahasiswa berdasarkan"), vec!["mahasiswa"]);
     }
 
     #[test]

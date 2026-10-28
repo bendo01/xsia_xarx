@@ -23,6 +23,12 @@ pub fn router() -> Router {
                 .push(Router::with_path("status").get_named("ai.rag.status", rag::status))
                 .push(Router::with_path("retrieve").post_named("ai.rag.retrieve", rag::retrieve))
                 .push(Router::with_path("ask").post_named("ai.rag.ask", rag::ask))
+                .push(Router::with_path("conversations").get_named("ai.rag.conversations", rag::conversations))
+                .push(
+                    Router::with_path("conversations/{id}")
+                        .get_named("ai.rag.conversation", rag::conversation_turns)
+                        .delete_named("ai.rag.conversation.delete", rag::delete_conversation),
+                )
                 .push(
                     Router::with_path("messages/{id}/feedback")
                         .post_named("ai.rag.feedback", rag::feedback),
