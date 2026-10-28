@@ -37,7 +37,7 @@ interface Turn {
 const SAMPLE_KEYS = ['ragSample1', 'ragSample2', 'ragSample3', 'ragSample4', 'ragSample5'];
 const TOP_K_RANGE = { min: 1, max: 10, step: 1 };
 const TEMPERATURE_RANGE = { min: 0, max: 1, step: 0.05 };
-const MAX_TOKEN_RANGE = { min: 100, max: 1000, step: 50 };
+const MAX_TOKEN_RANGE = { min: 64, max: 1024, step: 64 };
 const BODY_PREVIEW_CHARS = 280;
 
 const formatBytes = (bytes?: number | null) => (bytes ? `${(bytes / 1024 / 1024).toFixed(0)} MB` : '-');
@@ -52,11 +52,11 @@ export default function AgentChatbotPage() {
 
     // Settings
     const [retrievalOnly, setRetrievalOnly] = createSignal(false);
-    const [topK, setTopK] = createSignal(3);
+    const [topK, setTopK] = createSignal(TOP_K_RANGE.max);
     const [includeRevoked, setIncludeRevoked] = createSignal(false);
     const [rerank, setRerank] = createSignal(true);
     const [temperature, setTemperature] = createSignal(0.2);
-    const [maxTokens, setMaxTokens] = createSignal(400);
+    const [maxTokens, setMaxTokens] = createSignal(MAX_TOKEN_RANGE.max);
     const [modelId, setModelId] = createSignal('qwen');
 
     let abortController: AbortController | null = null;
