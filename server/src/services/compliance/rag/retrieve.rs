@@ -14,7 +14,7 @@ use sea_orm::{DatabaseConnection, FromQueryResult, Statement};
 use uuid::Uuid;
 
 use super::Hit;
-use super::fusion::{query_terms, rrf};
+use super::fusion::{Reference, extract_reference, query_terms, rrf};
 use crate::models::document::transaction::archives::CHUNKABLE_TYPE as ARCHIVE_TYPE;
 use crate::services::ai::EmbeddingService;
 
@@ -82,7 +82,15 @@ fn select() -> String {
 }
 
 /// Shared filter: `$1` = include revoked, `$2` = minimum body length.
-fn filter() -> String {
+fn filter(scope: Option<&[Uuid]>) -> String {
+    let scope = scope.map_or_else(String::new, |ids| {
+        let ids: Vec<String> = ids.iter().map(|id| format!("'{id}'")).collect();
+        format!(" AND c.chunkable_id IN ({})", ids.join(","))
+    });
+    format!("{}{scope}", base_filter())
+}
+
+fn base_filter() -> String {
     "((c.chunkable_type = 'Regulation' AND d.id IS NOT NULL AND d.deleted_at IS NULL AND ($1 OR d.status = 'active')) \
       OR (c.chunkable_type = $ARCHIVE AND a.id IS NOT NULL AND a.deleted_at IS NULL)) \
      AND c.deleted_at IS NULL \
@@ -101,9 +109,9 @@ async fn embed_query(query: &str) -> Result<String> {
     Ok(format!("[{}]", parts.join(",")))
 }
 
-async fn dense(db: &DatabaseConnection, query: &str, opts: Options) -> Result<Vec<Hit>> {
+async fn dense(db: &DatabaseConnection, query: &str, opts: Options, scope: Option<&[Uuid]>) -> Result<Vec<Hit>> {
     let vector = embed_query(query).await?;
-    let (select, filter) = (select(), filter());
+    let (select, filter) = (select(), filter(scope));
     let sql = format!("{select} WHERE {filter} AND c.embedding IS NOT NULL ORDER BY c.embedding <=> $3::vector LIMIT {CANDIDATES}");
     let rows = Row::find_by_statement(Statement::from_sql_and_values(
         db.get_database_backend(),
@@ -115,7 +123,7 @@ async fn dense(db: &DatabaseConnection, query: &str, opts: Options) -> Result<Ve
     Ok(rows.into_iter().map(Row::into_hit).collect())
 }
 
-async fn lexical(db: &DatabaseConnection, query: &str, opts: Options) -> Result<Vec<Hit>> {
+async fn lexical(db: &DatabaseConnection, query: &str, opts: Options, scope: Option<&[Uuid]>) -> Result<Vec<Hit>> {
     let terms = query_terms(query);
     if terms.is_empty() {
         return Ok(Vec::new());
@@ -123,7 +131,7 @@ async fn lexical(db: &DatabaseConnection, query: &str, opts: Options) -> Result<
     // terms are alphanumeric only, so joining them cannot inject tsquery syntax
     let tsquery = terms.join(" | ");
     let doc = "to_tsvector('simple', c.content || ' ' || coalesce(c.title_hierarchy, ''))";
-    let (select, filter) = (select(), filter());
+    let (select, filter) = (select(), filter(scope));
     let sql = format!(
         "{select} WHERE {filter} AND {doc} @@ to_tsquery('simple', $3) \
          ORDER BY ts_rank_cd({doc}, to_tsquery('simple', $3)) DESC LIMIT {CANDIDATES}"
@@ -138,11 +146,45 @@ async fn lexical(db: &DatabaseConnection, query: &str, opts: Options) -> Result<
     Ok(rows.into_iter().map(Row::into_hit).collect())
 }
 
+/// Archives whose file name carries the cited regulation, e.g. `Tahun_2012_UU_No_12.pdf` for UU 12/2012
+async fn referenced_archives(db: &DatabaseConnection, r: &Reference) -> Result<Vec<Uuid>> {
+    #[derive(FromQueryResult)]
+    struct Id {
+        id: Uuid,
+    }
+    let kind = r.kind.map_or_else(String::new, |k| format!("(^|[^a-z0-9]){}([^a-z0-9]|$)", k.to_lowercase()));
+    let rows = Id::find_by_statement(Statement::from_sql_and_values(
+        db.get_database_backend(),
+        "SELECT id FROM document_transaction.archives WHERE deleted_at IS NULL \
+         AND name ~* $1 AND name ~* $2 AND ($3 = '' OR name ~* $3)",
+        [
+            format!("(^|[^0-9]){}([^0-9]|$)", r.year).into(),
+            format!("(^|[^0-9])0*{}([^0-9]|$)", r.number).into(),
+            kind.into(),
+        ],
+    ))
+    .all(db)
+    .await?;
+    Ok(rows.into_iter().map(|r| r.id).collect())
+}
+
 /// Hybrid search: dense + lexical candidates fused with RRF, duplicate chunks removed, then reranked.
+/// When the question cites a regulation ("undang undang nomor 12 tahun 2012") the citation is taken out of the
+/// query, and that regulation is searched again on its own so its chunks compete with the rest.
 pub async fn search(db: &DatabaseConnection, query: &str, opts: Options) -> Result<Vec<Hit>> {
+    let mut query = query.to_owned();
+    let mut scope: Vec<Uuid> = Vec::new();
+    if let Some((reference, rest)) = extract_reference(&query)
+        && !query_terms(&rest).is_empty()
+    {
+        scope = referenced_archives(db, &reference).await?;
+        if !scope.is_empty() {
+            query = rest;
+        }
+    }
     let pool = if opts.rerank { opts.top_k.max(RERANK_POOL) } else { opts.top_k };
-    let fused = fuse(db, query, opts, pool).await?;
-    let mut hits = if opts.rerank { super::rerank::rerank(query, fused) } else { fused };
+    let fused = fuse(db, &query, opts, pool, &scope).await?;
+    let mut hits = if opts.rerank { super::rerank::rerank(&query, fused) } else { fused };
     hits.truncate(opts.top_k);
     Ok(hits)
 }
@@ -150,11 +192,15 @@ pub async fn search(db: &DatabaseConnection, query: &str, opts: Options) -> Resu
 /// Candidates reranked per query
 const RERANK_POOL: usize = 20;
 
-async fn fuse(db: &DatabaseConnection, query: &str, opts: Options, limit: usize) -> Result<Vec<Hit>> {
-    let (dense_hits, lexical_hits) = (dense(db, query, opts).await?, lexical(db, query, opts).await?);
+async fn fuse(db: &DatabaseConnection, query: &str, opts: Options, limit: usize, scope: &[Uuid]) -> Result<Vec<Hit>> {
+    let mut retrieved = vec![dense(db, query, opts, None).await?, lexical(db, query, opts, None).await?];
+    if !scope.is_empty() {
+        retrieved.push(dense(db, query, opts, Some(scope)).await?);
+        retrieved.push(lexical(db, query, opts, Some(scope)).await?);
+    }
 
     let mut by_id = std::collections::HashMap::new();
-    let lists: Vec<Vec<Uuid>> = [dense_hits, lexical_hits]
+    let lists: Vec<Vec<Uuid>> = retrieved
         .into_iter()
         .map(|hits| {
             hits.into_iter()

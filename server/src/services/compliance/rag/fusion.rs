@@ -44,6 +44,51 @@ pub fn query_terms(query: &str) -> Vec<String> {
         .collect()
 }
 
+/// A regulation named in a question, e.g. "undang undang nomor 12 tahun 2012"
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Reference {
+    /// Abbreviation used in archive names (`UU`, `PP`, `Perpres`), when the question names the kind
+    pub kind: Option<&'static str>,
+    pub number: String,
+    pub year: u16,
+}
+
+fn kind_of(words: &[&str]) -> Option<(&'static str, usize)> {
+    match words {
+        [.., "undang", "undang"] => Some(("UU", 2)),
+        [.., "uu"] => Some(("UU", 1)),
+        [.., "peraturan", "pemerintah"] => Some(("PP", 2)),
+        [.., "pp"] => Some(("PP", 1)),
+        [.., "peraturan", "presiden"] => Some(("Perpres", 2)),
+        [.., "perpres"] => Some(("Perpres", 1)),
+        _ => None,
+    }
+}
+
+/// Splits a question into the regulation it cites ("... nomor 12 tahun 2012") and the rest of the question.
+/// The citation words would otherwise match the "Mengingat" lists of every regulation that cites it.
+/// Returns `None` unless both a number and a year follow `nomor`/`no`/`tahun`.
+pub fn extract_reference(query: &str) -> Option<(Reference, String)> {
+    let lower = query.to_lowercase();
+    let words: Vec<&str> = lower.split(|c: char| !c.is_alphanumeric()).filter(|w| !w.is_empty()).collect();
+    let at = (0..words.len().saturating_sub(3)).find(|&i| {
+        matches!(words[i], "nomor" | "no")
+            && words[i + 1].chars().all(|c| c.is_ascii_digit())
+            && words[i + 2] == "tahun"
+            && words[i + 3].len() == 4
+            && words[i + 3].chars().all(|c| c.is_ascii_digit())
+    })?;
+    let number = words[at + 1].trim_start_matches('0');
+    let reference_start = kind_of(&words[..at]).map_or((None, at), |(k, n)| (Some(k), at - n));
+    let reference = Reference {
+        kind: reference_start.0,
+        number: if number.is_empty() { "0".to_owned() } else { number.to_owned() },
+        year: words[at + 3].parse().ok()?,
+    };
+    let rest: Vec<&str> = words[..reference_start.1].iter().chain(&words[at + 4..]).copied().collect();
+    Some((reference, rest.join(" ")))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -78,5 +123,17 @@ mod tests {
             vec!["beban", "sks", "dosen", "paling", "banyak", "16", "per", "semester"]
         );
         assert!(query_terms("di ke a").is_empty());
+    }
+
+    #[test]
+    fn reference_is_split_from_the_question() {
+        let (r, rest) = extract_reference("apakah yang dimaksud dengan mahasiswa pada undang undang nomor 12 tahun 2012").unwrap();
+        assert_eq!(r, Reference { kind: Some("UU"), number: "12".into(), year: 2012 });
+        assert_eq!(rest, "apakah yang dimaksud dengan mahasiswa pada");
+        let (r, rest) = extract_reference("Apa isi PP No. 04 Tahun 2014 tentang beban dosen?").unwrap();
+        assert_eq!((r.kind, r.number.as_str(), r.year), (Some("PP"), "4", 2014));
+        assert_eq!(rest, "apa isi tentang beban dosen");
+        assert!(extract_reference("Berapa beban dosen tahun 2012?").is_none());
+        assert!(extract_reference("nomor 12 tahun").is_none());
     }
 }

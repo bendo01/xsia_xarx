@@ -31,9 +31,9 @@ interface Turn {
 }
 
 const SAMPLE_KEYS = ['ragSample1', 'ragSample2', 'ragSample3', 'ragSample4', 'ragSample5'];
-const TOP_K_OPTIONS = [2, 3, 4, 5, 8];
-const TEMPERATURE_OPTIONS = [0, 0.2, 0.5, 0.8];
-const MAX_TOKEN_OPTIONS = [200, 400, 800];
+const TOP_K_RANGE = { min: 1, max: 10, step: 1 };
+const TEMPERATURE_RANGE = { min: 0, max: 1, step: 0.05 };
+const MAX_TOKEN_RANGE = { min: 100, max: 1000, step: 50 };
 const BODY_PREVIEW_CHARS = 280;
 
 const formatBytes = (bytes?: number | null) => (bytes ? `${(bytes / 1024 / 1024).toFixed(0)} MB` : '-');
@@ -229,6 +229,8 @@ export default function AgentChatbotPage() {
     const selectClass =
         'block w-full p-2 text-xs text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white';
 
+    const rangeClass = 'w-full accent-blue-600 cursor-pointer';
+
     return (
         <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
             <TopBar />
@@ -307,10 +309,20 @@ export default function AgentChatbotPage() {
                             </select>
                         </label>
                         <label class="block space-y-1 text-xs">
-                            <span class="font-medium">{t('ad.ragTopK')}</span>
-                            <select class={selectClass} value={topK()} onChange={(e) => setTopK(Number(e.currentTarget.value))} id="select-rag-top-k">
-                                <For each={TOP_K_OPTIONS}>{(n) => <option value={n}>{n}</option>}</For>
-                            </select>
+                            <span class="flex justify-between">
+                                <span class="font-medium">{t('ad.ragTopK')}</span>
+                                <span class="font-mono">{topK()}</span>
+                            </span>
+                            <input
+                                type="range"
+                                class={rangeClass}
+                                min={TOP_K_RANGE.min}
+                                max={TOP_K_RANGE.max}
+                                step={TOP_K_RANGE.step}
+                                value={topK()}
+                                onInput={(e) => setTopK(Number(e.currentTarget.value))}
+                                id="input-rag-top-k"
+                            />
                         </label>
                         <Show when={!retrievalOnly()}>
                             <Show when={(status()?.models?.length ?? 0) > 1}>
@@ -334,26 +346,36 @@ export default function AgentChatbotPage() {
                                 </label>
                             </Show>
                             <label class="block space-y-1 text-xs">
-                                <span class="font-medium">{t('ad.ragTemperature')}</span>
-                                <select
-                                    class={selectClass}
+                                <span class="flex justify-between">
+                                    <span class="font-medium">{t('ad.ragTemperature')}</span>
+                                    <span class="font-mono">{temperature().toFixed(2)}</span>
+                                </span>
+                                <input
+                                    type="range"
+                                    class={rangeClass}
+                                    min={TEMPERATURE_RANGE.min}
+                                    max={TEMPERATURE_RANGE.max}
+                                    step={TEMPERATURE_RANGE.step}
                                     value={temperature()}
-                                    onChange={(e) => setTemperature(Number(e.currentTarget.value))}
-                                    id="select-rag-temperature"
-                                >
-                                    <For each={TEMPERATURE_OPTIONS}>{(n) => <option value={n}>{n}</option>}</For>
-                                </select>
+                                    onInput={(e) => setTemperature(Number(e.currentTarget.value))}
+                                    id="input-rag-temperature"
+                                />
                             </label>
                             <label class="block space-y-1 text-xs">
-                                <span class="font-medium">{t('ad.ragMaxTokens')}</span>
-                                <select
-                                    class={selectClass}
+                                <span class="flex justify-between">
+                                    <span class="font-medium">{t('ad.ragMaxTokens')}</span>
+                                    <span class="font-mono">{maxTokens()}</span>
+                                </span>
+                                <input
+                                    type="range"
+                                    class={rangeClass}
+                                    min={MAX_TOKEN_RANGE.min}
+                                    max={MAX_TOKEN_RANGE.max}
+                                    step={MAX_TOKEN_RANGE.step}
                                     value={maxTokens()}
-                                    onChange={(e) => setMaxTokens(Number(e.currentTarget.value))}
-                                    id="select-rag-max-tokens"
-                                >
-                                    <For each={MAX_TOKEN_OPTIONS}>{(n) => <option value={n}>{n}</option>}</For>
-                                </select>
+                                    onInput={(e) => setMaxTokens(Number(e.currentTarget.value))}
+                                    id="input-rag-max-tokens"
+                                />
                             </label>
                         </Show>
                         <label class="flex items-center gap-2 text-xs cursor-pointer">
