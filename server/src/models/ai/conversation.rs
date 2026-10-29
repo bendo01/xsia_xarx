@@ -20,6 +20,8 @@ pub struct Model {
     pub temperature: Option<f64>,
     /// Chunks put in the prompt
     pub top_k: Option<i32>,
+    /// Retrieval strategy: `hybrid` or `dense`
+    pub search_mode: Option<String>,
     pub created_at: DateTime,
     pub updated_at: DateTime,
     pub deleted_at: Option<DateTime>,

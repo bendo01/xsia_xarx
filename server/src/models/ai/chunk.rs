@@ -16,8 +16,8 @@ pub struct Model {
     pub title_hierarchy: Option<String>,
     pub markdown_content: Option<String>,
     pub metadata: Option<Json>,
-    /// `vector(384)` embedding of `content`
-    #[sea_orm(column_type = "Vector(Some(384))", nullable)]
+    /// `vector(768)` embedding of `content` (multilingual-e5-base)
+    #[sea_orm(column_type = "Vector(Some(768))", nullable)]
     pub embedding: Option<PgVector>,
     pub created_at: DateTime,
     pub updated_at: DateTime,

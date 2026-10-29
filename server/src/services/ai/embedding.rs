@@ -1,33 +1,37 @@
 use std::path::PathBuf;
 
 use anyhow::{Context, Result};
-use candle_core::{Device, Tensor};
+use candle_core::{DType, Device, Tensor};
 use candle_nn::VarBuilder;
-use candle_transformers::models::bert::{BertModel, Config, DTYPE};
+use candle_transformers::models::xlm_roberta::{Config, XLMRobertaModel};
 use once_cell::sync::OnceCell;
 use tokenizers::{PaddingParams, Tokenizer, TruncationParams};
 
-/// Output size of `paraphrase-multilingual-MiniLM-L12-v2`; matches the `vector(384)` column of `ai.chunks`
-pub const EMBEDDING_DIMENSION: usize = 384;
+/// Output size of `multilingual-e5-base`; matches the `vector(768)` column of `ai.chunks`
+pub const EMBEDDING_DIMENSION: usize = 768;
 
-/// `max_seq_length` from the model's `sentence_bert_config.json`
-const MAX_TOKENS: usize = 128;
+/// `max_seq_length` from the model's `sentence_bert_config.json`; chunks are 200 to 500 characters, well below it
+const MAX_TOKENS: usize = 512;
+
+/// e5 models are trained with these prefixes: a question is a `query`, a stored chunk a `passage`
+const QUERY_PREFIX: &str = "query: ";
+const PASSAGE_PREFIX: &str = "passage: ";
 
 /// Default location of the model files, relative to the server's working directory.
 /// Download with:
-/// `hf download sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 config.json tokenizer.json model.safetensors --local-dir models/paraphrase-multilingual-MiniLM-L12-v2`
-const DEFAULT_MODEL_DIR: &str = "models/paraphrase-multilingual-MiniLM-L12-v2";
+/// `hf download intfloat/multilingual-e5-base config.json tokenizer.json model.safetensors --local-dir models/multilingual-e5-base`
+const DEFAULT_MODEL_DIR: &str = "models/multilingual-e5-base";
 
 /// Recorded in each chunk's metadata
-pub const EMBEDDING_MODEL: &str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2";
+pub const EMBEDDING_MODEL: &str = "intfloat/multilingual-e5-base";
 
 static EMBEDDER: OnceCell<EmbeddingService> = OnceCell::new();
 
-/// Multilingual (incl. Indonesian) sentence embeddings with `paraphrase-multilingual-MiniLM-L12-v2`
+/// Multilingual (incl. Indonesian) retrieval embeddings with `multilingual-e5-base`
 /// on the CPU: mean pooling over the attention mask, then L2 normalization so that cosine
 /// distance and inner product rank results the same
 pub struct EmbeddingService {
-    model: BertModel,
+    model: XLMRobertaModel,
     tokenizer: Tokenizer,
     device: Device,
 }
@@ -55,20 +59,36 @@ impl EmbeddingService {
         )?;
 
         let mut tokenizer = Tokenizer::from_file(dir.join("tokenizer.json")).map_err(anyhow::Error::msg)?;
-        tokenizer.with_padding(Some(PaddingParams::default()));
+        // XLM-R pads with token 1 (`<pad>`); it also drives the model's position ids
+        tokenizer.with_padding(Some(PaddingParams {
+            pad_id: config.pad_token_id,
+            pad_token: "<pad>".to_owned(),
+            ..Default::default()
+        }));
         tokenizer
             .with_truncation(Some(TruncationParams { max_length: MAX_TOKENS, ..Default::default() }))
             .map_err(anyhow::Error::msg)?;
 
         // SAFETY: the safetensors file is only read, and is not modified while the server runs
-        let vb = unsafe { VarBuilder::from_mmaped_safetensors(&[dir.join("model.safetensors")], DTYPE, &device)? };
-        let model = BertModel::load(vb, &config)?;
+        let vb = unsafe { VarBuilder::from_mmaped_safetensors(&[dir.join("model.safetensors")], DType::F32, &device)? };
+        let model = XLMRobertaModel::new(&config, vb)?;
 
         Ok(Self { model, tokenizer, device })
     }
 
-    /// Embeds each text into a unit-length 384-dimension vector. Blocking and CPU heavy.
-    pub fn embed(&self, texts: &[String]) -> Result<Vec<Vec<f32>>> {
+    /// Embeds stored text (chunks) as `passage:`. Blocking and CPU heavy.
+    pub fn embed_passages(&self, texts: &[String]) -> Result<Vec<Vec<f32>>> {
+        let prefixed: Vec<String> = texts.iter().map(|t| format!("{PASSAGE_PREFIX}{t}")).collect();
+        self.embed(&prefixed)
+    }
+
+    /// Embeds a question as `query:`. Blocking and CPU heavy.
+    pub fn embed_query(&self, text: &str) -> Result<Vec<f32>> {
+        self.embed(&[format!("{QUERY_PREFIX}{text}")])?.pop().context("embedder returned no vector")
+    }
+
+    /// Embeds each text into a unit-length 768-dimension vector, without adding a prefix.
+    fn embed(&self, texts: &[String]) -> Result<Vec<Vec<f32>>> {
         if texts.is_empty() {
             return Ok(Vec::new());
         }
@@ -91,11 +111,11 @@ impl EmbeddingService {
         let attention_mask = Tensor::stack(&masks, 0)?;
         let token_type_ids = input_ids.zeros_like()?;
 
-        // (batch, tokens, 384)
-        let hidden = self.model.forward(&input_ids, &token_type_ids, Some(&attention_mask))?;
+        // (batch, tokens, 768)
+        let hidden = self.model.forward(&input_ids, &attention_mask, &token_type_ids, None, None, None)?;
 
         // Mean pooling that ignores padding tokens
-        let mask = attention_mask.to_dtype(DTYPE)?.unsqueeze(2)?;
+        let mask = attention_mask.to_dtype(DType::F32)?.unsqueeze(2)?;
         let summed = hidden.broadcast_mul(&mask)?.sum(1)?;
         let counts = mask.sum(1)?;
         let pooled = summed.broadcast_div(&counts)?;
@@ -111,13 +131,13 @@ impl EmbeddingService {
 mod tests {
     use super::*;
 
-    /// Needs the model files in `models/paraphrase-multilingual-MiniLM-L12-v2`
+    /// Needs the model files in `models/multilingual-e5-base`
     #[test]
     #[ignore]
     fn embeds_unit_vectors_with_semantic_similarity() {
         let embedder = EmbeddingService::global().unwrap();
         let vectors = embedder
-            .embed(&[
+            .embed_passages(&[
                 "The cat sits on the mat".to_string(),
                 "A kitten is resting on a rug".to_string(),
                 "Seekor kucing tidur di atas karpet".to_string(),

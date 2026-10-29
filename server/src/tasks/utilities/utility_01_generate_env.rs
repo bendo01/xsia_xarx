@@ -94,7 +94,7 @@ const SECTIONS: &[(&str, &[Entry])] = &[
     ("External tools (defaults shown)", &[
         optional("CHROME_BIN", Value::Literal("/usr/lib64/chromium-browser/headless_shell")),
         optional("DOCLING_BIN", Value::Literal("docling")),
-        optional("EMBEDDING_MODEL_DIR", Value::Literal("models/paraphrase-multilingual-MiniLM-L12-v2")),
+        optional("EMBEDDING_MODEL_DIR", Value::Literal("models/multilingual-e5-base")),
         optional("AI_UPLOAD_DIR", Value::Literal("storage/ai/uploads")),
         optional("LLM_MODEL_PATH", Value::Literal("models/qwen2.5-1.5b-instruct-q4_k_m.gguf")),
         optional("GEMMA_MODEL_PATH", Value::Literal("models/gemma-3-4b-it-Q4_K_M.gguf")),

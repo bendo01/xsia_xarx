@@ -12,6 +12,8 @@ pub struct AskRequest {
     pub top_k: Option<usize>,
     /// Also search regulations that are no longer in force
     pub include_revoked: Option<bool>,
+    /// `hybrid` (default) or `dense`: embedding similarity only, which also skips reranking
+    pub search_mode: Option<String>,
     /// Rerank the fused candidates (default true)
     pub rerank: Option<bool>,
     /// 0 to 1, default 0.2; 0 is deterministic

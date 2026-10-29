@@ -39,6 +39,7 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new("rerank").boolean())
                     .col(ColumnDef::new("temperature").double())
                     .col(ColumnDef::new("top_k").integer())
+                    .col(ColumnDef::new("search_mode").text())
                     .col(
                         ColumnDef::new("created_at")
                             .date_time()

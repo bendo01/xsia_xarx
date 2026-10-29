@@ -9,7 +9,7 @@
 
 use std::collections::HashSet;
 
-use anyhow::{Context, Result};
+use anyhow::Result;
 use sea_orm::{DatabaseConnection, FromQueryResult, Statement};
 use uuid::Uuid;
 
@@ -27,8 +27,38 @@ const CANDIDATES: i64 = 60;
 /// A chunk needs at least this many characters after its heading line to be searchable
 const MIN_BODY_CHARS: i32 = 30;
 
+/// How candidate chunks are found
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum SearchMode {
+    /// Dense + lexical candidates fused with RRF, then (optionally) reranked
+    #[default]
+    Hybrid,
+    /// Cosine distance on the embedding only: `ORDER BY embedding <=> query LIMIT top_k`
+    Dense,
+}
+
+impl SearchMode {
+    /// Identifier used in requests and stored with a conversation
+    pub fn id(self) -> &'static str {
+        match self {
+            Self::Hybrid => "hybrid",
+            Self::Dense => "dense",
+        }
+    }
+
+    pub fn parse(id: &str) -> Option<Self> {
+        match id.trim().to_ascii_lowercase().as_str() {
+            "hybrid" => Some(Self::Hybrid),
+            "dense" => Some(Self::Dense),
+            _ => None,
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug)]
 pub struct Options {
+    /// Retrieval strategy; `Dense` ignores `rerank`
+    pub mode: SearchMode,
     /// Number of fused hits to return
     pub top_k: usize,
     /// Also search regulations whose status is not `active`
@@ -39,7 +69,7 @@ pub struct Options {
 
 impl Default for Options {
     fn default() -> Self {
-        Self { top_k: 5, include_revoked: false, rerank: true }
+        Self { mode: SearchMode::default(), top_k: 5, include_revoked: false, rerank: true }
     }
 }
 
@@ -101,8 +131,7 @@ fn base_filter() -> String {
 async fn embed_query(query: &str) -> Result<String> {
     let text = query.to_owned();
     let vector = tokio::task::spawn_blocking(move || -> Result<Vec<f32>> {
-        let mut v = EmbeddingService::global()?.embed(&[text])?;
-        v.pop().context("embedder returned no vector")
+        EmbeddingService::global()?.embed_query(&text)
     })
     .await??;
     let parts: Vec<String> = vector.iter().map(f32::to_string).collect();
@@ -224,6 +253,9 @@ async fn label_articles(db: &DatabaseConnection, hits: &mut [Hit]) -> Result<()>
 /// When the question cites a regulation ("undang undang nomor 12 tahun 2012") the citation is taken out of the
 /// query, and that regulation is searched again on its own so its chunks compete with the rest.
 pub async fn search(db: &DatabaseConnection, query: &str, opts: Options) -> Result<Vec<Hit>> {
+    if opts.mode == SearchMode::Dense {
+        return search_dense(db, query, opts).await;
+    }
     let mut query = query.to_owned();
     let mut scope: Vec<Uuid> = Vec::new();
     if let Some((reference, rest)) = extract_reference(&query)
@@ -241,6 +273,15 @@ pub async fn search(db: &DatabaseConnection, query: &str, opts: Options) -> Resu
     let definitions = definitions(db, &query, opts, &scope).await?;
     hits.retain(|h| !definitions.iter().any(|d| d.chunk_id == h.chunk_id));
     hits.splice(0..0, definitions);
+    hits.truncate(opts.top_k);
+    label_articles(db, &mut hits).await?;
+    Ok(hits)
+}
+
+/// Dense-only search: the `top_k` chunks closest to the question by cosine distance, with no lexical
+/// retrieval, citation scoping, definition lookup or reranking.
+async fn search_dense(db: &DatabaseConnection, query: &str, opts: Options) -> Result<Vec<Hit>> {
+    let mut hits = dense(db, query, opts, None).await?;
     hits.truncate(opts.top_k);
     label_articles(db, &mut hits).await?;
     Ok(hits)
