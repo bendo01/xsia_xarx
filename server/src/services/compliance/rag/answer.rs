@@ -9,10 +9,13 @@ pub const DEFAULT_BODY_CHARS: usize = 800;
 
 const SYSTEM: &str = "Kamu adalah asisten regulasi pendidikan tinggi Indonesia. \
 Jawab dalam Bahasa Indonesia, singkat dan tepat, HANYA berdasarkan KONTEKS yang diberikan. \
+Gunakan sumber yang memuat jawabannya dan abaikan sumber yang tidak relevan. \
 Setiap pernyataan harus diikuti nomor sumbernya, misalnya [1]. \
-Jika KONTEKS tidak memuat jawabannya, jawab persis: \"Informasi tidak ditemukan dalam basis pengetahuan.\" \
-Jangan menambahkan pengetahuan di luar KONTEKS. \
-Sumber yang berstatus DICABUT sudah tidak berlaku; jika kamu merujuknya, katakan bahwa peraturan itu sudah dicabut.";
+Hanya jika tidak ada satu pun sumber yang memuat jawabannya, katakan dengan satu kalimat bahwa informasinya tidak ditemukan dalam basis pengetahuan. \
+Jangan menambahkan pengetahuan di luar KONTEKS.";
+
+/// Added only when a source is revoked: with a small model, a rule that never applies still leaks into the answer
+const REVOKED_RULE: &str = " Sumber yang berstatus DICABUT sudah tidak berlaku; jika kamu merujuknya, katakan bahwa peraturan itu sudah dicabut.";
 
 /// First `max` characters of `text`, cut on a word boundary where possible
 fn clip(text: &str, max: usize) -> String {
@@ -41,13 +44,14 @@ pub fn build_prompt(kind: LlmKind, question: &str, hits: &[Hit], max_body_chars:
         context.push_str("(tidak ada konteks yang ditemukan)\n\n");
     }
     let question = question.trim();
+    let system = if hits.iter().any(|h| h.status != "active") { format!("{SYSTEM}{REVOKED_RULE}") } else { SYSTEM.to_owned() };
     match kind {
         LlmKind::Qwen => format!(
-            "<|im_start|>system\n{SYSTEM}<|im_end|>\n<|im_start|>user\nKONTEKS:\n{context}PERTANYAAN: {question}<|im_end|>\n<|im_start|>assistant\n"
+            "<|im_start|>system\n{system}<|im_end|>\n<|im_start|>user\nKONTEKS:\n{context}PERTANYAAN: {question}<|im_end|>\n<|im_start|>assistant\n"
         ),
         // Gemma has no system role, so the instructions open the user turn
         LlmKind::Gemma => format!(
-            "<bos><start_of_turn>user\n{SYSTEM}\n\nKONTEKS:\n{context}PERTANYAAN: {question}<end_of_turn>\n<start_of_turn>model\n"
+            "<bos><start_of_turn>user\n{system}\n\nKONTEKS:\n{context}PERTANYAAN: {question}<end_of_turn>\n<start_of_turn>model\n"
         ),
     }
 }
