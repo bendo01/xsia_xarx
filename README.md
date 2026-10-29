@@ -206,7 +206,7 @@ OPENWA_WEBHOOK_SECRET="generate-with-openssl-rand-hex-32" # POST /api/v1/webhook
 # External tools (defaults shown)
 # CHROME_BIN="/usr/lib64/chromium-browser/headless_shell"   # CHROMIUM_BIN also works
 # DOCLING_BIN="docling"
-# EMBEDDING_MODEL_DIR="models/paraphrase-multilingual-MiniLM-L12-v2"
+# EMBEDDING_MODEL_DIR="models/multilingual-e5-base"
 # AI_UPLOAD_DIR="storage/ai/uploads"
 ```
 

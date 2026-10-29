@@ -264,16 +264,15 @@ asxsia 'cd /var/www/ferron/xsia_xarx/src/server/migration && cargo build --relea
 sudo -u xsia install -m 0755 /var/www/ferron/xsia_xarx/src/server/target/release/xsia_xarx          /var/www/ferron/xsia_xarx/server/
 sudo -u xsia install -m 0755 /var/www/ferron/xsia_xarx/src/server/migration/target/release/migration /var/www/ferron/xsia_xarx/server/
 sudo -u xsia cp -a /var/www/ferron/xsia_xarx/src/server/public /var/www/ferron/xsia_xarx/server/
-# Embedding model for AI chunks (gitignored, so not in the checkout); ≈ 460 MB
-asxsia 'cd /var/www/ferron/xsia_xarx/server && uvx --from huggingface_hub hf download sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 config.json tokenizer.json model.safetensors --local-dir models/paraphrase-multilingual-MiniLM-L12-v2'
+# Embedding model for AI chunks (gitignored, so not in the checkout); ≈ 1.1 GB, 768 dimensions.
+# Default `EMBEDDING_MODEL_DIR` is models/multilingual-e5-base
+asxsia 'cd /var/www/ferron/xsia_xarx/server && uvx --from huggingface_hub hf download intfloat/multilingual-e5-base config.json tokenizer.json model.safetensors --local-dir models/multilingual-e5-base'
 
 # Models for the AI features (gitignored); `hf` comes from huggingface_hub
-asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 --local-dir ./models'
 asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download Qwen/Qwen2.5-1.5B-Instruct-GGUF qwen2.5-1.5b-instruct-q4_k_m.gguf --local-dir ./models'
 asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download Qwen/Qwen2.5-1.5B-Instruct tokenizer.json --local-dir ./models/qwen2.5-1.5b-instruct'
 
-# Optional: Gemma 3 4B (≈ 2.5 GB). The server currently loads Qwen2 only, so these files are unused
-# until generation.rs gets a Gemma 3 loader. The google/* repo is gated: accept the licence at
+# Optional: Gemma 3 4B (≈ 2.5 GB), selectable as model `gemma` in the chatbot. The google/* repo is gated: accept the licence at
 # https://huggingface.co/google/gemma-3-4b-it, then run `hf auth login` as the xsia user first.
 asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download ggml-org/gemma-3-4b-it-GGUF gemma-3-4b-it-Q4_K_M.gguf --local-dir ./models'
 asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download google/gemma-3-4b-it tokenizer.json --local-dir ./models/gemma-3-4b-it'
@@ -282,13 +281,9 @@ asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download google/gemma-3-4b-it 
 # so this file is unused until a Llama loader is added.
 asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download bartowski/Llama-3.2-3B-Instruct-GGUF Llama-3.2-3B-Instruct-Q4_K_M.gguf --local-dir ./models'
 
-# Optional: stronger multilingual embedding models, for retrieval that misses paraphrased questions.
-# Neither is loaded yet: `EmbeddingService` (embedding.rs) is built for MiniLM, with 384 dimensions and the
-# `vector(384)` column of ai.chunks. Switching needs a loader change, a new vector column and a full
-# re-embed of the chunks. Both models expect prefixes (e5: "query: " / "passage: ").
-#   multilingual-e5-base: 768 dimensions, ≈ 1.1 GB, ships model.safetensors
-asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download intfloat/multilingual-e5-base config.json tokenizer.json model.safetensors --local-dir ./models/multilingual-e5-base'
-#   bge-m3: 1024 dimensions, ≈ 2.3 GB. The repo has no model.safetensors, only pytorch_model.bin
+# Optional: bge-m3 (1024 dimensions, ≈ 2.3 GB). NOT loaded by the server: `EmbeddingService` (embedding.rs) is
+# built for multilingual-e5-base (XLM-R, safetensors, 768 dimensions, `vector(768)` column). Using bge-m3 needs a
+# loader that reads pytorch_model.bin (the repo has no model.safetensors), a `vector(1024)` column and a full re-embed.
 asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download BAAI/bge-m3 config.json tokenizer.json pytorch_model.bin --local-dir ./models/bge-m3'
 
 # Check for missing shared libraries (e.g. libtensorflow from the tensorflow crate)
@@ -386,6 +381,26 @@ asxsia 'cd /var/www/ferron/xsia_xarx/src/server && cp /var/www/ferron/xsia_xarx/
 # List all available tasks (e.g. feeder master-data sync)
 asxsia 'cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task'
 ```
+
+**Existing database from the MiniLM days?** Embeddings are now `vector(768)` from `intfloat/multilingual-e5-base`. A fresh database gets that from the migration. A database that already holds chunks keeps its `vector(384)` column and old vectors, which can't be compared with e5 ones, so convert it once (this empties the vectors) and recompute them from the stored chunk text. No PDFs or docling needed; it is resumable and takes a while on a CPU:
+
+```bash
+sudo -u postgres psql -d xsia_xarx <<'SQL'
+BEGIN;
+DROP INDEX IF EXISTS ai.idx_ai_chunks_embedding;
+UPDATE ai.chunks SET embedding = NULL;
+ALTER TABLE ai.chunks ALTER COLUMN embedding TYPE public.vector(768);
+COMMIT;
+SQL
+
+asxsia 'cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task compliance:generate-knowledgebase --reembed'
+
+# Build the index after the vectors exist (faster); raise maintenance_work_mem for a large table
+sudo -u postgres psql -d xsia_xarx -c "CREATE INDEX IF NOT EXISTS idx_ai_chunks_embedding ON ai.chunks USING hnsw (embedding public.vector_cosine_ops)"
+sudo systemctl restart xsia-api   # the running server still holds the old model
+```
+
+Stop and re-run `--reembed` freely: it only processes chunks that have no vector or whose `metadata.embedding_model` isn't e5. Search is unavailable until it finishes.
 
 Then store the integration settings in the database. Each task prompts for its values (passwords and keys are hidden and stored encrypted with `APP_ENCRYPTION_KEY`), so run them in an interactive terminal:
 
@@ -1066,19 +1081,19 @@ docker run --rm -v $BUILD/out/release:/r rockylinux/rockylinux:10 \
 | `server/public/` (static assets, PDF logos/signatures) | `server/public/` (never overwrites `public/upload/`) | tarball | every deploy |
 | `client/.output/` (SolidStart SSR build) | `client/.output/` | tarball | every deploy |
 | `api-usage.json` | `server/api-usage.json` | tarball | every deploy |
-| `server/models/paraphrase-multilingual-MiniLM-L12-v2/` (≈ 460 MB, gitignored) | `server/models/paraphrase-multilingual-MiniLM-L12-v2/` | `rsync`, see below | once, or when the model changes |
+| `server/models/multilingual-e5-base/` (≈ 1.1 GB, gitignored) | `server/models/multilingual-e5-base/` | `rsync`, see below | once, or when the model changes |
 | — | `server/.env` | created on the server ([6.C](#c-production-env)) | once |
 
 **Don't copy:** `target/`, the source tree, your dev `server/.env` / `client/.env`, `backups/`, `logs/`. The email template and the i18n files are compiled into the binary. The server creates `server/logs/`, `server/storage/ai/uploads/` and `server/public/upload/` itself.
 
-The embedding model isn't in git, so it isn't in the tarball. Copy it once from your dev checkout (or download it on the server with the `hf download` command in `src/services/ai/embedding.rs`):
+The embedding model isn't in git, so it isn't in the tarball. Copy it once from your dev checkout (or download it on the server with the `hf download` command in [6.B](#b-install-the-runtime-files)):
 
 ```bash
-rsync -a --mkpath ~/Projects/xsia_xarx/server/models/paraphrase-multilingual-MiniLM-L12-v2/ \
-  admin@server.example.ac.id:/tmp/minilm/
+rsync -a --mkpath ~/Projects/xsia_xarx/server/models/multilingual-e5-base/ \
+  admin@server.example.ac.id:/tmp/e5/
 # on the server
 sudo mkdir -p /var/www/ferron/xsia_xarx/server/models
-sudo rsync -a --delete /tmp/minilm/ /var/www/ferron/xsia_xarx/server/models/paraphrase-multilingual-MiniLM-L12-v2/
+sudo rsync -a --delete /tmp/e5/ /var/www/ferron/xsia_xarx/server/models/multilingual-e5-base/
 sudo chown -R xsia:xsia /var/www/ferron/xsia_xarx/server/models
 ```
 
