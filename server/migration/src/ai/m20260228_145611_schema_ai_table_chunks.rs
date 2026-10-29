@@ -61,9 +61,9 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new("title_hierarchy").text())
                     .col(ColumnDef::new("markdown_content").text())
                     .col(ColumnDef::new("metadata").json_binary())
-                    // 1536 adalah dimensi untuk OpenAI (text-embedding-3-small)
-                    // Sesuaikan jika menggunakan model lokal via Candle (misal: 384 atau 768)
-                    .col(ColumnDef::new("embedding").custom(Alias::new("public.vector(384)")))
+                    // 768 adalah dimensi multilingual-e5-base (Candle, lokal). Jika model diganti,
+                    // dimensi ini harus ikut diganti dan seluruh chunk di-embed ulang.
+                    .col(ColumnDef::new("embedding").custom(Alias::new("public.vector(768)")))
                     .col(
                         ColumnDef::new("created_at")
                             .date_time()

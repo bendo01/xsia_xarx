@@ -54,6 +54,7 @@ export default function AgentChatbotPage() {
     const [retrievalOnly, setRetrievalOnly] = createSignal(false);
     const [topK, setTopK] = createSignal(TOP_K_RANGE.max);
     const [includeRevoked, setIncludeRevoked] = createSignal(false);
+    const [searchMode, setSearchMode] = createSignal<'hybrid' | 'dense'>('hybrid');
     const [rerank, setRerank] = createSignal(true);
     const [temperature, setTemperature] = createSignal(0.2);
     const [maxTokens, setMaxTokens] = createSignal(MAX_TOKEN_RANGE.max);
@@ -134,6 +135,7 @@ export default function AgentChatbotPage() {
             question: q,
             top_k: topK(),
             include_revoked: includeRevoked(),
+            search_mode: searchMode(),
             rerank: rerank(),
             temperature: temperature(),
             max_new_tokens: maxTokens(),
@@ -214,7 +216,7 @@ export default function AgentChatbotPage() {
             return;
         }
         setTurns(
-            res.data.map((x) => ({
+            res.data.turns.map((x) => ({
                 id: nextId++,
                 question: x.question,
                 retrievalOnly: x.retrieval_only,
@@ -226,6 +228,14 @@ export default function AgentChatbotPage() {
                 note: x.note,
             })),
         );
+        // Restore the settings the conversation was last asked with; old conversations have none
+        const s = res.data.settings;
+        if (s.top_k != null) setTopK(Math.min(TOP_K_RANGE.max, Math.max(TOP_K_RANGE.min, s.top_k)));
+        if (s.search_mode) setSearchMode(s.search_mode);
+        if (s.rerank != null) setRerank(s.rerank);
+        if (s.temperature != null) setTemperature(s.temperature);
+        if (s.max_new_tokens != null) setMaxTokens(s.max_new_tokens);
+        if (s.model) setModelId(s.model);
         setConversationId(id);
     };
 
@@ -373,6 +383,18 @@ export default function AgentChatbotPage() {
                                 id="input-rag-top-k"
                             />
                         </label>
+                        <label class="block space-y-1 text-xs">
+                            <span class="font-medium">{t('ad.ragSearchMode')}</span>
+                            <select
+                                class={selectClass}
+                                value={searchMode()}
+                                onChange={(e) => setSearchMode(e.currentTarget.value as 'hybrid' | 'dense')}
+                                id="select-rag-search-mode"
+                            >
+                                <option value="hybrid">{t('ad.ragSearchModeHybrid')}</option>
+                                <option value="dense">{t('ad.ragSearchModeDense')}</option>
+                            </select>
+                        </label>
                         <Show when={!retrievalOnly()}>
                             <Show when={(status()?.models?.length ?? 0) > 1}>
                                 <label class="block space-y-1 text-xs">
@@ -431,10 +453,12 @@ export default function AgentChatbotPage() {
                             <input type="checkbox" checked={includeRevoked()} onChange={(e) => setIncludeRevoked(e.currentTarget.checked)} />
                             <span>{t('ad.ragIncludeRevoked')}</span>
                         </label>
-                        <label class="flex items-center gap-2 text-xs cursor-pointer">
-                            <input type="checkbox" checked={rerank()} onChange={(e) => setRerank(e.currentTarget.checked)} />
-                            <span>{t('ad.ragRerank')}</span>
-                        </label>
+                        <Show when={searchMode() === 'hybrid'}>
+                            <label class="flex items-center gap-2 text-xs cursor-pointer">
+                                <input type="checkbox" checked={rerank()} onChange={(e) => setRerank(e.currentTarget.checked)} />
+                                <span>{t('ad.ragRerank')}</span>
+                            </label>
+                        </Show>
                         <div class="pt-3 mt-1 border-t border-neutral-200 dark:border-neutral-700 space-y-2">
                             <h2 class="text-sm font-bold">{t('ad.ragHistory')}</h2>
                             <Show

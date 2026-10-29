@@ -23,7 +23,7 @@ use crate::models::document::transaction::archives;
 use crate::services::ai::generation::{self, GenParams, LlmKind, LlmService};
 use crate::services::ai::EmbeddingService;
 use crate::services::compliance::rag::answer::{DEFAULT_BODY_CHARS, build_prompt};
-use crate::services::compliance::rag::retrieve::{self as search, Options};
+use crate::services::compliance::rag::retrieve::{self as search, Options, SearchMode};
 
 const DEFAULT_TOP_K: usize = 3;
 const MAX_QUESTION_CHARS: usize = 1000;
@@ -48,11 +48,16 @@ fn settings(payload: &AskRequest) -> Result<Settings, StatusError> {
         None => LlmKind::default(),
         Some(id) => LlmKind::parse(id).ok_or_else(|| StatusError::bad_request().brief("Unknown language model"))?,
     };
+    let mode = match payload.search_mode.as_deref().filter(|m| !m.trim().is_empty()) {
+        None => SearchMode::default(),
+        Some(id) => SearchMode::parse(id).ok_or_else(|| StatusError::bad_request().brief("Unknown search mode"))?,
+    };
     let defaults = GenParams::default();
     Ok(Settings {
         question,
         kind,
         retrieval: Options {
+            mode,
             top_k: payload.top_k.unwrap_or(DEFAULT_TOP_K).clamp(1, 10),
             include_revoked: payload.include_revoked.unwrap_or(false),
             rerank: payload.rerank.unwrap_or(true),
@@ -288,6 +293,7 @@ async fn start_exchange(
     let rerank = Set(Some(s.retrieval.rerank));
     let temperature = Set(Some(s.params.temperature));
     let top_k = Set(Some(s.retrieval.top_k as i32));
+    let search_mode = Set(Some(s.retrieval.mode.id().to_owned()));
     let conversation_id = match conversation_id {
         Some(id) => {
             conversation::ActiveModel {
@@ -297,6 +303,7 @@ async fn start_exchange(
                 rerank,
                 temperature,
                 top_k,
+                search_mode,
                 updated_at: Set(now),
                 updated_by: Set(user_id),
                 ..Default::default()
@@ -316,6 +323,7 @@ async fn start_exchange(
                 rerank,
                 temperature,
                 top_k,
+                search_mode,
                 created_at: Set(now),
                 updated_at: Set(now),
                 created_by: Set(user_id),
@@ -507,7 +515,15 @@ pub async fn conversation_turns(req: &mut Request, depot: &mut Depot) -> Result<
     if let Some(q) = question {
         turns.push(json!({ "question": q, "answer": "", "hits": [], "message_id": null, "feedback": 0, "note": "", "retrieval_only": false }));
     }
-    Ok(Json(json!({ "id": conv.id, "title": conv.title, "turns": turns })))
+    let settings = json!({
+        "top_k": conv.top_k,
+        "search_mode": conv.search_mode,
+        "rerank": conv.rerank,
+        "temperature": conv.temperature,
+        "max_new_tokens": conv.max_new_tokens,
+        "model": conv.model,
+    });
+    Ok(Json(json!({ "id": conv.id, "title": conv.title, "settings": settings, "turns": turns })))
 }
 
 /// Removes a conversation from the history (soft delete; its messages stay in the table)

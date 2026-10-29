@@ -28,7 +28,7 @@ pub async fn preload_rag_models() {
         let start = Instant::now();
         let result = EmbeddingService::global().and_then(|e| {
             // One embedding touches the mmapped weights, so the first real query does not page them in
-            e.embed(&["warm up".to_owned()]).map(|_| ())
+            e.embed_query("warm up").map(|_| ())
         });
         (result, start.elapsed())
     });

@@ -1,12 +1,17 @@
 use indicatif::{ProgressBar, ProgressStyle};
 use salvo::async_trait;
-use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder};
+use sea_orm::{
+    ColumnTrait, ConnectionTrait, DatabaseConnection, EntityTrait, FromQueryResult, PaginatorTrait, QueryFilter, QueryOrder,
+    Statement,
+};
+use uuid::Uuid;
 
 use crate::jobs::embedding::embed::PdfEmbeddingJob;
 use crate::models::ai::chunk;
 use crate::models::document::transaction::archives::{self, CHUNKABLE_TYPE};
+use crate::services::ai::embedding::EMBEDDING_MODEL;
 use crate::services::ai::ingest::ingest_pdf;
-use crate::services::ai::{docling, knowledge};
+use crate::services::ai::{EmbeddingService, docling, knowledge};
 use crate::tasks::Task;
 
 pub struct GenerateKnowledgebaseTask;
@@ -18,7 +23,7 @@ impl Task for GenerateKnowledgebaseTask {
     }
 
     fn description(&self) -> &str {
-        "Embeds every archive with is_knowledge = true into ai.chunks (chunkable_type=Archive); --only=TEXT filters by file name, --limit=N stops after N archives, --force re-embeds archives that already have chunks"
+        "Embeds every archive with is_knowledge = true into ai.chunks (chunkable_type=Archive); --only=TEXT filters by file name, --limit=N stops after N archives, --force re-embeds archives that already have chunks; --reembed only recomputes the vectors of existing chunks with the current embedding model (no docling), e.g. after changing the model"
     }
 
     async fn run(&self, db: &DatabaseConnection, args: &[String]) -> Result<(), Box<dyn std::error::Error>> {
@@ -26,6 +31,10 @@ impl Task for GenerateKnowledgebaseTask {
         let only = arg("--only=").map(str::to_lowercase);
         let limit = arg("--limit=").and_then(|n| n.parse::<usize>().ok());
         let force = args.iter().any(|a| a == "--force");
+
+        if args.iter().any(|a| a == "--reembed") {
+            return reembed_chunks(db).await;
+        }
 
         if !docling::is_available().await {
             return Err(knowledge::DOCLING_MISSING_WARNING.into());
@@ -108,4 +117,74 @@ async fn embed_archive(
     let n = ingest_pdf(db, &job).await?;
     pb.println(format!("{}: {n} chunks", archive.name));
     Ok(true)
+}
+
+/// Chunks re-embedded per database round trip
+const REEMBED_BATCH: i64 = 64;
+
+#[derive(FromQueryResult)]
+struct StaleChunk {
+    id: Uuid,
+    content: String,
+}
+
+/// Recomputes the vector of every chunk that has none, or that was embedded by another model, from the
+/// stored `content`. Needs no PDF, so it is much faster than `--force`, and it can be stopped and resumed.
+async fn reembed_chunks(db: &DatabaseConnection) -> Result<(), Box<dyn std::error::Error>> {
+    let backend = db.get_database_backend();
+    let stale = "deleted_at IS NULL AND (embedding IS NULL OR metadata->>'embedding_model' IS DISTINCT FROM $1)";
+
+    #[derive(FromQueryResult)]
+    struct Total {
+        n: i64,
+    }
+    let total = Total::find_by_statement(Statement::from_sql_and_values(
+        backend,
+        format!("SELECT count(*) AS n FROM ai.chunks WHERE {stale}"),
+        [EMBEDDING_MODEL.into()],
+    ))
+    .one(db)
+    .await?
+    .map_or(0, |t| t.n);
+    println!("==> {total} chunk(s) to embed with {EMBEDDING_MODEL}");
+
+    let pb = ProgressBar::new(total as u64);
+    pb.set_style(
+        ProgressStyle::with_template("{bar:40.cyan/blue} {pos}/{len} [{elapsed_precise}<{eta_precise}]")
+            .unwrap()
+            .progress_chars("=>-"),
+    );
+
+    loop {
+        let batch = StaleChunk::find_by_statement(Statement::from_sql_and_values(
+            backend,
+            format!("SELECT id, content FROM ai.chunks WHERE {stale} ORDER BY id LIMIT {REEMBED_BATCH}"),
+            [EMBEDDING_MODEL.into()],
+        ))
+        .all(db)
+        .await?;
+        if batch.is_empty() {
+            break;
+        }
+
+        let texts: Vec<String> = batch.iter().map(|c| c.content.clone()).collect();
+        let vectors = tokio::task::spawn_blocking(move || EmbeddingService::global()?.embed_passages(&texts)).await??;
+
+        for (chunk, vector) in batch.iter().zip(vectors) {
+            let parts: Vec<String> = vector.iter().map(f32::to_string).collect();
+            db.execute_raw(Statement::from_sql_and_values(
+                backend,
+                "UPDATE ai.chunks SET embedding = $1::vector, \
+                 metadata = jsonb_set(coalesce(metadata, '{}'::jsonb), '{embedding_model}', to_jsonb($2::text)) \
+                 WHERE id = $3"
+                    .to_owned(),
+                [format!("[{}]", parts.join(",")).into(), EMBEDDING_MODEL.into(), chunk.id.into()],
+            ))
+            .await?;
+        }
+        pb.inc(batch.len() as u64);
+    }
+    pb.finish_and_clear();
+    println!("==> done");
+    Ok(())
 }

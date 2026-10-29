@@ -65,7 +65,7 @@ pub async fn ingest_pdf(db: &DatabaseConnection, job: &PdfEmbeddingJob) -> Resul
         let embedder = EmbeddingService::global()?;
         let mut vectors = Vec::with_capacity(embed_input.len());
         for batch in embed_input.chunks(EMBED_BATCH_SIZE) {
-            vectors.extend(embedder.embed(batch)?);
+            vectors.extend(embedder.embed_passages(batch)?);
         }
         Ok(vectors)
     })

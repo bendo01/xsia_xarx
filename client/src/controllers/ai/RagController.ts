@@ -57,6 +57,8 @@ export interface RagSettings {
     question: string;
     top_k: number;
     include_revoked: boolean;
+    /** `hybrid` (default) or `dense`: embedding similarity only, no rerank */
+    search_mode?: 'hybrid' | 'dense';
     rerank: boolean;
     temperature: number;
     max_new_tokens: number;
@@ -211,6 +213,21 @@ export interface RagConversationSummary {
     updated_at: string;
 }
 
+/** Settings of the latest question of a stored conversation; empty for conversations created before they were stored */
+export interface RagStoredSettings {
+    top_k?: number | null;
+    search_mode?: 'hybrid' | 'dense' | null;
+    rerank?: boolean | null;
+    temperature?: number | null;
+    max_new_tokens?: number | null;
+    model?: string | null;
+}
+
+export interface RagStoredConversation {
+    turns: RagStoredTurn[];
+    settings: RagStoredSettings;
+}
+
 export interface RagStoredTurn {
     question: string;
     answer: string;
@@ -235,12 +252,12 @@ export async function RagControllerConversations(): Promise<Result<RagConversati
 }
 
 /** The turns of one stored conversation, with the sources each answer was given */
-export async function RagControllerConversation(id: string): Promise<Result<RagStoredTurn[]>> {
+export async function RagControllerConversation(id: string): Promise<Result<RagStoredConversation>> {
     try {
         const res = await fetch(`${getBaseUrl()}/${path}/conversations/${id}`, { method: 'GET', headers: getHeaders() });
         if (!res.ok) return await failure(res, 'Failed to load the conversation.');
         const body = await res.json();
-        return { is_error: false, message: '', data: body.turns as RagStoredTurn[] };
+        return { is_error: false, message: '', data: { turns: body.turns as RagStoredTurn[], settings: (body.settings ?? {}) as RagStoredSettings } };
     } catch (error: any) {
         return { is_error: true, message: error.message || 'Network error while loading the conversation.' };
     }
