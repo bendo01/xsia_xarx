@@ -23,6 +23,7 @@ use crate::models::document::transaction::archives;
 use crate::services::ai::generation::{self, GenParams, LlmKind, LlmService};
 use crate::services::ai::EmbeddingService;
 use crate::services::compliance::rag::answer::{DEFAULT_BODY_CHARS, build_prompt};
+use crate::services::compliance::rag::Hit;
 use crate::services::compliance::rag::retrieve::{self as search, Options, SearchMode};
 
 const DEFAULT_TOP_K: usize = 3;
@@ -232,6 +233,12 @@ async fn run_ask(
     let started = Instant::now();
     let hits = search::search(db, &s.question, s.retrieval).await?;
     let retrieval_ms = started.elapsed().as_millis();
+    // Only the sources that fit the model's prompt budget are shown, stored and cited
+    let kind = s.kind;
+    let (prompt, hits) = {
+        let question = s.question.clone();
+        tokio::task::spawn_blocking(move || fit_prompt(kind, &question, hits)).await??
+    };
     let conversation_id = start_exchange(db, &s, user_id, conversation_id).await?;
     let _ = tx.send(Event(
         "sources",
@@ -242,8 +249,6 @@ async fn run_ask(
         }),
     ));
 
-    let kind = s.kind;
-    let prompt = build_prompt(kind, &s.question, &hits, DEFAULT_BODY_CHARS);
     let stream_tx = tx.clone();
     let params = s.params.clone();
     // Loading the model and generating are CPU bound, so they run off the async threads.
@@ -277,6 +282,20 @@ async fn run_ask(
         }),
     ));
     Ok(())
+}
+
+/// Builds the prompt, dropping the lowest-ranked sources until it fits `kind`'s token budget (the best source is
+/// always kept). Loads the model's tokenizer, so it is blocking.
+fn fit_prompt(kind: LlmKind, question: &str, mut hits: Vec<Hit>) -> anyhow::Result<(String, Vec<Hit>)> {
+    let llm = LlmService::global(kind)?;
+    let budget = kind.max_prompt_tokens();
+    loop {
+        let prompt = build_prompt(kind, question, &hits, DEFAULT_BODY_CHARS);
+        if hits.len() <= 1 || llm.count_tokens(&prompt)? <= budget {
+            return Ok((prompt, hits));
+        }
+        hits.pop();
+    }
 }
 
 /// Creates the conversation when needed and stores the question. The settings of the latest question are

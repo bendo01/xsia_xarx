@@ -71,6 +71,16 @@ impl LlmKind {
         PathBuf::from(std::env::var(var).unwrap_or_else(|_| default.to_owned())).join("tokenizer.json")
     }
 
+    /// Longest prompt (system, sources and question) worth sending. Gemma 3 answers well up to about 1,070 tokens
+    /// and then turns to gibberish (seen at 1,190 and above), so it is held below that; a longer prompt also
+    /// only slows a CPU model down.
+    pub fn max_prompt_tokens(self) -> usize {
+        match self {
+            Self::Qwen => 2000,
+            Self::Gemma => 1000,
+        }
+    }
+
     /// Tokens that end an answer
     fn stop_tokens(self) -> &'static [&'static str] {
         match self {
@@ -165,6 +175,11 @@ impl LlmService {
             bail!("The tokenizer has none of the stop tokens {:?}", kind.stop_tokens());
         }
         Ok(Self { model: Mutex::new(model), tokenizer, device, stop_tokens })
+    }
+
+    /// Number of tokens `text` takes in the model's tokenizer
+    pub fn count_tokens(&self, text: &str) -> Result<usize> {
+        Ok(self.tokenizer.encode(text, false).map_err(anyhow::Error::msg)?.len())
     }
 
     /// Generates a completion for a prompt in the model's chat format, calling `on_text` with each new piece of text.
