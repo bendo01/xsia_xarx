@@ -473,7 +473,7 @@ package "ai" {
     * content : text
     heading_context, title_hierarchy
     metadata : jsonb
-    embedding : vector(384)
+    embedding : vector(768)
   }
   entity "conversations (sudah ada)" as CONV {
     * id : uuid <<PK>>
@@ -542,7 +542,7 @@ CONV -[hidden]down- CH
 | `regulation` | `regulations` | Registri dokumen: nomor, tahun, status, masa berlaku audit, file sumber |
 | `regulation` | `regulation_relations` | Edge antar-regulasi beserta rujukan pasal |
 | `regulation` | `regulation_nodes` | Pohon struktur pasal |
-| `ai` | `chunks` (sudah ada) | Teks, embedding `vector(384)`, metadata |
+| `ai` | `chunks` (sudah ada) | Teks, embedding `vector(768)`, metadata |
 | `ai` | `message_citations` | Sitasi jawaban ke chunk, regulasi, dan pasal |
 | `ai` | `ingest_runs` | Riwayat ingest: model embedding, versi chunker, galat |
 
@@ -582,11 +582,11 @@ CONV -[hidden]down- CH
   ```
 - Status implementasi: task `compliance:ingest-regulations` masih menulis ke `compliance.regulation_documents` dengan `chunkable_type = 'Regulation'`, belum ke tabel `regulation.*` di atas. Daftar `REVOKED` di task itu sudah memuat 18 regulasi historis (bagian 2), dicocokkan dengan awalan nama file, nomor, dan tahun.
 - `ai.chunks.chunkable_id` tidak punya FK; integritas ke `regulation_nodes` dijaga di kode ingest.
-- Dimensi vektor saat ini 384. Mengganti model embedding berarti embed ulang semua chunk; `ingest_runs.embedding_model` mencatat model yang dipakai.
+- Dimensi vektor saat ini 768 (`intfloat/multilingual-e5-base`; sebelumnya 384 dengan MiniLM). Dimensi mengikuti model, jadi mengganti model berarti mengubah kolom dan embed ulang semua chunk (`compliance:generate-knowledgebase --reembed`, tanpa PDF). `ingest_runs.embedding_model` mencatat model yang dipakai.
 - Migrator CLI rusak di dev DB (nama migrasi lama), jadi migrasi diterapkan satu per satu.
-- embedding model **`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`**
+- embedding model **`intfloat/multilingual-e5-base`** (768 dimensi; awalan `query: ` untuk pertanyaan dan `passage: ` untuk chunk)
   ```sh
-  hf download sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 --local-dir ./models
+  hf download intfloat/multilingual-e5-base config.json tokenizer.json model.safetensors --local-dir ./models/multilingual-e5-base
   ```
 - RAG model `Qwen/Qwen2.5-1.5B-Instruct-GGUF qwen2.5-1.5b-instruct-q4_k_m.gguf`
   ```sh

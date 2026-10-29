@@ -72,7 +72,7 @@ package "ai" {
     * content : text
     heading_context, title_hierarchy
     metadata : jsonb
-    embedding : vector(384)
+    embedding : vector(768)
   }
   entity "conversations (sudah ada)" as CONV {
     * id : uuid <<PK>>
