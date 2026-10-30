@@ -17,18 +17,53 @@ pub fn rrf<K: Hash + Eq + Clone>(lists: &[Vec<K>], k: f64) -> Vec<(K, f64)> {
             *entry += 1.0 / (k + (i + 1) as f64);
         }
     }
-    let mut out: Vec<(K, f64)> = order.into_iter().map(|key| {
-        let s = scores[&key];
-        (key, s)
-    }).collect();
+    let mut out: Vec<(K, f64)> = order
+        .into_iter()
+        .map(|key| {
+            let s = scores[&key];
+            (key, s)
+        })
+        .collect();
     out.sort_by(|a, b| b.1.total_cmp(&a.1)); // stable: ties stay in first-seen order
     out
 }
 
 const STOPWORDS: &[&str] = &[
-    "yang", "dan", "dengan", "untuk", "dari", "pada", "atau", "apa", "berapa", "adalah", "dalam", "itu", "ini", "oleh",
-    "ke", "di", "the", "of", "is", "a", "an", "apakah", "pengertian", "definisi", "dimaksud", "berdasarkan", "menurut",
-    "tentang", "bagaimana", "jelaskan", "sebutkan", "sesuai", "sebagaimana", "seperti", "terdapat",
+    "yang",
+    "dan",
+    "dengan",
+    "untuk",
+    "dari",
+    "pada",
+    "atau",
+    "apa",
+    "berapa",
+    "adalah",
+    "dalam",
+    "itu",
+    "ini",
+    "oleh",
+    "ke",
+    "di",
+    "the",
+    "of",
+    "is",
+    "a",
+    "an",
+    "apakah",
+    "pengertian",
+    "definisi",
+    "dimaksud",
+    "berdasarkan",
+    "menurut",
+    "tentang",
+    "bagaimana",
+    "jelaskan",
+    "sebutkan",
+    "sesuai",
+    "sebagaimana",
+    "seperti",
+    "terdapat",
 ];
 
 /// Degree abbreviations that questions use but regulations spell out ("program sarjana"), so neither the
@@ -47,7 +82,7 @@ const DEGREE_ALIASES: &[(&str, &str)] = &[
 pub fn expand_aliases(query: &str) -> String {
     let mut out = String::with_capacity(query.len() + 16);
     let mut word = String::new();
-    let mut flush = |word: &mut String, out: &mut String| {
+    let flush = |word: &mut String, out: &mut String| {
         if word.is_empty() {
             return;
         }
@@ -78,7 +113,10 @@ pub fn query_terms(query: &str) -> Vec<String> {
         .to_lowercase()
         .split(|c: char| !c.is_alphanumeric())
         .filter(|t| !t.is_empty())
-        .filter(|t| t.chars().all(|c| c.is_ascii_digit()) || (t.chars().count() >= 3 && !STOPWORDS.contains(t)))
+        .filter(|t| {
+            t.chars().all(|c| c.is_ascii_digit())
+                || (t.chars().count() >= 3 && !STOPWORDS.contains(t))
+        })
         .filter(|t| seen.insert((*t).to_owned()))
         .map(str::to_owned)
         .collect()
@@ -110,7 +148,10 @@ fn kind_of(words: &[&str]) -> Option<(&'static str, usize)> {
 /// Returns `None` unless both a number and a year follow `nomor`/`no`/`tahun`.
 pub fn extract_reference(query: &str) -> Option<(Reference, String)> {
     let lower = query.to_lowercase();
-    let words: Vec<&str> = lower.split(|c: char| !c.is_alphanumeric()).filter(|w| !w.is_empty()).collect();
+    let words: Vec<&str> = lower
+        .split(|c: char| !c.is_alphanumeric())
+        .filter(|w| !w.is_empty())
+        .collect();
     let at = (0..words.len().saturating_sub(3)).find(|&i| {
         matches!(words[i], "nomor" | "no")
             && words[i + 1].chars().all(|c| c.is_ascii_digit())
@@ -122,10 +163,18 @@ pub fn extract_reference(query: &str) -> Option<(Reference, String)> {
     let reference_start = kind_of(&words[..at]).map_or((None, at), |(k, n)| (Some(k), at - n));
     let reference = Reference {
         kind: reference_start.0,
-        number: if number.is_empty() { "0".to_owned() } else { number.to_owned() },
+        number: if number.is_empty() {
+            "0".to_owned()
+        } else {
+            number.to_owned()
+        },
         year: words[at + 3].parse().ok()?,
     };
-    let rest: Vec<&str> = words[..reference_start.1].iter().chain(&words[at + 4..]).copied().collect();
+    let rest: Vec<&str> = words[..reference_start.1]
+        .iter()
+        .chain(&words[at + 4..])
+        .copied()
+        .collect();
     Some((reference, rest.join(" ")))
 }
 
@@ -144,7 +193,10 @@ mod tests {
 
     #[test]
     fn filler_words_do_not_count_as_terms() {
-        assert_eq!(query_terms("apa definisi mahasiswa sesuai dengan"), vec!["mahasiswa"]);
+        assert_eq!(
+            query_terms("apa definisi mahasiswa sesuai dengan"),
+            vec!["mahasiswa"]
+        );
     }
 
     #[test]
@@ -165,26 +217,48 @@ mod tests {
     fn query_terms_drop_stopwords_but_keep_numbers() {
         assert_eq!(
             query_terms("Berapa beban SKS dosen paling banyak 16 SKS per semester?"),
-            vec!["beban", "sks", "dosen", "paling", "banyak", "16", "per", "semester"]
+            vec![
+                "beban", "sks", "dosen", "paling", "banyak", "16", "per", "semester"
+            ]
         );
         assert!(query_terms("di ke a").is_empty());
-        assert_eq!(query_terms("apakah pengertian dari mahasiswa berdasarkan"), vec!["mahasiswa"]);
+        assert_eq!(
+            query_terms("apakah pengertian dari mahasiswa berdasarkan"),
+            vec!["mahasiswa"]
+        );
     }
 
     #[test]
     fn degree_abbreviations_are_spelled_out_as_whole_words() {
-        assert_eq!(expand_aliases("berapakah waktu tempuh mahasiswa S1?"), "berapakah waktu tempuh mahasiswa program sarjana?");
-        assert_eq!(expand_aliases("syarat d3 dan S2"), "syarat program diploma tiga dan program magister");
+        assert_eq!(
+            expand_aliases("berapakah waktu tempuh mahasiswa S1?"),
+            "berapakah waktu tempuh mahasiswa program sarjana?"
+        );
+        assert_eq!(
+            expand_aliases("syarat d3 dan S2"),
+            "syarat program diploma tiga dan program magister"
+        );
         // part of a longer word or number: left alone
         assert_eq!(expand_aliases("pasal s10 dan abs1"), "pasal s10 dan abs1");
     }
 
     #[test]
     fn reference_is_split_from_the_question() {
-        let (r, rest) = extract_reference("apakah yang dimaksud dengan mahasiswa pada undang undang nomor 12 tahun 2012").unwrap();
-        assert_eq!(r, Reference { kind: Some("UU"), number: "12".into(), year: 2012 });
+        let (r, rest) = extract_reference(
+            "apakah yang dimaksud dengan mahasiswa pada undang undang nomor 12 tahun 2012",
+        )
+        .unwrap();
+        assert_eq!(
+            r,
+            Reference {
+                kind: Some("UU"),
+                number: "12".into(),
+                year: 2012
+            }
+        );
         assert_eq!(rest, "apakah yang dimaksud dengan mahasiswa pada");
-        let (r, rest) = extract_reference("Apa isi PP No. 04 Tahun 2014 tentang beban dosen?").unwrap();
+        let (r, rest) =
+            extract_reference("Apa isi PP No. 04 Tahun 2014 tentang beban dosen?").unwrap();
         assert_eq!((r.kind, r.number.as_str(), r.year), (Some("PP"), "4", 2014));
         assert_eq!(rest, "apa isi tentang beban dosen");
         assert!(extract_reference("Berapa beban dosen tahun 2012?").is_none());

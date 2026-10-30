@@ -1,6 +1,6 @@
 use sea_orm::{
     ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection,
-    EntityTrait, IntoActiveModel, QueryFilter, TransactionTrait,
+    EntityTrait, IntoActiveModel, QueryFilter, QueryOrder, TransactionTrait,
 };
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -212,9 +212,11 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
 
     // 8. Upsert Detail Activity
     let existing_detail = detail_activities::Entity::find()
-        .filter(detail_activities::Column::TeachId.eq(teach.id))
+        .filter(detail_activities::Column::DeletedAt.is_null())
         .filter(detail_activities::Column::ActivityId.eq(student_activity.id))
         .filter(detail_activities::Column::CourseId.eq(course.id))
+        .order_by_desc(detail_activities::Column::TeachId.eq(teach.id))
+        .order_by_desc(detail_activities::Column::CreatedAt)
         .one(&txn)
         .await
         .map_err(|e| {
@@ -232,6 +234,7 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
     let action = if let Some(existing) = existing_detail {
         let mut active = existing.into_active_model();
         active.name = Set(Some(detail_activity_name.clone()));
+        active.teach_id = Set(Some(teach.id));
         active.credit = Set(Some(credit)); // Model uses f64
         active.feeder_id = Set(Some(model.id));
         active.updated_at = Set(Some(chrono::Utc::now().naive_utc()));

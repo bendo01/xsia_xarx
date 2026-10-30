@@ -62,10 +62,14 @@ async fn upsert_detail_activity(
     institution: Option<&Institution::Model>,
     academic_year: &AcademicYear::Model,
 ) -> Result<(AcademicDetailActivity::Model, UpsertAction), sea_orm::DbErr> {
+    // One live row per (activity, course): prefer the same class, but reuse a row left
+    // on another class instead of inserting a duplicate.
     let existing_detail = AcademicDetailActivity::Entity::find()
-        .filter(AcademicDetailActivity::Column::TeachId.eq(teach.id))
+        .filter(AcademicDetailActivity::Column::DeletedAt.is_null())
         .filter(AcademicDetailActivity::Column::ActivityId.eq(student_activity.id))
         .filter(AcademicDetailActivity::Column::CourseId.eq(course.id))
+        .order_by_desc(AcademicDetailActivity::Column::TeachId.eq(teach.id))
+        .order_by_desc(AcademicDetailActivity::Column::CreatedAt)
         .one(txn)
         .await?;
 
@@ -73,6 +77,7 @@ async fn upsert_detail_activity(
         Some(d) => Some(d),
         None => {
             AcademicDetailActivity::Entity::find()
+                .filter(AcademicDetailActivity::Column::DeletedAt.is_null())
                 .filter(AcademicDetailActivity::Column::FeederId.eq(record.id))
                 .one(txn)
                 .await?
@@ -93,6 +98,7 @@ async fn upsert_detail_activity(
     if let Some(existing) = existing_detail {
         let mut active = existing.into_active_model();
         active.name = Set(Some(detail_activity_name));
+        active.teach_id = Set(Some(teach.id));
         active.credit = Set(Some(credit));
         active.feeder_id = Set(Some(record.id));
         active.sync_at = Set(Some(now));
