@@ -83,6 +83,11 @@ pub fn router() -> Router {
                 .get(user::current_user)
         )
         .push(
+            Router::with_path("change-password")
+                .hoop(crate::middleware::auth::JwtAuth)
+                .post(user::change_password)
+        )
+        .push(
             Router::with_path("user/set_current_role/{role_id}")
                 .hoop(crate::middleware::auth::JwtAuth)
                 .get(user::set_current_role)

@@ -261,4 +261,11 @@ export const auId: Record<string, string> = {
     homeFooterHelp: 'Butuh bantuan lebih lanjut terkait akun Anda? Hubungi Layanan Administrasi Akademik atau Pusat Data dan Sistem Informasi Institusi.',
     homeFooterSystem: 'Sistem Informasi Akademik',
     homeHeroSubtitle: 'Selamat datang di portal akademik terpadu. Ikuti petunjuk langkah demi langkah di bawah ini untuk mengakses ruang kerja Anda, mendaftarkan akun baru, atau memulihkan kata sandi.',
+    ubahKataSandi: 'Ubah Kata Sandi',
+    ubahKataSandiDeskripsi: 'Perbarui kata sandi akun Anda secara berkala demi keamanan.',
+    kataSandiSaatIni: 'Kata Sandi Saat Ini',
+    masukkanKataSandiSaatIni: 'Masukkan kata sandi saat ini',
+    kataSandiBaruHarusBerbeda: 'Kata sandi baru harus berbeda dari kata sandi saat ini',
+    kataSandiBerhasilDiubah: 'Kata sandi berhasil diubah',
+    tampilkanKataSandi: 'Tampilkan kata sandi',
 };

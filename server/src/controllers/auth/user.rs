@@ -10,7 +10,7 @@ use validator::Validate;
 use crate::dtos::auth::user::{
     CreateUserRequest, UserQuery, UserResponse, PaginatedUserResponse,
     UpdateUserRequest, RegisterRequest, LoginRequest, LoginResponse, SessionLoginResponse,
-    ForgotPasswordRequest, ResetPasswordRequest, ResendVerificationRequest,
+    ForgotPasswordRequest, ResetPasswordRequest, ChangePasswordRequest, ResendVerificationRequest,
     AccountAcquisitionRequest, AccountAcquisitionResponse, ForgotPasswordResponse,
 };
 use crate::dtos::common::reference::{MessageResponse, OptionItem, OptionRequest};
@@ -1038,6 +1038,45 @@ pub async fn reset_password(
         wa_link,
         message: "Password has been successfully reset. You can now login.".to_string(),
     }))
+}
+
+#[endpoint(tags("Auth - Change Password"), status_codes(200, 400, 401, 500))]
+pub async fn change_password(
+    req: &mut Request,
+    depot: &mut Depot,
+) -> Result<Json<MessageResponse>, StatusError> {
+    let db = depot.get_typed::<DatabaseConnection>().map_err(|_| {
+        StatusError::internal_server_error().brief("Database connection missing")
+    })?;
+
+    let current_user_id = depot.get::<Uuid>("current_user_id").copied().map_err(|_| {
+        StatusError::unauthorized().brief("Unauthorized")
+    })?;
+
+    let payload: ChangePasswordRequest = req.parse_json().await.map_err(|e| {
+        StatusError::bad_request().brief(format!("Invalid JSON payload: {}", e))
+    })?;
+
+    payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+
+    let existing = entity_mod::Entity::find_by_id(current_user_id)
+        .filter(entity_mod::Column::DeletedAt.is_null())
+        .one(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+        .ok_or_else(|| StatusError::unauthorized().brief("Unauthorized"))?;
+
+    if !verify_password(&existing.password, &payload.current_password)? {
+        return Err(StatusError::bad_request().brief("Current password is incorrect"));
+    }
+
+    let mut active_model = existing.into_active_model();
+    active_model.password = Set(hash_password(&payload.new_password)?);
+    active_model.updated_at = Set(Utc::now().naive_utc());
+    active_model.updated_by = Set(auth_user_id(depot));
+    active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+    Ok(Json(MessageResponse { message: "Password has been successfully changed.".to_string() }))
 }
 
 #[endpoint(tags("Auth - Current User"), status_codes(200, 401, 500))]

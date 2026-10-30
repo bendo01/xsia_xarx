@@ -11,3 +11,4 @@ pub mod feeder;
 pub mod auth;
 pub mod webhook;
 pub mod ai;
+pub mod preference;

@@ -4357,4 +4357,11 @@ export const adEn: Record<string, string> = {
     ragFeedbackFailed: 'Failed to save the feedback.',
     ragLoadStatusFailed: 'Failed to load the RAG status.',
     ragSlowPrompt: 'Reading the context is still slow: add CANDLE_DEQUANTIZE_ALL=1 to the server .env (about 6 GB more RAM) and restart the server.',
+    applicationPreference: 'Application Preference',
+    applicationPreferenceSaved: 'Application preference saved.',
+    llmEnable: 'Enable LLM & Chatbot',
+    llmEnableHint: 'When on, the chatbot is shown on the client and the LLM is loaded at server start (applies after the server restarts).',
+    llmDisabledTitle: 'Chatbot is disabled',
+    llmDisabledDesc: 'Enable the LLM in the application preference to use the chatbot.',
+    save: 'Save',
 };

@@ -22,3 +22,4 @@ pub mod upsert_20_detail_nilai_perkuliahan_kelas_to_academic_student_campaign_de
 pub mod upsert_21_biodata_mahasiswa_to_contact_details;
 pub mod upsert_22_biodata_dosen_to_contact_details;
 pub mod sync_log;
+pub mod dedupe_detail_activities;

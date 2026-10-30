@@ -261,4 +261,11 @@ export const auEn: Record<string, string> = {
     homeFooterHelp: 'Need more help with your account? Contact the Academic Administration Service or the Institution\'s Data and Information Systems Center.',
     homeFooterSystem: 'Academic Information System',
     homeHeroSubtitle: 'Welcome to the unified academic portal. Follow the step-by-step instructions below to access your workspace, register a new account, or recover your password.',
+    ubahKataSandi: 'Change Password',
+    ubahKataSandiDeskripsi: 'Update your account password regularly to stay secure.',
+    kataSandiSaatIni: 'Current Password',
+    masukkanKataSandiSaatIni: 'Enter your current password',
+    kataSandiBaruHarusBerbeda: 'The new password must differ from the current password',
+    kataSandiBerhasilDiubah: 'Password changed successfully',
+    tampilkanKataSandi: 'Show passwords',
 };

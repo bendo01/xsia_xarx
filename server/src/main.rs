@@ -126,7 +126,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     start_pdf_embedding_worker(queue.clone(), db.clone());
     println!("PGMQ PDF embedding worker started");
 
-    xsia_xarx::services::ai::preload_rag_models().await;
+    if xsia_xarx::controllers::preference::application::is_llm_enabled(&db).await {
+        xsia_xarx::services::ai::preload_rag_models().await;
+    } else {
+        println!("LLM disabled in preference.applications; skipping model preload");
+    }
 
     let cors = salvo::cors::Cors::new()
         .allow_origin(salvo::cors::Any)

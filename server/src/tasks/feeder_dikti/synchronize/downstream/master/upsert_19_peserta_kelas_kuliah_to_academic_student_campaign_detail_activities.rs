@@ -513,6 +513,11 @@ impl Task for SyncPesertaKelasKuliahToDetailActivities {
             ));
         }
 
+        let duplicates_removed = super::dedupe_detail_activities::soft_delete_duplicate_detail_activities(db).await?;
+        if duplicates_removed > 0 {
+            println!("Soft-deleted {} duplicate detail activities", duplicates_removed);
+        }
+
         sync_log.summary(inserted, updated, skipped, errors)?;
 
         Ok(())

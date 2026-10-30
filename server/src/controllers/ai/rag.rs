@@ -126,6 +126,7 @@ pub async fn status(depot: &mut Depot) -> Result<Json<RagStatusResponse>, Status
         .collect();
     let default = &models[0];
     Ok(Json(RagStatusResponse {
+        llm_enabled: crate::controllers::preference::application::is_llm_enabled(db).await,
         llm_model: default.label.clone(),
         llm_model_present: default.model_present,
         llm_model_size: default.model_size,
@@ -200,6 +201,9 @@ pub async fn ask(req: &mut Request, depot: &mut Depot, res: &mut Response) -> Re
         .get_typed::<DatabaseConnection>()
         .map_err(|_| StatusError::internal_server_error().brief("Database connection missing"))?
         .clone();
+    if !crate::controllers::preference::application::is_llm_enabled(&db).await {
+        return Err(StatusError::forbidden().brief("The chatbot is disabled in the application preferences"));
+    }
     let payload: AskRequest = req
         .parse_json()
         .await

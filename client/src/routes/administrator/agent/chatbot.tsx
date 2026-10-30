@@ -294,6 +294,13 @@ export default function AgentChatbotPage() {
         <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
             <TopBar />
 
+            <Show when={status()?.llm_enabled !== false} fallback={
+                <div class="mx-auto max-w-xl px-4 py-16 text-center space-y-3">
+                    <h1 class="text-xl font-bold">{t('ad.llmDisabledTitle')}</h1>
+                    <p class="text-sm text-neutral-600 dark:text-neutral-400">{t('ad.llmDisabledDesc')}</p>
+                    <a href="/administrator/preference/application" class="inline-block text-sm font-semibold text-blue-600 hover:underline">{t('ad.applicationPreference')}</a>
+                </div>
+            }>
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
                 {/* Page header */}
                 <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
@@ -704,6 +711,7 @@ export default function AgentChatbotPage() {
                     </section>
                 </div>
             </div>
+            </Show>
         </div>
     );
 }

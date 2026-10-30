@@ -474,6 +474,44 @@ export async function resetPassword(resetPayload: ResetPassword) {
     }
 }
 
+export async function changePassword(currentPassword: string, newPassword: string) {
+    try {
+        const response = await fetch(`${getBaseUrl()}/change-password`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                Authorization: `Bearer ${getStorageItem("token")}`,
+            },
+            body: JSON.stringify({
+                current_password: currentPassword,
+                new_password: newPassword,
+            }),
+        });
+        let data: any = {};
+        try {
+            data = await response.json();
+        } catch {
+            data = {};
+        }
+        if (!response.ok) {
+            return {
+                code: response.status || 500,
+                message: data?.brief || data?.message || data?.error?.message || "Gagal mengubah kata sandi"
+            };
+        }
+        return {
+            code: 200,
+            message: data?.message || "Kata sandi berhasil diubah"
+        };
+    } catch {
+        return {
+            code: 500,
+            message: "Gagal terhubung ke server"
+        };
+    }
+}
+
 export async function AuthUserIndex(pagination: TypePaginationForm): Promise<ModelAuthUserPaginationResponse> {
     try {
         const queryParams = new URLSearchParams();
