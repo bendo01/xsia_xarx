@@ -14,7 +14,7 @@ use sea_orm::{DatabaseConnection, FromQueryResult, Statement};
 use uuid::Uuid;
 
 use super::Hit;
-use super::fusion::{Reference, extract_reference, query_terms, rrf};
+use super::fusion::{Reference, expand_aliases, extract_reference, query_terms, rrf};
 use crate::models::document::transaction::archives::CHUNKABLE_TYPE as ARCHIVE_TYPE;
 use crate::services::ai::EmbeddingService;
 
@@ -253,6 +253,8 @@ async fn label_articles(db: &DatabaseConnection, hits: &mut [Hit]) -> Result<()>
 /// When the question cites a regulation ("undang undang nomor 12 tahun 2012") the citation is taken out of the
 /// query, and that regulation is searched again on its own so its chunks compete with the rest.
 pub async fn search(db: &DatabaseConnection, query: &str, opts: Options) -> Result<Vec<Hit>> {
+    let query = expand_aliases(query);
+    let query = query.as_str();
     if opts.mode == SearchMode::Dense {
         return search_dense(db, query, opts).await;
     }
