@@ -169,6 +169,7 @@ pub async fn generate_html_content(
         .await?;
 
     let mut detail_activities = Vec::new();
+    let (mut calc_sks, mut graded_sks, mut weighted_sum) = (0.0_f64, 0.0_f64, 0.0_f64);
     for detail in detail_entities {
         let course = AcademicCourseMasterCourse::Entity::find_by_id(detail.course_id)
             .filter(AcademicCourseMasterCourse::Column::DeletedAt.is_null())
@@ -216,6 +217,13 @@ pub async fn generate_html_content(
             None => None,
         };
 
+        let cred = detail.credit.or_else(|| course.as_ref().map(|c| c.total_credit)).unwrap_or(0.0);
+        calc_sks += cred;
+        if let Some(g) = grade.as_ref() {
+            graded_sks += cred;
+            weighted_sum += g.grade * cred;
+        }
+
         detail_activities.push(DetailActivityDto {
             detail_activity: DetailActivityItemDto {
                 id: detail.id,
@@ -235,12 +243,24 @@ pub async fn generate_html_content(
         });
     }
 
+    // Feeder-sourced totals are 0 for many older semesters; fall back to the detail rows (same as the API).
+    let total_credit = if activity.total_credit.unwrap_or(0.0) > 0.0 || calc_sks <= 0.0 {
+        activity.total_credit
+    } else {
+        Some(calc_sks)
+    };
+    let cumulative_index = if activity.cumulative_index > 0.0 || graded_sks <= 0.0 || weighted_sum <= 0.0 {
+        activity.cumulative_index
+    } else {
+        weighted_sum / graded_sks
+    };
+
     let student_activity_dto = StudentActivityDto {
         activity: ActivityInfo {
             id: activity.id,
-            cumulative_index: activity.cumulative_index,
+            cumulative_index,
             grand_cumulative_index: activity.grand_cumulative_index,
-            total_credit: activity.total_credit,
+            total_credit,
             grand_total_credit: activity.grand_total_credit,
         },
         student: student.as_ref().map(|s| StudentInfo {

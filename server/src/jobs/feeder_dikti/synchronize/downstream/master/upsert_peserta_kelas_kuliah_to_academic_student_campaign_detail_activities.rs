@@ -141,8 +141,9 @@ pub async fn perform(db: &DatabaseConnection, args: WorkerArgs) -> Result<(), Bo
 
     // 5. Check if exists in student_detail_activities
     let existing_detail = detail_activities::Entity::find()
+        .filter(detail_activities::Column::DeletedAt.is_null())
         .filter(detail_activities::Column::ActivityId.eq(student_activity.id))
-        .filter(detail_activities::Column::TeachId.eq(teach.id))
+        .filter(detail_activities::Column::CourseId.eq(teach.course_id))
         .one(&txn)
         .await
         .map_err(|e| {

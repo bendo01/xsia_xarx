@@ -1228,7 +1228,7 @@ export default function StudentDashboardProfilePage() {
                                                                                 <span>{t('st.khs')}</span>
                                                                             </button>
                                                                             <A
-                                                                                href={`/student/academic/student/campaign/activity/${act.id}/show`}
+                                                                                href={`/student/academic/student/campaign/activity/${act.id}`}
                                                                                 class="px-2.5 py-1 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-xs text-xs font-semibold"
                                                                             >
                                                                                 {t('st.details')}
@@ -1336,7 +1336,7 @@ export default function StudentDashboardProfilePage() {
                                                                     <span>{t('st.khs')}</span>
                                                                 </button>
                                                                 <A
-                                                                    href={`/student/academic/student/campaign/activity/${act.id}/show`}
+                                                                    href={`/student/academic/student/campaign/activity/${act.id}`}
                                                                     class="flex-1 py-1.5 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-xs text-xs font-semibold text-center transition-colors"
                                                                 >
                                                                     {t('st.details')}

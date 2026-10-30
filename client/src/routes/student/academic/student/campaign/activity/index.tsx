@@ -2,19 +2,19 @@ import { createSignal, onMount, createEffect, For, Show } from 'solid-js';
 import { useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
-import { 
-    currentUserSignal, 
-    refreshAuthState, 
-    getActiveStudentId, 
-    getActiveStudentCode, 
-    setActiveStudent 
+import {
+    currentUserSignal,
+    refreshAuthState,
+    getActiveStudentId,
+    getActiveStudentCode,
+    setActiveStudent
 } from '~/lib/authStore';
 import { getStorageItem } from '~/lib/storage';
 import { GetCurrentUser } from '~/controllers/auth/AuthUser';
 import { PersonMasterIndividualControllerShow } from '~/controllers/person/master/PersonMasterIndividualController';
 import { getStudentById, StudentMasterItem } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
-import { 
-    listStudentActivities, 
+import {
+    listStudentActivities,
     StudentActivityItem,
     printActivityPlan,
     printActivityResult
@@ -79,7 +79,7 @@ export default function StudentCampaignActivityIndexPage() {
     const resolveActiveStudent = async (): Promise<StudentMasterItem | null> => {
         try {
             let targetIndId = currentUserSignal()?.individual_id || getStorageItem('individual_id') || '';
-            
+
             if (!targetIndId || targetIndId === '00000000-0000-0000-0000-000000000000') {
                 const curUserRes = await GetCurrentUser();
                 if (curUserRes.code === 200 && curUserRes.data?.individual_id) {
@@ -169,12 +169,12 @@ export default function StudentCampaignActivityIndexPage() {
 
     const handleSelectStudent = async (student: StudentMasterItem) => {
         if (activeStudent()?.id === student.id && activeStudent()?.code === student.code) return;
-        
+
         setActiveStudentState(student);
         setActiveStudent(student.id, student.code);
         setSearchParams({ code: student.code });
         setPage(1);
-        
+
         toast.success(t('st.loadingSemesterActivitiesForNIMNim', { nim: student.code }));
         await fetchActivities();
     };
@@ -397,7 +397,7 @@ export default function StudentCampaignActivityIndexPage() {
                                                             <span>{t('st.khs')}</span>
                                                         </button>
                                                         <A
-                                                            href={`/student/academic/student/campaign/activity/${act.id}/show`}
+                                                            href={`/student/academic/student/campaign/activity/${act.id}`}
                                                             class="px-3 py-1.5 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-xs text-xs font-bold transition-colors"
                                                         >
                                                             {t('st.details')}
@@ -514,7 +514,7 @@ export default function StudentCampaignActivityIndexPage() {
                                                 <span>{t('st.khs')}</span>
                                             </button>
                                             <A
-                                                href={`/student/academic/student/campaign/activity/${act.id}/show`}
+                                                href={`/student/academic/student/campaign/activity/${act.id}`}
                                                 class="flex-1 py-2 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-xs text-xs font-bold text-center transition-colors"
                                             >
                                                 {t('st.details')}

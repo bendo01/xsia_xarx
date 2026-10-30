@@ -39,6 +39,7 @@ pub fn get_tasks() -> Vec<Box<dyn Task>> {
         Box::new(utilities::utility_07_sync_student_roles::SyncStudentRolesTask),
         Box::new(utilities::utility_08_cleanup_student_detail_activity::CleanupStudentDetailActivityTask),
         Box::new(utilities::utility_06_sync_student_class_codes::SyncStudentClassCodesTask),
+        Box::new(feeder_dikti::synchronize::downstream::reports::mismatch_report::SksMismatchReportTask),
         Box::new(rag::rag_02_ingest_regulations::IngestRegulationsTask),
         Box::new(rag::rag_01_retrieve_regulations::RetrieveRegulationsTask),
         Box::new(rag::rag_03_eval_retrieval::EvalRetrievalTask),
