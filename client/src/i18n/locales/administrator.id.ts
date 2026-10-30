@@ -4357,4 +4357,11 @@ export const adId: Record<string, string> = {
     ragFeedbackFailed: 'Gagal menyimpan umpan balik.',
     ragLoadStatusFailed: 'Gagal memuat status RAG.',
     ragSlowPrompt: 'Pembacaan konteks masih lambat: tambahkan CANDLE_DEQUANTIZE_ALL=1 di .env server (sekitar 6 GB RAM tambahan) lalu mulai ulang server.',
+    applicationPreference: 'Preferensi Aplikasi',
+    applicationPreferenceSaved: 'Preferensi aplikasi disimpan.',
+    llmEnable: 'Aktifkan LLM & Chatbot',
+    llmEnableHint: 'Jika aktif, chatbot tampil di klien dan model LLM dimuat saat server dijalankan (berlaku setelah server dimulai ulang).',
+    llmDisabledTitle: 'Chatbot dinonaktifkan',
+    llmDisabledDesc: 'Aktifkan LLM pada preferensi aplikasi untuk memakai chatbot.',
+    save: 'Simpan',
 };

@@ -92,6 +92,8 @@ pub struct LlmModelStatus {
 /// State of the pieces the RAG tester needs
 #[derive(Serialize, ToSchema, Debug, Clone)]
 pub struct RagStatusResponse {
+    /// `preference.applications.is_llm_enable`: the chatbot is switched off when false
+    pub llm_enabled: bool,
     /// The default model (`qwen`); `models` lists every model
     pub llm_model: String,
     pub llm_model_present: bool,

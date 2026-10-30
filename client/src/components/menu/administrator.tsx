@@ -36,6 +36,34 @@ export default function MenuAdministrator() {
                 <span>{t('menu.administrator.ragTester')}</span>
             </A>
 
+            {/* Application preference */}
+            <A
+                href="/administrator/preference/application"
+                activeClass="bg-blue-600/15 text-blue-600 dark:text-blue-400 font-semibold"
+                class="flex items-center gap-x-2.5 py-2 px-2.5 text-xs font-semibold rounded-xl text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+            >
+                <svg class="size-4 shrink-0 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="4" x2="20" y1="7" y2="7" />
+                    <line x1="4" x2="20" y1="17" y2="17" />
+                    <circle cx="9" cy="7" r="2" />
+                    <circle cx="15" cy="17" r="2" />
+                </svg>
+                <span>{t('ad.applicationPreference')}</span>
+            </A>
+
+            {/* Change Password */}
+            <A
+                href="/administrator/authentification/reset-password"
+                activeClass="bg-blue-600/15 text-blue-600 dark:text-blue-400 font-semibold"
+                class="flex items-center gap-x-2.5 py-2 px-2.5 text-xs font-semibold rounded-xl text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+            >
+                <svg class="size-4 shrink-0 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+                <span>{t('au.ubahKataSandi')}</span>
+            </A>
+
             {/* Tree Menu Models Exactly Matching server/tree_menu.md */}
             <div class="pt-1 border-t border-neutral-200 dark:border-neutral-800">
                 <div class="px-2 py-1 flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 font-mono">

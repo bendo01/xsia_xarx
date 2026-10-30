@@ -138,6 +138,13 @@ pub struct ResetPasswordRequest {
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
+pub struct ChangePasswordRequest {
+    pub current_password: String,
+    #[validate(length(min = 6))]
+    pub new_password: String,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone, Validate)]
 pub struct ResendVerificationRequest {
     #[validate(email)]
     pub email: String,

@@ -11,6 +11,7 @@ pub mod auth;
 pub mod realtime;
 pub mod webhook;
 pub mod ai;
+pub mod preference;
 
 use salvo::Router;
 
@@ -30,5 +31,6 @@ pub fn api_routers() -> Vec<Router> {
         realtime::router(),
         webhook::router(),
         ai::router(),
+        preference::router(),
     ]
 }

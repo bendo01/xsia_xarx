@@ -26,6 +26,8 @@ export interface RagLlmModel {
 }
 
 export interface RagStatus {
+    /** Switched on in the application preferences; the chatbot is off when false */
+    llm_enabled: boolean;
     llm_model: string;
     llm_model_present: boolean;
     llm_model_size?: number | null;

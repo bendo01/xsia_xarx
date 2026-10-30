@@ -28,6 +28,12 @@ impl MigrationTrait for Migration {
                             .default(Expr::cust("uuid_generate_v7()")),
                     )
                     .col(
+                        ColumnDef::new("is_llm_enable")
+                            .boolean()
+                            .not_null()
+                            .default(false),
+                    )
+                    .col(
                         ColumnDef::new("created_at")
                             .date_time()
                             .default(Expr::cust("now()")),

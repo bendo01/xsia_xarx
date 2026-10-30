@@ -6,7 +6,7 @@ import { getStorageItem } from '../../lib/storage';
 export default function MenuStudent() {
     const profileHref = () => {
         const indId = currentUserSignal()?.individual_id || getStorageItem('individual_id');
-        return indId ? `/student/person/master/individual/${indId}/show` : '/student/person/master/individual/[id]/show';
+        return indId ? `/student/person/master/individual/${indId}` : '/student/person/master/individual/[id]';
     };
 
     return (
@@ -70,6 +70,21 @@ export default function MenuStudent() {
                         <path d="M6 12v5c3 3 9 3 12 0v-5" />
                     </svg>
                     <span>{t('menu.student.admittedStudents')}</span>
+                </A>
+            </li>
+
+            {/* Change Password */}
+            <li>
+                <A
+                    href="/student/authentification/reset-password"
+                    activeClass="bg-blue-600/15 text-blue-600 dark:text-blue-400 font-semibold"
+                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                >
+                    <svg class="size-4 shrink-0 text-rose-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                    <span>{t('au.ubahKataSandi')}</span>
                 </A>
             </li>
         </ul>
