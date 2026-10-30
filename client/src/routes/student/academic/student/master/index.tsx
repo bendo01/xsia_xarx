@@ -16,6 +16,7 @@ import {
     StudentMasterItem 
 } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
 import { t } from '../../../../../i18n';
+import { Spinner } from '~/components/loader';
 
 export default function StudentMasterIndexPage() {
     const [searchParams] = useSearchParams();
@@ -163,7 +164,7 @@ export default function StudentMasterIndexPage() {
                 <div class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
                     <Show when={!isLoading()} fallback={
                         <div class="py-16 flex flex-col items-center justify-center gap-3 text-neutral-400">
-                            <div class="size-8 border-3 border-blue-500 border-t-transparent rounded-xs animate-spin"></div>
+                            <Spinner size="lg" color="blue" aria-hidden={true} />
                             <p class="text-xs font-mono">{t('st.loadingAdmittedStudentsFromServer')}</p>
                         </div>
                     }>

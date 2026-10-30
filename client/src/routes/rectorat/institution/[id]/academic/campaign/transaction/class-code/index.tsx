@@ -11,6 +11,7 @@ import {
 import { getUnitOptions } from '~/controllers/institution/master/InstitutionMasterUnitController';
 import { InstitutionReferenceControllerUnitTypeIndex } from '~/controllers/institution/reference/InstitutionReferenceUnitTypeController';
 import { t } from '../../../../../../../../i18n';
+import { Spinner } from '~/components/loader';
 
 interface UnitOption {
     id: string;
@@ -488,7 +489,7 @@ export default function RectoratInstitutionClassCodeIndex() {
                                         <tr>
                                             <td colspan="5" class="px-6 py-16 text-center">
                                                 <div class="flex flex-col items-center justify-center gap-3">
-                                                    <div class="size-8 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
+                                                    <Spinner size="lg" color="indigo" aria-hidden={true} />
                                                     <span class="text-sm text-neutral-500 dark:text-neutral-400 font-medium">
                                                         {t('rt.memuatDataKodeKelas')}
                                                     </span>
@@ -654,7 +655,7 @@ export default function RectoratInstitutionClassCodeIndex() {
                             fallback={
                                 <div class="px-6 py-16 text-center">
                                     <div class="flex flex-col items-center justify-center gap-3">
-                                        <div class="size-8 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
+                                        <Spinner size="lg" color="indigo" aria-hidden={true} />
                                         <span class="text-sm text-neutral-500 dark:text-neutral-400 font-medium">
                                             {t('rt.memuatDataKodeKelas')}
                                         </span>

@@ -11,6 +11,7 @@ import {
     fetchAcademicYearOptions,
 } from '~/controllers/institution/master/InstitutionMasterInstitutionController';
 import { t } from '../../../../../i18n';
+import { Spinner } from '~/components/loader';
 
 export default function InstitutionMasterInstitutionCreatePage() {
     const [formData, setFormData] = createSignal({
@@ -197,7 +198,7 @@ export default function InstitutionMasterInstitutionCreatePage() {
 
                 <Show when={isLoadingReferences()}>
                     <div class="p-8 text-center bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 space-y-2">
-                        <div class="animate-spin size-6 border-2 border-blue-600 border-t-transparent rounded-xs mx-auto"></div>
+                        <Spinner size="md" color="blue" aria-hidden={true} />
                         <p class="text-xs text-neutral-500">{t('ad.loadingFormReferenceData')}</p>
                     </div>
                 </Show>
@@ -430,10 +431,7 @@ export default function InstitutionMasterInstitutionCreatePage() {
                                 class="px-6 py-2.5 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50"
                             >
                                 <Show when={isSubmitting()}>
-                                    <svg class="animate-spin size-4 text-white" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                                    </svg>
+                                    <Spinner size="sm" color="white" aria-hidden={true} />
                                 </Show>
                                 <span>{isSubmitting() ? t('ad.savingInstitution') : t('ad.saveInstitution')}</span>
                             </button>

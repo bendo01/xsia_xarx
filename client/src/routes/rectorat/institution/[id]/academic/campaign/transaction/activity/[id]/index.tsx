@@ -9,6 +9,7 @@ import {
     type CampaignActivityItem,
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionActivityController';
 import { t as tt } from '../../../../../../../../../i18n';
+import { Spinner } from '~/components/loader';
 
 interface UnitDetail {
     id: string;
@@ -401,7 +402,7 @@ export default function RectoratActivityDetail() {
                 {/* Loading State */}
                 <Show when={isLoading()}>
                     <div class="bg-white dark:bg-neutral-900 rounded-2xl p-16 border border-neutral-200 dark:border-neutral-800 text-center flex flex-col items-center justify-center gap-3">
-                        <div class="size-10 rounded-full border-3 border-blue-600 border-t-transparent animate-spin" />
+                        <Spinner size="lg" color="blue" aria-hidden={true} />
                         <p class="text-sm font-medium text-neutral-500 dark:text-neutral-400">
                             {tt('rt.memuatDataAktivitasTransaksi')}
                         </p>

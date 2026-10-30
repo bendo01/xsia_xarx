@@ -21,6 +21,7 @@ import {
 } from '~/controllers/academic/student/campaign/AcademicStudentCampaignActivityController';
 import { openOrDownloadPdf } from '~/lib/pdfHelper';
 import { t } from '../../../../../../i18n';
+import { Spinner } from '~/components/loader';
 
 export default function StudentCampaignActivityIndexPage() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -299,7 +300,7 @@ export default function StudentCampaignActivityIndexPage() {
                 <div class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
                     <Show when={!isLoading()} fallback={
                         <div class="py-16 flex flex-col items-center justify-center gap-3 text-neutral-400">
-                            <div class="size-8 border-3 border-blue-500 border-t-transparent rounded-xs animate-spin"></div>
+                            <Spinner size="lg" color="blue" aria-hidden={true} />
                             <p class="text-xs font-mono">{t('st.loadingAcademicSemesterActivitiesFromServer')}</p>
                         </div>
                     }>
@@ -378,7 +379,7 @@ export default function StudentCampaignActivityIndexPage() {
                                                             <Show when={printingId() === `krs-${act.id}`} fallback={
                                                                 <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
                                                             }>
-                                                                <div class="size-3 border-2 border-current border-t-transparent rounded-xs animate-spin"></div>
+                                                                <Spinner size="xs" color="current" aria-hidden={true} />
                                                             </Show>
                                                             <span>{t('st.krs')}</span>
                                                         </button>
@@ -392,7 +393,7 @@ export default function StudentCampaignActivityIndexPage() {
                                                             <Show when={printingId() === `khs-${act.id}`} fallback={
                                                                 <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
                                                             }>
-                                                                <div class="size-3 border-2 border-current border-t-transparent rounded-xs animate-spin"></div>
+                                                                <Spinner size="xs" color="current" aria-hidden={true} />
                                                             </Show>
                                                             <span>{t('st.khs')}</span>
                                                         </button>
@@ -496,7 +497,7 @@ export default function StudentCampaignActivityIndexPage() {
                                                 <Show when={printingId() === `krs-${act.id}`} fallback={
                                                     <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
                                                 }>
-                                                    <div class="size-3 border-2 border-current border-t-transparent rounded-xs animate-spin"></div>
+                                                    <Spinner size="xs" color="current" aria-hidden={true} />
                                                 </Show>
                                                 <span>{t('st.krs')}</span>
                                             </button>
@@ -509,7 +510,7 @@ export default function StudentCampaignActivityIndexPage() {
                                                 <Show when={printingId() === `khs-${act.id}`} fallback={
                                                     <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
                                                 }>
-                                                    <div class="size-3 border-2 border-current border-t-transparent rounded-xs animate-spin"></div>
+                                                    <Spinner size="xs" color="current" aria-hidden={true} />
                                                 </Show>
                                                 <span>{t('st.khs')}</span>
                                             </button>

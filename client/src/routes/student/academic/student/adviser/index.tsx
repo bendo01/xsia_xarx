@@ -6,6 +6,7 @@ import { currentUserSignal } from '~/lib/authStore';
 import { getStorageItem } from '~/lib/storage';
 import { listCounsellors, listDecrees, CounsellorItem, DecreeItem } from '~/controllers/academic/student/adviser/AcademicStudentAdviserController';
 import { t } from '../../../../../i18n';
+import { Spinner } from '~/components/loader';
 
 export default function StudentAdviserIndexPage() {
     const [counsellors, setCounsellors] = createSignal<CounsellorItem[]>([]);
@@ -144,7 +145,7 @@ export default function StudentAdviserIndexPage() {
                 {/* Adviser Cards Grid */}
                 <Show when={!isLoading()} fallback={
                     <div class="py-16 flex flex-col items-center justify-center gap-3 text-neutral-400">
-                        <div class="size-8 border-3 border-amber-500 border-t-transparent rounded-xs animate-spin"></div>
+                        <Spinner size="lg" color="amber" aria-hidden={true} />
                         <p class="text-xs font-mono">{t('st.loadingAssignedAdvisersFromServer')}</p>
                     </div>
                 }>

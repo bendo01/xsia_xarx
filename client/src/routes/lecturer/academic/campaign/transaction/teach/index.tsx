@@ -12,6 +12,7 @@ import {
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachController';
 import type { AcademicLecturerMasterLecturer } from '~/models/academic/lecturer/master/Lecturer';
 import { t } from '../../../../../../i18n';
+import { Spinner } from '~/components/loader';
 
 const TeachCreditChart = lazy(() => import('~/components/chart/teach_credit_chart'));
 
@@ -382,7 +383,7 @@ export default function LecturerTeachIndexPage() {
                     >
                         <Suspense fallback={
                             <div class="py-12 text-center flex flex-col items-center justify-center gap-2">
-                                <div class="size-6 border-2 border-blue-600 border-t-transparent rounded-xs animate-spin"></div>
+                                <Spinner size="md" color="blue" aria-hidden={true} />
                                 <span class="text-xs font-mono text-neutral-400">{t('lc.loadingChart')}</span>
                             </div>
                         }>
@@ -464,7 +465,7 @@ export default function LecturerTeachIndexPage() {
                     when={!isLoading()}
                     fallback={
                         <div class="py-24 text-center flex flex-col items-center justify-center gap-3">
-                            <div class="size-8 border-2 border-blue-600 border-t-transparent rounded-xs animate-spin"></div>
+                            <Spinner size="lg" color="blue" aria-hidden={true} />
                             <span class="text-xs font-mono text-neutral-400">{t('lc.loadingAssignedTeachingClasses')}</span>
                         </div>
                     }

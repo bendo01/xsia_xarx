@@ -18,6 +18,7 @@ import {
     type OptionItem,
 } from '~/controllers/academic/candidate/AcademicCandidateAdmissionController';
 import { t } from '../../../../../../../i18n';
+import { Spinner } from '~/components/loader';
 
 /** Relative types a candidate may register, matched by `relative_types.name` */
 const PARENT_RELATIVE_TYPES = ['Ayah Kandung', 'Ibu Kandung', 'Ayah Wali', 'Ibu Wali'];
@@ -241,7 +242,7 @@ export default function CandidateDashboardPage() {
                     when={!isLoading() || status()}
                     fallback={
                         <div class="py-16 flex flex-col items-center justify-center gap-3 text-neutral-400">
-                            <div class="size-8 border-3 border-emerald-500 border-t-transparent rounded-xs animate-spin"></div>
+                            <Spinner size="lg" color="emerald" aria-hidden={true} />
                             <p class="text-xs font-mono">{t('cn.memuatDataPendaftaran')}</p>
                         </div>
                     }

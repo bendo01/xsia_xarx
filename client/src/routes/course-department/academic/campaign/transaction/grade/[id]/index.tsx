@@ -9,6 +9,7 @@ import {
     type GradeItem,
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionGradeController';
 import { t } from '../../../../../../../i18n';
+import { Spinner } from '~/components/loader';
 
 interface UnitDetail {
     id: string;
@@ -255,7 +256,7 @@ export default function RectoratGradeDetail() {
                 {/* Loading State */}
                 <Show when={isLoading()}>
                     <div class="bg-white dark:bg-neutral-900 rounded-2xl p-16 border border-neutral-200/80 dark:border-neutral-800 flex flex-col items-center justify-center gap-3">
-                        <div class="size-9 rounded-full border-3 border-emerald-600 border-t-transparent animate-spin" />
+                        <Spinner size="lg" color="emerald" aria-hidden={true} />
                         <span class="text-sm text-neutral-500 font-medium">{t('rt.memuatDetailDataSkalaNilai')}</span>
                     </div>
                 </Show>

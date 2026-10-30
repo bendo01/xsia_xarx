@@ -15,6 +15,7 @@ import {
     masterApiDelete,
 } from '~/controllers/master/masterApiController';
 import { t } from '../../../../../../i18n';
+import { Spinner } from '~/components/loader';
 
 export default function AcademicCampaignTransactionTeachPage() {
     const basePath = '/administrator/academic/campaign/transaction/teach';
@@ -1433,9 +1434,7 @@ export default function AcademicCampaignTransactionTeachPage() {
                                     class="px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-xs disabled:opacity-50 transition-colors cursor-pointer flex items-center gap-1.5 font-bold"
                                 >
                                     <Show when={isSubmittingForm()}>
-                                        <svg class="size-3.5 animate-spin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                            <circle cx="12" cy="12" r="10" stroke-width="4" stroke="currentColor" stroke-dasharray="32" stroke-linecap="round" />
-                                        </svg>
+                                        <Spinner size="xs" color="current" aria-hidden={true} />
                                     </Show>
                                     <span>{isEditing() ? t('ad.saveChanges') : t('ad.createClass')}</span>
                                 </button>
@@ -1592,9 +1591,7 @@ export default function AcademicCampaignTransactionTeachPage() {
                                 class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-bold rounded-xs disabled:opacity-50 flex items-center gap-1.5"
                             >
                                 <Show when={isDeleting()}>
-                                    <svg class="size-3 animate-spin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                        <circle cx="12" cy="12" r="10" stroke-width="4" stroke="currentColor" stroke-dasharray="32" stroke-linecap="round" />
-                                    </svg>
+                                    <Spinner size="xs" color="current" aria-hidden={true} />
                                 </Show>
                                 <span>{t('ad.deleteRecord')}</span>
                             </button>
