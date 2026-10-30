@@ -24,6 +24,7 @@ import type { AcademicCourseReferenceVariety } from '~/models/academic/course/re
 import { openOrDownloadPdf } from '~/lib/pdfHelper';
 import type { AcademicTrendPoint } from '~/components/chart/academic_performance_chart';
 import StudentCreditChart from '~/components/chart/student_credit_chart';
+import { Loader } from '~/components/loader';
 import PopupBlockedAlert from '~/components/alert/PopupBlockedAlert';
 import { t } from '../../../../../../i18n';
 
@@ -864,10 +865,7 @@ export default function StudentDashboardProfilePage() {
 
                     <div class="p-6 sm:p-8">
                         <Show when={!isLoading()} fallback={
-                            <div class="py-12 flex flex-col items-center justify-center gap-3 text-neutral-400">
-                                <div class="size-8 border-3 border-blue-500 border-t-transparent rounded-xs animate-spin"></div>
-                                <p class="text-xs font-mono">{t('st.loadingStudentProfileDetailsFromServer')}</p>
-                            </div>
+                            <Loader color="blue" message={t('st.loadingStudentProfileDetailsFromServer')} />
                         }>
                             {/* TAB 1: OVERVIEW */}
                             <Show when={activeTab() === 'overview'}>

@@ -1,6 +1,6 @@
 use chrono::Utc;
 use salvo::prelude::*;
-use sea_orm::{ActiveModelTrait, IntoActiveModel, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QueryOrder, Set};
+use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QueryOrder, Set};
 use uuid::Uuid;
 
 use crate::controllers::ai::require_administrator;
@@ -53,7 +53,7 @@ pub async fn update(req: &mut Request, depot: &mut Depot) -> Result<Json<Applica
     let existing = current(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
     let saved = match existing {
         Some(row) => {
-            let mut active = row.into_active_model();
+            let mut active = entity_mod::ActiveModel::from(row);
             active.is_llm_enable = Set(payload.is_llm_enable);
             active.updated_at = Set(Some(now));
             active.updated_by = Set(user);
