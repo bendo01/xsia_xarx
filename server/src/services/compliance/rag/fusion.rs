@@ -31,6 +31,45 @@ const STOPWORDS: &[&str] = &[
     "tentang", "bagaimana", "jelaskan", "sebutkan", "sesuai", "sebagaimana", "seperti", "terdapat",
 ];
 
+/// Degree abbreviations that questions use but regulations spell out ("program sarjana"), so neither the
+/// embedding nor the keyword match would otherwise connect "S1" with the article about it
+const DEGREE_ALIASES: &[(&str, &str)] = &[
+    ("d1", "program diploma satu"),
+    ("d2", "program diploma dua"),
+    ("d3", "program diploma tiga"),
+    ("d4", "program diploma empat"),
+    ("s1", "program sarjana"),
+    ("s2", "program magister"),
+    ("s3", "program doktor"),
+];
+
+/// The question with each whole-word degree abbreviation (`S1`, `d3`, ...) replaced by the regulation's wording
+pub fn expand_aliases(query: &str) -> String {
+    let mut out = String::with_capacity(query.len() + 16);
+    let mut word = String::new();
+    let mut flush = |word: &mut String, out: &mut String| {
+        if word.is_empty() {
+            return;
+        }
+        let lower = word.to_lowercase();
+        match DEGREE_ALIASES.iter().find(|(abbr, _)| *abbr == lower) {
+            Some((_, full)) => out.push_str(full),
+            None => out.push_str(word),
+        }
+        word.clear();
+    };
+    for c in query.chars() {
+        if c.is_alphanumeric() {
+            word.push(c);
+        } else {
+            flush(&mut word, &mut out);
+            out.push(c);
+        }
+    }
+    flush(&mut word, &mut out);
+    out
+}
+
 /// Search terms of a question: lowercase alphanumerics, minus stop words and one/two-letter words
 /// (numbers are kept, since limits such as `16` matter).
 pub fn query_terms(query: &str) -> Vec<String> {
@@ -130,6 +169,14 @@ mod tests {
         );
         assert!(query_terms("di ke a").is_empty());
         assert_eq!(query_terms("apakah pengertian dari mahasiswa berdasarkan"), vec!["mahasiswa"]);
+    }
+
+    #[test]
+    fn degree_abbreviations_are_spelled_out_as_whole_words() {
+        assert_eq!(expand_aliases("berapakah waktu tempuh mahasiswa S1?"), "berapakah waktu tempuh mahasiswa program sarjana?");
+        assert_eq!(expand_aliases("syarat d3 dan S2"), "syarat program diploma tiga dan program magister");
+        // part of a longer word or number: left alone
+        assert_eq!(expand_aliases("pasal s10 dan abs1"), "pasal s10 dan abs1");
     }
 
     #[test]
