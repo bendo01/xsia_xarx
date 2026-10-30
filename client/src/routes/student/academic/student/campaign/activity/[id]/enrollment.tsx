@@ -37,6 +37,7 @@ import {
 } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
 import { getActiveStudentId } from '~/lib/authStore';
 import { t as tt } from '../../../../../../../i18n';
+import { Spinner } from '~/components/loader';
 
 export default function StudentCourseEnrollmentPage() {
     const params = useParams();
@@ -658,7 +659,7 @@ export default function StudentCourseEnrollmentPage() {
                     {/* Offerings Content */}
                     <Show when={!isLoading()} fallback={
                         <div class="py-16 flex flex-col items-center justify-center gap-3 text-neutral-400">
-                            <div class="size-8 border-3 border-blue-500 border-t-transparent rounded-xs animate-spin"></div>
+                            <Spinner size="lg" color="blue" aria-hidden={true} />
                             <p class="text-xs font-mono">{tt('st.loadingTeachClassOfferingsFromServer')}</p>
                         </div>
                     }>

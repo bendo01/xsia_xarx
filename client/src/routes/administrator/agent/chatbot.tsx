@@ -16,6 +16,7 @@ import {
     type RagStatus,
 } from '~/controllers/ai/RagController';
 import { t } from '../../../i18n';
+import { Spinner } from '~/components/loader';
 
 type TurnStatus = 'retrieving' | 'generating' | 'done' | 'error' | 'stopped';
 
@@ -549,7 +550,7 @@ export default function AgentChatbotPage() {
                                             <div class="space-y-2">
                                                 <Show when={turn.status === 'retrieving'}>
                                                     <p class="flex items-center gap-2 text-xs text-neutral-500">
-                                                        <span class="inline-block size-3.5 rounded-full border-2 border-neutral-300 dark:border-neutral-700 border-t-blue-600 dark:border-t-blue-400 animate-spin" role="status" aria-hidden="true"></span>
+                                                        <Spinner size="xs" color="blue" aria-hidden={true} />
                                                         <span class="animate-pulse">{t('ad.ragSearching')}</span>
                                                     </p>
                                                 </Show>
@@ -582,7 +583,7 @@ export default function AgentChatbotPage() {
                                                     </div>
                                                     <Show when={turn.status === 'generating' && !turn.answer}>
                                                         <p class="flex items-center gap-2 text-xs text-neutral-500">
-                                                            <span class="inline-block size-3.5 rounded-full border-2 border-neutral-300 dark:border-neutral-700 border-t-blue-600 dark:border-t-blue-400 animate-spin" role="status" aria-hidden="true"></span>
+                                                            <Spinner size="xs" color="blue" aria-hidden={true} />
                                                             <span class="animate-pulse">{t('ad.ragGenerating')}</span>
                                                         </p>
                                                     </Show>

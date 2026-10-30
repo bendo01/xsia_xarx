@@ -21,6 +21,7 @@ import {
     type StudentMasterItem,
 } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
 import { t as tt } from '../../../../../../../i18n';
+import { Spinner } from '~/components/loader';
 
 interface UnitDetail {
     id: string;
@@ -373,7 +374,7 @@ export default function RectoratClassCodeDetail() {
                 {/* Loading State */}
                 <Show when={isLoading()}>
                     <div class="bg-white dark:bg-neutral-900 rounded-2xl p-16 border border-neutral-200/80 dark:border-neutral-800 flex flex-col items-center justify-center gap-3">
-                        <div class="size-9 rounded-full border-3 border-indigo-600 border-t-transparent animate-spin" />
+                        <Spinner size="lg" color="indigo" aria-hidden={true} />
                         <span class="text-sm text-neutral-500 font-medium">{tt('rt.memuatDetailDataKodeKelas')}</span>
                     </div>
                 </Show>
@@ -593,7 +594,7 @@ export default function RectoratClassCodeDetail() {
                                                 <tr>
                                                     <td colspan="6" class="py-10 text-center text-neutral-500">
                                                         <div class="inline-flex items-center gap-2">
-                                                            <div class="size-4 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
+                                                            <Spinner size="sm" color="indigo" aria-hidden={true} />
                                                             {tt('rt.memuatDataPengajaran')}
                                                         </div>
                                                     </td>
@@ -688,7 +689,7 @@ export default function RectoratClassCodeDetail() {
                                                 <tr>
                                                     <td colspan="6" class="py-10 text-center text-neutral-500">
                                                         <div class="inline-flex items-center gap-2">
-                                                            <div class="size-4 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
+                                                            <Spinner size="sm" color="indigo" aria-hidden={true} />
                                                             {tt('rt.memuatDataMahasiswa')}
                                                         </div>
                                                     </td>

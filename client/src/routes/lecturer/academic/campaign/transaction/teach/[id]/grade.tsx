@@ -1,7 +1,7 @@
 import { createSignal,  createMemo, onMount, For, Show } from 'solid-js';
 import { useParams, useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
-import Loader from '~/components/loader';
+import Loader, { Spinner } from '~/components/loader';
 import {
     getTeachById,
     getCourseById,
@@ -729,7 +729,7 @@ export default function LecturerTeachGradePage() {
                                     class="px-5 py-2.5 rounded-xs bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs shadow-xs disabled:opacity-50 disabled:cursor-not-allowed transition-all inline-flex items-center gap-2"
                                 >
                                     <Show when={isSavingAll()} fallback={<span>{t('lc.simpanSemuaNilai')}</span>}>
-                                        <div class="size-3.5 border-2 border-white border-t-transparent rounded-xs animate-spin"></div>
+                                        <Spinner size="xs" color="white" aria-hidden={true} />
                                         <span>{t('lc.menyimpan')}</span>
                                     </Show>
                                 </button>
@@ -1022,7 +1022,7 @@ export default function LecturerTeachGradePage() {
                                                                 class="px-2.5 py-1.5 rounded-xs bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900 text-blue-700 dark:text-blue-300 font-semibold text-xs transition-colors disabled:opacity-30 disabled:cursor-not-allowed inline-flex items-center gap-1"
                                                             >
                                                                 <Show when={student.is_saving} fallback={<span>{t('lc.simpan')}</span>}>
-                                                                    <div class="size-3 border-2 border-blue-600 border-t-transparent rounded-xs animate-spin"></div>
+                                                                    <Spinner size="xs" color="blue" aria-hidden={true} />
                                                                 </Show>
                                                             </button>
                                                         </td>
@@ -1148,7 +1148,7 @@ export default function LecturerTeachGradePage() {
                                                     class="w-full py-2.5 px-3 rounded-xs bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-xs"
                                                 >
                                                     <Show when={student.is_saving} fallback={<span>{student.is_dirty ? t('lc.simpanPerubahan') : t('lc.tersimpan')}</span>}>
-                                                        <div class="size-3.5 border-2 border-white border-t-transparent rounded-xs animate-spin"></div>
+                                                        <Spinner size="xs" color="white" aria-hidden={true} />
                                                         <span>{t('lc.menyimpan')}</span>
                                                     </Show>
                                                 </button>

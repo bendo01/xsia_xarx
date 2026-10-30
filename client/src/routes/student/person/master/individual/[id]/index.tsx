@@ -24,7 +24,7 @@ import type { AcademicCourseReferenceVariety } from '~/models/academic/course/re
 import { openOrDownloadPdf } from '~/lib/pdfHelper';
 import type { AcademicTrendPoint } from '~/components/chart/academic_performance_chart';
 import StudentCreditChart from '~/components/chart/student_credit_chart';
-import { Loader } from '~/components/loader';
+import { Loader, Spinner } from '~/components/loader';
 import PopupBlockedAlert from '~/components/alert/PopupBlockedAlert';
 import { t } from '../../../../../../i18n';
 
@@ -970,7 +970,7 @@ export default function StudentDashboardProfilePage() {
                                             }>
                                                 <Suspense fallback={
                                                     <div class="py-16 text-center flex flex-col items-center justify-center gap-2">
-                                                        <div class="size-6 border-2 border-blue-600 border-t-transparent rounded-xs animate-spin"></div>
+                                                        <Spinner size="md" color="blue" aria-hidden={true} />
                                                         <span class="text-xs font-mono text-neutral-400">{t('st.loadingChart')}</span>
                                                     </div>
                                                 }>
@@ -1143,7 +1143,7 @@ export default function StudentDashboardProfilePage() {
                                                     {t('st.recentAcademicSemesters')}
                                                 </h3>
                                                 <Show when={isSubLoading()}>
-                                                    <div class="size-3.5 border-2 border-blue-500 border-t-transparent rounded-xs animate-spin"></div>
+                                                    <Spinner size="xs" color="blue" aria-hidden={true} />
                                                 </Show>
                                             </div>
                                             <A href="/student/academic/student/campaign/activity" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
@@ -1207,7 +1207,7 @@ export default function StudentDashboardProfilePage() {
                                                                                 <Show when={printingId() === `krs-${act.id}`} fallback={
                                                                                     <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><path d="M6 14h12v8H6z" /></svg>
                                                                                 }>
-                                                                                    <div class="size-3 border-2 border-current border-t-transparent rounded-xs animate-spin"></div>
+                                                                                    <Spinner size="xs" color="current" aria-hidden={true} />
                                                                                 </Show>
                                                                                 <span>{t('st.krs')}</span>
                                                                             </button>
@@ -1221,7 +1221,7 @@ export default function StudentDashboardProfilePage() {
                                                                                 <Show when={printingId() === `khs-${act.id}`} fallback={
                                                                                     <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><path d="M6 14h12v8H6z" /></svg>
                                                                                 }>
-                                                                                    <div class="size-3 border-2 border-current border-t-transparent rounded-xs animate-spin"></div>
+                                                                                    <Spinner size="xs" color="current" aria-hidden={true} />
                                                                                 </Show>
                                                                                 <span>{t('st.khs')}</span>
                                                                             </button>
@@ -1315,7 +1315,7 @@ export default function StudentDashboardProfilePage() {
                                                                     <Show when={printingId() === `krs-${act.id}`} fallback={
                                                                         <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><path d="M6 14h12v8H6z" /></svg>
                                                                     }>
-                                                                        <div class="size-3 border-2 border-current border-t-transparent rounded-xs animate-spin"></div>
+                                                                        <Spinner size="xs" color="current" aria-hidden={true} />
                                                                     </Show>
                                                                     <span>{t('st.krs')}</span>
                                                                 </button>
@@ -1329,7 +1329,7 @@ export default function StudentDashboardProfilePage() {
                                                                     <Show when={printingId() === `khs-${act.id}`} fallback={
                                                                         <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><path d="M6 14h12v8H6z" /></svg>
                                                                     }>
-                                                                        <div class="size-3 border-2 border-current border-t-transparent rounded-xs animate-spin"></div>
+                                                                        <Spinner size="xs" color="current" aria-hidden={true} />
                                                                     </Show>
                                                                     <span>{t('st.khs')}</span>
                                                                 </button>
@@ -1417,7 +1417,7 @@ export default function StudentDashboardProfilePage() {
                                                 {t('st.assignedAcademicAdvisersCounsellors')}
                                             </h3>
                                             <Show when={isSubLoading()}>
-                                                <div class="size-3.5 border-2 border-blue-500 border-t-transparent rounded-xs animate-spin"></div>
+                                                <Spinner size="xs" color="blue" aria-hidden={true} />
                                             </Show>
                                         </div>
                                         <A href="/student/academic/student/adviser" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">

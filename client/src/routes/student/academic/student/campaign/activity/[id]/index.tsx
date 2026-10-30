@@ -20,6 +20,7 @@ import {
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachController';
 import { listGrades } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionGradeController';
 import { openOrDownloadPdf } from '~/lib/pdfHelper';
+import { Spinner } from '~/components/loader';
 
 export default function StudentCampaignActivityShowPage() {
     const params = useParams();
@@ -340,7 +341,7 @@ export default function StudentCampaignActivityShowPage() {
                             >
                                 <Show
                                     when={!isPrintingKRS()}
-                                    fallback={<div class="size-4 border-2 border-neutral-400 border-t-transparent rounded-xs animate-spin"></div>}
+                                    fallback={<Spinner size="sm" color="current" aria-hidden={true} />}
                                 >
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect width="12" height="8" x="6" y="14" /></svg>
                                 </Show>
@@ -355,7 +356,7 @@ export default function StudentCampaignActivityShowPage() {
                             >
                                 <Show
                                     when={!isPrintingKHS()}
-                                    fallback={<div class="size-4 border-2 border-blue-400 border-t-transparent rounded-xs animate-spin"></div>}
+                                    fallback={<Spinner size="sm" color="blue" aria-hidden={true} />}
                                 >
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
                                 </Show>
@@ -420,7 +421,7 @@ export default function StudentCampaignActivityShowPage() {
 
                     <Show when={!isLoading()} fallback={
                         <div class="py-16 flex flex-col items-center justify-center gap-3 text-neutral-400">
-                            <div class="size-8 border-3 border-blue-500 border-t-transparent rounded-xs animate-spin"></div>
+                            <Spinner size="lg" color="blue" aria-hidden={true} />
                             <p class="text-xs font-mono">{t('academic.loadingCourses')}</p>
                         </div>
                     }>

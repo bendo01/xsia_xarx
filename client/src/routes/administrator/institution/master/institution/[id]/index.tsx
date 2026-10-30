@@ -7,6 +7,7 @@ import {
     InstitutionMasterInstitutionControllerShow,
 } from '~/controllers/institution/master/InstitutionMasterInstitutionController';
 import { t } from '../../../../../../i18n';
+import { Spinner } from '~/components/loader';
 
 export default function InstitutionMasterInstitutionDetailPage() {
     const params = useParams();
@@ -142,7 +143,7 @@ export default function InstitutionMasterInstitutionDetailPage() {
 
                 <Show when={isLoading()}>
                     <div class="p-12 text-center bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-3">
-                        <div class="animate-spin size-8 border-3 border-blue-600 border-t-transparent rounded-xs mx-auto"></div>
+                        <Spinner size="lg" color="blue" aria-hidden={true} />
                         <p class="text-xs sm:text-sm text-neutral-500">{t('ad.loadingInstitutionProfileDetailsAndRelated')}</p>
                     </div>
                 </Show>

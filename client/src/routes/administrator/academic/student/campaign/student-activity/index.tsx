@@ -24,6 +24,7 @@ import {
     CampaignActivityItem
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionActivityController';
 import { t } from '../../../../../../i18n';
+import { Spinner } from '~/components/loader';
 
 export default function AcademicStudentCampaignStudentActivityPage() {
     // Data list state
@@ -805,10 +806,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                         <tr>
                                             <td colspan="8" class="px-4 py-16 text-center text-neutral-500 dark:text-neutral-400">
                                                 <div class="flex flex-col items-center justify-center gap-2">
-                                                    <svg class="size-6 animate-spin text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                    </svg>
+                                                    <Spinner size="md" color="blue" aria-hidden={true} />
                                                     <span>{t('ad.memuatDataAktivitasMahasiswa')}</span>
                                                 </div>
                                             </td>
@@ -944,10 +942,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                                                 <Show
                                                                     when={lockingId() !== item.id}
                                                                     fallback={
-                                                                        <svg class="size-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
-                                                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                                        </svg>
+                                                                        <Spinner size="xs" color="current" aria-hidden={true} />
                                                                     }
                                                                 >
                                                                     <Show
@@ -1003,10 +998,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                                                     <Show
                                                                         when={printingPlanId() !== item.id}
                                                                         fallback={
-                                                                            <svg class="size-4 animate-spin text-purple-600" viewBox="0 0 24 24" fill="none">
-                                                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                                            </svg>
+                                                                            <Spinner size="sm" color="purple" aria-hidden={true} />
                                                                         }
                                                                     >
                                                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1026,10 +1018,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                                                     <Show
                                                                         when={printingResultId() !== item.id}
                                                                         fallback={
-                                                                            <svg class="size-4 animate-spin text-emerald-600" viewBox="0 0 24 24" fill="none">
-                                                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                                            </svg>
+                                                                            <Spinner size="sm" color="emerald" aria-hidden={true} />
                                                                         }
                                                                     >
                                                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1138,10 +1127,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                     />
                                     <Show when={isSearchingStudents()}>
                                         <div class="absolute right-3 top-2.5 text-neutral-400">
-                                            <svg class="size-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                            </svg>
+                                            <Spinner size="sm" color="current" aria-hidden={true} />
                                         </div>
                                     </Show>
                                 </div>
@@ -1339,10 +1325,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                     class="px-4 py-2 text-xs font-semibold rounded bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-colors disabled:opacity-50 flex items-center gap-1.5"
                                 >
                                     <Show when={isSubmitting()}>
-                                        <svg class="size-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
+                                        <Spinner size="xs" color="current" aria-hidden={true} />
                                     </Show>
                                     <span>{t('ad.simpanAktivitas')}</span>
                                 </button>
@@ -1518,10 +1501,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                     class="px-4 py-2 text-xs font-semibold rounded bg-amber-600 hover:bg-amber-700 text-white shadow-xs transition-colors disabled:opacity-50 flex items-center gap-1.5"
                                 >
                                     <Show when={isSubmitting()}>
-                                        <svg class="size-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
+                                        <Spinner size="xs" color="current" aria-hidden={true} />
                                     </Show>
                                     <span>{t('ad.simpanPerubahan')}</span>
                                 </button>
@@ -1578,10 +1558,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 class="px-4 py-2 text-xs font-semibold rounded bg-rose-600 hover:bg-rose-700 text-white shadow-xs transition-colors disabled:opacity-50 flex items-center gap-1.5"
                             >
                                 <Show when={isSubmitting()}>
-                                    <svg class="size-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
+                                    <Spinner size="xs" color="current" aria-hidden={true} />
                                 </Show>
                                 <span>{t('ad.yaHapusData')}</span>
                             </button>

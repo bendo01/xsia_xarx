@@ -10,6 +10,7 @@ import {
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionActivityController';
 import { getAcademicYearOptions } from '~/controllers/academic/general/reference/AcademicGeneralReferenceAcademicYearController';
 import { t } from '../../../../../../i18n';
+import { Spinner } from '~/components/loader';
 
 interface UnitOption {
     id: string;
@@ -479,7 +480,7 @@ export default function CourseDepartmentActivityIndex() {
                         fallback={
                             <div class="px-6 py-16 text-center">
                                 <div class="flex flex-col items-center justify-center gap-3">
-                                    <div class="size-8 rounded-full border-2 border-blue-600 border-t-transparent animate-spin" />
+                                    <Spinner size="lg" color="blue" aria-hidden={true} />
                                     <span class="text-sm text-neutral-500 dark:text-neutral-400 font-medium">
                                         {t('rt.memuatDataAktivitas')}
                                     </span>

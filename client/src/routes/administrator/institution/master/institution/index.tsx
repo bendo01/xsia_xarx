@@ -11,6 +11,7 @@ import {
     fetchInstitutionVarietyOptions,
 } from '~/controllers/institution/master/InstitutionMasterInstitutionController';
 import { t } from '../../../../../i18n';
+import { Spinner } from '~/components/loader';
 
 export default function InstitutionMasterInstitutionIndexPage() {
     let multiSelectRefCategory: HTMLSelectElement | undefined;
@@ -636,10 +637,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
                             class="px-3.5 py-2 text-xs font-medium text-white bg-red-600 hover:bg-red-700 transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                         >
                             <Show when={isSubmitting()}>
-                                <svg class="animate-spin size-3.5 text-white" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                                </svg>
+                                <Spinner size="xs" color="white" aria-hidden={true} />
                             </Show>
                             <span>{isSubmitting() ? t('ad.deleting') : t('ad.deleteInstitution')}</span>
                         </button>

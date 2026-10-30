@@ -4,6 +4,7 @@ import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { getBaseApiUrl, getAuthHeaders } from '~/controllers/master/masterApiController';
 import { t } from '../../../../../../i18n';
+import { Spinner } from '~/components/loader';
 
 interface OptionItem {
     id: string;
@@ -245,10 +246,7 @@ export default function RectoratStaffEdit() {
 
                 <Show when={isLoading()}>
                     <div class="flex flex-col items-center justify-center py-24 gap-4">
-                        <div class="relative size-16">
-                            <div class="absolute inset-0 rounded-full border-4 border-teal-200 dark:border-teal-900/40"></div>
-                            <div class="absolute inset-0 rounded-full border-4 border-teal-600 border-t-transparent animate-spin"></div>
-                        </div>
+                        <Spinner size="xl" color="teal" aria-hidden={true} />
                         <p class="text-sm text-neutral-500 dark:text-neutral-400 font-medium">{t('rt.memuatDataStaf')}</p>
                     </div>
                 </Show>

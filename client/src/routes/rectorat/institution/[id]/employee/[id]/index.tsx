@@ -4,6 +4,7 @@ import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import { getBaseApiUrl, getAuthHeaders } from '~/controllers/master/masterApiController';
 import { t } from '../../../../../../i18n';
+import { Spinner } from '~/components/loader';
 
 interface IndividualDetail {
     id?: string;
@@ -233,10 +234,7 @@ export default function RectoratEmployeeDetail() {
                 {/* Loading State */}
                 <Show when={isLoading()}>
                     <div class="flex flex-col items-center justify-center py-24 gap-4">
-                        <div class="relative size-16">
-                            <div class="absolute inset-0 rounded-full border-4 border-indigo-200 dark:border-indigo-900/40"></div>
-                            <div class="absolute inset-0 rounded-full border-4 border-indigo-600 border-t-transparent animate-spin"></div>
-                        </div>
+                        <Spinner size="xl" color="indigo" aria-hidden={true} />
                         <p class="text-sm text-neutral-500 dark:text-neutral-400 font-medium">{t('rt.memuatDataPegawai')}</p>
                     </div>
                 </Show>

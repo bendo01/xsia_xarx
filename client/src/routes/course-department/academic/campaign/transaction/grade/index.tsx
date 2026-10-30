@@ -9,6 +9,7 @@ import {
     type GradeItem,
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionGradeController';
 import { t } from '../../../../../../i18n';
+import { Spinner } from '~/components/loader';
 
 interface UnitOption {
     id: string;
@@ -392,7 +393,7 @@ export default function CourseDepartmentGradeIndex() {
                                         <tr>
                                             <td colspan="6" class="px-6 py-16 text-center">
                                                 <div class="flex flex-col items-center justify-center gap-3">
-                                                    <div class="size-8 rounded-full border-2 border-emerald-600 border-t-transparent animate-spin" />
+                                                    <Spinner size="lg" color="emerald" aria-hidden={true} />
                                                     <span class="text-sm text-neutral-500 dark:text-neutral-400 font-medium">
                                                         {t('rt.memuatDataSkalaNilai')}
                                                     </span>
@@ -560,7 +561,7 @@ export default function CourseDepartmentGradeIndex() {
                             fallback={
                                 <div class="p-8 text-center">
                                     <div class="flex flex-col items-center justify-center gap-3">
-                                        <div class="size-8 rounded-full border-2 border-emerald-600 border-t-transparent animate-spin" />
+                                        <Spinner size="lg" color="emerald" aria-hidden={true} />
                                         <span class="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
                                             {t('rt.memuatDataSkalaNilai')}
                                         </span>

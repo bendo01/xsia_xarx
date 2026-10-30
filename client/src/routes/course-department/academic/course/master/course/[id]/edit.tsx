@@ -5,6 +5,7 @@ import { toast } from '~/components/toast/Toaster';
 import { masterApiIndex, masterApiShow, masterApiUpdate } from '~/controllers/master/masterApiController';
 import { getLoggedInStaffUnit } from '~/lib/staffHelper';
 import { t } from '../../../../../../../i18n';
+import { Spinner } from '~/components/loader';
 
 export default function CourseMasterEditPage() {
     const apiPath = "academic/course/master/courses";
@@ -737,10 +738,7 @@ export default function CourseMasterEditPage() {
                                 class="inline-flex items-center gap-2 px-6 py-2.5 text-xs font-mono font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs disabled:opacity-50 transition-colors cursor-pointer"
                             >
                                 <Show when={isSubmitting()}>
-                                    <svg class="animate-spin -ml-1 mr-1 size-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                                    </svg>
+                                    <Spinner size="xs" color="white" class="-ml-1 mr-1" aria-hidden={true} />
                                 </Show>
                                 <span>{isSubmitting() ? t('cd.updatingCourse') : t('cd.updateCourse')}</span>
                             </button>

@@ -58,7 +58,7 @@ export default function ChangePasswordPage() {
 
                 <form
                     onSubmit={handleSubmit}
-                    class="w-full max-w-lg space-y-4 p-6 bg-white dark:bg-neutral-800/60 border border-neutral-200 dark:border-neutral-800 rounded-lg"
+                    class="w-full space-y-4 p-6 bg-white dark:bg-neutral-800/60 border border-neutral-200 dark:border-neutral-800 rounded-lg"
                 >
                     <Show when={errorMessage()}>
                         <div class="p-3 bg-red-50 dark:bg-red-500/15 border border-red-500/30 rounded-lg text-red-700 dark:text-red-200 text-xs font-medium">
