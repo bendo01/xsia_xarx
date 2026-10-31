@@ -1,0 +1,115 @@
+@startuml TKPI_2020
+' ER Diagram - Tabel Komposisi Pangan Indonesia (TKPI) 2020
+' Sumber: TKPI-2020-tabel.xlsx
+'   T1 -> kelompok_pangan, T2 -> kode kelompok, T3 -> zat_gizi, T4 -> metode_analisis
+'   4.x Komposisi -> bahan_pangan + komposisi_gizi
+'   5.x Indeks    -> taksonomi_pangan
+'   6.x Glosari   -> masakan_daerah
+'   7.x Kode      -> riwayat_kode
+'   8 Ralat       -> ralat
+
+hide circle
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+entity "kelompok_pangan" as kelompok_pangan {
+  * id : int <<PK>>
+  --
+  * no : int
+  * nama : varchar        ' mis. Serealia dan hasil olahannya
+  * kode_huruf : char(1)  ' A, B, C, D, E, F, G, H, J, K, M, N, P
+  * kode_mentah : char(2) ' mis. AR
+  * kode_olahan : char(2) ' mis. AP
+}
+
+entity "bahan_pangan" as bahan_pangan {
+  * kode : varchar(6) <<PK>>   ' mis. AR001
+  --
+  * kelompok_pangan_id : int <<FK>>
+  * nama_bahan : varchar
+  * jenis : varchar        ' TUNGGAL/SINGLE, OLAHAN, PRODUK, KOMPOSIT
+  sumber_id : int <<FK>>
+  bdd_persen : decimal     ' Bagian Dapat Dimakan (%)
+  hal_pdf : int
+}
+
+entity "sumber_data" as sumber_data {
+  * id : int <<PK>>
+  --
+  * kode : varchar         ' mis. KZGMI-2001, KZGPI-1990
+}
+
+entity "zat_gizi" as zat_gizi {
+  * id : int <<PK>>
+  --
+  * nama : varchar         ' Air, Energi, Protein, ...
+  * infoods_tagname : varchar  ' WATER, ENERC, PROCNT, ...
+  * satuan : varchar       ' g, mg, mcg, Kal
+  * angka_desimal : int
+}
+
+entity "metode_analisis" as metode_analisis {
+  * id : int <<PK>>
+  --
+  * zat_gizi_id : int <<FK>>
+  * metode : varchar
+}
+
+entity "komposisi_gizi" as komposisi_gizi {
+  * bahan_pangan_kode : varchar(6) <<PK, FK>>
+  * zat_gizi_id : int <<PK, FK>>
+  --
+  nilai : decimal          ' kosong = tidak ada di halaman
+}
+
+entity "taksonomi_pangan" as taksonomi_pangan {
+  * bahan_pangan_kode : varchar(6) <<PK, FK>>
+  --
+  nama_latin_spesies : varchar
+  nama_latin_genus : varchar
+  nama_latin_famili : varchar
+  nama_inggris : varchar
+  hal_pdf : int
+}
+
+entity "masakan_daerah" as masakan_daerah {
+  * id : int <<PK>>
+  --
+  * bahan_pangan_kode : varchar(6) <<FK>>
+  * nama_daerah_lokal : varchar
+  deskripsi_masakan : text
+  hal_pdf : int
+}
+
+entity "riwayat_kode" as riwayat_kode {
+  * id : int <<PK>>
+  --
+  * kode_lama : varchar    ' mis. IDA001
+  * kode_baru : varchar(6) <<FK>>
+  nama_bahan : varchar
+  jenis : varchar
+  hal_pdf : int
+}
+
+entity "ralat" as ralat {
+  * id : int <<PK>>
+  --
+  * bahan_pangan_kode : varchar(6) <<FK>>
+  * zat_gizi_id : int <<FK>>
+  nilai_tkpi_2017 : decimal
+  nilai_perbaikan : decimal
+  hal_pdf : int
+}
+
+kelompok_pangan  ||--o{ bahan_pangan     : memiliki
+sumber_data      |o--o{ bahan_pangan     : "menjadi sumber"
+bahan_pangan     ||--o{ komposisi_gizi   : memiliki
+zat_gizi         ||--o{ komposisi_gizi   : diukur
+zat_gizi         ||--o{ metode_analisis  : dianalisis
+bahan_pangan     ||--o| taksonomi_pangan : "diklasifikasikan"
+bahan_pangan     ||--o{ masakan_daerah   : "dikenal sebagai"
+bahan_pangan     ||--o{ riwayat_kode     : "kode baru"
+bahan_pangan     ||--o{ ralat            : dikoreksi
+zat_gizi         ||--o{ ralat            : dikoreksi
+
+@enduml

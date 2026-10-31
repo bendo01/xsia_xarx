@@ -1,0 +1,160 @@
+@startuml TKPI_2020
+' ER Diagram - Indonesian Food Composition Table (TKPI) 2020
+' Source: TKPI-2020-tabel.xlsx
+'
+' Conventions (Rails-style):
+'   - plural snake_case table names
+'   - surrogate primary key named id, type uuid (UUID version 7)
+'   - foreign keys named <singular_table>_id (uuid)
+'   - every table has audit columns: created_at, updated_at, deleted_at
+'     (timestamp without time zone, deleted_at = soft delete) and
+'     created_by, modified_by (uuid, the acting user)
+'   - natural keys (e.g. food code) are unique columns, not primary keys
+
+hide circle
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+entity "food_groups" as food_groups {
+  * id : uuid <<PK>>
+  --
+  * name : string
+  * position : integer
+  * raw_code : string
+  * processed_code : string
+  --
+  * created_at : datetime without time zone
+  * updated_at : datetime without time zone
+  deleted_at : datetime without time zone
+  created_by : uuid
+  modified_by : uuid
+}
+
+entity "sources" as sources {
+  * id : uuid <<PK>>
+  --
+  * name : string
+  --
+  * created_at : datetime without time zone
+  * updated_at : datetime without time zone
+  deleted_at : datetime without time zone
+  created_by : uuid
+  modified_by : uuid
+}
+
+entity "foods" as foods {
+  * id : uuid <<PK>>
+  --
+  * food_group_id : uuid <<FK>>
+  source_id : uuid <<FK>>
+  * code : string
+  * name : string
+  * kind : string
+  edible_portion : decimal
+  species : string
+  genus : string
+  family : string
+  english_name : string
+  --
+  * created_at : datetime without time zone
+  * updated_at : datetime without time zone
+  deleted_at : datetime without time zone
+  created_by : uuid
+  modified_by : uuid
+}
+
+entity "nutrients" as nutrients {
+  * id : uuid <<PK>>
+  --
+  * name : string
+  * tagname : string
+  * unit : string
+  * decimal_places : integer
+  --
+  * created_at : datetime without time zone
+  * updated_at : datetime without time zone
+  deleted_at : datetime without time zone
+  created_by : uuid
+  modified_by : uuid
+}
+
+entity "analysis_methods" as analysis_methods {
+  * id : uuid <<PK>>
+  --
+  * nutrient_id : uuid <<FK>>
+  * name : string
+  --
+  * created_at : datetime without time zone
+  * updated_at : datetime without time zone
+  deleted_at : datetime without time zone
+  created_by : uuid
+  modified_by : uuid
+}
+
+entity "food_nutrients" as food_nutrients {
+  * id : uuid <<PK>>
+  --
+  * food_id : uuid <<FK>>
+  * nutrient_id : uuid <<FK>>
+  value : decimal
+  --
+  * created_at : datetime without time zone
+  * updated_at : datetime without time zone
+  deleted_at : datetime without time zone
+  created_by : uuid
+  modified_by : uuid
+}
+
+entity "local_dishes" as local_dishes {
+  * id : uuid <<PK>>
+  --
+  * food_id : uuid <<FK>>
+  * name : string
+  description : text
+  --
+  * created_at : datetime without time zone
+  * updated_at : datetime without time zone
+  deleted_at : datetime without time zone
+  created_by : uuid
+  modified_by : uuid
+}
+
+entity "code_histories" as code_histories {
+  * id : uuid <<PK>>
+  --
+  * food_id : uuid <<FK>>
+  * old_code : string
+  --
+  * created_at : datetime without time zone
+  * updated_at : datetime without time zone
+  deleted_at : datetime without time zone
+  created_by : uuid
+  modified_by : uuid
+}
+
+entity "corrections" as corrections {
+  * id : uuid <<PK>>
+  --
+  * food_id : uuid <<FK>>
+  * nutrient_id : uuid <<FK>>
+  original_value : decimal
+  corrected_value : decimal
+  --
+  * created_at : datetime without time zone
+  * updated_at : datetime without time zone
+  deleted_at : datetime without time zone
+  created_by : uuid
+  modified_by : uuid
+}
+
+food_groups ||--o{ foods
+sources     |o--o{ foods
+foods       ||--o{ food_nutrients
+nutrients   ||--o{ food_nutrients
+nutrients   ||--o{ analysis_methods
+foods       ||--o{ local_dishes
+foods       ||--o{ code_histories
+foods       ||--o{ corrections
+nutrients   ||--o{ corrections
+
+@enduml
