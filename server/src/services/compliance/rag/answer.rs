@@ -119,7 +119,12 @@ mod tests {
              dilakukan melalui OSS dengan memenuhi komitmen yang disyaratkan, lalu Kementerian memverifikasi dokumen paling lama \
              30 (tiga puluh) hari kerja.",
         )];
+        // `LLM_BACKEND=cuda|vulkan` picks the backend (the build needs the matching feature)
+        crate::services::ai::generation::set_backend(
+            crate::services::ai::generation::LlmBackend::parse(&std::env::var("LLM_BACKEND").unwrap_or_default()).unwrap_or_default(),
+        );
         let llm = LlmService::global(LlmKind::Qwen).unwrap();
+        println!("backend: {:?}", crate::services::ai::generation::loaded_backend(LlmKind::Qwen));
         let ask = |q: &str| {
             let stats = llm
                 .generate(&build_prompt(LlmKind::Qwen, q, &hits, DEFAULT_BODY_CHARS), &GenParams { max_new_tokens: 120, ..Default::default() }, |_| true)

@@ -87,6 +87,8 @@ pub struct LlmModelStatus {
     pub tokenizer_present: bool,
     /// Loaded into memory by the first question
     pub loaded: bool,
+    /// `cpu`, `cuda` or `vulkan` once the model is loaded
+    pub device: Option<String>,
 }
 
 /// State of the pieces the RAG tester needs

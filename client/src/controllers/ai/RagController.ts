@@ -23,6 +23,8 @@ export interface RagLlmModel {
     model_size?: number | null;
     tokenizer_present: boolean;
     loaded: boolean;
+    /** `gpu` or `cpu` once the model is loaded */
+    device?: string | null;
 }
 
 export interface RagStatus {

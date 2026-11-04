@@ -258,6 +258,8 @@ asxsia 'cd /var/www/ferron/xsia_xarx/src/server/migration && cargo build --relea
 
 > ⏳ The first build is long and memory-hungry (Candle / Burn / TensorFlow / Headless Chrome crates). On servers with < 8 GB RAM add swap or limit parallelism with `CARGO_BUILD_JOBS=2`.
 
+> 🎮 To run the chatbot's language model on a GPU, build with `--features cuda` (NVIDIA) and/or `--features vulkan` (AMD, Intel). Plain `cargo build --release` is CPU-only and needs nothing extra — see [6.E](#e-choose-where-the-llm-runs-cpu-nvidia-amdintel).
+
 ### B. Install the runtime files
 
 ```bash
@@ -442,6 +444,87 @@ cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task
 - `cd` is a shell builtin, so wrap it in `bash -c '…'` as above.
 - If `bendo01` can't use `sudo -u xsia`, add `bendo01 ALL=(xsia) NOPASSWD: ALL` with `sudo visudo -f /etc/sudoers.d/bendo01` (or restrict it to specific commands).
 - For tasks that must run on a schedule, use a systemd timer with `User=xsia` or `sudo crontab -u xsia -e` rather than your own crontab.
+
+### E. Choose where the LLM runs (CPU, NVIDIA, AMD/Intel)
+
+The chatbot's language model (Qwen / Gemma, GGUF files in `server/models/`) runs on one of three backends. The plain build contains only the CPU one; the GPU ones are cargo features:
+
+| Backend | Hardware | Engine | Build with | Needed on the build machine |
+| :--- | :--- | :--- | :--- | :--- |
+| `cpu` | any | candle | *(nothing — always included)* | nothing extra |
+| `cuda` | NVIDIA | candle | `--features cuda` | CUDA toolkit (`nvcc`) |
+| `vulkan` | AMD, Intel (NVIDIA works too) | Burn + wgpu | `--features vulkan` | nothing beyond Rust (no CMake, no Vulkan SDK); a Vulkan driver at runtime |
+
+Features can be combined (`--features cuda,vulkan`), so one binary can offer several backends; the administrator picks one at runtime.
+
+**1. Install the build prerequisites.** `vulkan` needs none (it is built with Rust alone), `cuda` needs the toolkit. Package names are those of RHEL/Rocky 10 — confirm with `dnf search` if one is missing:
+
+```bash
+# Devel packages live in CRB
+sudo dnf config-manager --set-enabled crb
+
+# CUDA (NVIDIA): install the NVIDIA driver and CUDA toolkit from NVIDIA's RHEL repository,
+# then make nvcc visible to cargo
+export PATH=/usr/local/cuda/bin:$PATH CUDA_PATH=/usr/local/cuda
+nvcc --version
+```
+
+On an **Arch Linux** workstation (building or testing there instead of on the server):
+
+```bash
+# Vulkan (AMD / Intel): only a driver is needed, nothing to install for the build
+sudo pacman -S --needed vulkan-radeon vulkan-icd-loader   # AMD (vulkan-intel for Intel)
+
+# CUDA (NVIDIA): nvcc ends up in /opt/cuda/bin
+sudo pacman -S --needed cuda
+export PATH=/opt/cuda/bin:$PATH CUDA_PATH=/opt/cuda
+```
+
+**2. Build** (replace the command in [6.A](#a-build-release-binaries)):
+
+```bash
+asxsia 'cd /var/www/ferron/xsia_xarx/src/server && cargo build --release --locked --features vulkan'
+# NVIDIA:           --features cuda
+# several backends: --features cuda,vulkan
+```
+
+> ⏳ The CUDA kernels are compiled the first time (several minutes). `deploy/build-release.sh` ([14](#14-alternative-build-on-a-workstation-ship-to-the-server)) builds **without** features; adding `--features vulkan` to its `cargo build` line is enough for Vulkan, while `cuda` also needs the CUDA toolkit in the build image.
+
+**3. Runtime requirements on the server**
+
+- **Drivers:** the NVIDIA driver (`nvidia-smi` works) for `cuda`; a Vulkan driver for `vulkan` — `mesa-vulkan-drivers` for AMD / Intel, or the NVIDIA driver. Check with `vulkaninfo --summary`.
+- **`vulkan` limits:** it runs Qwen only (Gemma falls back to the CPU with a warning) and keeps the weights as f32, about 6 GB of GPU memory for Qwen2.5-1.5B.
+- **Device access:** the `xsia` user must be allowed to open the GPU:
+
+  ```bash
+  sudo usermod -aG video,render xsia
+  sudo systemctl restart xsia-api
+  ```
+
+- **SELinux:** if the log says the GPU was not found although it works for your own user, look for denials with `sudo ausearch -m avc -ts recent` (see [step 10](#10-firewall--selinux)).
+
+**4. Pick the backend**
+
+Administrator → *Preferensi Aplikasi* → **LLM backend** (stored in `preference.applications.llm_backend`: `cpu`, `cuda` or `vulkan`). Backends missing from the build are shown disabled, and the API refuses them with `400`.
+
+- The choice applies **when a model is loaded**. A model already in memory keeps its backend, so restart `xsia-api` after changing it: `sudo systemctl restart xsia-api`.
+- If the chosen backend isn't in the build, or CUDA can't start, the API logs a warning and falls back to the CPU instead of failing.
+- The default is `cpu`.
+
+**5. Verify**
+
+```bash
+journalctl -u xsia-api -b | grep -i "LLM"
+#   LLM runs on the NVIDIA GPU (candle CUDA)      → cuda
+#   LLM qwen runs on a Vulkan GPU (Burn + wgpu)    → vulkan
+#   …the LLM runs on the CPU                      → cpu (or a fallback; read the warning before it)
+nvidia-smi        # the xsia-api process holds VRAM while a CUDA model is loaded
+```
+
+The chatbot page also shows the backend of the loaded model next to "Model loaded" (CPU / CUDA / VULKAN).
+
+> If the database already ran the `preference.applications` migration before the `llm_backend` column existed, add it by hand (the migrator won't re-run an applied migration):
+> `ALTER TABLE preference.applications ADD COLUMN IF NOT EXISTS llm_backend varchar(16) NOT NULL DEFAULT 'cpu';`
 
 ---
 
@@ -1244,6 +1327,11 @@ Copy backups off the server (rsync / object storage) — a backup on the same di
 | `xsia-web` fails with `status=203/EXEC` | SELinux label on `/var/lib/xsia/.bun/bin/bun` is `var_lib_t`. Run the `semanage fcontext` + `restorecon` lines in [step 3](#3-install-build-toolchains-rust-bun) (again after `bun upgrade`). |
 | `error while loading shared libraries: libtensorflow…` | See the `ldd` step in [6.B](#b-install-the-runtime-files). |
 | `version 'GLIBC_2.4x' not found` | The binary was built on a machine with a newer glibc. Rebuild in the Rocky 10 container ([14.C](#c-compile-and-collect-the-artifacts)); don't upgrade the server's glibc. |
+| `The cuda backend is not in this build` / `…vulkan…` in the API log | The binary was built without that cargo feature, so the LLM fell back to the CPU. Rebuild with `--features cuda` / `--features vulkan` ([6.E](#e-choose-where-the-llm-runs-cpu-nvidia-amdintel)). |
+| `CUDA is unavailable, the LLM runs on the CPU` | The NVIDIA driver / CUDA runtime isn't visible to `xsia` (`nvidia-smi` as `xsia`), or `xsia` isn't in the `video` / `render` groups. |
+| `vulkan` backend: the log says no adapter / the LLM is slow | wgpu found no Vulkan GPU (or only a software one such as `llvmpipe`). Check `vulkaninfo --summary` as the `xsia` user and that it is in the `video` / `render` groups ([6.E](#e-choose-where-the-llm-runs-cpu-nvidia-amdintel)). |
+| Build fails: `nvcc` not found, or an unsupported host compiler | Put the CUDA toolkit's `bin/` on `PATH` and set `CUDA_PATH`; use a host `gcc` version your CUDA release supports. |
+| Changed the LLM backend in the preferences but nothing changed | The model was already loaded. Restart `xsia-api`; the backend is chosen when a model loads. |
 | CORS errors | The API allows any origin; check that Ferron isn't adding duplicate `Access-Control-*` headers (e.g. a `cors_headers` snippet applied to the API host). |
 
 Logs: `journalctl -u xsia-api -f`, `journalctl -u xsia-web -f`, `/var/log/ferron/error.log`, `journalctl -u ferron`, `/var/lib/pgsql/18/data/log/`.

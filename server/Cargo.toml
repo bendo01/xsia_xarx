@@ -5,6 +5,12 @@ edition = "2024"
 publish = false
 rust-version = "1.97.1"
 
+[features]
+# LLM on an NVIDIA GPU through candle; needs the CUDA toolkit (nvcc) at build time
+cuda = ["candle-core/cuda", "candle-nn/cuda", "candle-transformers/cuda"]
+# LLM on any Vulkan GPU (AMD, Intel) through Burn + wgpu; needs only a Vulkan driver at runtime
+vulkan = ["burn/wgpu"]
+
 [dependencies]
 dotenv = "0.15.0"
 openssl = { version = "0.10", features = ["vendored"] }

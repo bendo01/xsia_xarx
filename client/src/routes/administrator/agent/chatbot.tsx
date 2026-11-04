@@ -346,6 +346,7 @@ export default function AgentChatbotPage() {
                         </span>
                         <span class="text-neutral-500 dark:text-neutral-400">
                             {(selectedModel()?.loaded ?? status()!.llm_loaded) ? t('ad.ragModelLoaded') : t('ad.ragModelColdStart')}
+                            <Show when={selectedModel()?.device}>{(d) => <> ({d().toUpperCase()})</>}</Show>
                         </span>
                     </div>
                 </Show>

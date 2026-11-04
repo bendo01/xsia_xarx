@@ -150,6 +150,27 @@ Before starting, ensure you have the following installed on your machine:
   cargo install cargo-nextest --locked
   ```
 
+- *(Optional)* **GPU backends for the chatbot LLM**: the default build runs the language model on the CPU and needs nothing extra. To run it on a GPU, build with a cargo feature (the backend is then chosen under *Preferensi Aplikasi* in the app):
+
+  | Backend | Hardware | Build | Extra requirements |
+  | :--- | :--- | :--- | :--- |
+  | CPU | any | `cargo run` | none |
+  | CUDA | NVIDIA | `cargo run --features cuda` | NVIDIA driver + CUDA toolkit (`nvcc`) |
+  | Vulkan | AMD, Intel (NVIDIA works too) | `cargo run --features vulkan` | a Vulkan driver only (runs on Burn + wgpu; Qwen only, needs about 6 GB of GPU memory) |
+
+  On Arch Linux:
+
+  ```bash
+  # Vulkan (AMD / Intel): only a driver, nothing to compile besides Rust
+  sudo pacman -S --needed vulkan-radeon vulkan-icd-loader   # AMD (vulkan-intel for Intel)
+
+  # CUDA (NVIDIA)
+  sudo pacman -S --needed cuda
+  export PATH=/opt/cuda/bin:$PATH CUDA_PATH=/opt/cuda
+  ```
+
+  Features can be combined (`--features cuda,vulkan`). For servers (Rocky Linux) see [DEPLOYMENT.md, step 6.E](DEPLOYMENT.md#e-choose-where-the-llm-runs-cpu-nvidia-amdintel).
+
 - **uv** + **autocrop** + **docling**: Python CLI tools for face-cropping photos and converting documents (see [Python Tools](#-python-tools-autocrop--docling))
 
 ---
@@ -267,6 +288,9 @@ CURRENT_INSTITUTION_CODE="092010"
 
    ```bash
    cargo run
+   # or, to run the chatbot LLM on a GPU (see Prerequisites):
+   cargo run --features cuda      # NVIDIA
+   cargo run --features vulkan    # AMD / Intel
    ```
 
    The backend API will start on `http://127.0.0.1:5800`.

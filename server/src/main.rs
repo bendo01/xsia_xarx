@@ -126,6 +126,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     start_pdf_embedding_worker(queue.clone(), db.clone());
     println!("PGMQ PDF embedding worker started");
 
+    xsia_xarx::controllers::preference::application::apply_backend_preference(&db).await;
     if xsia_xarx::controllers::preference::application::is_llm_enabled(&db).await {
         xsia_xarx::services::ai::preload_rag_models().await;
     } else {

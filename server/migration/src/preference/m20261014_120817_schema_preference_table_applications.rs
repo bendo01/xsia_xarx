@@ -34,6 +34,12 @@ impl MigrationTrait for Migration {
                             .default(false),
                     )
                     .col(
+                        ColumnDef::new("llm_backend")
+                            .string_len(16)
+                            .not_null()
+                            .default("cpu"),
+                    )
+                    .col(
                         ColumnDef::new("created_at")
                             .date_time()
                             .default(Expr::cust("now()")),

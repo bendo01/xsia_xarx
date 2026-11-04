@@ -3,8 +3,17 @@ import { getStorageItem } from '~/lib/storage';
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
 const path = 'preference/application';
 
+export type LlmBackend = 'cpu' | 'cuda' | 'vulkan';
+
 export interface PreferenceApplication {
     is_llm_enable: boolean;
+    /** `cpu`, `cuda` (NVIDIA) or `vulkan` (AMD, Intel) */
+    llm_backend: LlmBackend;
+}
+
+export interface PreferenceApplicationState extends PreferenceApplication {
+    /** Backends the server build contains */
+    available_backends: LlmBackend[];
 }
 
 type Result<T> = { is_error: false; message: string; data: T } | { is_error: true; message: string; data?: undefined };
@@ -16,7 +25,7 @@ const getHeaders = (): Record<string, string> => {
     return headers;
 };
 
-const request = async (method: 'GET' | 'PUT', body?: PreferenceApplication): Promise<Result<PreferenceApplication>> => {
+const request = async (method: 'GET' | 'PUT', body?: PreferenceApplication): Promise<Result<PreferenceApplicationState>> => {
     try {
         const res = await fetch(`${getBaseUrl()}/${path}`, {
             method,
@@ -25,7 +34,7 @@ const request = async (method: 'GET' | 'PUT', body?: PreferenceApplication): Pro
         });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) return { is_error: true, message: data?.brief || data?.message || 'Request failed' };
-        return { is_error: false, message: '', data: data as PreferenceApplication };
+        return { is_error: false, message: '', data: data as PreferenceApplicationState };
     } catch (error: any) {
         return { is_error: true, message: error.message || 'Network error' };
     }

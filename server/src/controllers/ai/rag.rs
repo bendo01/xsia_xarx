@@ -121,6 +121,7 @@ pub async fn status(depot: &mut Depot) -> Result<Json<RagStatusResponse>, Status
                 model_size: std::fs::metadata(&path).ok().map(|m| m.len()),
                 tokenizer_present: kind.tokenizer_path().is_file(),
                 loaded: generation::is_loaded(kind),
+                device: generation::loaded_backend(kind).map(|b| b.id().to_owned()),
             }
         })
         .collect();
@@ -204,6 +205,7 @@ pub async fn ask(req: &mut Request, depot: &mut Depot, res: &mut Response) -> Re
     if !crate::controllers::preference::application::is_llm_enabled(&db).await {
         return Err(StatusError::forbidden().brief("The chatbot is disabled in the application preferences"));
     }
+    crate::controllers::preference::application::apply_backend_preference(&db).await;
     let payload: AskRequest = req
         .parse_json()
         .await

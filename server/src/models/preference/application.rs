@@ -9,6 +9,8 @@ pub struct Model {
     pub id: Uuid,
     /// Enables the chatbot on the client and loads the LLM at server start
     pub is_llm_enable: bool,
+    /// Where the LLM runs: `cpu`, `cuda` (NVIDIA) or `vulkan` (AMD, Intel); applies when a model is loaded
+    pub llm_backend: String,
     pub created_at: Option<DateTime>,
     pub updated_at: Option<DateTime>,
     pub deleted_at: Option<DateTime>,

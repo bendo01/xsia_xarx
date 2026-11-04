@@ -1,25 +1,37 @@
-import { createSignal, onMount, Show } from 'solid-js';
+import { createSignal, For, onMount, Show } from 'solid-js';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
-import { PreferenceApplicationShow, PreferenceApplicationUpdate } from '~/controllers/preference/PreferenceApplicationController';
+import { type LlmBackend, PreferenceApplicationShow, PreferenceApplicationUpdate } from '~/controllers/preference/PreferenceApplicationController';
 import { t } from '../../../i18n';
+
+const BACKENDS: { id: LlmBackend; label: string }[] = [
+    { id: 'cpu', label: 'ad.llmBackendCpu' },
+    { id: 'cuda', label: 'ad.llmBackendCuda' },
+    { id: 'vulkan', label: 'ad.llmBackendVulkan' },
+];
 
 export default function PreferenceApplicationPage() {
     const [isLlmEnable, setIsLlmEnable] = createSignal(false);
+    const [llmBackend, setLlmBackend] = createSignal<LlmBackend>('cpu');
+    const [availableBackends, setAvailableBackends] = createSignal<LlmBackend[]>(['cpu']);
     const [isLoading, setIsLoading] = createSignal(true);
     const [isSaving, setIsSaving] = createSignal(false);
 
     onMount(async () => {
         const res = await PreferenceApplicationShow();
         if (res.is_error) toast.danger(res.message);
-        else setIsLlmEnable(res.data.is_llm_enable);
+        else {
+            setIsLlmEnable(res.data.is_llm_enable);
+            setLlmBackend(res.data.llm_backend);
+            setAvailableBackends(res.data.available_backends);
+        }
         setIsLoading(false);
     });
 
     const save = async (e: SubmitEvent) => {
         e.preventDefault();
         setIsSaving(true);
-        const res = await PreferenceApplicationUpdate({ is_llm_enable: isLlmEnable() });
+        const res = await PreferenceApplicationUpdate({ is_llm_enable: isLlmEnable(), llm_backend: llmBackend() });
         setIsSaving(false);
         if (res.is_error) toast.danger(res.message);
         else toast.success(t('ad.applicationPreferenceSaved'));
@@ -47,6 +59,27 @@ export default function PreferenceApplicationPage() {
                                 <span class="block text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">{t('ad.llmEnableHint')}</span>
                             </span>
                         </label>
+                        <div>
+                            <label class="block text-sm font-semibold mb-1" for="llm-backend">
+                                {t('ad.llmBackend')}
+                            </label>
+                            <select
+                                id="llm-backend"
+                                class="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm"
+                                value={llmBackend()}
+                                onChange={(e) => setLlmBackend(e.currentTarget.value as LlmBackend)}
+                            >
+                                <For each={BACKENDS}>
+                                    {(b) => (
+                                        <option value={b.id} disabled={!availableBackends().includes(b.id)}>
+                                            {t(b.label)}
+                                            {availableBackends().includes(b.id) ? '' : ` (${t('ad.llmBackendUnavailable')})`}
+                                        </option>
+                                    )}
+                                </For>
+                            </select>
+                            <span class="block text-xs text-neutral-500 dark:text-neutral-400 mt-1">{t('ad.llmBackendHint')}</span>
+                        </div>
                         <button
                             type="submit"
                             disabled={isSaving()}
