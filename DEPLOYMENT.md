@@ -493,7 +493,7 @@ asxsia 'cd /var/www/ferron/xsia_xarx/src/server && cargo build --release --locke
 **3. Runtime requirements on the server**
 
 - **Drivers:** the NVIDIA driver (`nvidia-smi` works) for `cuda`; a Vulkan driver for `vulkan` — `mesa-vulkan-drivers` for AMD / Intel, or the NVIDIA driver. Check with `vulkaninfo --summary`.
-- **`vulkan` limits:** it runs Qwen only (Gemma falls back to the CPU with a warning) and keeps the weights as f32, about 6 GB of GPU memory for Qwen2.5-1.5B.
+- **`vulkan` limits:** see *Performance and limits* below.
 - **Device access:** the `xsia` user must be allowed to open the GPU:
 
   ```bash
@@ -502,6 +502,23 @@ asxsia 'cd /var/www/ferron/xsia_xarx/src/server && cargo build --release --locke
   ```
 
 - **SELinux:** if the log says the GPU was not found although it works for your own user, look for denials with `sudo ausearch -m avc -ts recent` (see [step 10](#10-firewall--selinux)).
+
+**Performance and limits**
+
+Measured on one workstation (NVIDIA RTX 4080, release build, Qwen2.5-1.5B Q4_K_M, a RAG prompt of about 280 tokens, model already warm). Treat the numbers as an order of magnitude: AMD and Intel GPUs were **not** tested, and the `vulkan` figures were taken on the NVIDIA card through its Vulkan driver.
+
+| Backend | Prompt (≈280 tokens) | Per generated token | GPU memory |
+| :--- | :--- | :--- | :--- |
+| `cpu` | ≈ 7.7 s | ≈ 65 ms | none |
+| `vulkan` | ≈ 0.3 s | ≈ 30 ms | ≈ 6 GB |
+| `cuda` | ≈ 20 ms | ≈ 8 ms | ≈ 1 GB |
+
+- **First answer after a model loads is slower** on a GPU (about 1 s more for `vulkan`) because the shaders are compiled once per process.
+- **`vulkan` runs Qwen only.** Gemma falls back to the CPU, with a warning in the log.
+- **`vulkan` keeps the weights as f32** (Burn has no 4-bit kernels, so the GGUF is dequantized when loaded), about 6 GB of GPU memory for Qwen2.5-1.5B. A card with less memory than that will not load it; choose `cpu` there. f16 weights were tried and produced garbage (`!!!!!`), so they are not used.
+- **`vulkan` decoding is about 4× slower than `cuda`**, so on an NVIDIA server prefer `cuda`; use `vulkan` for AMD and Intel.
+- **Do not enable Burn's `fusion` or `autotune` features** for `vulkan` (`Cargo.toml`): fusion gave no gain, and autotune re-tunes the kernels for every new prompt length, which made RAG prompts several seconds slower.
+- **The GPU backends are chosen when a model loads**, so a changed preference needs a restart of `xsia-api` (step 4 below).
 
 **4. Pick the backend**
 

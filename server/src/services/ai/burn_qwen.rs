@@ -209,7 +209,7 @@ impl<B: Backend> QwenModel<B> {
         }
         let last = rms_norm(x, norm, cfg.eps).slice([0..cfg.hidden, s - 1..s]);
         let logits = lm_head.clone().matmul(last); // [vocab, 1]
-        let values = logits.into_data().to_vec::<f32>().map_err(|e| anyhow::anyhow!("reading the logits: {e:?}"))?;
+        let values = logits.into_data().convert::<f32>().to_vec::<f32>().map_err(|e| anyhow::anyhow!("reading the logits: {e:?}"))?;
         if values.len() != cfg.vocab {
             bail!("expected {} logits, got {}", cfg.vocab, values.len());
         }
