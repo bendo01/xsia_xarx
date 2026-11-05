@@ -8,6 +8,8 @@
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{booktabs}
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \usepackage{tikz}
 \usetikzlibrary{positioning,arrows.meta}
 % Draft watermark: comment out the next three lines for the final version
@@ -50,6 +52,7 @@ Higher education institutions in Indonesia report their academic data to the nat
 \end{abstract}
 
 \begin{IEEEkeywords}
+\raggedright
 anomaly detection, regulatory compliance, higher education, PDDIKTI, outlier detection, data quality
 \end{IEEEkeywords}
 
@@ -84,7 +87,7 @@ The data are replicated from the Feeder PDDIKTI web service into a relational st
 \begin{table}[htbp]
 \caption{PDDIKTI Entities and Attributes Used}
 \begin{center}
-\begin{tabular}{p{0.27\columnwidth}p{0.61\columnwidth}}
+\begin{tabular}{L{0.27\columnwidth}L{0.61\columnwidth}}
 \toprule
 \textbf{Entity} & \textbf{Attributes used} \\
 \midrule
@@ -111,7 +114,7 @@ The explicit rules are taken from the built-in validation of the Feeder PDDIKTI 
 \begin{table}[htbp]
 \caption{Rule-Based Validation Criteria from the Feeder PDDIKTI Guide}
 \begin{center}
-\begin{tabular}{p{0.2\columnwidth}p{0.68\columnwidth}}
+\begin{tabular}{L{0.2\columnwidth}L{0.68\columnwidth}}
 \toprule
 \textbf{Entity} & \textbf{Violation condition} \\
 \midrule
@@ -176,7 +179,7 @@ Features are built per entity from the attributes in Table~\ref{tab:data}. Stude
 \caption{Characteristics of the Detectors Compared}
 \begin{center}
 \footnotesize\setlength{\tabcolsep}{3pt}
-\begin{tabular}{p{0.17\columnwidth}p{0.2\columnwidth}p{0.25\columnwidth}p{0.25\columnwidth}}
+\begin{tabular}{L{0.17\columnwidth}L{0.2\columnwidth}L{0.25\columnwidth}L{0.25\columnwidth}}
 \toprule
 \textbf{Detector} & \textbf{Principle} & \textbf{Suited to} & \textbf{Weakness} \\
 \midrule
@@ -200,7 +203,7 @@ Rule-based detection is evaluated by precision, recall, and F1-score against the
 \begin{table}[htbp]
 \caption{Experimental Settings}
 \begin{center}
-\begin{tabular}{p{0.34\columnwidth}p{0.54\columnwidth}}
+\begin{tabular}{L{0.34\columnwidth}L{0.54\columnwidth}}
 \toprule
 \textbf{Item} & \textbf{Setting} \\
 \midrule
@@ -282,19 +285,19 @@ Teaching & Rules & 1.000 & 0.027 \\
 \begin{table}[htbp]
 \caption{Precision, Recall, and F1-score of Flag-Based Detection (mean $\pm$ std over 10 injections)}
 \begin{center}
-\footnotesize\setlength{\tabcolsep}{3pt}
+\footnotesize\setlength{\tabcolsep}{2pt}
 \begin{tabular}{llccc}
 \toprule
 \textbf{Entity} & \textbf{Method} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} \\
 \midrule
-Student-semester & Rules & $1.000\pm0.000$ & $0.808\pm0.007$ & $0.894\pm0.004$ \\
- & Combined & $0.638\pm0.038$ & $0.868\pm0.033$ & $0.735\pm0.036$ \\
+Student-semester & Rules & $1.000{\pm}0.000$ & $0.808{\pm}0.007$ & $0.894{\pm}0.004$ \\
+ & Combined & $0.638{\pm}0.038$ & $0.868{\pm}0.033$ & $0.735{\pm}0.036$ \\
 \midrule
-Course & Rules & $1.000\pm0.000$ & $1.000\pm0.000$ & $1.000\pm0.000$ \\
- & Combined & $0.811\pm0.084$ & $1.000\pm0.000$ & $0.894\pm0.051$ \\
+Course & Rules & $1.000{\pm}0.000$ & $1.000{\pm}0.000$ & $1.000{\pm}0.000$ \\
+ & Combined & $0.811{\pm}0.084$ & $1.000{\pm}0.000$ & $0.894{\pm}0.051$ \\
 \midrule
-Teaching & Rules & $1.000\pm0.000$ & $0.500\pm0.000$ & $0.667\pm0.000$ \\
- & Combined & $0.410\pm0.146$ & $0.854\pm0.058$ & $0.536\pm0.121$ \\
+Teaching & Rules & $1.000{\pm}0.000$ & $0.500{\pm}0.000$ & $0.667{\pm}0.000$ \\
+ & Combined & $0.410{\pm}0.146$ & $0.854{\pm}0.058$ & $0.536{\pm}0.121$ \\
 \bottomrule
 \end{tabular}
 \label{tab:prf}
@@ -328,7 +331,7 @@ The authors thank Institut Teknologi dan Kesehatan Tri Tunas Nasional for provid
 
 \begin{thebibliography}{00}
 \bibitem{permendikbudristek53_2023} Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi, ``Peraturan Menteri Pendidikan, Kebudayaan, Riset, dan Teknologi Nomor 53 Tahun 2023 tentang Penjaminan Mutu Pendidikan Tinggi,'' Berita Negara Republik Indonesia Tahun 2023 Nomor 638, Aug. 2023 (revoked by \cite{permendiktisaintek39_2025}).
-\bibitem{permendiktisaintek39_2025} Kementerian Pendidikan Tinggi, Sains, dan Teknologi, ``Peraturan Menteri Pendidikan Tinggi, Sains, dan Teknologi Nomor 39 Tahun 2025 tentang Penjaminan Mutu Pendidikan Tinggi,'' Berita Negara Republik Indonesia Tahun 2025 Nomor 661, promulgated 25 Sep. 2025.
+\bibitem{permendiktisaintek39_2025} \raggedright Kementerian Pendidikan Tinggi, Sains, dan Teknologi, ``Peraturan Menteri Pendidikan Tinggi, Sains, dan Teknologi Nomor 39 Tahun 2025 tentang Penjaminan Mutu Pendidikan Tinggi,'' Berita Negara Republik Indonesia Tahun 2025 Nomor 661, promulgated 25 Sep. 2025.
 \bibitem{uu24_2013} Republik Indonesia, ``Undang-Undang Nomor 24 Tahun 2013 tentang Perubahan atas Undang-Undang Nomor 23 Tahun 2006 tentang Administrasi Kependudukan,'' Lembaran Negara Republik Indonesia Tahun 2013 Nomor 232, Dec. 2013.
 \bibitem{feeder_guide} Kementerian Pendidikan dan Kebudayaan, ``User guide UI/UX Feeder PDDIKTI, version 4.0,'' Direktorat Jenderal Pendidikan Tinggi, Dec. 2020.
 \bibitem{liu2008iforest} F. T. Liu, K. M. Ting, and Z.-H. Zhou, ``Isolation forest,'' in \textit{Proc. 8th IEEE Int. Conf. Data Mining (ICDM)}, 2008, pp. 413--422.

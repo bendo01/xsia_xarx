@@ -13,7 +13,8 @@ vulkan = ["burn/wgpu"]
 
 [dependencies]
 dotenv = "0.15.0"
-openssl = { version = "0.10", features = ["vendored"] }
+# openssl = { version = "0.10", features = ["vendored"] }
+openssl = { version = "0.10" }
 openssl-sys = "0.9"
 tracing = { version = "0.1" }
 tracing-subscriber = { version = "0.3.19", features = ["env-filter", "json"] }

@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1792924555.96339 "article.tex" "article.pdf" "article" 1792924558.20943 0
+["pdflatex"] 1793851636.4918 "article.tex" "article.pdf" "article" 1793851638.58653 0
   "/usr/share/texmf-dist/fonts/enc/dvips/base/8r.enc" 1775415801 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texmf-dist/fonts/map/fontname/texfonts.map" 1775415801 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texmf-dist/fonts/tfm/adobe/helvetic/phvr7t.tfm" 1775415801 2520 53e01eef820ca829e42c1333c3fd02b9 ""
@@ -147,13 +147,14 @@
   "/usr/share/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty" 1775415801 325 f9f16d12354225b7dd52a3321f085955 ""
   "/usr/share/texmf-dist/tex/latex/psnfss/ot1phv.fd" 1775415801 1679 51f99a09d5536398d3a0ad1d44df9625 ""
   "/usr/share/texmf-dist/tex/latex/psnfss/ot1ptm.fd" 1775415801 961 15056f4a61917ceed3a44e4ac11fcc52 ""
+  "/usr/share/texmf-dist/tex/latex/tools/array.sty" 1775415801 15651 9d7c62df82cb29a555c00550babfe364 ""
   "/usr/share/texmf-dist/tex/latex/xcolor/xcolor.sty" 1775415801 55384 b454dec21c2d9f45ec0b793f0995b992 ""
   "/usr/share/texmf-dist/web2c/texmf.cnf" 1775415801 43569 fd570f2fa160877d211e859f687312ba ""
-  "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1789214508 5385779 47c0c393a77fd4a098bacfd57d66b88a ""
-  "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1789214372 2328189 3452438f9de7f6ac5133eb83e17f685e ""
-  "IEEEtran.cls" 1792893372.88455 288304 b67b6fc6c2abb39f9b461923f5199343 ""
-  "article.aux" 1792924557.78279 5910 61937be620e75405da7b511a4abd54ff "pdflatex"
-  "article.tex" 1792924555.61735 37903 6a299219c88e596c3673b0b941f58c54 ""
+  "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1793499881 5385779 47c0c393a77fd4a098bacfd57d66b88a ""
+  "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1793499685 2328188 c9608c77c511b30a339d01369613397a ""
+  "IEEEtran.cls" 1793603631.86422 288304 b67b6fc6c2abb39f9b461923f5199343 ""
+  "article.aux" 1793851638.20745 5910 2256962ed01eafa9910af7f060438ef0 "pdflatex"
+  "article.tex" 1793851636.22561 38042 7ab374ea23c6546211811650555afb1d ""
   (generated)
   "article.aux"
   "article.log"
