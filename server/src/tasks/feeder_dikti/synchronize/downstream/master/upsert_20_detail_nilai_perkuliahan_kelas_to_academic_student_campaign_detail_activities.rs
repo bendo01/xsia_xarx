@@ -65,6 +65,7 @@ impl Task for SyncNilaiPerkuliahanKelasToDetailActivities {
         let mut inserted: u64 = 0;
         let mut updated: u64 = 0;
         let mut skipped: u64 = 0;
+        let mut failed: u64 = 0;
 
         let mut offset = 0;
         let limit = 1000;
@@ -83,137 +84,167 @@ impl Task for SyncNilaiPerkuliahanKelasToDetailActivities {
             
             for record in records {
                 let txn = db.begin().await?;
-                
-                // search data course
-                let course_opt = if let Some(id_matkul) = record.id_matkul {
-                    AcademicCourse::Entity::find()
-                        .filter(AcademicCourse::Column::FeederCourseId.eq(id_matkul))
-                        .one(&txn)
-                        .await?
-                } else {
-                    None
-                };
-                
-                // search data teach
-                let teach_opt = if let Some(id_kelas_kuliah) = record.id_kelas_kuliah {
-                    AcademicTeach::Entity::find()
-                        .filter(AcademicTeach::Column::FeederId.eq(id_kelas_kuliah))
-                        .one(&txn)
-                        .await?
-                } else {
-                    None
-                };
-                
-                // search data student
-                let student_opt = {
-                    let mut condition = Condition::any();
-                    let mut has_condition = false;
-
-                    if let Some(id_m) = record.id_mahasiswa {
-                        condition = condition.add(AcademicStudent::Column::IdMahasiswa.eq(id_m));
-                        has_condition = true;
+                match process_record(&txn, &record).await {
+                    Ok(outcome) => {
+                        txn.commit().await?;
+                        match outcome {
+                            Outcome::Inserted => inserted += 1,
+                            Outcome::Updated => updated += 1,
+                            Outcome::Skipped => skipped += 1,
+                        }
                     }
-                    if let Some(id_rm) = record.id_registrasi_mahasiswa {
-                        condition = condition.add(AcademicStudent::Column::IdRegistrasiMahasiswa.eq(id_rm));
-                        has_condition = true;
+                    Err(e) => {
+                        let _ = txn.rollback().await;
+                        failed += 1;
+                        eprintln!("Failed to sync detail_nilai_perkuliahan_kelas {}: {e}", record.id);
                     }
-                    
-                    if has_condition {
-                        AcademicStudent::Entity::find().filter(condition).one(&txn).await?
-                    } else {
-                        None
-                    }
-                };
-                
-                // search data grade
-                let grade_opt = if let (Some(nilai_huruf), Some(student)) = (&record.nilai_huruf, &student_opt) {
-                    AcademicGrade::Entity::find()
-                        .filter(AcademicGrade::Column::Name.eq(nilai_huruf))
-                        .filter(AcademicGrade::Column::UnitId.eq(student.unit_id))
-                        .one(&txn)
-                        .await?
-                } else {
-                    None
-                };
-                
-                // search data student_activity
-                let student_activity_opt = if let (Some(teach), Some(student)) = (&teach_opt, &student_opt) {
-                    if let Some(activity_id) = teach.activity_id {
-                        AcademicStudentActivity::Entity::find()
-                            .filter(AcademicStudentActivity::Column::UnitActivityId.eq(activity_id))
-                            .filter(AcademicStudentActivity::Column::StudentId.eq(student.id))
-                            .one(&txn)
-                            .await?
-                    } else {
-                        None
-                    }
-                } else {
-                    None
-                };
-                
-                if let (Some(student_activity), Some(course), Some(teach)) = (&student_activity_opt, &course_opt, &teach_opt) {
-                    // search data detail_activities
-                    let detail_activity_opt = AcademicDetailActivity::Entity::find()
-                        .filter(AcademicDetailActivity::Column::ActivityId.eq(student_activity.id))
-                        .filter(AcademicDetailActivity::Column::CourseId.eq(course.id))
-                        .filter(AcademicDetailActivity::Column::TeachId.eq(teach.id))
-                        .one(&txn)
-                        .await?;
-                        
-                    let grade_id = grade_opt.map(|g| g.id);
-                    let mark = record.nilai_angka.map(|v| v as f64);
-                    
-                    if let Some(detail_activity) = detail_activity_opt {
-                        let mut active_model: AcademicDetailActivity::ActiveModel = detail_activity.into_active_model();
-                        active_model.feeder_id = Set(Some(record.id));
-                        active_model.feeder_grade_id = Set(Some(record.id));
-                        active_model.mark = Set(mark);
-                        active_model.grade_id = Set(grade_id);
-                        active_model.is_lock = Set(Some(true));
-                        active_model.updated_at = Set(Some(chrono::Local::now().naive_local()));
-                        
-                        active_model.update(&txn).await?;
-                        updated += 1;
-                    } else {
-                        let new_detail = AcademicDetailActivity::ActiveModel {
-                            id: Set(Uuid::new_v4()),
-                            activity_id: Set(student_activity.id),
-                            course_id: Set(course.id),
-                            teach_id: Set(Some(teach.id)),
-                            feeder_id: Set(Some(record.id)),
-                            feeder_grade_id: Set(Some(record.id)),
-                            mark: Set(mark),
-                            grade_id: Set(grade_id),
-                            is_lock: Set(Some(true)),
-                            created_at: Set(Some(chrono::Local::now().naive_local())),
-                            updated_at: Set(Some(chrono::Local::now().naive_local())),
-                            ..Default::default()
-                        };
-                        new_detail.insert(&txn).await?;
-                        inserted += 1;
-                    }
-                } else {
-                    skipped += 1;
                 }
-                
-                txn.commit().await?;
-                
+
                 if let Some(ref pb) = pb {
-                    pb.set_message(format!("inserted: {inserted} | updated: {updated} | skipped: {skipped}"));
+                    pb.set_message(format!("inserted: {inserted} | updated: {updated} | skipped: {skipped} | failed: {failed}"));
                     pb.inc(1);
                 }
             }
-            
+
             offset += limit;
         }
         
-        let summary = format!("Sync completed - inserted: {inserted} | updated: {updated} | skipped: {skipped}");
+        let summary = format!("Sync completed - inserted: {inserted} | updated: {updated} | skipped: {skipped} | failed: {failed}");
         if let Some(pb) = pb {
             pb.finish_with_message(summary);
         } else {
             println!("{summary}");
         }
-        
+
+        if failed > 0 {
+            return Err(format!("{failed} record(s) failed to sync").into());
+        }
+
         Ok(())
     }
+}
+
+enum Outcome {
+    Inserted,
+    Updated,
+    Skipped,
+}
+
+async fn process_record(
+    txn: &sea_orm::DatabaseTransaction,
+    record: &FeederDetailNilai::Model,
+) -> Result<Outcome, sea_orm::DbErr> {
+    // search data course
+    let course_opt = if let Some(id_matkul) = record.id_matkul {
+        AcademicCourse::Entity::find()
+            .filter(AcademicCourse::Column::FeederCourseId.eq(id_matkul))
+            .one(txn)
+            .await?
+    } else {
+        None
+    };
+    
+    // search data teach
+    let teach_opt = if let Some(id_kelas_kuliah) = record.id_kelas_kuliah {
+        AcademicTeach::Entity::find()
+            .filter(AcademicTeach::Column::FeederId.eq(id_kelas_kuliah))
+            .one(txn)
+            .await?
+    } else {
+        None
+    };
+    
+    // search data student
+    let student_opt = {
+        let mut condition = Condition::any();
+        let mut has_condition = false;
+
+        if let Some(id_m) = record.id_mahasiswa {
+            condition = condition.add(AcademicStudent::Column::IdMahasiswa.eq(id_m));
+            has_condition = true;
+        }
+        if let Some(id_rm) = record.id_registrasi_mahasiswa {
+            condition = condition.add(AcademicStudent::Column::IdRegistrasiMahasiswa.eq(id_rm));
+            has_condition = true;
+        }
+        
+        if has_condition {
+            AcademicStudent::Entity::find().filter(condition).one(txn).await?
+        } else {
+            None
+        }
+    };
+    
+    // search data grade
+    let grade_opt = if let (Some(nilai_huruf), Some(student)) = (&record.nilai_huruf, &student_opt) {
+        AcademicGrade::Entity::find()
+            .filter(AcademicGrade::Column::Name.eq(nilai_huruf))
+            .filter(AcademicGrade::Column::UnitId.eq(student.unit_id))
+            .one(txn)
+            .await?
+    } else {
+        None
+    };
+    
+    // search data student_activity
+    let student_activity_opt = if let (Some(teach), Some(student)) = (&teach_opt, &student_opt) {
+        if let Some(activity_id) = teach.activity_id {
+            AcademicStudentActivity::Entity::find()
+                .filter(AcademicStudentActivity::Column::UnitActivityId.eq(activity_id))
+                .filter(AcademicStudentActivity::Column::StudentId.eq(student.id))
+                .one(txn)
+                .await?
+        } else {
+            None
+        }
+    } else {
+        None
+    };
+    
+    if let (Some(student_activity), Some(course), Some(teach)) = (&student_activity_opt, &course_opt, &teach_opt) {
+        // search data detail_activities
+        let detail_activity_opt = AcademicDetailActivity::Entity::find()
+            .filter(AcademicDetailActivity::Column::ActivityId.eq(student_activity.id))
+            .filter(AcademicDetailActivity::Column::CourseId.eq(course.id))
+            .filter(AcademicDetailActivity::Column::DeletedAt.is_null())
+            .one(txn)
+            .await?;
+            
+        let grade_id = grade_opt.map(|g| g.id);
+        let mark = record.nilai_angka.map(|v| v as f64);
+        
+        if let Some(detail_activity) = detail_activity_opt {
+            let mut active_model: AcademicDetailActivity::ActiveModel = detail_activity.into_active_model();
+            active_model.teach_id = Set(Some(teach.id));
+            active_model.feeder_id = Set(Some(record.id));
+            active_model.feeder_grade_id = Set(Some(record.id));
+            active_model.mark = Set(mark);
+            active_model.grade_id = Set(grade_id);
+            active_model.is_lock = Set(Some(true));
+            active_model.updated_at = Set(Some(chrono::Local::now().naive_local()));
+            
+            active_model.update(txn).await?;
+            return Ok(Outcome::Updated);
+        } else {
+            let new_detail = AcademicDetailActivity::ActiveModel {
+                id: Set(Uuid::new_v4()),
+                activity_id: Set(student_activity.id),
+                course_id: Set(course.id),
+                teach_id: Set(Some(teach.id)),
+                feeder_id: Set(Some(record.id)),
+                feeder_grade_id: Set(Some(record.id)),
+                mark: Set(mark),
+                grade_id: Set(grade_id),
+                is_lock: Set(Some(true)),
+                created_at: Set(Some(chrono::Local::now().naive_local())),
+                updated_at: Set(Some(chrono::Local::now().naive_local())),
+                ..Default::default()
+            };
+            new_detail.insert(txn).await?;
+            return Ok(Outcome::Inserted);
+        }
+    } else {
+        Ok(Outcome::Skipped)
+    }
+    
 }
