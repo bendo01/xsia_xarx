@@ -21,6 +21,25 @@ const getHeaders = (): Record<string, string> => {
 
 import type { StudentActivityItem } from '~/controllers/academic/student/campaign/AcademicStudentCampaignActivityController';
 
+export interface StudentConvertionItem {
+    id: string;
+    student_id: string;
+    course_id: string;
+    grade_id: string;
+    transfer_code: string;
+    transfer_name: string;
+    transfer_credit: number;
+    transfer_grade: string;
+    origin_code?: string | null;
+    origin_name?: string | null;
+    origin_credit?: number | null;
+    origin_grade?: string | null;
+    name?: string | null;
+    academic_year_id?: string | null;
+    is_lock?: string | null;
+    sync_at?: string | null;
+}
+
 export interface StudentMasterItem {
     id: string;
     code: string;
@@ -66,6 +85,7 @@ export interface StudentMasterItem {
     class_code?: any;
     finance?: any;
     student_activities?: StudentActivityItem[];
+    convertions?: StudentConvertionItem[];
 }
 
 export async function listStudents(queryParams?: {

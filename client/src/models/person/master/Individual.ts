@@ -82,4 +82,45 @@ export interface PersonMasterIndividualDataObject {
   candidates: any[] | null; // AcademicCandidateMasterCandidate[]
   evaluators: any[] | null; // AcademicPriorLearningRecognitionTransactionEvaluator[]
   family_card_members: any[] | null; // PersonMasterFamilyCardMember[]
+  phones?: IndividualContactItem[] | null;
+  electronic_mails?: IndividualContactItem[] | null;
+  residences?: IndividualResidenceItem[] | null;
+  family_cards?: IndividualFamilyCardItem[] | null;
+}
+
+export interface IndividualContactItem {
+  id: string;
+  value: string;
+  type_name?: string | null;
+}
+
+export interface IndividualResidenceItem {
+  id: string;
+  street: string;
+  citizens_association: number;
+  neighborhood_association: number;
+  residence_type_name?: string | null;
+  province_name?: string | null;
+  regency_name?: string | null;
+  sub_district_name?: string | null;
+  village_name?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+}
+
+export interface IndividualFamilyCardMemberItem {
+  id: string;
+  individual_id: string;
+  individual_name?: string | null;
+  relative_id: string;
+  relative_name?: string | null;
+  relative_type_name?: string | null;
+}
+
+export interface IndividualFamilyCardItem {
+  id: string;
+  code?: string | null;
+  head_individual_id?: string | null;
+  head_name?: string | null;
+  members: IndividualFamilyCardMemberItem[];
 }

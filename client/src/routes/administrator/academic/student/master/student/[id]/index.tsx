@@ -1,4 +1,6 @@
 import { createSignal, onMount, createEffect, Show, For, JSX } from 'solid-js';
+import IndividualContactsFamily from '~/components/student/IndividualContactsFamily';
+import StudentConvertions from '~/components/student/StudentConvertions';
 import { useParams } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
@@ -358,6 +360,9 @@ export default function MasterShowPage() {
                                         </div>
                                     </Show>
                                 </Section>
+
+                                <StudentConvertions items={record()?.convertions} />
+                                <IndividualContactsFamily individualId={record()?.individual_id} />
 
                                 <Section title={t('ad.systemMetadata')}>
                                     <dl class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

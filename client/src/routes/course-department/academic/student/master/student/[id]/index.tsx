@@ -1,4 +1,6 @@
 import { createSignal, onMount, createEffect, Show, For, createMemo, ErrorBoundary } from 'solid-js';
+import IndividualContactsFamily from '~/components/student/IndividualContactsFamily';
+import StudentConvertions from '~/components/student/StudentConvertions';
 import { useParams, useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { Loader, ErrorFallback } from '~/components/loader';
@@ -568,6 +570,8 @@ export default function CourseDepartmentStudentMasterShowPage() {
                         </div>
                     </Show>
                 </ErrorBoundary>
+                <StudentConvertions items={student()?.convertions} />
+                <IndividualContactsFamily individualId={student()?.individual_id} />
             </main>
         </div>
     );

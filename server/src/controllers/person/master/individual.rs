@@ -165,6 +165,184 @@ pub async fn index(
     }))
 }
 
+fn db_err(e: sea_orm::DbErr) -> StatusError {
+    StatusError::internal_server_error().brief(e.to_string())
+}
+
+/// Loads phones, e-mails, residences and family cards owned by an individual.
+async fn load_contacts_and_family(
+    db: &DatabaseConnection,
+    individual_id: Uuid,
+) -> Result<
+    (
+        Vec<crate::dtos::person::master::individual::IndividualContactItem>,
+        Vec<crate::dtos::person::master::individual::IndividualContactItem>,
+        Vec<crate::dtos::person::master::individual::IndividualResidenceItem>,
+        Vec<crate::dtos::person::master::individual::IndividualFamilyCardItem>,
+    ),
+    StatusError,
+> {
+    use crate::dtos::person::master::individual::*;
+    use crate::models::contact::master::{electronic_mails, owner_types, phones, residences};
+    use crate::models::contact::reference::{electronic_mail_types, phone_types, residence_types};
+    use crate::models::location::{provinces, regencies, sub_districts, villages};
+    use crate::models::person::master::{family_card, family_card_member};
+    use std::collections::HashMap;
+
+    // id -> name lookup for a set of ids
+    use crate::models::person::reference::relative_type;
+    macro_rules! names {
+        ($module:ident, $ids:expr, $opt:expr) => {{
+            let ids: Vec<Uuid> = $ids;
+            let mut map: HashMap<Uuid, String> = HashMap::new();
+            if !ids.is_empty() {
+                for m in $module::Entity::find()
+                    .filter($module::Column::Id.is_in(ids))
+                    .all(db)
+                    .await
+                    .map_err(db_err)?
+                {
+                    if let Some(n) = $opt(m.name.clone()) {
+                        map.insert(m.id, n);
+                    }
+                }
+            }
+            map
+        }};
+    }
+    fn some(n: String) -> Option<String> { Some(n) }
+    fn same(n: Option<String>) -> Option<String> { n }
+
+    // Phones
+    let phone_rows = phones::Entity::find()
+        .filter(phones::Column::PhoneableId.eq(individual_id))
+        .filter(phones::Column::PhoneableType.eq(owner_types::INDIVIDUAL))
+        .filter(phones::Column::DeletedAt.is_null())
+        .all(db)
+        .await
+        .map_err(db_err)?;
+    let phone_types_map = names!(phone_types, phone_rows.iter().filter_map(|r| r.phone_type_id).collect(), some);
+    let phones_out = phone_rows
+        .into_iter()
+        .map(|r| IndividualContactItem {
+            id: r.id,
+            value: r.phone_number,
+            type_name: r.phone_type_id.and_then(|t| phone_types_map.get(&t).cloned()),
+        })
+        .collect();
+
+    // E-mails
+    let mail_rows = electronic_mails::Entity::find()
+        .filter(electronic_mails::Column::ElectronicMailableId.eq(individual_id))
+        .filter(electronic_mails::Column::ElectronicMailableType.eq(owner_types::INDIVIDUAL))
+        .filter(electronic_mails::Column::DeletedAt.is_null())
+        .all(db)
+        .await
+        .map_err(db_err)?;
+    let mail_types_map = names!(electronic_mail_types, mail_rows.iter().filter_map(|r| r.electronic_mail_type_id).collect(), some);
+    let mails_out = mail_rows
+        .into_iter()
+        .map(|r| IndividualContactItem {
+            id: r.id,
+            value: r.email_address,
+            type_name: r.electronic_mail_type_id.and_then(|t| mail_types_map.get(&t).cloned()),
+        })
+        .collect();
+
+    // Residences
+    let res_rows = residences::Entity::find()
+        .filter(residences::Column::ResidenceableId.eq(individual_id))
+        .filter(residences::Column::ResidenceableType.eq(owner_types::INDIVIDUAL))
+        .filter(residences::Column::DeletedAt.is_null())
+        .all(db)
+        .await
+        .map_err(db_err)?;
+    let rtypes = names!(residence_types, res_rows.iter().filter_map(|r| r.residence_type_id).collect(), some);
+    let provs = names!(provinces, res_rows.iter().filter_map(|r| r.province_id).collect(), same);
+    let regs = names!(regencies, res_rows.iter().filter_map(|r| r.regency_id).collect(), same);
+    let subs = names!(sub_districts, res_rows.iter().filter_map(|r| r.sub_district_id).collect(), some);
+    let vils = names!(villages, res_rows.iter().filter_map(|r| r.village_id).collect(), some);
+    let residences_out = res_rows
+        .into_iter()
+        .map(|r| IndividualResidenceItem {
+            id: r.id,
+            street: r.street,
+            citizens_association: r.citizens_association,
+            neighborhood_association: r.neighborhood_association,
+            residence_type_name: r.residence_type_id.and_then(|i| rtypes.get(&i).cloned()),
+            province_name: r.province_id.and_then(|i| provs.get(&i).cloned()),
+            regency_name: r.regency_id.and_then(|i| regs.get(&i).cloned()),
+            sub_district_name: r.sub_district_id.and_then(|i| subs.get(&i).cloned()),
+            village_name: r.village_id.and_then(|i| vils.get(&i).cloned()),
+            latitude: r.latitude,
+            longitude: r.longitude,
+        })
+        .collect();
+
+    // Family cards: cards headed by the individual, or where they are a member
+    let member_card_ids: Vec<Uuid> = family_card_member::Entity::find()
+        .filter(family_card_member::Column::IndividualId.eq(individual_id))
+        .filter(family_card_member::Column::DeletedAt.is_null())
+        .all(db)
+        .await
+        .map_err(db_err)?
+        .into_iter()
+        .map(|m| m.family_card_id)
+        .collect();
+    let cards = family_card::Entity::find()
+        .filter(family_card::Column::DeletedAt.is_null())
+        .filter(
+            Condition::any()
+                .add(family_card::Column::IndividualId.eq(individual_id))
+                .add(family_card::Column::Id.is_in(member_card_ids)),
+        )
+        .all(db)
+        .await
+        .map_err(db_err)?;
+    let card_ids: Vec<Uuid> = cards.iter().map(|c| c.id).collect();
+    let members = if card_ids.is_empty() {
+        Vec::new()
+    } else {
+        family_card_member::Entity::find()
+            .filter(family_card_member::Column::FamilyCardId.is_in(card_ids))
+            .filter(family_card_member::Column::DeletedAt.is_null())
+            .all(db)
+            .await
+            .map_err(db_err)?
+    };
+    let mut person_ids: Vec<Uuid> = members.iter().flat_map(|m| [m.individual_id, m.relative_id]).collect();
+    person_ids.extend(cards.iter().filter_map(|c| c.individual_id));
+    let people = names!(entity_mod, person_ids, some);
+    let rel_types = names!(
+        relative_type,
+        members.iter().map(|m| m.relative_type_id).collect(),
+        some
+    );
+    let family_out = cards
+        .into_iter()
+        .map(|c| IndividualFamilyCardItem {
+            id: c.id,
+            code: c.code,
+            head_individual_id: c.individual_id,
+            head_name: c.individual_id.and_then(|i| people.get(&i).cloned()),
+            members: members
+                .iter()
+                .filter(|m| m.family_card_id == c.id)
+                .map(|m| IndividualFamilyCardMemberItem {
+                    id: m.id,
+                    individual_id: m.individual_id,
+                    individual_name: people.get(&m.individual_id).cloned(),
+                    relative_id: m.relative_id,
+                    relative_name: people.get(&m.relative_id).cloned(),
+                    relative_type_name: rel_types.get(&m.relative_type_id).cloned(),
+                })
+                .collect(),
+        })
+        .collect();
+
+    Ok((phones_out, mails_out, residences_out, family_out))
+}
+
 #[endpoint(tags("Person - Master - Individual"), status_codes(200, 400, 404, 500))]
 pub async fn show(
     req: &mut Request,
@@ -663,6 +841,10 @@ pub async fn show(
         })
         .collect::<Vec<_>>();
 
+    // Contacts & family cards
+    let (phones, electronic_mails, residences, family_cards) =
+        load_contacts_and_family(db, item.id).await?;
+
     Ok(Json(IndividualDetailResponse {
         individual: IndividualResponse {
             id: item.id,
@@ -707,6 +889,10 @@ pub async fn show(
         candidates,
         evaluators,
         students,
+        phones,
+        electronic_mails,
+        residences,
+        family_cards,
     }))
 }
 

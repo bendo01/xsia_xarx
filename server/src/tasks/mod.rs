@@ -69,6 +69,7 @@ pub fn get_tasks() -> Vec<Box<dyn Task>> {
         Box::new(feeder_dikti::synchronize::downstream::master::upsert_20_detail_nilai_perkuliahan_kelas_to_academic_student_campaign_detail_activities::SyncNilaiPerkuliahanKelasToDetailActivities),
         Box::new(feeder_dikti::synchronize::downstream::master::upsert_21_biodata_mahasiswa_to_contact_details::SyncBiodataMahasiswaToContactDetails),
         Box::new(feeder_dikti::synchronize::downstream::master::upsert_22_biodata_dosen_to_contact_details::SyncBiodataDosenToContactDetails),
+        Box::new(feeder_dikti::synchronize::downstream::master::upsert_23_biodata_mahasiswa_family_card::SyncBiodataMahasiswaFamilyCard),
         Box::new(feeder_dikti::downstream::estimasi::master::get_28_aktifitas_mengajar_dosen::EstimateAktifitasMengajarDosen),
         Box::new(feeder_dikti::downstream::estimasi::master::get_02_all_prodi::EstimateGetAllProdi),
         Box::new(feeder_dikti::downstream::estimasi::master::get_01_all_pt::EstimateGetAllPT),

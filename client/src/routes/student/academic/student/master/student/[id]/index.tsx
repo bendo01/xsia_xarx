@@ -1,4 +1,6 @@
 import { createSignal, onMount, createEffect, Show } from 'solid-js';
+import IndividualContactsFamily from '~/components/student/IndividualContactsFamily';
+import StudentConvertions from '~/components/student/StudentConvertions';
 import { useParams, useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
@@ -188,6 +190,8 @@ export default function StudentMasterShowPage() {
                         </div>
                     </div>
                 </Show>
+                <StudentConvertions items={student()?.convertions} />
+                <IndividualContactsFamily individualId={student()?.individual_id} />
             </main>
         </div>
     );

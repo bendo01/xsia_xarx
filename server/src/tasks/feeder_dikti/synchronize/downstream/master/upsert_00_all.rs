@@ -28,6 +28,7 @@ use super::{
     upsert_20_detail_nilai_perkuliahan_kelas_to_academic_student_campaign_detail_activities::SyncNilaiPerkuliahanKelasToDetailActivities,
     upsert_21_biodata_mahasiswa_to_contact_details::SyncBiodataMahasiswaToContactDetails,
     upsert_22_biodata_dosen_to_contact_details::SyncBiodataDosenToContactDetails,
+    upsert_23_biodata_mahasiswa_family_card::SyncBiodataMahasiswaFamilyCard,
 };
 
 // Configuration constants
@@ -43,13 +44,13 @@ const ARG_START_FROM: &str = "--start-from";
 /// Pass `--only <N|task_name>` to run only a single specified step.
 const ARG_ONLY: &str = "--only";
 
-/// Runs all 22 master downstream synchronization tasks sequentially.
+/// Runs all 23 master downstream synchronization tasks sequentially.
 pub struct SyncAllMasterData;
 
 pub type SyncUpsertAllMasterData = SyncAllMasterData;
 
 impl SyncAllMasterData {
-    /// Ordered list of sub-tasks (steps 01 through 22).
+    /// Ordered list of sub-tasks (steps 01 through 23).
     /// Execution order strictly follows relational dependencies.
     pub fn sub_tasks() -> Vec<Box<dyn Task>> {
         vec![
@@ -75,6 +76,7 @@ impl SyncAllMasterData {
             Box::new(SyncNilaiPerkuliahanKelasToDetailActivities),
             Box::new(SyncBiodataMahasiswaToContactDetails),
             Box::new(SyncBiodataDosenToContactDetails),
+            Box::new(SyncBiodataMahasiswaFamilyCard),
         ]
     }
 
@@ -99,7 +101,7 @@ impl Task for SyncAllMasterData {
     }
 
     fn description(&self) -> &str {
-        "Sequentially run all downstream master synchronization tasks (01 to 22)"
+        "Sequentially run all downstream master synchronization tasks (01 to 23)"
     }
 
     async fn run(&self, db: &DatabaseConnection, args: &[String]) -> Result<(), Box<dyn std::error::Error>> {

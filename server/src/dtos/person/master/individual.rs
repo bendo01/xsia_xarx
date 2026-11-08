@@ -120,6 +120,52 @@ pub struct IndividualDetailResponse {
     pub candidates: Vec<crate::dtos::academic::candidate::master::candidates::CandidateResponse>,
     pub evaluators: Vec<crate::dtos::academic::prior_learning_recognition::transaction::evaluators::EvaluatorResponse>,
     pub students: Vec<crate::dtos::academic::student::master::students::StudentResponse>,
+    pub phones: Vec<IndividualContactItem>,
+    pub electronic_mails: Vec<IndividualContactItem>,
+    pub residences: Vec<IndividualResidenceItem>,
+    pub family_cards: Vec<IndividualFamilyCardItem>,
+}
+
+/// Phone number or e-mail address with its human-readable type.
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct IndividualContactItem {
+    pub id: Uuid,
+    pub value: String,
+    pub type_name: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct IndividualResidenceItem {
+    pub id: Uuid,
+    pub street: String,
+    pub citizens_association: i32,
+    pub neighborhood_association: i32,
+    pub residence_type_name: Option<String>,
+    pub province_name: Option<String>,
+    pub regency_name: Option<String>,
+    pub sub_district_name: Option<String>,
+    pub village_name: Option<String>,
+    pub latitude: Option<f64>,
+    pub longitude: Option<f64>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct IndividualFamilyCardMemberItem {
+    pub id: Uuid,
+    pub individual_id: Uuid,
+    pub individual_name: Option<String>,
+    pub relative_id: Uuid,
+    pub relative_name: Option<String>,
+    pub relative_type_name: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]
+pub struct IndividualFamilyCardItem {
+    pub id: Uuid,
+    pub code: Option<String>,
+    pub head_individual_id: Option<Uuid>,
+    pub head_name: Option<String>,
+    pub members: Vec<IndividualFamilyCardMemberItem>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]

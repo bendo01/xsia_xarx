@@ -1,4 +1,6 @@
 import { createSignal, onMount, createEffect, Show, For, createMemo, lazy, Suspense } from 'solid-js';
+import IndividualContactsFamily from '~/components/student/IndividualContactsFamily';
+import StudentConvertions from '~/components/student/StudentConvertions';
 import { useParams, useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
@@ -1458,6 +1460,8 @@ export default function StudentDashboardProfilePage() {
                         </Show>
                     </div>
                 </div>
+                <StudentConvertions items={studentRecord()?.convertions} />
+                <IndividualContactsFamily individualId={ind()?.id} />
             </main>
         </div>
     );

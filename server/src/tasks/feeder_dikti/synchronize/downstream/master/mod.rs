@@ -21,5 +21,6 @@ pub mod upsert_19_peserta_kelas_kuliah_to_academic_student_campaign_detail_activ
 pub mod upsert_20_detail_nilai_perkuliahan_kelas_to_academic_student_campaign_detail_activities;
 pub mod upsert_21_biodata_mahasiswa_to_contact_details;
 pub mod upsert_22_biodata_dosen_to_contact_details;
+pub mod upsert_23_biodata_mahasiswa_family_card;
 pub mod sync_log;
 pub mod dedupe_detail_activities;
