@@ -11,6 +11,8 @@ pub struct CandidateQuery {
     pub page_size: Option<u64>,
     pub name: Option<String>,
     pub code: Option<String>,
+    pub institution_id: Option<Uuid>,
+    pub academic_year_id: Option<Uuid>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]

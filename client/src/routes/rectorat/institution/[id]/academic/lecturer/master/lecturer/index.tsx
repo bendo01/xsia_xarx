@@ -170,15 +170,15 @@ export default function RectoratLecturerIndex() {
 
                     {/* Stats */}
                     <div class="flex items-center gap-3 shrink-0">
-                        <div class="text-center px-4 py-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm min-w-[72px]">
+                        <div class="text-center px-4 py-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm min-w-18">
                             <p class="text-2xl font-black text-neutral-900 dark:text-white">{scopedItems().length}</p>
                             <p class="text-[11px] text-neutral-500 dark:text-neutral-400 font-medium uppercase tracking-wide">{t('rt.total')}</p>
                         </div>
-                        <div class="text-center px-4 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 shadow-sm min-w-[72px]">
+                        <div class="text-center px-4 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 shadow-sm min-w-18">
                             <p class="text-2xl font-black text-emerald-700 dark:text-emerald-400">{activeCount()}</p>
                             <p class="text-[11px] text-emerald-600 dark:text-emerald-500 font-medium uppercase tracking-wide">{t('rt.aktif')}</p>
                         </div>
-                        <div class="text-center px-4 py-2.5 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 shadow-sm min-w-[72px]">
+                        <div class="text-center px-4 py-2.5 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 shadow-sm min-w-18">
                             <p class="text-2xl font-black text-amber-700 dark:text-amber-400">{inactiveCount()}</p>
                             <p class="text-[11px] text-amber-600 dark:text-amber-500 font-medium uppercase tracking-wide">{t('rt.tidakAktif')}</p>
                         </div>

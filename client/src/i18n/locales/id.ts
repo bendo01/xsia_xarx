@@ -438,6 +438,7 @@ export const id: TranslationSchema = {
             listData: 'List Data',
             studentList: 'Peserta Didik',
             lecturerList: 'Tenaga Pendidik',
+            candidateList: 'Calon Mahasiswa',
             courseList: 'Matakuliah',
             curriculumList: 'Kurikulum',
             studentActivityList: 'Aktifitas Peserta Didik',

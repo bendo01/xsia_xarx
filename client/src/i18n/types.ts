@@ -171,6 +171,7 @@ export interface TranslationSchema {
             listData: string;
             studentList: string;
             lecturerList: string;
+            candidateList: string;
             courseList: string;
             curriculumList: string;
             studentActivityList: string;

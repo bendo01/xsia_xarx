@@ -38,6 +38,14 @@ pub async fn index(
         select = select.filter(entity_mod::Column::Code.eq(code));
     }
 
+    if let Some(institution_id) = query.institution_id {
+        select = select.filter(entity_mod::Column::InstitutionId.eq(institution_id));
+    }
+
+    if let Some(academic_year_id) = query.academic_year_id {
+        select = select.filter(entity_mod::Column::AcademicYearId.eq(academic_year_id));
+    }
+
     let paginator = select
         .order_by_asc(entity_mod::Column::Name)
         .paginate(db, page_size);

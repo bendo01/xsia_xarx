@@ -438,6 +438,7 @@ export const en: TranslationSchema = {
             listData: 'List Data',
             studentList: 'Students',
             lecturerList: 'Lecturer',
+            candidateList: 'Prospective Students',
             courseList: 'Course',
             curriculumList: 'Curriculum',
             studentActivityList: 'Student Activity',
