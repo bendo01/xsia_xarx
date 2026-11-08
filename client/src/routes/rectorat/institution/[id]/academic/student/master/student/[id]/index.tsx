@@ -904,7 +904,7 @@ export default function RectoratStudentDetail() {
                 </Show>
 
                 <StudentConvertions items={student()?.convertions} />
-                <IndividualContactsFamily individualId={student()?.individual_id} />
+                <IndividualContactsFamily rounded individualId={student()?.individual_id} data={individual() ?? undefined} />
             </div>
         </div>
     );

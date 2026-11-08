@@ -158,6 +158,10 @@ export async function PersonMasterIndividualControllerShow(id: string): Promise<
             candidates: resData.candidates ?? null,
             evaluators: resData.evaluators ?? null,
             family_card_members: resData.family_card_members ?? null,
+            phones: resData.phones ?? null,
+            electronic_mails: resData.electronic_mails ?? null,
+            residences: resData.residences ?? null,
+            family_cards: resData.family_cards ?? null,
         };
 
         return {

@@ -185,6 +185,30 @@ export default function MasterIndexPage() {
         return item?.code || item?.kode || item?.id?.substring(0, 8) || '-';
     };
 
+    // Status badge colour per student status
+    const getStatusBadgeClass = (statusName?: string | null) => {
+        const s = (statusName || '').toLowerCase();
+        if (s.includes('non') || s.includes('tidak aktif') || s.includes('inactive')) {
+            return 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700';
+        }
+        if (s.includes('aktif') || s.includes('active')) {
+            return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60';
+        }
+        if (s.includes('cuti') || s.includes('leave')) {
+            return 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60';
+        }
+        if (s.includes('lulus') || s.includes('graduat')) {
+            return 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60';
+        }
+        if (s.includes('mutasi') || s.includes('pindah') || s.includes('transfer')) {
+            return 'bg-violet-50 text-violet-700 dark:bg-violet-950/60 dark:text-violet-400 border border-violet-200 dark:border-violet-800/60';
+        }
+        if (s.includes('keluar') || s.includes('drop') || s.includes('resign') || s.includes('putus')) {
+            return 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400 border border-rose-200 dark:border-rose-800/60';
+        }
+        return 'bg-sky-50 text-sky-700 dark:bg-sky-950/60 dark:text-sky-400 border border-sky-200 dark:border-sky-800/60';
+    };
+
     const startIndex = () => (currentPage() - 1) * itemsPerPage();
     const endIndex = () => Math.min(startIndex() + items().length, totalData());
 
@@ -385,7 +409,11 @@ export default function MasterIndexPage() {
                                                         </div>
                                                         <div>
                                                             <dt class="text-neutral-500 dark:text-neutral-400">{t('ad.status')}</dt>
-                                                            <dd class="text-neutral-800 dark:text-neutral-200">{item.status_name || '-'}</dd>
+                                                            <dd class="text-neutral-800 dark:text-neutral-200">
+                                                                <Show when={item.status_name} fallback={<span>-</span>}>
+                                                                    <span class={`inline-block px-2 py-0.5 rounded-xs text-[10px] font-bold ${getStatusBadgeClass(item.status_name)}`}>{item.status_name}</span>
+                                                                </Show>
+                                                            </dd>
                                                         </div>
                                                         <div>
                                                             <dt class="text-neutral-500 dark:text-neutral-400">{t('ad.registration')}</dt>
@@ -506,7 +534,9 @@ export default function MasterIndexPage() {
                                                         {item.academic_year_name || '-'}
                                                     </td>
                                                     <td class="px-4 py-3 text-xs text-neutral-600 dark:text-neutral-300 whitespace-nowrap">
-                                                        {item.status_name || '-'}
+                                                        <Show when={item.status_name} fallback={<span>-</span>}>
+                                                            <span class={`inline-block px-2 py-0.5 rounded-xs text-[10px] font-bold ${getStatusBadgeClass(item.status_name)}`}>{item.status_name}</span>
+                                                        </Show>
                                                     </td>
                                                     <td class="px-4 py-3 text-xs text-neutral-600 dark:text-neutral-300 whitespace-nowrap">
                                                         {item.registration_name || '-'}

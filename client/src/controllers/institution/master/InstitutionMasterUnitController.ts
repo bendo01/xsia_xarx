@@ -1,4 +1,5 @@
 import type { ModelSelectItem } from "../../../models/common/select/ModelSelectItem";
+import { getStorageItem } from "../../../lib/storage";
 
 const server_api_url = import.meta.env.VITE_API_SERVER_URL ?? "http://localhost:5155/api/";
 
@@ -14,7 +15,7 @@ export async function getUnitOptions(queryParams?: {
         if (queryParams?.institution_id) params.set('institution_id', queryParams.institution_id);
         if (queryParams?.unit_type_id) params.set('unit_type_id', queryParams.unit_type_id);
 
-        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        const token = typeof window !== 'undefined' ? getStorageItem('token') : null;
         const headers: Record<string, string> = {
             'Content-Type': 'application/json',
             Accept: 'application/json',

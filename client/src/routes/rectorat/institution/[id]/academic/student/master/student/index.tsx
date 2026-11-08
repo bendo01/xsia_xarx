@@ -7,6 +7,8 @@ import { resolveInstitutionFromStaffRole } from '~/lib/rectoratHelper';
 import { getAcademicYearOptions } from '~/controllers/academic/general/reference/AcademicGeneralReferenceAcademicYearController';
 import { getStatusOptions } from '~/controllers/academic/student/reference/AcademicStudentReferenceStatusController';
 import { getRegistrationOptions } from '~/controllers/academic/student/reference/AcademicStudentReferenceRegistrationController';
+import { getUnitOptions } from '~/controllers/institution/master/InstitutionMasterUnitController';
+import { InstitutionReferenceControllerUnitTypeIndex } from '~/controllers/institution/reference/InstitutionReferenceUnitTypeController';
 import { t } from '../../../../../../../../i18n';
 
 interface StudentRow {
@@ -57,6 +59,8 @@ export default function RectoratStudentIndex() {
     const [selectedStatus, setSelectedStatus] = createSignal<string>('');
     const [registrations, setRegistrations] = createSignal<OptionItem[]>([]);
     const [selectedRegistration, setSelectedRegistration] = createSignal<string>('');
+    const [units, setUnits] = createSignal<OptionItem[]>([]);
+    const [selectedUnit, setSelectedUnit] = createSignal<string>('');
 
     // Sort state: 'code' | 'name', 'asc' | 'desc'
     const [sortBy, setSortBy] = createSignal<'code' | 'name'>('code');
@@ -92,6 +96,35 @@ export default function RectoratStudentIndex() {
         onCleanup(() => document.removeEventListener('click', handleOutsideClick));
     });
 
+    // Units are loaded once the real (resolved) institution id is known.
+    let unitsLoadedFor = '';
+    // Only units of type Program Studi Perguruan Tinggi (code 5, alphabet_code 'PRODI')
+    const resolveProdiUnitTypeId = async (): Promise<string> => {
+        try {
+            const res = await InstitutionReferenceControllerUnitTypeIndex({ page: 1, per_page: 50 });
+            const prodi = (res.data || []).find(
+                (item: any) =>
+                    item.code === 5 ||
+                    item.alphabet_code === 'PRODI' ||
+                    item.name === 'Program Studi Perguruan Tinggi',
+            );
+            if (prodi?.id) return prodi.id;
+        } catch (e) {
+            console.warn('Failed to load unit types for PRODI filter:', e);
+        }
+        return '019759fd-36e8-4f43-80ed-4f687a48145d';
+    };
+    const loadUnits = async (instId: string) => {
+        if (unitsLoadedFor === instId) return;
+        unitsLoadedFor = instId;
+        setSelectedUnit('');
+        try {
+            setUnits((await getUnitOptions({ institution_id: instId, unit_type_id: await resolveProdiUnitTypeId() })) || []);
+        } catch {
+            setUnits([]);
+        }
+    };
+
     const fetchData = async () => {
         setIsLoading(true);
         try {
@@ -110,12 +143,15 @@ export default function RectoratStudentIndex() {
                 return;
             }
 
+            void loadUnits(instId);
+
             const response = await masterApiIndex<StudentRow>('academic/student/master/students', {
                 page: currentPage(),
                 per_page: itemsPerPage(),
                 institution_id: instId,
                 search: searchQuery() || undefined,
                 academic_year_ids: selectedAcademicYears().length > 0 ? selectedAcademicYears().join(',') : undefined,
+                unit_id: selectedUnit() || undefined,
                 status_id: selectedStatus() || undefined,
                 registration_id: selectedRegistration() || undefined,
                 sort_by: sortBy(),
@@ -143,6 +179,7 @@ export default function RectoratStudentIndex() {
         itemsPerPage();
         searchQuery();
         selectedAcademicYears();
+        selectedUnit();
         selectedStatus();
         selectedRegistration();
         sortBy();
@@ -167,6 +204,30 @@ export default function RectoratStudentIndex() {
             .map((w) => w[0] ?? '')
             .join('')
             .toUpperCase();
+
+    // Status badge colour per student status
+    const getStatusBadgeClass = (statusName?: string | null) => {
+        const s = (statusName || '').toLowerCase();
+        if (s.includes('non') || s.includes('tidak aktif') || s.includes('inactive')) {
+            return 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700';
+        }
+        if (s.includes('aktif') || s.includes('active')) {
+            return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60';
+        }
+        if (s.includes('cuti') || s.includes('leave')) {
+            return 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60';
+        }
+        if (s.includes('lulus') || s.includes('graduat')) {
+            return 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60';
+        }
+        if (s.includes('mutasi') || s.includes('pindah') || s.includes('transfer')) {
+            return 'bg-violet-50 text-violet-700 dark:bg-violet-950/60 dark:text-violet-400 border border-violet-200 dark:border-violet-800/60';
+        }
+        if (s.includes('keluar') || s.includes('drop') || s.includes('resign') || s.includes('dikeluarkan') || s.includes('putus')) {
+            return 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400 border border-rose-200 dark:border-rose-800/60';
+        }
+        return 'bg-sky-50 text-sky-700 dark:bg-sky-950/60 dark:text-sky-400 border border-sky-200 dark:border-sky-800/60';
+    };
 
     const formatDate = (d?: string | null) => {
         if (!d) return '-';
@@ -224,6 +285,7 @@ export default function RectoratStudentIndex() {
         const searchInput = document.getElementById('student-search-input') as HTMLInputElement | null;
         if (searchInput) searchInput.value = '';
         setSelectedAcademicYears([]);
+        setSelectedUnit('');
         setSelectedStatus('');
         setSelectedRegistration('');
         setSortBy('code');
@@ -232,7 +294,7 @@ export default function RectoratStudentIndex() {
     };
 
     const hasActiveFilters = () =>
-        Boolean(searchQuery()) || selectedAcademicYears().length > 0 || Boolean(selectedStatus()) || Boolean(selectedRegistration());
+        Boolean(searchQuery()) || selectedAcademicYears().length > 0 || Boolean(selectedUnit()) || Boolean(selectedStatus()) || Boolean(selectedRegistration());
 
     return (
         <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
@@ -309,7 +371,7 @@ export default function RectoratStudentIndex() {
                                 type="button"
                                 id="academic-year-multi-select-btn"
                                 onClick={() => setIsAyDropdownOpen(!isAyDropdownOpen())}
-                                class="w-full flex items-center justify-between py-2.5 px-3 text-xs border border-neutral-200 rounded-lg bg-neutral-50/50 hover:bg-white focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-neutral-800/60 dark:border-neutral-700 dark:focus:bg-neutral-800 dark:text-white transition-all text-left shadow-xs"
+                                class="w-full flex items-center justify-between py-2.5 px-3 text-xs border border-neutral-200 rounded-lg bg-neutral-50/50 hover:bg-white dark:hover:bg-neutral-800 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-neutral-800/60 dark:border-neutral-700 dark:focus:bg-neutral-800 dark:text-white transition-all text-left shadow-xs"
                             >
                                 <div class="flex items-center gap-2 truncate">
                                     <svg class="size-3.5 text-neutral-400 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -405,11 +467,29 @@ export default function RectoratStudentIndex() {
                             </Show>
                         </div>
 
+                        {/* Unit (Study Program) Filter Dropdown */}
+                        <div class="md:col-span-3">
+                            <select
+                                id="student-unit-filter"
+                                class="w-full py-2.5 px-3 text-xs border border-neutral-200 rounded-lg bg-neutral-50/50 hover:bg-white dark:hover:bg-neutral-800 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-neutral-800/60 dark:border-neutral-700 dark:focus:bg-neutral-800 dark:text-white transition-all shadow-xs cursor-pointer"
+                                value={selectedUnit()}
+                                onChange={(e) => {
+                                    setSelectedUnit((e.target as HTMLSelectElement).value);
+                                    setCurrentPage(1);
+                                }}
+                            >
+                                <option value="">{t('rt.semuaProgramStudi')}</option>
+                                <For each={units()}>
+                                    {(u) => <option value={u.id}>{u.name}</option>}
+                                </For>
+                            </select>
+                        </div>
+
                         {/* Status Filter Dropdown */}
                         <div class="md:col-span-2">
                             <select
                                 id="student-status-filter"
-                                class="w-full py-2.5 px-3 text-xs border border-neutral-200 rounded-lg bg-neutral-50/50 hover:bg-white focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-neutral-800/60 dark:border-neutral-700 dark:focus:bg-neutral-800 dark:text-white transition-all shadow-xs cursor-pointer"
+                                class="w-full py-2.5 px-3 text-xs border border-neutral-200 rounded-lg bg-neutral-50/50 hover:bg-white dark:hover:bg-neutral-800 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-neutral-800/60 dark:border-neutral-700 dark:focus:bg-neutral-800 dark:text-white transition-all shadow-xs cursor-pointer"
                                 value={selectedStatus()}
                                 onChange={(e) => {
                                     setSelectedStatus((e.target as HTMLSelectElement).value);
@@ -427,7 +507,7 @@ export default function RectoratStudentIndex() {
                         <div class="md:col-span-2">
                             <select
                                 id="student-registration-filter"
-                                class="w-full py-2.5 px-3 text-xs border border-neutral-200 rounded-lg bg-neutral-50/50 hover:bg-white focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-neutral-800/60 dark:border-neutral-700 dark:focus:bg-neutral-800 dark:text-white transition-all shadow-xs cursor-pointer"
+                                class="w-full py-2.5 px-3 text-xs border border-neutral-200 rounded-lg bg-neutral-50/50 hover:bg-white dark:hover:bg-neutral-800 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-neutral-800/60 dark:border-neutral-700 dark:focus:bg-neutral-800 dark:text-white transition-all shadow-xs cursor-pointer"
                                 value={selectedRegistration()}
                                 onChange={(e) => {
                                     setSelectedRegistration((e.target as HTMLSelectElement).value);
@@ -445,7 +525,7 @@ export default function RectoratStudentIndex() {
                         <div class="md:col-span-2">
                             <select
                                 id="student-sort-selector"
-                                class="w-full py-2.5 px-3 text-xs border border-neutral-200 rounded-lg bg-neutral-50/50 hover:bg-white focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-neutral-800/60 dark:border-neutral-700 dark:focus:bg-neutral-800 dark:text-white transition-all shadow-xs cursor-pointer font-medium"
+                                class="w-full py-2.5 px-3 text-xs border border-neutral-200 rounded-lg bg-neutral-50/50 hover:bg-white dark:hover:bg-neutral-800 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-neutral-800/60 dark:border-neutral-700 dark:focus:bg-neutral-800 dark:text-white transition-all shadow-xs cursor-pointer font-medium"
                                 value={`${sortBy()}-${sortDir()}`}
                                 onChange={(e) => {
                                     const [by, dir] = (e.target as HTMLSelectElement).value.split('-');
@@ -493,6 +573,22 @@ export default function RectoratStudentIndex() {
                                         type="button"
                                         onClick={clearAllAy}
                                         class="hover:text-indigo-900 dark:hover:text-indigo-100 font-bold"
+                                    >
+                                        ✕
+                                    </button>
+                                </span>
+                            </Show>
+
+                            <Show when={selectedUnit()}>
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300 text-[11px] font-medium border border-sky-200 dark:border-sky-800/60">
+                                    <span>{t('rt.programStudi')}: {units().find(u => u.id === selectedUnit())?.name || selectedUnit()}</span>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setSelectedUnit('');
+                                            setCurrentPage(1);
+                                        }}
+                                        class="hover:text-sky-900 dark:hover:text-sky-100 font-bold"
                                     >
                                         ✕
                                     </button>
@@ -715,7 +811,7 @@ export default function RectoratStudentIndex() {
                                                             when={item.status_name}
                                                             fallback={<span class="text-neutral-400 dark:text-neutral-600">-</span>}
                                                         >
-                                                            <span class="inline-flex items-center justify-center h-6 px-2.5 text-[10px] font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800/50">
+                                                            <span class={`inline-flex items-center justify-center h-6 px-2.5 text-[10px] font-bold rounded-full ${getStatusBadgeClass(item.status_name)}`}>
                                                                 {item.status_name}
                                                             </span>
                                                         </Show>

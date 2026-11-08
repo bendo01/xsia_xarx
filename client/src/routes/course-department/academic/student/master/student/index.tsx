@@ -367,8 +367,11 @@ export default function CourseDepartmentStudentMasterPage() {
     });
 
     // Helper for status badge styling
-    const getStatusBadgeClass = (statusName?: string) => {
+    const getStatusBadgeClass = (statusName?: string | null) => {
         const s = (statusName || '').toLowerCase();
+        if (s.includes('non') || s.includes('tidak aktif') || s.includes('inactive')) {
+            return 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700';
+        }
         if (s.includes('aktif') || s.includes('active')) {
             return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60';
         }
@@ -378,10 +381,13 @@ export default function CourseDepartmentStudentMasterPage() {
         if (s.includes('lulus') || s.includes('graduat')) {
             return 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60';
         }
-        if (s.includes('keluar') || s.includes('drop') || s.includes('resign')) {
+        if (s.includes('mutasi') || s.includes('pindah') || s.includes('transfer')) {
+            return 'bg-violet-50 text-violet-700 dark:bg-violet-950/60 dark:text-violet-400 border border-violet-200 dark:border-violet-800/60';
+        }
+        if (s.includes('keluar') || s.includes('drop') || s.includes('resign') || s.includes('putus')) {
             return 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400 border border-rose-200 dark:border-rose-800/60';
         }
-        return 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700';
+        return 'bg-sky-50 text-sky-700 dark:bg-sky-950/60 dark:text-sky-400 border border-sky-200 dark:border-sky-800/60';
     };
 
     return (

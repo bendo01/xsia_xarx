@@ -5,10 +5,16 @@ import { t } from '../../i18n';
 
 const dash = (v: unknown) => (v === null || v === undefined || v === '' ? '-' : String(v));
 
-function Card(props: { title: string; children: any }) {
+function Card(props: { title: string; children: any; rounded?: boolean }) {
     return (
-        <div class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-            <div class="px-4 py-3 border-b border-neutral-200 dark:border-neutral-700 text-sm font-bold">{props.title}</div>
+        <div
+            class={
+                props.rounded
+                    ? 'bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm'
+                    : 'bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs'
+            }
+        >
+            <div class={`px-4 py-3 border-b text-sm font-bold ${props.rounded ? 'border-neutral-200 dark:border-neutral-800' : 'border-neutral-200 dark:border-neutral-700'}`}>{props.title}</div>
             <div class="p-4 text-xs">{props.children}</div>
         </div>
     );
@@ -21,6 +27,8 @@ function Card(props: { title: string; children: any }) {
 export default function IndividualContactsFamily(props: {
     individualId?: string | null;
     data?: PersonMasterIndividualDataObject | null;
+    /** Match the rounded-xl card style used on the rectorat detail pages. */
+    rounded?: boolean;
 }) {
     const NIL = '00000000-0000-0000-0000-000000000000';
     const [fetched] = createResource(
@@ -42,7 +50,7 @@ export default function IndividualContactsFamily(props: {
             <div class="space-y-4">
                 <h2 class="text-sm font-bold">{t('ad.contactsAndFamily')}</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Card title={t('ad.phoneNumbers')}>
+                    <Card rounded={props.rounded} title={t('ad.phoneNumbers')}>
                         <Show when={phones().length > 0} fallback={<p class="text-neutral-500">{t('ad.noneRecorded')}</p>}>
                             <ul class="space-y-1.5">
                                 <For each={phones()}>
@@ -56,7 +64,7 @@ export default function IndividualContactsFamily(props: {
                             </ul>
                         </Show>
                     </Card>
-                    <Card title={t('ad.emailAddresses')}>
+                    <Card rounded={props.rounded} title={t('ad.emailAddresses')}>
                         <Show when={mails().length > 0} fallback={<p class="text-neutral-500">{t('ad.noneRecorded')}</p>}>
                             <ul class="space-y-1.5">
                                 <For each={mails()}>
@@ -72,7 +80,7 @@ export default function IndividualContactsFamily(props: {
                     </Card>
                 </div>
 
-                <Card title={t('ad.residencesTitle')}>
+                <Card rounded={props.rounded} title={t('ad.residencesTitle')}>
                     <Show when={residences().length > 0} fallback={<p class="text-neutral-500">{t('ad.noneRecorded')}</p>}>
                         <ul class="divide-y divide-neutral-100 dark:divide-neutral-700/50">
                             <For each={residences()}>
@@ -96,7 +104,7 @@ export default function IndividualContactsFamily(props: {
 
                 <For each={cards()}>
                     {(c) => (
-                        <Card title={`${t('ad.familyCards')} · ${t('ad.familyCardNumber')} ${dash(c.code)}`}>
+                        <Card rounded={props.rounded} title={`${t('ad.familyCards')} · ${t('ad.familyCardNumber')} ${dash(c.code)}`}>
                             <p class="mb-2 text-neutral-500">{t('ad.familyHead')}: <span class="font-semibold text-neutral-800 dark:text-neutral-100">{dash(c.head_name)}</span></p>
                             <div class="overflow-x-auto -mx-4">
                                 <table class="w-full text-left">
