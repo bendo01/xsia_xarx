@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.11.1)  5 NOV 2026 12:07
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.11.1)  8 NOV 2026 14:30
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**article.tex
-(./article.tex
+**/home/bendo01/Projects/xsia_xarx/journal/conference/article.tex
+(/home/bendo01/Projects/xsia_xarx/journal/conference/article.tex
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
 (./IEEEtran.cls
@@ -541,15 +541,11 @@ File: pgflibraryarrows.meta.code.tex 2025-08-29 v3.1.11a (3.1.11a)
 \pgfarrowlength=\dimen305
 \pgfarrowwidth=\dimen306
 \pgfarrowlinewidth=\dimen307
-) (/usr/share/texmf-dist/tex/latex/eso-pic/eso-pic.sty
-Package: eso-pic 2025/12/10 v3.0d eso-pic (RN)
-\ESO@tempdima=\dimen308
-\ESO@tempdimb=\dimen309
-)
-(/usr/share/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
+) (/usr/share/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count331
-) (./article.aux)
+)
+(./article.aux)
 \openout1 = `article.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 20.
@@ -571,13 +567,13 @@ LaTeX Font Info:    ... okay on input line 20.
 (/usr/share/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count332
-\scratchdimen=\dimen310
+\scratchdimen=\dimen308
 \scratchbox=\box70
 \nofMPsegments=\count333
 \nofMParguments=\count334
 \everyMPshowfont=\toks37
 \MPscratchCnt=\count335
-\MPscratchDim=\dimen311
+\MPscratchDim=\dimen309
 \MPnumerator=\count336
 \makeMPintoPDFobject=\count337
 \everyMPtoPDFconversion=\toks38
@@ -606,17 +602,11 @@ LaTeX Font Info:    Calculating math sizes for size <11> on input line 48.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-LaTeX Font Info:    Trying to load font information for OT1+phv on input line 7
-3.
-
-(/usr/share/texmf-dist/tex/latex/psnfss/ot1phv.fd
-File: ot1phv.fd 2020/03/25 scalable font definitions for OT1/phv.
-) [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf-dist/f
-onts/enc/dvips/base/8r.enc}
+ [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf-dist/fo
+nts/enc/dvips/base/8r.enc}
 
 
-]
-[2] [3] [4] [5]
+] [2] [3] [4] [5]
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -635,13 +625,13 @@ L3 programming layer <2026-01-19>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 14965 strings out of 469515
- 298744 string characters out of 5470807
- 703901 words of memory out of 5000000
- 43355 multiletter control sequences out of 15000+600000
- 673770 words of font info for 129 fonts, out of 8000000 for 9000
+ 14796 strings out of 469515
+ 296310 string characters out of 5470807
+ 700986 words of memory out of 5000000
+ 43194 multiletter control sequences out of 15000+600000
+ 672010 words of font info for 127 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 84i,15n,94p,1454b,720s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,15n,94p,1506b,720s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/
 texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-dist/fon
 ts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texmf-dist/fonts/type1/public
@@ -652,14 +642,13 @@ onts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texmf-dist/fonts/type1/publi
 c/amsfonts/cm/cmsy10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/
 cmsy7.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr
 /share/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/te
-xmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/share/texmf-dist/fonts/type1
-/urw/times/utmb8a.pfb></usr/share/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb>
-</usr/share/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texmf-dist/
-fonts/type1/urw/times/utmri8a.pfb>
-Output written on article.pdf (6 pages, 205065 bytes).
+xmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texmf-dist/fonts/type1/ur
+w/times/utmbi8a.pfb></usr/share/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></u
+sr/share/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on article.pdf (6 pages, 200978 bytes).
 PDF statistics:
- 112 PDF objects out of 1000 (max. 8388607)
- 69 compressed objects within 1 object stream
+ 107 PDF objects out of 1000 (max. 8388607)
+ 66 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -1,7 +1,7 @@
 PWD /home/bendo01/Projects/xsia_xarx/journal/conference
 INPUT /usr/share/texmf-dist/web2c/texmf.cnf
 INPUT /var/lib/texmf/web2c/pdftex/pdflatex.fmt
-INPUT article_indonesia.tex
+INPUT /home/bendo01/Projects/xsia_xarx/journal/conference/article_indonesia.tex
 OUTPUT article_indonesia.log
 INPUT ./IEEEtran.cls
 INPUT IEEEtran.cls

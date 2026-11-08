@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.11.1)  5 NOV 2026 12:08
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.11.1)  8 NOV 2026 14:30
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**article_indonesia.tex
-(./article_indonesia.tex
+**/home/bendo01/Projects/xsia_xarx/journal/conference/article_indonesia.tex
+(/home/bendo01/Projects/xsia_xarx/journal/conference/article_indonesia.tex
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
 (./IEEEtran.cls
@@ -644,13 +644,13 @@ L3 programming layer <2026-01-19>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 14970 strings out of 469515
- 298903 string characters out of 5470807
- 708219 words of memory out of 5000000
+ 14971 strings out of 469515
+ 299057 string characters out of 5470807
+ 708238 words of memory out of 5000000
  43356 multiletter control sequences out of 15000+600000
  678869 words of font info for 134 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 84i,15n,94p,1624b,722s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,15n,94p,1676b,722s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/
 texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-dist/fon
 ts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texmf-dist/fonts/type1/public
@@ -665,7 +665,7 @@ xmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/share/texmf-dist/fonts/type1
 /urw/times/utmb8a.pfb></usr/share/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb>
 </usr/share/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texmf-dist/
 fonts/type1/urw/times/utmri8a.pfb>
-Output written on article_indonesia.pdf (7 pages, 206251 bytes).
+Output written on article_indonesia.pdf (7 pages, 206257 bytes).
 PDF statistics:
  117 PDF objects out of 1000 (max. 8388607)
  73 compressed objects within 1 object stream

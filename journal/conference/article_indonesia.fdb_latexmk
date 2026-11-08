@@ -1,5 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1793851735.22117 "article_indonesia.tex" "article_indonesia.pdf" "article_indonesia" 1793851738.1207 0
+["pdflatex"] 1794119446.9683 "/home/bendo01/Projects/xsia_xarx/journal/conference/article_indonesia.tex" "article_indonesia.pdf" "article_indonesia" 1794119450.21673 0
+  "/home/bendo01/Projects/xsia_xarx/journal/conference/article_indonesia.tex" 1794119446.6397 41304 aa9a121475e428dfaa49d87aae24152f ""
   "/usr/share/texmf-dist/fonts/enc/dvips/base/8r.enc" 1775415801 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texmf-dist/fonts/map/fontname/texfonts.map" 1775415801 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texmf-dist/fonts/tfm/adobe/helvetic/phvr7t.tfm" 1775415801 2520 53e01eef820ca829e42c1333c3fd02b9 ""
@@ -153,8 +154,8 @@
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1793499881 5385779 47c0c393a77fd4a098bacfd57d66b88a ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1793499685 2328188 c9608c77c511b30a339d01369613397a ""
   "IEEEtran.cls" 1793603631.86422 288304 b67b6fc6c2abb39f9b461923f5199343 ""
-  "article_indonesia.aux" 1793851737.73895 5986 01b86044d7bd90a217f2b3f6bc9c85d3 "pdflatex"
-  "article_indonesia.tex" 1793851732.45445 41285 3938a450ac4655dbb73a6542f3da5ba3 ""
+  "article_indonesia.aux" 1794119449.42274 5986 01b86044d7bd90a217f2b3f6bc9c85d3 "pdflatex"
+  "article_indonesia.tex" 1794119446.6397 41304 aa9a121475e428dfaa49d87aae24152f ""
   (generated)
   "article_indonesia.aux"
   "article_indonesia.log"

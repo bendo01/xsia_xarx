@@ -13,21 +13,30 @@
 \usepackage{tikz}
 \usetikzlibrary{positioning,arrows.meta}
 % Draft watermark: comment out the next three lines for the final version
-\usepackage{eso-pic}
-\AddToShipoutPictureBG{\AtPageCenter{\makebox(0,0){\rotatebox{55}{\scalebox{10}{\textcolor[gray]{0.88}{\textsf{DRAFT}}}}}}}
-\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
-    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+% \usepackage{eso-pic}
+% \AddToShipoutPictureBG{\AtPageCenter{\makebox(0,0){\rotatebox{55}{\scalebox{10}{\textcolor[gray]{0.88}{\textsf{DRAFT}}}}}}}
+% \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+%     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+% Double-blind switch: \blindtrue for review submission, \blindfalse for camera-ready
+\newif\ifblind
+\blindtrue
+\usepackage[pdfauthor={},pdftitle={Anonymous submission},pdfcreator={},pdfproducer={}]{hyperref}
 \begin{document}
 
 \title{Compliance Anomaly Detection in Higher Education Academic Data Using Rule-Based and Machine Learning Methods}
 
+\ifblind
+\author{\IEEEauthorblockN{Anonymous Authors}
+\IEEEauthorblockA{\textit{Anonymous Institution}\\
+Anonymous City, Country}}
+\else
 \author{\parbox{\textwidth}{\centering
 \parbox[t]{0.45\textwidth}{\centering
 {\normalsize 1\textsuperscript{st} Benny Leonard Enrico Panggabean}\\
 {\small \textit{Informatics Engineering, Faculty of Engineering} \\
 \textit{Universitas Hasanuddin}\\
 Makassar, Indonesia \\
-bendo01@gmail.com \\
+panggabeanble25d@student.unhas.ac.id \\
 ORCID: 0000-0001-6805-6463}}\hfill
 \parbox[t]{0.45\textwidth}{\centering
 {\normalsize 2\textsuperscript{nd} Amil Ahmad Ilham}\\
@@ -44,6 +53,7 @@ Makassar, Indonesia \\
 novy@unhas.ac.id \\
 ORCID: 0000-0001-5706-939X}}
 }}
+\fi
 
 \maketitle
 
@@ -326,8 +336,10 @@ Three limitations affect how far the results can be generalized. First, the anom
 \section{Conclusion}
 This paper evaluated rule-based and machine learning detection of compliance anomalies on PDDIKTI data using rules from the Feeder validation guide and injected anomalies. Rules detect explicit violations exactly but miss deviations that satisfy all thresholds, while Isolation Forest, LOF, and an autoencoder recover part of those deviations to an extent that depends on the entity. The combined detector gives the best overall ranking when explicit violations dominate, while the choice of unsupervised detector matters most for subtle anomalies. Future work includes validation on naturally occurring violations and additional institutions, the remaining entities such as enrollment history and study periods, per-semester scoring with weighted voting tuned on labeled cases, and linking each flagged record to the text of the regulation it may violate so that findings are explained to auditors in natural language, for example with retrieval-augmented generation \cite{gao2023rag}.
 
+\ifblind\else
 \section*{Acknowledgment}
 The authors thank Institut Teknologi dan Kesehatan Tri Tunas Nasional for providing the PDDIKTI data used in this study. This research received no external funding.
+\fi
 
 \begin{thebibliography}{00}
 \bibitem{permendikbudristek53_2023} Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi, ``Peraturan Menteri Pendidikan, Kebudayaan, Riset, dan Teknologi Nomor 53 Tahun 2023 tentang Penjaminan Mutu Pendidikan Tinggi,'' Berita Negara Republik Indonesia Tahun 2023 Nomor 638, Aug. 2023 (revoked by \cite{permendiktisaintek39_2025}).
