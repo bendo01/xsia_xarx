@@ -1,6 +1,7 @@
 import type { TypePaginationForm, TypePaginationResponse } from '~/lib/types';
 import type { PermissionRole } from '~/models/auth/PermissionRole';
 import { getStorageItem } from '~/lib/storage';
+import { queryFetch } from '~/lib/queryFetch';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
 const path = 'permission-role';
@@ -27,7 +28,7 @@ export async function AuthPermissionRoleControllerIndex(
         if (props.page) params.append('page', props.page.toString());
         if (props.per_page) params.append('page_size', props.per_page.toString());
 
-        const res = await fetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
+        const res = await queryFetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -89,7 +90,7 @@ export async function AuthPermissionRoleControllerUpsert(
             permission_id: form.permission_id,
         };
 
-        const res = await fetch(url, {
+        const res = await queryFetch(url, {
             method,
             headers: getHeaders(),
             body: JSON.stringify(payload),
@@ -154,7 +155,7 @@ export async function AuthPermissionRoleControllerByRole(roleId: string): Promis
             page_size: pageSize.toString(),
             role_id: roleId,
         });
-        const res = await fetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
+        const res = await queryFetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });

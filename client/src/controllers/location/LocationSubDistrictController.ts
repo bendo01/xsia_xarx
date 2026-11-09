@@ -2,6 +2,7 @@ import type { TypePaginationForm, TypePaginationResponse } from '~/lib/types';
 import type { LocationSubDistrict } from '~/models/location/SubDistrict';
 import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
 import { getStorageItem } from '~/lib/storage';
+import { queryFetch } from '~/lib/queryFetch';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
 const path = 'sub-districts';
@@ -32,7 +33,7 @@ export async function LocationSubDistrictControllerIndex(
         if (props.code) params.append('code', props.code.toString());
         if (props.regency_id) params.append('regency_id', props.regency_id);
 
-        const res = await fetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
+        const res = await queryFetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -103,7 +104,7 @@ export async function LocationSubDistrictControllerUpsert(
             alt_slug: form.alt_slug || null,
         };
 
-        const res = await fetch(url, {
+        const res = await queryFetch(url, {
             method,
             headers: getHeaders(),
             body: JSON.stringify(payload),
@@ -167,7 +168,7 @@ export async function getSubDistrictLists(regency_id?: string): Promise<{
         params.append('page_size', '1000');
         if (regency_id) params.append('regency_id', regency_id);
 
-        const res = await fetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
+        const res = await queryFetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });

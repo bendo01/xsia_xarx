@@ -2,6 +2,7 @@ import { AuthLogin,   ResetPassword, UserClaim,  AuthUserDetail } from "../../mo
 import {  removeStorageItem, setStorageItem, getStorageItem } from "../../lib/storage";
 import { TypePaginationForm } from "../../lib/types";
 import { ModelAuthUserPaginationResponse } from "../../models/pagination/ModelPagination";
+import { queryFetch } from '~/lib/queryFetch';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0.1:5800/api/v1/").replace(/\/+$/, "");
 const path = "user";
@@ -168,7 +169,7 @@ export async function GetUserRoles(userId?: string) {
         const url = userId
             ? `${getBaseUrl()}/role?user_id=${encodeURIComponent(userId)}`
             : `${getBaseUrl()}/role`;
-        const response = await fetch(url, {
+        const response = await queryFetch(url, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -519,7 +520,7 @@ export async function AuthUserIndex(pagination: TypePaginationForm): Promise<Mod
         if (pagination.per_page) queryParams.set("page_size", String(pagination.per_page));
         if (pagination.search) queryParams.set("name", pagination.search);
 
-        const response = await fetch(`${getBaseUrl()}/${path}?${queryParams.toString()}`, {
+        const response = await queryFetch(`${getBaseUrl()}/${path}?${queryParams.toString()}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

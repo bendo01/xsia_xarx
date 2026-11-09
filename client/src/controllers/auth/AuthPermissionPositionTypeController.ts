@@ -1,5 +1,6 @@
 import type { PermissionPositionType } from '~/models/auth/PermissionPositionType';
 import { getStorageItem } from '~/lib/storage';
+import { queryFetch } from '~/lib/queryFetch';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
 const path = 'permission-position-type';
@@ -29,7 +30,7 @@ export async function AuthPermissionPositionTypeControllerByPositionType(positio
             page_size: pageSize.toString(),
             position_type_id: positionTypeId,
         });
-        const res = await fetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
+        const res = await queryFetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });

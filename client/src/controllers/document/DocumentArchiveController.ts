@@ -1,6 +1,7 @@
 import type { TypePaginationForm, TypePaginationResponse } from '~/lib/types';
 import type { DocumentArchive } from '~/models/document/Archive';
 import { getStorageItem } from '~/lib/storage';
+import { queryFetch } from '~/lib/queryFetch';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
 const path = 'document/transaction/archives';
@@ -32,7 +33,7 @@ export async function DocumentArchiveControllerIndex(
         if (props.sort_by) params.append('sort_by', props.sort_by);
         if (props.sort_dir) params.append('sort_dir', props.sort_dir);
 
-        const res = await fetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
+        const res = await queryFetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -108,7 +109,7 @@ export async function DocumentArchiveControllerUpsert(
             is_knowledge: Boolean(form.is_knowledge),
         };
 
-        const res = await fetch(url, {
+        const res = await queryFetch(url, {
             method,
             headers: getHeaders(),
             body: JSON.stringify(payload),

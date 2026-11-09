@@ -4,6 +4,7 @@ import type { UpsertDeleteMessage } from "../../../models/common/reference/Model
 import type { ModelCommonReferencePaginationResponse } from "../../../models/pagination/ModelPagination";
 import type { ModelSelectItem } from "../../../models/common/select/ModelSelectItem";
 import type { InstitutionReferencePositionType } from "../../../models/institution/reference/PositionType";
+import { queryFetch } from '~/lib/queryFetch';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0.1:5800/api/v1/").replace(/\/+$/, "");
 const path = "institution/reference/position-type";
@@ -35,7 +36,7 @@ export async function InstitutionReferencePositionTypeIndex(pagination: TypePagi
         }
 
         const url = `${getBaseUrl()}/${path}?${queryParams.toString()}`;
-        const response = await fetch(url, {
+        const response = await queryFetch(url, {
             method: "GET",
             headers: getHeaders(),
         });
@@ -116,7 +117,7 @@ export async function InstitutionReferencePositionTypeUpsert(data: TypeInputEnti
         const url = isUpdate ? `${getBaseUrl()}/${path}/${data.id}` : `${getBaseUrl()}/${path}`;
         const method = isUpdate ? "PUT" : "POST";
 
-        const response = await fetch(url, {
+        const response = await queryFetch(url, {
             method,
             headers: getHeaders(),
             body: JSON.stringify(payload),
@@ -186,7 +187,7 @@ export async function InstitutionReferencePositionTypeList(): Promise<{
     message: string | ModelSelectItem[];
 }> {
     try {
-        const response = await fetch(`${getBaseUrl()}/${path}?page=1&page_size=1000`, {
+        const response = await queryFetch(`${getBaseUrl()}/${path}?page=1&page_size=1000`, {
             method: "GET",
             headers: getHeaders(),
         });

@@ -1,5 +1,6 @@
 import { getStorageItem } from "../../../lib/storage";
 import { PerkuliahanMahasiswaResponse } from "../../../models/feeder/master/PerkuliahanMahasiswaResponse";
+import { queryFetch } from '~/lib/queryFetch';
 
 const server_api_url = import.meta.env.VITE_API_SERVER_URL ?? "http://localhost:5150/api/";
 
@@ -14,7 +15,7 @@ export async function feederMasterPerkuliahanMahasiswa(id: string): Promise<Perk
         const url = `${server_api_url}feeder/master/perkuliahan-mahasiswa/mahasiswa/${id}`;
         console.log("🔍 Fetching perkuliahan data from:", url);
         
-        const response = await fetch(url, {
+        const response = await queryFetch(url, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

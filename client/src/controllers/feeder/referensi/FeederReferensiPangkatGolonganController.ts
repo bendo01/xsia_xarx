@@ -2,6 +2,7 @@ import type { TypePaginationForm, TypePaginationResponse } from '~/lib/types';
 import type { FeederReferensiPangkatGolongan } from '~/models/feeder/referensi/PangkatGolongan';
 import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
 import { getStorageItem } from '~/lib/storage';
+import { queryFetch } from '~/lib/queryFetch';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
 const path = 'feeder/referensi/pangkat-golongan';
@@ -30,7 +31,7 @@ export async function FeederReferensiControllerPangkatGolonganIndex(
         if (props.search) params.append('name', props.search);
         if (props.name) params.append('name', props.name);
 
-        const res = await fetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
+        const res = await queryFetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -92,7 +93,7 @@ export async function FeederReferensiControllerPangkatGolonganUpsert(
             nama_pangkat: form.nama_pangkat,
         };
 
-        const res = await fetch(url, {
+        const res = await queryFetch(url, {
             method,
             headers: getHeaders(),
             body: JSON.stringify(payload),
@@ -151,7 +152,7 @@ export async function FeederReferensiControllerPangkatGolonganList(): Promise<{
     message: string | ModelSelectItem[];
 }> {
     try {
-        const res = await fetch(`${getBaseUrl()}/${path}?page=1&page_size=1000`, {
+        const res = await queryFetch(`${getBaseUrl()}/${path}?page=1&page_size=1000`, {
             method: 'GET',
             headers: getHeaders(),
         });

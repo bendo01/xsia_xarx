@@ -2,6 +2,7 @@ import type { TypePaginationForm, TypePaginationResponse } from '~/lib/types';
 import type { LocationRegency } from '~/models/location/Regency';
 import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
 import { getStorageItem } from '~/lib/storage';
+import { queryFetch } from '~/lib/queryFetch';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
 const path = 'regencies';
@@ -32,7 +33,7 @@ export async function LocationRegencyControllerIndex(
         if (props.code) params.append('code', props.code.toString());
         if (props.province_id) params.append('province_id', props.province_id);
 
-        const res = await fetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
+        const res = await queryFetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -106,7 +107,7 @@ export async function LocationRegencyControllerUpsert(
             slug: form.slug || null,
         };
 
-        const res = await fetch(url, {
+        const res = await queryFetch(url, {
             method,
             headers: getHeaders(),
             body: JSON.stringify(payload),
@@ -170,7 +171,7 @@ export async function getRegencyLists(province_id?: string): Promise<{
         params.append('page_size', '1000');
         if (province_id) params.append('province_id', province_id);
 
-        const res = await fetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
+        const res = await queryFetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });

@@ -7,6 +7,7 @@ import type {
 } from "~/models/institution/master/Institution";
 import type { ModelSelectItem } from "~/models/common/select/ModelSelectItem";
 import { getStorageItem } from "~/lib/storage";
+import { queryFetch } from '~/lib/queryFetch';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0.1:5800/api/v1/").replace(/\/+$/, "");
 const path = "institution/master/institutions";
@@ -56,7 +57,7 @@ export async function InstitutionMasterInstitutionControllerIndex(
         }
 
         const url = `${getBaseUrl()}/${path}?${queryParams.toString()}`;
-        const response = await fetch(url, {
+        const response = await queryFetch(url, {
             method: "GET",
             headers: getHeaders(),
         });
@@ -328,7 +329,7 @@ export async function InstitutionMasterInstitutionControllerList(
         queryParams.set("page_size", "200");
         if (search) queryParams.set("name", search);
 
-        const response = await fetch(`${getBaseUrl()}/${path}?${queryParams.toString()}`, {
+        const response = await queryFetch(`${getBaseUrl()}/${path}?${queryParams.toString()}`, {
             method: "GET",
             headers: getHeaders(),
         });
@@ -362,7 +363,7 @@ export async function fetchInstitutionVarietyOptions(search: string = ""): Promi
                 label: v.name,
             }));
         }
-        const fallbackRes = await fetch(`${getBaseUrl()}/institution/reference/varieties?page=1&page_size=1000`, {
+        const fallbackRes = await queryFetch(`${getBaseUrl()}/institution/reference/varieties?page=1&page_size=1000`, {
             headers: getHeaders(),
         });
         if (!fallbackRes.ok) return [];
@@ -392,7 +393,7 @@ export async function fetchInstitutionCategoryOptions(search: string = ""): Prom
                 label: c.name,
             }));
         }
-        const fallbackRes = await fetch(`${getBaseUrl()}/institution/reference/categories?page=1&page_size=1000`, {
+        const fallbackRes = await queryFetch(`${getBaseUrl()}/institution/reference/categories?page=1&page_size=1000`, {
             headers: getHeaders(),
         });
         if (!fallbackRes.ok) return [];
@@ -409,7 +410,7 @@ export async function fetchInstitutionCategoryOptions(search: string = ""): Prom
 
 export async function fetchCountryOptions(): Promise<ModelSelectItem[]> {
     try {
-        const res = await fetch(`${getBaseUrl()}/countries?page=1&page_size=1000`, {
+        const res = await queryFetch(`${getBaseUrl()}/countries?page=1&page_size=1000`, {
             headers: getHeaders(),
         });
         if (!res.ok) return [];
@@ -426,7 +427,7 @@ export async function fetchCountryOptions(): Promise<ModelSelectItem[]> {
 
 export async function fetchAcademicYearOptions(): Promise<ModelSelectItem[]> {
     try {
-        const res = await fetch(`${getBaseUrl()}/academic/general/reference/academic-years?page=1&page_size=1000`, {
+        const res = await queryFetch(`${getBaseUrl()}/academic/general/reference/academic-years?page=1&page_size=1000`, {
             headers: getHeaders(),
         });
         if (!res.ok) return [];

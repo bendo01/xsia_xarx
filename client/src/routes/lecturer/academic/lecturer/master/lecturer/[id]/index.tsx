@@ -28,6 +28,7 @@ import EChart from '~/components/chart/echart_component';
 import PopupBlockedAlert from '~/components/alert/PopupBlockedAlert';
 import { Loader } from '~/components/loader';
 import { t } from '../../../../../../../i18n';
+import { queryFetch } from '~/lib/queryFetch';
 
 export default function LecturerIndividualShowPage() {
     const params = useParams();
@@ -143,7 +144,7 @@ export default function LecturerIndividualShowPage() {
                     // Fetch teach-lecture-chart
                     try {
                         const url = `${getBaseApiUrl()}/academic/lecturer/master/lecturers/${encodeURIComponent(activeLecturerId)}/teach-lecture-chart`;
-                        const response = await fetch(url, { headers: getAuthHeaders() });
+                        const response = await queryFetch(url, { headers: getAuthHeaders() });
                         if (response.ok) {
                             const resJson = await response.json();
                             setTeachLectureChart(resJson.data ?? resJson);

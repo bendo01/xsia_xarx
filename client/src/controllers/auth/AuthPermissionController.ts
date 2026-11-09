@@ -2,6 +2,7 @@ import type { TypePaginationForm, TypePaginationResponse } from '~/lib/types';
 import type { Permission } from '~/models/auth/Permission';
 import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
 import { getStorageItem } from '~/lib/storage';
+import { queryFetch } from '~/lib/queryFetch';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
 const path = 'permission';
@@ -31,7 +32,7 @@ export async function AuthPermissionControllerIndex(
         if (props.name) params.append('name', props.name);
         if (props.is_open === true || props.is_open === false) params.append('is_open', String(props.is_open));
 
-        const res = await fetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
+        const res = await queryFetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -95,7 +96,7 @@ export async function AuthPermissionControllerUpsert(
             is_open: form.is_open ?? true,
         };
 
-        const res = await fetch(url, {
+        const res = await queryFetch(url, {
             method,
             headers: getHeaders(),
             body: JSON.stringify(payload),
@@ -154,7 +155,7 @@ export async function AuthPermissionControllerList(): Promise<{
     message: string | ModelSelectItem[];
 }> {
     try {
-        const res = await fetch(`${getBaseUrl()}/${path}?page=1&page_size=1000`, {
+        const res = await queryFetch(`${getBaseUrl()}/${path}?page=1&page_size=1000`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -189,7 +190,7 @@ export async function AuthPermissionControllerAll(): Promise<Permission[]> {
     let page = 1;
     let totalPages = 1;
     do {
-        const res = await fetch(`${getBaseUrl()}/${path}?page=${page}&page_size=${pageSize}`, {
+        const res = await queryFetch(`${getBaseUrl()}/${path}?page=${page}&page_size=${pageSize}`, {
             method: 'GET',
             headers: getHeaders(),
         });

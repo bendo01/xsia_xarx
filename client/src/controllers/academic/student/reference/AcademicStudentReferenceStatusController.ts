@@ -6,6 +6,7 @@ import {
 } from '~/lib/types';
 import type { AcademicStudentReferenceStatus } from '~/models/academic/student/reference/Status';
 import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
+import { queryFetch } from '~/lib/queryFetch';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
 const path = 'academic/student/reference/statuses';
@@ -37,7 +38,7 @@ export async function AcademicStudentReferenceControllerStatusIndex(
             params.append('code', props.code.toString());
         }
 
-        const res = await fetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
+        const res = await queryFetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -96,7 +97,7 @@ export async function AcademicStudentReferenceControllerStatusUpsert(
             name: form.name,
         };
 
-        const res = await fetch(url, {
+        const res = await queryFetch(url, {
             method,
             headers: getHeaders(),
             body: JSON.stringify(payload),

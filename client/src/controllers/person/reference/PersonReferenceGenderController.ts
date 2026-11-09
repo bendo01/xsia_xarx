@@ -3,6 +3,7 @@ import type { TypePaginationForm, TypeInputEntityReferenceForm } from "../../../
 import type { UpsertDeleteMessage } from "../../../models/common/reference/ModelCommonReference";
 import type { ModelCommonReferencePaginationResponse } from "../../../models/pagination/ModelPagination";
 import type { ModelSelectItem } from "../../../models/common/select/ModelSelectItem";
+import { queryFetch } from '~/lib/queryFetch';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0.1:5800/api/v1/").replace(/\/+$/, "");
 const path = "person/reference/gender";
@@ -34,7 +35,7 @@ export async function PersonReferenceControllerGenderIndex(pagination: TypePagin
         }
 
         const url = `${getBaseUrl()}/${path}?${queryParams.toString()}`;
-        const response = await fetch(url, {
+        const response = await queryFetch(url, {
             method: "GET",
             headers: getHeaders(),
         });
@@ -96,7 +97,7 @@ export async function PersonReferenceControllerGenderUpsert(data: TypeInputEntit
         const url = isUpdate ? `${getBaseUrl()}/${path}/${data.id}` : `${getBaseUrl()}/${path}`;
         const method = isUpdate ? "PUT" : "POST";
 
-        const response = await fetch(url, {
+        const response = await queryFetch(url, {
             method,
             headers: getHeaders(),
             body: JSON.stringify(payload),
@@ -166,7 +167,7 @@ export async function PersonReferenceControllerGenderList(): Promise<{
     message: string | ModelSelectItem[];
 }> {
     try {
-        const response = await fetch(`${getBaseUrl()}/${path}?page=1&page_size=1000`, {
+        const response = await queryFetch(`${getBaseUrl()}/${path}?page=1&page_size=1000`, {
             method: "GET",
             headers: getHeaders(),
         });

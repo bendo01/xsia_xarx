@@ -6,6 +6,7 @@ import { getBaseApiUrl, getAuthHeaders } from '~/controllers/master/masterApiCon
 import { getStorageItem } from '~/lib/storage';
 import EChart from '~/components/chart/echart_component';
 import { t } from '../../../../../../i18n';
+import { queryFetch } from '~/lib/queryFetch';
 
 export default function UnitDashboardPage() {
     const apiPath = "institution/master/units";
@@ -34,7 +35,7 @@ export default function UnitDashboardPage() {
         setIsLoading(true);
         try {
             const url = `${getBaseApiUrl()}/${apiPath}/${encodeURIComponent(id)}/dashboard`;
-            const response = await fetch(url, {
+            const response = await queryFetch(url, {
                 method: "GET",
                 headers: getAuthHeaders(),
             });

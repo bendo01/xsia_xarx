@@ -1,5 +1,6 @@
 import { getStorageItem } from "../../lib/storage";
 import type { TypePaginationForm } from "../../lib/types";
+import { queryFetch } from '~/lib/queryFetch';
 
 export const getBaseApiUrl = () => {
     const envUrl = import.meta.env.VITE_API_SERVER_URL;
@@ -54,7 +55,7 @@ export async function masterApiIndex<T = any>(
         });
 
         const url = `${getBaseApiUrl()}/${apiPath.replace(/^\/+/, "")}?${queryParams.toString()}`;
-        const response = await fetch(url, {
+        const response = await queryFetch(url, {
             method: "GET",
             headers: getAuthHeaders(),
         });
@@ -105,7 +106,7 @@ export async function masterApiIndex<T = any>(
 export async function masterApiShow<T = any>(apiPath: string, id: string): Promise<{ data: T | null; error?: string }> {
     try {
         const url = `${getBaseApiUrl()}/${apiPath.replace(/^\/+/, "")}/${encodeURIComponent(id)}`;
-        const response = await fetch(url, {
+        const response = await queryFetch(url, {
             method: "GET",
             headers: getAuthHeaders(),
         });
@@ -139,7 +140,7 @@ export async function masterApiOptions(apiPath: string, filters: Record<string, 
         Object.entries(filters).forEach(([key, value]) => {
             if (value) body[key] = value;
         });
-        const response = await fetch(url, {
+        const response = await queryFetch(url, {
             method: "POST",
             headers: getAuthHeaders(),
             body: JSON.stringify(body),
@@ -161,7 +162,7 @@ export async function masterApiOptions(apiPath: string, filters: Record<string, 
 export async function masterApiCreate<T = any>(apiPath: string, payload: any): Promise<{ data?: T; success: boolean; message: string; errors?: any }> {
     try {
         const url = `${getBaseApiUrl()}/${apiPath.replace(/^\/+/, "")}`;
-        const response = await fetch(url, {
+        const response = await queryFetch(url, {
             method: "POST",
             headers: getAuthHeaders(),
             body: JSON.stringify(payload),
@@ -193,7 +194,7 @@ export async function masterApiCreate<T = any>(apiPath: string, payload: any): P
 export async function masterApiUpdate<T = any>(apiPath: string, id: string, payload: any): Promise<{ data?: T; success: boolean; message: string; errors?: any }> {
     try {
         const url = `${getBaseApiUrl()}/${apiPath.replace(/^\/+/, "")}/${encodeURIComponent(id)}`;
-        const response = await fetch(url, {
+        const response = await queryFetch(url, {
             method: "PUT",
             headers: getAuthHeaders(),
             body: JSON.stringify(payload),
@@ -225,7 +226,7 @@ export async function masterApiUpdate<T = any>(apiPath: string, id: string, payl
 export async function masterApiDelete(apiPath: string, id: string): Promise<{ success: boolean; message: string }> {
     try {
         const url = `${getBaseApiUrl()}/${apiPath.replace(/^\/+/, "")}/${encodeURIComponent(id)}`;
-        const response = await fetch(url, {
+        const response = await queryFetch(url, {
             method: "DELETE",
             headers: getAuthHeaders(),
         });

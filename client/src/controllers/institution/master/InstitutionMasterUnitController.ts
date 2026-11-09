@@ -1,5 +1,6 @@
 import type { ModelSelectItem } from "../../../models/common/select/ModelSelectItem";
 import { getStorageItem } from "../../../lib/storage";
+import { queryFetch } from '~/lib/queryFetch';
 
 const server_api_url = import.meta.env.VITE_API_SERVER_URL ?? "http://localhost:5155/api/";
 
@@ -22,7 +23,7 @@ export async function getUnitOptions(queryParams?: {
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
         };
 
-        const res = await fetch(`${baseUrl}/institution/master/units/options?${params.toString()}`, {
+        const res = await queryFetch(`${baseUrl}/institution/master/units/options?${params.toString()}`, {
             method: 'GET',
             headers,
         });

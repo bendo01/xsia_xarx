@@ -20,6 +20,7 @@ const getHeaders = (): Record<string, string> => {
 };
 
 import type { StudentActivityItem } from '~/controllers/academic/student/campaign/AcademicStudentCampaignActivityController';
+import { queryFetch } from '~/lib/queryFetch';
 
 export interface StudentConvertionItem {
     id: string;
@@ -137,7 +138,7 @@ export async function listStudents(queryParams?: {
         if (queryParams?.order_by) params.set('order_by', queryParams.order_by);
         if (queryParams?.order_dir) params.set('order_dir', queryParams.order_dir);
 
-        const res = await fetch(`${getBaseUrl()}/academic/student/master/students?${params.toString()}`, {
+        const res = await queryFetch(`${getBaseUrl()}/academic/student/master/students?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -224,7 +225,7 @@ export async function academicStudentMasterStudentValidate(id: string): Promise<
 
 export async function listStudyUnits(): Promise<any[]> {
     try {
-        const res = await fetch(`${getBaseUrl()}/institution/master/units?page=1&page_size=200`, {
+        const res = await queryFetch(`${getBaseUrl()}/institution/master/units?page=1&page_size=200`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -238,7 +239,7 @@ export async function listStudyUnits(): Promise<any[]> {
 
 export async function listAcademicYears(): Promise<any[]> {
     try {
-        const res = await fetch(`${getBaseUrl()}/academic/general/reference/academic-years?page=1&page_size=100`, {
+        const res = await queryFetch(`${getBaseUrl()}/academic/general/reference/academic-years?page=1&page_size=100`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -252,7 +253,7 @@ export async function listAcademicYears(): Promise<any[]> {
 
 export async function listStudentStatuses(): Promise<any[]> {
     try {
-        const res = await fetch(`${getBaseUrl()}/academic/student/reference/statuses?page=1&page_size=100`, {
+        const res = await queryFetch(`${getBaseUrl()}/academic/student/reference/statuses?page=1&page_size=100`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -284,7 +285,7 @@ export async function listStudentAcademicYears(params?: {
 
         const qs = queryParams.toString();
         const url = `${getBaseUrl()}/academic/student/master/students/academic-years${qs ? `?${qs}` : ''}`;
-        const res = await fetch(url, {
+        const res = await queryFetch(url, {
             method: 'GET',
             headers: getHeaders(),
         });

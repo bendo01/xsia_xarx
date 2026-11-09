@@ -6,6 +6,7 @@ import { resolveInstitutionFromStaffRole } from '~/lib/rectoratHelper';
 import { toast } from '~/components/toast/Toaster';
 import EChart from '~/components/chart/echart_component';
 import { t as tt } from '../../../../i18n';
+import { queryFetch } from '~/lib/queryFetch';
 
 interface ProdiUnit {
     id: string;
@@ -118,7 +119,7 @@ export default function RectoratInstitutionDashboard() {
             const loadDash = async (unit: ProdiUnit): Promise<ProdiDashboard> => {
                 try {
                     const url = `${getBaseApiUrl()}/institution/master/units/${encodeURIComponent(unit.id)}/dashboard`;
-                    const resp = await fetch(url, { method: 'GET', headers: getAuthHeaders() });
+                    const resp = await queryFetch(url, { method: 'GET', headers: getAuthHeaders() });
                     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
                     const json = await resp.json();
                     const d = json.data ?? json;

@@ -1,4 +1,5 @@
 import { getStorageItem } from '~/lib/storage';
+import { queryFetch } from '~/lib/queryFetch';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
 
@@ -48,7 +49,7 @@ export async function listTeachEvaluations(queryParams?: {
         if (queryParams?.name) params.set('name', queryParams.name);
         if (queryParams?.teach_id) params.set('teach_id', queryParams.teach_id);
 
-        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/teach-evaluations?${params.toString()}`, {
+        const res = await queryFetch(`${getBaseUrl()}/academic/campaign/transaction/teach-evaluations?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });

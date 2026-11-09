@@ -25,6 +25,7 @@ import EChart from '~/components/chart/echart_component';
 import PopupBlockedAlert from '~/components/alert/PopupBlockedAlert';
 import { Loader } from '~/components/loader';
 import { t } from '../../../../../../../../../i18n';
+import { queryFetch } from '~/lib/queryFetch';
 
 export default function RectoratLecturerDetail() {
     const params = useParams();
@@ -202,7 +203,7 @@ export default function RectoratLecturerDetail() {
             // 4. Fetch teach-lecture-chart
             try {
                 const url = `${getBaseApiUrl()}/academic/lecturer/master/lecturers/${encodeURIComponent(lid)}/teach-lecture-chart`;
-                const response = await fetch(url, { headers: getAuthHeaders() });
+                const response = await queryFetch(url, { headers: getAuthHeaders() });
                 if (response.ok) {
                     const resJson = await response.json();
                     setTeachLectureChart(resJson.data ?? resJson);

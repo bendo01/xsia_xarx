@@ -5,6 +5,7 @@ import { toast } from '~/components/toast/Toaster';
 import { getBaseApiUrl, getAuthHeaders } from '~/controllers/master/masterApiController';
 import { t } from '../../../../../../i18n';
 import { Spinner } from '~/components/loader';
+import { queryFetch } from '~/lib/queryFetch';
 
 interface IndividualDetail {
     id?: string;
@@ -119,7 +120,7 @@ export default function RectoratEmployeeDetail() {
         setIsLoading(true);
         try {
             const url = `${getBaseApiUrl()}/institution/master/employees/${encodeURIComponent(id)}`;
-            const response = await fetch(url, {
+            const response = await queryFetch(url, {
                 method: 'GET',
                 headers: getAuthHeaders(),
             });

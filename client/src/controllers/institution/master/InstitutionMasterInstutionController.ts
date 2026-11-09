@@ -1,4 +1,5 @@
 import { getStorageItem } from "../../../lib/storage";
+import { queryFetch } from '~/lib/queryFetch';
 
 export interface SummaryData {
     total_unit: number;
@@ -47,7 +48,7 @@ export async function getSummaryData(): Promise<{
 
 export async function list(search: string = "") {
     try {
-        const response = await fetch(`${server_api_url}institution/master/institutions/list?search=${search}`, {
+        const response = await queryFetch(`${server_api_url}institution/master/institutions/list?search=${search}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

@@ -2,6 +2,7 @@ import type { TypePaginationForm, TypePaginationResponse } from '~/lib/types';
 import type { LiterateEducation, TypeInputLiterateEducationForm } from '~/models/literate/Education';
 import type { ModelSelectItem } from '~/models/common/select/ModelSelectItem';
 import { getStorageItem } from '~/lib/storage';
+import { queryFetch } from '~/lib/queryFetch';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
 const path = 'educations';
@@ -37,7 +38,7 @@ export async function LiterateEducationControllerIndex(
         if (props.category_id) params.append('category_id', props.category_id);
         if (props.variety_id) params.append('variety_id', props.variety_id);
 
-        const res = await fetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
+        const res = await queryFetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -101,7 +102,7 @@ export async function LiterateEducationControllerUpsert(
             variety_id: form.variety_id,
         };
 
-        const res = await fetch(url, {
+        const res = await queryFetch(url, {
             method,
             headers: getHeaders(),
             body: JSON.stringify(payload),
@@ -197,7 +198,7 @@ export async function fetchEducationOptions(): Promise<ModelSelectItem[]> {
         }
 
         // 3. Fallback: GET /educations?page=1&page_size=1000
-        const fallbackRes = await fetch(`${getBaseUrl()}/${path}?page=1&page_size=1000`, {
+        const fallbackRes = await queryFetch(`${getBaseUrl()}/${path}?page=1&page_size=1000`, {
             method: 'GET',
             headers,
         });
@@ -217,7 +218,7 @@ export async function fetchEducationOptions(): Promise<ModelSelectItem[]> {
         }
 
         // 4. Fallback: GET /levels?page=1&page_size=1000
-        const levelsRes = await fetch(`${getBaseUrl()}/levels?page=1&page_size=1000`, {
+        const levelsRes = await queryFetch(`${getBaseUrl()}/levels?page=1&page_size=1000`, {
             method: 'GET',
             headers,
         });

@@ -60,11 +60,21 @@ impl NamedRouterExt for Router {
         if let Ok(mut names) = REGISTERED_ROUTE_NAMES.lock() {
             names.insert(name);
         }
-        self.hoop(RouteName(name)).hoop(RbacGuard)
+        self.hoop(super::query_method::QueryMethod).hoop(RouteName(name)).hoop(RbacGuard)
     }
 
     fn get_named(self, name: &'static str, handler: impl Handler + 'static) -> Self {
-        self.push(Router::new().named(name).get(handler))
+        // Accept GET and the HTTP QUERY method; `QueryMethod` (hooped in `named`) rewrites QUERY to GET
+        // before RBAC and the handler run.
+        self.push(
+            Router::new().named(name).push(
+                Router::new()
+                    .filter_fn(|req, _| {
+                        req.method() == Method::GET || req.method().as_str() == "QUERY"
+                    })
+                    .goal(handler),
+            ),
+        )
     }
 
     fn post_named(self, name: &'static str, handler: impl Handler + 'static) -> Self {

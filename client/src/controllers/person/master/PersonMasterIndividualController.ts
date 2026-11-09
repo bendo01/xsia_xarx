@@ -4,6 +4,7 @@ import type { PersonMasterIndividual, PersonMasterIndividualDataObject } from ".
 import type { ModelPersonMasterIndividualPaginationResponse } from "../../../models/pagination/ModelPagination";
 import type { ModelSelectItem } from "../../../models/common/select/ModelSelectItem";
 import { getStorageItem } from "../../../lib/storage";
+import { queryFetch } from '~/lib/queryFetch';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? "http://127.0.0.1:5800/api/v1/").replace(/\/+$/, "");
 const path = "person/master/individual";
@@ -38,7 +39,7 @@ export async function PersonMasterIndividualControllerIndex(pagination: TypePagi
         if (pagination.sort_dir) queryParams.set("sort_dir", pagination.sort_dir);
 
         const url = `${getBaseUrl()}/${path}?${queryParams.toString()}`;
-        const response = await fetch(url, {
+        const response = await queryFetch(url, {
             method: "GET",
             headers: getHeaders(),
         });
@@ -192,7 +193,7 @@ export async function PersonMasterIndividualControllerUpsert(data: Partial<Perso
         const url = isUpdate ? `${getBaseUrl()}/${path}/${data.id}` : `${getBaseUrl()}/${path}`;
         const method = isUpdate ? "PUT" : "POST";
 
-        const response = await fetch(url, {
+        const response = await queryFetch(url, {
             method,
             headers: getHeaders(),
             body: JSON.stringify(data),
@@ -267,7 +268,7 @@ export async function PersonMasterIndividualControllerList(params?: { search?: s
         queryParams.set("page_size", "100");
         if (params?.search) queryParams.set("name", params.search);
 
-        const response = await fetch(`${getBaseUrl()}/${path}?${queryParams.toString()}`, {
+        const response = await queryFetch(`${getBaseUrl()}/${path}?${queryParams.toString()}`, {
             method: "GET",
             headers: getHeaders(),
         });

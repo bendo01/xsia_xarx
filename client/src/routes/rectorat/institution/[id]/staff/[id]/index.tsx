@@ -5,6 +5,7 @@ import { toast } from '~/components/toast/Toaster';
 import { getBaseApiUrl, getAuthHeaders } from '~/controllers/master/masterApiController';
 import { t } from '../../../../../../i18n';
 import { Spinner } from '~/components/loader';
+import { queryFetch } from '~/lib/queryFetch';
 
 interface EmployeeInfo {
     id?: string;
@@ -119,7 +120,7 @@ export default function RectoratStaffDetail() {
         try {
             // Fetch staff record
             const url = `${getBaseApiUrl()}/institution/master/staffes/${encodeURIComponent(id)}`;
-            const res = await fetch(url, { method: 'GET', headers: getAuthHeaders() });
+            const res = await queryFetch(url, { method: 'GET', headers: getAuthHeaders() });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const resJson = await res.json();
             const data: StaffDetailData = resJson.data ?? resJson;
@@ -134,7 +135,7 @@ export default function RectoratStaffDetail() {
             if (data.employee_id) {
                 try {
                     const empUrl = `${getBaseApiUrl()}/institution/master/employees/${encodeURIComponent(data.employee_id)}`;
-                    const empRes = await fetch(empUrl, { method: 'GET', headers: getAuthHeaders() });
+                    const empRes = await queryFetch(empUrl, { method: 'GET', headers: getAuthHeaders() });
                     if (empRes.ok) {
                         const empJson = await empRes.json();
                         data.employee = empJson.data ?? empJson;

@@ -1,5 +1,6 @@
 import { getBaseApiUrl, getAuthHeaders } from "../../master/masterApiController";
 import { getStorageItem, setStorageItem } from "../../../lib/storage";
+import { queryFetch } from '~/lib/queryFetch';
 
 const path = "academic/candidate/admission";
 
@@ -124,7 +125,7 @@ async function parseResponse<T>(response: Response): Promise<ApiResult<T>> {
 
 async function request<T>(url: string, init: RequestInit): Promise<ApiResult<T>> {
     try {
-        const response = await fetch(url, init);
+        const response = await queryFetch(url, init);
         return await parseResponse<T>(response);
     } catch (error: any) {
         return { ok: false, status: 500, message: error?.message || "Gagal terhubung ke server" };

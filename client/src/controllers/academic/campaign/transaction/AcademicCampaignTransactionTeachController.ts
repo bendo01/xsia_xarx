@@ -1,4 +1,5 @@
 import { getStorageItem } from '~/lib/storage';
+import { queryFetch } from '~/lib/queryFetch';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
 
@@ -89,7 +90,7 @@ export async function listTeaches(queryParams?: {
         if (queryParams?.course_id) params.set('course_id', queryParams.course_id);
         if (queryParams?.class_code_id) params.set('class_code_id', queryParams.class_code_id);
 
-        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/teaches?${params.toString()}`, {
+        const res = await queryFetch(`${getBaseUrl()}/academic/campaign/transaction/teaches?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -173,7 +174,7 @@ export async function listCourses(queryParams?: { page?: number; page_size?: num
         if (queryParams?.code) params.set('code', queryParams.code);
         if (queryParams?.unit_id) params.set('unit_id', queryParams.unit_id);
 
-        const res = await fetch(`${getBaseUrl()}/academic/course/master/courses?${params.toString()}`, {
+        const res = await queryFetch(`${getBaseUrl()}/academic/course/master/courses?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -194,7 +195,7 @@ export async function listTeachDecrees(queryParams?: { page?: number; page_size?
         if (queryParams?.page) params.set('page', String(queryParams.page));
         if (queryParams?.activity_id) params.set('activity_id', queryParams.activity_id);
 
-        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/teach-decrees?${params.toString()}`, {
+        const res = await queryFetch(`${getBaseUrl()}/academic/campaign/transaction/teach-decrees?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -210,7 +211,7 @@ export async function listTeachDecrees(queryParams?: { page?: number; page_size?
 export async function listClassCodes(queryParams?: { page_size?: number }): Promise<any[]> {
     try {
         const size = queryParams?.page_size || 200;
-        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/class-codes?page_size=${size}`, {
+        const res = await queryFetch(`${getBaseUrl()}/academic/campaign/transaction/class-codes?page_size=${size}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -263,7 +264,7 @@ export interface LecturerAssignedTeachItem {
 export async function listActivities(queryParams?: { page_size?: number }): Promise<any[]> {
     try {
         const size = queryParams?.page_size || 500;
-        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/activities?page_size=${size}`, {
+        const res = await queryFetch(`${getBaseUrl()}/academic/campaign/transaction/activities?page_size=${size}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -294,7 +295,7 @@ export async function getActivityById(id: string): Promise<any | null> {
 export async function listAcademicYears(queryParams?: { page_size?: number }): Promise<any[]> {
     try {
         const size = queryParams?.page_size || 500;
-        const res = await fetch(`${getBaseUrl()}/academic/general/reference/academic-years?page_size=${size}`, {
+        const res = await queryFetch(`${getBaseUrl()}/academic/general/reference/academic-years?page_size=${size}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -331,7 +332,7 @@ export async function listTeachLecturers(queryParams?: { page?: number; page_siz
         if (queryParams?.lecturer_id) params.set('lecturer_id', queryParams.lecturer_id);
         if (queryParams?.teach_id) params.set('teach_id', queryParams.teach_id);
 
-        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/teach-lecturers?${params.toString()}`, {
+        const res = await queryFetch(`${getBaseUrl()}/academic/campaign/transaction/teach-lecturers?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -367,7 +368,7 @@ export async function getLecturerAssignedTeaches(lecturerId: string): Promise<Le
 export async function listSchedules(queryParams?: { page_size?: number }): Promise<any[]> {
     try {
         const size = queryParams?.page_size || 200;
-        const res = await fetch(`${getBaseUrl()}/academic/campaign/transaction/schedules?page_size=${size}`, {
+        const res = await queryFetch(`${getBaseUrl()}/academic/campaign/transaction/schedules?page_size=${size}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -383,7 +384,7 @@ export async function listSchedules(queryParams?: { page_size?: number }): Promi
 export async function listLecturers(queryParams?: { page_size?: number }): Promise<any[]> {
     try {
         const size = queryParams?.page_size || 200;
-        const res = await fetch(`${getBaseUrl()}/academic/lecturer/master/lecturers?page_size=${size}`, {
+        const res = await queryFetch(`${getBaseUrl()}/academic/lecturer/master/lecturers?page_size=${size}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -399,7 +400,7 @@ export async function listLecturers(queryParams?: { page_size?: number }): Promi
 export async function listRooms(queryParams?: { page_size?: number }): Promise<any[]> {
     try {
         const size = queryParams?.page_size || 200;
-        const res = await fetch(`${getBaseUrl()}/building/master/rooms?page_size=${size}`, {
+        const res = await queryFetch(`${getBaseUrl()}/building/master/rooms?page_size=${size}`, {
             method: 'GET',
             headers: getHeaders(),
         });

@@ -5,6 +5,7 @@ import {
     TypeInputEntityReferenceForm,
 } from '~/lib/types';
 import type { AcademicStudentReferenceRegistration } from '~/models/academic/student/reference/Registration';
+import { queryFetch } from '~/lib/queryFetch';
 
 const getBaseUrl = () => (import.meta.env.VITE_API_SERVER_URL ?? 'http://127.0.0.1:5800/api/v1/').replace(/\/+$/, '');
 const path = 'academic/student/reference/registrations';
@@ -36,7 +37,7 @@ export async function AcademicStudentReferenceControllerRegistrationIndex(
             params.append('code', props.code.toString());
         }
 
-        const res = await fetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
+        const res = await queryFetch(`${getBaseUrl()}/${path}?${params.toString()}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -95,7 +96,7 @@ export async function AcademicStudentReferenceControllerRegistrationUpsert(
             name: form.name,
         };
 
-        const res = await fetch(url, {
+        const res = await queryFetch(url, {
             method,
             headers: getHeaders(),
             body: JSON.stringify(payload),
