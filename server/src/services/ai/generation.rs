@@ -465,4 +465,19 @@ mod tests {
         assert!(!stats.text.trim().is_empty());
         assert_eq!(streamed.trim(), stats.text.trim());
     }
+
+    /// Same as above on a Vulkan GPU: `cargo test --release --features vulkan vulkan_gpu -- --ignored --nocapture`
+    #[cfg(feature = "vulkan")]
+    #[test]
+    #[ignore]
+    fn answers_in_indonesian_on_a_vulkan_gpu() {
+        set_backend(LlmBackend::Vulkan);
+        let llm = LlmService::global(LlmKind::Qwen).unwrap();
+        assert_eq!(llm.backend, LlmBackend::Vulkan);
+        let prompt = "<|im_start|>system\nJawab singkat dalam Bahasa Indonesia.<|im_end|>\n\
+                      <|im_start|>user\nApa kepanjangan UU PT?<|im_end|>\n<|im_start|>assistant\n";
+        let stats = llm.generate(prompt, &GenParams { max_new_tokens: 60, ..Default::default() }, |_| true).unwrap();
+        println!("{stats:?}");
+        assert!(!stats.text.trim().is_empty());
+    }
 }
