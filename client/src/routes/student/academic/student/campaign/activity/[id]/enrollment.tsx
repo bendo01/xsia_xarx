@@ -1,4 +1,4 @@
-import { createSignal, onMount, createEffect, For, Show } from 'solid-js';
+import { createSignal, onMount, onCleanup, createEffect, For, Show } from 'solid-js';
 import { useParams, useSearchParams, A } from '@solidjs/router';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
@@ -36,6 +36,7 @@ import {
     StudentMasterItem
 } from '~/controllers/academic/student/master/AcademicStudentMasterStudentController';
 import { getActiveStudentId } from '~/lib/authStore';
+import { createRealtime, RealtimeConnection } from '~/lib/realtime';
 import { t as tt } from '../../../../../../../i18n';
 import { Spinner } from '~/components/loader';
 
@@ -55,8 +56,8 @@ export default function StudentCourseEnrollmentPage() {
 
     const maxAllowedSKS = 24;
 
-    const fetchEnrollmentData = async () => {
-        setIsLoading(true);
+    const fetchEnrollmentData = async (silent = false) => {
+        if (!silent) setIsLoading(true);
         try {
             // 1. Resolve student info
             let targetStudentId = getActiveStudentId();
@@ -314,6 +315,39 @@ export default function StudentCourseEnrollmentPage() {
         fetchEnrollmentData();
     });
 
+    // ── Realtime: seat changes per class and sync of this student's plan ──
+    const [isRealtimeConnected, setIsRealtimeConnected] = createSignal(false);
+    let realtime: RealtimeConnection | null = null;
+    let refreshTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const scheduleSilentRefresh = () => {
+        clearTimeout(refreshTimer);
+        refreshTimer = setTimeout(() => fetchEnrollmentData(true), 300);
+    };
+
+    onMount(() => {
+        realtime = createRealtime([], {
+            onStatusChange: setIsRealtimeConnected,
+            onEvent: ({ channel, data }) => {
+                if (channel.startsWith('teach:') || channel.startsWith('activity:')) {
+                    scheduleSilentRefresh();
+                }
+            }
+        });
+    });
+
+    createEffect(() => {
+        const channels = availableTeaches().map((t) => `teach:${t.id}`);
+        const activityId = activeActivity()?.id;
+        if (activityId) channels.push(`activity:${activityId}`);
+        realtime?.subscribe(channels);
+    });
+
+    onCleanup(() => {
+        clearTimeout(refreshTimer);
+        realtime?.close();
+    });
+
     createEffect(() => {
         const _id = searchParams.activity_id;
         fetchEnrollmentData();
@@ -450,6 +484,10 @@ export default function StudentCourseEnrollmentPage() {
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+                <div class="flex items-center justify-end gap-1.5 text-[11px] text-neutral-500 dark:text-neutral-400" aria-live="polite">
+                    <span class={`size-2 rounded-full ${isRealtimeConnected() ? 'bg-emerald-500' : 'bg-neutral-400'}`} />
+                    {isRealtimeConnected() ? 'Live' : 'Offline'}
+                </div>
                 {/* Not Found State if Activity ID is missing/invalid */}
                 <Show when={!isLoading() && !activeActivity()}>
                     <div class="bg-white dark:bg-neutral-800 rounded-xs p-10 border border-neutral-200 dark:border-neutral-700 shadow-2xs text-center space-y-4 max-w-xl mx-auto my-12">
@@ -511,7 +549,7 @@ export default function StudentCourseEnrollmentPage() {
                             </div>
 
                         {/* Realtime SKS Meter */}
-                        <div class="p-5 bg-neutral-100 dark:bg-neutral-700 backdrop-blur-md rounded-xs border border-neutral-200 dark:border-neutral-600 min-w-[280px] space-y-3">
+                        <div class="p-5 bg-neutral-100 dark:bg-neutral-700 backdrop-blur-md rounded-xs border border-neutral-200 dark:border-neutral-600 min-w-70 space-y-3">
                             <div class="flex justify-between items-center text-xs font-mono">
                                 <span class="text-neutral-600 dark:text-neutral-300">{tt('st.creditLoadSKS')}</span>
                                 <span class="font-bold text-neutral-900 dark:text-white text-sm">{totalCurrentSKS()} / {maxAllowedSKS} SKS</span>

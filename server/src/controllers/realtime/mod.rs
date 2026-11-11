@@ -45,6 +45,30 @@ impl ChannelHub {
     }
 }
 
+// ── Channel policy & server-side publishing ─────────────────────────────────
+
+/// Channels a client may subscribe to: `teach:<uuid>` (class seat changes) and
+/// `activity:<uuid>` (a student's own plan). Only the server publishes to them.
+pub fn is_allowed_channel(chan: &str) -> bool {
+    match chan.split_once(':') {
+        Some(("teach" | "activity", id)) => uuid::Uuid::parse_str(id).is_ok(),
+        _ => false,
+    }
+}
+
+/// Publish a server-originated event to a channel (no-op if nobody listens).
+pub fn publish_event(channel: &str, data: serde_json::Value) -> usize {
+    let payload = ServerEvent::Message {
+        channel: channel.to_string(),
+        data,
+        timestamp: chrono::Utc::now().to_rfc3339(),
+    };
+    match serde_json::to_string(&payload) {
+        Ok(s) => HUB.publish(channel, s),
+        Err(_) => 0,
+    }
+}
+
 // ── Payload DTOs ─────────────────────────────────────────────────────────────
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -110,11 +134,22 @@ pub enum ServerEvent {
     description = "Upgrades HTTP connection to full-duplex Multi-Channel WebSocket communication"
 )]
 pub async fn ws_handler(req: &mut Request, res: &mut Response) -> Result<(), StatusError> {
-    let initial_channel = req.query::<String>("channel").unwrap_or_else(|| "general".to_string());
+    let token = req
+        .query::<String>("token")
+        .ok_or_else(|| StatusError::unauthorized().brief("Missing token"))?;
+    crate::config::jwt::verify_token(&token, &crate::config::jwt::JwtConfig::from_env())
+        .map_err(|_| StatusError::unauthorized().brief("Invalid or expired token"))?;
+
+    let initial_channel = req.query::<String>("channel");
+    if let Some(ref c) = initial_channel {
+        if !is_allowed_channel(c) {
+            return Err(StatusError::forbidden().brief("Channel not allowed"));
+        }
+    }
 
     WebSocketUpgrade::new()
         .upgrade(req, res, move |ws| async move {
-            tracing::info!("WebSocket client connected. Initial channel: {}", initial_channel);
+            tracing::info!("WebSocket client connected. Initial channel: {:?}", initial_channel);
             let (mut ws_sender, mut ws_receiver) = ws.split();
 
             // Client-bound message queue
@@ -137,6 +172,16 @@ pub async fn ws_handler(req: &mut Request, res: &mut Response) -> Result<(), Sta
                                      client_tx: &mpsc::UnboundedSender<String>,
                                      subs: &mut HashMap<String, tokio::sync::oneshot::Sender<()>>| {
                 if subs.contains_key(chan) {
+                    return;
+                }
+                if !is_allowed_channel(chan) {
+                    let err = ServerEvent::Error {
+                        message: format!("Channel '{}' is not allowed", chan),
+                        timestamp: chrono::Utc::now().to_rfc3339(),
+                    };
+                    if let Ok(s) = serde_json::to_string(&err) {
+                        let _ = client_tx.send(s);
+                    }
                     return;
                 }
 
@@ -182,7 +227,9 @@ pub async fn ws_handler(req: &mut Request, res: &mut Response) -> Result<(), Sta
             };
 
             // Auto-subscribe to initial channel
-            subscribe_channel(&initial_channel, &client_tx, &mut active_subs);
+            if let Some(ref chan) = initial_channel {
+                subscribe_channel(chan, &client_tx, &mut active_subs);
+            }
 
             // Handle incoming client messages
             while let Some(msg) = ws_receiver.next().await {
@@ -220,18 +267,17 @@ pub async fn ws_handler(req: &mut Request, res: &mut Response) -> Result<(), Sta
                                         let _ = client_tx.send(ack_str);
                                     }
                                 }
-                                ClientAction::Publish { channel, data } => {
-                                    let payload = ServerEvent::Message {
-                                        channel: channel.clone(),
-                                        data,
+                                ClientAction::Publish { .. } => {
+                                    let err = ServerEvent::Error {
+                                        message: "Publishing from clients is not allowed".to_string(),
                                         timestamp: chrono::Utc::now().to_rfc3339(),
                                     };
-                                    if let Ok(payload_str) = serde_json::to_string(&payload) {
-                                        HUB.publish(&channel, payload_str);
+                                    if let Ok(s) = serde_json::to_string(&err) {
+                                        let _ = client_tx.send(s);
                                     }
                                 }
                                 ClientAction::ListChannels => {
-                                    let channels = HUB.active_channels();
+                                    let channels: Vec<String> = active_subs.keys().cloned().collect();
                                     let resp = ServerEvent::ChannelsList {
                                         channels,
                                         timestamp: chrono::Utc::now().to_rfc3339(),

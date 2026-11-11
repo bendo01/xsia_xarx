@@ -2,8 +2,8 @@ use std::collections::HashMap;
 use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
-    PaginatorTrait, QueryFilter, QueryOrder, Set, TransactionTrait,
+    ActiveModelTrait, ColumnTrait, ConnectionTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
+    PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, Set, TransactionTrait,
 };
 use uuid::Uuid;
 use validator::Validate;
@@ -20,6 +20,55 @@ use crate::dtos::common::reference::{MessageResponse, OptionItem};
 use crate::models::academic::student::campaign::detail_activities as entity_mod;
 use crate::middleware::auth::auth_user_id;
 use crate::services::auth::data_scope::DataScope;
+use crate::controllers::realtime::publish_event;
+use crate::models::academic::campaign::transaction::teaches as teach_mod;
+use crate::models::academic::student::campaign::student_activities as activity_mod;
+
+/// Hard upper bound of credits (SKS) a student may take in one activity.
+pub const MAX_ACTIVITY_CREDITS: f64 = 24.0;
+
+/// Number of non-deleted enrollments for a class.
+async fn enrolled_count<C: ConnectionTrait>(db: &C, teach_id: Uuid) -> Result<u64, StatusError> {
+    entity_mod::Entity::find()
+        .filter(entity_mod::Column::TeachId.eq(teach_id))
+        .filter(entity_mod::Column::DeletedAt.is_null())
+        .count(db)
+        .await
+        .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))
+}
+
+/// Broadcast the new seat count of a class and a change notice for the student's plan.
+async fn publish_enrollment_change(
+    db: &DatabaseConnection,
+    teach_id: Option<Uuid>,
+    activity_id: Uuid,
+    action: &str,
+    detail_id: Uuid,
+) {
+    if let Some(teach_id) = teach_id {
+        let max_member = teach_mod::Entity::find_by_id(teach_id)
+            .one(db)
+            .await
+            .ok()
+            .flatten()
+            .and_then(|t| t.max_member);
+        if let Ok(count) = enrolled_count(db, teach_id).await {
+            publish_event(
+                &format!("teach:{teach_id}"),
+                serde_json::json!({
+                    "type": "seat_changed",
+                    "teach_id": teach_id,
+                    "enrolled_count": count,
+                    "max_member": max_member,
+                }),
+            );
+        }
+    }
+    publish_event(
+        &format!("activity:{activity_id}"),
+        serde_json::json!({ "type": "detail_changed", "action": action, "detail_id": detail_id }),
+    );
+}
 
 pub async fn load_relations_for_detail_activities(
     db: &DatabaseConnection,
@@ -448,6 +497,10 @@ pub async fn store(
 
         let now = Utc::now().naive_utc();
         let new_id = Uuid::new_v4();
+        let payload_activity_id = payload.activity_id;
+        let payload_course_id = payload.course_id;
+        let payload_teach_id = payload.teach_id;
+        let payload_credit = payload.credit;
 
         let active_model = entity_mod::ActiveModel {
             id: Set(new_id),
@@ -471,9 +524,63 @@ pub async fn store(
     };
 
         let txn = db.begin().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        // Lock the activity row so concurrent enrollments serialize.
+        let activity = activity_mod::Entity::find_by_id(payload_activity_id)
+            .lock_exclusive()
+            .one(&txn)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .ok_or_else(|| StatusError::bad_request().brief("Activity not found"))?;
+        if activity.is_lock.unwrap_or(false) {
+            return Err(StatusError::conflict().brief("Activity is locked"));
+        }
+
+        let duplicate = entity_mod::Entity::find()
+            .filter(entity_mod::Column::ActivityId.eq(payload_activity_id))
+            .filter(entity_mod::Column::CourseId.eq(payload_course_id))
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .count(&txn)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+        if duplicate > 0 {
+            return Err(StatusError::conflict().brief("Course already taken in this activity"));
+        }
+
+        let taken: f64 = entity_mod::Entity::find()
+            .filter(entity_mod::Column::ActivityId.eq(payload_activity_id))
+            .filter(entity_mod::Column::DeletedAt.is_null())
+            .all(&txn)
+            .await
+            .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+            .iter()
+            .map(|d| d.credit.unwrap_or(0.0))
+            .sum();
+        if taken + payload_credit.unwrap_or(0.0) > MAX_ACTIVITY_CREDITS {
+            return Err(StatusError::conflict()
+                .brief(format!("Total credits would exceed the maximum of {MAX_ACTIVITY_CREDITS}")));
+        }
+
+        if let Some(teach_id) = payload_teach_id {
+            // Lock the class row so the seat count check is race-free.
+            let teach = teach_mod::Entity::find_by_id(teach_id)
+                .lock_exclusive()
+                .one(&txn)
+                .await
+                .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
+                .ok_or_else(|| StatusError::bad_request().brief("Class not found"))?;
+            if let Some(max) = teach.max_member {
+                if enrolled_count(&txn, teach_id).await? >= max.max(0) as u64 {
+                    return Err(StatusError::conflict().brief("Class is full"));
+                }
+            }
+        }
+
         let item = active_model.insert(&txn).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
         scope.ensure_visible::<entity_mod::Entity, _>(&txn, item.id).await?;
         txn.commit().await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        publish_enrollment_change(db, item.teach_id, item.activity_id, "created", item.id).await;
 
         let (grades_map, courses_map, teaches_map, teach_lecturers_map, students_map) =
             load_relations_for_detail_activities(db, std::slice::from_ref(&item)).await?;
@@ -591,6 +698,7 @@ pub async fn delete(
             .ok_or_else(|| StatusError::not_found().brief("DetailActivity not found"))?;
 
         let now = Utc::now().naive_utc();
+        let (ex_teach_id, ex_activity_id, ex_id) = (existing.teach_id, existing.activity_id, existing.id);
         let mut active_model = existing.into_active_model();
 
         active_model.deleted_at = Set(Some(now));
@@ -598,6 +706,8 @@ pub async fn delete(
         active_model.updated_by = Set(auth_user_id(depot));
 
         active_model.update(db).await.map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?;
+
+        publish_enrollment_change(db, ex_teach_id, ex_activity_id, "deleted", ex_id).await;
 
         Ok(Json(MessageResponse {
             message: "DetailActivity deleted successfully".to_string(),
