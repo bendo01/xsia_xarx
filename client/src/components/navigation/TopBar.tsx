@@ -24,10 +24,11 @@ import {
     refreshAuthState,
     enrichUserRolesWithStudentCodes,
     normalizeRoleName,
-    
+
     type UserRoleItem
 } from '../../lib/authStore';
 import { ChangeUserRole } from '../../controllers/auth/AuthUser';
+import LocaleFlag from './LocaleFlag';
 import { resolveInstitutionFromStaffRole } from '../../lib/rectoratHelper';
 import { toggleTheme } from '../../lib/theme';
 import { toast } from '../toast/Toaster';
@@ -198,12 +199,13 @@ export default function TopBar() {
                         <button
                             onClick={toggleLocale}
                             type="button"
+                            id="topbar-language-button"
                             data-testid="topbar-language-button"
                             class="relative h-9 px-2.5 flex justify-center items-center gap-1.5 rounded-xs bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 focus:outline-hidden transition-colors text-xs font-semibold"
                             aria-label={t('nav.selectLanguage')}
                             title={t('nav.selectLanguage')}
                         >
-                            <span class="text-sm">{getLocale() === 'id' ? '🇮🇩' : '🇬🇧'}</span>
+                            <LocaleFlag locale={getLocale()} />
                             <span class="font-mono text-xs uppercase font-bold">{getLocale()}</span>
                         </button>
 
