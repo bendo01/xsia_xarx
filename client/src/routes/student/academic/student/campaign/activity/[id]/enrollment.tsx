@@ -329,7 +329,20 @@ export default function StudentCourseEnrollmentPage() {
         realtime = createRealtime([], {
             onStatusChange: setIsRealtimeConnected,
             onEvent: ({ channel, data }) => {
-                if (channel.startsWith('teach:') || channel.startsWith('activity:')) {
+                if (channel.startsWith('teach:')) {
+                    // Apply the seat count from the event directly, no refetch needed
+                    const teachId = data.teach_id ?? channel.slice('teach:'.length);
+                    if (data.type === 'seat_changed' && typeof data.enrolled_count === 'number') {
+                        setAvailableTeaches((list) =>
+                            list.map((t) =>
+                                t.id === teachId
+                                    ? { ...t, enrolled_count: data.enrolled_count, max_member: data.max_member ?? t.max_member }
+                                    : t
+                            )
+                        );
+                    }
+                } else if (channel.startsWith('activity:')) {
+                    // Changes to this student's own plan (other tab/device) need the full data
                     scheduleSilentRefresh();
                 }
             }
