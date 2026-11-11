@@ -7,6 +7,7 @@ pub mod calendars;
 pub mod class_codes;
 pub mod grades;
 pub mod schedules;
+pub mod teach_attendances;
 pub mod teach_decrees;
 pub mod teach_evaluations;
 pub mod teach_lecturers;
@@ -14,6 +15,28 @@ pub mod teaches;
 
 pub fn router() -> Router {
     Router::with_path("transaction")
+        .push(
+            Router::with_path("teach-meetings")
+                .get_named("academic.campaign.transaction.teach_meetings.index", teach_attendances::meetings_index)
+                .push(
+                    Router::with_path("{id}")
+                        .push(
+                            Router::with_path("attendances")
+                                .get_named("academic.campaign.transaction.teach_meetings.roster", teach_attendances::roster)
+                                .put_named("academic.campaign.transaction.teach_meetings.save_attendances", teach_attendances::save_attendances),
+                        )
+                        .push(
+                            Router::with_path("qr")
+                                .get_named("academic.campaign.transaction.teach_meetings.qr_token", teach_attendances::qr_token)
+                                .post_named("academic.campaign.transaction.teach_meetings.open_qr", teach_attendances::open_qr)
+                                .delete_named("academic.campaign.transaction.teach_meetings.close_qr", teach_attendances::close_qr),
+                        ),
+                ),
+        )
+        .push(
+            Router::with_path("attendance-scan")
+                .post_named("academic.campaign.transaction.attendance_scan.scan", teach_attendances::scan),
+        )
         .push(
             Router::with_path("activities")
                 .get_named("academic.campaign.transaction.activities.index", activities::index)

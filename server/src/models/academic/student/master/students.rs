@@ -69,6 +69,8 @@ pub struct Model {
     pub submissions: HasMany<crate::models::academic::student::final_assignment::transaction::submissions::Entity>,
     #[sea_orm(has_many)]
     pub images: HasMany<crate::models::academic::student::master::images::Entity>,
+    #[sea_orm(has_many)]
+    pub teach_attendances: HasMany<crate::models::academic::campaign::transaction::teach_attendances::Entity>,
 }
 
 

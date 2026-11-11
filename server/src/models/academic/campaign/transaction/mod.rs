@@ -10,3 +10,5 @@ pub mod teach_decrees;
 pub mod teach_evaluations;
 pub mod teach_lecturers;
 pub mod teaches;
+pub mod teach_attendances;
+pub mod teach_meetings;

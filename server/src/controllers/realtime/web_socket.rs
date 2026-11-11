@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QueryOrder};
 use uuid::Uuid;
 
-use crate::models::academic::campaign::transaction::{class_codes, teaches};
+use crate::models::academic::campaign::transaction::{class_codes, teach_meetings, teaches};
 use crate::models::academic::student::campaign::student_activities;
 use crate::models::academic::student::master::students;
 use crate::models::auth::{role, user};
@@ -52,11 +52,13 @@ impl ChannelHub {
 
 // ── Channel policy & server-side publishing ─────────────────────────────────
 
-/// Channels a client may subscribe to: `teach:<uuid>` (class seat changes) and
-/// `activity:<uuid>` (a student's own plan). Only the server publishes to them.
+/// Channels a client may subscribe to: `teach:<uuid>` (class seat changes), `activity:<uuid>`
+/// (a student's own plan), `meeting:<uuid>` (live attendance roster for lecturers) and
+/// `student-attendance:<uuid>` (a student's own attendance notifications).
+/// Only the server publishes to them.
 pub fn is_allowed_channel(chan: &str) -> bool {
     match chan.split_once(':') {
-        Some(("teach" | "activity", id)) => uuid::Uuid::parse_str(id).is_ok(),
+        Some(("teach" | "activity" | "meeting" | "student-attendance", id)) => uuid::Uuid::parse_str(id).is_ok(),
         _ => false,
     }
 }
@@ -103,6 +105,23 @@ async fn authorize_channel(db: &DatabaseConnection, scope: &DataScope, chan: &st
             .is_visible::<student_activities::Entity, _>(db, id)
             .await
             .unwrap_or(false),
+        "meeting" => {
+            // Live roster: only whoever may manage the class, never students
+            if matches!(scope, DataScope::Student(_)) {
+                return false;
+            }
+            let Ok(Some(meeting)) = teach_meetings::Entity::find_by_id(id).one(db).await else { return false };
+            scope
+                .is_visible::<teaches::Entity, _>(db, meeting.teach_id)
+                .await
+                .unwrap_or(false)
+        }
+        // A student's own attendance notifications; administrators may listen too
+        "student-attendance" => match scope {
+            DataScope::Student(student_id) => *student_id == id,
+            DataScope::All => true,
+            _ => false,
+        },
         "teach" => {
             // Students must see seats of classes they have NOT taken yet, so compare units
             // instead of using the (taken-classes-only) teach scope.
