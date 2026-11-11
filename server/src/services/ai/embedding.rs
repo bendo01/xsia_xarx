@@ -58,6 +58,15 @@ impl EmbeddingService {
                 .with_context(|| format!("Failed to read {}", config_path.display()))?,
         )?;
 
+        anyhow::ensure!(
+            config.hidden_size == EMBEDDING_DIMENSION,
+            "Embedding model in {} outputs {} dimensions, but ai.chunks expects {}; set EMBEDDING_MODEL_DIR to {}",
+            dir.display(),
+            config.hidden_size,
+            EMBEDDING_DIMENSION,
+            EMBEDDING_MODEL
+        );
+
         let mut tokenizer = Tokenizer::from_file(dir.join("tokenizer.json")).map_err(anyhow::Error::msg)?;
         // XLM-R pads with token 1 (`<pad>`); it also drives the model's position ids
         tokenizer.with_padding(Some(PaddingParams {

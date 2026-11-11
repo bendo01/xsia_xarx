@@ -36,9 +36,15 @@ interface Turn {
 }
 
 const SAMPLE_KEYS = ['ragSample1', 'ragSample2', 'ragSample3', 'ragSample4', 'ragSample5'];
-const TOP_K_RANGE = { min: 1, max: 10, step: 1 };
-const TEMPERATURE_RANGE = { min: 0, max: 1, step: 0.05 };
-const MAX_TOKEN_RANGE = { min: 64, max: 1024, step: 64 };
+// Mirror the server limits (server/src/controllers/ai/rag.rs, dtos/ai/rag.rs, services/ai/generation.rs)
+const TOP_K_RANGE = { min: 1, max: 10, step: 1, default: 3 };
+const TEMPERATURE_RANGE = { min: 0, max: 1, step: 0.05, default: 0.2 };
+const MAX_TOKEN_RANGE = { min: 16, max: 1024, step: 16, default: 400 };
+// Gemma's prompt budget is about half of Qwen's (generation.rs `max_prompt_tokens`), so it gets fewer chunks
+const TOP_K_MAX_BY_MODEL: Record<string, number> = { qwen: 10, gemma: 4 };
+const QUESTION_MIN_CHARS = 3;
+const QUESTION_MAX_CHARS = 1000;
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 const BODY_PREVIEW_CHARS = 280;
 
 const formatBytes = (bytes?: number | null) => (bytes ? `${(bytes / 1024 / 1024).toFixed(0)} MB` : '-');
@@ -53,12 +59,12 @@ export default function AgentChatbotPage() {
 
     // Settings
     const [retrievalOnly, setRetrievalOnly] = createSignal(false);
-    const [topK, setTopK] = createSignal(TOP_K_RANGE.max);
+    const [topK, setTopK] = createSignal(TOP_K_RANGE.default);
     const [includeRevoked, setIncludeRevoked] = createSignal(false);
     const [searchMode, setSearchMode] = createSignal<'hybrid' | 'dense'>('hybrid');
     const [rerank, setRerank] = createSignal(true);
-    const [temperature, setTemperature] = createSignal(0.2);
-    const [maxTokens, setMaxTokens] = createSignal(MAX_TOKEN_RANGE.max);
+    const [temperature, setTemperature] = createSignal(TEMPERATURE_RANGE.default);
+    const [maxTokens, setMaxTokens] = createSignal(MAX_TOKEN_RANGE.default);
     const [modelId, setModelId] = createSignal('qwen');
 
     let abortController: AbortController | null = null;
@@ -91,6 +97,13 @@ export default function AgentChatbotPage() {
     });
 
     // The model picked in the settings; `status().models` is missing on servers older than the model switch
+    // Answer mode sends the chunks to the LLM, so its prompt budget caps them; retrieval-only can use the full range
+    const topKMax = () => (retrievalOnly() ? TOP_K_RANGE.max : (TOP_K_MAX_BY_MODEL[modelId()] ?? TOP_K_RANGE.max));
+
+    createEffect(() => {
+        if (topK() > topKMax()) setTopK(topKMax());
+    });
+
     const selectedModel = () => status()?.models?.find((m) => m.id === modelId());
 
     const modelProblem = () => {
@@ -116,7 +129,7 @@ export default function AgentChatbotPage() {
 
     const send = async (text: string) => {
         const q = text.trim();
-        if (q.length < 3 || isBusy()) return;
+        if (q.length < QUESTION_MIN_CHARS || q.length > QUESTION_MAX_CHARS || isBusy()) return;
         const id = nextId++;
         const onlyRetrieval = retrievalOnly();
         setTurns(turns.length, {
@@ -134,12 +147,12 @@ export default function AgentChatbotPage() {
 
         const settings = {
             question: q,
-            top_k: topK(),
+            top_k: clamp(Math.round(topK()), TOP_K_RANGE.min, topKMax()),
             include_revoked: includeRevoked(),
             search_mode: searchMode(),
             rerank: rerank(),
-            temperature: temperature(),
-            max_new_tokens: maxTokens(),
+            temperature: clamp(temperature(), TEMPERATURE_RANGE.min, TEMPERATURE_RANGE.max),
+            max_new_tokens: clamp(Math.round(maxTokens()), MAX_TOKEN_RANGE.min, MAX_TOKEN_RANGE.max),
             model: modelId(),
             conversation_id: conversationId(),
         };
@@ -231,11 +244,11 @@ export default function AgentChatbotPage() {
         );
         // Restore the settings the conversation was last asked with; old conversations have none
         const s = res.data.settings;
-        if (s.top_k != null) setTopK(Math.min(TOP_K_RANGE.max, Math.max(TOP_K_RANGE.min, s.top_k)));
+        if (s.top_k != null) setTopK(clamp(s.top_k, TOP_K_RANGE.min, TOP_K_RANGE.max));
         if (s.search_mode) setSearchMode(s.search_mode);
         if (s.rerank != null) setRerank(s.rerank);
-        if (s.temperature != null) setTemperature(s.temperature);
-        if (s.max_new_tokens != null) setMaxTokens(s.max_new_tokens);
+        if (s.temperature != null) setTemperature(clamp(s.temperature, TEMPERATURE_RANGE.min, TEMPERATURE_RANGE.max));
+        if (s.max_new_tokens != null) setMaxTokens(clamp(s.max_new_tokens, MAX_TOKEN_RANGE.min, MAX_TOKEN_RANGE.max));
         if (s.model) setModelId(s.model);
         setConversationId(id);
     };
@@ -385,7 +398,7 @@ export default function AgentChatbotPage() {
                                 type="range"
                                 class={rangeClass}
                                 min={TOP_K_RANGE.min}
-                                max={TOP_K_RANGE.max}
+                                max={topKMax()}
                                 step={TOP_K_RANGE.step}
                                 value={topK()}
                                 onInput={(e) => setTopK(Number(e.currentTarget.value))}
@@ -682,7 +695,7 @@ export default function AgentChatbotPage() {
                                 onInput={(e) => setQuestion(e.currentTarget.value)}
                                 onKeyDown={onKeyDown}
                                 placeholder={t('ad.ragPlaceholder')}
-                                maxLength={1000}
+                                maxLength={QUESTION_MAX_CHARS}
                                 class="flex-1 p-2.5 text-sm border border-neutral-300 rounded-xs bg-white text-neutral-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white resize-none"
                                 id="textarea-rag-question"
                             />
@@ -702,7 +715,7 @@ export default function AgentChatbotPage() {
                                 <button
                                     type="button"
                                     onClick={() => send(question())}
-                                    disabled={question().trim().length < 3 || modelProblem() !== null}
+                                    disabled={question().trim().length < QUESTION_MIN_CHARS || modelProblem() !== null}
                                     class="px-4 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xs cursor-pointer transition-colors"
                                     id="btn-rag-send"
                                 >
