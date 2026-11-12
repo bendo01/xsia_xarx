@@ -768,7 +768,98 @@ export default function AcademicStudentCampaignStudentActivityDetailPage() {
                             </div>
                         </div>
 
-                        <div class="overflow-x-auto border border-border rounded-md">
+                        <div class="md:hidden border border-border rounded-md divide-y divide-neutral-200 dark:divide-neutral-700/60">
+                            <For
+                                each={detailActivities()}
+                                fallback={<div class="px-4 py-10 text-center text-xs text-neutral-500">{t('ad.belumAdaMataKuliahYangTerdaftar')}</div>}
+                            >
+                                {(detail, idx) => {
+                                    const cred = detail.credit || 0;
+                                    const mark = detail.mark ?? 0;
+                                    const gradeLetter = detail.grade_letter || detail.grade?.alphabet_code || '-';
+                                    const gradePoint = detail.grade_point ?? detail.grade?.grade ?? 0;
+                                    const qualityPoint = cred * gradePoint;
+
+                                    return (
+                                        <div class="p-3 space-y-2.5">
+                                            <div class="flex items-start justify-between gap-3">
+                                                <div class="min-w-0">
+                                                    <p class="font-semibold text-foreground text-sm wrap-break-word">
+                                                        <span class="font-mono text-neutral-400 text-xs">{idx() + 1}.</span>{' '}
+                                                        {detail.course_name || detail.course?.name || detail.name || 'Mata Kuliah'}
+                                                    </p>
+                                                    <p class="font-mono text-[11px] text-neutral-500">{detail.course_code || detail.course?.code || '-'}</p>
+                                                    <p class="text-[11px] text-neutral-500 mt-0.5">
+                                                        {t('ad.kelas')} {detail.class_name || detail.teach?.class_code?.name || '-'}
+                                                        {' · '}
+                                                        {detail.lecturer_name || (Array.isArray(detail.lecturers) ? detail.lecturers.join(', ') : '-')}
+                                                    </p>
+                                                </div>
+                                                <span
+                                                    class={`inline-flex items-center px-2 py-0.5 rounded text-xs font-bold font-mono shrink-0 ${gradeLetter.startsWith('A')
+                                                        ? 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200'
+                                                        : gradeLetter.startsWith('B')
+                                                            ? 'bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200'
+                                                            : gradeLetter.startsWith('C')
+                                                                ? 'bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200'
+                                                                : gradeLetter === '-'
+                                                                    ? 'bg-secondary text-neutral-500'
+                                                                    : 'bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200'}`}
+                                                >
+                                                    {gradeLetter}
+                                                </span>
+                                            </div>
+                                            <dl class="grid grid-cols-4 gap-x-2 text-xs">
+                                                <div>
+                                                    <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('ad.sks')}</dt>
+                                                    <dd class="font-mono font-medium">{cred}</dd>
+                                                </div>
+                                                <div>
+                                                    <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('ad.nilaiAngka')}</dt>
+                                                    <dd class="font-mono font-semibold">{mark > 0 ? mark : '-'}</dd>
+                                                </div>
+                                                <div>
+                                                    <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('ad.bobot')}</dt>
+                                                    <dd class="font-mono">{gradePoint.toFixed(2)}</dd>
+                                                </div>
+                                                <div>
+                                                    <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('ad.mutuSKSXB')}</dt>
+                                                    <dd class="font-mono font-bold">{qualityPoint.toFixed(2)}</dd>
+                                                </div>
+                                            </dl>
+                                            <div class="flex items-center justify-end gap-1">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => openEditGradeModal(detail)}
+                                                    class="p-2 text-neutral-600 hover:text-blue-600 dark:text-neutral-400 dark:hover:text-blue-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded transition-colors"
+                                                    title={t('ad.inputEditNilai')}
+                                                >
+                                                    <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    </svg>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => openDropCourseModal(detail)}
+                                                    class="p-2 text-neutral-600 hover:text-rose-600 dark:text-neutral-400 dark:hover:text-rose-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded transition-colors"
+                                                    title={t('ad.dropBatalkanMataKuliah')}
+                                                >
+                                                    <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    );
+                                }}
+                            </For>
+                            <div class="p-3 bg-muted/60 flex items-center justify-between gap-3 text-xs font-semibold">
+                                <span class="text-neutral-500 uppercase tracking-wider">{t('ad.totalSemester')}: <span class="font-mono font-bold text-foreground">{totalKrsSks()} SKS</span></span>
+                                <span class="text-neutral-500">{t('ad.totalMutuIPS')}: <span class="font-mono font-bold text-blue-600 dark:text-blue-400">{totalQualityPoints().toFixed(2)} ({calculatedIps()})</span></span>
+                            </div>
+                        </div>
+
+                        <div class="hidden md:block overflow-x-auto border border-border rounded-md">
                             <table class="w-full text-left text-xs border-collapse">
                                 <thead>
                                     <tr class="bg-muted/60 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[11px]">

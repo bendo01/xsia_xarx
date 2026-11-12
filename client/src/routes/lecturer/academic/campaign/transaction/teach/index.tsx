@@ -590,7 +590,69 @@ export default function LecturerTeachIndexPage() {
                         {/* Table Roster View */}
                         <Show when={viewMode() === 'table'}>
                             <div class="rounded-md bg-card border border-border/60 overflow-hidden shadow-2xs">
-                                <div class="overflow-x-auto">
+                                {/* Mobile compact list */}
+                                <div class="md:hidden divide-y divide-neutral-200/60 dark:divide-neutral-700/60">
+                                    <For each={filteredTeaches()}>
+                                        {(item) => (
+                                            <div class="p-4 space-y-3">
+                                                <div class="flex items-start justify-between gap-3">
+                                                    <div class="min-w-0 space-y-0.5">
+                                                        <div class="flex flex-wrap items-center gap-2">
+                                                            <span class="font-mono text-[11px] font-bold text-blue-600 dark:text-blue-400">{item.course_code}</span>
+                                                            <Show when={item.academic_year_name}>
+                                                                <span class="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
+                                                                    {item.academic_year_name}
+                                                                </span>
+                                                            </Show>
+                                                        </div>
+                                                        <h4 class="font-bold text-foreground text-sm wrap-break-word">{item.course_name}</h4>
+                                                    </div>
+                                                    <Show when={item.is_lecturer_home_base}>
+                                                        <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 shrink-0">
+                                                            {t('lc.homebase')}
+                                                        </span>
+                                                    </Show>
+                                                </div>
+                                                <dl class="grid grid-cols-3 gap-x-3 text-xs">
+                                                    <div>
+                                                        <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('lc.classSection')}</dt>
+                                                        <dd class="font-bold text-foreground">{item.class_name || `Kelas ${item.class_alphabet_code}`}</dd>
+                                                    </div>
+                                                    <div>
+                                                        <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('lc.sks')}</dt>
+                                                        <dd class="font-bold font-mono text-purple-600 dark:text-purple-400">{item.credit || item.course_total_credit || 0}</dd>
+                                                    </div>
+                                                    <div>
+                                                        <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('lc.teachingSessions')}</dt>
+                                                        <dd class="font-bold font-mono text-foreground">{item.realization} / {item.planning || 16}</dd>
+                                                    </div>
+                                                </dl>
+                                                <div class="w-full h-1.5 rounded-md bg-neutral-200 dark:bg-neutral-700 overflow-hidden">
+                                                    <div
+                                                        class="h-full rounded-md bg-blue-600"
+                                                        style={{ width: `${item.planning > 0 ? Math.min(100, Math.round((item.realization / item.planning) * 100)) : 0}%` }}
+                                                    ></div>
+                                                </div>
+                                                <div class="flex items-center gap-2">
+                                                    <A
+                                                        href={`/lecturer/academic/campaign/transaction/teach/${item.teach_id}/attendance`}
+                                                        class="flex-1 py-2 px-3 text-center bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900 text-blue-700 dark:text-blue-300 font-semibold rounded-md text-xs transition-colors"
+                                                    >
+                                                        {t('lc.presensi')}
+                                                    </A>
+                                                    <A
+                                                        href={`/lecturer/academic/campaign/transaction/teach/${item.teach_id}/grade`}
+                                                        class="flex-1 py-2 px-3 text-center bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700 dark:hover:bg-neutral-600 text-neutral-700 dark:text-neutral-200 font-semibold rounded-md text-xs transition-colors"
+                                                    >
+                                                        {t('lc.nilai2')}
+                                                    </A>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </For>
+                                </div>
+
+                                <div class="hidden md:block overflow-x-auto">
                                     <table class="w-full text-left text-xs">
                                         <thead class="bg-muted/60 border-b border-border text-neutral-500 font-mono uppercase tracking-wider text-[11px]">
                                             <tr>

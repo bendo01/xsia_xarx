@@ -26,7 +26,7 @@ use crate::models::institution::master::units as InstitutionMasterUnit;
 use crate::models::institution::reference::position_type as InstitutionReferencePositionType;
 use crate::models::institution::reference::unit_types as InstitutionReferenceUnitType;
 use crate::services::image::encode::EncodeService;
-use crate::services::pdf::institution_092010::student::activity::plan::activity_plan::{
+use crate::services::pdf::institution_092010::academic::student::activity::plan::activity_plan::{
     AcademicYearInfo, ActivityInfo, ClassCodeInfo, CourseInfo, DetailActivityDto,
     DetailActivityItemDto, GradeInfo, StatusInfo, StudentActivityDto, StudentInfo,
     TeachActivityDto, UnitActivityDto, UnitInfo,

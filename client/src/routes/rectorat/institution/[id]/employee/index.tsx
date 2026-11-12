@@ -236,7 +236,7 @@ export default function RectoratEmployeesIndex() {
 
                 {/* Data Table */}
                 <div class="bg-card border border-border rounded-xl shadow-sm overflow-hidden transition-all">
-                    <div class="overflow-x-auto">
+                    <div class="hidden md:block overflow-x-auto">
                         <table class="w-full text-sm text-left">
                             <thead class="text-xs text-neutral-500 uppercase bg-neutral-50/80 dark:bg-neutral-800/50 dark:text-neutral-400 border-b border-border font-semibold tracking-wider">
                                 <tr>
@@ -365,6 +365,81 @@ export default function RectoratEmployeesIndex() {
                                 </Show>
                             </tbody>
                         </table>
+                    </div>
+
+                    {/* Mobile Card List */}
+                    <div class="md:hidden divide-y divide-neutral-100 dark:divide-neutral-800">
+                        <Show
+                            when={!isLoading()}
+                            fallback={
+                                <For each={Array.from({ length: 5 })}>
+                                    {() => (
+                                        <div class="p-4 animate-pulse space-y-3">
+                                            <div class="flex items-center gap-3">
+                                                <div class="size-10 rounded-full bg-neutral-200 dark:bg-neutral-800 shrink-0"></div>
+                                                <div class="space-y-1.5 flex-1">
+                                                    <div class="h-4 w-3/4 bg-neutral-200 dark:bg-neutral-800 rounded"></div>
+                                                    <div class="h-3 w-1/2 bg-neutral-200 dark:bg-neutral-800 rounded"></div>
+                                                </div>
+                                            </div>
+                                            <div class="h-9 bg-neutral-200 dark:bg-neutral-800 rounded"></div>
+                                        </div>
+                                    )}
+                                </For>
+                            }
+                        >
+                            <Show
+                                when={pagedItems().length > 0}
+                                fallback={
+                                    <div class="px-4 py-12 flex flex-col items-center gap-2 text-center text-muted-foreground">
+                                        <span class="font-semibold text-base text-foreground/80">{t('rt.tidakAdaDataPegawaiDitemukan')}</span>
+                                        <span class="text-sm">{t('rt.silakanUbahKataKunciPencarianAtau')}</span>
+                                    </div>
+                                }
+                            >
+                                <For each={pagedItems()}>
+                                    {(item) => (
+                                        <div class="p-4 space-y-3">
+                                            <div class="flex items-start gap-3">
+                                                <div class="size-10 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-sm shrink-0">
+                                                    {displayName(item).split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase()}
+                                                </div>
+                                                <div class="min-w-0 flex-1">
+                                                    <p class="font-semibold text-foreground wrap-break-word">{displayName(item)}</p>
+                                                    <p class="font-mono text-xs text-muted-foreground">{item.code || '-'}</p>
+                                                </div>
+                                                {item.is_active ? (
+                                                    <span class="inline-flex items-center h-6 px-2.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full shrink-0 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800/50">
+                                                        {t('rt.aktif')}
+                                                    </span>
+                                                ) : (
+                                                    <span class="inline-flex items-center h-6 px-2.5 text-[10px] font-bold text-red-700 bg-red-50 border border-red-200 rounded-full shrink-0 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800/50">
+                                                        {t('rt.nonAktif')}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <Show when={item.decree_number || item.decree_date}>
+                                                <dl class="text-xs">
+                                                    <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('rt.noSKTanggal')}</dt>
+                                                    <dd class="text-foreground">
+                                                        <span class="font-mono">{item.decree_number}</span>
+                                                        <Show when={item.decree_date}>
+                                                            <span class="text-muted-foreground"> · {item.decree_date}</span>
+                                                        </Show>
+                                                    </dd>
+                                                </dl>
+                                            </Show>
+                                            <A
+                                                href={`/rectorat/institution/${institutionId()}/employee/${item.id}`}
+                                                class="flex items-center justify-center w-full px-3 py-2 text-xs font-medium text-indigo-600 hover:text-white hover:bg-indigo-600 border border-indigo-200 hover:border-indigo-600 rounded-md transition-all dark:text-indigo-400 dark:border-indigo-800/60 dark:hover:bg-indigo-600 dark:hover:text-white"
+                                            >
+                                                {t('rt.detail')}
+                                            </A>
+                                        </div>
+                                    )}
+                                </For>
+                            </Show>
+                        </Show>
                     </div>
 
                     {/* Pagination Footer */}

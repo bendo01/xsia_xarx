@@ -15,8 +15,8 @@ use crate::dtos::academic::student::campaign::student_activities::{
 };
 use crate::dtos::common::reference::{MessageResponse, OptionItem};
 use crate::models::academic::student::campaign::student_activities as entity_mod;
-use crate::services::pdf::institution_092010::student::activity::plan::activity_plan as Institution092010StudentActivityPlan;
-use crate::services::pdf::institution_092010::student::activity::result::activity_result as Institution092010StudentActivityResult;
+use crate::services::pdf::institution_092010::academic::student::activity::plan::activity_plan as Institution092010StudentActivityPlan;
+use crate::services::pdf::institution_092010::academic::student::activity::result::activity_result as Institution092010StudentActivityResult;
 use crate::middleware::auth::auth_user_id;
 use crate::services::auth::data_scope::DataScope;
 

@@ -531,7 +531,48 @@ export default function RectoratTeachDetail() {
                                 </span>
                             </div>
 
-                            <div class="overflow-x-auto">
+                            <div class="md:hidden divide-y divide-neutral-200/80 dark:divide-neutral-800/80">
+                                <For
+                                    each={teachLecturers()}
+                                    fallback={<div class="py-10 text-center text-xs text-neutral-500">{t('rt.belumAdaDosenYangDitugaskanPada')}</div>}
+                                >
+                                    {(tl) => {
+                                        const lecturerInfo = lecturersList().find((l) => l.id === tl.lecturer_id);
+                                        const lecturerName = tl.name || lecturerInfo?.name || lecturerInfo?.display_name || 'Dosen Pengajar';
+                                        const pct = tl.planning > 0 ? Math.min(100, Math.round(((tl.realization || 0) / tl.planning) * 100)) : 0;
+                                        return (
+                                            <div class="py-3 space-y-2">
+                                                <div class="flex items-start gap-3">
+                                                    <div class="size-9 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-xs shrink-0">
+                                                        {lecturerName.slice(0, 2).toUpperCase()}
+                                                    </div>
+                                                    <div class="min-w-0 flex-1">
+                                                        <span class="font-bold text-foreground block text-sm wrap-break-word">{lecturerName}</span>
+                                                        <span class="text-2xs text-neutral-500 font-mono">{tl.code || lecturerInfo?.code || lecturerInfo?.nuptk || '-'}</span>
+                                                    </div>
+                                                    <Show
+                                                        when={tl.is_lecturer_home_base}
+                                                        fallback={<span class="px-2.5 py-0.5 rounded-full text-2xs font-medium bg-secondary text-muted-foreground shrink-0">{t('rt.luarHomebase')}</span>}
+                                                    >
+                                                        <span class="px-2.5 py-0.5 rounded-full text-2xs font-medium bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80 shrink-0">
+                                                            {t('rt.homebase')}
+                                                        </span>
+                                                    </Show>
+                                                </div>
+                                                <div class="flex items-center justify-between text-xs font-mono">
+                                                    <span class="font-bold">{tl.credit || 0} SKS</span>
+                                                    <span>{tl.realization || 0} / {tl.planning || 0} · {pct}%</span>
+                                                </div>
+                                                <div class="w-full h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+                                                    <div class="h-full bg-purple-500 rounded-full" style={{ width: `${pct}%` }} />
+                                                </div>
+                                            </div>
+                                        );
+                                    }}
+                                </For>
+                            </div>
+
+                            <div class="hidden md:block overflow-x-auto">
                                 <table class="w-full text-left text-sm">
                                     <thead class="bg-neutral-50/80 dark:bg-neutral-800/50 border-b border-border text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                                         <tr>
@@ -653,7 +694,45 @@ export default function RectoratTeachDetail() {
                                 </div>
                             </div>
 
-                            <div class="overflow-x-auto rounded-xl border border-border">
+                            <div class="md:hidden rounded-xl border border-border divide-y divide-neutral-200/80 dark:divide-neutral-800/80">
+                                <For
+                                    each={filteredStudents()}
+                                    fallback={<div class="px-4 py-10 text-center text-xs text-neutral-500">{t('rt.tidakAdaDataMahasiswaTerdaftarYang')}</div>}
+                                >
+                                    {(student) => (
+                                        <div class="p-3 space-y-2">
+                                            <div class="flex items-start justify-between gap-3">
+                                                <div class="min-w-0">
+                                                    <span class="font-bold text-foreground text-sm block wrap-break-word">{student.student_name || 'Mahasiswa'}</span>
+                                                    <span class="text-2xs font-mono text-neutral-500">{t('rt.nim2')} {student.student_nim || '-'}</span>
+                                                </div>
+                                                <Show
+                                                    when={student.is_lock}
+                                                    fallback={<span class="px-2 py-0.5 rounded text-2xs font-medium bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 shrink-0">{t('rt.terbuka')}</span>}
+                                                >
+                                                    <span class="px-2 py-0.5 rounded text-2xs font-medium bg-secondary text-muted-foreground shrink-0">{t('rt.terkunci')}</span>
+                                                </Show>
+                                            </div>
+                                            <dl class="grid grid-cols-3 gap-x-3 text-xs">
+                                                <div>
+                                                    <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('rt.sks')}</dt>
+                                                    <dd class="font-mono">{student.credit || course()?.total_credit || 0}</dd>
+                                                </div>
+                                                <div>
+                                                    <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('rt.nilaiAngka')}</dt>
+                                                    <dd class="font-mono font-bold">{student.mark !== null && student.mark !== undefined ? student.mark.toFixed(2) : '-'}</dd>
+                                                </div>
+                                                <div>
+                                                    <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('rt.nilaiHuruf')}</dt>
+                                                    <dd class="font-mono font-bold">{student.grade?.alphabet_code || '-'}</dd>
+                                                </div>
+                                            </dl>
+                                        </div>
+                                    )}
+                                </For>
+                            </div>
+
+                            <div class="hidden md:block overflow-x-auto rounded-xl border border-border">
                                 <table class="w-full text-left text-sm">
                                     <thead class="bg-neutral-50/80 dark:bg-neutral-800/50 border-b border-border text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                                         <tr>
@@ -750,7 +829,26 @@ export default function RectoratTeachDetail() {
                                 </div>
                             </div>
 
-                            <div class="overflow-x-auto rounded-xl border border-border">
+                            <div class="md:hidden rounded-xl border border-border divide-y divide-neutral-200/80 dark:divide-neutral-800/80">
+                                <For
+                                    each={teach()?.teach_evaluations || []}
+                                    fallback={<div class="px-4 py-10 text-center text-xs text-neutral-500">{t('rt.belumAdaKomponenEvaluasiYangDitentukan')}</div>}
+                                >
+                                    {(ev, idx) => (
+                                        <div class="p-3 flex items-start justify-between gap-3">
+                                            <div class="min-w-0">
+                                                <p class="font-semibold text-foreground text-xs wrap-break-word">
+                                                    <span class="font-mono text-neutral-500">#{ev.thread || idx() + 1}</span> {ev.name || '-'}
+                                                </p>
+                                                <p class="text-xs text-neutral-500 italic">{ev.english_name || '-'}</p>
+                                            </div>
+                                            <span class="font-mono font-bold text-xs text-blue-600 dark:text-blue-400 shrink-0">{ev.evaluation_weight || 0}%</span>
+                                        </div>
+                                    )}
+                                </For>
+                            </div>
+
+                            <div class="hidden md:block overflow-x-auto rounded-xl border border-border">
                                 <table class="w-full text-left text-sm">
                                     <thead class="bg-neutral-50/80 dark:bg-neutral-800/50 border-b border-border text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                                         <tr>

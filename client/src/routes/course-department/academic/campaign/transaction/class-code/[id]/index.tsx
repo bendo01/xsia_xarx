@@ -575,7 +575,48 @@ export default function RectoratClassCodeDetail() {
                                 </span>
                             </div>
 
-                            <div class="overflow-x-auto">
+                            <div class="md:hidden divide-y divide-neutral-100 dark:divide-neutral-800/80">
+                                <Show
+                                    when={!isTeachesLoading()}
+                                    fallback={
+                                        <div class="py-10 flex items-center justify-center gap-2 text-xs text-neutral-500">
+                                            <Spinner size="sm" color="indigo" aria-hidden={true} />
+                                            {tt('rt.memuatDataPengajaran')}
+                                        </div>
+                                    }
+                                >
+                                    <For
+                                        each={teaches()}
+                                        fallback={<div class="py-10 text-center text-xs text-neutral-500">{tt('rt.belumAdaPengajaranUntukKelasIni')}</div>}
+                                    >
+                                        {(teach) => (
+                                            <div class="py-3 space-y-2">
+                                                <div class="flex items-start justify-between gap-3">
+                                                    <div class="min-w-0">
+                                                        <p class="font-semibold text-foreground text-sm wrap-break-word">{teach.course?.name || teach.name || '-'}</p>
+                                                        <p class="font-mono text-xs font-semibold text-indigo-600 dark:text-indigo-400">{teach.course?.code || '-'}</p>
+                                                    </div>
+                                                    <A
+                                                        href={`/course-department/academic/campaign/transaction/teach/${teach.id}`}
+                                                        class="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium shrink-0"
+                                                    >
+                                                        {tt('rt.detail2')}
+                                                    </A>
+                                                </div>
+                                                <div class="flex gap-4 text-xs font-mono text-muted-foreground">
+                                                    <span>{teach.course?.total_credit ?? '-'} {tt('rt.sks')}</span>
+                                                    <span>
+                                                        {tt('rt.peserta')}: {teach.enrolled_count ?? 0}
+                                                        <Show when={teach.max_member}> / {teach.max_member}</Show>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </For>
+                                </Show>
+                            </div>
+
+                            <div class="hidden md:block overflow-x-auto">
                                 <table class="w-full text-xs">
                                     <thead>
                                         <tr class="text-left text-2xs uppercase tracking-wider text-muted-foreground border-b border-border">
@@ -670,7 +711,51 @@ export default function RectoratClassCodeDetail() {
                                 />
                             </div>
 
-                            <div class="overflow-x-auto">
+                            <div class="md:hidden divide-y divide-neutral-100 dark:divide-neutral-800/80">
+                                <Show
+                                    when={!isStudentsLoading()}
+                                    fallback={
+                                        <div class="py-10 flex items-center justify-center gap-2 text-xs text-neutral-500">
+                                            <Spinner size="sm" color="indigo" aria-hidden={true} />
+                                            {tt('rt.memuatDataMahasiswa')}
+                                        </div>
+                                    }
+                                >
+                                    <For
+                                        each={students()}
+                                        fallback={
+                                            <div class="py-10 text-center text-xs text-neutral-500">
+                                                {studentSearch() ? tt('rt.tidakAdaMahasiswaYangCocokDengan') : tt('rt.belumAdaMahasiswaYangTerdaftarDi')}
+                                            </div>
+                                        }
+                                    >
+                                        {(student) => (
+                                            <div class="py-3 space-y-1.5">
+                                                <div class="flex items-start justify-between gap-3">
+                                                    <div class="min-w-0">
+                                                        <p class="font-semibold text-foreground text-sm wrap-break-word">{student.name || '-'}</p>
+                                                        <p class="font-mono text-xs font-semibold text-indigo-600 dark:text-indigo-400">{student.code || '-'}</p>
+                                                    </div>
+                                                    <A
+                                                        href={`/course-department/academic/student/master/student/${student.id}`}
+                                                        class="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium shrink-0"
+                                                    >
+                                                        {tt('rt.detail2')}
+                                                    </A>
+                                                </div>
+                                                <div class="flex flex-wrap items-center gap-2 text-xs">
+                                                    <span class="inline-flex px-2 py-0.5 rounded-md bg-secondary text-foreground/80 text-2xs font-semibold">
+                                                        {student.status_name || '-'}
+                                                    </span>
+                                                    <span class="font-mono text-muted-foreground">{student.academic_year_name || '-'}</span>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </For>
+                                </Show>
+                            </div>
+
+                            <div class="hidden md:block overflow-x-auto">
                                 <table class="w-full text-xs">
                                     <thead>
                                         <tr class="text-left text-2xs uppercase tracking-wider text-muted-foreground border-b border-border">

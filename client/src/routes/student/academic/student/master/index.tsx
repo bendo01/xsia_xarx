@@ -168,7 +168,7 @@ export default function StudentMasterIndexPage() {
                             <p class="text-xs font-mono">{t('st.loadingAdmittedStudentsFromServer')}</p>
                         </div>
                     }>
-                        <div class="overflow-x-auto">
+                        <div class="hidden md:block overflow-x-auto">
                             <table class="w-full text-xs text-start">
                                 <thead class="bg-neutral-100 dark:bg-neutral-900/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-border">
                                     <tr>
@@ -238,6 +238,56 @@ export default function StudentMasterIndexPage() {
                                     </For>
                                 </tbody>
                             </table>
+                        </div>
+
+                        {/* Mobile Card List */}
+                        <div class="md:hidden divide-y divide-neutral-100 dark:divide-neutral-700/50">
+                            <For each={students()} fallback={
+                                <div class="py-12 px-4 flex flex-col items-center gap-2 text-center text-neutral-400 dark:text-neutral-500">
+                                    <p class="text-sm font-semibold text-muted-foreground">
+                                        {t('st.noAdmittedStudentRecordsFound')}
+                                    </p>
+                                    <p class="text-xs text-neutral-400">
+                                        {searchQuery()
+                                            ? t('st.noStudentsMatchingQueryWereFound', { query: searchQuery() })
+                                            : t('st.thereAreCurrentlyNoAdmittedStudent')}
+                                    </p>
+                                </div>
+                            }>
+                                {(std) => (
+                                    <div class="p-4 space-y-3">
+                                        <div class="flex items-start justify-between gap-3">
+                                            <div class="min-w-0">
+                                                <p class="font-bold text-foreground text-sm wrap-break-word">{std.name}</p>
+                                                <p class="font-mono font-bold text-xs text-blue-600 dark:text-blue-400">{std.code}</p>
+                                            </div>
+                                            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 shrink-0">
+                                                {t('st.active')}
+                                            </span>
+                                        </div>
+                                        <dl class="grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
+                                            <div class="col-span-2">
+                                                <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('st.studyProgram')}</dt>
+                                                <dd class="text-foreground">{std.unit_name || 'Informatics Engineering'}</dd>
+                                            </div>
+                                            <div>
+                                                <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('st.admissionPath')}</dt>
+                                                <dd class="text-foreground">{std.selection_type_name || 'SNBP'}</dd>
+                                            </div>
+                                            <div>
+                                                <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('st.registrationDate')}</dt>
+                                                <dd class="font-mono text-foreground">{std.registered}</dd>
+                                            </div>
+                                        </dl>
+                                        <A
+                                            href={`/student/academic/student/master/student/${std.id}/show`}
+                                            class="flex items-center justify-center w-full px-3 py-2 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-md text-xs font-bold transition-colors"
+                                        >
+                                            {t('st.viewDetail')}
+                                        </A>
+                                    </div>
+                                )}
+                            </For>
                         </div>
 
                         {/* Pagination Bar */}

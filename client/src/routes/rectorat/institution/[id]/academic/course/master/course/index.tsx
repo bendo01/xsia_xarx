@@ -180,7 +180,7 @@ export default function RectoratCourseIndex() {
                 </div>
 
                 <div class="border border-border rounded-xl bg-card shadow-sm overflow-hidden">
-                    <div class="overflow-x-auto">
+                    <div class="hidden md:block overflow-x-auto">
                         <table class="w-full text-sm text-left">
                             <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-950 dark:text-neutral-300 border-b border-border">
                                 <tr>
@@ -245,6 +245,59 @@ export default function RectoratCourseIndex() {
                                 </Show>
                             </tbody>
                         </table>
+                    </div>
+
+                    {/* Mobile Card List */}
+                    <div class="md:hidden divide-y divide-neutral-200 dark:divide-neutral-800">
+                        <Show
+                            when={!isLoading()}
+                            fallback={
+                                <For each={Array.from({ length: 5 })}>
+                                    {() => (
+                                        <div class="p-4 animate-pulse space-y-2">
+                                            <div class="h-4 w-3/4 bg-neutral-200 dark:bg-neutral-800 rounded"></div>
+                                            <div class="h-3 w-1/2 bg-neutral-200 dark:bg-neutral-800 rounded"></div>
+                                        </div>
+                                    )}
+                                </For>
+                            }
+                        >
+                            <Show
+                                when={pagedItems().length > 0}
+                                fallback={<div class="px-4 py-12 text-center text-muted-foreground font-semibold">{t('rt.noRecordsFound')}</div>}
+                            >
+                                <For each={pagedItems()}>
+                                    {(c) => (
+                                        <div class="p-4 space-y-2">
+                                            <div class="flex items-start justify-between gap-3">
+                                                <A href={detailHref(c.id)} class="font-semibold text-violet-600 dark:text-violet-400 hover:underline wrap-break-word min-w-0">{c.name || '-'}</A>
+                                                <span class="px-2 py-0.5 text-xs font-mono bg-secondary border border-border rounded shrink-0">{c.code || '-'}</span>
+                                            </div>
+                                            <dl class="grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
+                                                <div>
+                                                    <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('rt.unitLabel')}</dt>
+                                                    <dd class="text-foreground">{unitName(c.unit_id)}</dd>
+                                                </div>
+                                                <div>
+                                                    <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('rt.sks')}</dt>
+                                                    <dd class="font-mono text-foreground">{c.total_credit ?? '-'}</dd>
+                                                </div>
+                                            </dl>
+                                            <div class="flex items-center justify-between gap-3">
+                                                <span
+                                                    class={`px-2 py-0.5 text-xs font-semibold rounded-full ${c.end_date
+                                                        ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400'
+                                                        : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400'}`}
+                                                >
+                                                    {c.end_date ? t('rt.tidakAktif') : t('rt.aktif')}
+                                                </span>
+                                                <A href={detailHref(c.id)} class="text-xs font-medium text-violet-600 hover:underline">{t('rt.lihatDetail')}</A>
+                                            </div>
+                                        </div>
+                                    )}
+                                </For>
+                            </Show>
+                        </Show>
                     </div>
 
                     <div class="flex flex-col sm:flex-row items-center justify-between border-t border-border px-6 py-4 gap-3">

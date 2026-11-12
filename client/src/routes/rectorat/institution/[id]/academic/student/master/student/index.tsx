@@ -321,7 +321,7 @@ export default function RectoratStudentIndex() {
                             </span>
                             {t('rt.akademikMahasiswa')}
                         </div>
-                        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground flex items-center gap-3">
+                        <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-foreground flex items-center gap-3">
                             <span class="text-blue-600 dark:text-blue-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-9 h-9">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 3.741-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
@@ -663,7 +663,7 @@ export default function RectoratStudentIndex() {
 
                 {/* Table */}
                 <div class="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
-                    <div class="overflow-x-auto">
+                    <div class="hidden md:block overflow-x-auto">
                         <table class="w-full text-sm text-left">
                             <thead class="text-xs uppercase bg-neutral-50/80 dark:bg-neutral-800/50 text-muted-foreground border-b border-border font-semibold tracking-wider select-none">
                                 <tr>
@@ -838,12 +838,113 @@ export default function RectoratStudentIndex() {
                         </table>
                     </div>
 
+                    {/* Mobile Card List */}
+                    <div class="md:hidden divide-y divide-neutral-100 dark:divide-neutral-800">
+                        <Show
+                            when={!isLoading()}
+                            fallback={
+                                <For each={Array.from({ length: 5 })}>
+                                    {() => (
+                                        <div class="p-4 animate-pulse space-y-3">
+                                            <div class="flex items-center gap-3">
+                                                <div class="size-10 rounded-full bg-neutral-200 dark:bg-neutral-800 shrink-0"></div>
+                                                <div class="space-y-1.5 flex-1">
+                                                    <div class="h-4 w-3/4 bg-neutral-200 dark:bg-neutral-800 rounded"></div>
+                                                    <div class="h-3 w-1/2 bg-neutral-200 dark:bg-neutral-800 rounded"></div>
+                                                </div>
+                                            </div>
+                                            <div class="h-10 bg-neutral-200 dark:bg-neutral-800 rounded"></div>
+                                        </div>
+                                    )}
+                                </For>
+                            }
+                        >
+                            <Show
+                                when={items().length > 0}
+                                fallback={
+                                    <div class="px-4 py-12 flex flex-col items-center gap-2 text-center text-muted-foreground">
+                                        <span class="font-semibold text-base text-foreground/80">{t('rt.tidakAdaDataMahasiswa')}</span>
+                                        <span class="text-sm">{t('rt.cobaSesuaikanKataKunciPencarianAtau')}</span>
+                                        <Show when={hasActiveFilters()}>
+                                            <button
+                                                type="button"
+                                                onClick={resetAllFilters}
+                                                class="mt-2 px-3 py-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 rounded-lg transition-colors cursor-pointer"
+                                            >
+                                                {t('rt.resetSemuaFilter')}
+                                            </button>
+                                        </Show>
+                                    </div>
+                                }
+                            >
+                                <For each={items()}>
+                                    {(item) => (
+                                        <div class="p-4 space-y-3">
+                                            <div class="flex items-start gap-3">
+                                                <div class="size-10 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-sm shrink-0">
+                                                    {initials(item.name)}
+                                                </div>
+                                                <div class="min-w-0 flex-1">
+                                                    <p class="font-semibold text-foreground wrap-break-word">{item.name}</p>
+                                                    <div class="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
+                                                        <span class="font-mono text-xs font-semibold text-foreground/80 bg-secondary px-2 py-0.5 rounded">
+                                                            {item.code}
+                                                        </span>
+                                                        <Show when={item.nisn}>
+                                                            <span class="text-[11px] text-neutral-400 font-mono">{t('rt.nisn')} {item.nisn}</span>
+                                                        </Show>
+                                                    </div>
+                                                </div>
+                                                <Show when={item.status_name}>
+                                                    <span class={`inline-flex items-center justify-center h-6 px-2.5 text-[10px] font-bold rounded-full shrink-0 ${getStatusBadgeClass(item.status_name)}`}>
+                                                        {item.status_name}
+                                                    </span>
+                                                </Show>
+                                            </div>
+
+                                            <dl class="grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
+                                                <div class="col-span-2">
+                                                    <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('rt.programStudi')}</dt>
+                                                    <dd class="text-foreground font-medium">
+                                                        {item.unit_name || '-'}
+                                                        <Show when={item.unit_code}>
+                                                            <span class="font-mono text-muted-foreground"> ({item.unit_code})</span>
+                                                        </Show>
+                                                    </dd>
+                                                </div>
+                                                <div>
+                                                    <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('rt.tahunAkademik')}</dt>
+                                                    <dd class="text-foreground">{item.academic_year_name || '-'}</dd>
+                                                </div>
+                                                <div>
+                                                    <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('rt.terdaftar')}</dt>
+                                                    <dd class="text-foreground">{formatDate(item.registered)}</dd>
+                                                </div>
+                                            </dl>
+
+                                            <A
+                                                href={`/rectorat/institution/${institutionId()}/academic/student/master/student/${item.id}`}
+                                                class="flex items-center justify-center gap-1.5 w-full px-3 py-2 text-xs font-medium text-blue-600 hover:text-white hover:bg-blue-600 border border-blue-200 hover:border-blue-600 rounded-md transition-all dark:text-blue-400 dark:border-blue-800/60 dark:hover:bg-blue-600 dark:hover:text-white"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                </svg>
+                                                {t('rt.detail')}
+                                            </A>
+                                        </div>
+                                    )}
+                                </For>
+                            </Show>
+                        </Show>
+                    </div>
+
                     {/* Pagination */}
-                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-border bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-3">
-                        <p class="text-sm text-muted-foreground">
+                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-border bg-neutral-50/50 dark:bg-neutral-900/50 px-4 sm:px-6 py-4 gap-3">
+                        <p class="text-sm text-muted-foreground text-center sm:text-left">
                             {t('rt.menampilkan')} <span class="font-semibold text-foreground">{totalData() > 0 ? startIndex() : 0}</span>–<span class="font-semibold text-foreground">{endIndex()}</span> dari <span class="font-semibold text-foreground">{totalData().toLocaleString()}</span> mahasiswa
                         </p>
-                        <nav class="inline-flex -space-x-px rounded-lg overflow-hidden shadow-sm">
+                        <nav class="flex w-full sm:w-auto sm:inline-flex -space-x-px rounded-lg overflow-hidden shadow-sm [&>button]:flex-1 [&>button]:justify-center sm:[&>button]:flex-none">
                             <button
                                 type="button"
                                 id="student-prev-page"

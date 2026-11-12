@@ -792,7 +792,40 @@ export default function RectoratActivityDetail() {
                                     </div>
                                 }
                             >
-                                <div class="overflow-x-auto">
+                                <div class="md:hidden divide-y divide-neutral-100 dark:divide-neutral-800">
+                                    <For each={teaches()}>
+                                        {(t) => (
+                                            <div class="p-4 space-y-2">
+                                                <div class="flex items-start justify-between gap-3">
+                                                    <p class="font-semibold text-foreground text-sm wrap-break-word min-w-0">
+                                                        {t.course?.code && t.course?.name ? `${t.course.code} / ${t.course.name}` : t.course?.name || t.course?.code || '-'}
+                                                    </p>
+                                                    <span class="px-2 py-0.5 rounded-md text-xs font-bold bg-secondary text-foreground/80 shrink-0">
+                                                        {t.class_code?.alphabet_code || t.name || '-'}
+                                                    </span>
+                                                </div>
+                                                <dl class="grid grid-cols-2 gap-x-3 text-xs">
+                                                    <div>
+                                                        <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{tt('rt.sks')}</dt>
+                                                        <dd class="font-mono text-foreground">{t.course?.total_credit ?? '-'}</dd>
+                                                    </div>
+                                                    <div>
+                                                        <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{tt('rt.kapasitas')}</dt>
+                                                        <dd class="font-mono text-foreground">{t.class_code?.capacity ?? '-'}</dd>
+                                                    </div>
+                                                </dl>
+                                                <A
+                                                    href={`/course-department/academic/campaign/transaction/teach/${t.id}`}
+                                                    class="flex items-center justify-center w-full py-2 text-xs font-medium text-blue-600 border border-blue-200 hover:bg-blue-50 rounded-md dark:text-blue-400 dark:border-blue-800/60 dark:hover:bg-blue-900/30"
+                                                >
+                                                    {tt('rt.bukaKelas')}
+                                                </A>
+                                            </div>
+                                        )}
+                                    </For>
+                                </div>
+
+                                <div class="hidden md:block overflow-x-auto">
                                     <table class="w-full text-left text-xs">
                                         <thead class="bg-muted/50 uppercase font-semibold text-neutral-500">
                                             <tr>

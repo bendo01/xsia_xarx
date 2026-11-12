@@ -283,7 +283,7 @@ export default function RectoratStaffIndex() {
 
                 {/* Data Table */}
                 <div class="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
-                    <div class="overflow-x-auto">
+                    <div class="hidden md:block overflow-x-auto">
                         <table class="w-full text-sm text-left">
                             <thead class="text-xs text-neutral-500 uppercase bg-neutral-50/80 dark:bg-neutral-800/50 dark:text-neutral-400 border-b border-border font-semibold tracking-wider">
                                 <tr>
@@ -412,6 +412,87 @@ export default function RectoratStaffIndex() {
                                 </Show>
                             </tbody>
                         </table>
+                    </div>
+
+                    {/* Mobile Card List */}
+                    <div class="md:hidden divide-y divide-neutral-100 dark:divide-neutral-800">
+                        <Show
+                            when={!isLoading()}
+                            fallback={
+                                <For each={Array.from({ length: 5 })}>
+                                    {() => (
+                                        <div class="p-4 animate-pulse space-y-3">
+                                            <div class="flex items-center gap-3">
+                                                <div class="size-10 rounded-full bg-neutral-200 dark:bg-neutral-800 shrink-0"></div>
+                                                <div class="space-y-1.5 flex-1">
+                                                    <div class="h-4 w-3/4 bg-neutral-200 dark:bg-neutral-800 rounded-sm"></div>
+                                                    <div class="h-3 w-1/2 bg-neutral-200 dark:bg-neutral-800 rounded-sm"></div>
+                                                </div>
+                                            </div>
+                                            <div class="h-9 bg-neutral-200 dark:bg-neutral-800 rounded-sm"></div>
+                                        </div>
+                                    )}
+                                </For>
+                            }
+                        >
+                            <Show
+                                when={pagedItems().length > 0}
+                                fallback={
+                                    <div class="px-4 py-12 flex flex-col items-center gap-2 text-center text-muted-foreground">
+                                        <span class="font-semibold text-base text-foreground/80">{t('rt.tidakAdaDataStafDitemukan')}</span>
+                                        <span class="text-sm">{t('rt.silakanUbahKataKunciAtauFilter')}</span>
+                                    </div>
+                                }
+                            >
+                                <For each={pagedItems()}>
+                                    {(item) => (
+                                        <div class="p-4 space-y-3">
+                                            <div class="flex items-start gap-3">
+                                                <div class="size-10 rounded-full bg-linear-to-br from-teal-500 to-cyan-600 flex items-center justify-center text-white text-xs font-bold shadow-sm shrink-0">
+                                                    {initials(item)}
+                                                </div>
+                                                <div class="min-w-0 flex-1">
+                                                    <p class="font-semibold text-foreground wrap-break-word">{item.name || displayPersonName(item)}</p>
+                                                    <p class="font-mono text-xs text-muted-foreground">{item.code || '-'}</p>
+                                                    <Show when={item.employee_code}>
+                                                        <p class="text-[10px] font-mono text-teal-600 dark:text-teal-400">{item.employee_code}</p>
+                                                    </Show>
+                                                </div>
+                                                {!item.end_date ? (
+                                                    <span class="inline-flex items-center h-6 px-2.5 text-[10px] font-bold text-teal-700 bg-teal-50 border border-teal-200 rounded-full shrink-0 dark:bg-teal-900/30 dark:text-teal-300 dark:border-teal-800/50">
+                                                        {t('rt.aktif')}
+                                                    </span>
+                                                ) : (
+                                                    <span class="inline-flex items-center h-6 px-2.5 text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-full shrink-0 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800/50">
+                                                        {t('rt.selesai2')}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <dl class="grid grid-cols-3 gap-x-3 gap-y-2 text-xs">
+                                                <div>
+                                                    <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('rt.noSK')}</dt>
+                                                    <dd class="font-mono text-foreground">{item.decree_number || '-'}</dd>
+                                                </div>
+                                                <div>
+                                                    <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('rt.mulaiTugas')}</dt>
+                                                    <dd class="text-foreground">{formatDate(item.start_date) || '-'}</dd>
+                                                </div>
+                                                <div>
+                                                    <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('rt.selesaiTugas')}</dt>
+                                                    <dd class="text-foreground">{formatDate(item.end_date) || '-'}</dd>
+                                                </div>
+                                            </dl>
+                                            <A
+                                                href={`/rectorat/institution/${institutionId()}/staff/${item.id}`}
+                                                class="flex items-center justify-center w-full px-3 py-2 text-xs font-medium text-teal-600 hover:text-white hover:bg-teal-600 border border-teal-200 hover:border-teal-600 rounded-md transition-all dark:text-teal-400 dark:border-teal-800/60 dark:hover:bg-teal-600 dark:hover:text-white"
+                                            >
+                                                {t('rt.detail')}
+                                            </A>
+                                        </div>
+                                    )}
+                                </For>
+                            </Show>
+                        </Show>
                     </div>
 
                     {/* Pagination Footer */}

@@ -137,7 +137,7 @@ export default function RectoratUnitsIndex() {
 
                 {/* Data Table */}
                 <div class="bg-card border border-border rounded-xl shadow-sm overflow-hidden transition-all">
-                    <div class="overflow-x-auto">
+                    <div class="hidden md:block overflow-x-auto">
                         <table class="w-full text-sm text-left">
                             <thead class="text-xs text-neutral-500 uppercase bg-neutral-50/80 dark:bg-neutral-800/50 dark:text-neutral-400 border-b border-border font-semibold tracking-wider">
                                 <tr>
@@ -235,6 +235,72 @@ export default function RectoratUnitsIndex() {
                                 </Show>
                             </tbody>
                         </table>
+                    </div>
+
+                    {/* Mobile Card List */}
+                    <div class="md:hidden divide-y divide-neutral-100 dark:divide-neutral-800">
+                        <Show
+                            when={!isLoading()}
+                            fallback={
+                                <For each={Array.from({ length: 5 })}>
+                                    {() => (
+                                        <div class="p-4 animate-pulse space-y-2">
+                                            <div class="h-4 w-3/4 bg-neutral-200 dark:bg-neutral-800 rounded-sm"></div>
+                                            <div class="h-3 w-1/2 bg-neutral-200 dark:bg-neutral-800 rounded-sm"></div>
+                                            <div class="h-9 bg-neutral-200 dark:bg-neutral-800 rounded-sm"></div>
+                                        </div>
+                                    )}
+                                </For>
+                            }
+                        >
+                            <Show
+                                when={items().length > 0}
+                                fallback={
+                                    <div class="px-4 py-12 flex flex-col items-center gap-2 text-center text-muted-foreground">
+                                        <span class="font-medium text-base text-foreground/80">{tt('rt.tidakAdaDataDitemukan')}</span>
+                                        <span class="text-sm">{tt('rt.silakanUbahKataKunciPencarianAnda')}</span>
+                                    </div>
+                                }
+                            >
+                                <For each={items()}>
+                                    {(item) => (
+                                        <div class="p-4 space-y-3">
+                                            <div class="flex items-start justify-between gap-3">
+                                                <div class="min-w-0">
+                                                    <p class="font-semibold text-foreground wrap-break-word">{item.name || '-'}</p>
+                                                    <p class="font-mono text-xs text-muted-foreground mt-0.5">{item.code || '-'}</p>
+                                                </div>
+                                                {item.is_active ? (
+                                                    <span class="inline-flex items-center h-6 px-2.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full shrink-0 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800/50">
+                                                        {tt('rt.aktif')}
+                                                    </span>
+                                                ) : (
+                                                    <span class="inline-flex items-center h-6 px-2.5 text-[10px] font-bold text-red-700 bg-red-50 border border-red-200 rounded-full shrink-0 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800/50">
+                                                        {tt('rt.nonAktif')}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <dl class="grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
+                                                <div>
+                                                    <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{tt('rt.tipeUnit')}</dt>
+                                                    <dd class="text-foreground">{item.unit_type?.name || '-'}</dd>
+                                                </div>
+                                                <div>
+                                                    <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{tt('rt.indukParent')}</dt>
+                                                    <dd class="text-foreground">{item.parent?.name || '-'}</dd>
+                                                </div>
+                                            </dl>
+                                            <A
+                                                href={`/rectorat/institution/${institutionId()}/unit/${item.id}`}
+                                                class="flex items-center justify-center w-full px-3 py-2 text-xs font-medium text-blue-600 hover:text-white hover:bg-blue-600 border border-blue-200 hover:border-blue-600 rounded-md transition-all dark:text-blue-400 dark:border-blue-800/60 dark:hover:bg-blue-600 dark:hover:text-white"
+                                            >
+                                                {tt('rt.detail')}
+                                            </A>
+                                        </div>
+                                    )}
+                                </For>
+                            </Show>
+                        </Show>
                     </div>
 
                     {/* Pagination Footer */}

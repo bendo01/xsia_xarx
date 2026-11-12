@@ -778,7 +778,160 @@ export default function AcademicStudentCampaignStudentActivityPage() {
 
                 {/* Main Data Table */}
                 <div class="bg-card rounded-lg border border-border shadow-2xs overflow-hidden">
-                    <div class="overflow-x-auto">
+                    {/* Mobile Card List */}
+                    <div class="md:hidden">
+                        <Show
+                            when={!isLoading()}
+                            fallback={
+                                <div class="px-4 py-12 flex flex-col items-center gap-2 text-xs text-muted-foreground">
+                                    <Spinner size="md" color="blue" aria-hidden={true} />
+                                    <span>{t('ad.memuatDataAktivitasMahasiswa')}</span>
+                                </div>
+                            }
+                        >
+                            <Show
+                                when={items().length > 0}
+                                fallback={
+                                    <div class="px-4 py-12 text-center">
+                                        <h4 class="font-bold text-foreground">{t('ad.tidakAdaDataAktivitas')}</h4>
+                                        <p class="text-xs text-neutral-500 mt-1">{t('ad.cobaSesuaikanKataKunciPencarianAtau')}</p>
+                                    </div>
+                                }
+                            >
+                                <div class="flex items-center gap-2 px-4 py-2.5 bg-muted/50 border-b border-border text-xs text-muted-foreground">
+                                    <input
+                                        type="checkbox"
+                                        checked={items().length > 0 && items().every(i => selectedIds().includes(i.id))}
+                                        onChange={handleSelectAll}
+                                        class="rounded border-border text-blue-600 focus:ring-blue-500 cursor-pointer"
+                                    />
+                                    <span>{selectedIds().length} / {items().length}</span>
+                                </div>
+                                <div class="divide-y divide-neutral-200 dark:divide-neutral-700/60">
+                                    <For each={items()}>
+                                        {item => {
+                                            const studentName = item.student_name || item.student?.name || item.name || 'Mahasiswa';
+                                            const studentCode = item.student_code || item.student?.code || '-';
+                                            const unitName = item.unit_name || item.unit?.name || 'Program Studi';
+                                            const semesterName = item.academic_year_name || item.unit_activity?.name || '-';
+                                            const status = item.status_name || item.status?.name || 'Aktif';
+                                            const ips = Number(item.cumulative_index || 0);
+                                            const ipk = Number(item.grand_cumulative_index || 0);
+                                            const isStatusAktif = status.toLowerCase().includes('aktif');
+                                            const isStatusCuti = status.toLowerCase().includes('cuti');
+                                            const iconBtn = 'p-2 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded transition-colors disabled:opacity-50';
+
+                                            return (
+                                                <div class="p-4 space-y-3">
+                                                    <div class="flex items-start gap-3">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={selectedIds().includes(item.id)}
+                                                            onChange={() => handleSelectRow(item.id)}
+                                                            class="mt-1 rounded border-border text-blue-600 focus:ring-blue-500 cursor-pointer"
+                                                        />
+                                                        <div class="min-w-0 flex-1">
+                                                            <A
+                                                                href={`/administrator/academic/student/campaign/student-activity/${item.id}`}
+                                                                class="font-semibold text-foreground text-sm wrap-break-word block"
+                                                            >
+                                                                {studentName}
+                                                            </A>
+                                                            <p class="text-[11px] text-muted-foreground">
+                                                                <span class="font-mono font-medium">{studentCode}</span> • {unitName}
+                                                            </p>
+                                                        </div>
+                                                        <span
+                                                            class={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold shrink-0 ${isStatusAktif
+                                                                ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60'
+                                                                : isStatusCuti
+                                                                    ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60'
+                                                                    : 'bg-secondary text-foreground/80 border border-border'}`}
+                                                        >
+                                                            {status}
+                                                        </span>
+                                                    </div>
+
+                                                    <dl class="grid grid-cols-3 gap-x-3 text-xs">
+                                                        <div>
+                                                            <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('ad.periodeSemester')}</dt>
+                                                            <dd class="text-foreground font-medium">{semesterName}</dd>
+                                                        </div>
+                                                        <div>
+                                                            <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('ad.sks')}</dt>
+                                                            <dd class="font-mono text-foreground">{item.total_credit ?? 0} / {item.grand_total_credit ?? 0}</dd>
+                                                        </div>
+                                                        <div>
+                                                            <dt class="text-[10px] uppercase tracking-wide text-neutral-400 font-semibold">{t('ad.ipsIPK')}</dt>
+                                                            <dd class="font-mono text-foreground">{ips.toFixed(2)} / {ipk.toFixed(2)}</dd>
+                                                        </div>
+                                                    </dl>
+
+                                                    <div class="flex items-center justify-between gap-2">
+                                                        <button
+                                                            type="button"
+                                                            disabled={lockingId() === item.id}
+                                                            onClick={() => handleToggleLock(item)}
+                                                            class={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-medium border transition-all ${item.is_lock
+                                                                ? 'bg-amber-50 dark:bg-amber-950/70 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800/80'
+                                                                : 'bg-secondary text-muted-foreground border-border'}`}
+                                                            title={item.is_lock ? t('ad.klikUntukMembukaKunci') : t('ad.klikUntukMengunciAktivitas')}
+                                                        >
+                                                            <Show when={lockingId() === item.id}>
+                                                                <Spinner size="xs" color="current" aria-hidden={true} />
+                                                            </Show>
+                                                            <span>{item.is_lock ? t('ad.kunci') : t('ad.buka')}</span>
+                                                        </button>
+
+                                                        <div class="flex items-center gap-0.5">
+                                                            <A href={`/administrator/academic/student/campaign/student-activity/${item.id}`} class={iconBtn} title={t('ad.lihatDetailKRS')}>
+                                                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                                </svg>
+                                                            </A>
+                                                            <button type="button" onClick={() => openEditModal(item)} class={iconBtn} title={t('ad.editAktivitas')}>
+                                                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                                </svg>
+                                                            </button>
+                                                            <button type="button" disabled={printingPlanId() === item.id} onClick={() => handlePrintPlan(item)} class={iconBtn} title={t('ad.cetakKRSKartuRencanaStudi')}>
+                                                                <Show
+                                                                    when={printingPlanId() !== item.id}
+                                                                    fallback={<Spinner size="sm" color="purple" aria-hidden={true} />}
+                                                                >
+                                                                    <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                                    </svg>
+                                                                </Show>
+                                                            </button>
+                                                            <button type="button" disabled={printingResultId() === item.id} onClick={() => handlePrintResult(item)} class={iconBtn} title={t('ad.cetakKHSKartuHasilStudi')}>
+                                                                <Show
+                                                                    when={printingResultId() !== item.id}
+                                                                    fallback={<Spinner size="sm" color="emerald" aria-hidden={true} />}
+                                                                >
+                                                                    <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                                                    </svg>
+                                                                </Show>
+                                                            </button>
+                                                            <button type="button" onClick={() => openDeleteModal(item)} class={`${iconBtn} hover:text-rose-600`} title={t('ad.hapusAktivitas')}>
+                                                                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        }}
+                                    </For>
+                                </div>
+                            </Show>
+                        </Show>
+                    </div>
+
+                    <div class="hidden md:block overflow-x-auto">
                         <table class="w-full text-left text-xs border-collapse">
                             <thead>
                                 <tr class="bg-muted/50 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[11px]">
